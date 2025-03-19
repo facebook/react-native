@@ -8,8 +8,8 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {
   BubblingEventHandler,
   DirectEventHandler,
@@ -20,22 +20,22 @@ import type {
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type OnChangeEvent = $ReadOnly<{|
+type OnChangeEvent = $ReadOnly<{
   value: boolean,
   source?: string,
   progress: ?Int32,
   scale?: ?Float,
-|}>;
+}>;
 
-type OnEventDirect = $ReadOnly<{|
+type OnEventDirect = $ReadOnly<{
   value: boolean,
-|}>;
+}>;
 
-type OnOrientationChangeEvent = $ReadOnly<{|
+type OnOrientationChangeEvent = $ReadOnly<{
   orientation: 'landscape' | 'portrait',
-|}>;
+}>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
@@ -57,7 +57,7 @@ type NativeProps = $ReadOnly<{|
     null,
     'paperBubblingName',
   >,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'EventPropsNativeComponentView',

@@ -3,12 +3,14 @@
 docs/generatedComponentApiDocs.js
 packages/react-native/flow/
 packages/react-native/sdks/
+packages/react-native/ReactAndroid/build
 packages/react-native/ReactAndroid/hermes-engine/build/
 packages/react-native/Libraries/Renderer/*
 packages/react-native/Libraries/vendor/**/*
 node_modules/
 packages/*/node_modules
 packages/*/dist
+packages/*/types_generated
 packages/debugger-frontend/dist/**/*
 packages/react-native-codegen/lib
 tools/eslint/rules/sort-imports.js

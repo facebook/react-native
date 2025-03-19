@@ -58,7 +58,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
   private static volatile UnobservedExceptionHandler unobservedExceptionHandler;
 
   /** Returns the handler invoked when a task has an unobserved exception or {@code null}. */
-  public static UnobservedExceptionHandler getUnobservedExceptionHandler() {
+  public static @Nullable UnobservedExceptionHandler getUnobservedExceptionHandler() {
     return unobservedExceptionHandler;
   }
 
@@ -250,16 +250,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
 
     return tcs.getTask();
-  }
-
-  /**
-   * Invokes the callable on the current thread, producing a Task.
-   *
-   * <p>If you want to cancel the resulting Task throw a {@link
-   * java.util.concurrent.CancellationException} from the callable.
-   */
-  public static <TResult> Task<TResult> call(final Callable<TResult> callable) {
-    return call(callable, IMMEDIATE_EXECUTOR);
   }
 
   /**

@@ -20,10 +20,24 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import {getFabricUIManager} from '../ReactNative/FabricUIManager';
 import Platform from '../Utilities/Platform';
 
-const UIManager = require('../ReactNative/UIManager');
+export type {
+  LayoutAnimationType,
+  LayoutAnimationProperty,
+  LayoutAnimationAnimationConfig as LayoutAnimationAnim,
+} from '../Renderer/shims/ReactNativeTypes';
+
+const UIManager = require('../ReactNative/UIManager').default;
 
 // Reexport type
 export type LayoutAnimationConfig = LayoutAnimationConfig_;
+
+export type LayoutAnimationTypes = $ReadOnly<{
+  [type in LayoutAnimationType]: type,
+}>;
+
+export type LayoutAnimationProperties = $ReadOnly<{
+  [prop in LayoutAnimationProperty]: prop,
+}>;
 
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
@@ -103,8 +117,8 @@ function configureNext(
 
 function create(
   duration: number,
-  type: LayoutAnimationType,
-  property: LayoutAnimationProperty,
+  type?: LayoutAnimationType,
+  property?: LayoutAnimationProperty,
 ): LayoutAnimationConfig {
   return {
     duration,
@@ -121,7 +135,7 @@ const Presets = {
     'opacity',
   ): LayoutAnimationConfig),
   linear: (create(500, 'linear', 'opacity'): LayoutAnimationConfig),
-  spring: {
+  spring: ({
     duration: 700,
     create: {
       type: 'linear',
@@ -135,7 +149,7 @@ const Presets = {
       type: 'linear',
       property: 'opacity',
     },
-  },
+  }: LayoutAnimationConfig),
 };
 
 /**
@@ -174,13 +188,13 @@ const LayoutAnimation = {
     easeIn: 'easeIn',
     easeOut: 'easeOut',
     keyboard: 'keyboard',
-  }),
+  }) as LayoutAnimationTypes,
   Properties: Object.freeze({
     opacity: 'opacity',
     scaleX: 'scaleX',
     scaleY: 'scaleY',
     scaleXY: 'scaleXY',
-  }),
+  }) as LayoutAnimationProperties,
   checkConfig(...args: Array<mixed>) {
     console.error('LayoutAnimation.checkConfig(...) has been disabled.');
   },
@@ -197,4 +211,4 @@ const LayoutAnimation = {
   setEnabled,
 };
 
-module.exports = LayoutAnimation;
+export default LayoutAnimation;

@@ -126,7 +126,9 @@ def podspec_source_build_from_local_source_dir(react_native_path)
     source_dir_path = ENV['REACT_NATIVE_OVERRIDE_HERMES_DIR']
     if Dir.exist?(source_dir_path)
         hermes_log("Using source code from local path: #{source_dir_path}")
-        tarball_path = File.join(artifacts_dir(), "hermes-engine-from-local-source-dir.tar.gz")
+        tarball_dir_path = artifacts_dir()
+        FileUtils.mkdir_p(tarball_dir_path) unless Dir.exist?(tarball_dir_path)
+        tarball_path = File.join(tarball_dir_path, "hermes-engine-from-local-source-dir.tar.gz")
         exclude_paths = [
             "__tests__",
             "./external/flowtest",
@@ -202,9 +204,11 @@ def hermestag_file(react_native_path)
 end
 
 def release_tarball_url(version, build_type)
+    maven_repo_url = "https://repo1.maven.org/maven2"
+    namespace = "com/facebook/react"
     # Sample url from Maven:
     # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
-    return "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
+    return "#{maven_repo_url}/#{namespace}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
 end
 
 def download_stable_hermes(react_native_path, version, configuration)

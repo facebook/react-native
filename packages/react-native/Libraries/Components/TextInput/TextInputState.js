@@ -12,36 +12,18 @@
 // TextInputs. All calls relating to the keyboard should be funneled
 // through here.
 
-import type {
-  HostComponent,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-  MeasureOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 
 import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
 import {Commands as iOSTextInputCommands} from '../../Components/TextInput/RCTSingelineTextInputNativeComponent';
 
 const {findNodeHandle} = require('../../ReactNative/RendererProxy');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-type ComponentRef = React.ElementRef<HostComponent<mixed>>;
+const Platform = require('../../Utilities/Platform').default;
 
-let currentlyFocusedInputRef: ?ComponentRef = null;
-const inputs = new Set<{
-  blur(): void,
-  focus(): void,
-  measure(callback: MeasureOnSuccessCallback): void,
-  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
-  measureLayout(
-    relativeToNativeNode: number | React.ElementRef<HostComponent<mixed>>,
-    onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail?: () => void,
-  ): void,
-  setNativeProps(nativeProps: {...}): void,
-}>();
+let currentlyFocusedInputRef: ?HostInstance = null;
+const inputs = new Set<HostInstance>();
 
-function currentlyFocusedInput(): ?ComponentRef {
+function currentlyFocusedInput(): ?HostInstance {
   return currentlyFocusedInputRef;
 }
 
@@ -59,13 +41,13 @@ function currentlyFocusedField(): ?number {
   return findNodeHandle(currentlyFocusedInputRef);
 }
 
-function focusInput(textField: ?ComponentRef): void {
+function focusInput(textField: ?HostInstance): void {
   if (currentlyFocusedInputRef !== textField && textField != null) {
     currentlyFocusedInputRef = textField;
   }
 }
 
-function blurInput(textField: ?ComponentRef): void {
+function blurInput(textField: ?HostInstance): void {
   if (currentlyFocusedInputRef === textField && textField != null) {
     currentlyFocusedInputRef = null;
   }
@@ -92,7 +74,7 @@ function blurField(textFieldID: ?number) {
  * Focuses the specified text field
  * noop if the text field was already focused or if the field is not editable
  */
-function focusTextInput(textField: ?ComponentRef) {
+function focusTextInput(textField: ?HostInstance) {
   if (typeof textField === 'number') {
     if (__DEV__) {
       console.error(
@@ -131,7 +113,7 @@ function focusTextInput(textField: ?ComponentRef) {
  * Unfocuses the specified text field
  * noop if it wasn't focused
  */
-function blurTextInput(textField: ?ComponentRef) {
+function blurTextInput(textField: ?HostInstance) {
   if (typeof textField === 'number') {
     if (__DEV__) {
       console.error(
@@ -157,7 +139,7 @@ function blurTextInput(textField: ?ComponentRef) {
   }
 }
 
-function registerInput(textField: ComponentRef) {
+function registerInput(textField: HostInstance) {
   if (typeof textField === 'number') {
     if (__DEV__) {
       console.error(
@@ -171,7 +153,7 @@ function registerInput(textField: ComponentRef) {
   inputs.add(textField);
 }
 
-function unregisterInput(textField: ComponentRef) {
+function unregisterInput(textField: HostInstance) {
   if (typeof textField === 'number') {
     if (__DEV__) {
       console.error(
@@ -184,7 +166,7 @@ function unregisterInput(textField: ComponentRef) {
   inputs.delete(textField);
 }
 
-function isTextInput(textField: ComponentRef): boolean {
+function isTextInput(textField: HostInstance): boolean {
   if (typeof textField === 'number') {
     if (__DEV__) {
       console.error(
@@ -198,7 +180,7 @@ function isTextInput(textField: ComponentRef): boolean {
   return inputs.has(textField);
 }
 
-module.exports = {
+const TextInputState = {
   currentlyFocusedInput,
   focusInput,
   blurInput,
@@ -212,3 +194,5 @@ module.exports = {
   unregisterInput,
   isTextInput,
 };
+
+export default TextInputState;

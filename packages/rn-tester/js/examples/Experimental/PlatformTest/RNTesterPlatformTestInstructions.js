@@ -13,10 +13,10 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   instructions?: $ReadOnlyArray<string>,
   style?: ?ViewStyleProp,
-|}>;
+}>;
 export default function RNTesterPlatformTestInstructions({
   instructions,
   style,

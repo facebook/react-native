@@ -9,7 +9,7 @@ package com.facebook.react.reactperflogger
 
 import com.facebook.jni.HybridData
 
-public abstract class NativeModulePerfLogger protected constructor() {
+internal abstract class NativeModulePerfLogger protected constructor() {
 
   @Suppress("NoHungarianNotation") private val mHybridData: HybridData
 
@@ -20,25 +20,25 @@ public abstract class NativeModulePerfLogger protected constructor() {
 
   protected abstract fun initHybrid(): HybridData
 
-  public abstract fun moduleDataCreateStart(moduleName: String, id: Int)
+  abstract fun moduleDataCreateStart(moduleName: String, id: Int)
 
-  public abstract fun moduleDataCreateEnd(moduleName: String, id: Int)
+  abstract fun moduleDataCreateEnd(moduleName: String, id: Int)
 
-  public abstract fun moduleCreateStart(moduleName: String, id: Int)
+  abstract fun moduleCreateStart(moduleName: String, id: Int)
 
-  public abstract fun moduleCreateCacheHit(moduleName: String, id: Int)
+  abstract fun moduleCreateCacheHit(moduleName: String, id: Int)
 
-  public abstract fun moduleCreateConstructStart(moduleName: String, id: Int)
+  abstract fun moduleCreateConstructStart(moduleName: String, id: Int)
 
-  public abstract fun moduleCreateConstructEnd(moduleName: String, id: Int)
+  abstract fun moduleCreateConstructEnd(moduleName: String, id: Int)
 
-  public abstract fun moduleCreateSetUpStart(moduleName: String, id: Int)
+  abstract fun moduleCreateSetUpStart(moduleName: String, id: Int)
 
-  public abstract fun moduleCreateSetUpEnd(moduleName: String, id: Int)
+  abstract fun moduleCreateSetUpEnd(moduleName: String, id: Int)
 
-  public abstract fun moduleCreateEnd(moduleName: String, id: Int)
+  abstract fun moduleCreateEnd(moduleName: String, id: Int)
 
-  public abstract fun moduleCreateFail(moduleName: String, id: Int)
+  abstract fun moduleCreateFail(moduleName: String, id: Int)
 
   /** Subclasses will override this method to load their own SO libraries. */
   @Synchronized

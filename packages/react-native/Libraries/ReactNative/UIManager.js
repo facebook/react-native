@@ -20,8 +20,8 @@ function isFabricReactTag(reactTag: number): boolean {
 
 const UIManagerImpl: UIManagerJSInterface =
   global.RN$Bridgeless === true
-    ? require('./BridgelessUIManager')
-    : require('./PaperUIManager');
+    ? require('./BridgelessUIManager').default
+    : require('./PaperUIManager').default;
 
 // $FlowFixMe[cannot-spread-interface]
 const UIManager: UIManagerJSInterface = {
@@ -190,4 +190,4 @@ const UIManager: UIManagerJSInterface = {
   },
 };
 
-module.exports = UIManager;
+export default UIManager;

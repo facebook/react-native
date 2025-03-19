@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: "The node.js version to use"
     required: false
-    default: "18"
+    default: "20"
 runs:
   using: composite
   steps:
@@ -13,7 +13,7 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
     - name: Yarn install
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Run Tests - JavaScript Tests
       shell: bash
       run: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2

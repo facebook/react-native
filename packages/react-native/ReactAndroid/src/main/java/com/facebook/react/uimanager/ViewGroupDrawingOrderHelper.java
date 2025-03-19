@@ -47,7 +47,7 @@ public class ViewGroupDrawingOrderHelper {
    *
    * @param view The view that is being removed.
    */
-  public void handleRemoveView(View view) {
+  public void handleRemoveView(@Nullable View view) {
     if (ViewGroupManager.getViewZIndex(view) != null) {
       mNumberOfChildrenWithZIndex--;
     }

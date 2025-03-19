@@ -24,8 +24,12 @@ struct Color {
   Color(int32_t color);
   Color(const DynamicColor& dynamicColor);
   Color(const ColorComponents& components);
-  Color(std::shared_ptr<void> uiColor);
+  Color() : uiColor_(nullptr){};
   int32_t getColor() const;
+  int32_t getUIColorHash() const;
+
+  static Color createSemanticColor(std::vector<std::string>& semanticItems);
+
   std::shared_ptr<void> getUIColor() const {
     return uiColor_;
   }
@@ -48,7 +52,9 @@ struct Color {
   }
 
  private:
+  Color(std::shared_ptr<void> uiColor);
   std::shared_ptr<void> uiColor_;
+  int32_t uiColorHashValue_;
 };
 
 namespace HostPlatformColor {
@@ -59,7 +65,7 @@ namespace HostPlatformColor {
 #define NO_DESTROY
 #endif
 
-NO_DESTROY static const facebook::react::Color UndefinedColor = Color(nullptr);
+NO_DESTROY static const facebook::react::Color UndefinedColor = Color();
 } // namespace HostPlatformColor
 
 inline Color
@@ -103,8 +109,6 @@ inline float blueFromHostPlatformColor(Color color) {
 template <>
 struct std::hash<facebook::react::Color> {
   size_t operator()(const facebook::react::Color& color) const {
-    auto seed = size_t{0};
-    facebook::react::hash_combine(seed, color.getColor());
-    return seed;
+    return color.getUIColorHash();
   }
 };

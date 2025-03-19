@@ -12,6 +12,7 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
@@ -19,31 +20,43 @@ import * as React from 'react';
 
 const MAX_DEPTH = 5;
 
-function isPlainObject(value: any): boolean {
+export function isPlainObject(
+  value: mixed,
+  /* $FlowIssue[incompatible-type-guard] - Flow does not know that the prototype
+     and ReactElement checks preserve the type refinement of `value`. */
+): value is $ReadOnly<{[string]: mixed}> {
   return (
+    // $FlowFixMe[incompatible-type-guard]
     value !== null &&
     typeof value === 'object' &&
-    Object.getPrototypeOf(value).isPrototypeOf(Object)
+    Object.getPrototypeOf(value).isPrototypeOf(Object) &&
+    !React.isValidElement(value)
   );
 }
 
-// Recurse through values, executing fn for any AnimatedNodes
-function visit(value: any, fn: any => void, depth: number = 0): void {
+function flatAnimatedNodes(
+  value: mixed,
+  nodes: Array<AnimatedNode> = [],
+  depth: number = 0,
+): Array<AnimatedNode> {
   if (depth >= MAX_DEPTH) {
-    return;
+    return nodes;
   }
-
   if (value instanceof AnimatedNode) {
-    fn(value);
+    nodes.push(value);
   } else if (Array.isArray(value)) {
-    value.forEach(element => {
-      visit(element, fn, depth + 1);
-    });
+    for (let ii = 0, length = value.length; ii < length; ii++) {
+      const element = value[ii];
+      flatAnimatedNodes(element, nodes, depth + 1);
+    }
   } else if (isPlainObject(value)) {
-    Object.values(value).forEach(element => {
-      visit(element, fn, depth + 1);
-    });
+    const keys = Object.keys(value);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
+      flatAnimatedNodes(value[key], nodes, depth + 1);
+    }
   }
+  return nodes;
 }
 
 // Returns a copy of value with a transformation fn applied to any AnimatedNodes
@@ -58,7 +71,9 @@ function mapAnimatedNodes(value: any, fn: any => any, depth: number = 0): any {
     return value.map(element => mapAnimatedNodes(element, fn, depth + 1));
   } else if (isPlainObject(value)) {
     const result: {[string]: any} = {};
-    for (const key in value) {
+    const keys = Object.keys(value);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
       result[key] = mapAnimatedNodes(value[key], fn, depth + 1);
     }
     return result;
@@ -67,38 +82,32 @@ function mapAnimatedNodes(value: any, fn: any => any, depth: number = 0): any {
   }
 }
 
-export function hasAnimatedNode(value: any, depth: number = 0): boolean {
-  if (depth >= MAX_DEPTH) {
-    return false;
-  }
-
-  if (value instanceof AnimatedNode) {
-    return true;
-  } else if (Array.isArray(value)) {
-    for (const element of value) {
-      if (hasAnimatedNode(element, depth + 1)) {
-        return true;
-      }
-    }
-  } else if (isPlainObject(value)) {
-    // Don't consider React elements
-    if (React.isValidElement(value)) {
-      return false;
-    }
-    for (const key in value) {
-      if (hasAnimatedNode(value[key], depth + 1)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 export default class AnimatedObject extends AnimatedWithChildren {
-  _value: any;
+  #nodes: $ReadOnlyArray<AnimatedNode>;
+  _value: mixed;
 
-  constructor(value: any) {
-    super();
+  /**
+   * Creates an `AnimatedObject` if `value` contains `AnimatedNode` instances.
+   * Otherwise, returns `null`.
+   */
+  static from(value: mixed): ?AnimatedObject {
+    const nodes = flatAnimatedNodes(value);
+    if (nodes.length === 0) {
+      return null;
+    }
+    return new AnimatedObject(nodes, value);
+  }
+
+  /**
+   * Should only be called by `AnimatedObject.from`.
+   */
+  constructor(
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    value: mixed,
+    config?: ?AnimatedNodeConfig,
+  ) {
+    super(config);
+    this.#nodes = nodes;
     this._value = value;
   }
 
@@ -108,6 +117,14 @@ export default class AnimatedObject extends AnimatedWithChildren {
     });
   }
 
+  __getValueWithStaticObject(staticObject: mixed): any {
+    const nodes = this.#nodes;
+    let index = 0;
+    // NOTE: We can depend on `this._value` and `staticObject` sharing a
+    // structure because of `useAnimatedPropsMemo`.
+    return mapAnimatedNodes(staticObject, () => nodes[index++].__getValue());
+  }
+
   __getAnimatedValue(): any {
     return mapAnimatedNodes(this._value, node => {
       return node.__getAnimatedValue();
@@ -115,23 +132,29 @@ export default class AnimatedObject extends AnimatedWithChildren {
   }
 
   __attach(): void {
-    super.__attach();
-    visit(this._value, node => {
+    const nodes = this.#nodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
       node.__addChild(this);
-    });
+    }
+    super.__attach();
   }
 
   __detach(): void {
-    visit(this._value, node => {
+    const nodes = this.#nodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
       node.__removeChild(this);
-    });
+    }
     super.__detach();
   }
 
   __makeNative(platformConfig: ?PlatformConfig): void {
-    visit(this._value, value => {
-      value.__makeNative(platformConfig);
-    });
+    const nodes = this.#nodes;
+    for (let ii = 0, length = nodes.length; ii < length; ii++) {
+      const node = nodes[ii];
+      node.__makeNative(platformConfig);
+    }
     super.__makeNative(platformConfig);
   }
 
@@ -141,6 +164,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
       value: mapAnimatedNodes(this._value, node => {
         return {nodeTag: node.__getNativeTag()};
       }),
+      debugID: this.__getDebugID(),
     };
   }
 }

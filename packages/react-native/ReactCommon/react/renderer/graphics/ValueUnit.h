@@ -29,15 +29,20 @@ struct ValueUnit {
     return !(*this == other);
   }
 
-  constexpr float resolve(float referenceLength) {
+  constexpr float resolve(float referenceLength) const {
     switch (unit) {
       case UnitType::Point:
         return value;
       case UnitType::Percent:
         return value * referenceLength * 0.01f;
-      default:
+      case UnitType::Undefined:
         return 0.0f;
     }
+    return 0.0f;
+  }
+
+  constexpr operator bool() const {
+    return unit != UnitType::Undefined;
   }
 };
 } // namespace facebook::react

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>
 #include <fbjni/fbjni.h>
 
@@ -17,14 +18,24 @@ class BindingsInstallerHolder
  public:
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder;";
+  using BindingsInstallFunc = std::function<void(
+      jsi::Runtime& runtime,
+      const std::shared_ptr<CallInvoker>& callInvoker)>;
 
-  void installBindings(jsi::Runtime& runtime);
+  void installBindings(
+      jsi::Runtime& runtime,
+      const std::shared_ptr<CallInvoker>& callInvoker);
+
+ private:
+  BindingsInstallerHolder(BindingsInstallFunc bindingsInstaller);
+  [[deprecated(
+      "Use 'BindingsInstaller([](Runtime, CallInvoker) { ... })' instead")]]
+  BindingsInstallerHolder(
+      std::function<void(jsi::Runtime& runtime)> oldBindingsInstaller);
 
  private:
   friend HybridBase;
-  BindingsInstallerHolder(
-      std::function<void(facebook::jsi::Runtime& runtime)> bindingsInstaller);
-  std::function<void(facebook::jsi::Runtime& runtime)> bindingsInstaller_;
+  BindingsInstallFunc bindingsInstaller_;
 };
 
 } // namespace facebook::react

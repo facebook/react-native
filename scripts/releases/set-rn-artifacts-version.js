@@ -16,9 +16,9 @@ import type {BuildType, Version} from './utils/version-utils';
 const {REPO_ROOT} = require('../consts');
 const {getNpmInfo} = require('../npm-utils');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
-const {parseArgs} = require('@pkgjs/parseargs');
 const {promises: fs} = require('fs');
 const path = require('path');
+const {parseArgs} = require('util');
 
 const GRADLE_FILE_PATH = path.join(
   REPO_ROOT,
@@ -56,7 +56,7 @@ async function main() {
   the given release version. This does not update package.json.
 
   Options:
-    --build-type       One of ['dry-run', 'nightly', 'release', 'prealpha'].
+    --build-type       One of ['dry-run', 'nightly', 'release'].
     --to-version       The new version string.
     `);
     return;
@@ -91,9 +91,9 @@ function updateSourceFiles(
     fs.writeFile(
       path.join(
         REPO_ROOT,
-        'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
+        'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt',
       ),
-      require('./templates/ReactNativeVersion.java-template')(templateData),
+      require('./templates/ReactNativeVersion.kt-template')(templateData),
     ),
     fs.writeFile(
       path.join(REPO_ROOT, 'packages/react-native/React/Base/RCTVersion.m'),

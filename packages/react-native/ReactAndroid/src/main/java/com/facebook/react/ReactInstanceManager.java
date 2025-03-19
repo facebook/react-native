@@ -56,12 +56,10 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
-import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
@@ -80,7 +78,9 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
@@ -93,6 +93,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebugg
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
+import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -145,7 +146,13 @@ import java.util.Set;
  */
 @ThreadSafe
 @StableReactNativeAPI
+@LegacyArchitecture
 public class ReactInstanceManager {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "ReactInstanceManager", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
 
@@ -326,11 +333,6 @@ public class ReactInstanceManager {
   private ReactInstanceDevHelper createDevHelperInterface() {
     return new ReactInstanceDevHelper() {
       @Override
-      public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-        ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
-      }
-
-      @Override
       public void onJSBundleLoadedFromServer() {
         ReactInstanceManager.this.onJSBundleLoadedFromServer();
       }
@@ -355,7 +357,7 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          boolean isFabric = ReactFeatureFlags.enableFabricRenderer;
+          boolean isFabric = ReactNativeFeatureFlags.enableFabricRenderer();
           rootView.setIsFabric(isFabric);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, new Bundle());
           return rootView;
@@ -369,6 +371,23 @@ public class ReactInstanceManager {
         if (rootView instanceof ReactRootView) {
           ((ReactRootView) rootView).unmountReactApplication();
         }
+      }
+
+      @Override
+      public void reload(String s) {
+        // no-op not implemented for Bridge Mode
+      }
+
+      @Override
+      public TaskInterface<Boolean> loadBundle(JSBundleLoader bundleLoader) {
+        // no-op not implemented for Bridge Mode
+        return null;
+      }
+
+      @Override
+      public ReactContext getCurrentReactContext() {
+        // no-op not implemented for Bridge Mode
+        return null;
       }
     };
   }
@@ -485,14 +504,11 @@ public class ReactInstanceManager {
                         if (packagerIsRunning) {
                           mDevSupportManager.handleReloadJS();
                         } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
-                            && !devSettings.isRemoteJSDebugEnabled()
                             && !mUseFallbackBundle) {
                           // If there is a up-to-date bundle downloaded from server,
                           // with remote JS debugging disabled, always use that.
                           onJSBundleLoadedFromServer();
                         } else {
-                          // If dev server is down, disable the remote JS debugging.
-                          devSettings.setRemoteJSDebugEnabled(false);
                           recreateReactContextInBackgroundFromBundleLoader();
                         }
                       });
@@ -634,6 +650,16 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void onHostPause(@Nullable Activity activity) {
     if (mRequireActivity) {
+      if (mCurrentActivity == null) {
+        String message =
+            "ReactInstanceManager.onHostPause called with null activity, expected:"
+                + mCurrentActivity.getClass().getSimpleName();
+        FLog.e(TAG, message);
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : stackTrace) {
+          FLog.e(TAG, element.toString());
+        }
+      }
       Assertions.assertCondition(mCurrentActivity != null);
     }
     if (mCurrentActivity != null) {
@@ -793,12 +819,10 @@ public class ReactInstanceManager {
     synchronized (mAttachedReactRoots) {
       synchronized (mReactContextLock) {
         if (mCurrentReactContext != null) {
-          if (ReactNativeFeatureFlags.destroyFabricSurfacesInReactInstanceManager()) {
-            for (ReactRoot reactRoot : mAttachedReactRoots) {
-              // Fabric surfaces must be cleaned up when React Native is destroyed.
-              if (reactRoot.getUIManagerType() == UIManagerType.FABRIC) {
-                detachRootViewFromInstance(reactRoot, mCurrentReactContext);
-              }
+          for (ReactRoot reactRoot : mAttachedReactRoots) {
+            // Fabric surfaces must be cleaned up when React Native is destroyed.
+            if (reactRoot.getUIManagerType() == UIManagerType.FABRIC) {
+              detachRootViewFromInstance(reactRoot, mCurrentReactContext);
             }
           }
 
@@ -943,22 +967,23 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void attachRootView(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
+    synchronized (mAttachedReactRoots) {
+      // Calling clearReactRoot is necessary to initialize the Id on reactRoot
+      // This is necessary independently if the RN Bridge has been initialized or not.
+      // Ideally reactRoot should be initialized with id == NO_ID
+      if (mAttachedReactRoots.add(reactRoot)) {
+        clearReactRoot(reactRoot);
+      } else {
+        FLog.e(ReactConstants.TAG, "ReactRoot was attached multiple times");
+      }
 
-    // Calling clearReactRoot is necessary to initialize the Id on reactRoot
-    // This is necessary independently if the RN Bridge has been initialized or not.
-    // Ideally reactRoot should be initialized with id == NO_ID
-    if (mAttachedReactRoots.add(reactRoot)) {
-      clearReactRoot(reactRoot);
-    } else {
-      FLog.e(ReactConstants.TAG, "ReactRoot was attached multiple times");
-    }
-
-    // If react context is being created in the background, JS application will be started
-    // automatically when creation completes, as reactRoot is part of the attached
-    // reactRoot list.
-    ReactContext currentContext = getCurrentReactContext();
-    if (mCreateReactContextThread == null && currentContext != null) {
-      attachRootViewToInstance(reactRoot);
+      // If react context is being created in the background, JS application will be started
+      // automatically when creation completes, as reactRoot is part of the attached
+      // reactRoot list.
+      ReactContext currentContext = getCurrentReactContext();
+      if (mCreateReactContextThread == null && currentContext != null) {
+        attachRootViewToInstance(reactRoot);
+      }
     }
   }
 
@@ -1127,16 +1152,6 @@ public class ReactInstanceManager {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.invalidate()");
     mInstanceManagerInvalidated = true;
     destroy();
-  }
-
-  @ThreadConfined(UI)
-  private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-    FLog.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
-    recreateReactContextInBackground(
-        new ProxyJavaScriptExecutor.Factory(jsExecutorFactory),
-        JSBundleLoader.createRemoteDebuggerBundleLoader(
-            mDevSupportManager.getJSBundleURLForRemoteDebugging(),
-            mDevSupportManager.getSourceUrl()));
   }
 
   @ThreadConfined(UI)
@@ -1393,14 +1408,14 @@ public class ReactInstanceManager {
             new RuntimeException(
                 "detachRootViewFromInstance called with ReactRootView with invalid id"));
       }
+
+      clearReactRoot(reactRoot);
     } else {
       reactContext
           .getCatalystInstance()
           .getJSModule(AppRegistry.class)
           .unmountApplicationComponentAtRootTag(reactRoot.getRootViewTag());
     }
-
-    clearReactRoot(reactRoot);
   }
 
   @ThreadConfined(UI)
@@ -1470,7 +1485,7 @@ public class ReactInstanceManager {
     // architecture so it will always be there.
     catalystInstance.getRuntimeScheduler();
 
-    if (ReactFeatureFlags.useTurboModules && mTMMDelegateBuilder != null) {
+    if (ReactNativeFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
           mTMMDelegateBuilder
               .setPackages(mPackages)
@@ -1505,7 +1520,8 @@ public class ReactInstanceManager {
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
-    if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
+    if (BuildConfig.ENABLE_PERFETTO
+        || Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
 
@@ -1520,7 +1536,7 @@ public class ReactInstanceManager {
   private NativeModuleRegistry processPackages(
       ReactApplicationContext reactContext, List<ReactPackage> packages) {
     NativeModuleRegistryBuilder nativeModuleRegistryBuilder =
-        new NativeModuleRegistryBuilder(reactContext, this);
+        new NativeModuleRegistryBuilder(reactContext);
 
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
 

@@ -18,13 +18,11 @@
 namespace facebook::react {
 
 class MountingTransaction;
-class ReactNativeConfig;
 struct ShadowView;
 
 class FabricMountingManager final {
  public:
   FabricMountingManager(
-      std::shared_ptr<const ReactNativeConfig>& config,
       jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
   FabricMountingManager(const FabricMountingManager&) = delete;
 
@@ -33,6 +31,8 @@ class FabricMountingManager final {
   void onSurfaceStop(SurfaceId surfaceId);
 
   void maybePreallocateShadowNode(const ShadowNode& shadowNode);
+
+  void destroyUnmountedShadowNode(const ShadowNodeFamily& family);
 
   /*
    * Drains preallocatedViewsQueue_ by calling preallocateShadowView on each
@@ -80,10 +80,6 @@ class FabricMountingManager final {
   std::unordered_map<SurfaceId, std::unordered_set<Tag>>
       allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
-
-  jni::local_ref<jobject> getProps(
-      const ShadowView& oldShadowView,
-      const ShadowView& newShadowView);
 
   /*
    * Calls FabricUIManager.preallocateView() on the Java side if view needs to

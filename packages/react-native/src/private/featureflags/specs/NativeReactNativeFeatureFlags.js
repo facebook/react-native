@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9728234e0662758c72ba79b3cffbd4e5>>
- * @flow strict-local
+ * @generated SignedSource<<22d8e7623a2eee5182c786f2ec914401>>
+ * @flow strict
  */
 
 /**
@@ -15,7 +15,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
@@ -24,50 +24,48 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
-  +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
-  +batchRenderingUpdatesInEventLoop?: () => boolean;
-  +changeOrderOfMountingInstructionsOnAndroid?: () => boolean;
-  +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
-  +destroyFabricSurfacesInReactInstanceManager?: () => boolean;
-  +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
-  +enableAndroidMixBlendModeProp?: () => boolean;
-  +enableBackgroundStyleApplicator?: () => boolean;
-  +enableCleanTextInputYogaNode?: () => boolean;
+  +commonTestFlagWithoutNativeImplementation?: () => boolean;
+  +animatedShouldSignalBatch?: () => boolean;
+  +disableMountItemReorderingAndroid?: () => boolean;
+  +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
+  +enableBridgelessArchitecture?: () => boolean;
+  +enableCppPropsIteratorSetter?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
-  +enableEventEmitterRetentionDuringGesturesOnAndroid?: () => boolean;
   +enableFabricLogs?: () => boolean;
-  +enableFabricRendererExclusively?: () => boolean;
-  +enableGranularShadowTreeStateReconciliation?: () => boolean;
+  +enableFabricRenderer?: () => boolean;
+  +enableIOSViewClipToPaddingBox?: () => boolean;
+  +enableImagePrefetchingAndroid?: () => boolean;
+  +enableJSRuntimeGCOnMemoryPressureOnIOS?: () => boolean;
+  +enableLayoutAnimationsOnAndroid?: () => boolean;
+  +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
-  +enableMicrotasks?: () => boolean;
+  +enableNativeCSSParsing?: () => boolean;
+  +enableNewBackgroundAndBorderDrawables?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableReportEventPaintTime?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
+  +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
-  +excludeYogaFromRawProps?: () => boolean;
-  +fetchImagesInViewPreallocation?: () => boolean;
-  +fixIncorrectScrollViewStateUpdateOnAndroid?: () => boolean;
+  +enableViewRecyclingForText?: () => boolean;
+  +enableViewRecyclingForView?: () => boolean;
+  +fixDifferentiatorEmittingUpdatesWithWrongParentTag?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
-  +fixMissedFabricStateUpdatesOnAndroid?: () => boolean;
-  +forceBatchingMountItemsOnAndroid?: () => boolean;
-  +fuseboxEnabledDebug?: () => boolean;
+  +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
-  +initEagerTurboModulesOnNativeModulesQueueAndroid?: () => boolean;
+  +fuseboxNetworkInspectionEnabled?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
-  +loadVectorDrawablesOnImages?: () => boolean;
-  +setAndroidLayoutDirection?: () => boolean;
+  +removeTurboModuleManagerDelegateMutex?: () => boolean;
+  +throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
+  +useAlwaysAvailableJSErrorHandling?: () => boolean;
+  +useEditTextStockAndroidFocusBehavior?: () => boolean;
   +useFabricInterop?: () => boolean;
-  +useImmediateExecutorInAndroidBridgeless?: () => boolean;
-  +useModernRuntimeScheduler?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
-  +useNewReactImageViewBackgroundDrawing?: () => boolean;
-  +useOptimisedViewPreallocationOnAndroid?: () => boolean;
-  +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
-  +useRuntimeShadowNodeReferenceUpdateOnLayout?: () => boolean;
-  +useStateAlignmentMechanism?: () => boolean;
+  +useOptimizedEventBatchingOnAndroid?: () => boolean;
+  +useRawPropsJsiValue?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
+  +useTurboModules?: () => boolean;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(

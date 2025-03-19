@@ -7,7 +7,7 @@
 
 #include "UIManagerBinding.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
@@ -18,8 +18,6 @@
 #include <react/renderer/uimanager/primitives.h>
 
 #include <utility>
-
-#include "bindingUtils.h"
 
 namespace facebook::react {
 
@@ -62,40 +60,13 @@ UIManagerBinding::~UIManagerBinding() {
                << this << ").";
 }
 
-jsi::Value UIManagerBinding::getInspectorDataForInstance(
-    jsi::Runtime& runtime,
-    const EventEmitter& eventEmitter) const {
-  auto eventTarget = eventEmitter.eventTarget_;
-  EventEmitter::DispatchMutex().lock();
-
-  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge") ||
-      !eventTarget) {
-    return jsi::Value::undefined();
-  }
-
-  eventTarget->retain(runtime);
-  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
-  eventTarget->release(runtime);
-  EventEmitter::DispatchMutex().unlock();
-
-  if (instanceHandle.isUndefined()) {
-    return jsi::Value::undefined();
-  }
-
-  return callMethodOfModule(
-      runtime,
-      "ReactFabric",
-      "getInspectorDataForInstance",
-      {std::move(instanceHandle)});
-}
-
 void UIManagerBinding::dispatchEvent(
     jsi::Runtime& runtime,
     const EventTarget* eventTarget,
     const std::string& type,
     ReactEventPriority priority,
     const EventPayload& eventPayload) const {
-  SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
+  TraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
   if (eventPayload.getType() == EventPayloadType::PointerEvent) {
     auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);
@@ -261,30 +232,6 @@ jsi::Value UIManagerBinding::get(
           } catch (const std::logic_error& ex) {
             LOG(FATAL) << "logic_error in createNode: " << ex.what();
           }
-        });
-  }
-
-  // Semantic: Clones the node with *same* props and *same* children.
-  if (methodName == "cloneNode") {
-    auto paramCount = 1;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        paramCount,
-        [uiManager, methodName, paramCount](
-            jsi::Runtime& runtime,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* arguments,
-            size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
-
-          return valueFromShadowNode(
-              runtime,
-              uiManager->cloneNode(
-                  *shadowNodeFromValue(runtime, arguments[0]),
-                  nullptr,
-                  RawProps()),
-              true);
         });
   }
 
@@ -509,7 +456,7 @@ jsi::Value UIManagerBinding::get(
               shadowNodeList,
               {.enableStateReconciliation = true,
                .mountSynchronously = false,
-               .shouldYield = nullptr});
+               .source = ShadowTree::CommitSource::React});
 
           return jsi::Value::undefined();
         });

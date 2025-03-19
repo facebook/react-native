@@ -8,12 +8,12 @@
  * @format
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {
   BlurEvent,
   FocusEvent,
+  GestureResponderEvent,
   MouseEvent,
-  PressEvent,
 } from '../Types/CoreEventTypes';
 
 import SoundManager from '../Components/Sound/SoundManager';
@@ -26,9 +26,8 @@ import {isHoverEnabled} from './HoverState';
 import PressabilityPerformanceEventEmitter from './PressabilityPerformanceEventEmitter.js';
 import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.js';
 import invariant from 'invariant';
-import * as React from 'react';
 
-export type PressabilityConfig = $ReadOnly<{|
+export type PressabilityConfig = $ReadOnly<{
   /**
    * Whether a press gesture can be interrupted by a parent gesture such as a
    * scroll event. Defaults to true.
@@ -109,50 +108,50 @@ export type PressabilityConfig = $ReadOnly<{|
   /**
    * Called when a long press gesture has been triggered.
    */
-  onLongPress?: ?(event: PressEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Called when a press gesture has been triggered.
    */
-  onPress?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Called when the press is activated to provide visual feedback.
    */
-  onPressIn?: ?(event: PressEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Called when the press location moves. (This should rarely be used.)
    */
-  onPressMove?: ?(event: PressEvent) => mixed,
+  onPressMove?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Called when the press is deactivated to undo visual feedback.
    */
-  onPressOut?: ?(event: PressEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Whether to prevent any other native components from becoming responder
    * while this pressable is responder.
    */
   blockNativeResponder?: ?boolean,
-|}>;
+}>;
 
-export type EventHandlers = $ReadOnly<{|
+export type EventHandlers = $ReadOnly<{
   onBlur: (event: BlurEvent) => void,
-  onClick: (event: PressEvent) => void,
+  onClick: (event: GestureResponderEvent) => void,
   onFocus: (event: FocusEvent) => void,
   onMouseEnter?: (event: MouseEvent) => void,
   onMouseLeave?: (event: MouseEvent) => void,
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
-  onResponderGrant: (event: PressEvent) => void | boolean,
-  onResponderMove: (event: PressEvent) => void,
-  onResponderRelease: (event: PressEvent) => void,
-  onResponderTerminate: (event: PressEvent) => void,
+  onResponderGrant: (event: GestureResponderEvent) => void | boolean,
+  onResponderMove: (event: GestureResponderEvent) => void,
+  onResponderRelease: (event: GestureResponderEvent) => void,
+  onResponderTerminate: (event: GestureResponderEvent) => void,
   onResponderTerminationRequest: () => boolean,
   onStartShouldSetResponder: () => boolean,
-|}>;
+}>;
 
 type TouchState =
   | 'NOT_RESPONDER'
@@ -378,17 +377,17 @@ export default class Pressability {
   _longPressDelayTimeout: ?TimeoutID = null;
   _pressDelayTimeout: ?TimeoutID = null;
   _pressOutDelayTimeout: ?TimeoutID = null;
-  _responderID: ?number | React.ElementRef<HostComponent<mixed>> = null;
-  _responderRegion: ?$ReadOnly<{|
+  _responderID: ?number | HostInstance = null;
+  _responderRegion: ?$ReadOnly<{
     bottom: number,
     left: number,
     right: number,
     top: number,
-  |}> = null;
-  _touchActivatePosition: ?$ReadOnly<{|
+  }> = null;
+  _touchActivatePosition: ?$ReadOnly<{
     pageX: number,
     pageY: number,
-  |}>;
+  }>;
   _touchActivateTime: ?number;
   _touchState: TouchState = 'NOT_RESPONDER';
 
@@ -451,7 +450,7 @@ export default class Pressability {
         return !disabled ?? true;
       },
 
-      onResponderGrant: (event: PressEvent): void | boolean => {
+      onResponderGrant: (event: GestureResponderEvent): void | boolean => {
         event.persist();
 
         this._cancelPressOutDelayTimeout();
@@ -481,7 +480,7 @@ export default class Pressability {
         return this._config.blockNativeResponder === true;
       },
 
-      onResponderMove: (event: PressEvent): void => {
+      onResponderMove: (event: GestureResponderEvent): void => {
         const {onPressMove} = this._config;
         if (onPressMove != null) {
           onPressMove(event);
@@ -516,11 +515,11 @@ export default class Pressability {
         }
       },
 
-      onResponderRelease: (event: PressEvent): void => {
+      onResponderRelease: (event: GestureResponderEvent): void => {
         this._receiveSignal('RESPONDER_RELEASE', event);
       },
 
-      onResponderTerminate: (event: PressEvent): void => {
+      onResponderTerminate: (event: GestureResponderEvent): void => {
         this._receiveSignal('RESPONDER_TERMINATED', event);
       },
 
@@ -529,7 +528,7 @@ export default class Pressability {
         return cancelable ?? true;
       },
 
-      onClick: (event: PressEvent): void => {
+      onClick: (event: GestureResponderEvent): void => {
         // If event has `pointerType`, it was emitted from a PointerEvent and
         // we should ignore it to avoid triggering `onPress` twice.
         if (event?.nativeEvent?.hasOwnProperty?.('pointerType')) {
@@ -665,7 +664,7 @@ export default class Pressability {
    * Receives a state machine signal, performs side effects of the transition
    * and stores the new state. Validates the transition as well.
    */
-  _receiveSignal(signal: TouchSignal, event: PressEvent): void {
+  _receiveSignal(signal: TouchSignal, event: GestureResponderEvent): void {
     // Especially on iOS, not all events have timestamps associated.
     // For telemetry purposes, this doesn't matter too much, as long as *some* do.
     // Since the native timestamp is integral for logging telemetry, just skip
@@ -707,7 +706,7 @@ export default class Pressability {
     prevState: TouchState,
     nextState: TouchState,
     signal: TouchSignal,
-    event: PressEvent,
+    event: GestureResponderEvent,
   ): void {
     if (isTerminalSignal(signal)) {
       this._touchActivatePosition = null;
@@ -763,7 +762,7 @@ export default class Pressability {
     this._cancelPressDelayTimeout();
   }
 
-  _activate(event: PressEvent): void {
+  _activate(event: GestureResponderEvent): void {
     const {onPressIn} = this._config;
     const {pageX, pageY} = getTouchFromPressEvent(event);
     this._touchActivatePosition = {pageX, pageY};
@@ -773,7 +772,7 @@ export default class Pressability {
     }
   }
 
-  _deactivate(event: PressEvent): void {
+  _deactivate(event: GestureResponderEvent): void {
     const {onPressOut} = this._config;
     if (onPressOut != null) {
       const minPressDuration = normalizeDelay(
@@ -830,13 +829,13 @@ export default class Pressability {
   };
 
   _isTouchWithinResponderRegion(
-    touch: $PropertyType<PressEvent, 'nativeEvent'>,
-    responderRegion: $ReadOnly<{|
+    touch: $PropertyType<GestureResponderEvent, 'nativeEvent'>,
+    responderRegion: $ReadOnly<{
       bottom: number,
       left: number,
       right: number,
       top: number,
-    |}>,
+    }>,
   ): boolean {
     const hitSlop = normalizeRect(this._config.hitSlop);
     const pressRectOffset = normalizeRect(this._config.pressRectOffset);
@@ -875,7 +874,7 @@ export default class Pressability {
     );
   }
 
-  _handleLongPress(event: PressEvent): void {
+  _handleLongPress(event: GestureResponderEvent): void {
     if (
       this._touchState === 'RESPONDER_ACTIVE_PRESS_IN' ||
       this._touchState === 'RESPONDER_ACTIVE_LONG_PRESS_IN'
@@ -928,7 +927,7 @@ function normalizeDelay(
   return Math.max(min, delay ?? fallback);
 }
 
-const getTouchFromPressEvent = (event: PressEvent) => {
+const getTouchFromPressEvent = (event: GestureResponderEvent) => {
   const {changedTouches, touches} = event.nativeEvent;
 
   if (touches != null && touches.length > 0) {

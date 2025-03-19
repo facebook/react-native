@@ -8,19 +8,19 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {WithDefault} from 'react-native/Libraries/Types/CodegenTypes';
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
   disabled?: WithDefault<boolean, false>,
   disabledNullable?: WithDefault<boolean, null>,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'BooleanPropNativeComponentView',

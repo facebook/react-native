@@ -43,6 +43,7 @@ jsi::Value ScrollEvent::asJSIValue(jsi::Runtime& runtime) const {
   }
 
   payload.setProperty(runtime, "zoomScale", zoomScale);
+  payload.setProperty(runtime, "timestamp", timestamp * 1000);
 
   return payload;
 }
@@ -61,11 +62,12 @@ folly::dynamic ScrollEvent::asDynamic() const {
   auto containerSizeObj = folly::dynamic::object("width", containerSize.width)(
       "height", containerSize.height);
 
-  auto metrics = folly::dynamic::object(
-      "contentOffset", std::move(contentOffsetObj))(
-      "contentInset", std::move(contentInsetObj))(
-      "contentSize", std::move(contentSizeObj))(
-      "layoutMeasurement", std::move(containerSizeObj))("zoomScale", zoomScale);
+  auto metrics =
+      folly::dynamic::object("contentOffset", std::move(contentOffsetObj))(
+          "contentInset", std::move(contentInsetObj))(
+          "contentSize", std::move(contentSizeObj))(
+          "layoutMeasurement", std::move(containerSizeObj))(
+          "zoomScale", zoomScale)("timestamp", timestamp * 1000);
 
   return metrics;
 };
@@ -73,6 +75,39 @@ folly::dynamic ScrollEvent::asDynamic() const {
 EventPayloadType ScrollEvent::getType() const {
   return EventPayloadType::ScrollEvent;
 }
+
+jsi::Value ScrollEndDragEvent::asJSIValue(jsi::Runtime& runtime) const {
+  auto payload = ScrollEvent::asJSIValue(runtime).asObject(runtime);
+
+  {
+    auto targetContentOffsetObj = jsi::Object(runtime);
+    targetContentOffsetObj.setProperty(runtime, "x", targetContentOffset.x);
+    targetContentOffsetObj.setProperty(runtime, "y", targetContentOffset.y);
+    payload.setProperty(runtime, "targetContentOffset", targetContentOffsetObj);
+  }
+
+  {
+    auto velocityObj = jsi::Object(runtime);
+    velocityObj.setProperty(runtime, "x", velocity.x);
+    velocityObj.setProperty(runtime, "y", velocity.y);
+    payload.setProperty(runtime, "velocity", velocityObj);
+  }
+
+  return payload;
+}
+
+folly::dynamic ScrollEndDragEvent::asDynamic() const {
+  auto metrics = ScrollEvent::asDynamic();
+
+  auto targetContentOffsetObj = folly::dynamic::object(
+      "x", targetContentOffset.x)("y", targetContentOffset.y);
+  metrics["targetContentOffset"] = std::move(targetContentOffsetObj);
+
+  auto velocityObj = folly::dynamic::object("x", velocity.x)("y", velocity.y);
+  metrics["velocity"] = std::move(velocityObj);
+
+  return metrics;
+};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
@@ -89,9 +124,9 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"contentInset", getDebugDescription(scrollEvent.contentInset, options)},
       {"contentSize", getDebugDescription(scrollEvent.contentSize, options)},
       {"layoutMeasurement",
-       getDebugDescription(scrollEvent.layoutMeasurement, options)},
+       getDebugDescription(scrollEvent.containerSize, options)},
       {"zoomScale", getDebugDescription(scrollEvent.zoomScale, options)},
-  };
+      {"timestamp", getDebugDescription(scrollEvent.timestamp, options)}};
 }
 
 #endif

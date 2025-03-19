@@ -24,18 +24,7 @@ public interface SurfaceHandler {
 
   public val moduleName: String
 
-  /** Starts the surface if the surface is not running */
-  public fun start()
-
-  /** Stops the surface if it is currently running */
-  public fun stop()
-
   public fun setProps(props: NativeMap)
-
-  /**
-   * Updates current surface id. Id should be updated after each call to {@link SurfaceHandler#stop}
-   */
-  public fun setSurfaceId(surfaceId: Int)
 
   public fun setLayoutConstraints(
       widthMeasureSpec: Int,

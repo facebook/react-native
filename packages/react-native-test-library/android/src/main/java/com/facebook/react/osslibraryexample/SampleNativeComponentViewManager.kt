@@ -76,6 +76,7 @@ internal class SampleNativeComponentViewManager :
     }
   }
 
+  @Deprecated("Deprecated in Java")
   @SuppressLint("BadMethodUse-android.view.View.setBackgroundColor")
   @Suppress("DEPRECATION") // We intentionally want to test against the legacy API here.
   override fun receiveCommand(view: SampleNativeView, commandId: Int, args: ReadableArray?) {

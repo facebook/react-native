@@ -18,9 +18,10 @@ export type TargetCapabilityFlags = $ReadOnly<{
    * The target supports a stable page representation across reloads.
    *
    * In the proxy, this disables legacy page reload emulation and the
-   * additional '(Experimental)' target in `/json/list`.
+   * additional 'React Native Experimental' target in `/json/list`.
    *
-   * In the launch flow, this allows targets to be matched directly by `appId`.
+   * In the launch flow, this allows targets to be matched directly by
+   * `logicalDeviceId`.
    */
   nativePageReloads?: boolean,
 
@@ -30,13 +31,6 @@ export type TargetCapabilityFlags = $ReadOnly<{
    * In the proxy, this disables source fetching emulation and host rewrites.
    */
   nativeSourceCodeFetching?: boolean,
-
-  /**
-   * The target supports native network inspection.
-   *
-   * In the proxy, this disables intercepting and storing network requests.
-   */
-  nativeNetworkInspection?: boolean,
 
   /**
    * The target supports the modern `rn_fusebox.html` entry point.
@@ -53,6 +47,8 @@ export type TargetCapabilityFlags = $ReadOnly<{
 export type PageFromDevice = $ReadOnly<{
   id: string,
   title: string,
+  /** Sent from modern targets only */
+  description?: string,
   /** @deprecated This is sent from legacy targets only */
   vm?: string,
   app: string,
@@ -113,12 +109,14 @@ export type MessageToDevice =
 export type PageDescription = $ReadOnly<{
   id: string,
   title: string,
+  appId: string,
   description: string,
   type: string,
   devtoolsFrontendUrl: string,
   webSocketDebuggerUrl: string,
 
   // React Native specific fields
+  /** @deprecated Prefer `title` */
   deviceName: string,
   /** @deprecated This is sent from legacy targets only */
   vm?: string,

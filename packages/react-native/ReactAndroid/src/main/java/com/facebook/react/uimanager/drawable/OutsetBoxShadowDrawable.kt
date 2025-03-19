@@ -14,11 +14,13 @@ import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import com.facebook.react.uimanager.FilterHelper
-import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
 import com.facebook.react.uimanager.style.CornerRadii
@@ -35,29 +37,23 @@ private const val BLUR_RADIUS_SIGMA_SCALE = 0.5f
 @RequiresApi(MIN_OUTSET_BOX_SHADOW_SDK_VERSION)
 internal class OutsetBoxShadowDrawable(
     private val context: Context,
-    borderRadius: BorderRadiusStyle? = null,
     private val shadowColor: Int,
     private val offsetX: Float,
     private val offsetY: Float,
     private val blurRadius: Float,
     private val spread: Float,
+    /*
+     * We assume borderRadius to be shared across multiple drawables
+     * therefore we should manually invalidate this drawable when changing it
+     */
+    var borderRadius: BorderRadiusStyle? = null,
 ) : Drawable() {
-  public var borderRadius = borderRadius
-    set(value) {
-      if (value != field) {
-        field = value
-        invalidateSelf()
-      }
-    }
-
   private val shadowPaint =
       Paint().apply {
         color = shadowColor
-        if (blurRadius > 0) {
-          maskFilter =
-              BlurMaskFilter(
-                  FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE),
-                  BlurMaskFilter.Blur.NORMAL)
+        val convertedBlurRadius = FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE)
+        if (convertedBlurRadius > 0) {
+          maskFilter = BlurMaskFilter(convertedBlurRadius, BlurMaskFilter.Blur.NORMAL)
         }
       }
 
@@ -71,39 +67,37 @@ internal class OutsetBoxShadowDrawable(
     invalidateSelf()
   }
 
-  override fun getOpacity(): Int =
-      ((shadowPaint.alpha / 255f) / (Color.alpha(shadowColor) / 255f) * 255f).roundToInt()
+  @Deprecated("Deprecated in Java")
+  override fun getOpacity(): Int {
+    val alpha = shadowPaint.alpha
+    return when (alpha) {
+      255 -> PixelFormat.OPAQUE
+      in 1..254 -> PixelFormat.TRANSLUCENT
+      else -> PixelFormat.TRANSPARENT
+    }
+  }
 
   override fun draw(canvas: Canvas) {
-    val resolutionWidth = PixelUtil.toDIPFromPixel(bounds.width().toFloat())
-    val resolutionHeight = PixelUtil.toDIPFromPixel(bounds.height().toFloat())
+    val resolutionWidth = bounds.width().toFloat().pxToDp()
+    val resolutionHeight = bounds.height().toFloat().pxToDp()
     val computedBorderRadii =
         borderRadius?.resolve(layoutDirection, context, resolutionWidth, resolutionHeight)?.let {
           ComputedBorderRadius(
-              topLeft =
-                  CornerRadii(
-                      PixelUtil.toPixelFromDIP(it.topLeft.horizontal),
-                      PixelUtil.toPixelFromDIP(it.topLeft.vertical)),
+              topLeft = CornerRadii(it.topLeft.horizontal.dpToPx(), it.topLeft.vertical.dpToPx()),
               topRight =
-                  CornerRadii(
-                      PixelUtil.toPixelFromDIP(it.topRight.horizontal),
-                      PixelUtil.toPixelFromDIP(it.topRight.vertical)),
+                  CornerRadii(it.topRight.horizontal.dpToPx(), it.topRight.vertical.dpToPx()),
               bottomLeft =
-                  CornerRadii(
-                      PixelUtil.toPixelFromDIP(it.bottomLeft.horizontal),
-                      PixelUtil.toPixelFromDIP(it.bottomLeft.vertical)),
+                  CornerRadii(it.bottomLeft.horizontal.dpToPx(), it.bottomLeft.vertical.dpToPx()),
               bottomRight =
-                  CornerRadii(
-                      PixelUtil.toPixelFromDIP(it.bottomRight.horizontal),
-                      PixelUtil.toPixelFromDIP(it.bottomRight.vertical)),
+                  CornerRadii(it.bottomRight.horizontal.dpToPx(), it.bottomRight.vertical.dpToPx()),
           )
         }
 
-    val spreadExtent = PixelUtil.toPixelFromDIP(spread)
+    val spreadExtent = spread.dpToPx()
     val shadowRect =
         RectF(bounds).apply {
           inset(-spreadExtent, -spreadExtent)
-          offset(PixelUtil.toPixelFromDIP(offsetX), PixelUtil.toPixelFromDIP(offsetY))
+          offset(offsetX.dpToPx(), offsetY.dpToPx())
         }
 
     canvas.save().let { saveCount ->

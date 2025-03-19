@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("com.facebook.react")
   alias(libs.plugins.android.application)
@@ -70,9 +72,9 @@ val enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC) For example, to use the international variant,
- * you can use: `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ * you can use: `def jscFlavor = "io.github.react-native-community:jsc-android-intl:2026004.+"`
  */
-val jscFlavor = "org.webkit:android-jsc:+"
+val jscFlavor = "io.github.react-native-community:jsc-android:2026004.+"
 
 /** This allows to customized the CMake version used for compiling RN Tester. */
 val cmakeVersion =
@@ -82,13 +84,6 @@ val cmakeVersion =
 fun reactNativeArchitectures(): List<String> {
   val value = project.properties["reactNativeArchitectures"]
   return value?.toString()?.split(",") ?: listOf("armeabi-v7a", "x86", "x86_64", "arm64-v8a")
-}
-
-repositories {
-  maven {
-    url = rootProject.file("node_modules/jsc-android/dist").toURI()
-    content { includeGroup("org.webkit") }
-  }
 }
 
 android {
@@ -130,6 +125,7 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     buildConfigField("String", "JS_MAIN_MODULE_NAME", "\"js/RNTesterApp.android\"")
     buildConfigField("String", "BUNDLE_ASSET_NAME", "\"RNTesterApp.android.bundle\"")
+    buildConfigField("Boolean", "IS_INTERNAL_BUILD", "false")
   }
   externalNativeBuild { cmake { version = cmakeVersion } }
   splits {
@@ -169,6 +165,7 @@ dependencies {
   "jscImplementation"(jscFlavor)
 
   testImplementation(libs.junit)
+  implementation(libs.androidx.profileinstaller)
 }
 
 android {
@@ -180,6 +177,20 @@ android {
         path("src/main/jni/CMakeLists.txt")
       }
     }
+  }
+}
+
+kotlin { explicitApi() }
+
+tasks.withType<JavaCompile>().configureEach {
+  options.compilerArgs.add("-Xlint:deprecation,unchecked")
+  options.compilerArgs.add("-Werror")
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+  compilerOptions {
+    allWarningsAsErrors =
+        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
   }
 }
 

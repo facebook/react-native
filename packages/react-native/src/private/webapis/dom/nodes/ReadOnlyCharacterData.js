@@ -12,9 +12,10 @@
 
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import ReadOnlyNode, {getShadowNode} from './ReadOnlyNode';
+import {getNativeTextReference} from './internals/NodeInternals';
+import {getElementSibling} from './internals/Traversal';
+import ReadOnlyNode from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
-import {getElementSibling} from './utilities/Traversal';
 
 export default class ReadOnlyCharacterData extends ReadOnlyNode {
   get nextElementSibling(): ReadOnlyElement | null {
@@ -26,10 +27,10 @@ export default class ReadOnlyCharacterData extends ReadOnlyNode {
   }
 
   get data(): string {
-    const shadowNode = getShadowNode(this);
+    const node = getNativeTextReference(this);
 
-    if (shadowNode != null) {
-      return NativeDOM.getTextContent(shadowNode);
+    if (node != null) {
+      return NativeDOM.getTextContent(node);
     }
 
     return '';
@@ -42,7 +43,7 @@ export default class ReadOnlyCharacterData extends ReadOnlyNode {
   /**
    * @override
    */
-  get textContent(): string | null {
+  get textContent(): string {
     return this.data;
   }
 

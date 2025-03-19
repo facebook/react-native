@@ -9,7 +9,7 @@
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import processColor from '../../StyleSheet/processColor';
 import Platform from '../../Utilities/Platform';
@@ -19,35 +19,35 @@ import invariant from 'invariant';
 import * as React from 'react';
 import {useMemo} from 'react';
 
-type NativeBackgroundProp = $ReadOnly<{|
+type NativeBackgroundProp = $ReadOnly<{
   type: 'RippleAndroid',
   color: ?number,
   borderless: boolean,
   rippleRadius: ?number,
-|}>;
+}>;
 
-export type RippleConfig = {|
+export type PressableAndroidRippleConfig = {
   color?: ColorValue,
   borderless?: boolean,
   radius?: number,
   foreground?: boolean,
-|};
+};
 
 /**
  * Provides the event handlers and props for configuring the ripple effect on
  * supported versions of Android.
  */
 export default function useAndroidRippleForView(
-  rippleConfig: ?RippleConfig,
-  viewRef: {|current: null | React.ElementRef<typeof View>|},
-): ?$ReadOnly<{|
-  onPressIn: (event: PressEvent) => void,
-  onPressMove: (event: PressEvent) => void,
-  onPressOut: (event: PressEvent) => void,
+  rippleConfig: ?PressableAndroidRippleConfig,
+  viewRef: {current: null | React.ElementRef<typeof View>},
+): ?$ReadOnly<{
+  onPressIn: (event: GestureResponderEvent) => void,
+  onPressMove: (event: GestureResponderEvent) => void,
+  onPressOut: (event: GestureResponderEvent) => void,
   viewProps:
-    | $ReadOnly<{|nativeBackgroundAndroid: NativeBackgroundProp|}>
-    | $ReadOnly<{|nativeForegroundAndroid: NativeBackgroundProp|}>,
-|}> {
+    | $ReadOnly<{nativeBackgroundAndroid: NativeBackgroundProp}>
+    | $ReadOnly<{nativeForegroundAndroid: NativeBackgroundProp}>,
+}> {
   const {color, borderless, radius, foreground} = rippleConfig ?? {};
 
   return useMemo(() => {
@@ -75,7 +75,7 @@ export default function useAndroidRippleForView(
               {nativeForegroundAndroid: nativeRippleValue}
             : // $FlowFixMe[incompatible-return]
               {nativeBackgroundAndroid: nativeRippleValue},
-        onPressIn(event: PressEvent): void {
+        onPressIn(event: GestureResponderEvent): void {
           const view = viewRef.current;
           if (view != null) {
             Commands.hotspotUpdate(
@@ -86,7 +86,7 @@ export default function useAndroidRippleForView(
             Commands.setPressed(view, true);
           }
         },
-        onPressMove(event: PressEvent): void {
+        onPressMove(event: GestureResponderEvent): void {
           const view = viewRef.current;
           if (view != null) {
             Commands.hotspotUpdate(
@@ -96,7 +96,7 @@ export default function useAndroidRippleForView(
             );
           }
         },
-        onPressOut(event: PressEvent): void {
+        onPressOut(event: GestureResponderEvent): void {
           const view = viewRef.current;
           if (view != null) {
             Commands.setPressed(view, false);

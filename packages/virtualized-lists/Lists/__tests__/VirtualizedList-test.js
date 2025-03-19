@@ -663,11 +663,6 @@ describe('VirtualizedList', () => {
       renderItem: ({item}) => <item value={item.key} />,
       getItem: (items, index) => items[index],
       getItemCount: items => items.length,
-      getItemLayout: (items, index) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index,
-        index,
-      }),
       onEndReached,
     };
 
@@ -694,6 +689,15 @@ describe('VirtualizedList', () => {
     expect(onEndReached).not.toHaveBeenCalled();
 
     await act(() => {
+      for (let i = 0; i < 20; ++i) {
+        simulateCellLayout(component, data, i, {
+          width: 10,
+          height: ITEM_HEIGHT,
+          x: 0,
+          y: i * ITEM_HEIGHT,
+        });
+      }
+
       instance._onScroll({
         timeStamp: 1000,
         nativeEvent: {
@@ -1522,8 +1526,7 @@ it('adjusts render area with non-zero initialScrollIndex', async () => {
     simulateScroll(component, {x: 0, y: 10}); // simulate scroll offset for initialScrollIndex
 
     // TODO: Rewrite test to tolerate subtle timing changes.
-    performNextBatch();
-    performNextBatch();
+    jest.advanceTimersToNextTimer(3);
   });
 
   // We should expand the render area after receiving a message indcating we
@@ -2538,5 +2541,5 @@ function performAllBatches() {
 }
 
 function performNextBatch() {
-  jest.runOnlyPendingTimers();
+  jest.advanceTimersToNextTimer(1);
 }

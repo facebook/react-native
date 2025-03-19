@@ -11,9 +11,9 @@
 // Small subset from whatwg-url: https://github.com/jsdom/whatwg-url/tree/master/src
 // The reference code bloat comes from Unicode issues with URLs, so those won't work here.
 export class URLSearchParams {
-  _searchParams: Array<Array<string>> = [];
+  _searchParams: Array<[string, string]> = [];
 
-  constructor(params: any) {
+  constructor(params?: Record<string, string>) {
     if (typeof params === 'object') {
       Object.keys(params).forEach(key => this.append(key, params[key]));
     }
@@ -23,33 +23,32 @@ export class URLSearchParams {
     this._searchParams.push([key, value]);
   }
 
-  delete(name: string): void {
+  delete(name: string): empty {
     throw new Error('URLSearchParams.delete is not implemented');
   }
 
-  get(name: string): void {
+  get(name: string): empty {
     throw new Error('URLSearchParams.get is not implemented');
   }
 
-  getAll(name: string): void {
+  getAll(name: string): empty {
     throw new Error('URLSearchParams.getAll is not implemented');
   }
 
-  has(name: string): void {
+  has(name: string): empty {
     throw new Error('URLSearchParams.has is not implemented');
   }
 
-  set(name: string, value: string): void {
+  set(name: string, value: string): empty {
     throw new Error('URLSearchParams.set is not implemented');
   }
 
-  sort(): void {
+  sort(): empty {
     throw new Error('URLSearchParams.sort is not implemented');
   }
 
   // $FlowFixMe[unsupported-syntax]
-  // $FlowFixMe[missing-local-annot]
-  [Symbol.iterator]() {
+  [Symbol.iterator](): Iterator<[string, string]> {
     return this._searchParams[Symbol.iterator]();
   }
 

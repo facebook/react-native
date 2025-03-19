@@ -10,11 +10,15 @@
 
 'use strict';
 
-import typeof UnimplementedViewType from '../UnimplementedViews/UnimplementedView';
 import typeof ProgressBarAndroidNativeComponentType from './ProgressBarAndroidNativeComponent';
+import type {ProgressBarAndroidProps} from './ProgressBarAndroidTypes';
 
-export type {ProgressBarAndroidProps} from './ProgressBarAndroid.android';
+export type {ProgressBarAndroidProps};
 
-module.exports = (require('../UnimplementedViews/UnimplementedView'):
-  | UnimplementedViewType
-  | ProgressBarAndroidNativeComponentType);
+export default require('../UnimplementedViews/UnimplementedView')
+  .default as $FlowFixMe as component(
+  ref?: React.RefSetter<
+    React.ElementRef<ProgressBarAndroidNativeComponentType>,
+  >,
+  ...props: ProgressBarAndroidProps
+);

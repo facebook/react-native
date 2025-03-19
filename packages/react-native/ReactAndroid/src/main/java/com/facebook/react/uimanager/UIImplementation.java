@@ -21,6 +21,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -38,7 +41,13 @@ import java.util.Map;
  * A class that is used to receive React commands from JS and translate them into a shadow node
  * hierarchy that is then mapped to a native view hierarchy.
  */
+@LegacyArchitecture
 public class UIImplementation {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "UIImplementation", LegacyArchitectureLogLevel.WARNING);
+  }
+
   protected Object uiImplementationThreadLock = new Object();
 
   protected final EventDispatcher mEventDispatcher;
@@ -200,6 +209,20 @@ public class UIImplementation {
     }
     cssNode.setStyleWidth(newWidth);
     cssNode.setStyleHeight(newHeight);
+
+    dispatchViewUpdatesIfNeeded();
+  }
+
+  public void updateInsetsPadding(int nodeViewTag, int top, int left, int bottom, int right) {
+    ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
+    if (cssNode == null) {
+      FLog.w(ReactConstants.TAG, "Tried to update size of non-existent tag: " + nodeViewTag);
+      return;
+    }
+    cssNode.setPadding(Spacing.START, (float) left);
+    cssNode.setPadding(Spacing.TOP, (float) top);
+    cssNode.setPadding(Spacing.END, (float) right);
+    cssNode.setPadding(Spacing.BOTTOM, (float) bottom);
 
     dispatchViewUpdatesIfNeeded();
   }
@@ -760,6 +783,8 @@ public class UIImplementation {
     mViewManagers.invalidate();
   }
 
+  // NOTE: When converted to Kotlin this method should be `internal` due to
+  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
   public void setViewHierarchyUpdateDebugListener(
       @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
     mOperationsQueue.setViewHierarchyUpdateDebugListener(listener);

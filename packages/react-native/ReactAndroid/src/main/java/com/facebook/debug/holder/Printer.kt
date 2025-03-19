@@ -10,11 +10,11 @@ package com.facebook.debug.holder
 import com.facebook.debug.debugoverlay.model.DebugOverlayTag
 
 /** Interface to debugging tool. */
-public interface Printer {
+internal interface Printer {
 
-  public fun logMessage(tag: DebugOverlayTag, message: String, vararg args: Any?)
+  fun logMessage(tag: DebugOverlayTag, message: String, vararg args: Any?)
 
-  public fun logMessage(tag: DebugOverlayTag, message: String)
+  fun logMessage(tag: DebugOverlayTag, message: String)
 
-  public fun shouldDisplayLogMessage(tag: DebugOverlayTag): Boolean
+  fun shouldDisplayLogMessage(tag: DebugOverlayTag): Boolean
 }

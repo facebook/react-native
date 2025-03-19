@@ -17,7 +17,7 @@ const {
 const {echo, exec, exit, popd, pushd, test} = require('shelljs');
 
 /*::
-type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+type BuildType = 'dry-run' | 'release' | 'nightly';
 */
 
 function generateAndroidArtifacts(releaseVersion /*: string */) {
@@ -96,7 +96,7 @@ function publishExternalArtifactsToMaven(
     // This can't be done earlier in build_android because this artifact are partially built by the iOS jobs.
     if (
       exec(
-        './gradlew :packages:react-native:ReactAndroid:external-artifacts:publishToSonatype :packages:react-native:ReactAndroid:external-artifacts:closeAndReleaseSonatypeStagingRepository',
+        './gradlew :packages:react-native:ReactAndroid:external-artifacts:publishToSonatype closeAndReleaseSonatypeStagingRepository',
       ).code
     ) {
       echo(
@@ -105,7 +105,7 @@ function publishExternalArtifactsToMaven(
       exit(1);
     }
   } else {
-    const isSnapshot = buildType === 'nightly' || buildType === 'prealpha';
+    const isSnapshot = buildType === 'nightly';
     // -------- For nightly releases, we only need to publish the snapshot to Sonatype snapshot repo.
     if (
       exec(

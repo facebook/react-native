@@ -13,9 +13,10 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
-import com.facebook.react.uimanager.BaseViewManagerInterface;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.LayoutShadowNode;
 
-public class AndroidPopupMenuManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & AndroidPopupMenuManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+public class AndroidPopupMenuManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & AndroidPopupMenuManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public AndroidPopupMenuManagerDelegate(U viewManager) {
     super(viewManager);
   }

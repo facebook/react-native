@@ -123,6 +123,15 @@ std::vector<ExportedMethod> parseExportedMethods(std::string moduleName, Class m
     NSArray<RCTMethodArgument *> *arguments;
     SEL objCMethodSelector = NSSelectorFromString(RCTParseMethodSignature(methodInfo->objcName, &arguments));
     NSMethodSignature *objCMethodSignature = [moduleClass instanceMethodSignatureForSelector:objCMethodSelector];
+    if (objCMethodSignature == nullptr) {
+      RCTLogWarn(
+          @"The objective-c `%s` method signature for the JS method `%@` can not be found in the ObjecitveC definition of the %s module.\nThe `%@` JS method will not be available.",
+          methodInfo->objcName,
+          jsMethodName,
+          moduleName.c_str(),
+          jsMethodName);
+      continue;
+    }
     std::string objCMethodReturnType = [objCMethodSignature methodReturnType];
 
     if (objCMethodSignature.numberOfArguments - 2 != [arguments count]) {
@@ -337,7 +346,7 @@ void ObjCInteropTurboModule::setInvocationArg(
   SEL selector = selectorForType(argumentType);
 
   if ([RCTConvert respondsToSelector:selector]) {
-    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
 
     if (objCArgType == @encode(char)) {
       char arg = RCTConvertTo<char>(selector, objCArg);
@@ -437,6 +446,15 @@ void ObjCInteropTurboModule::setInvocationArg(
 
     if (objCArgType == @encode(id)) {
       id arg = RCTConvertTo<id>(selector, objCArg);
+
+      // Handle the special case where there is an argument and it must be nil
+      // Without this check, the JS side will receive an object.
+      // See: discussion at
+      // https://github.com/facebook/react-native/pull/49250#issuecomment-2668465893
+      if (arg == [NSNull null]) {
+        return;
+      }
+
       if (arg) {
         [retainedObjectsForInvocation addObject:arg];
       }
@@ -491,7 +509,7 @@ void ObjCInteropTurboModule::setInvocationArg(
     }
 
     RCTResponseSenderBlock arg =
-        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
     if (arg) {
       [retainedObjectsForInvocation addObject:arg];
     }
@@ -506,7 +524,7 @@ void ObjCInteropTurboModule::setInvocationArg(
     }
 
     RCTResponseSenderBlock senderBlock =
-        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
     RCTResponseErrorBlock arg = ^(NSError *error) {
       senderBlock(@[ RCTJSErrorFromNSError(error) ]);
     };
@@ -536,7 +554,7 @@ void ObjCInteropTurboModule::setInvocationArg(
           runtime, errorPrefix + "JavaScript argument must be a plain object. Got " + getType(runtime, jsiArg));
     }
 
-    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
 
     RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
     RCTManagedPointer *box = convert([RCTCxxConvert class], selector, arg);

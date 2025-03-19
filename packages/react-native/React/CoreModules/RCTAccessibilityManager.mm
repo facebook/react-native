@@ -12,6 +12,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTInitialAccessibilityValuesProxy.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 
@@ -37,7 +38,7 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (instancetype)init
@@ -77,6 +78,11 @@ RCT_EXPORT_MODULE()
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(darkerSystemColorsDidChange:)
+                                                 name:UIAccessibilityDarkerSystemColorsStatusDidChangeNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reduceTransparencyStatusDidChange:)
                                                  name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
                                                object:nil];
@@ -86,13 +92,15 @@ RCT_EXPORT_MODULE()
                                                  name:UIAccessibilityVoiceOverStatusDidChangeNotification
                                                object:nil];
 
-    self.contentSizeCategory = RCTSharedApplication().preferredContentSizeCategory;
-    _isBoldTextEnabled = UIAccessibilityIsBoldTextEnabled();
-    _isGrayscaleEnabled = UIAccessibilityIsGrayscaleEnabled();
-    _isInvertColorsEnabled = UIAccessibilityIsInvertColorsEnabled();
-    _isReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
-    _isReduceTransparencyEnabled = UIAccessibilityIsReduceTransparencyEnabled();
-    _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
+    RCTInitialAccessibilityValuesProxy *initialValuesProxy = [RCTInitialAccessibilityValuesProxy sharedInstance];
+    self.contentSizeCategory = initialValuesProxy.preferredContentSizeCategory;
+    _isBoldTextEnabled = initialValuesProxy.isBoldTextEnabled;
+    _isGrayscaleEnabled = initialValuesProxy.isGrayscaleEnabled;
+    _isInvertColorsEnabled = initialValuesProxy.isInvertColorsEnabled;
+    _isReduceMotionEnabled = initialValuesProxy.isReduceMotionEnabled;
+    _isDarkerSystemColorsEnabled = initialValuesProxy.isDarkerSystemColorsEnabled;
+    _isReduceTransparencyEnabled = initialValuesProxy.isReduceTransparencyEnabled;
+    _isVoiceOverEnabled = initialValuesProxy.isVoiceOverEnabled;
   }
   return self;
 }
@@ -165,6 +173,20 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"reduceMotionChanged"
                                                                           body:@(_isReduceMotionEnabled)];
+#pragma clang diagnostic pop
+  }
+}
+
+- (void)darkerSystemColorsDidChange:(__unused NSNotification *)notification
+{
+  BOOL newDarkerSystemColorsEnabled = UIAccessibilityDarkerSystemColorsEnabled();
+  if (_isDarkerSystemColorsEnabled != newDarkerSystemColorsEnabled) {
+    _isDarkerSystemColorsEnabled = newDarkerSystemColorsEnabled;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"darkerSystemColorsChanged"
+                                                                          body:@(_isDarkerSystemColorsEnabled)];
+
 #pragma clang diagnostic pop
   }
 }
@@ -352,6 +374,13 @@ RCT_EXPORT_METHOD(getCurrentReduceMotionState
                   : (__unused RCTResponseSenderBlock)onError)
 {
   onSuccess(@[ @(_isReduceMotionEnabled) ]);
+}
+
+RCT_EXPORT_METHOD(getCurrentDarkerSystemColorsState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
+{
+  onSuccess(@[ @(_isDarkerSystemColorsEnabled) ]);
 }
 
 RCT_EXPORT_METHOD(getCurrentPrefersCrossFadeTransitionsState

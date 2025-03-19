@@ -34,7 +34,9 @@ class EventTarget {
   /*
    * Constructs an EventTarget from a weak instance handler and a tag.
    */
-  explicit EventTarget(InstanceHandle::Shared instanceHandle);
+  explicit EventTarget(
+      InstanceHandle::Shared instanceHandle,
+      SurfaceId surfaceId);
 
   /*
    * Sets the `enabled` flag that allows creating a strong instance handle from
@@ -59,6 +61,8 @@ class EventTarget {
    */
   jsi::Value getInstanceHandle(jsi::Runtime& runtime) const;
 
+  SurfaceId getSurfaceId() const;
+
   /*
    * Deprecated. Do not use.
    */
@@ -66,6 +70,7 @@ class EventTarget {
 
  private:
   const InstanceHandle::Shared instanceHandle_;
+  const SurfaceId surfaceId_;
   mutable bool enabled_{false}; // Protected by `EventEmitter::DispatchMutex()`.
   mutable jsi::Value strongInstanceHandle_; // Protected by `jsi::Runtime &`.
   mutable size_t retainCount_{0}; // Protected by `jsi::Runtime &`.

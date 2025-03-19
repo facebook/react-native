@@ -81,6 +81,7 @@ export interface Spec extends TurboModule {
   +onClick: EventEmitter<string>;
   +onChange: EventEmitter<ObjectStruct>;
   +onSubmit: EventEmitter<ObjectStruct[]>;
+  +onEvent: EventEmitter<EnumNone>;
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;

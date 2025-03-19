@@ -8,8 +8,8 @@
  * @format
  */
 
-import type {Props as VirtualizedListProps} from './VirtualizedListProps';
-import type {Layout} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {VirtualizedListProps} from './VirtualizedListProps';
+import type {LayoutRectangle} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
@@ -82,7 +82,7 @@ export default class ListMetricsAggregator {
     cellIndex: number,
     cellKey: string,
     orientation: ListOrientation,
-    layout: Layout,
+    layout: LayoutRectangle,
   }): boolean {
     this._invalidateIfOrientationChanged(orientation);
 
@@ -167,6 +167,30 @@ export default class ListMetricsAggregator {
       // check for invalid frames due to row re-ordering
       return frame;
     } else {
+      let offset;
+
+      const highestMeasuredCellIndex = this.getHighestMeasuredCellIndex();
+      if (highestMeasuredCellIndex < index) {
+        // If any of the cells before this one have been laid out already, we
+        // should use that information in the estimations.
+        // This is important because if the list has a header, the initial cell
+        // will have a larger offset that we should take into account here.
+        const highestMeasuredCellFrame = this.getCellMetrics(
+          highestMeasuredCellIndex,
+          props,
+        );
+        if (highestMeasuredCellFrame) {
+          offset =
+            highestMeasuredCellFrame.offset +
+            highestMeasuredCellFrame.length +
+            this._averageCellLength * (index - highestMeasuredCellIndex - 1);
+        }
+      }
+
+      if (offset == null) {
+        offset = this._averageCellLength * index;
+      }
+
       const {data, getItemCount} = props;
       invariant(
         index >= 0 && index < getItemCount(data),
@@ -174,7 +198,7 @@ export default class ListMetricsAggregator {
       );
       return {
         length: this._averageCellLength,
-        offset: this._averageCellLength * index,
+        offset,
         index,
         isMounted: false,
       };
@@ -240,7 +264,10 @@ export default class ListMetricsAggregator {
    * Finds the flow-relative offset (e.g. starting from the left in LTR, but
    * right in RTL) from a layout box.
    */
-  flowRelativeOffset(layout: Layout, referenceContentLength?: ?number): number {
+  flowRelativeOffset(
+    layout: LayoutRectangle,
+    referenceContentLength?: ?number,
+  ): number {
     const {horizontal, rtl} = this._orientation;
 
     if (horizontal && rtl) {

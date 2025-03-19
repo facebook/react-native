@@ -14,7 +14,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "flags.h"
+#include <react/renderer/debug/flags.h>
 
 namespace facebook::react {
 
@@ -90,14 +90,23 @@ class DebugStringConvertible {};
 
 /*
  * Set of particular-format-opinionated functions that convert base types to
- * `std::string`; practically incapsulate `folly:to<>` and `folly::format`.
+ * `std::string`
  */
-std::string toString(const std::string& value);
-std::string toString(const int& value);
-std::string toString(const bool& value);
-std::string toString(const float& value);
 std::string toString(const double& value);
 std::string toString(const void* value);
+
+inline std::string toString(const std::string& value) {
+  return value;
+}
+inline std::string toString(const int& value) {
+  return std::to_string(value);
+}
+inline std::string toString(const bool& value) {
+  return value ? "true" : "false";
+}
+inline std::string toString(const float& value) {
+  return toString(static_cast<double>(value));
+}
 
 template <typename T>
 std::string toString(const std::optional<T>& value) {
@@ -140,26 +149,26 @@ std::string toString(const std::optional<T>& value) {
  * types.
  */
 template <typename T>
-std::string getDebugName(const T& object) {
+std::string getDebugName(const T& /*object*/) {
   return "Node";
 }
 
 template <typename T>
-std::string getDebugValue(const T& object) {
+std::string getDebugValue(const T& /*object*/) {
   return "";
 }
 
 template <typename T>
 std::vector<T> getDebugChildren(
-    const T& object,
-    DebugStringConvertibleOptions options) {
+    const T& /*object*/,
+    DebugStringConvertibleOptions /*options*/) {
   return {};
 }
 
 template <typename T>
 std::vector<T> getDebugProps(
-    const T& object,
-    DebugStringConvertibleOptions options) {
+    const T& /*object*/,
+    DebugStringConvertibleOptions /*options*/) {
   return {};
 }
 
@@ -257,68 +266,68 @@ std::string getDebugDescription(
 // `int`
 inline std::string getDebugDescription(
     int number,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   return toString(number);
 }
 
 // `float`
 inline std::string getDebugDescription(
     float number,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   return toString(number);
 }
 
 // `double`
 inline std::string getDebugDescription(
     double number,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   return toString(number);
 }
 
 // `bool`
 inline std::string getDebugDescription(
     bool boolean,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   return toString(boolean);
 }
 
 // `void *`
 inline std::string getDebugDescription(
     void* pointer,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   return toString(pointer);
 }
 
 // `std::string`
 inline std::string getDebugDescription(
     const std::string& string,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   return string;
 }
 
 // `std::vector<T>`
 template <typename T, typename... Ts>
-std::string getDebugName(const std::vector<T, Ts...>& vector) {
+std::string getDebugName(const std::vector<T, Ts...>& /*vector*/) {
   return "List";
 }
 
 template <typename T, typename... Ts>
 std::vector<T, Ts...> getDebugChildren(
     const std::vector<T, Ts...>& vector,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   return vector;
 }
 
 // `std::array<T, Size>`
 template <typename T, size_t Size>
-std::string getDebugName(const std::array<T, Size>& array) {
+std::string getDebugName(const std::array<T, Size>& /*array*/) {
   return "List";
 }
 
 template <typename T, size_t Size>
 std::vector<T> getDebugChildren(
     const std::array<T, Size>& array,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   auto vector = std::vector<T>{};
   for (const auto& value : array) {
     vector.push_back(value);
@@ -328,14 +337,14 @@ std::vector<T> getDebugChildren(
 
 // `std::unordered_set<T>`
 template <typename T, typename... Ts>
-std::string getDebugName(const std::unordered_set<T, Ts...>& set) {
+std::string getDebugName(const std::unordered_set<T, Ts...>& /*set*/) {
   return "Set";
 }
 
 template <typename T, typename... Ts>
 std::vector<T> getDebugChildren(
     const std::unordered_set<T, Ts...>& set,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   auto vector = std::vector<T>{};
   vector.insert(vector.end(), set.begin(), set.end());
   return vector;

@@ -37,18 +37,17 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
   private final List<DevToolsReactPerfLoggerListener> mDevToolsReactPerfLoggerListeners =
       new ArrayList<>();
 
-  public static final LongStreamingStats mStreamingCommitStats = new LongStreamingStats();
-  public static final LongStreamingStats mStreamingLayoutStats = new LongStreamingStats();
-  public static final LongStreamingStats mStreamingDiffStats = new LongStreamingStats();
-  public static final LongStreamingStats mStreamingTransactionEndStats = new LongStreamingStats();
-  public static final LongStreamingStats mStreamingBatchExecutionStats = new LongStreamingStats();
+  static final LongStreamingStats mStreamingCommitStats = new LongStreamingStats();
+  static final LongStreamingStats mStreamingLayoutStats = new LongStreamingStats();
+  static final LongStreamingStats mStreamingDiffStats = new LongStreamingStats();
+  static final LongStreamingStats mStreamingTransactionEndStats = new LongStreamingStats();
+  static final LongStreamingStats mStreamingBatchExecutionStats = new LongStreamingStats();
 
   public interface DevToolsReactPerfLoggerListener {
-
     void onFabricCommitEnd(FabricCommitPoint commitPoint);
   }
 
-  public static class FabricCommitPointData {
+  private static class FabricCommitPointData {
     private final long mTimeStamp;
     private final int mCounter;
 

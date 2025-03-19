@@ -94,7 +94,7 @@ class JSCRuntime : public jsi::Runtime {
         const std::atomic<bool>& ctxInvalid,
         JSValueRef sym);
 #endif
-    void invalidate() override;
+    void invalidate() noexcept override;
 
     JSGlobalContextRef ctx_;
     const std::atomic<bool>& ctxInvalid_;
@@ -114,7 +114,7 @@ class JSCRuntime : public jsi::Runtime {
 #else
     JSCStringValue(JSStringRef str);
 #endif
-    void invalidate() override;
+    void invalidate() noexcept override;
 
     JSStringRef str_;
 #ifndef NDEBUG
@@ -135,7 +135,7 @@ class JSCRuntime : public jsi::Runtime {
 #endif
     );
 
-    void invalidate() override;
+    void invalidate() noexcept override;
 
     JSGlobalContextRef ctx_;
     const std::atomic<bool>& ctxInvalid_;
@@ -377,11 +377,9 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 {
 #ifndef NDEBUG
 #ifdef _JSC_HAS_INSPECTABLE
-#if (__OSX_AVAILABLE_STARTING(MAC_NA, IPHONE_16_4))
   if (__builtin_available(macOS 13.3, iOS 16.4, tvOS 16.4, *)) {
     JSGlobalContextSetInspectable(ctx_, true);
   }
-#endif
 #endif
 #endif
 }
@@ -506,7 +504,7 @@ JSCRuntime::JSCSymbolValue::JSCSymbolValue(
 #endif
 }
 
-void JSCRuntime::JSCSymbolValue::invalidate() {
+void JSCRuntime::JSCSymbolValue::invalidate() noexcept {
 #ifndef NDEBUG
   counter_ -= 1;
 #endif
@@ -531,7 +529,7 @@ JSCRuntime::JSCStringValue::JSCStringValue(JSStringRef str)
     : str_(JSStringRetain(str)) {}
 #endif
 
-void JSCRuntime::JSCStringValue::invalidate() {
+void JSCRuntime::JSCStringValue::invalidate() noexcept {
   // These JSC{String,Object}Value objects are implicitly owned by the
   // {String,Object} objects, thus when a String/Object is destructed
   // the JSC{String,Object}Value should be released.
@@ -566,7 +564,7 @@ JSCRuntime::JSCObjectValue::JSCObjectValue(
 #endif
 }
 
-void JSCRuntime::JSCObjectValue::invalidate() {
+void JSCRuntime::JSCObjectValue::invalidate() noexcept {
 #ifndef NDEBUG
   counter_ -= 1;
 #endif
@@ -668,9 +666,9 @@ jsi::PropNameID JSCRuntime::createPropNameIDFromString(const jsi::String& str) {
 }
 
 jsi::PropNameID JSCRuntime::createPropNameIDFromSymbol(const jsi::Symbol& sym) {
-  // TODO: Support for symbols through the native API in JSC is very limited.
-  // While we could construct a PropNameID here, we would not be able to get a
-  // symbol property through the C++ API.
+  // TODO(T204185517): Support for symbols through the native API in JSC is very
+  // limited. While we could construct a PropNameID here, we would not be able
+  // to get a symbol property through the C++ API.
   throw std::logic_error("Not implemented");
 }
 

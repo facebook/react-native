@@ -10,7 +10,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
-import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 
@@ -18,9 +18,9 @@ import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 const Log = ({message}: {message: string}) =>
   message ? (
     <View style={styles.logContainer}>
-      <Text>
-        <Text style={styles.bold}>Log</Text>: {message}
-      </Text>
+      <RNTesterText>
+        <RNTesterText style={styles.bold}>Log</RNTesterText>: {message}
+      </RNTesterText>
     </View>
   ) : null;
 
@@ -242,16 +242,13 @@ const PromptOptions = () => {
       style: 'cancel',
     },
   ];
-  const theme = React.useContext(RNTesterThemeContext);
 
   return (
     <View>
-      <Text style={styles.promptValue}>
-        <Text style={[{color: theme.SecondaryLabelColor}, styles.bold]}>
-          Prompt value:
-        </Text>
+      <RNTesterText style={styles.promptValue}>
+        <Text style={styles.bold}>Prompt value:</Text>
         {JSON.stringify(promptValue, null, 2)}
-      </Text>
+      </RNTesterText>
 
       <Pressable
         style={styles.wrapper}

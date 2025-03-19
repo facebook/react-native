@@ -11,6 +11,7 @@ import java.util.*
 import org.gradle.api.Project
 
 internal object BackwardCompatUtils {
+  private var hasShownJSCRemovalMessage = false
 
   fun configureBackwardCompatibilityReactMap(project: Project) {
     if (project.extensions.extraProperties.has("react")) {
@@ -44,5 +45,26 @@ internal object BackwardCompatUtils {
 
     // We set an empty react[] map so if a library is reading it, they will find empty values.
     project.extensions.extraProperties.set("react", mapOf<String, String>())
+  }
+
+  fun showJSCRemovalMessage(project: Project) {
+    if (hasShownJSCRemovalMessage) {
+      return
+    }
+
+    val message =
+        """
+
+=============== JavaScriptCore is being moved ===============
+JavaScriptCore has been extracted from react-native core
+and will be removed in a future release. It can now be
+installed from `@react-native-community/javascriptcore`
+See: https://github.com/react-native-community/javascriptcore
+=============================================================
+
+"""
+            .trimIndent()
+    project.logger.warn(message)
+    hasShownJSCRemovalMessage = true
   }
 }

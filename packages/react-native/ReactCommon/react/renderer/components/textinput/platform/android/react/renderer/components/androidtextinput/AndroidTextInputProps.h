@@ -13,13 +13,12 @@
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/textinput/BaseTextInputProps.h>
+#include <react/renderer/components/textinput/basePrimitives.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
-#include <cinttypes>
 #include <unordered_map>
-#include <vector>
 
 namespace facebook::react {
 
@@ -87,14 +86,11 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   bool autoCorrect{false};
   bool allowFontScaling{false};
   Float maxFontSizeMultiplier{0.0};
-  bool editable{false};
   std::string keyboardType{};
   std::string returnKeyType{};
-  bool multiline{false};
   bool secureTextEntry{false};
   std::string value{};
   bool selectTextOnFocus{false};
-  std::string submitBehavior{};
   bool caretHidden{false};
   bool contextMenuHidden{false};
   SharedColor textShadowColor{};

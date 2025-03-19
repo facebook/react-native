@@ -16,10 +16,13 @@
 #include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #include <react/renderer/components/progressbar/AndroidProgressBarComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
+#include <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
+#include <react/renderer/components/scrollview/AndroidHorizontalScrollContentViewComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
+#include <react/renderer/components/view/LayoutConformanceComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 
 namespace facebook::react::CoreComponentsRegistry {
@@ -48,6 +51,8 @@ sharedProviderRegistry() {
     providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidSwitchComponentDescriptor>());
     providerRegistry->add(
+        concreteComponentDescriptorProvider<SafeAreaViewComponentDescriptor>());
+    providerRegistry->add(
         concreteComponentDescriptorProvider<TextComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
@@ -62,6 +67,8 @@ sharedProviderRegistry() {
                           AndroidDrawerLayoutComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           DebuggingOverlayComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          LayoutConformanceComponentDescriptor>());
 
     return providerRegistry;
   }();

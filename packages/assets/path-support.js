@@ -4,13 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
-import type {PackagerAsset} from './registry.js';
+/*:: import type {PackagerAsset} from './registry.js'; */
 
 const androidScaleSuffix = {
   '0.75': 'ldpi',
@@ -27,7 +27,7 @@ const ANDROID_BASE_DENSITY = 160;
  * FIXME: using number to represent discrete scale numbers is fragile in essence because of
  * floating point numbers imprecision.
  */
-function getAndroidAssetSuffix(scale: number): string {
+function getAndroidAssetSuffix(scale /*: number */) /*: string */ {
   if (scale.toString() in androidScaleSuffix) {
     // $FlowFixMe[invalid-computed-prop]
     return androidScaleSuffix[scale.toString()];
@@ -47,15 +47,14 @@ const drawableFileTypes = new Set([
   'jpg',
   'ktx',
   'png',
-  'svg',
   'webp',
   'xml',
 ]);
 
 function getAndroidResourceFolderName(
-  asset: PackagerAsset,
-  scale: number,
-): string | $TEMPORARY$string<'raw'> {
+  asset /*: PackagerAsset */,
+  scale /*: number */,
+) /*: string */ {
   if (!drawableFileTypes.has(asset.type)) {
     return 'raw';
   }
@@ -73,15 +72,17 @@ function getAndroidResourceFolderName(
   return 'drawable-' + suffix;
 }
 
-function getAndroidResourceIdentifier(asset: PackagerAsset): string {
+function getAndroidResourceIdentifier(
+  asset /*: PackagerAsset */,
+) /*: string */ {
   return (getBasePath(asset) + '/' + asset.name)
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
     .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
-    .replace(/^assets_/, ''); // Remove "assets_" prefix
+    .replace(/^(?:assets|assetsunstable_path)_/, ''); // Remove "assets_" or "assetsunstable_path_" prefix
 }
 
-function getBasePath(asset: PackagerAsset): string {
+function getBasePath(asset /*: PackagerAsset */) /*: string */ {
   const basePath = asset.httpServerLocation;
   return basePath.startsWith('/') ? basePath.slice(1) : basePath;
 }

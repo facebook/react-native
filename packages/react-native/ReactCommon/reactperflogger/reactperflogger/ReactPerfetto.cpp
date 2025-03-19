@@ -7,11 +7,16 @@
 
 #ifdef WITH_PERFETTO
 
+#include "ReactPerfetto.h"
+
 #include <perfetto.h>
 #include <unordered_map>
 
+#include "FuseboxPerfettoDataSource.h"
 #include "HermesPerfettoDataSource.h"
 #include "ReactPerfettoCategories.h"
+
+namespace facebook::react {
 
 std::once_flag perfettoInit;
 void initializePerfetto() {
@@ -28,6 +33,7 @@ void initializePerfetto() {
   });
 
   HermesPerfettoDataSource::RegisterDataSource();
+  FuseboxPerfettoDataSource::RegisterDataSource();
 }
 
 static perfetto::Track createTrack(const std::string& trackName) {
@@ -82,5 +88,7 @@ uint64_t performanceNowToPerfettoTraceTime(double perfNowTime) {
   }
   return static_cast<uint64_t>(perfNowTime * 1.e6);
 }
+
+} // namespace facebook::react
 
 #endif // WITH_PERFETTO

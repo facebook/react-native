@@ -42,7 +42,7 @@ EOF
     patch -p1 config.sub fix_glog_0.3.5_apple_silicon.patch
 fi
 
-XCRUN="$(which xcrun)"
+XCRUN="$(which xcrun || true)"
 if [ -n "$XCRUN" ]; then
   export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
   export CXX="$CC"
@@ -61,13 +61,22 @@ fi
 sed -i.bak -e 's/\@ac_cv_have_libgflags\@/0/' src/glog/logging.h.in && rm src/glog/logging.h.in.bak
 sed -i.bak -e 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in && rm src/config.h.in.bak
 
-./configure --host arm-apple-darwin
+./configure --host arm-apple-darwin || true
 
 cat << EOF >> src/config.h
 /* Add in so we have Apple Target Conditionals */
 #ifdef __APPLE__
 #include <TargetConditionals.h>
 #include <Availability.h>
+#endif
+
+/* Special configuration for AppleTVOS */
+#if TARGET_OS_TV
+#undef HAVE_SYSCALL_H
+#undef HAVE_SYS_SYSCALL_H
+#undef OS_MACOSX
+/* NO_THREADS needed right now for Xcode 16 */
+#define NO_THREADS
 #endif
 
 /* Special configuration for ucontext */

@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -285,11 +286,11 @@ public class MountingManager {
    * Send an accessibility eventType to a Native View. eventType is any valid `AccessibilityEvent.X`
    * value.
    *
-   * <p>Why accept {@ViewUtils.NO_SURFACE_ID}(-1) SurfaceId? Currently there are calls to
+   * <p>Why accept {@ViewUtil.NO_SURFACE_ID}(-1) SurfaceId? Currently there are calls to
    * UIManager.sendAccessibilityEvent which is a legacy API and accepts only reactTag. We will have
    * to investigate and migrate away from those calls over time.
    *
-   * @param surfaceId {@link int} that identifies the surface or {@ViewUtils.NO_SURFACE_ID}(-1) to
+   * @param surfaceId {@link int} that identifies the surface or {@ViewUtil.NO_SURFACE_ID}(-1) to
    *     temporarily support backward compatibility.
    * @param reactTag {@link int} that identifies the react Tag of the view.
    * @param eventType {@link int} that identifies Android eventType. see {@link
@@ -330,14 +331,11 @@ public class MountingManager {
   @AnyThread
   @ThreadConfined(ANY)
   public @Nullable EventEmitterWrapper getEventEmitter(int surfaceId, int reactTag) {
-    SurfaceMountingManager surfaceMountingManager =
-        (surfaceId == ViewUtil.NO_SURFACE_ID
-            ? getSurfaceManagerForView(reactTag)
-            : getSurfaceManager(surfaceId));
-    if (surfaceMountingManager == null) {
+    SurfaceMountingManager smm = getSurfaceMountingManager(surfaceId, reactTag);
+    if (smm == null) {
       return null;
     }
-    return surfaceMountingManager.getEventEmitter(reactTag);
+    return smm.getEventEmitter(reactTag);
   }
 
   /**
@@ -427,6 +425,29 @@ public class MountingManager {
             attachmentsPositions);
   }
 
+  /**
+   * THIS PREFETCH METHOD IS EXPERIMENTAL, DO NOT USE IT FOR PRODUCTION CODE. IT WILL MOST LIKELY
+   * CHANGE OR BE REMOVED IN THE FUTURE.
+   *
+   * @param reactContext
+   * @param componentName
+   * @param surfaceId {@link int} surface ID
+   * @param reactTag reactTag that should be set as ID of the view instance
+   * @param params {@link MapBuffer} prefetch request params defined in C++
+   */
+  @AnyThread
+  @UnstableReactNativeAPI
+  public void experimental_prefetchResource(
+      ReactContext reactContext,
+      String componentName,
+      int surfaceId,
+      int reactTag,
+      MapBuffer params) {
+    mViewManagerRegistry
+        .get(componentName)
+        .experimental_prefetchResource(reactContext, surfaceId, reactTag, params);
+  }
+
   public void enqueuePendingEvent(
       int surfaceId,
       int reactTag,
@@ -434,11 +455,21 @@ public class MountingManager {
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory) {
-    @Nullable SurfaceMountingManager smm = getSurfaceManager(surfaceId);
+    SurfaceMountingManager smm = getSurfaceMountingManager(surfaceId, reactTag);
     if (smm == null) {
-      // Cannot queue event without valid surface mountng manager. Do nothing here.
+      FLog.d(
+          TAG,
+          "Cannot queue event without valid surface mounting manager for tag: %d, surfaceId: %d",
+          reactTag,
+          surfaceId);
       return;
     }
     smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory);
+  }
+
+  private @Nullable SurfaceMountingManager getSurfaceMountingManager(int surfaceId, int reactTag) {
+    return (surfaceId == ViewUtil.NO_SURFACE_ID
+        ? getSurfaceManagerForView(reactTag)
+        : getSurfaceManager(surfaceId));
   }
 }

@@ -10,17 +10,18 @@
 
 'use strict';
 
-const RNTesterButton = require('../../components/RNTesterButton');
-const React = require('react');
-const {Alert, Platform, Text, ToastAndroid, View} = require('react-native');
+import RNTesterButton from '../../components/RNTesterButton';
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {Alert, Platform, ToastAndroid, View} from 'react-native';
 
 function burnCPU(milliseconds: number) {
   const start = global.performance.now();
   while (global.performance.now() < start + milliseconds) {}
 }
 
-type RequestIdleCallbackTesterProps = $ReadOnly<{||}>;
-type RequestIdleCallbackTesterState = {|message: string|};
+type RequestIdleCallbackTesterProps = $ReadOnly<{}>;
+type RequestIdleCallbackTesterState = {message: string};
 
 class RequestIdleCallbackTester extends React.Component<
   RequestIdleCallbackTesterProps,
@@ -67,7 +68,7 @@ class RequestIdleCallbackTester extends React.Component<
           Stop background task
         </RNTesterButton>
 
-        <Text>{this.state.message}</Text>
+        <RNTesterText>{this.state.message}</RNTesterText>
       </View>
     );
   }
@@ -143,10 +144,10 @@ class RequestIdleCallbackTester extends React.Component<
   };
 }
 
-type TimerTesterProps = $ReadOnly<{|
+type TimerTesterProps = $ReadOnly<{
   dt?: any,
   type: string,
-|}>;
+}>;
 
 class TimerTester extends React.Component<TimerTesterProps> {
   _ii = 0;
@@ -268,10 +269,10 @@ class TimerTester extends React.Component<TimerTesterProps> {
 }
 
 class IntervalExample extends React.Component<
-  $ReadOnly<{||}>,
-  {|
+  $ReadOnly<{}>,
+  {
     showTimer: boolean,
-  |},
+  },
 > {
   state: {showTimer: boolean} = {
     showTimer: true,

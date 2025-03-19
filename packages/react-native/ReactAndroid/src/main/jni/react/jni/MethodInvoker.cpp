@@ -65,9 +65,9 @@ jint extractInteger(const folly::dynamic& value) {
   double dbl = value.getDouble();
   jint result = static_cast<jint>(dbl);
   if (dbl != result) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "Tried to convert jint argument, but got a non-integral double: ",
-        dbl));
+    throw std::invalid_argument(
+        "Tried to convert jint argument, but got a non-integral double: " +
+        std::to_string(dbl));
   }
   return result;
 }
@@ -222,14 +222,17 @@ MethodCallResult MethodInvoker::invoke(
 #endif
 
   if (params.size() != jsArgCount_) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "expected ", jsArgCount_, " arguments, got ", params.size()));
+    throw std::invalid_argument(
+        "expected " + std::to_string(jsArgCount_) + " arguments, got " +
+        std::to_string(params.size()));
   }
 
   auto env = Environment::current();
   auto argCount = signature_.size() - 2;
   JniLocalScope scope(env, static_cast<int>(argCount));
-  jvalue args[argCount];
+  std::vector<jvalue> argsStorage(
+      argCount + 1); // ensure we have at least 1 element
+  jvalue* args = argsStorage.data();
   std::transform(
       signature_.begin() + 2,
       signature_.end(),

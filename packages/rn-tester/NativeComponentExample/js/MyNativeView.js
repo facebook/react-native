@@ -22,7 +22,7 @@ import RNTMyNativeView, {
 } from './MyNativeViewNativeComponent';
 import * as React from 'react';
 import {useRef, useState} from 'react';
-import {Button, Text, UIManager, View} from 'react-native';
+import {Button, Platform, Text, UIManager, View} from 'react-native';
 const colors = [
   '#0000FF',
   '#FF0000',
@@ -85,12 +85,21 @@ function getTextFor(measureStruct: MeasureStruct): string {
     measureStruct.height,
   )}`;
 }
+const opacityDecrementCounter = 0.2;
+
+function computeNextOpacity(opacity: number): number {
+  if (parseFloat(opacity.toFixed(1)) > 0.0) {
+    return opacity - opacityDecrementCounter;
+  }
+  return 1.0;
+}
 
 // This is an example component that migrates to use the new architecture.
 export default function MyNativeView(props: {}): React.Node {
   const containerRef = useRef<React.ElementRef<typeof View> | null>(null);
   const ref = useRef<React.ElementRef<MyNativeViewType> | null>(null);
   const legacyRef = useRef<React.ElementRef<MyLegacyViewType> | null>(null);
+  const [currentBGColor, setCurrentBGColor] = useState<number>(0);
   const [opacity, setOpacity] = useState(1.0);
   const [arrayValues, setArrayValues] = useState([1, 2, 3]);
   const [hsba, setHsba] = useState<HSBA>(new HSBA());
@@ -101,6 +110,8 @@ export default function MyNativeView(props: {}): React.Node {
     useState<MeasureStruct>(MeasureStructZero);
   const [legacyMeasureLayout, setLegacyMeasureLayout] =
     useState<MeasureStruct>(MeasureStructZero);
+  const [legacyStyleEventCount, setLegacyStyleEventCount] = useState<number>(0);
+
   return (
     <View ref={containerRef} style={{flex: 1}}>
       <Text style={{color: 'red'}}>Fabric View</Text>
@@ -120,6 +131,7 @@ export default function MyNativeView(props: {}): React.Node {
           console.log(event.nativeEvent.multiArrays);
         }}
         onLegacyStyleEvent={event => {
+          setLegacyStyleEventCount(prevCount => prevCount + 1);
           console.log(event.nativeEvent.string);
         }}
       />
@@ -128,16 +140,24 @@ export default function MyNativeView(props: {}): React.Node {
         ref={legacyRef}
         style={{flex: 1}}
         opacity={opacity}
-        onColorChanged={event =>
+        onColorChanged={event => {
+          const normalizedHue =
+            Platform.OS === 'android'
+              ? event.nativeEvent.backgroundColor.hue
+              : event.nativeEvent.backgroundColor.hue * 360;
+          const normalizedAlpha =
+            Platform.OS === 'android'
+              ? event.nativeEvent.backgroundColor.alpha
+              : event.nativeEvent.backgroundColor.alpha * 255;
           setHsba(
             new HSBA(
-              event.nativeEvent.backgroundColor.hue,
+              normalizedHue,
               event.nativeEvent.backgroundColor.saturation,
               event.nativeEvent.backgroundColor.brightness,
-              event.nativeEvent.backgroundColor.alpha,
+              normalizedAlpha,
             ),
-          )
-        }
+          );
+        }}
       />
       <Text style={{color: 'green', textAlign: 'center'}}>
         HSBA: {hsba.toString()}
@@ -146,90 +166,110 @@ export default function MyNativeView(props: {}): React.Node {
         Constants From Interop Layer:{' '}
         {UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Constants.PI}
       </Text>
-      <Button
-        title="Change Background"
-        onPress={() => {
-          let newColor = colors[Math.floor(Math.random() * 5)];
-          RNTMyNativeViewCommands.callNativeMethodToChangeBackgroundColor(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-            newColor,
-          );
-
-          callNativeMethodToChangeBackgroundColor(legacyRef.current, newColor);
-        }}
-      />
-      <Button
-        title="Add Overlays"
-        onPress={() => {
-          let randomColorId = Math.floor(Math.random() * 5);
-          let overlayColors = [
-            colors[randomColorId],
-            colors[(randomColorId + 1) % 5],
-          ];
-          RNTMyNativeViewCommands.callNativeMethodToAddOverlays(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-            overlayColors,
-          );
-          callNativeMethodToAddOverlays(legacyRef.current, overlayColors);
-        }}
-      />
-      <Button
-        title="Remove Overlays"
-        onPress={() => {
-          RNTMyNativeViewCommands.callNativeMethodToRemoveOverlays(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-          );
-          callNativeMethodToRemoveOverlays(legacyRef.current);
-        }}
-      />
-      <Button
-        title="Set Opacity"
-        onPress={() => {
-          setOpacity(Math.random());
-          setArrayValues([
-            Math.floor(Math.random() * 100),
-            Math.floor(Math.random() * 100),
-            Math.floor(Math.random() * 100),
-          ]);
-        }}
-      />
-      <Button
-        title="Console.log Measure"
-        onPress={() => {
-          ref.current?.measure((x, y, width, height) => {
-            console.log(x, y, width, height);
-          });
-
-          legacyRef.current?.measure((x, y, width, height) => {
-            setLegacyMeasure({x, y, width, height});
-          });
-          legacyRef.current?.measureInWindow((x, y, width, height) => {
-            setLegacyMeasureInWindow({x, y, width, height});
-          });
-
-          if (containerRef.current) {
-            legacyRef.current?.measureLayout(
+      <Text style={{color: 'green', textAlign: 'center'}}>
+        Opacity: {opacity.toFixed(1)}
+      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+        }}>
+        <Button
+          title="Change Background"
+          onPress={() => {
+            let nextBGColor =
+              currentBGColor + 1 >= colors.length ? 0 : currentBGColor + 1;
+            let newColor = colors[nextBGColor];
+            RNTMyNativeViewCommands.callNativeMethodToChangeBackgroundColor(
               // $FlowFixMe[incompatible-call]
-              containerRef.current,
-              (x, y, width, height) => {
-                setLegacyMeasureLayout({x, y, width, height});
-              },
+              ref.current,
+              newColor,
             );
-          }
-        }}
-      />
-      <Button
-        title="Fire Legacy Style Event"
-        onPress={() => {
-          RNTMyNativeViewCommands.fireLagacyStyleEvent(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-          );
-        }}
-      />
+
+            callNativeMethodToChangeBackgroundColor(
+              legacyRef.current,
+              newColor,
+            );
+            setCurrentBGColor(nextBGColor);
+          }}
+        />
+        <Button
+          title="Set Opacity"
+          onPress={() => {
+            setOpacity(computeNextOpacity(opacity));
+            setArrayValues([
+              Math.floor(Math.random() * 100),
+              Math.floor(Math.random() * 100),
+              Math.floor(Math.random() * 100),
+            ]);
+          }}
+        />
+        <Button
+          title="Add Overlays"
+          onPress={() => {
+            let randomColorId = Math.floor(Math.random() * 5);
+            let overlayColors = [
+              colors[randomColorId],
+              colors[(randomColorId + 1) % 5],
+            ];
+            RNTMyNativeViewCommands.callNativeMethodToAddOverlays(
+              // $FlowFixMe[incompatible-call]
+              ref.current,
+              overlayColors,
+            );
+            callNativeMethodToAddOverlays(legacyRef.current, overlayColors);
+          }}
+        />
+        <Button
+          title="Remove Overlays"
+          onPress={() => {
+            RNTMyNativeViewCommands.callNativeMethodToRemoveOverlays(
+              // $FlowFixMe[incompatible-call]
+              ref.current,
+            );
+            callNativeMethodToRemoveOverlays(legacyRef.current);
+          }}
+        />
+        <Button
+          title="Console.log Measure"
+          onPress={() => {
+            ref.current?.measure((x, y, width, height) => {
+              console.log(x, y, width, height);
+            });
+
+            legacyRef.current?.measure((x, y, width, height) => {
+              setLegacyMeasure({x, y, width, height});
+            });
+            legacyRef.current?.measureInWindow((x, y, width, height) => {
+              setLegacyMeasureInWindow({x, y, width, height});
+            });
+
+            if (containerRef.current) {
+              legacyRef.current?.measureLayout(
+                // $FlowFixMe[incompatible-call]
+                containerRef.current,
+                (x, y, width, height) => {
+                  setLegacyMeasureLayout({x, y, width, height});
+                },
+              );
+            }
+          }}
+        />
+        <Button
+          title="Test setNativeProps"
+          onPress={() => {
+            const newCRIndex =
+              cornerRadiusIndex + 1 >= cornerRadiuses.length
+                ? 0
+                : cornerRadiusIndex + 1;
+            setCornerRadiusIndex(newCRIndex);
+            legacyRef.current?.setNativeProps({
+              cornerRadius: cornerRadiuses[newCRIndex],
+            });
+          }}
+        />
+      </View>
       <Text style={{color: 'green', textAlign: 'center'}}>
         &gt; Interop Layer Measurements &lt;
       </Text>
@@ -243,18 +283,17 @@ export default function MyNativeView(props: {}): React.Node {
         InLayout {getTextFor(legacyMeasureLayout)}
       </Text>
       <Button
-        title="Test setNativeProps"
+        title="Fire Legacy Style Event"
         onPress={() => {
-          const newCRIndex =
-            cornerRadiusIndex + 1 >= cornerRadiuses.length
-              ? 0
-              : cornerRadiusIndex + 1;
-          setCornerRadiusIndex(newCRIndex);
-          legacyRef.current?.setNativeProps({
-            cornerRadius: cornerRadiuses[newCRIndex],
-          });
+          RNTMyNativeViewCommands.fireLagacyStyleEvent(
+            // $FlowFixMe[incompatible-call]
+            ref.current,
+          );
         }}
       />
+      <Text style={{color: 'green', textAlign: 'center'}}>
+        Legacy Style Event Fired {legacyStyleEventCount} times
+      </Text>
     </View>
   );
 }

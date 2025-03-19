@@ -12,11 +12,20 @@
 namespace facebook::react {
 
 BindingsInstallerHolder::BindingsInstallerHolder(
-    std::function<void(facebook::jsi::Runtime& runtime)> bindingsInstaller)
+    BindingsInstallFunc bindingsInstaller)
     : bindingsInstaller_(std::move(bindingsInstaller)) {}
 
-void BindingsInstallerHolder::installBindings(jsi::Runtime& runtime) {
-  bindingsInstaller_(runtime);
+BindingsInstallerHolder::BindingsInstallerHolder(
+    std::function<void(jsi::Runtime& runtime)> oldBindingsInstaller)
+    : bindingsInstaller_(
+          [f = std::move(oldBindingsInstaller)](
+              jsi::Runtime& runtime,
+              const std::shared_ptr<CallInvoker>&) { f(runtime); }) {}
+
+void BindingsInstallerHolder::installBindings(
+    jsi::Runtime& runtime,
+    const std::shared_ptr<CallInvoker>& callInvoker) {
+  bindingsInstaller_(runtime, callInvoker);
 }
 
 } // namespace facebook::react

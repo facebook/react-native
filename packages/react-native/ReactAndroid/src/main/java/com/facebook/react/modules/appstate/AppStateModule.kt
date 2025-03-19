@@ -18,7 +18,7 @@ import com.facebook.react.common.LifecycleState
 import com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = NativeAppStateSpec.NAME)
-public class AppStateModule(reactContext: ReactApplicationContext) :
+internal class AppStateModule(reactContext: ReactApplicationContext) :
     NativeAppStateSpec(reactContext), LifecycleEventListener, WindowFocusChangeListener {
 
   private var appState: String
@@ -34,26 +34,26 @@ public class AppStateModule(reactContext: ReactApplicationContext) :
   public override fun getTypedExportedConstants(): Map<String, Any> =
       mapOf(INITIAL_STATE to appState)
 
-  public override fun getCurrentAppState(success: Callback, error: Callback?) {
+  override fun getCurrentAppState(success: Callback, error: Callback?) {
     success.invoke(createAppStateEventMap())
   }
 
-  public override fun onHostResume() {
+  override fun onHostResume() {
     appState = APP_STATE_ACTIVE
     sendAppStateChangeEvent()
   }
 
-  public override fun onHostPause() {
+  override fun onHostPause() {
     appState = APP_STATE_BACKGROUND
     sendAppStateChangeEvent()
   }
 
-  public override fun onHostDestroy() {
+  override fun onHostDestroy() {
     // do not set state to destroyed, do not send an event. By the current implementation, the
     // catalyst instance is going to be immediately dropped, and all JS calls with it.
   }
 
-  public override fun onWindowFocusChange(hasFocus: Boolean) {
+  override fun onWindowFocusChange(hasFocus: Boolean) {
     sendEvent("appStateFocusChange", hasFocus)
   }
 
@@ -75,23 +75,23 @@ public class AppStateModule(reactContext: ReactApplicationContext) :
     sendEvent("appStateDidChange", createAppStateEventMap())
   }
 
-  public override fun addListener(eventName: String?) {
+  override fun addListener(eventName: String?) {
     // iOS only
   }
 
-  public override fun removeListeners(count: Double) {
+  override fun removeListeners(count: Double) {
     // iOS only
   }
 
-  public override fun invalidate() {
+  override fun invalidate() {
     super.invalidate()
     getReactApplicationContext().removeLifecycleEventListener(this)
   }
 
-  public companion object {
-    public const val NAME: String = NativeAppStateSpec.NAME
-    public const val APP_STATE_ACTIVE: String = "active"
-    public const val APP_STATE_BACKGROUND: String = "background"
+  companion object {
+    const val NAME: String = NativeAppStateSpec.NAME
+    const val APP_STATE_ACTIVE: String = "active"
+    const val APP_STATE_BACKGROUND: String = "background"
     private const val INITIAL_STATE: String = "initialAppState"
   }
 }

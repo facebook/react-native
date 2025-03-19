@@ -8,11 +8,11 @@
  * @format
  */
 
-import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
+import type {CellRendererProps, ListRenderItem} from './VirtualizedListProps';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
-  LayoutEvent,
+  LayoutChangeEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
 
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
@@ -31,7 +31,11 @@ export type Props<ItemT> = {
   index: number,
   inversionStyle: ViewStyleProp,
   item: ItemT,
-  onCellLayout?: (event: LayoutEvent, cellKey: string, index: number) => void,
+  onCellLayout?: (
+    event: LayoutChangeEvent,
+    cellKey: string,
+    index: number,
+  ) => void,
   onCellFocusCapture?: (cellKey: string) => void,
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (
@@ -39,21 +43,21 @@ export type Props<ItemT> = {
     props: Partial<SeparatorProps<ItemT>>,
   ) => void,
   prevCellKey: ?string,
-  renderItem?: ?RenderItemType<ItemT>,
+  renderItem?: ?ListRenderItem<ItemT>,
   ...
 };
 
-type SeparatorProps<ItemT> = $ReadOnly<{|
+type SeparatorProps<ItemT> = $ReadOnly<{
   highlighted: boolean,
   leadingItem: ?ItemT,
-|}>;
+}>;
 
 type State<ItemT> = {
   separatorProps: SeparatorProps<ItemT>,
   ...
 };
 
-export default class CellRenderer<ItemT> extends React.Component<
+export default class CellRenderer<ItemT> extends React.PureComponent<
   Props<ItemT>,
   State<ItemT>,
 > {
@@ -64,16 +68,19 @@ export default class CellRenderer<ItemT> extends React.Component<
     },
   };
 
-  static getDerivedStateFromProps(
-    props: Props<ItemT>,
-    prevState: State<ItemT>,
-  ): ?State<ItemT> {
-    return {
-      separatorProps: {
-        ...prevState.separatorProps,
-        leadingItem: props.item,
-      },
-    };
+  static getDerivedStateFromProps<StaticItemT>(
+    props: Props<StaticItemT>,
+    prevState: State<StaticItemT>,
+  ): ?State<StaticItemT> {
+    if (props.item !== prevState.separatorProps.leadingItem) {
+      return {
+        separatorProps: {
+          ...prevState.separatorProps,
+          leadingItem: props.item,
+        },
+      };
+    }
+    return null;
   }
 
   // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not
@@ -114,7 +121,7 @@ export default class CellRenderer<ItemT> extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
-  _onLayout = (nativeEvent: LayoutEvent): void => {
+  _onLayout = (nativeEvent: LayoutChangeEvent): void => {
     this.props.onCellLayout?.(
       nativeEvent,
       this.props.cellKey,
@@ -127,7 +134,7 @@ export default class CellRenderer<ItemT> extends React.Component<
   };
 
   _renderElement(
-    renderItem: ?RenderItemType<ItemT>,
+    renderItem: ?ListRenderItem<ItemT>,
     ListItemComponent: any,
     item: ItemT,
     index: number,

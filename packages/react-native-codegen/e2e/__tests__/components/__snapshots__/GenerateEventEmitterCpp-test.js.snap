@@ -149,21 +149,35 @@ Object {
 
 namespace facebook::react {
 
-void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange $event) const {
-  dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
-    auto $payload = jsi::Object(runtime);
+void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange event) const {
+  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
     {
   auto location = jsi::Object(runtime);
   {
     auto source = jsi::Object(runtime);
-    source.setProperty(runtime, \\"url\\", $event.location.source.url);
+    source.setProperty(runtime, \\"url\\", event.location.source.url);
     location.setProperty(runtime, \\"source\\", source);
   }
-  location.setProperty(runtime, \\"x\\", $event.location.x);
-  location.setProperty(runtime, \\"y\\", $event.location.y);
-  $payload.setProperty(runtime, \\"location\\", location);
+  location.setProperty(runtime, \\"x\\", event.location.x);
+  location.setProperty(runtime, \\"y\\", event.location.y);
+
+      auto arrayOfObjects = jsi::Array(runtime, event.location.arrayOfObjects.size());
+      size_t arrayOfObjectsIndex = 0;
+      for (auto arrayOfObjectsValue : event.location.arrayOfObjects) {
+        auto arrayOfObjectsObject = jsi::Object(runtime);
+        {
+    auto value = jsi::Object(runtime);
+    value.setProperty(runtime, \\"str\\", arrayOfObjectsValue.value.str);
+    arrayOfObjectsObject.setProperty(runtime, \\"value\\", value);
+  }
+        arrayOfObjects.setValueAtIndex(runtime, arrayOfObjectsIndex++, arrayOfObjectsObject);
+      }
+      location.setProperty(runtime, \\"arrayOfObjects\\", arrayOfObjects);
+    
+  payload.setProperty(runtime, \\"location\\", location);
 }
-    return $payload;
+    return payload;
   });
 }
 
@@ -189,59 +203,59 @@ Object {
 
 namespace facebook::react {
 
-void EventPropsNativeComponentViewEventEmitter::onChange(OnChange $event) const {
-  dispatchEvent(\\"paperDirectName\\", [$event=std::move($event)](jsi::Runtime &runtime) {
-    auto $payload = jsi::Object(runtime);
-    $payload.setProperty(runtime, \\"value\\", $event.value);
-$payload.setProperty(runtime, \\"source\\", $event.source);
-$payload.setProperty(runtime, \\"progress\\", $event.progress);
-$payload.setProperty(runtime, \\"scale\\", $event.scale);
-    return $payload;
+void EventPropsNativeComponentViewEventEmitter::onChange(OnChange event) const {
+  dispatchEvent(\\"paperDirectName\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"value\\", event.value);
+payload.setProperty(runtime, \\"source\\", event.source);
+payload.setProperty(runtime, \\"progress\\", event.progress);
+payload.setProperty(runtime, \\"scale\\", event.scale);
+    return payload;
   });
 }
 
 
-void EventPropsNativeComponentViewEventEmitter::onEventDirect(OnEventDirect $event) const {
-  dispatchEvent(\\"eventDirect\\", [$event=std::move($event)](jsi::Runtime &runtime) {
-    auto $payload = jsi::Object(runtime);
-    $payload.setProperty(runtime, \\"value\\", $event.value);
-    return $payload;
+void EventPropsNativeComponentViewEventEmitter::onEventDirect(OnEventDirect event) const {
+  dispatchEvent(\\"eventDirect\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"value\\", event.value);
+    return payload;
   });
 }
 
 
-void EventPropsNativeComponentViewEventEmitter::onEventDirectWithPaperName(OnEventDirectWithPaperName $event) const {
-  dispatchEvent(\\"paperDirectName\\", [$event=std::move($event)](jsi::Runtime &runtime) {
-    auto $payload = jsi::Object(runtime);
-    $payload.setProperty(runtime, \\"value\\", $event.value);
-    return $payload;
+void EventPropsNativeComponentViewEventEmitter::onEventDirectWithPaperName(OnEventDirectWithPaperName event) const {
+  dispatchEvent(\\"paperDirectName\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"value\\", event.value);
+    return payload;
   });
 }
 
 
-void EventPropsNativeComponentViewEventEmitter::onOrientationChange(OnOrientationChange $event) const {
-  dispatchEvent(\\"paperBubblingName\\", [$event=std::move($event)](jsi::Runtime &runtime) {
-    auto $payload = jsi::Object(runtime);
-    $payload.setProperty(runtime, \\"orientation\\", toString($event.orientation));
-    return $payload;
+void EventPropsNativeComponentViewEventEmitter::onOrientationChange(OnOrientationChange event) const {
+  dispatchEvent(\\"paperBubblingName\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"orientation\\", toString(event.orientation));
+    return payload;
   });
 }
 
 
-void EventPropsNativeComponentViewEventEmitter::onEnd(OnEnd $event) const {
+void EventPropsNativeComponentViewEventEmitter::onEnd(OnEnd event) const {
   dispatchEvent(\\"end\\", [](jsi::Runtime &runtime) {
-    auto $payload = jsi::Object(runtime);
+    auto payload = jsi::Object(runtime);
     
-    return $payload;
+    return payload;
   });
 }
 
 
-void EventPropsNativeComponentViewEventEmitter::onEventBubblingWithPaperName(OnEventBubblingWithPaperName $event) const {
+void EventPropsNativeComponentViewEventEmitter::onEventBubblingWithPaperName(OnEventBubblingWithPaperName event) const {
   dispatchEvent(\\"paperBubblingName\\", [](jsi::Runtime &runtime) {
-    auto $payload = jsi::Object(runtime);
+    auto payload = jsi::Object(runtime);
     
-    return $payload;
+    return payload;
   });
 }
 
@@ -333,11 +347,11 @@ Object {
 
 namespace facebook::react {
 
-void InterfaceOnlyNativeComponentViewEventEmitter::onChange(OnChange $event) const {
-  dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
-    auto $payload = jsi::Object(runtime);
-    $payload.setProperty(runtime, \\"value\\", $event.value);
-    return $payload;
+void InterfaceOnlyNativeComponentViewEventEmitter::onChange(OnChange event) const {
+  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"value\\", event.value);
+    return payload;
   });
 }
 

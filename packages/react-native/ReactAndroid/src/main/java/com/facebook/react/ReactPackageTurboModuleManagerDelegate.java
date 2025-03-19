@@ -14,7 +14,6 @@ import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.module.annotations.ReactModule;
@@ -37,7 +36,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       new HashMap<>();
 
   private final boolean mShouldEnableLegacyModuleInterop =
-      ReactFeatureFlags.enableBridgelessArchitecture
+      ReactNativeFeatureFlags.enableBridgelessArchitecture()
           && ReactNativeFeatureFlags.useTurboModuleInterop();
 
   // Lazy Props

@@ -4,17 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  * @oncall react_native
  */
 
-import Animated from '../Animated';
-import AnimatedObject, {hasAnimatedNode} from '../nodes/AnimatedObject';
+import nullthrows from 'nullthrows';
 
 describe('AnimatedObject', () => {
+  let Animated;
+  let AnimatedObject;
+
   beforeEach(() => {
     jest.resetModules();
+
+    Animated = require('../Animated').default;
+    AnimatedObject = require('../nodes/AnimatedObject').default;
   });
 
   it('should get the proper value', () => {
@@ -24,15 +28,17 @@ describe('AnimatedObject', () => {
       outputRange: [100, 200],
     });
 
-    const node = new AnimatedObject([
-      {
-        translate: [translateAnim, translateAnim],
-      },
-      {
-        translateX: translateAnim,
-      },
-      {scale: anim},
-    ]);
+    const node = nullthrows(
+      AnimatedObject.from([
+        {
+          translate: [translateAnim, translateAnim],
+        },
+        {
+          translateX: translateAnim,
+        },
+        {scale: anim},
+      ]),
+    );
 
     expect(node.__getValue()).toEqual([
       {translate: [100, 100]},
@@ -48,15 +54,17 @@ describe('AnimatedObject', () => {
       outputRange: [100, 200],
     });
 
-    const node = new AnimatedObject([
-      {
-        translate: [translateAnim, translateAnim],
-      },
-      {
-        translateX: translateAnim,
-      },
-      {scale: anim},
-    ]);
+    const node = nullthrows(
+      AnimatedObject.from([
+        {
+          translate: [translateAnim, translateAnim],
+        },
+        {
+          translateX: translateAnim,
+        },
+        {scale: anim},
+      ]),
+    );
 
     node.__makeNative();
 
@@ -65,26 +73,24 @@ describe('AnimatedObject', () => {
     expect(translateAnim.__isNative).toBe(true);
   });
 
-  describe('hasAnimatedNode', () => {
-    it('should detect any animated nodes', () => {
-      expect(hasAnimatedNode(10)).toBe(false);
+  it('detects animated nodes', () => {
+    expect(AnimatedObject.from(10)).toBe(null);
 
-      const anim = new Animated.Value(0);
-      expect(hasAnimatedNode(anim)).toBe(true);
+    const anim = new Animated.Value(0);
+    expect(AnimatedObject.from(anim)).not.toBe(null);
 
-      const event = Animated.event([{}], {useNativeDriver: true});
-      expect(hasAnimatedNode(event)).toBe(false);
+    const event = Animated.event([{}], {useNativeDriver: true});
+    expect(AnimatedObject.from(event)).toBe(null);
 
-      expect(hasAnimatedNode([10, 10])).toBe(false);
-      expect(hasAnimatedNode([10, anim])).toBe(true);
+    expect(AnimatedObject.from([10, 10])).toBe(null);
+    expect(AnimatedObject.from([10, anim])).not.toBe(null);
 
-      expect(hasAnimatedNode({a: 10, b: 10})).toBe(false);
-      expect(hasAnimatedNode({a: 10, b: anim})).toBe(true);
+    expect(AnimatedObject.from({a: 10, b: 10})).toBe(null);
+    expect(AnimatedObject.from({a: 10, b: anim})).not.toBe(null);
 
-      expect(hasAnimatedNode({a: 10, b: {ba: 10, bb: 10}})).toBe(false);
-      expect(hasAnimatedNode({a: 10, b: {ba: 10, bb: anim}})).toBe(true);
-      expect(hasAnimatedNode({a: 10, b: [10, 10]})).toBe(false);
-      expect(hasAnimatedNode({a: 10, b: [10, anim]})).toBe(true);
-    });
+    expect(AnimatedObject.from({a: 10, b: {ba: 10, bb: 10}})).toBe(null);
+    expect(AnimatedObject.from({a: 10, b: {ba: 10, bb: anim}})).not.toBe(null);
+    expect(AnimatedObject.from({a: 10, b: [10, 10]})).toBe(null);
+    expect(AnimatedObject.from({a: 10, b: [10, anim]})).not.toBe(null);
   });
 });

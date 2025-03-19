@@ -11,6 +11,7 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
+import type {ImageResizeMode} from './../Image/ImageResizeMode';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -58,7 +59,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
    *  'flex' is the default.
    */
-  display?: 'none' | 'flex',
+  display?: 'none' | 'flex' | 'contents',
 
   /** `width` sets the width of this component.
    *
@@ -612,6 +613,19 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   aspectRatio?: number | string,
 
+  /**
+   * Box sizing controls whether certain size properties apply to the node's
+   * content box or border box. The size properties in question include `width`,
+   * `height`, `minWidth`, `minHeight`, `maxWidth`, `maxHeight`, and `flexBasis`.
+   *
+   * e.g: Say a node has 10px of padding and 10px of borders on all
+   * sides and a defined `width` and `height` of 100px and 50px. Then the total
+   * size of the node (content area + padding + border) would be 100px by 50px
+   * under `boxSizing: border-box` and 120px by 70px under
+   * `boxSizing: content-box`.
+   */
+  boxSizing?: 'border-box' | 'content-box',
+
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to
    *  their order in the document tree, so later components draw over
@@ -700,9 +714,9 @@ export type FilterFunction =
   | {opacity: number | string}
   | {saturate: number | string}
   | {sepia: number | string}
-  | {dropShadow: DropShadowPrimitive | string};
+  | {dropShadow: DropShadowValue | string};
 
-export type DropShadowPrimitive = {
+export type DropShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   standardDeviation?: number | string,
@@ -715,11 +729,11 @@ export type GradientValue = {
   direction?: string,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
-    position?: string,
+    positions?: $ReadOnlyArray<string>,
   }>,
 };
 
-export type BoxShadowPrimitive = {
+export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
   color?: ____ColorValue_Internal,
@@ -746,10 +760,7 @@ type ____BlendMode_Internal =
   | 'color'
   | 'luminosity';
 
-export type ____ViewStyle_InternalCore = $ReadOnly<{
-  ...$Exact<____LayoutStyle_Internal>,
-  ...$Exact<____ShadowStyle_Internal>,
-  ...$Exact<____TransformStyle_Internal>,
+export type ____ViewStyle_InternalBase = $ReadOnly<{
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -785,14 +796,25 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderStartWidth?: AnimatableNumericValue,
   borderTopWidth?: AnimatableNumericValue,
   opacity?: AnimatableNumericValue,
+  outlineColor?: ____ColorValue_Internal,
+  outlineOffset?: AnimatableNumericValue,
+  outlineStyle?: 'solid' | 'dotted' | 'dashed',
+  outlineWidth?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
-  experimental_boxShadow?: $ReadOnlyArray<BoxShadowPrimitive> | string,
-  experimental_filter?: $ReadOnlyArray<FilterFunction> | string,
-  experimental_mixBlendMode?: ____BlendMode_Internal,
+  boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
+  filter?: $ReadOnlyArray<FilterFunction> | string,
+  mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: 'auto' | 'isolate',
+}>;
+
+export type ____ViewStyle_InternalCore = $ReadOnly<{
+  ...$Exact<____LayoutStyle_Internal>,
+  ...$Exact<____ShadowStyle_Internal>,
+  ...$Exact<____TransformStyle_Internal>,
+  ...____ViewStyle_InternalBase,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{
@@ -885,8 +907,7 @@ export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | 'stylistic-twenty',
 >;
 
-export type ____TextStyle_InternalCore = $ReadOnly<{
-  ...$Exact<____ViewStyle_Internal>,
+type ____TextStyle_InternalBase = $ReadOnly<{
   color?: ____ColorValue_Internal,
   fontFamily?: string,
   fontSize?: number,
@@ -917,6 +938,11 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 }>;
 
+export type ____TextStyle_InternalCore = $ReadOnly<{
+  ...$Exact<____ViewStyle_Internal>,
+  ...____TextStyle_InternalBase,
+}>;
+
 export type ____TextStyle_Internal = $ReadOnly<{
   ...____TextStyle_InternalCore,
   ...____TextStyle_InternalOverrides,
@@ -924,8 +950,8 @@ export type ____TextStyle_Internal = $ReadOnly<{
 
 export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
-  resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
+  resizeMode?: ImageResizeMode,
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -937,8 +963,8 @@ export type ____ImageStyle_Internal = $ReadOnly<{
 
 export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
-  resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
+  resizeMode?: ImageResizeMode,
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -949,24 +975,24 @@ export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
   ...
 }>;
 
-type GenericStyleProp<+T> =
+export type StyleProp<+T> =
   | null
   | void
   | T
   | false
   | ''
-  | $ReadOnlyArray<GenericStyleProp<T>>;
+  | $ReadOnlyArray<StyleProp<T>>;
 
-export type ____DangerouslyImpreciseStyleProp_Internal = GenericStyleProp<
+export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
-export type ____ViewStyleProp_Internal = GenericStyleProp<
+export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
-export type ____TextStyleProp_Internal = GenericStyleProp<
+export type ____TextStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____TextStyle_Internal>>,
 >;
-export type ____ImageStyleProp_Internal = GenericStyleProp<
+export type ____ImageStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ImageStyle_Internal>>,
 >;
 
@@ -977,10 +1003,26 @@ export type ____Styles_Internal = {
   ...
 };
 
-export type ____FlattenStyleProp_Internal<
-  +TStyleProp: GenericStyleProp<mixed>,
-> = TStyleProp extends null | void | false | ''
+// A depth limiter, to avoid TS2589 in TypeScript. This and
+// ____FlattenStyleProp_Helper should be considered internal.
+type FlattenDepthLimiter = [void, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+type ____FlattenStyleProp_Helper<
+  +TStyleProp: StyleProp<mixed>,
+  Depth: $Values<FlattenDepthLimiter> = 9,
+> = Depth extends 0
   ? empty
-  : TStyleProp extends $ReadOnlyArray<infer V>
-    ? ____FlattenStyleProp_Internal<V>
-    : TStyleProp;
+  : TStyleProp extends null | void | false | ''
+    ? empty
+    : // When TStyleProp is an array, recurse with decremented Depth
+      TStyleProp extends $ReadOnlyArray<infer V>
+      ? ____FlattenStyleProp_Helper<
+          V,
+          Depth extends number ? FlattenDepthLimiter[Depth] : 0,
+        >
+      : TStyleProp;
+
+export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
+  ____FlattenStyleProp_Helper<TStyleProp> extends empty
+    ? // $FlowFixMe[unclear-type]
+      any
+    : ____FlattenStyleProp_Helper<TStyleProp>;

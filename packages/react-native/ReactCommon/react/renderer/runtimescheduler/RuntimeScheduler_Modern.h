@@ -42,7 +42,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * Alias for scheduleTask with immediate priority.
    *
    * To be removed when we finish testing this implementation.
-   * All callers should use scheduleTask with the right priority afte that.
+   * All callers should use scheduleTask with the right priority after that.
    */
   void scheduleWork(RawCallback&& callback) noexcept override;
 
@@ -139,6 +139,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * immediately.
    */
   void scheduleRenderingUpdate(
+      SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
   void setShadowTreeRevisionConsistencyManager(
@@ -147,6 +148,9 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   void setPerformanceEntryReporter(
       PerformanceEntryReporter* performanceEntryReporter) override;
+
+  void setEventTimingDelegate(
+      RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
 
  private:
   std::atomic<uint_fast8_t> syncTaskRequests_{0};
@@ -219,10 +223,13 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   bool isEventLoopScheduled_{false};
 
   std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
+  std::unordered_set<SurfaceId> surfaceIdsWithPendingRenderingUpdates_;
+
   ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
       nullptr};
 
   PerformanceEntryReporter* performanceEntryReporter_{nullptr};
+  RuntimeSchedulerEventTimingDelegate* eventTimingDelegate_{nullptr};
 
   RuntimeSchedulerTaskErrorHandler onTaskError_;
 };

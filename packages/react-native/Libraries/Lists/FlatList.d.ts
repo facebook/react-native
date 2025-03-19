@@ -222,7 +222,7 @@ export abstract class FlatListComponent<
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder: () => JSX.Element | null | undefined;
+  getScrollResponder: () => React.JSX.Element | null | undefined;
 
   /**
    * Provides a reference to the underlying host component
@@ -235,8 +235,7 @@ export abstract class FlatListComponent<
 
   getScrollableNode: () => any;
 
-  // TODO: use `unknown` instead of `any` for Typescript >= 3.0
-  setNativeProps: (props: {[key: string]: any}) => void;
+  setNativeProps: (props: {[key: string]: unknown}) => void;
 }
 
 export class FlatList<ItemT = any> extends FlatListComponent<

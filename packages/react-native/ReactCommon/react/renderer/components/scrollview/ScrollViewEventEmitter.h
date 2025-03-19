@@ -21,11 +21,11 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
   using ViewEventEmitter::ViewEventEmitter;
 
   using Metrics = ScrollEvent;
+  using EndDragMetrics = ScrollEndDragEvent;
 
   void onScroll(const ScrollEvent& scrollEvent) const;
-  void experimental_onDiscreteScroll(const ScrollEvent& scrollEvent) const;
   void onScrollBeginDrag(const ScrollEvent& scrollEvent) const;
-  void onScrollEndDrag(const ScrollEvent& scrollEvent) const;
+  void onScrollEndDrag(const ScrollEndDragEvent& scrollEvent) const;
   void onMomentumScrollBegin(const ScrollEvent& scrollEvent) const;
   void onMomentumScrollEnd(const ScrollEvent& scrollEvent) const;
   void onScrollToTop(const ScrollEvent& scrollEvent) const;

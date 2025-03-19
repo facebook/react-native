@@ -59,7 +59,7 @@ function TappableLinks(props: {
 
   // URLs were detected. Construct array of Text nodes.
 
-  let fragments: Array<React.Node> = [];
+  const fragments: Array<React.Node> = [];
   let indexCounter = 0;
   let startIndex = 0;
 
@@ -115,7 +115,7 @@ function LogBoxMessage(props: Props): React.Node {
   const elements = [];
   let length = 0;
   const createUnderLength = (
-    key: string | $TEMPORARY$string<'-1'>,
+    key: string,
     message: string,
     style: void | TextStyleProp,
   ) => {

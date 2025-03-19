@@ -37,14 +37,18 @@ BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 static BOOL _newArchEnabled = false;
 BOOL RCTIsNewArchEnabled(void)
 {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSNumber *rctNewArchEnabled = (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTNewArchEnabled"];
+    _newArchEnabled = rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  });
   return _newArchEnabled;
 }
 void RCTSetNewArchEnabled(BOOL enabled)
 {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    _newArchEnabled = enabled;
-  });
+  // This function is now deprecated and will be removed in the future.
+  // This function is now no-op. You need to modify the Info.plist adding a `RCTNewArchEnabled` bool property to control
+  // whether the New Arch is enabled or not.
 }
 
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
@@ -239,7 +243,10 @@ NSString *RCTMD5Hash(NSString *string)
 {
   const char *str = string.UTF8String;
   unsigned char result[CC_MD5_DIGEST_LENGTH];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   CC_MD5(str, (CC_LONG)strlen(str), result);
+#pragma clang diagnostic pop
 
   return [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
                                     result[0],
@@ -296,8 +303,8 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
 
 static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
 {
-  // The solution was borrowed from a post by Ben Alpert:
-  // https://benalpert.com/2014/04/02/dispatch-once-initialization-on-the-main-thread.html
+  // The solution was borrowed from a post by Sophie Alpert:
+  // https://sophiebits.com/2014/04/02/dispatch-once-initialization-on-the-main-thread
   // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
   if (RCTIsMainQueue()) {
     dispatch_once(onceToken, block);
@@ -584,16 +591,12 @@ UIWindow *__nullable RCTKeyWindow(void)
   }
 
   UIScene *sceneToUse = foregroundActiveScene ? foregroundActiveScene : foregroundInactiveScene;
-  UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
 
-  if (@available(iOS 15.0, *)) {
+  if ([sceneToUse respondsToSelector:@selector(keyWindow)]) {
+    // We have apps internally that might use UIScenes which are not window scenes.
+    // Calling keyWindow on a UIScene which is not a UIWindowScene can cause a crash
+    UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
     return windowScene.keyWindow;
-  }
-
-  for (UIWindow *window in windowScene.windows) {
-    if (window.isKeyWindow) {
-      return window;
-    }
   }
 
   return nil;
@@ -1098,7 +1101,7 @@ RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
     const NSString *argPos)
 {
   if (![obj isKindOfClass:expectedClass]) {
-    NSString *kindOfClass = RCTHumanReadableType(obj);
+    __unused NSString *kindOfClass = RCTHumanReadableType(obj);
 
     RCTLogError(
         @"%@ command %@ received %@ argument of type %@, expected %@.",

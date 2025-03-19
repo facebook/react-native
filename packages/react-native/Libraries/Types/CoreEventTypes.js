@@ -8,18 +8,16 @@
  * @format
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../src/private/types/HostInstance';
 
-import * as React from 'react';
-
-export type SyntheticEvent<+T> = $ReadOnly<{|
+export type NativeSyntheticEvent<+T> = $ReadOnly<{
   bubbles: ?boolean,
   cancelable: ?boolean,
-  currentTarget: number | React.ElementRef<HostComponent<mixed>>,
+  currentTarget: number | HostInstance,
   defaultPrevented: ?boolean,
-  dispatchConfig: $ReadOnly<{|
+  dispatchConfig: $ReadOnly<{
     registrationName: string,
-  |}>,
+  }>,
   eventPhase: ?number,
   preventDefault: () => void,
   isDefaultPrevented: () => boolean,
@@ -28,19 +26,19 @@ export type SyntheticEvent<+T> = $ReadOnly<{|
   isTrusted: ?boolean,
   nativeEvent: T,
   persist: () => void,
-  target: ?number | React.ElementRef<HostComponent<mixed>>,
+  target: ?number | HostInstance,
   timeStamp: number,
   type: ?string,
-|}>;
+}>;
 
-export type ResponderSyntheticEvent<T> = $ReadOnly<{|
-  ...SyntheticEvent<T>,
-  touchHistory: $ReadOnly<{|
+export type ResponderSyntheticEvent<T> = $ReadOnly<{
+  ...NativeSyntheticEvent<T>,
+  touchHistory: $ReadOnly<{
     indexOfSingleActiveTouch: number,
     mostRecentTimeStamp: number,
     numberActiveTouches: number,
     touchBank: $ReadOnlyArray<
-      $ReadOnly<{|
+      $ReadOnly<{
         touchActive: boolean,
         startPageX: number,
         startPageY: number,
@@ -51,38 +49,38 @@ export type ResponderSyntheticEvent<T> = $ReadOnly<{|
         previousPageX: number,
         previousPageY: number,
         previousTimeStamp: number,
-      |}>,
+      }>,
     >,
-  |}>,
-|}>;
+  }>,
+}>;
 
-export type Layout = $ReadOnly<{|
+export type LayoutRectangle = $ReadOnly<{
   x: number,
   y: number,
   width: number,
   height: number,
-|}>;
+}>;
 
-export type TextLayout = $ReadOnly<{|
-  ...Layout,
+export type TextLayoutLine = $ReadOnly<{
+  ...LayoutRectangle,
   ascender: number,
   capHeight: number,
   descender: number,
   text: string,
   xHeight: number,
-|}>;
+}>;
 
-export type LayoutEvent = SyntheticEvent<
-  $ReadOnly<{|
-    layout: Layout,
-  |}>,
+export type LayoutChangeEvent = NativeSyntheticEvent<
+  $ReadOnly<{
+    layout: LayoutRectangle,
+  }>,
 >;
 
-export type TextLayoutEvent = SyntheticEvent<
-  $ReadOnly<{|
-    lines: Array<TextLayout>,
-  |}>,
->;
+export type TextLayoutEventData = $ReadOnly<{
+  lines: Array<TextLayoutLine>,
+}>;
+
+export type TextLayoutEvent = NativeSyntheticEvent<TextLayoutEventData>;
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/UIEvent
@@ -157,7 +155,7 @@ export interface NativeMouseEvent extends NativeUIEvent {
   /**
    * The secondary target for the event, if there is one.
    */
-  +relatedTarget: null | number | React.ElementRef<HostComponent<mixed>>;
+  +relatedTarget: null | number | HostInstance;
   // offset is proposed: https://drafts.csswg.org/cssom-view/#extensions-to-the-mouseevent-interface
   /**
    * The X coordinate of the mouse pointer between that event and the padding edge of the target node
@@ -220,74 +218,107 @@ export interface NativePointerEvent extends NativeMouseEvent {
   +isPrimary: boolean;
 }
 
-export type PointerEvent = SyntheticEvent<NativePointerEvent>;
+export type PointerEvent = NativeSyntheticEvent<NativePointerEvent>;
 
-export type PressEvent = ResponderSyntheticEvent<
-  $ReadOnly<{|
-    changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
-    force?: number,
-    identifier: number,
-    locationX: number,
-    locationY: number,
-    pageX: number,
-    pageY: number,
-    target: ?number,
-    timestamp: number,
-    touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
-  |}>,
->;
+export type NativeTouchEvent = $ReadOnly<{
+  /**
+   * Array of all touch events that have changed since the last event
+   */
+  changedTouches: $ReadOnlyArray<NativeTouchEvent>,
+  /**
+   * 3D Touch reported force
+   * @platform ios
+   */
+  force?: number,
+  /**
+   * The ID of the touch
+   */
+  identifier: number,
+  /**
+   * The X position of the touch, relative to the element
+   */
+  locationX: number,
+  /**
+   * The Y position of the touch, relative to the element
+   */
+  locationY: number,
+  /**
+   * The X position of the touch, relative to the screen
+   */
+  pageX: number,
+  /**
+   * The Y position of the touch, relative to the screen
+   */
+  pageY: number,
+  /**
+   * The node id of the element receiving the touch event
+   */
+  target: ?number,
+  /**
+   * A time identifier for the touch, useful for velocity calculation
+   */
+  timestamp: number,
+  /**
+   * Array of all current touches on the screen
+   */
+  touches: $ReadOnlyArray<NativeTouchEvent>,
+}>;
 
-export type ScrollEvent = SyntheticEvent<
-  $ReadOnly<{|
-    contentInset: $ReadOnly<{|
-      bottom: number,
-      left: number,
-      right: number,
-      top: number,
-    |}>,
-    contentOffset: $ReadOnly<{|
-      y: number,
-      x: number,
-    |}>,
-    contentSize: $ReadOnly<{|
-      height: number,
-      width: number,
-    |}>,
-    layoutMeasurement: $ReadOnly<{|
-      height: number,
-      width: number,
-    |}>,
-    targetContentOffset?: $ReadOnly<{|
-      y: number,
-      x: number,
-    |}>,
-    velocity?: $ReadOnly<{|
-      y: number,
-      x: number,
-    |}>,
-    zoomScale?: number,
-    responderIgnoreScroll?: boolean,
-  |}>,
->;
+export type GestureResponderEvent = ResponderSyntheticEvent<NativeTouchEvent>;
 
-export type BlurEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-  |}>,
->;
+export type NativeScrollRectangle = $ReadOnly<{
+  bottom: number,
+  left: number,
+  right: number,
+  top: number,
+}>;
 
-export type FocusEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-  |}>,
->;
+export type NativeScrollPoint = $ReadOnly<{
+  y: number,
+  x: number,
+}>;
 
-export type MouseEvent = SyntheticEvent<
-  $ReadOnly<{|
+export type NativeScrollVelocity = $ReadOnly<{
+  y: number,
+  x: number,
+}>;
+
+export type NativeScrollSize = $ReadOnly<{
+  height: number,
+  width: number,
+}>;
+
+export type NativeScrollEvent = $ReadOnly<{
+  contentInset: NativeScrollRectangle,
+  contentOffset: NativeScrollPoint,
+  contentSize: NativeScrollSize,
+  layoutMeasurement: NativeScrollSize,
+  velocity?: NativeScrollVelocity,
+  zoomScale?: number,
+  responderIgnoreScroll?: boolean,
+  /**
+   * @platform ios
+   */
+  targetContentOffset?: NativeScrollPoint,
+}>;
+
+export type ScrollEvent = NativeSyntheticEvent<NativeScrollEvent>;
+
+export type TargetedEvent = $ReadOnly<{
+  target: number,
+  ...
+}>;
+
+export type BlurEvent = NativeSyntheticEvent<TargetedEvent>;
+
+export type FocusEvent = NativeSyntheticEvent<TargetedEvent>;
+
+export type MouseEvent = NativeSyntheticEvent<
+  $ReadOnly<{
     clientX: number,
     clientY: number,
     pageX: number,
     pageY: number,
     timestamp: number,
-  |}>,
+  }>,
 >;

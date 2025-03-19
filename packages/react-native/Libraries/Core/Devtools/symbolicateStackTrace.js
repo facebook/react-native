@@ -12,7 +12,7 @@
 
 import type {StackFrame} from '../NativeExceptionsManager';
 
-const getDevServer = require('./getDevServer');
+const getDevServer = require('./getDevServer').default;
 
 export type CodeFrame = $ReadOnly<{
   content: string,
@@ -29,7 +29,7 @@ export type SymbolicatedStackTrace = $ReadOnly<{
   codeFrame: ?CodeFrame,
 }>;
 
-async function symbolicateStackTrace(
+export default async function symbolicateStackTrace(
   stack: Array<StackFrame>,
   extraData?: mixed,
 ): Promise<SymbolicatedStackTrace> {
@@ -39,12 +39,13 @@ async function symbolicateStackTrace(
   }
 
   // Lazy-load `fetch` until the first symbolication call to avoid circular requires.
-  const fetch = global.fetch ?? require('../../Network/fetch');
+  const fetch = global.fetch ?? require('../../Network/fetch').fetch;
   const response = await fetch(devServer.url + 'symbolicate', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({stack, extraData}),
   });
   return await response.json();
 }
-
-module.exports = symbolicateStackTrace;

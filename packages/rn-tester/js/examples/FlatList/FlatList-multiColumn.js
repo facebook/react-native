@@ -12,9 +12,9 @@
 
 import type {Item} from '../../components/ListExampleShared';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
 
-const {
+import {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
@@ -24,134 +24,64 @@ const {
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
-} = require('../../components/ListExampleShared');
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-const {Alert, FlatList, StyleSheet, Text, View} = require('react-native');
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
+} from '../../components/ListExampleShared';
+import RNTesterPage from '../../components/RNTesterPage';
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {Alert, FlatList, StyleSheet, View} from 'react-native';
+import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
-class MultiColumnExample extends React.PureComponent<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  state:
-    | any
-    | {|
-        data: Array<Item>,
-        filterText: string,
-        fixedHeight: boolean,
-        logViewable: boolean,
-        numColumns: number,
-        virtualized: boolean,
-      |} = {
-    data: genNewerItems(1000),
-    filterText: '',
-    fixedHeight: true,
-    logViewable: false,
-    numColumns: 2,
-    virtualized: true,
+function MultiColumnExample(): React.Node {
+  const [data, setData] = React.useState(genNewerItems(1000));
+  const [filterText, setFilterText] = React.useState('');
+  const [fixedHeight, setFixedHeight] = React.useState(true);
+  const [logViewable, setLogViewable] = React.useState(false);
+  const [numColumns, setNumColumns] = React.useState(2);
+  const [virtualized, setVirtualized] = React.useState(true);
+
+  const _onChangeFilterText = (_filterText: string) => {
+    setFilterText(_filterText);
   };
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  _onChangeFilterText = filterText => {
-    this.setState(() => ({filterText}));
-  };
-  _onChangeNumColumns = (numColumns: mixed) => {
-    this.setState(() => ({numColumns: Number(numColumns)}));
+  const _onChangeNumColumns = (_numColumns: mixed) => {
+    setNumColumns(Number(_numColumns));
   };
 
-  _setBooleanValue: string => boolean => void = key => value =>
-    this.setState({[key]: value});
+  const _setBooleanValue = (key: string) => (value: boolean) => {
+    switch (key) {
+      case 'virtualized':
+        setVirtualized(value);
+        break;
+      case 'fixedHeight':
+        setFixedHeight(value);
+        break;
+      case 'logViewable':
+        setLogViewable(value);
+        break;
+    }
+  };
 
-  render(): React.Node {
-    const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = (item: any | Item) =>
-      filterRegex.test(item.text) || filterRegex.test(item.title);
-    const filteredData = this.state.data.filter(filter);
-    return (
-      <RNTesterPage
-        title={this.props.navigator ? null : '<FlatList> - MultiColumn'}
-        noScroll={true}>
-        <View style={styles.searchRow}>
-          <View style={styles.row}>
-            <PlainInput
-              onChangeText={this._onChangeFilterText}
-              placeholder="Search..."
-              value={this.state.filterText}
-            />
-            <Text> numColumns: </Text>
-            <PlainInput
-              clearButtonMode="never"
-              onChangeText={this._onChangeNumColumns}
-              value={this.state.numColumns ? String(this.state.numColumns) : ''}
-            />
-          </View>
-          <View style={styles.row}>
-            {renderSmallSwitchOption(
-              'Virtualized',
-              this.state.virtualized,
-              this._setBooleanValue('virtualized'),
-            )}
-            {renderSmallSwitchOption(
-              'Fixed Height',
-              this.state.fixedHeight,
-              this._setBooleanValue('fixedHeight'),
-            )}
-            {renderSmallSwitchOption(
-              'Log Viewable',
-              this.state.logViewable,
-              this._setBooleanValue('logViewable'),
-            )}
-          </View>
-        </View>
-        <SeparatorComponent />
-        <FlatList
-          ListFooterComponent={FooterComponent}
-          ListHeaderComponent={HeaderComponent}
-          getItemLayout={
-            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-            this.state.fixedHeight ? this._getItemLayout : undefined
-          }
-          data={filteredData}
-          key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}
-          numColumns={this.state.numColumns || 1}
-          onRefresh={() =>
-            Alert.alert('Alert', 'onRefresh: nothing to refresh :P')
-          }
-          refreshing={false}
-          renderItem={this._renderItemComponent}
-          disableVirtualization={!this.state.virtualized}
-          onViewableItemsChanged={this._onViewableItemsChanged}
-        />
-      </RNTesterPage>
-    );
-  }
-  _getItemLayout(
-    data: any,
-    index: number,
-  ): {
-    length: number,
-    offset: number,
-    index: number,
-    ...
-  } {
+  const _getItemLayout = (_data: any, index: number) => {
     const length =
-      getItemLayout(data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
+      getItemLayout(_data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
     return {length, offset: length * index, index};
-  }
-  _renderItemComponent = ({item}: RenderItemProps<any | Item>): $FlowFixMe => {
+  };
+
+  const _renderItemComponent = ({
+    item,
+  }: ListRenderItemInfo<any | Item>): $FlowFixMe => {
     return (
       <View style={styles.card}>
         <ItemComponent
           item={item}
-          fixedHeight={this.state.fixedHeight}
-          onPress={this._pressItem}
+          fixedHeight={fixedHeight}
+          onPress={_pressItem}
         />
       </View>
     );
   };
+
   // This is called when items change viewability by scrolling into or out of the viewable area.
-  _onViewableItemsChanged = (info: {
+  const _onViewableItemsChanged = (info: {
     changed: Array<{
       key: string,
       isViewable: boolean,
@@ -163,7 +93,7 @@ class MultiColumnExample extends React.PureComponent<
     ...
   }) => {
     // Impressions can be logged here
-    if (this.state.logViewable) {
+    if (logViewable) {
       infoLog(
         'onViewableItemsChanged: ',
         info.changed.map(v => ({...v, item: '...'})),
@@ -171,18 +101,74 @@ class MultiColumnExample extends React.PureComponent<
     }
   };
 
-  _pressItem = (key: string) => {
+  const _pressItem = (key: string) => {
     const index = Number(key);
-    const itemState = pressItem(this.state.data[index]);
-    this.setState(state => ({
-      ...state,
-      data: [
-        ...state.data.slice(0, index),
-        itemState,
-        ...state.data.slice(index + 1),
-      ],
-    }));
+    const itemState = pressItem(data[index]);
+    setData(state => [
+      ...state.slice(0, index),
+      itemState,
+      ...state.slice(index + 1),
+    ]);
   };
+
+  const filterRegex = new RegExp(String(filterText), 'i');
+  const filter = (item: any | Item) =>
+    filterRegex.test(item.text) || filterRegex.test(item.title);
+  const filteredData = data.filter(filter);
+
+  return (
+    <RNTesterPage title={'<FlatList> - MultiColumn'} noScroll={true}>
+      <View style={styles.searchRow}>
+        <View style={styles.row}>
+          <PlainInput
+            onChangeText={_onChangeFilterText}
+            placeholder="Search..."
+            value={filterText}
+            placeholderTextColor="#000"
+          />
+          <RNTesterText> numColumns: </RNTesterText>
+          <PlainInput
+            clearButtonMode="never"
+            onChangeText={_onChangeNumColumns}
+            value={numColumns ? String(numColumns) : ''}
+          />
+        </View>
+        <View style={styles.row}>
+          {renderSmallSwitchOption(
+            'Virtualized',
+            virtualized,
+            _setBooleanValue('virtualized'),
+          )}
+          {renderSmallSwitchOption(
+            'Fixed Height',
+            fixedHeight,
+            _setBooleanValue('fixedHeight'),
+          )}
+          {renderSmallSwitchOption(
+            'Log Viewable',
+            logViewable,
+            _setBooleanValue('logViewable'),
+          )}
+        </View>
+      </View>
+      <SeparatorComponent />
+      <FlatList
+        ListFooterComponent={FooterComponent}
+        ListHeaderComponent={HeaderComponent}
+        getItemLayout={fixedHeight ? _getItemLayout : undefined}
+        data={filteredData}
+        key={numColumns + (fixedHeight ? 'f' : 'v')}
+        numColumns={numColumns || 1}
+        onRefresh={() =>
+          Alert.alert('Alert', 'onRefresh: nothing to refresh :P')
+        }
+        refreshing={false}
+        renderItem={_renderItemComponent}
+        disableVirtualization={virtualized}
+        onViewableItemsChanged={_onViewableItemsChanged}
+      />
+    </RNTesterPage>
+  );
 }
 
 const CARD_MARGIN = 4;

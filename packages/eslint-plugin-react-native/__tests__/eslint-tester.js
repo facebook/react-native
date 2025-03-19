@@ -12,7 +12,7 @@
 const ESLintTester = require('eslint').RuleTester;
 
 ESLintTester.setDefaultConfig({
-  parser: require.resolve('@babel/eslint-parser'),
+  parser: require.resolve('hermes-eslint'),
   parserOptions: {
     requireConfigFile: false,
     ecmaVersion: 6,

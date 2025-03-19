@@ -21,11 +21,6 @@ export type PerformanceEntryJSON = {
   ...
 };
 
-export const ALWAYS_LOGGED_ENTRY_TYPES: $ReadOnlyArray<PerformanceEntryType> = [
-  'mark',
-  'measure',
-];
-
 export class PerformanceEntry {
   #name: string;
   #entryType: PerformanceEntryType;
@@ -69,3 +64,5 @@ export class PerformanceEntry {
     };
   }
 }
+
+export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;

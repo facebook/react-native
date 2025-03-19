@@ -11,18 +11,20 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <utility>
 
 namespace facebook::react {
+
+extern const char RuntimeSchedulerKey[] = "RuntimeScheduler";
 
 namespace {
 std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,
     std::function<RuntimeSchedulerTimePoint()> now,
     RuntimeSchedulerTaskErrorHandler onTaskError) {
-  if (ReactNativeFeatureFlags::useModernRuntimeScheduler()) {
+  if (ReactNativeFeatureFlags::enableBridgelessArchitecture()) {
     return std::make_unique<RuntimeScheduler_Modern>(
         std::move(runtimeExecutor), std::move(now), std::move(onTaskError));
   } else {
@@ -101,9 +103,10 @@ void RuntimeScheduler::callExpiredTasks(jsi::Runtime& runtime) {
 }
 
 void RuntimeScheduler::scheduleRenderingUpdate(
+    SurfaceId surfaceId,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
   return runtimeSchedulerImpl_->scheduleRenderingUpdate(
-      std::move(renderingUpdate));
+      surfaceId, std::move(renderingUpdate));
 }
 
 void RuntimeScheduler::setShadowTreeRevisionConsistencyManager(
@@ -117,6 +120,11 @@ void RuntimeScheduler::setPerformanceEntryReporter(
     PerformanceEntryReporter* performanceEntryReporter) {
   return runtimeSchedulerImpl_->setPerformanceEntryReporter(
       performanceEntryReporter);
+}
+
+void RuntimeScheduler::setEventTimingDelegate(
+    RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) {
+  return runtimeSchedulerImpl_->setEventTimingDelegate(eventTimingDelegate);
 }
 
 } // namespace facebook::react

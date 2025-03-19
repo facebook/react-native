@@ -16,18 +16,11 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-boost_compiler_flags = '-Wno-documentation'
-
 Pod::Spec.new do |s|
   source_files = "**/*.{m,mm,cpp,h}"
   header_search_paths = [
-    "\"$(PODS_ROOT)/boost\"",
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
-    "\"$(PODS_ROOT)/RCT-Folly\"",
-    "\"$(PODS_ROOT)/DoubleConversion\"",
-    "\"$(PODS_ROOT)/fmt/include\"",
   ].join(" ")
 
   s.name                   = "React-ImageManager"
@@ -38,7 +31,6 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.source_files           = source_files
   s.header_dir             = "react/renderer/imagemanager"
 
@@ -54,9 +46,7 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES",
   }
 
-  s.dependency "RCT-Folly/Fabric"
   s.dependency "React-Core/Default"
-  s.dependency "glog"
 
   add_dependency(s, "React-Fabric")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
@@ -64,4 +54,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-utils")
   add_dependency(s, "React-rendererdebug")
 
+  add_rn_third_party_dependencies(s)
 end

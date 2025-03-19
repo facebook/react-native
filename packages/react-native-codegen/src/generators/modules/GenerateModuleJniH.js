@@ -91,7 +91,7 @@ target_link_libraries(
   ${
     libraryName !== 'rncore'
       ? 'reactnative'
-      : 'folly_runtime glog react_debug react_nativemodule_core react_render_componentregistry react_render_core react_render_debug react_render_graphics react_render_imagemanager react_render_mapbuffer react_utils rrc_image rrc_view turbomodulejsijni yoga'
+      : 'folly_runtime glog react_debug react_nativemodule_core react_renderer_componentregistry react_renderer_core react_renderer_debug react_renderer_graphics react_renderer_imagemanager react_renderer_mapbuffer react_utils rrc_image rrc_view turbomodulejsijni yoga'
   }
 )
 

@@ -8,19 +8,19 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {WithDefault} from 'react-native/Libraries/Types/CodegenTypes';
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
   alignment?: WithDefault<'top' | 'center' | 'bottom-right', 'center'>,
   intervals?: WithDefault<0 | 15 | 30 | 60, 0>,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'EnumPropNativeComponentView',

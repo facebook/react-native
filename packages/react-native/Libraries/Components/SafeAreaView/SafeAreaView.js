@@ -23,10 +23,10 @@ import * as React from 'react';
  * limitation of the screen, such as rounded corners or camera notches (aka
  * sensor housing area on iPhone X).
  */
-const exported: React.AbstractComponent<
-  ViewProps,
-  React.ElementRef<typeof View>,
-> = Platform.select({
+const exported: component(
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: ViewProps
+) = Platform.select({
   ios: require('./RCTSafeAreaViewNativeComponent').default,
   default: View,
 });

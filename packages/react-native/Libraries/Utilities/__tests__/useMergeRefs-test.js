@@ -9,181 +9,171 @@
  * @oncall react_native
  */
 
-import type {ViewProps} from '../../Components/View/ViewPropTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../../src/private/types/HostInstance';
+import type {ReactTestRenderer} from 'react-test-renderer';
 
 import View from '../../Components/View/View';
 import useMergeRefs from '../useMergeRefs';
 import * as React from 'react';
 import {act, create} from 'react-test-renderer';
 
-/**
- * TestView provide a component execution environment to test hooks.
- */
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function TestView({name, refs}) {
-  const mergeRef = useMergeRefs(...refs);
-  return <View ref={mergeRef} testID={name} />;
-}
+class Screen {
+  #root: ?ReactTestRenderer;
 
-/**
- * TestViewInstance provides a pretty-printable replacement for React instances.
- */
-class TestViewInstance {
-  name: string;
-
-  constructor(name: string) {
-    this.name = name;
+  render(children: () => React.MixedElement): void {
+    act(() => {
+      if (this.#root == null) {
+        this.#root = create(<TestComponent>{children}</TestComponent>);
+      } else {
+        this.#root.update(<TestComponent>{children}</TestComponent>);
+      }
+    });
   }
 
-  // $FlowIgnore[unclear-type] - Intentional.
-  static fromValue(value: any): ?TestViewInstance {
-    const testID = value?.props?.testID;
-    return testID == null ? null : new TestViewInstance(testID);
-  }
-
-  static named(name: string): $FlowFixMe {
-    // $FlowIssue[prop-missing] - Flow does not support type augmentation.
-    return expect.testViewInstance(name);
+  unmount(): void {
+    act(() => {
+      this.#root?.unmount();
+    });
   }
 }
 
-/**
- * extend.testViewInstance makes it easier to assert expected values. But use
- * TestViewInstance.named instead of extend.testViewInstance because of Flow.
- */
-expect.extend({
-  testViewInstance(received, name) {
-    const pass = received instanceof TestViewInstance && received.name === name;
-    return {pass};
-  },
-});
+function TestComponent(
+  props: $ReadOnly<{children: () => React.MixedElement}>,
+): React.Node {
+  return props.children();
+}
 
-/**
- * Creates a registry that records the values assigned to the mock refs created
- * by either of the two returned callbacks.
- */
-function mockRefRegistry<T>(): {
-  mockCallbackRef: (name: string) => T => mixed,
-  mockObjectRef: (name: string) => {current: T, ...},
-  registry: $ReadOnlyArray<{[string]: T}>,
-} {
-  const registry = [];
-  return {
-    mockCallbackRef:
-      (name: string): (T => mixed) =>
-      current => {
-        registry.push({[name]: TestViewInstance.fromValue(current)});
-      },
-    mockObjectRef: (name: string): {current: T, ...} => ({
-      // $FlowIgnore[unsafe-getters-setters] - Intentional.
-      set current(current: $FlowFixMe) {
-        registry.push({[name]: TestViewInstance.fromValue(current)});
-      },
-    }),
-    registry,
+function id(instance: HostInstance | null): string | null {
+  // $FlowIgnore[prop-missing] - Intentional.
+  return instance?.props?.id ?? null;
+}
+
+test('accepts a ref callback', () => {
+  const screen = new Screen();
+  const ledger: Array<{[string]: string | null}> = [];
+
+  const ref = (current: HostInstance | null) => {
+    ledger.push({ref: id(current)});
   };
-}
 
-test('accepts a callback ref', () => {
-  let root;
+  screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
 
-  const {mockCallbackRef, registry} = mockRefRegistry<React.ElementRef<
-    HostComponent<ViewProps>,
-  > | null>();
-  const refA = mockCallbackRef('refA');
+  expect(ledger).toEqual([{ref: 'foo'}]);
 
-  act(() => {
-    root = create(<TestView name="foo" refs={[refA]} />);
-  });
+  screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
 
-  expect(registry).toEqual([{refA: TestViewInstance.named('foo')}]);
+  expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
 
-  act(() => {
-    root = create(<TestView name="bar" refs={[refA]} />);
-  });
+  screen.unmount();
 
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refA: TestViewInstance.named('bar')},
-  ]);
-
-  act(() => {
-    root.unmount();
-  });
-
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refA: TestViewInstance.named('bar')},
-    {refA: null},
+  expect(ledger).toEqual([
+    {ref: 'foo'},
+    {ref: null},
+    {ref: 'bar'},
+    {ref: null},
   ]);
 });
 
-test('accepts an object ref', () => {
-  let root;
+test('accepts a ref callback that returns a cleanup function', () => {
+  const screen = new Screen();
+  const ledger: Array<{[string]: string | null}> = [];
 
-  const {mockObjectRef, registry} = mockRefRegistry<React.ElementRef<
-    HostComponent<ViewProps>,
-  > | null>();
-  const refA = mockObjectRef('refA');
+  // TODO: Remove `| null` after Flow supports ref cleanup functions.
+  const ref = (current: HostInstance | null) => {
+    ledger.push({ref: id(current)});
+    return () => {
+      ledger.push({ref: null});
+    };
+  };
 
-  act(() => {
-    root = create(<TestView name="foo" refs={[refA]} />);
-  });
+  screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
 
-  expect(registry).toEqual([{refA: TestViewInstance.named('foo')}]);
+  expect(ledger).toEqual([{ref: 'foo'}]);
 
-  act(() => {
-    root = create(<TestView name="bar" refs={[refA]} />);
-  });
+  screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
 
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refA: TestViewInstance.named('bar')},
+  expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
+
+  screen.unmount();
+
+  expect(ledger).toEqual([
+    {ref: 'foo'},
+    {ref: null},
+    {ref: 'bar'},
+    {ref: null},
   ]);
+});
 
-  act(() => {
-    root.unmount();
-  });
+test('accepts a ref object', () => {
+  const screen = new Screen();
+  const ledger: Array<{[string]: string | null}> = [];
 
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refA: TestViewInstance.named('bar')},
-    {refA: null},
+  const ref = {
+    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    set current(current: HostInstance | null) {
+      ledger.push({ref: id(current)});
+    },
+  };
+
+  screen.render(() => <View id="foo" key="foo" ref={useMergeRefs(ref)} />);
+
+  expect(ledger).toEqual([{ref: 'foo'}]);
+
+  screen.render(() => <View id="bar" key="bar" ref={useMergeRefs(ref)} />);
+
+  expect(ledger).toEqual([{ref: 'foo'}, {ref: null}, {ref: 'bar'}]);
+
+  screen.unmount();
+
+  expect(ledger).toEqual([
+    {ref: 'foo'},
+    {ref: null},
+    {ref: 'bar'},
+    {ref: null},
   ]);
 });
 
 test('invokes refs in order', () => {
-  let root;
+  const screen = new Screen();
+  const ledger: Array<{[string]: string | null}> = [];
 
-  const {mockCallbackRef, mockObjectRef, registry} =
-    mockRefRegistry<React.ElementRef<HostComponent<ViewProps>> | null>();
-  const refA = mockCallbackRef('refA');
-  const refB = mockObjectRef('refB');
-  const refC = mockCallbackRef('refC');
-  const refD = mockObjectRef('refD');
+  const refA = (current: HostInstance | null) => {
+    ledger.push({refA: id(current)});
+  };
+  const refB = {
+    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    set current(current: HostInstance | null) {
+      ledger.push({refB: id(current)});
+    },
+  };
+  const refC = (current: HostInstance | null) => {
+    ledger.push({refC: id(current)});
+  };
+  const refD = {
+    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    set current(current: HostInstance | null) {
+      ledger.push({refD: id(current)});
+    },
+  };
 
-  act(() => {
-    root = create(<TestView name="foo" refs={[refA, refB, refC, refD]} />);
-  });
+  screen.render(() => (
+    <View id="foo" key="foo" ref={useMergeRefs(refA, refB, refC, refD)} />
+  ));
 
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refB: TestViewInstance.named('foo')},
-    {refC: TestViewInstance.named('foo')},
-    {refD: TestViewInstance.named('foo')},
+  expect(ledger).toEqual([
+    {refA: 'foo'},
+    {refB: 'foo'},
+    {refC: 'foo'},
+    {refD: 'foo'},
   ]);
 
-  act(() => {
-    root.unmount();
-  });
+  screen.unmount();
 
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refB: TestViewInstance.named('foo')},
-    {refC: TestViewInstance.named('foo')},
-    {refD: TestViewInstance.named('foo')},
+  expect(ledger).toEqual([
+    {refA: 'foo'},
+    {refB: 'foo'},
+    {refC: 'foo'},
+    {refD: 'foo'},
     {refA: null},
     {refB: null},
     {refC: null},
@@ -194,48 +184,46 @@ test('invokes refs in order', () => {
 // This is actually undesirable behavior, but it's what we have so let's make
 // sure it does not change unexpectedly.
 test('invokes all refs if any ref changes', () => {
-  let root;
+  const screen = new Screen();
+  const ledger: Array<{[string]: string | null}> = [];
 
-  const {mockCallbackRef, registry} = mockRefRegistry<React.ElementRef<
-    HostComponent<ViewProps>,
-  > | null>();
-  const refA = mockCallbackRef('refA');
-  const refB = mockCallbackRef('refB');
+  const refA = (current: HostInstance | null) => {
+    ledger.push({refA: id(current)});
+  };
+  const refB = (current: HostInstance | null) => {
+    ledger.push({refB: id(current)});
+  };
 
-  act(() => {
-    root = create(<TestView name="foo" refs={[refA, refB]} />);
-  });
+  screen.render(() => (
+    <View id="foo" key="foo" ref={useMergeRefs(refA, refB)} />
+  ));
 
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refB: TestViewInstance.named('foo')},
-  ]);
+  const refAPrime = (current: HostInstance | null) => {
+    ledger.push({refAPrime: id(current)});
+  };
 
-  const refAPrime = mockCallbackRef('refAPrime');
-  act(() => {
-    root.update(<TestView name="foo" refs={[refAPrime, refB]} />);
-  });
+  screen.render(() => (
+    <View id="foo" key="foo" ref={useMergeRefs(refAPrime, refB)} />
+  ));
 
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refB: TestViewInstance.named('foo')},
+  expect(ledger).toEqual([
+    {refA: 'foo'},
+    {refB: 'foo'},
     {refA: null},
     {refB: null},
-    {refAPrime: TestViewInstance.named('foo')},
-    {refB: TestViewInstance.named('foo')},
+    {refAPrime: 'foo'},
+    {refB: 'foo'},
   ]);
 
-  act(() => {
-    root.unmount();
-  });
+  screen.unmount();
 
-  expect(registry).toEqual([
-    {refA: TestViewInstance.named('foo')},
-    {refB: TestViewInstance.named('foo')},
+  expect(ledger).toEqual([
+    {refA: 'foo'},
+    {refB: 'foo'},
     {refA: null},
     {refB: null},
-    {refAPrime: TestViewInstance.named('foo')},
-    {refB: TestViewInstance.named('foo')},
+    {refAPrime: 'foo'},
+    {refB: 'foo'},
     {refAPrime: null},
     {refB: null},
   ]);

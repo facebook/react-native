@@ -47,7 +47,7 @@
 
 #if USE_HERMES
 #import <reacthermes/HermesExecutorFactory.h>
-#else
+#elif USE_THIRD_PARTY_JSC != 1
 #import "JSCExecutorFactory.h"
 #endif
 #import "RCTJSIExecutorRuntimeInstaller.h"
@@ -177,7 +177,6 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 @property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
-- (void)partialBatchDidFlush;
 - (void)batchDidComplete;
 
 @end
@@ -187,8 +186,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCTInstanceCallback(RCTCxxBridge *bridge) : bridge_(bridge){};
   void onBatchComplete() override
   {
-    // There's no interface to call this per partial batch
-    [bridge_ partialBatchDidFlush];
     [bridge_ batchDidComplete];
   }
 };
@@ -374,7 +371,8 @@ struct RCTInstanceCallback : public InstanceCallback {
   // in case if some other tread resets it.
   auto reactInstance = _reactInstance;
   if (reactInstance) {
-    int unloadLevel = RCTGetMemoryPressureUnloadLevel();
+    // Memory Pressure Unloading Level 15 represents TRIM_MEMORY_RUNNING_CRITICAL.
+    int unloadLevel = 15;
     reactInstance->handleMemoryPressure(unloadLevel);
   }
 }
@@ -423,7 +421,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   [self registerExtraModules];
   // Initialize all native modules that cannot be loaded lazily
   (void)[self _initializeModules:RCTGetModuleClasses() withDispatchGroup:prepareBridge lazilyDiscovered:NO];
-  [self registerExtraLazyModules];
 
   [_performanceLogger markStopForTag:RCTPLNativeModuleInit];
 
@@ -443,8 +440,10 @@ struct RCTInstanceCallback : public InstanceCallback {
       auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);
 #if USE_HERMES
       executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
-#else
+#elif USE_THIRD_PARTY_JSC != 1
       executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
+#else
+      throw std::runtime_error("No JSExecutorFactory specified.");
 #endif
     }
   } else {
@@ -877,63 +876,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
-- (void)registerExtraLazyModules
-{
-#if RCT_DEBUG
-  // This is debug-only and only when Chrome is attached, since it expects all modules to be already
-  // available on start up. Otherwise, we can let the lazy module discovery to load them on demand.
-  Class executorClass = [_parentBridge executorClass];
-  if (executorClass && [NSStringFromClass(executorClass) isEqualToString:@"RCTWebSocketExecutor"]) {
-    NSDictionary<NSString *, Class> *moduleClasses = nil;
-    if ([self.delegate respondsToSelector:@selector(extraLazyModuleClassesForBridge:)]) {
-      moduleClasses = [self.delegate extraLazyModuleClassesForBridge:_parentBridge];
-    }
-
-    if (!moduleClasses) {
-      return;
-    }
-
-    // This logic is mostly copied from `registerModulesForClasses:`, but with one difference:
-    // we must use the names provided by the delegate method here.
-    for (NSString *moduleName in moduleClasses) {
-      Class moduleClass = moduleClasses[moduleName];
-      if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
-        continue;
-      }
-
-      // Check for module name collisions
-      RCTModuleData *moduleData = _moduleDataByName[moduleName];
-      if (moduleData) {
-        if (moduleData.hasInstance) {
-          // Existing module was preregistered, so it takes precedence
-          continue;
-        } else if ([moduleClass new] == nil) {
-          // The new module returned nil from init, so use the old module
-          continue;
-        } else if ([moduleData.moduleClass new] != nil) {
-          // Use existing module since it was already loaded but not yet instantiated.
-          continue;
-        }
-      }
-
-      int32_t moduleDataId = getUniqueId();
-      BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
-      moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
-                                                       bridge:self
-                                               moduleRegistry:_objCModuleRegistry
-                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
-                                                bundleManager:_bundleManager
-                                            callableJSModules:_callableJSModules];
-      BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
-
-      _moduleDataByName[moduleName] = moduleData;
-      [_moduleClassesByID addObject:moduleClass];
-      [_moduleDataByID addObject:moduleData];
-    }
-  }
-#endif
-}
-
 - (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
                                withDispatchGroup:(dispatch_group_t)dispatchGroup
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
@@ -1167,9 +1109,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 /**
  * Prevent super from calling setUp (that'd create another batchedBridge)
  */
-- (void)setUp
-{
-}
+- (void)setUp {}
 
 - (Class)executorClass
 {
@@ -1516,30 +1456,29 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
 #pragma mark - Payload Processing
 
-- (void)partialBatchDidFlush
-{
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.implementsPartialBatchDidFlush) {
-      [self
-          dispatchBlock:^{
-            [moduleData.instance partialBatchDidFlush];
-          }
-                  queue:moduleData.methodQueue];
-    }
-  }
-}
-
 - (void)batchDidComplete
 {
-  // TODO #12592471: batchDidComplete is only used by RCTUIManager,
-  // can we eliminate this special case?
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.implementsBatchDidComplete) {
+  if (RCTBridgeModuleBatchDidCompleteDisabled()) {
+    id uiManager = [self moduleForName:@"UIManager"];
+    if ([uiManager respondsToSelector:@selector(batchDidComplete)] &&
+        [uiManager respondsToSelector:@selector(methodQueue)]) {
       [self
           dispatchBlock:^{
-            [moduleData.instance batchDidComplete];
+            [uiManager batchDidComplete];
           }
-                  queue:moduleData.methodQueue];
+                  queue:[uiManager methodQueue]];
+    }
+  } else {
+    // TODO #12592471: batchDidComplete is only used by RCTUIManager,
+    // can we eliminate this special case?
+    for (RCTModuleData *moduleData in _moduleDataByID) {
+      if (moduleData.implementsBatchDidComplete) {
+        [self
+            dispatchBlock:^{
+              [moduleData.instance batchDidComplete];
+            }
+                    queue:moduleData.methodQueue];
+      }
     }
   }
 }

@@ -14,53 +14,8 @@ import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import convertRequestBody, {type RequestBody} from './convertRequestBody';
 import NativeNetworkingIOS from './NativeNetworkingIOS';
+import {type RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinitions.flow';
 import {type NativeResponseType} from './XMLHttpRequest';
-
-type RCTNetworkingEventDefinitions = $ReadOnly<{
-  didSendNetworkData: [
-    [
-      number, // requestId
-      number, // progress
-      number, // total
-    ],
-  ],
-  didReceiveNetworkResponse: [
-    [
-      number, // requestId
-      number, // status
-      ?{[string]: string}, // responseHeaders
-      ?string, // responseURL
-    ],
-  ],
-  didReceiveNetworkData: [
-    [
-      number, // requestId
-      string, // response
-    ],
-  ],
-  didReceiveNetworkIncrementalData: [
-    [
-      number, // requestId
-      string, // responseText
-      number, // progress
-      number, // total
-    ],
-  ],
-  didReceiveNetworkDataProgress: [
-    [
-      number, // requestId
-      number, // loaded
-      number, // total
-    ],
-  ],
-  didCompleteNetworkResponse: [
-    [
-      number, // requestId
-      string, // error
-      boolean, // timeOutError
-    ],
-  ],
-}>;
 
 const RCTNetworking = {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
@@ -74,7 +29,7 @@ const RCTNetworking = {
 
   sendRequest(
     method: string,
-    trackingName: string,
+    trackingName: ?string,
     url: string,
     headers: {...},
     data: RequestBody,

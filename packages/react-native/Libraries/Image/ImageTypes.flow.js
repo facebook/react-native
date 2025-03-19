@@ -17,8 +17,15 @@ import typeof TextInlineImageNativeComponent from './TextInlineImageNativeCompon
 
 import * as React from 'react';
 
+export type ImageSize = {
+  width: number,
+  height: number,
+};
+
+export type ImageResolvedAssetSource = ResolvedAssetSource;
+
 type ImageComponentStaticsIOS = $ReadOnly<{
-  getSize(uri: string): Promise<{width: number, height: number}>,
+  getSize(uri: string): Promise<ImageSize>,
   getSize(
     uri: string,
     success: (width: number, height: number) => void,
@@ -28,7 +35,7 @@ type ImageComponentStaticsIOS = $ReadOnly<{
   getSizeWithHeaders(
     uri: string,
     headers: {[string]: string, ...},
-  ): Promise<{width: number, height: number}>,
+  ): Promise<ImageSize>,
   getSizeWithHeaders(
     uri: string,
     headers: {[string]: string, ...},
@@ -46,9 +53,12 @@ type ImageComponentStaticsIOS = $ReadOnly<{
 
   queryCache(
     urls: Array<string>,
-  ): Promise<{[string]: 'memory' | 'disk' | 'disk/memory', ...}>,
+  ): Promise<{[url: string]: 'memory' | 'disk' | 'disk/memory', ...}>,
 
-  resolveAssetSource(source: ImageSource): ?ResolvedAssetSource,
+  /**
+   * @see https://reactnative.dev/docs/image#resolveassetsource
+   */
+  resolveAssetSource(source: ImageSource): ?ImageResolvedAssetSource,
 }>;
 
 type ImageComponentStaticsAndroid = $ReadOnly<{
@@ -56,18 +66,20 @@ type ImageComponentStaticsAndroid = $ReadOnly<{
   abortPrefetch(requestId: number): void,
 }>;
 
-export type AbstractImageAndroid = React.AbstractComponent<
-  ImagePropsType,
-  | React.ElementRef<TextInlineImageNativeComponent>
-  | React.ElementRef<ImageViewNativeComponent>,
->;
+export type AbstractImageAndroid = component(
+  ref?: React.RefSetter<
+    | React.ElementRef<TextInlineImageNativeComponent>
+    | React.ElementRef<ImageViewNativeComponent>,
+  >,
+  ...props: ImagePropsType
+);
 
 export type ImageAndroid = AbstractImageAndroid & ImageComponentStaticsAndroid;
 
-export type AbstractImageIOS = React.AbstractComponent<
-  ImagePropsType,
-  React.ElementRef<ImageViewNativeComponent>,
->;
+export type AbstractImageIOS = component(
+  ref?: React.RefSetter<React.ElementRef<ImageViewNativeComponent>>,
+  ...props: ImagePropsType
+);
 
 export type ImageIOS = AbstractImageIOS & ImageComponentStaticsIOS;
 

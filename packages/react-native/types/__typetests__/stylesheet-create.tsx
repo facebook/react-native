@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, type ShadowStyleIOS} from 'react-native';
 
 export function App() {
   return <View style={styles.container} />;
@@ -38,5 +38,17 @@ const styles2 = StyleSheet.create({
     // Should error due to misspelled parameter name
     // @ts-expect-error
     magrinRight: 1,
+  },
+});
+
+const shadowOffsetConst: Readonly<ShadowStyleIOS['shadowOffset']> = {
+  width: 1,
+  height: 2,
+};
+
+const styles3 = StyleSheet.create({
+  transforms: {
+    transform: [{translateX: 40}] as const,
+    shadowOffset: shadowOffsetConst,
   },
 });

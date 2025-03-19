@@ -8,13 +8,14 @@
  * @flow
  */
 
-import type {RNTesterModuleInfo} from './types/RNTesterTypes';
+import type {RNTesterModuleInfo, ScreenTypes} from './types/RNTesterTypes';
 
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import RNTTitleBar from './components/RNTTitleBar';
+import {title as PlaygroundTitle} from './examples/Playground/PlaygroundExample';
 import RNTesterList from './utils/RNTesterList';
 import {
   RNTesterNavigationActionsType,
@@ -25,6 +26,7 @@ import {
   getExamplesListWithRecentlyUsed,
   initialNavigationState,
 } from './utils/testerStateUtils';
+import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import * as React from 'react';
 import {
   BackHandler,
@@ -42,7 +44,6 @@ if (global.RN$Bridgeless === true && __DEV__) {
   NativeComponentRegistry.setRuntimeConfigProvider(() => {
     return {
       native: false,
-      strict: true,
       verify: true,
     };
   });
@@ -97,14 +98,11 @@ const RNTesterApp = ({
       return false;
     };
 
-    BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
-
-    return () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        handleHardwareBackPress,
-      );
-    };
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleHardwareBackPress,
+    );
+    return () => subscription.remove();
   }, [activeModuleKey, handleBackPress]);
 
   const handleModuleCardPress = React.useCallback(
@@ -128,11 +126,22 @@ const RNTesterApp = ({
   );
 
   const handleNavBarPress = React.useCallback(
-    (args: {screen: string}) => {
-      dispatch({
-        type: RNTesterNavigationActionsType.NAVBAR_PRESS,
-        data: {screen: args.screen},
-      });
+    (args: {screen: ScreenTypes}) => {
+      if (args.screen === 'playgrounds') {
+        dispatch({
+          type: RNTesterNavigationActionsType.NAVBAR_OPEN_MODULE_PRESS,
+          data: {
+            key: 'PlaygroundExample',
+            title: PlaygroundTitle,
+            screen: args.screen,
+          },
+        });
+      } else {
+        dispatch({
+          type: RNTesterNavigationActionsType.NAVBAR_PRESS,
+          data: {screen: args.screen},
+        });
+      }
     },
     [dispatch],
   );
@@ -290,6 +299,7 @@ const RNTesterApp = ({
           handleNavBarPress={handleNavBarPress}
         />
       </View>
+      <ReportFullyDrawnView />
     </RNTesterThemeContext.Provider>
   );
 };

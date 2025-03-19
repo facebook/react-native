@@ -19,10 +19,7 @@
  * @param {MatrixMath.Matrix} two Second matrix.
  * @return {boolean} Whether or not the two matrices differ.
  */
-const matricesDiffer = function (
-  one: ?Array<number>,
-  two: ?Array<number>,
-): boolean {
+function matricesDiffer(one: ?Array<number>, two: ?Array<number>): boolean {
   if (one === two) {
     return false;
   }
@@ -46,6 +43,6 @@ const matricesDiffer = function (
     one[11] !== two[11] ||
     one[15] !== two[15]
   );
-};
+}
 
-module.exports = matricesDiffer;
+export default matricesDiffer;

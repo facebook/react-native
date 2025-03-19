@@ -17,6 +17,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.BuildConfig;
 import com.facebook.react.DebugCorePackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
@@ -40,10 +41,9 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.devsupport.StackTraceHelper;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
-import com.facebook.react.fabric.Binding;
-import com.facebook.react.fabric.BindingImpl;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.fabric.FabricUIManagerBinding;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.internal.AndroidChoreographerProvider;
@@ -131,9 +131,7 @@ final class ReactInstance {
         mQueueConfiguration.getNativeModulesQueueThread();
 
     ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
-    if (useDevSupport) {
-      devSupportManager.startInspector();
-    }
+    devSupportManager.startInspector();
 
     JSTimerExecutor jsTimerExecutor = createJSTimerExecutor();
     mJavaTimerManager =
@@ -147,7 +145,9 @@ final class ReactInstance {
     BindingsInstaller bindingsInstaller = delegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
-        Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
+        BuildConfig.ENABLE_PERFETTO
+            || Systrace.isTracing(
+                Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
 
     mHybridData =
         initHybrid(
@@ -156,7 +156,7 @@ final class ReactInstance {
             nativeModulesMessageQueueThread,
             mJavaTimerManager,
             jsTimerExecutor,
-            new ReactJsExceptionHandlerImpl(nativeModulesMessageQueueThread),
+            new ReactJsExceptionHandlerImpl(exceptionHandler),
             bindingsInstaller,
             isProfiling,
             reactHostInspectorTarget);
@@ -272,14 +272,13 @@ final class ReactInstance {
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);
 
-    Binding binding = new BindingImpl();
+    FabricUIManagerBinding binding = new FabricUIManagerBinding();
     binding.register(
         getBufferedRuntimeExecutor(),
         getRuntimeScheduler(),
         mFabricUIManager,
         eventBeatManager,
-        componentFactory,
-        delegate.getReactNativeConfig());
+        componentFactory);
 
     // Initialize the FabricUIManager
     mFabricUIManager.initialize();
@@ -289,21 +288,18 @@ final class ReactInstance {
   }
 
   void initializeEagerTurboModules() {
-    Runnable task =
-        () -> {
-          Systrace.beginSection(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeEagerTurboModules");
-          // Eagerly initialize TurboModules
-          for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
-            mTurboModuleManager.getModule(moduleName);
-          }
-          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-        };
-    if (ReactNativeFeatureFlags.initEagerTurboModulesOnNativeModulesQueueAndroid()) {
-      mQueueConfiguration.getNativeModulesQueueThread().runOnQueue(task);
-    } else {
-      task.run();
-    }
+    mQueueConfiguration
+        .getNativeModulesQueueThread()
+        .runOnQueue(
+            () -> {
+              Systrace.beginSection(
+                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeEagerTurboModules");
+              // Eagerly initialize TurboModules
+              for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
+                mTurboModuleManager.getModule(moduleName);
+              }
+              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+            });
   }
 
   private static synchronized void loadLibraryIfNeeded() {
@@ -318,25 +314,28 @@ final class ReactInstance {
   }
 
   private class ReactJsExceptionHandlerImpl implements ReactJsExceptionHandler {
-    private final MessageQueueThread mMessageQueueThread;
+    private final QueueThreadExceptionHandler mQueueThreadExceptionHandler;
 
-    ReactJsExceptionHandlerImpl(MessageQueueThread nativeModulesMessageQueueThread) {
-      mMessageQueueThread = nativeModulesMessageQueueThread;
+    ReactJsExceptionHandlerImpl(QueueThreadExceptionHandler queueThreadExceptionHandler) {
+      mQueueThreadExceptionHandler = queueThreadExceptionHandler;
     }
 
     @Override
-    public void reportJsException(ParsedError error) {
-      JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
+    public void reportJsException(ProcessedError error) {
+      JavaOnlyMap data = StackTraceHelper.convertProcessedError(error);
 
-      // Simulate async native module method call
-      mMessageQueueThread.runOnQueue(
-          () -> {
-            NativeExceptionsManagerSpec exceptionsManager =
-                (NativeExceptionsManagerSpec)
-                    Assertions.assertNotNull(
-                        mTurboModuleManager.getModule(NativeExceptionsManagerSpec.NAME));
-            exceptionsManager.reportException(data);
-          });
+      try {
+        NativeExceptionsManagerSpec exceptionsManager =
+            (NativeExceptionsManagerSpec)
+                Assertions.assertNotNull(
+                    mTurboModuleManager.getModule(NativeExceptionsManagerSpec.NAME));
+        exceptionsManager.reportException(data);
+      } catch (Exception e) {
+        // Sometimes (e.g: always with the default exception manager) the native module exceptions
+        // manager can throw. In those cases, call into the lower-level queue thread exceptions
+        // handler.
+        mQueueThreadExceptionHandler.handleException(e);
+      }
     }
   }
 

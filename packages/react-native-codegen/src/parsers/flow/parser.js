@@ -15,7 +15,7 @@ import type {
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
   Nullable,
@@ -115,6 +115,12 @@ class FlowParser implements Parser {
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
+  }
+
+  getStringLiteralUnionTypeAnnotationStringLiterals(
+    membersTypes: $FlowFixMe[],
+  ): string[] {
+    return membersTypes.map((item: $FlowFixMe) => item.value);
   }
 
   parseFile(filename: string): SchemaType {
@@ -221,11 +227,31 @@ class FlowParser implements Parser {
     });
   }
 
-  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
-    return typeAnnotation.members.map(member => ({
-      name: member.id.name,
-      value: member.init?.value ?? member.id.name,
-    }));
+  parseEnumMembers(
+    typeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<NativeModuleEnumMember> {
+    return typeAnnotation.members.map(member => {
+      const value =
+        typeof member.init?.value === 'number'
+          ? {
+              type: 'NumberLiteralTypeAnnotation',
+              value: member.init.value,
+            }
+          : typeof member.init?.value === 'string'
+          ? {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.init.value,
+            }
+          : {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.id.name,
+            };
+
+      return {
+        name: member.id.name,
+        value: value,
+      };
+    });
   }
 
   isModuleInterface(node: $FlowFixMe): boolean {

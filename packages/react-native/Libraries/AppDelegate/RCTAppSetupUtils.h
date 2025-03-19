@@ -19,18 +19,23 @@
 #elif __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
-#else // USE_HERMES
+#elif USE_THIRD_PARTY_JSC != 1
 #import <React/JSCExecutorFactory.h>
 #endif // USE_HERMES
 
 #import <ReactCommon/RCTTurboModuleManager.h>
+#import <jsireact/JSIExecutor.h>
+
+@protocol RCTDependencyProvider;
 
 // Forward declaration to decrease compilation coupling
 namespace facebook::react {
 class RuntimeScheduler;
 }
 
-RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass);
+RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(
+    Class moduleClass,
+    id<RCTDependencyProvider> dependencyProvider);
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
     RCTBridge *bridge,

@@ -19,15 +19,15 @@ internal class TransformAnimatedNode(
     config: ReadableMap,
     private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
 ) : AnimatedNode() {
-  private val transformConfigs: MutableList<TransformConfig>
+  private val transformConfigs: List<TransformConfig>
 
   init {
     val transforms = config.getArray("transforms")
     transformConfigs =
-        if (transforms == null) mutableListOf()
+        if (transforms == null) emptyList()
         else
-            MutableList<TransformConfig>(transforms.size()) { i ->
-              val transformConfigMap = transforms.getMap(i)
+            List(transforms.size()) { i ->
+              val transformConfigMap = checkNotNull(transforms.getMap(i))
               val property = transformConfigMap.getString("property")
               val type = transformConfigMap.getString("type")
               if (type == "animated") {
@@ -44,9 +44,9 @@ internal class TransformAnimatedNode(
             }
   }
 
-  public fun collectViewUpdates(propsMap: JavaOnlyMap) {
+  fun collectViewUpdates(propsMap: JavaOnlyMap) {
     val transforms =
-        MutableList<JavaOnlyMap>(transformConfigs.size) { i ->
+        List(transformConfigs.size) { i ->
           val transformConfig = transformConfigs[i]
           val transform =
               if (transformConfig is AnimatedTransformConfig) {

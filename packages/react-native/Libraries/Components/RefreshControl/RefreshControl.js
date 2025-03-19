@@ -17,11 +17,11 @@ import AndroidSwipeRefreshLayoutNativeComponent, {
 import PullToRefreshViewNativeComponent, {
   Commands as PullToRefreshCommands,
 } from './PullToRefreshViewNativeComponent';
+import React from 'react';
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
+const Platform = require('../../Utilities/Platform').default;
 
-type IOSProps = $ReadOnly<{|
+export type RefreshControlPropsIOS = $ReadOnly<{
   /**
    * The color of the refresh indicator.
    */
@@ -34,9 +34,9 @@ type IOSProps = $ReadOnly<{|
    * The title displayed under the refresh indicator.
    */
   title?: ?string,
-|}>;
+}>;
 
-type AndroidProps = $ReadOnly<{|
+export type RefreshControlPropsAndroid = $ReadOnly<{
   /**
    * Whether the pull to refresh functionality is enabled.
    */
@@ -53,13 +53,9 @@ type AndroidProps = $ReadOnly<{|
    * Size of the refresh indicator.
    */
   size?: ?('default' | 'large'),
-|}>;
+}>;
 
-export type RefreshControlProps = $ReadOnly<{|
-  ...ViewProps,
-  ...IOSProps,
-  ...AndroidProps,
-
+type RefreshControlBaseProps = $ReadOnly<{
   /**
    * Called when the view starts refreshing.
    */
@@ -74,7 +70,14 @@ export type RefreshControlProps = $ReadOnly<{|
    * Progress view top offset
    */
   progressViewOffset?: ?number,
-|}>;
+}>;
+
+export type RefreshControlProps = $ReadOnly<{
+  ...ViewProps,
+  ...RefreshControlPropsIOS,
+  ...RefreshControlPropsAndroid,
+  ...RefreshControlBaseProps,
+}>;
 
 /**
  * This component is used inside a ScrollView or ListView to add pull to refresh
@@ -126,7 +129,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
     | typeof PullToRefreshViewNativeComponent
     | typeof AndroidSwipeRefreshLayoutNativeComponent,
   >;
-  _lastNativeRefreshing = false;
+  _lastNativeRefreshing: boolean = false;
 
   componentDidMount() {
     this._lastNativeRefreshing = this.props.refreshing;
@@ -201,4 +204,4 @@ class RefreshControl extends React.Component<RefreshControlProps> {
   };
 }
 
-module.exports = RefreshControl;
+export default RefreshControl;

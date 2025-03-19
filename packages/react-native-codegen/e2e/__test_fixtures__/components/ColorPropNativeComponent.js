@@ -8,18 +8,18 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
   tintColor?: ColorValue,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'ColorPropNativeComponentView',

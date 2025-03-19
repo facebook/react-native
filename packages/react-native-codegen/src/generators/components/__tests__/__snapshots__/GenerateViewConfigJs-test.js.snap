@@ -19,21 +19,16 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ArrayPropsNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ArrayPropsNativeComponent',
-
+  uiViewClassName: \\"ArrayPropsNativeComponent\\",
   validAttributes: {
     names: true,
     disableds: true,
     progress: true,
     radii: true,
-
     colors: {
-      process: require('react-native/Libraries/StyleSheet/processColorArray'),
+      process: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/StyleSheet/processColorArray'))
     },
-
     srcs: true,
     points: true,
     dimensions: true,
@@ -41,9 +36,9 @@ export const __INTERNAL_VIEW_CONFIG = {
     object: true,
     array: true,
     arrayOfArrayOfObject: true,
-  },
+    arrayOfMixed: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -68,16 +63,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ArrayPropsNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ArrayPropsNativeComponent',
-
+  uiViewClassName: \\"ArrayPropsNativeComponent\\",
   validAttributes: {
-    nativePrimitives: true,
-  },
+    nativePrimitives: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -102,16 +93,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'BooleanPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'BooleanPropNativeComponent',
-
+  uiViewClassName: \\"BooleanPropNativeComponent\\",
   validAttributes: {
-    disabled: true,
-  },
+    disabled: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -136,18 +123,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ColorPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ColorPropNativeComponent',
-
+  uiViewClassName: \\"ColorPropNativeComponent\\",
   validAttributes: {
     tintColor: {
-      process: require('react-native/Libraries/StyleSheet/processColor').default,
-    },
-  },
+      process: require('react-native/Libraries/StyleSheet/processColor').default
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -173,23 +156,18 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {dispatchCommand} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 
 let nativeComponentName = 'CommandNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'CommandNativeComponent',
-  validAttributes: {},
+  uiViewClassName: \\"CommandNativeComponent\\",
+  validAttributes: {}
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
-
 export const Commands = {
-    flashScrollIndicators(ref) {
-        dispatchCommand(ref, \\"flashScrollIndicators\\", []);
-    },
-
-    allTypes(ref, x, y, z, message, animated) {
-        dispatchCommand(ref, \\"allTypes\\", [x, y, z, message, animated]);
-    }
+  flashScrollIndicators(ref) {
+    dispatchCommand(ref, \\"flashScrollIndicators\\", []);
+  },
+  allTypes(ref, x, y, z, message, animated, locations) {
+    dispatchCommand(ref, \\"allTypes\\", [x, y, z, message, animated, locations]);
+  }
 };
 ",
 }
@@ -215,30 +193,23 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {dispatchCommand} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 
 let nativeComponentName = 'CommandNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'CommandNativeComponent',
-
+  uiViewClassName: \\"CommandNativeComponent\\",
   validAttributes: {
-    accessibilityHint: true,
-  },
+    accessibilityHint: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
-
 export const Commands = {
-    handleRootTag(ref, rootTag) {
-        dispatchCommand(ref, \\"handleRootTag\\", [rootTag]);
-    },
-
-    hotspotUpdate(ref, x, y) {
-        dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
-    },
-
-    addItems(ref, items) {
-        dispatchCommand(ref, \\"addItems\\", [items]);
-    }
+  handleRootTag(ref, rootTag) {
+    dispatchCommand(ref, \\"handleRootTag\\", [rootTag]);
+  },
+  hotspotUpdate(ref, x, y) {
+    dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
+  },
+  addItems(ref, items) {
+    dispatchCommand(ref, \\"addItems\\", [items]);
+  }
 };
 ",
 }
@@ -263,16 +234,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'DimensionPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'DimensionPropNativeComponent',
-
+  uiViewClassName: \\"DimensionPropNativeComponent\\",
   validAttributes: {
-    marginBack: true,
-  },
+    marginBack: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -297,21 +264,17 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'DoublePropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'DoublePropNativeComponent',
-
+  uiViewClassName: \\"DoublePropNativeComponent\\",
   validAttributes: {
     blurRadius: true,
     blurRadius2: true,
     blurRadius3: true,
     blurRadius4: true,
     blurRadius5: true,
-    blurRadius6: true,
-  },
+    blurRadius6: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -337,29 +300,23 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'EventsNestedObjectNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'EventsNestedObjectNativeComponent',
-
+  uiViewClassName: \\"EventsNestedObjectNativeComponent\\",
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
-    },
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
+      }
+    }
   },
-
   validAttributes: {
     disabled: true,
-
     ...ConditionallyIgnoredEventHandlers({
-      onChange: true,
-    }),
-  },
+      onChange: true
+    })
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -385,62 +342,51 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'EventsNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'EventsNativeComponent',
-
+  uiViewClassName: \\"EventsNativeComponent\\",
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
+      }
     },
-
     topArrayEventType: {
       phasedRegistrationNames: {
-        captured: 'onArrayEventTypeCapture',
-        bubbled: 'onArrayEventType',
-      },
+        captured: \\"onArrayEventTypeCapture\\",
+        bubbled: \\"onArrayEventType\\"
+      }
     },
-
     topEnd: {
       phasedRegistrationNames: {
-        captured: 'onEndCapture',
-        bubbled: 'onEnd',
-      },
-    },
+        captured: \\"onEndCapture\\",
+        bubbled: \\"onEnd\\"
+      }
+    }
   },
-
   directEventTypes: {
     topEventDirect: {
-      registrationName: 'onEventDirect',
+      registrationName: \\"onEventDirect\\"
     },
-
     topOrientationChange: {
-      registrationName: 'onOrientationChange',
+      registrationName: \\"onOrientationChange\\"
     },
-
     topEventWithMixedPropAttribute: {
-      registrationName: 'onEventWithMixedPropAttribute',
-    },
+      registrationName: \\"onEventWithMixedPropAttribute\\"
+    }
   },
-
   validAttributes: {
     disabled: true,
-
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
       onArrayEventType: true,
       onEventDirect: true,
       onOrientationChange: true,
       onEnd: true,
-      onEventWithMixedPropAttribute: true,
-    }),
-  },
+      onEventWithMixedPropAttribute: true
+    })
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -466,34 +412,28 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'RCTInterfaceOnlyComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'RCTInterfaceOnlyComponent',
-
+  uiViewClassName: \\"RCTInterfaceOnlyComponent\\",
   bubblingEventTypes: {
     topPaperChange: {
       phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
-    },
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
+      }
+    }
   },
-
   directEventTypes: {
     topPaperDirectChange: {
-      registrationName: 'onDirectChange',
-    },
+      registrationName: \\"onDirectChange\\"
+    }
   },
-
   validAttributes: {
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
-      onDirectChange: true,
-    }),
-  },
+      onDirectChange: true
+    })
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -518,13 +458,10 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ExcludedAndroidComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ExcludedAndroidComponent',
-  validAttributes: {},
+  uiViewClassName: \\"ExcludedAndroidComponent\\",
+  validAttributes: {}
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -549,13 +486,10 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ExcludedAndroidIosComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ExcludedAndroidIosComponent',
-  validAttributes: {},
+  uiViewClassName: \\"ExcludedAndroidIosComponent\\",
+  validAttributes: {}
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -580,26 +514,19 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ExcludedIosComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ExcludedIosComponent',
-  validAttributes: {},
+  uiViewClassName: \\"ExcludedIosComponent\\",
+  validAttributes: {}
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 
 let nativeComponentName = 'MultiFileIncludedNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'MultiFileIncludedNativeComponent',
-
+  uiViewClassName: \\"MultiFileIncludedNativeComponent\\",
   validAttributes: {
-    disabled: true,
-  },
+    disabled: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -624,21 +551,17 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'FloatPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'FloatPropNativeComponent',
-
+  uiViewClassName: \\"FloatPropNativeComponent\\",
   validAttributes: {
     blurRadius: true,
     blurRadius2: true,
     blurRadius3: true,
     blurRadius4: true,
     blurRadius5: true,
-    blurRadius6: true,
-  },
+    blurRadius6: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -663,18 +586,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ImagePropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ImagePropNativeComponent',
-
+  uiViewClassName: \\"ImagePropNativeComponent\\",
   validAttributes: {
     thumbImage: {
-      process: require('react-native/Libraries/Image/resolveAssetSource'),
-    },
-  },
+      process: require('react-native/Libraries/Image/resolveAssetSource')
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -699,18 +618,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'InsetsPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'InsetsPropNativeComponent',
-
+  uiViewClassName: \\"InsetsPropNativeComponent\\",
   validAttributes: {
     contentInset: {
-      diff: require('react-native/Libraries/Utilities/differ/insetsDiffer'),
-    },
-  },
+      diff: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/insetsDiffer'))
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -735,16 +650,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'Int32EnumPropsNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'Int32EnumPropsNativeComponent',
-
+  uiViewClassName: \\"Int32EnumPropsNativeComponent\\",
   validAttributes: {
-    maxInterval: true,
-  },
+    maxInterval: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -769,18 +680,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'IntegerPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'IntegerPropNativeComponent',
-
+  uiViewClassName: \\"IntegerPropNativeComponent\\",
   validAttributes: {
     progress1: true,
     progress2: true,
-    progress3: true,
-  },
+    progress3: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -806,29 +713,23 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'RCTInterfaceOnlyComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'RCTInterfaceOnlyComponent',
-
+  uiViewClassName: \\"RCTInterfaceOnlyComponent\\",
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
-    },
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
+      }
+    }
   },
-
   validAttributes: {
     accessibilityHint: true,
-
     ...ConditionallyIgnoredEventHandlers({
-      onChange: true,
-    }),
-  },
+      onChange: true
+    })
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -853,16 +754,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'MixedPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'MixedPropNativeComponent',
-
+  uiViewClassName: \\"MixedPropNativeComponent\\",
   validAttributes: {
-    mixedProp: true,
-  },
+    mixedProp: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -887,30 +784,23 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ImageColorPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ImageColorPropNativeComponent',
-
+  uiViewClassName: \\"ImageColorPropNativeComponent\\",
   validAttributes: {
     thumbImage: {
-      process: require('react-native/Libraries/Image/resolveAssetSource'),
+      process: require('react-native/Libraries/Image/resolveAssetSource')
     },
-
     color: {
-      process: require('react-native/Libraries/StyleSheet/processColor').default,
+      process: require('react-native/Libraries/StyleSheet/processColor').default
     },
-
     thumbTintColor: {
-      process: require('react-native/Libraries/StyleSheet/processColor').default,
+      process: require('react-native/Libraries/StyleSheet/processColor').default
     },
-
     point: {
-      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
-    },
-  },
+      diff: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer'))
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -935,13 +825,10 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'NoPropsNoEventsComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'NoPropsNoEventsComponent',
-  validAttributes: {},
+  uiViewClassName: \\"NoPropsNoEventsComponent\\",
+  validAttributes: {}
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -966,16 +853,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ObjectProps';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ObjectProps',
-
+  uiViewClassName: \\"ObjectProps\\",
   validAttributes: {
-    objectProp: true,
-  },
+    objectProp: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -1000,18 +883,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'PointPropNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'PointPropNativeComponent',
-
+  uiViewClassName: \\"PointPropNativeComponent\\",
   validAttributes: {
     startPoint: {
-      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
-    },
-  },
+      diff: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer'))
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -1036,16 +915,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'StringEnumPropsNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'StringEnumPropsNativeComponent',
-
+  uiViewClassName: \\"StringEnumPropsNativeComponent\\",
   validAttributes: {
-    alignment: true,
-  },
+    alignment: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -1070,17 +945,13 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'StringPropComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'StringPropComponent',
-
+  uiViewClassName: \\"StringPropComponent\\",
   validAttributes: {
     accessibilityHint: true,
-    accessibilityRole: true,
-  },
+    accessibilityRole: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -1105,29 +976,21 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'MultiFile1NativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'MultiFile1NativeComponent',
-
+  uiViewClassName: \\"MultiFile1NativeComponent\\",
   validAttributes: {
-    disabled: true,
-  },
+    disabled: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 
 let nativeComponentName = 'MultiFile2NativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'MultiFile2NativeComponent',
-
+  uiViewClassName: \\"MultiFile2NativeComponent\\",
   validAttributes: {
-    disabled: true,
-  },
+    disabled: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -1152,29 +1015,21 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'MultiComponent1NativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'MultiComponent1NativeComponent',
-
+  uiViewClassName: \\"MultiComponent1NativeComponent\\",
   validAttributes: {
-    disabled: true,
-  },
+    disabled: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 
 let nativeComponentName = 'MultiComponent2NativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'MultiComponent2NativeComponent',
-
+  uiViewClassName: \\"MultiComponent2NativeComponent\\",
   validAttributes: {
-    disabled: true,
-  },
+    disabled: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -1207,12 +1062,10 @@ if (UIManager.hasViewManagerConfig('NativeComponentName')) {
 } else {
   throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\"');
 }
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'NativeComponentName',
-  validAttributes: {},
+  uiViewClassName: \\"NativeComponentName\\",
+  validAttributes: {}
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }

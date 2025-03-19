@@ -7,6 +7,8 @@ inputs:
   run-e2e-tests:
     default: 'false'
     description: If we need to build to run E2E tests. If yes, we need to build also x86.
+  gradle-cache-encryption-key:
+    description: "The encryption key needed to store the Gradle Configuration cache"
 runs:
   using: composite
   steps:
@@ -16,7 +18,7 @@ runs:
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Install node dependencies
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Set React Native Version
       shell: bash
       run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
@@ -24,6 +26,7 @@ runs:
       uses: ./.github/actions/setup-gradle
       with:
         cache-read-only: "false"
+        cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
     - name: Restore Android ccache
       uses: actions/cache/restore@v4
       with:

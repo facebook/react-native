@@ -20,9 +20,9 @@ import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 
 /**
- * A ReactHost is an object that manages a single {@link ReactInstance}. A ReactHost can be
- * constructed without initializing the ReactInstance, and it will continue to exist after the
- * instance is destroyed.
+ * A ReactHost is an object that manages a single [ReactInstance]. A ReactHost can be constructed
+ * without initializing the ReactInstance, and it will continue to exist after the instance is
+ * destroyed.
  *
  * The implementation of this interface should be Thread Safe
  */
@@ -84,7 +84,7 @@ public interface ReactHost {
       context: Context,
       moduleName: String,
       initialProps: Bundle?
-  ): ReactSurface?
+  ): ReactSurface
 
   /**
    * This function can be used to initialize the ReactInstance in a background thread before a
@@ -111,12 +111,44 @@ public interface ReactHost {
    * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
    * reload is finished, before destroying.
    *
-   * @param reason describing why ReactHost is being destroyed (e.g. memmory pressure)
+   * The destroy operation is asynchronous and the task returned by this method will complete when
+   * React Native gets destroyed. Note that the destroy operation will execute in multiple threads,
+   * in particular some of the sub-tasks will run in the UIThread. Calling
+   * [TaskInterface.waitForCompletion] from the UIThread will lead into a deadlock. Use [destroy]
+   * passing the onDestroyFinished callback to be notified when React Native gets destroyed.
+   *
+   * @param reason describing why ReactHost is being destroyed (e.g. memory pressure)
    * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
    *   be used to log properly the cause of destroy operation.
    * @return A task that completes when React Native gets destroyed.
    */
-  public fun destroy(reason: String, ex: Exception?): TaskInterface<Void>
+  public fun destroy(
+      reason: String,
+      ex: Exception?,
+  ): TaskInterface<Void>
+
+  /**
+   * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
+   * reload is finished, before destroying.
+   *
+   * The destroy operation is asynchronous and the task returned by this method will complete when
+   * React Native gets destroyed. Note that the destroy operation will execute in multiple threads,
+   * in particular some of the sub-tasks will run in the UIThread. Calling
+   * [TaskInterface.waitForCompletion] from the UIThread will lead into a deadlock. Use
+   * onDestroyFinished callback to be notified when React Native gets destroyed.
+   *
+   * @param reason describing why ReactHost is being destroyed (e.g. memory pressure)
+   * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
+   *   be used to log properly the cause of destroy operation.
+   * @param onDestroyFinished callback that will be called when React Native gets destroyed, the
+   *   callback will run on a background thread.
+   * @return A task that completes when React Native gets destroyed.
+   */
+  public fun destroy(
+      reason: String,
+      ex: Exception?,
+      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {}
+  ): TaskInterface<Void>
 
   /**
    * Permanently destroys the ReactHost, including the ReactInstance (if any). The application MUST
@@ -155,6 +187,6 @@ public interface ReactHost {
   /** Add a listener to be notified of ReactInstance events. */
   public fun addReactInstanceEventListener(listener: ReactInstanceEventListener)
 
-  /** Remove a listener previously added with {@link #addReactInstanceEventListener}. */
+  /** Remove a listener previously added with [addReactInstanceEventListener]. */
   public fun removeReactInstanceEventListener(listener: ReactInstanceEventListener)
 }

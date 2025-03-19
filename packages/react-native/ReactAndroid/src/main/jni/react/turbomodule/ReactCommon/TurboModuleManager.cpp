@@ -15,6 +15,7 @@
 #include <jsi/jsi.h>
 
 #include <ReactCommon/BindingsInstallerHolder.h>
+#include <ReactCommon/CxxTurboModuleUtils.h>
 #include <ReactCommon/JavaInteropTurboModule.h>
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
@@ -168,6 +169,14 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
     return cxxModule;
   }
 
+  auto& cxxTurboModuleMapProvider = globalExportedCxxTurboModuleMap();
+  auto it = cxxTurboModuleMapProvider.find(name);
+  if (it != cxxTurboModuleMapProvider.end()) {
+    auto turboModule = it->second(jsCallInvoker_);
+    turboModuleCache_.insert({name, turboModule});
+    return turboModule;
+  }
+
   static auto getTurboJavaModule =
       javaPart->getClass()
           ->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>(
@@ -190,7 +199,7 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
                   "getBindingsInstaller");
       auto installer = getBindingsInstaller(moduleInstance);
       if (installer) {
-        installer->cthis()->installBindings(runtime);
+        installer->cthis()->installBindings(runtime, jsCallInvoker_);
       }
     }
 

@@ -6,7 +6,17 @@
 require "json"
 require_relative "./hermes-utils.rb"
 
-react_native_path = File.join(__dir__, "..", "..")
+begin
+  react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
+    'require.resolve(
+    "react-native",
+    {paths: [process.argv[1]]},
+    )', __dir__]).strip
+  )
+rescue => e
+  # Fallback to the parent directory if the above command fails (e.g when building locally in OOT Platform)
+  react_native_path = File.join(__dir__, "..", "..")
+end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
@@ -24,17 +34,19 @@ Pod::Spec.new do |spec|
   spec.license     = package['license']
   spec.author      = "Facebook"
   spec.source      = source
-  spec.platforms   = { :osx => "10.13", :ios => "13.4", :visionos => "1.0" }
+  spec.platforms   = { :osx => "10.13", :ios => "15.1", :visionos => "1.0", :tvos => "15.1" }
 
   spec.preserve_paths      = '**/*.*'
   spec.source_files        = ''
 
   spec.pod_target_xcconfig = {
                     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
-                    "CLANG_CXX_LIBRARY" => "compiler-default"
+                    "CLANG_CXX_LIBRARY" => "compiler-default",
+                    "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
                   }
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
+  spec.tvos.vendored_frameworks = "destroot/Library/Frameworks/tvos/hermes.framework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
   spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/xros/hermes.framework"
 
@@ -46,6 +58,7 @@ Pod::Spec.new do |spec|
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
+      ss.tvos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
     end
 

@@ -67,4 +67,21 @@ public object PixelUtil {
   @JvmStatic
   public fun getDisplayMetricDensity(): Float =
       DisplayMetricsHolder.getWindowDisplayMetrics().density
+
+  /* Kotlin extensions */
+  public fun Int.dpToPx(): Float = toPixelFromDIP(this.toFloat())
+
+  public fun Long.dpToPx(): Float = toPixelFromDIP(this.toFloat())
+
+  public fun Float.dpToPx(): Float = toPixelFromDIP(this)
+
+  public fun Double.dpToPx(): Float = toPixelFromDIP(this.toFloat())
+
+  public fun Int.pxToDp(): Float = toDIPFromPixel(this.toFloat())
+
+  public fun Long.pxToDp(): Float = toDIPFromPixel(this.toFloat())
+
+  public fun Float.pxToDp(): Float = toDIPFromPixel(this)
+
+  public fun Double.pxToDp(): Float = toDIPFromPixel(this.toFloat())
 }

@@ -27,13 +27,7 @@
 // jsinspector-modern
 #import <jsinspector-modern/InspectorFlags.h>
 
-#if __has_include(<ReactCodegen/RCTModulesConformingToProtocolsProvider.h>)
-#define USE_OSS_CODEGEN 1
-#import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
-#else
-// Meta internal system do not generate the RCTModulesConformingToProtocolsProvider.h file
-#define USE_OSS_CODEGEN 0
-#endif
+#import "RCTDependencyProvider.h"
 
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
@@ -53,27 +47,27 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
     id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
                                                                    moduleName:moduleName
                                                             initialProperties:initialProperties];
-    return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+    UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+    [surface start];
+    return rootView;
   }
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
+id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider)
 {
   // private block used to filter out modules depending on protocol conformance
   NSArray * (^extractModuleConformingToProtocol)(RCTModuleRegistry *, Protocol *) =
       ^NSArray *(RCTModuleRegistry *moduleRegistry, Protocol *protocol) {
         NSArray<NSString *> *classNames = @[];
 
-#if USE_OSS_CODEGEN
         if (protocol == @protocol(RCTImageURLLoader)) {
-          classNames = [RCTModulesConformingToProtocolsProvider imageURLLoaderClassNames];
+          classNames = dependencyProvider ? dependencyProvider.imageURLLoaderClassNames : @[];
         } else if (protocol == @protocol(RCTImageDataDecoder)) {
-          classNames = [RCTModulesConformingToProtocolsProvider imageDataDecoderClassNames];
+          classNames = dependencyProvider ? dependencyProvider.imageDataDecoderClassNames : @[];
         } else if (protocol == @protocol(RCTURLRequestHandler)) {
-          classNames = [RCTModulesConformingToProtocolsProvider URLRequestHandlerClassNames];
+          classNames = dependencyProvider ? dependencyProvider.URLRequestHandlerClassNames : @[];
         }
-#endif
 
         NSMutableArray *modules = [NSMutableArray new];
 
@@ -136,38 +130,47 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif // end RCT_DEV
 
+  auto runtimeInstallerLambda = [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+    if (!bridge || !turboModuleManager) {
+      return;
+    }
+    if (runtimeScheduler) {
+      facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+    }
+    [turboModuleManager installJSBindings:runtime];
+  };
 #if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
-#else
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#elif USE_THIRD_PARTY_JSC != 1
   return std::make_unique<facebook::react::JSCExecutorFactory>(
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#else
+  throw std::runtime_error("No JSExecutorFactory specified.");
+  return nullptr;
 #endif // USE_HERMES
-      facebook::react::RCTJSIExecutorRuntimeInstaller(
-          [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
-            if (!bridge || !turboModuleManager) {
-              return;
-            }
-            if (runtimeScheduler) {
-              facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
-            }
-            [turboModuleManager installJSBindings:runtime];
-          }));
 }
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
+  auto runtimeInstallerLambda = [bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+    if (!bridge) {
+      return;
+    }
+    if (runtimeScheduler) {
+      facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+    }
+  };
 #if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
-#else
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#elif USE_THIRD_PARTY_JSC != 1
   return std::make_unique<facebook::react::JSCExecutorFactory>(
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#else
+  throw std::runtime_error("No JSExecutorFactory specified.");
+  return nullptr;
 #endif // USE_HERMES
-      facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
-        if (!bridge) {
-          return;
-        }
-        if (runtimeScheduler) {
-          facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
-        }
-      }));
 }

@@ -10,7 +10,6 @@
  */
 
 const {PACKAGES_DIR} = require('../consts');
-const {parseArgs} = require('@pkgjs/parseargs');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');
 const chalk = require('chalk');
@@ -25,9 +24,10 @@ const rimraf = require('rimraf');
 const SignedSource = require('signedsource');
 // $FlowFixMe[untyped-import]: TODO type supports-color
 const supportsColor = require('supports-color');
+const {parseArgs} = require('util');
 
 const DEVTOOLS_FRONTEND_REPO_URL =
-  'https://github.com/facebookexperimental/rn-chrome-devtools-frontend';
+  'https://github.com/facebook/react-native-devtools-frontend';
 
 const config = {
   allowPositionals: true,

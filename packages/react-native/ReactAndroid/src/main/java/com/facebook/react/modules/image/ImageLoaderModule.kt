@@ -80,7 +80,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    *   when there is an error
    */
   @ReactMethod
-  override public fun getSize(uriString: String?, promise: Promise) {
+  public override fun getSize(uriString: String?, promise: Promise) {
     if (uriString.isNullOrEmpty()) {
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
@@ -91,9 +91,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
         this.imagePipeline.fetchDecodedImage(request, this.callerContext)
     val dataSubscriber: DataSubscriber<CloseableReference<CloseableImage>> =
         object : BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-          protected override fun onNewResultImpl(
-              dataSource: DataSource<CloseableReference<CloseableImage>>
-          ) {
+          override fun onNewResultImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
             if (!dataSource.isFinished) {
               return
             }
@@ -115,9 +113,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
             }
           }
 
-          protected override fun onFailureImpl(
-              dataSource: DataSource<CloseableReference<CloseableImage>>
-          ) {
+          override fun onFailureImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
             promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.failureCause)
           }
         }
@@ -133,7 +129,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    *   when there is an error
    */
   @ReactMethod
-  override public fun getSizeWithHeaders(
+  public override fun getSizeWithHeaders(
       uriString: String?,
       headers: ReadableMap?,
       promise: Promise
@@ -151,9 +147,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
         this.imagePipeline.fetchDecodedImage(request, this.callerContext)
     val dataSubscriber: DataSubscriber<CloseableReference<CloseableImage>> =
         object : BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-          protected override fun onNewResultImpl(
-              dataSource: DataSource<CloseableReference<CloseableImage>>
-          ) {
+          override fun onNewResultImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
             if (!dataSource.isFinished) {
               return
             }
@@ -175,9 +169,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
             }
           }
 
-          protected override fun onFailureImpl(
-              dataSource: DataSource<CloseableReference<CloseableImage>>
-          ) {
+          override fun onFailureImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
             promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.failureCause)
           }
         }
@@ -192,7 +184,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    * @param promise the promise that is fulfilled when the image is successfully prefetched or
    *   rejected when there is an error
    */
-  override public fun prefetchImage(
+  public override fun prefetchImage(
       uriString: String?,
       requestIdAsDouble: Double,
       promise: Promise
@@ -208,7 +200,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
         this.imagePipeline.prefetchToDiskCache(request, this.callerContext)
     val prefetchSubscriber =
         object : BaseDataSubscriber<Void?>() {
-          protected override fun onNewResultImpl(dataSource: DataSource<Void?>) {
+          override fun onNewResultImpl(dataSource: DataSource<Void?>) {
             if (!dataSource.isFinished) {
               return
             }
@@ -222,7 +214,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
             }
           }
 
-          protected override fun onFailureImpl(dataSource: DataSource<Void?>) {
+          override fun onFailureImpl(dataSource: DataSource<Void?>) {
             try {
               removeRequest(requestId)
               promise.reject(ERROR_PREFETCH_FAILURE, dataSource.failureCause)
@@ -235,22 +227,22 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
     prefetchSource.subscribe(prefetchSubscriber, CallerThreadExecutor.getInstance())
   }
 
-  override public fun abortRequest(requestId: Double) {
+  public override fun abortRequest(requestId: Double) {
     val request = removeRequest(requestId.toInt())
     request?.close()
   }
 
   @ReactMethod
-  override public fun queryCache(uris: ReadableArray, promise: Promise) {
+  public override fun queryCache(uris: ReadableArray, promise: Promise) {
     // perform cache interrogation in async task as disk cache checks are expensive
     @Suppress("DEPRECATION", "StaticFieldLeak")
     object : GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
-          protected override fun doInBackgroundGuarded(vararg params: Void) {
+          override fun doInBackgroundGuarded(vararg params: Void) {
             val result: WritableMap = Arguments.createMap()
             val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
             for (i in 0 until uris.size()) {
-              val uriString: String = uris.getString(i)
-              if (uriString.isNotEmpty()) {
+              val uriString = uris.getString(i)
+              if (!uriString.isNullOrEmpty()) {
                 val uri = Uri.parse(uriString)
                 if (imagePipeline.isInBitmapMemoryCache(uri)) {
                   result.putString(uriString, "memory")

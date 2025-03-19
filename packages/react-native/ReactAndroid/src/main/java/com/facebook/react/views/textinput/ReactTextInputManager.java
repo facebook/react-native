@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
@@ -45,7 +44,6 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.BaseViewManager;
@@ -957,36 +955,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       },
       defaultFloat = Float.NaN)
   public void setBorderRadius(ReactEditText view, int index, float borderRadius) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      LengthPercentage radius =
-          Float.isNaN(borderRadius)
-              ? null
-              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
-      BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
-    } else {
-      if (!Float.isNaN(borderRadius)) {
-        borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-      }
-
-      if (index == 0) {
-        view.setBorderRadius(borderRadius);
-      } else {
-        view.setBorderRadius(borderRadius, index - 1);
-      }
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
   }
 
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactEditText view, @Nullable String borderStyle) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      BorderStyle parsedBorderStyle =
-          borderStyle == null ? null : BorderStyle.fromString(borderStyle);
-      BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
-    } else {
-      view.setBorderStyle(borderStyle);
-    }
+    @Nullable
+    BorderStyle parsedBorderStyle =
+        borderStyle == null ? null : BorderStyle.fromString(borderStyle);
+    BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
   }
 
   @ReactProp(name = "showSoftInputOnFocus", defaultBoolean = true)
@@ -1004,6 +986,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setPaintFlags(
         view.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG | Paint.UNDERLINE_TEXT_FLAG));
 
+    if (textDecorationLineString == null) {
+      return;
+    }
     for (String token : textDecorationLineString.split(" ")) {
       if (token.equals("underline")) {
         view.setPaintFlags(view.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -1023,14 +1008,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       },
       defaultFloat = Float.NaN)
   public void setBorderWidth(ReactEditText view, int index, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
-    } else {
-      if (!Float.isNaN(width)) {
-        width = PixelUtil.toPixelFromDIP(width);
-      }
-      view.setBorderWidth(SPACING_TYPES[index], width);
-    }
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
   }
 
   @ReactPropGroup(
@@ -1043,33 +1021,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       },
       customType = "Color")
   public void setBorderColor(ReactEditText view, int index, @Nullable Integer color) {
-
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color);
-    } else {
-      view.setBorderColor(SPACING_TYPES[index], color);
-    }
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color);
   }
 
   @ReactProp(name = "overflow")
   public void setOverflow(ReactEditText view, @Nullable String overflow) {
     view.setOverflow(overflow);
-  }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactEditText view, @Nullable ReadableArray shadows) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBoxShadow(view, shadows);
-    }
-  }
-
-  @Override
-  public void setBackgroundColor(ReactEditText view, @ColorInt int backgroundColor) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
-    } else {
-      super.setBackgroundColor(view, backgroundColor);
-    }
   }
 
   @Override
@@ -1345,8 +1302,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 0, // can't get content width
                 0, // can't get content height
                 mReactEditText.getWidth(),
-                mReactEditText.getHeight(),
-                false);
+                mReactEditText.getHeight());
 
         mEventDispatcher.dispatchEvent(event);
 

@@ -144,7 +144,7 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
   public fun get4PlusFrameStutters(): Int = fourPlusFrameStutters
 
   public val totalTimeMS: Int
-    get() = (lastFrameTime.toDouble() - firstFrameTime).toInt() / 1000000
+    get() = ((lastFrameTime.toDouble() - firstFrameTime) / 1000000.0).toInt()
 
   /**
    * Returns the FpsInfo as if stop had been called at the given upToTimeMs. Only valid if

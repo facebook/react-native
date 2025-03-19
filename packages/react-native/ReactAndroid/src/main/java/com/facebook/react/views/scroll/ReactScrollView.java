@@ -39,7 +39,6 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -50,7 +49,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
 import com.facebook.react.uimanager.StateWrapper;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
@@ -62,7 +60,7 @@ import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasSmoothScroll;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasStateWrapper;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
-import com.facebook.react.views.view.ReactViewBackgroundManager;
+import com.facebook.systrace.Systrace;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -78,6 +76,7 @@ public class ReactScrollView extends ScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
         View.OnLayoutChangeListener,
+        ReactAccessibleScrollView,
         ReactOverflowViewWithInset,
         HasScrollState,
         HasStateWrapper,
@@ -104,11 +103,9 @@ public class ReactScrollView extends ScrollView
   private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
-  private boolean mPreventReentry = false;
   private boolean mSendMomentumEvents;
   private @Nullable FpsListener mFpsListener = null;
   private @Nullable String mScrollPerfTag;
-  private boolean mEnableSyncOnScroll = false;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
   private boolean mDisableIntervalMomentum = false;
@@ -118,13 +115,12 @@ public class ReactScrollView extends ScrollView
   private boolean mSnapToEnd = true;
   private int mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
   private @Nullable View mContentView;
-  private ReactViewBackgroundManager mReactBackgroundManager;
   private @Nullable ReadableMap mCurrentContentOffset = null;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private @Nullable StateWrapper mStateWrapper = null;
   private final ReactScrollViewScrollState mReactScrollViewScrollState =
-      new ReactScrollViewScrollState(ViewCompat.LAYOUT_DIRECTION_LTR);
+      new ReactScrollViewScrollState();
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private long mLastScrollDispatchTime = 0;
@@ -139,13 +135,11 @@ public class ReactScrollView extends ScrollView
   public ReactScrollView(Context context, @Nullable FpsListener fpsListener) {
     super(context);
     mFpsListener = fpsListener;
-    mReactBackgroundManager = new ReactViewBackgroundManager(this);
 
     mScroller = getOverScrollerFromParent();
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
     setClipChildren(false);
-    mReactBackgroundManager.setOverflow(ViewProps.SCROLL);
 
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
   }
@@ -215,10 +209,6 @@ public class ReactScrollView extends ScrollView
     mScrollPerfTag = scrollPerfTag;
   }
 
-  public void setEnableSyncOnScroll(boolean enableSyncOnScroll) {
-    mEnableSyncOnScroll = enableSyncOnScroll;
-  }
-
   public void setScrollEnabled(boolean scrollEnabled) {
     mScrollEnabled = scrollEnabled;
   }
@@ -277,7 +267,6 @@ public class ReactScrollView extends ScrollView
       mOverflow = parsedOverflow == null ? Overflow.SCROLL : parsedOverflow;
     }
 
-    mReactBackgroundManager.setOverflow(overflow == null ? ViewProps.SCROLL : overflow);
     invalidate();
   }
 
@@ -392,7 +381,8 @@ public class ReactScrollView extends ScrollView
   }
 
   /** Returns whether the given descendent is partially scrolled in view */
-  boolean isPartiallyScrolledInView(View descendent) {
+  @Override
+  public boolean isPartiallyScrolledInView(View descendent) {
     int scrollDelta = getScrollDelta(descendent);
     descendent.getDrawingRect(mTempRect);
     return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
@@ -414,24 +404,23 @@ public class ReactScrollView extends ScrollView
 
   @Override
   protected void onScrollChanged(int x, int y, int oldX, int oldY) {
-    super.onScrollChanged(x, y, oldX, oldY);
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactScrollView.onScrollChanged");
+    try {
+      super.onScrollChanged(x, y, oldX, oldY);
 
-    mActivelyScrolling = true;
+      mActivelyScrolling = true;
 
-    if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
-      if (mRemoveClippedSubviews) {
-        updateClippingRect();
+      if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+        if (mRemoveClippedSubviews) {
+          updateClippingRect();
+        }
+        ReactScrollViewHelper.updateStateOnScrollChanged(
+            this,
+            mOnScrollDispatchHelper.getXFlingVelocity(),
+            mOnScrollDispatchHelper.getYFlingVelocity());
       }
-      if (mPreventReentry) {
-        return;
-      }
-      mPreventReentry = true;
-      ReactScrollViewHelper.updateStateOnScrollChanged(
-          this,
-          mOnScrollDispatchHelper.getXFlingVelocity(),
-          mOnScrollDispatchHelper.getYFlingVelocity(),
-          mEnableSyncOnScroll);
-      mPreventReentry = false;
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -543,12 +532,18 @@ public class ReactScrollView extends ScrollView
       return;
     }
 
-    Assertions.assertNotNull(mClippingRect);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactScrollView.updateClippingRect");
+    try {
+      Assertions.assertNotNull(mClippingRect);
 
-    ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
-    View contentView = getContentView();
-    if (contentView instanceof ReactClippingViewGroup) {
-      ((ReactClippingViewGroup) contentView).updateClippingRect();
+      ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
+      View contentView = getContentView();
+      if (contentView instanceof ReactClippingViewGroup) {
+        ((ReactClippingViewGroup) contentView).updateClippingRect();
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -672,12 +667,8 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void onDraw(Canvas canvas) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      if (mOverflow != Overflow.VISIBLE) {
-        BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
-      }
-    } else {
-      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (mOverflow != Overflow.VISIBLE) {
+      BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
     }
     super.onDraw(canvas);
   }
@@ -1245,32 +1236,22 @@ public class ReactScrollView extends ScrollView
         scrollTo(getScrollX(), maxScrollY);
       }
     }
+
+    ReactScrollViewHelper.emitLayoutChangeEvent(this);
   }
 
   @Override
   public void setBackgroundColor(int color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(this, color);
-    } else {
-      mReactBackgroundManager.setBackgroundColor(color);
-    }
+    BackgroundStyleApplicator.setBackgroundColor(this, color);
   }
 
   public void setBorderWidth(int position, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(
-          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
-    } else {
-      mReactBackgroundManager.setBorderWidth(position, width);
-    }
+    BackgroundStyleApplicator.setBorderWidth(
+        this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
   }
 
   public void setBorderColor(int position, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
-    } else {
-      mReactBackgroundManager.setBorderColor(position, color);
-    }
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
   }
 
   public void setBorderRadius(float borderRadius) {
@@ -1278,26 +1259,18 @@ public class ReactScrollView extends ScrollView
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      LengthPercentage radius =
-          Float.isNaN(borderRadius)
-              ? null
-              : new LengthPercentage(
-                  PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
-    } else {
-      mReactBackgroundManager.setBorderRadius(borderRadius, position);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(
+                PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderStyle(
-          this, style == null ? null : BorderStyle.fromString(style));
-    } else {
-      mReactBackgroundManager.setBorderStyle(style);
-    }
+    BackgroundStyleApplicator.setBorderStyle(
+        this, style == null ? null : BorderStyle.fromString(style));
   }
 
   /**
@@ -1358,12 +1331,20 @@ public class ReactScrollView extends ScrollView
     DEFAULT_FLING_ANIMATOR.cancel();
 
     // Update the fling animator with new values
-    DEFAULT_FLING_ANIMATOR
-        .setDuration(ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext()))
-        .setIntValues(start, end);
+    int duration = ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext());
+    DEFAULT_FLING_ANIMATOR.setDuration(duration).setIntValues(start, end);
 
     // Start the animator
     DEFAULT_FLING_ANIMATOR.start();
+
+    if (mSendMomentumEvents) {
+      int yVelocity = 0;
+      if (duration > 0) {
+        yVelocity = (end - start) / duration;
+      }
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, 0, yVelocity);
+      ReactScrollViewHelper.dispatchMomentumEndOnAnimationEnd(this);
+    }
   }
 
   @NonNull

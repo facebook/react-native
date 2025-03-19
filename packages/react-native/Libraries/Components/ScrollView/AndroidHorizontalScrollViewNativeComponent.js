@@ -8,10 +8,8 @@
  * @format
  */
 
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../src/private/types/HostComponent';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
@@ -25,16 +23,12 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     disableIntervalMomentum: true,
     maintainVisibleContentPosition: true,
     endFillColor: {process: require('../../StyleSheet/processColor').default},
-    experimental_boxShadow: {
-      process: require('../../StyleSheet/processBoxShadow').default,
-    },
     fadingEdgeLength: true,
     nestedScrollEnabled: true,
     overScrollMode: true,
     pagingEnabled: true,
     persistentScrollbar: true,
     horizontal: true,
-    enableSyncOnScroll: true,
     scrollEnabled: true,
     scrollEventThrottle: true,
     scrollPerfTag: true,

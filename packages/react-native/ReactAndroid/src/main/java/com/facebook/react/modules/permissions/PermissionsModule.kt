@@ -37,7 +37,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * Check if the app has the permission given. successCallback is called with true if the
    * permission had been granted, false otherwise. See [Activity.checkSelfPermission].
    */
-  override public fun checkPermission(permission: String, promise: Promise): Unit {
+  public override fun checkPermission(permission: String, promise: Promise): Unit {
     val context = getReactApplicationContext().getBaseContext()
     promise.resolve(context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
   }
@@ -50,7 +50,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * again). For devices before Android M, this always returns false. See
    * [permissionAwareActivity.shouldShowRequestPermissionRationale].
    */
-  override public fun shouldShowRequestPermissionRationale(
+  public override fun shouldShowRequestPermissionRationale(
       permission: String,
       promise: Promise
   ): Unit {
@@ -67,7 +67,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * user has the permission given or not and resolves with GRANTED or DENIED. See
    * [Activity.checkSelfPermission].
    */
-  override public fun requestPermission(permission: String, promise: Promise): Unit {
+  public override fun requestPermission(permission: String, promise: Promise): Unit {
     val context = getReactApplicationContext().getBaseContext()
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       promise.resolve(GRANTED)
@@ -78,7 +78,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       callbacks.put(
           requestCode,
           object : Callback {
-            override public operator fun invoke(vararg args: Any?) {
+            override operator fun invoke(vararg args: Any?) {
               val results = args[0] as IntArray
               if (results.size > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
                 promise.resolve(GRANTED)
@@ -99,7 +99,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  override public fun requestMultiplePermissions(
+  public override fun requestMultiplePermissions(
       permissions: ReadableArray,
       promise: Promise
   ): Unit {
@@ -108,7 +108,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
     var checkedPermissionsCount = 0
     val context = getReactApplicationContext().getBaseContext()
     for (i in 0 until permissions.size()) {
-      val perm = permissions.getString(i)
+      val perm = permissions.getString(i) ?: continue
       if (context.checkSelfPermission(perm) == PackageManager.PERMISSION_GRANTED) {
         grantedPermissions.putString(perm, GRANTED)
         checkedPermissionsCount++
@@ -125,12 +125,12 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       callbacks.put(
           requestCode,
           object : Callback {
-            override public operator fun invoke(vararg args: Any?) {
+            override operator fun invoke(vararg args: Any?) {
               val results = args[0] as IntArray
               val callbackActivity = args[1] as PermissionAwareActivity
               for (j in permissionsToCheck.indices) {
                 val permission = permissionsToCheck[j]
-                if (results.size > 0 && results[j] == PackageManager.PERMISSION_GRANTED) {
+                if (results.size > j && results[j] == PackageManager.PERMISSION_GRANTED) {
                   grantedPermissions.putString(permission, GRANTED)
                 } else {
                   if (callbackActivity.shouldShowRequestPermissionRationale(permission)) {
@@ -183,7 +183,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       return activity
     }
 
-  private companion object {
+  public companion object {
+    public const val NAME: String = NativePermissionsAndroidSpec.NAME
     private const val ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY"
   }
 }

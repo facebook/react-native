@@ -323,6 +323,7 @@ declare module "yargs" {
     updateStrings(obj: { [key: string]: string, ... }): this;
 
     usage(message: string, opts?: { [key: string]: Options, ... }): this;
+    usage(message: string, desc?: string, builder: CommonModuleObject["builder"], handler: CommonModuleObject["handler"]): this;
 
     version(): this;
     version(version: string | false): this;

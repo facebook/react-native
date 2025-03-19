@@ -13,17 +13,13 @@ import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
@@ -153,36 +149,20 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
       },
       defaultFloat = Float.NaN)
   public void setBorderRadius(ReactTextView view, int index, float borderRadius) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      LengthPercentage radius =
-          Float.isNaN(borderRadius)
-              ? null
-              : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
-      BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
-    } else {
-      if (!Float.isNaN(borderRadius)) {
-        borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-      }
-
-      if (index == 0) {
-        view.setBorderRadius(borderRadius);
-      } else {
-        view.setBorderRadius(borderRadius, index - 1);
-      }
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
   }
 
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactTextView view, @Nullable String borderStyle) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      BorderStyle parsedBorderStyle =
-          borderStyle == null ? null : BorderStyle.fromString(borderStyle);
-      BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
-    } else {
-      view.setBorderStyle(borderStyle);
-    }
+    @Nullable
+    BorderStyle parsedBorderStyle =
+        borderStyle == null ? null : BorderStyle.fromString(borderStyle);
+    BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
   }
 
   @ReactPropGroup(
@@ -197,14 +177,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
       },
       defaultFloat = Float.NaN)
   public void setBorderWidth(ReactTextView view, int index, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
-    } else {
-      if (!Float.isNaN(width)) {
-        width = PixelUtil.toPixelFromDIP(width);
-      }
-      view.setBorderWidth(SPACING_TYPES[index], width);
-    }
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
   }
 
   @ReactPropGroup(
@@ -217,11 +190,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
       },
       customType = "Color")
   public void setBorderColor(ReactTextView view, int index, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color);
-    } else {
-      view.setBorderColor(SPACING_TYPES[index], color);
-    }
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color);
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
@@ -260,21 +229,5 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   @ReactProp(name = "onInlineViewLayout")
   public void setNotifyOnInlineViewLayout(ReactTextView view, boolean notifyOnInlineViewLayout) {
     view.setNotifyOnInlineViewLayout(notifyOnInlineViewLayout);
-  }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactTextView view, @Nullable ReadableArray shadows) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBoxShadow(view, shadows);
-    }
-  }
-
-  @Override
-  public void setBackgroundColor(T view, @ColorInt int backgroundColor) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
-    } else {
-      super.setBackgroundColor(view, backgroundColor);
-    }
   }
 }

@@ -13,6 +13,7 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
@@ -21,8 +22,8 @@ export default class AnimatedModulo extends AnimatedWithChildren {
   _a: AnimatedNode;
   _modulus: number;
 
-  constructor(a: AnimatedNode, modulus: number) {
-    super();
+  constructor(a: AnimatedNode, modulus: number, config?: ?AnimatedNodeConfig) {
+    super(config);
     this._a = a;
     this._modulus = modulus;
   }
@@ -46,6 +47,7 @@ export default class AnimatedModulo extends AnimatedWithChildren {
 
   __attach(): void {
     this._a.__addChild(this);
+    super.__attach();
   }
 
   __detach(): void {
@@ -58,6 +60,7 @@ export default class AnimatedModulo extends AnimatedWithChildren {
       type: 'modulus',
       input: this._a.__getNativeTag(),
       modulus: this._modulus,
+      debugID: this.__getDebugID(),
     };
   }
 }

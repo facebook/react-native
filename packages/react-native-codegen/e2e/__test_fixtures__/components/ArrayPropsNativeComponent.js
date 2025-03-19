@@ -8,9 +8,9 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 import type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   DimensionValue,
@@ -20,12 +20,13 @@ import type {
 import type {
   Float,
   Int32,
+  UnsafeMixed,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
@@ -39,9 +40,10 @@ type NativeProps = $ReadOnly<{|
   edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
   dimensions?: $ReadOnlyArray<DimensionValue>,
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
-  object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
-  arrayOfObjects?: $ReadOnlyArray<$ReadOnly<{|prop1: Float, prop2: Int32|}>>,
-|}>;
+  object?: $ReadOnlyArray<$ReadOnly<{prop: string}>>,
+  arrayOfObjects?: $ReadOnlyArray<$ReadOnly<{prop1: Float, prop2: Int32}>>,
+  arrayOfMixed?: $ReadOnlyArray<UnsafeMixed>,
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'ArrayPropsNativeComponentView',

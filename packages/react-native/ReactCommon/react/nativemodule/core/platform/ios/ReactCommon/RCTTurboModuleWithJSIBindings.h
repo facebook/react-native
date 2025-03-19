@@ -8,13 +8,21 @@
 #import <Foundation/Foundation.h>
 
 #ifdef __cplusplus
+#include <ReactCommon/CallInvoker.h>
 #include <jsi/jsi.h>
 #endif
 
 @protocol RCTTurboModuleWithJSIBindings <NSObject>
 
 #ifdef __cplusplus
-- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime;
+
+@optional
+- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime
+                          callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callinvoker;
+
+- (void)installJSIBindingsWithRuntime:(facebook::jsi::Runtime &)runtime
+    __attribute__((deprecated("Use 'installJSIBindingsWithRuntime:callInvoker:' instead")));
+
 #endif
 
 @end

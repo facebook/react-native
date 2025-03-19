@@ -19,6 +19,10 @@ import com.facebook.react.packagerconnection.RequestHandler;
 import java.util.Map;
 
 public interface DevSupportManagerFactory {
+  /**
+   * Factory used by the Old Architecture flow to create a {@link DevSupportManager} and a {@link
+   * com.facebook.react.runtime.BridgeDevSupportManager}
+   */
   DevSupportManager create(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceManagerHelper,
@@ -31,4 +35,22 @@ public interface DevSupportManagerFactory {
       @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
       @Nullable DevLoadingViewManager devLoadingViewManager,
       @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager);
+
+  /**
+   * Factory used by the New Architecture/Bridgeless flow to create a {@link DevSupportManager} and
+   * a {@link BridgelessDevSupportManager}
+   */
+  DevSupportManager create(
+      Context applicationContext,
+      ReactInstanceDevHelper reactInstanceManagerHelper,
+      @Nullable String packagerPathForJSBundleName,
+      boolean enableOnCreate,
+      @Nullable RedBoxHandler redBoxHandler,
+      @Nullable DevBundleDownloadListener devBundleDownloadListener,
+      int minNumShakes,
+      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
+      @Nullable DevLoadingViewManager devLoadingViewManager,
+      @Nullable PausedInDebuggerOverlayManager pausedInDebuggerOverlayManager,
+      boolean useDevSupport);
 }

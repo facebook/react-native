@@ -10,11 +10,6 @@
 module.exports = async (github, context) => {
   const issue = context.payload.issue;
 
-  // Ignore issues using upgrade template (they use a special label)
-  if (issue.labels.find(label => label.name === 'Type: Upgrade Issue')) {
-    return;
-  }
-
   const issueVersionUnparsed =
     getReactNativeVersionFromIssueBodyIfExists(issue);
   const issueVersion = parseVersionFromString(issueVersionUnparsed);

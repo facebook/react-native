@@ -33,7 +33,8 @@ const reactDevToolsHook: ReactDevToolsGlobalHook =
 // Required for React DevTools to view / edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.
 if (reactDevToolsHook) {
-  reactDevToolsHook.resolveRNStyle = require('../StyleSheet/flattenStyle');
+  reactDevToolsHook.resolveRNStyle =
+    require('../StyleSheet/flattenStyle').default;
   reactDevToolsHook.nativeStyleEditorValidAttributes = Object.keys(
     ReactNativeStyleAttributes,
   );
@@ -52,7 +53,7 @@ const InspectorDeferred = ({
 }: InspectorDeferredProps) => {
   // D39382967 adds a require cycle: InitializeCore -> AppContainer -> Inspector -> InspectorPanel -> ScrollView -> InitializeCore
   // We can't remove it yet, fallback to dynamic require for now. This is the only reason why this logic is in a separate function.
-  const Inspector = require('../Inspector/Inspector');
+  const Inspector = require('../../src/private/inspector/Inspector').default;
 
   return (
     <Inspector
@@ -73,7 +74,7 @@ const ReactDevToolsOverlayDeferred = ({
   reactDevToolsAgent,
 }: ReactDevToolsOverlayDeferredProps) => {
   const ReactDevToolsOverlay =
-    require('../Inspector/ReactDevToolsOverlay').default;
+    require('../../src/private/inspector/ReactDevToolsOverlay').default;
 
   return (
     <ReactDevToolsOverlay

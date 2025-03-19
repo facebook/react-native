@@ -16,7 +16,6 @@
 #import <react/renderer/components/image/ImageProps.h>
 #import <react/renderer/imagemanager/ImageRequest.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
-#import <react/utils/CoreFeatures.h>
 
 using namespace facebook::react;
 
@@ -101,13 +100,6 @@ using namespace facebook::react;
     const auto &imageRequest = _state->getData().getImageRequest();
     auto &observerCoordinator = imageRequest.getObserverCoordinator();
     observerCoordinator.removeObserver(_imageResponseObserverProxy);
-    // Cancelling image request because we are no longer observing it.
-    // This is not 100% correct place to do this because we may want to
-    // re-create RCTImageComponentView with the same image and if it
-    // was cancelled before downloaded, download is not resumed.
-    // This will only become issue if we decouple life cycle of a
-    // ShadowNode from ComponentView, which is not something we do now.
-    imageRequest.cancel();
   }
 
   _state = state;

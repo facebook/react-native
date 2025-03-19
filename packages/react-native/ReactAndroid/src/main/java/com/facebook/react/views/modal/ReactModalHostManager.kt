@@ -10,7 +10,6 @@ package com.facebook.react.views.modal
 import android.content.DialogInterface.OnShowListener
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
@@ -20,7 +19,6 @@ import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.ModalHostViewManagerDelegate
 import com.facebook.react.viewmanagers.ModalHostViewManagerInterface
-import com.facebook.react.views.modal.ModalHostHelper.getModalHostSize
 import com.facebook.react.views.modal.ReactModalHostView.OnRequestCloseListener
 
 /** View manager for [ReactModalHostView] components. */
@@ -33,11 +31,6 @@ public class ReactModalHostManager :
 
   protected override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
       ReactModalHostView(reactContext)
-
-  public override fun createShadowNodeInstance(): LayoutShadowNode = ModalHostShadowNode()
-
-  public override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
-      ModalHostShadowNode::class.java
 
   public override fun onDropViewInstance(view: ReactModalHostView) {
     super.onDropViewInstance(view)
@@ -62,6 +55,14 @@ public class ReactModalHostManager :
       statusBarTranslucent: Boolean
   ) {
     view.statusBarTranslucent = statusBarTranslucent
+  }
+
+  @ReactProp(name = "navigationBarTranslucent")
+  public override fun setNavigationBarTranslucent(
+      view: ReactModalHostView,
+      navigationBarTranslucent: Boolean
+  ) {
+    view.navigationBarTranslucent = navigationBarTranslucent
   }
 
   @ReactProp(name = "hardwareAccelerated")
@@ -91,6 +92,11 @@ public class ReactModalHostManager :
 
   @ReactProp(name = "identifier")
   public override fun setIdentifier(view: ReactModalHostView, value: Int): Unit = Unit
+
+  public override fun setTestId(view: ReactModalHostView, value: String?) {
+    super.setTestId(view, value)
+    view.setDialogRootViewGroupTestId(value)
+  }
 
   protected override fun addEventEmitters(
       reactContext: ThemedReactContext,
@@ -128,8 +134,6 @@ public class ReactModalHostManager :
       stateWrapper: StateWrapper
   ): Any? {
     view.stateWrapper = stateWrapper
-    val modalSize = getModalHostSize(view.context)
-    view.updateState(modalSize.x, modalSize.y)
     return null
   }
 

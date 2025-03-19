@@ -40,10 +40,6 @@ class UIManagerBinding : public jsi::HostObject {
 
   ~UIManagerBinding() override;
 
-  jsi::Value getInspectorDataForInstance(
-      jsi::Runtime& runtime,
-      const EventEmitter& eventEmitter) const;
-
   /*
    * Delivers raw event data to JavaScript.
    * Thread synchronization must be enforced externally.

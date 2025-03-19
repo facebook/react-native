@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeModalManager';
-import NativeModalManager from '../../src/private/specs/modules/NativeModalManager';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeModalManager';
+import NativeModalManager from '../../src/private/specs_DEPRECATED/modules/NativeModalManager';
 export default NativeModalManager;

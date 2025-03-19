@@ -29,23 +29,32 @@ void BaseTextShadowNode::buildAttributedString(
     const ShadowNode& parentNode,
     AttributedString& outAttributedString,
     Attachments& outAttachments) {
+  bool lastFragmentWasRawText = false;
   for (const auto& childNode : parentNode.getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode =
         dynamic_cast<const RawTextShadowNode*>(childNode.get());
     if (rawTextShadowNode != nullptr) {
-      auto fragment = AttributedString::Fragment{};
-      fragment.string = rawTextShadowNode->getConcreteProps().text;
-      fragment.textAttributes = baseTextAttributes;
+      const auto& rawText = rawTextShadowNode->getConcreteProps().text;
+      if (lastFragmentWasRawText) {
+        outAttributedString.getFragments().back().string += rawText;
+      } else {
+        auto fragment = AttributedString::Fragment{};
+        fragment.string = rawText;
+        fragment.textAttributes = baseTextAttributes;
 
-      // Storing a retaining pointer to `ParagraphShadowNode` inside
-      // `attributedString` causes a retain cycle (besides that fact that we
-      // don't need it at all). Storing a `ShadowView` instance instead of
-      // `ShadowNode` should properly fix this problem.
-      fragment.parentShadowView = shadowViewFromShadowNode(parentNode);
-      outAttributedString.appendFragment(fragment);
+        // Storing a retaining pointer to `ParagraphShadowNode` inside
+        // `attributedString` causes a retain cycle (besides that fact that we
+        // don't need it at all). Storing a `ShadowView` instance instead of
+        // `ShadowNode` should properly fix this problem.
+        fragment.parentShadowView = shadowViewFromShadowNode(parentNode);
+        outAttributedString.appendFragment(std::move(fragment));
+        lastFragmentWasRawText = true;
+      }
       continue;
     }
+
+    lastFragmentWasRawText = false;
 
     // TextShadowNode
     auto textShadowNode = dynamic_cast<const TextShadowNode*>(childNode.get());
@@ -66,7 +75,7 @@ void BaseTextShadowNode::buildAttributedString(
     fragment.string = AttributedString::Fragment::AttachmentCharacter();
     fragment.parentShadowView = shadowViewFromShadowNode(*childNode);
     fragment.textAttributes = baseTextAttributes;
-    outAttributedString.appendFragment(fragment);
+    outAttributedString.appendFragment(std::move(fragment));
     outAttachments.push_back(Attachment{
         childNode.get(), outAttributedString.getFragments().size() - 1});
   }

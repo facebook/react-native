@@ -38,10 +38,10 @@ const EVENT_DEFINITION = `
   int32_optional_value: ?Int32,
   int32_optional_both?: ?Int32,
 
-  enum_required: ('small' | 'large'),
-  enum_optional_key?: ('small' | 'large'),
-  enum_optional_value: ?('small' | 'large'),
-  enum_optional_both?: ?('small' | 'large'),
+  union_required: ('small' | 'large'),
+  union_optional_key?: ('small' | 'large'),
+  union_optional_value: ?('small' | 'large'),
+  union_optional_both?: ?('small' | 'large'),
 
   object_required: {
     boolean_required: boolean,
@@ -110,10 +110,10 @@ const EVENT_DEFINITION = `
   int32_array_optional_value: ?$ReadOnlyArray<Int32>,
   int32_array_optional_both?: ?Int32[],
 
-  enum_array_required: $ReadOnlyArray<('small' | 'large')>,
-  enum_array_optional_key?: ('small' | 'large')[],
-  enum_array_optional_value: ?$ReadOnlyArray<('small' | 'large')>,
-  enum_array_optional_both?: ?('small' | 'large')[],
+  union_array_required: $ReadOnlyArray<('small' | 'large')>,
+  union_array_optional_key?: ('small' | 'large')[],
+  union_array_optional_value: ?$ReadOnlyArray<('small' | 'large')>,
+  union_array_optional_both?: ?('small' | 'large')[],
 
   object_array_required: $ReadOnlyArray<{
     boolean_required: boolean,
@@ -482,6 +482,12 @@ type ModuleProps = $ReadOnly<{|
   array_object_optional_key?: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
   array_object_optional_value: ?ArrayObjectType,
   array_object_optional_both?: ?$ReadOnlyArray<ObjectType>,
+
+  // UnsafeMixed props
+  array_mixed_required: $ReadOnlyArray<UnsafeMixed>,
+  array_mixed_optional_key?: $ReadOnlyArray<UnsafeMixed>,
+  array_mixed_optional_value: ?$ReadOnlyArray<UnsafeMixed>,
+  array_mixed_optional_both?: ?$ReadOnlyArray<UnsafeMixed>,
 
   // Nested array object types
   array_of_array_object_required: $ReadOnlyArray<
@@ -951,10 +957,18 @@ interface NativeCommands {
     z: Double,
     animated: boolean,
   ): void;
+  +arrayArgs: (
+    viewRef: React.ElementRef<NativeType>,
+    booleanArray: $ReadOnlyArray<boolean>,
+    stringArray: $ReadOnlyArray<string>,
+    floatArray: $ReadOnlyArray<Float>,
+    intArray: $ReadOnlyArray<Int32>,
+    doubleArray: $ReadOnlyArray<Double>,
+  ) => void;
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo'],
+  supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo', 'arrayArgs'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(
@@ -985,6 +999,10 @@ import type {HostComponent} from 'react-native';
 export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
+export type Locations = {
+  x: number,
+  y: number,
+}
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -1006,6 +1024,7 @@ interface NativeCommands {
     overlayColorsReadOnly: $ReadOnlyArray<string>,
     overlayColorsArray: Array<string>,
     overlayColorsArrayAnnotation: string[],
+    overlayLocations: $ReadOnlyArray<Locations>,
   ) => void;
 }
 

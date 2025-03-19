@@ -18,8 +18,12 @@ import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.interfaces.fabric.ReactSurface;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.systrace.Systrace;
 
 /**
  * Delegate class for {@link ReactActivity}. You can subclass this to provide custom implementations
@@ -75,17 +79,25 @@ public class ReactActivityDelegate {
   }
 
   /**
-   * Get the {@link ReactNativeHost} used by this app. By default, assumes {@link
-   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * Get the {@link ReactNativeHost} used by this app with Bridge enabled. By default, assumes
+   * {@link Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
    * ReactApplication#getReactNativeHost()}. Override this method if your application class does not
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactNativeHost}, e.g. as a static field somewhere.
    */
+  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
   protected ReactNativeHost getReactNativeHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
   }
 
-  public ReactHost getReactHost() {
+  /**
+   * Get the {@link ReactHost} used by this app with Bridgeless enabled. By default, assumes {@link
+   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * ReactApplication#getReactHost()}. Override this method if your application class does not
+   * implement {@code ReactApplication} or you simply have a different mechanism for storing a
+   * {@code ReactHost}, e.g. as a static field somewhere.
+   */
+  public @Nullable ReactHost getReactHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactHost();
   }
 
@@ -93,6 +105,7 @@ public class ReactActivityDelegate {
     return mReactDelegate;
   }
 
+  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
   public ReactInstanceManager getReactInstanceManager() {
     return mReactDelegate.getReactInstanceManager();
   }
@@ -102,40 +115,54 @@ public class ReactActivityDelegate {
   }
 
   public void onCreate(Bundle savedInstanceState) {
-    String mainComponentName = getMainComponentName();
-    final Bundle launchOptions = composeLaunchOptions();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
-      mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
-    }
-    if (ReactFeatureFlags.enableBridgelessArchitecture) {
-      mReactDelegate =
-          new ReactDelegate(getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
-    } else {
-      mReactDelegate =
-          new ReactDelegate(
-              getPlainActivity(),
-              getReactNativeHost(),
-              mainComponentName,
-              launchOptions,
-              isFabricEnabled()) {
-            @Override
-            protected ReactRootView createRootView() {
-              ReactRootView rootView = ReactActivityDelegate.this.createRootView();
-              if (rootView == null) {
-                rootView = super.createRootView();
-              }
-              return rootView;
-            }
-          };
-    }
-    if (mainComponentName != null) {
-      loadApp(mainComponentName);
-    }
+    Systrace.traceSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "ReactActivityDelegate.onCreate::init",
+        () -> {
+          String mainComponentName = getMainComponentName();
+          final Bundle launchOptions = composeLaunchOptions();
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
+            mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
+          }
+          if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+            mReactDelegate =
+                new ReactDelegate(
+                    getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
+          } else {
+            mReactDelegate =
+                new ReactDelegate(
+                    getPlainActivity(),
+                    getReactNativeHost(),
+                    mainComponentName,
+                    launchOptions,
+                    isFabricEnabled()) {
+                  @Override
+                  protected ReactRootView createRootView() {
+                    ReactRootView rootView = ReactActivityDelegate.this.createRootView();
+                    if (rootView == null) {
+                      rootView = super.createRootView();
+                    }
+                    return rootView;
+                  }
+                };
+          }
+          if (mainComponentName != null) {
+            loadApp(mainComponentName);
+          }
+        });
   }
 
   protected void loadApp(String appKey) {
     mReactDelegate.loadApp(appKey);
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
+  }
+
+  public void setReactSurface(ReactSurface reactSurface) {
+    mReactDelegate.setReactSurface(reactSurface);
+  }
+
+  public void setReactRootView(ReactRootView reactRootView) {
+    mReactDelegate.setReactRootView(reactRootView);
   }
 
   public void onUserLeaveHint() {
@@ -219,6 +246,20 @@ public class ReactActivityDelegate {
     return ((Activity) getContext());
   }
 
+  protected ReactActivity getReactActivity() {
+    return ((ReactActivity) getContext());
+  }
+
+  /**
+   * Get the current {@link ReactContext} from ReactHost or ReactInstanceManager
+   *
+   * <p>Do not store a reference to this, if the React instance is reloaded or destroyed, this
+   * context will no longer be valid.
+   */
+  public @Nullable ReactContext getCurrentReactContext() {
+    return mReactDelegate.getCurrentReactContext();
+  }
+
   /**
    * Override this method if you wish to selectively toggle Fabric for a specific surface. This will
    * also control if Concurrent Root (React 18) should be enabled or not.
@@ -226,7 +267,7 @@ public class ReactActivityDelegate {
    * @return true if Fabric is enabled for this Activity, false otherwise.
    */
   protected boolean isFabricEnabled() {
-    return ReactFeatureFlags.enableFabricRenderer;
+    return ReactNativeFeatureFlags.enableFabricRenderer();
   }
 
   /**

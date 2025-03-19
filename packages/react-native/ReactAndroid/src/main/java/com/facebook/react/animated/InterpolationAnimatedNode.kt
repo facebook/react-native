@@ -19,7 +19,7 @@ import java.util.regex.Pattern
  *
  * Currently only a linear interpolation is supported on an input range of an arbitrary size.
  */
-public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode() {
+internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode() {
   private enum class OutputType {
     Number,
     Color,
@@ -98,10 +98,10 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
   override fun prettyPrint(): String =
       "InterpolationAnimatedNode[$tag] super: {super.prettyPrint()}"
 
-  public companion object {
-    public const val EXTRAPOLATE_TYPE_IDENTITY: String = "identity"
-    public const val EXTRAPOLATE_TYPE_CLAMP: String = "clamp"
-    public const val EXTRAPOLATE_TYPE_EXTEND: String = "extend"
+  companion object {
+    const val EXTRAPOLATE_TYPE_IDENTITY: String = "identity"
+    const val EXTRAPOLATE_TYPE_CLAMP: String = "clamp"
+    const val EXTRAPOLATE_TYPE_EXTEND: String = "extend"
 
     private val numericPattern: Pattern =
         Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?")
@@ -130,7 +130,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       val outputRange = arrayOfNulls<DoubleArray>(size)
 
       // Match the first pattern into a List, since we don't know its length yet
-      var m = numericPattern.matcher(array.getString(0))
+      var m = numericPattern.matcher(array.getString(0) ?: "")
       val firstOutputRange: MutableList<Double> = ArrayList()
       while (m.find()) {
         firstOutputRange.add(m.group().toDouble())
@@ -143,7 +143,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       for (i in 1 until size) {
         val outputArr = DoubleArray(firstOutputRangeArr.size)
         var j = 0
-        m = numericPattern.matcher(array.getString(i))
+        m = numericPattern.matcher(array.getString(i) ?: "")
         while (m.find() && j < firstOutputRangeArr.size) {
           outputArr[j++] = m.group().toDouble()
         }
@@ -152,7 +152,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       return outputRange
     }
 
-    public fun interpolate(
+    fun interpolate(
         value: Double,
         inputMin: Double,
         inputMax: Double,
@@ -194,7 +194,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       } else outputMin + (outputMax - outputMin) * (result - inputMin) / (inputMax - inputMin)
     }
 
-    public fun interpolate(
+    fun interpolate(
         value: Double,
         inputRange: DoubleArray,
         outputRange: DoubleArray,
@@ -212,11 +212,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
           extrapolateRight)
     }
 
-    public fun interpolateColor(
-        value: Double,
-        inputRange: DoubleArray,
-        outputRange: IntArray
-    ): Int {
+    fun interpolateColor(value: Double, inputRange: DoubleArray, outputRange: IntArray): Int {
       val rangeIndex = findRangeIndex(value, inputRange)
       val outputMin = outputRange[rangeIndex]
       val outputMax = outputRange[rangeIndex + 1]
@@ -234,7 +230,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       return ColorUtils.blendARGB(outputMin, outputMax, ratio.toFloat())
     }
 
-    public fun interpolateString(
+    fun interpolateString(
         pattern: String,
         value: Double,
         inputRange: DoubleArray,

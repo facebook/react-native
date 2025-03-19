@@ -25,7 +25,6 @@ import com.facebook.react.bridge.interop.InteropModuleRegistry;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -63,6 +62,8 @@ public abstract class ReactContext extends ContextWrapper {
   private @Nullable JSExceptionHandler mExceptionHandlerWrapper;
   private @Nullable WeakReference<Activity> mCurrentActivity;
 
+  // NOTE: When converted to Kotlin, this field should be made internal due to
+  // visibility restriction on InteropModuleRegistry otherwise it will be exposed to the public API.
   protected @Nullable InteropModuleRegistry mInteropModuleRegistry;
   private boolean mIsInitialized = false;
 
@@ -501,10 +502,8 @@ public abstract class ReactContext extends ContextWrapper {
    */
   public abstract @Nullable CallInvokerHolder getJSCallInvokerHolder();
 
-  @DeprecatedInNewArchitecture(
-      message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
-              + " encouraged usage.")
+  @Deprecated(
+      since = "This method is deprecated, please use UIManagerHelper.getUIManager() instead.")
   /**
    * Get the UIManager for Fabric from the CatalystInstance.
    *

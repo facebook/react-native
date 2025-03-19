@@ -8,31 +8,27 @@
  * @flow
  */
 
-import type {
-  AppearancePreferences,
-  ColorSchemeName,
-} from 'react-native/Libraries/Utilities/NativeAppearance';
+import type {ColorSchemeName} from 'react-native/Libraries/Utilities/NativeAppearance';
 
+import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Appearance, Button, Text, View, useColorScheme} from 'react-native';
 
 function ColorSchemeSubscription() {
-  const [colorScheme, setScheme] = useState<?ColorSchemeName | string>(
+  const [colorScheme, setColorScheme] = useState<?ColorSchemeName | string>(
     Appearance.getColorScheme(),
   );
 
   useEffect(() => {
     const subscription = Appearance.addChangeListener(
-      (preferences: AppearancePreferences) => {
-        const {colorScheme: scheme} = preferences;
-        setScheme(scheme);
+      ({colorScheme: newColorScheme}: {colorScheme: ?ColorSchemeName}) => {
+        setColorScheme(newColorScheme);
       },
     );
-
-    return () => subscription?.remove();
-  }, [setScheme]);
+    return () => subscription.remove();
+  }, [setColorScheme]);
 
   return (
     <RNTesterThemeContext.Consumer>
@@ -148,8 +144,8 @@ const ToggleNativeAppearance = () => {
 
   return (
     <View>
-      <Text>Native colorScheme: {nativeColorScheme}</Text>
-      <Text>Current colorScheme: {colorScheme}</Text>
+      <RNTesterText>Native colorScheme: {nativeColorScheme}</RNTesterText>
+      <RNTesterText>Current colorScheme: {colorScheme}</RNTesterText>
       <Button
         title="Set to light"
         onPress={() => setNativeColorScheme('light')}

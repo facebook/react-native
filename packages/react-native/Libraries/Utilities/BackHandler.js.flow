@@ -10,18 +10,16 @@
 
 'use strict';
 
-type BackPressEventName = 'backPress' | 'hardwareBackPress';
+export type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
-type TBackHandler = {|
-  +exitApp: () => void,
-  +addEventListener: (
+type TBackHandler = {
+  exitApp(): void,
+  addEventListener(
     eventName: BackPressEventName,
     handler: () => ?boolean,
-  ) => {remove: () => void, ...},
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ) => void,
-|};
+  ): {remove: () => void, ...},
+};
 
-declare module.exports: TBackHandler;
+declare const BackHandler: TBackHandler;
+
+declare export default typeof BackHandler;

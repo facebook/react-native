@@ -18,19 +18,22 @@ const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
  *
  * You can use this module directly, or just require InitializeCore.
  */
-polyfillGlobal('XMLHttpRequest', () => require('../Network/XMLHttpRequest'));
-polyfillGlobal('FormData', () => require('../Network/FormData'));
+polyfillGlobal(
+  'XMLHttpRequest',
+  () => require('../Network/XMLHttpRequest').default,
+);
+polyfillGlobal('FormData', () => require('../Network/FormData').default);
 
 polyfillGlobal('fetch', () => require('../Network/fetch').fetch);
 polyfillGlobal('Headers', () => require('../Network/fetch').Headers);
 polyfillGlobal('Request', () => require('../Network/fetch').Request);
 polyfillGlobal('Response', () => require('../Network/fetch').Response);
-polyfillGlobal('WebSocket', () => require('../WebSocket/WebSocket'));
-polyfillGlobal('Blob', () => require('../Blob/Blob'));
-polyfillGlobal('File', () => require('../Blob/File'));
-polyfillGlobal('FileReader', () => require('../Blob/FileReader'));
-polyfillGlobal('URL', () => require('../Blob/URL').URL); // flowlint-line untyped-import:off
-polyfillGlobal('URLSearchParams', () => require('../Blob/URL').URLSearchParams); // flowlint-line untyped-import:off
+polyfillGlobal('WebSocket', () => require('../WebSocket/WebSocket').default);
+polyfillGlobal('Blob', () => require('../Blob/Blob').default);
+polyfillGlobal('File', () => require('../Blob/File').default);
+polyfillGlobal('FileReader', () => require('../Blob/FileReader').default);
+polyfillGlobal('URL', () => require('../Blob/URL').URL);
+polyfillGlobal('URLSearchParams', () => require('../Blob/URL').URLSearchParams);
 polyfillGlobal(
   'AbortController',
   () => require('abort-controller/dist/abort-controller').AbortController, // flowlint-line untyped-import:off

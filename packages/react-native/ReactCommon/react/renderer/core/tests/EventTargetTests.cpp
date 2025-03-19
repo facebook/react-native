@@ -21,9 +21,11 @@ TEST(EventTargetTests, getInstanceHandle) {
 
   EXPECT_EQ(instanceHandle->getTag(), 1);
 
-  auto eventTarget = EventTarget(std::move(instanceHandle));
+  auto eventTarget = EventTarget(std::move(instanceHandle), 41);
 
   EXPECT_EQ(eventTarget.getTag(), 1);
+
+  EXPECT_EQ(eventTarget.getSurfaceId(), 41);
 
   EXPECT_TRUE(eventTarget.getInstanceHandle(*runtime).isNull());
 

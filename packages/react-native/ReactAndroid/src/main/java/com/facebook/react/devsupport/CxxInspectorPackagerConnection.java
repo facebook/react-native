@@ -28,12 +28,12 @@ import okhttp3.WebSocketListener;
 
   @DoNotStrip private final HybridData mHybridData;
 
-  public CxxInspectorPackagerConnection(String url, String packageName) {
-    mHybridData = initHybrid(url, packageName, new DelegateImpl());
+  public CxxInspectorPackagerConnection(String url, String deviceName, String packageName) {
+    mHybridData = initHybrid(url, deviceName, packageName, new DelegateImpl());
   }
 
   private static native HybridData initHybrid(
-      String url, String packageName, DelegateImpl delegate);
+      String url, String deviceName, String packageName, DelegateImpl delegate);
 
   public native void connect();
 
@@ -49,6 +49,8 @@ import okhttp3.WebSocketListener;
     public native void didFailWithError(@Nullable Integer posixCode, String error);
 
     public native void didReceiveMessage(String message);
+
+    public native void didOpen();
 
     public native void didClose();
 
@@ -121,6 +123,17 @@ import okhttp3.WebSocketListener;
                       new Runnable() {
                         public void run() {
                           delegate.didReceiveMessage(text);
+                        }
+                      },
+                      0);
+                }
+
+                @Override
+                public void onOpen(WebSocket _webSocket, Response response) {
+                  scheduleCallback(
+                      new Runnable() {
+                        public void run() {
+                          delegate.didOpen();
                         }
                       },
                       0);

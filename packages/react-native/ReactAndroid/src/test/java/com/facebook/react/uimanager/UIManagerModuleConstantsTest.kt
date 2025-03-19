@@ -10,6 +10,7 @@ package com.facebook.react.uimanager
 import android.view.View
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import org.assertj.core.api.Assertions
 import org.assertj.core.data.MapEntry
 import org.junit.Before
@@ -54,6 +55,7 @@ class UIManagerModuleConstantsTest {
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
     reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
   }
 

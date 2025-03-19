@@ -6,7 +6,7 @@
  */
 
 #include "NativeMutationObserver.h"
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -111,7 +111,7 @@ NativeMutationObserver::getPublicInstancesFromShadowNodes(
 }
 
 void NativeMutationObserver::onMutations(std::vector<MutationRecord>& records) {
-  SystraceSection s("NativeMutationObserver::onMutations");
+  TraceSection s("NativeMutationObserver::onMutations");
 
   for (const auto& record : records) {
     pendingRecords_.emplace_back(NativeMutationRecord{
@@ -141,8 +141,8 @@ void NativeMutationObserver::notifyMutationObserversIfNecessary() {
   }
 
   if (dispatchNotification) {
-    SystraceSection s("NativeMutationObserver::notifyObservers");
-    if (ReactNativeFeatureFlags::enableMicrotasks()) {
+    TraceSection s("NativeMutationObserver::notifyObservers");
+    if (ReactNativeFeatureFlags::enableBridgelessArchitecture()) {
       runtime_->queueMicrotask(notifyMutationObservers_.value());
     } else {
       jsInvoker_->invokeAsync([&](jsi::Runtime& runtime) {

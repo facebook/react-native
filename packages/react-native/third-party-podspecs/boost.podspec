@@ -27,4 +27,8 @@ Pod::Spec.new do |spec|
   spec.header_mappings_dir = 'boost/boost'
 
   spec.resource_bundles = {'boost_privacy' => 'boost/PrivacyInfo.xcprivacy'}
+
+  spec.pod_target_xcconfig = {
+    "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
+  }
 end

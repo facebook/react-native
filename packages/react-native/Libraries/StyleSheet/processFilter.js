@@ -12,7 +12,7 @@
 'use strict';
 
 import type {ColorValue} from './StyleSheet';
-import type {DropShadowPrimitive, FilterFunction} from './StyleSheetTypes';
+import type {DropShadowValue, FilterFunction} from './StyleSheetTypes';
 
 import processColor from './processColor';
 
@@ -44,6 +44,8 @@ export default function processFilter(
   }
 
   if (typeof filter === 'string') {
+    filter = filter.replace(/\n/g, ' ');
+
     // matches on functions with args and nested functions like "drop-shadow(10 10 10 rgba(0, 0, 0, 1))"
     const regex = /([\w-]+)\(([^()]*|\([^()]*\)|[^()]*\([^()]*\)[^()]*)\)/g;
     let matches;
@@ -80,7 +82,7 @@ export default function processFilter(
         }
       }
     }
-  } else {
+  } else if (Array.isArray(filter)) {
     for (const filterFunction of filter) {
       const [filterName, filterValue] = Object.entries(filterFunction)[0];
       if (filterName === 'dropShadow') {
@@ -107,6 +109,8 @@ export default function processFilter(
         }
       }
     }
+  } else {
+    throw new TypeError(`${typeof filter} filter is not a string or array`);
   }
 
   return result;
@@ -175,7 +179,7 @@ function _getFilterAmount(filterName: string, filterArgs: mixed): ?number {
 }
 
 function parseDropShadow(
-  rawDropShadow: string | DropShadowPrimitive,
+  rawDropShadow: string | DropShadowValue,
 ): ?ParsedDropShadow {
   const dropShadow =
     typeof rawDropShadow === 'string'
@@ -244,8 +248,8 @@ function parseDropShadow(
   return parsedDropShadow;
 }
 
-function parseDropShadowString(rawDropShadow: string): ?DropShadowPrimitive {
-  const dropShadow: DropShadowPrimitive = {
+function parseDropShadowString(rawDropShadow: string): ?DropShadowValue {
+  const dropShadow: DropShadowValue = {
     offsetX: 0,
     offsetY: 0,
   };
@@ -310,6 +314,10 @@ function parseLength(length: string): ?number {
   }
 
   if (match[3] != null && match[3] !== 'px') {
+    return null;
+  }
+
+  if (match[3] == null && match[1] !== '0') {
     return null;
   }
 

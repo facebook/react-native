@@ -30,12 +30,13 @@ struct WritableNativeArray
   WritableNativeArray();
   WritableNativeArray(folly::dynamic&& val);
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  static void initHybrid(jni::alias_ref<jhybridobject> jobj);
 
   void pushNull();
   void pushBoolean(jboolean value);
   void pushDouble(jdouble value);
   void pushInt(jint value);
+  void pushLong(jlong value);
   void pushString(jstring value);
   void pushNativeArray(ReadableNativeArray* otherArray);
   void pushNativeMap(ReadableNativeMap* map);

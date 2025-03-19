@@ -44,7 +44,7 @@ const folly::dynamic targetCapabilitiesToDynamic(
 
 struct InspectorPageDescription {
   const int id;
-  const std::string title;
+  const std::string description;
   const std::string vm;
   const InspectorTargetCapabilities capabilities;
 };
@@ -100,7 +100,7 @@ class JSINSPECTOR_EXPORT IInspector : public IDestructible {
    * \returns the ID assigned to the new page.
    */
   virtual int addPage(
-      const std::string& title,
+      const std::string& description,
       const std::string& vm,
       ConnectFunc connectFunc,
       InspectorTargetCapabilities capabilities = {}) = 0;

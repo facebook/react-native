@@ -27,13 +27,15 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage
 import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
+import com.facebook.react.uiapp.component.ReportFullyDrawnViewManager
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
 
-class RNTesterApplication : Application(), ReactApplication {
+internal class RNTesterApplication : Application(), ReactApplication {
   override val reactNativeHost: ReactNativeHost by lazy {
     object : DefaultReactNativeHost(this) {
       public override fun getJSMainModuleName(): String = BuildConfig.JS_MAIN_MODULE_NAME
@@ -75,16 +77,16 @@ class RNTesterApplication : Application(), ReactApplication {
                               ReactModuleInfo(
                                   SampleTurboModule.NAME,
                                   "SampleTurboModule",
-                                  _canOverrideExistingModule = false,
-                                  _needsEagerInit = false,
+                                  canOverrideExistingModule = false,
+                                  needsEagerInit = false,
                                   isCxxModule = false,
                                   isTurboModule = true),
                           SampleLegacyModule.NAME to
                               ReactModuleInfo(
                                   SampleLegacyModule.NAME,
                                   "SampleLegacyModule",
-                                  _canOverrideExistingModule = false,
-                                  _needsEagerInit = false,
+                                  canOverrideExistingModule = false,
+                                  needsEagerInit = false,
                                   isCxxModule = false,
                                   isTurboModule = false))
                     } else {
@@ -98,12 +100,15 @@ class RNTesterApplication : Application(), ReactApplication {
               ): List<NativeModule> = emptyList()
 
               override fun getViewManagerNames(reactContext: ReactApplicationContext) =
-                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView")
+                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView", "RNTReportFullyDrawnView")
 
               override fun createViewManagers(
                   reactContext: ReactApplicationContext
               ): List<ViewManager<*, *>> =
-                  listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext))
+                  listOf(
+                      MyNativeViewManager(),
+                      MyLegacyViewManager(reactContext),
+                      ReportFullyDrawnViewManager())
 
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
@@ -112,6 +117,7 @@ class RNTesterApplication : Application(), ReactApplication {
                   when (viewManagerName) {
                     "RNTMyNativeView" -> MyNativeViewManager()
                     "RNTMyLegacyNativeView" -> MyLegacyViewManager(reactContext)
+                    "RNTReportFullyDrawnView" -> ReportFullyDrawnViewManager()
                     else -> null
                   }
             })
@@ -129,8 +135,13 @@ class RNTesterApplication : Application(), ReactApplication {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik)
     super.onCreate()
 
-    // We want the .init() statement to exercise this code when building RNTester with Buck
-    @Suppress("DEPRECATION") SoLoader.init(this, /* native exopackage */ false)
+    if (BuildConfig.IS_INTERNAL_BUILD) {
+      // For Buck we call the simple init() as the SoMapping is built-from-source inside SoLoader
+      SoLoader.init(this, false)
+    } else {
+      // For Gradle instead, we need to specify it as constructor parameter.
+      SoLoader.init(this, OpenSourceMergedSoMapping)
+    }
 
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()

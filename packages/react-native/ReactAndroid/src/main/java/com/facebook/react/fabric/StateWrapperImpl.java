@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.jni.HybridData;
+import com.facebook.jni.HybridClassBase;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -27,21 +27,18 @@ import com.facebook.react.uimanager.StateWrapper;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStrip
-public class StateWrapperImpl implements StateWrapper {
+public class StateWrapperImpl extends HybridClassBase implements StateWrapper {
   static {
     FabricSoLoader.staticInit();
   }
 
   private static final String TAG = "StateWrapperImpl";
 
-  @DoNotStrip private final HybridData mHybridData;
-  private volatile boolean mDestroyed = false;
-
   private StateWrapperImpl() {
-    mHybridData = initHybrid();
+    initHybrid();
   }
 
-  private static native HybridData initHybrid();
+  private native void initHybrid();
 
   private native ReadableNativeMap getStateDataImpl();
 
@@ -52,7 +49,7 @@ public class StateWrapperImpl implements StateWrapper {
   @Override
   @Nullable
   public ReadableMapBuffer getStateDataMapBuffer() {
-    if (mDestroyed) {
+    if (!isValid()) {
       FLog.e(TAG, "Race between StateWrapperImpl destruction and getState");
       return null;
     }
@@ -62,7 +59,7 @@ public class StateWrapperImpl implements StateWrapper {
   @Override
   @Nullable
   public ReadableNativeMap getStateData() {
-    if (mDestroyed) {
+    if (!isValid()) {
       FLog.e(TAG, "Race between StateWrapperImpl destruction and getState");
       return null;
     }
@@ -71,7 +68,7 @@ public class StateWrapperImpl implements StateWrapper {
 
   @Override
   public void updateState(@NonNull WritableMap map) {
-    if (mDestroyed) {
+    if (!isValid()) {
       FLog.e(TAG, "Race between StateWrapperImpl destruction and updateState");
       return;
     }
@@ -80,15 +77,14 @@ public class StateWrapperImpl implements StateWrapper {
 
   @Override
   public void destroyState() {
-    if (!mDestroyed) {
-      mDestroyed = true;
-      mHybridData.resetNative();
+    if (isValid()) {
+      resetNative();
     }
   }
 
   @Override
   public String toString() {
-    if (mDestroyed) {
+    if (!isValid()) {
       return "<destroyed>";
     }
 

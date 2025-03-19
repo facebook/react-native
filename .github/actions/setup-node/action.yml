@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: 'The node.js version to use'
     required: false
-    default: '18'
+    default: '20'
 runs:
   using: "composite"
   steps:
@@ -12,3 +12,4 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
+        cache: yarn

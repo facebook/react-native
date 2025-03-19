@@ -33,13 +33,15 @@ class InspectorPackagerConnection {
    * Creates a new connection instance. Connections start in the disconnected
    * state; connect() should be called to establish a connection.
    * \param url The WebSocket URL where the inspector-proxy server is listening.
-   * \param app The name of the application being debugged.
+   * \param deviceName The host device name.
+   * \param appName The application name.
    * \param delegate An interface to platform-specific methods for creating a
    * WebSocket, scheduling async work, etc.
    */
   InspectorPackagerConnection(
       std::string url,
-      std::string app,
+      std::string deviceName,
+      std::string appName,
       std::unique_ptr<InspectorPackagerConnectionDelegate> delegate);
   bool isConnected() const;
   void connect();

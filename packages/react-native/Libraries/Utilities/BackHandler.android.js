@@ -14,12 +14,13 @@ import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 const DEVICE_BACK_EVENT = 'hardwareBackPress';
 
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
+type BackPressHandler = () => ?boolean;
 
-const _backPressSubscriptions = [];
+const _backPressSubscriptions: Array<BackPressHandler> = [];
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function () {
   for (let i = _backPressSubscriptions.length - 1; i >= 0; i--) {
-    if (_backPressSubscriptions[i]()) {
+    if (_backPressSubscriptions[i]?.()) {
       return;
     }
   }
@@ -53,17 +54,13 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function () {
  * });
  * ```
  */
-type TBackHandler = {|
+type TBackHandler = {
   +exitApp: () => void,
   +addEventListener: (
     eventName: BackPressEventName,
-    handler: () => ?boolean,
+    handler: BackPressHandler,
   ) => {remove: () => void, ...},
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ) => void,
-|};
+};
 const BackHandler: TBackHandler = {
   exitApp: function (): void {
     if (!NativeDeviceEventManager) {
@@ -80,28 +77,20 @@ const BackHandler: TBackHandler = {
    */
   addEventListener: function (
     eventName: BackPressEventName,
-    handler: () => ?boolean,
+    handler: BackPressHandler,
   ): {remove: () => void, ...} {
     if (_backPressSubscriptions.indexOf(handler) === -1) {
       _backPressSubscriptions.push(handler);
     }
     return {
-      remove: (): void => BackHandler.removeEventListener(eventName, handler),
+      remove: (): void => {
+        const index = _backPressSubscriptions.indexOf(handler);
+        if (index !== -1) {
+          _backPressSubscriptions.splice(index, 1);
+        }
+      },
     };
-  },
-
-  /**
-   * Removes the event handler.
-   */
-  removeEventListener: function (
-    eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ): void {
-    const index = _backPressSubscriptions.indexOf(handler);
-    if (index !== -1) {
-      _backPressSubscriptions.splice(index, 1);
-    }
   },
 };
 
-module.exports = BackHandler;
+export default BackHandler;

@@ -380,22 +380,13 @@ const inspect = (function () {
   return inspect;
 })();
 
-const OBJECT_COLUMN_NAME = '(index)';
+const INDEX_COLUMN_NAME = '(index)';
 const LOG_LEVELS = {
   trace: 0,
   info: 1,
   warn: 2,
   error: 3,
 };
-const INSPECTOR_LEVELS = [];
-INSPECTOR_LEVELS[LOG_LEVELS.trace] = 'debug';
-INSPECTOR_LEVELS[LOG_LEVELS.info] = 'log';
-INSPECTOR_LEVELS[LOG_LEVELS.warn] = 'warning';
-INSPECTOR_LEVELS[LOG_LEVELS.error] = 'error';
-
-// Strip the inner function in getNativeLogFunction(), if in dev also
-// strip method printing to originalConsole.
-const INSPECTOR_FRAMES_TO_SKIP = __DEV__ ? 2 : 1;
 
 function getNativeLogFunction(level) {
   return function () {
@@ -429,14 +420,6 @@ function getNativeLogFunction(level) {
       // (Note: Logic duplicated in ExceptionsManager.js.)
       logLevel = LOG_LEVELS.warn;
     }
-    if (global.__inspectorLog) {
-      global.__inspectorLog(
-        INSPECTOR_LEVELS[logLevel],
-        str,
-        [].slice.call(arguments),
-        INSPECTOR_FRAMES_TO_SKIP,
-      );
-    }
     if (groupStack.length) {
       str = groupFormat('', str);
     }
@@ -450,16 +433,47 @@ function repeat(element, n) {
   });
 }
 
-function consoleTablePolyfill(rows) {
+function formatCellValue(cell, key) {
+  if (key === INDEX_COLUMN_NAME) {
+    return cell[key];
+  }
+
+  if (cell.hasOwnProperty(key)) {
+    var cellValue = cell[key];
+
+    switch (typeof cellValue) {
+      case 'function':
+        return 'ƒ';
+      case 'string':
+        return "'" + cellValue + "'";
+      case 'object':
+        return cellValue == null ? 'null' : '{…}';
+    }
+
+    return String(cellValue);
+  }
+  return '';
+}
+
+function consoleTablePolyfill(data, columns) {
+  var rows;
+
   // convert object -> array
-  if (!Array.isArray(rows)) {
-    var data = rows;
+  if (Array.isArray(data)) {
+    rows = data.map((row, index) => {
+      var processedRow = {};
+      processedRow[INDEX_COLUMN_NAME] = String(index);
+      Object.assign(processedRow, row);
+      return processedRow;
+    });
+  } else {
     rows = [];
     for (var key in data) {
       if (data.hasOwnProperty(key)) {
-        var row = data[key];
-        row[OBJECT_COLUMN_NAME] = key;
-        rows.push(row);
+        var processedRow = {};
+        processedRow[INDEX_COLUMN_NAME] = key;
+        Object.assign(processedRow, data[key]);
+        rows.push(processedRow);
       }
     }
   }
@@ -468,7 +482,16 @@ function consoleTablePolyfill(rows) {
     return;
   }
 
-  var columns = Object.keys(rows[0]).sort();
+  if (Array.isArray(columns)) {
+    columns = [INDEX_COLUMN_NAME].concat(columns);
+  } else {
+    columns = Array.from(
+      rows.reduce((columnSet, row) => {
+        Object.keys(row).forEach(key => columnSet.add(key));
+        return columnSet;
+      }, new Set()),
+    );
+  }
   var stringRows = [];
   var columnWidths = [];
 
@@ -477,7 +500,7 @@ function consoleTablePolyfill(rows) {
   columns.forEach(function (k, i) {
     columnWidths[i] = k.length;
     for (var j = 0; j < rows.length; j++) {
-      var cellStr = (rows[j][k] || '?').toString();
+      var cellStr = formatCellValue(rows[j], k);
       stringRows[j] = stringRows[j] || [];
       stringRows[j][i] = cellStr;
       columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
@@ -492,13 +515,13 @@ function consoleTablePolyfill(rows) {
       return cell + extraSpaces;
     });
     space = space || ' ';
-    return cells.join(space + '|' + space);
+    return '| ' + cells.join(space + '|' + space) + ' |';
   }
 
   var separators = columnWidths.map(function (columnWidth) {
     return repeat('-', columnWidth).join('');
   });
-  var separatorRow = joinRow(separators, '-');
+  var separatorRow = joinRow(separators);
   var header = joinRow(columns);
   var table = [header, separatorRow];
 
@@ -569,6 +592,48 @@ if (global.nativeLoggingHook) {
     groupCollapsed: consoleGroupCollapsedPolyfill,
     assert: consoleAssertPolyfill,
   };
+
+  // TODO(T206796580): This was copy-pasted from ExceptionsManager.js
+  // Delete the copy there after the c++ pipeline is rolled out everywhere.
+  if (global.RN$useAlwaysAvailableJSErrorHandling === true) {
+    let originalConsoleError = console.error;
+    console.reportErrorsAsExceptions = true;
+    function stringifySafe(arg) {
+      return inspect(arg, {depth: 10}).replace(/\n\s*/g, ' ');
+    }
+    console.error = function (...args) {
+      originalConsoleError.apply(this, args);
+      if (!console.reportErrorsAsExceptions) {
+        return;
+      }
+      if (global.RN$inExceptionHandler?.()) {
+        return;
+      }
+      let error;
+
+      const firstArg = args[0];
+      if (firstArg?.stack) {
+        // RN$handleException will console.error this with high enough fidelity.
+        error = firstArg;
+      } else {
+        if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
+          // React warnings use console.error so that a stack trace is shown, but
+          // we don't (currently) want these to show a redbox
+          return;
+        }
+        const message = args
+          .map(arg => (typeof arg === 'string' ? arg : stringifySafe(arg)))
+          .join(' ');
+
+        error = new Error(message);
+        error.name = 'console.error';
+      }
+
+      const isFatal = false;
+      const reportToConsole = false;
+      global.RN$handleException(error, isFatal, reportToConsole);
+    };
+  }
 
   Object.defineProperty(console, '_isPolyfilled', {
     value: true,

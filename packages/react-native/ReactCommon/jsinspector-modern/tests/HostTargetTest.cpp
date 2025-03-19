@@ -19,6 +19,7 @@
 #include "FollyDynamicMatchers.h"
 #include "InspectorMocks.h"
 #include "UniquePtrFactory.h"
+#include "utils/InspectorFlagOverridesGuard.h"
 
 using namespace ::testing;
 
@@ -28,6 +29,7 @@ namespace {
 
 class HostTargetTest : public Test {
   folly::QueuedImmediateExecutor immediateExecutor_;
+  InspectorFlagOverridesGuard inspectorFlagsGuard_{{}};
 
  protected:
   HostTargetTest() {

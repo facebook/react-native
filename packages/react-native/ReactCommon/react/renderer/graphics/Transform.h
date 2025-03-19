@@ -8,8 +8,10 @@
 #pragma once
 
 #include <array>
+#include <string>
 #include <vector>
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/RectangleEdges.h>
@@ -101,7 +103,8 @@ struct Transform {
    */
   static Transform FromTransformOperation(
       TransformOperation transformOperation,
-      const Size& size);
+      const Size& size,
+      const Transform& transform = Transform::Identity());
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
 
@@ -161,10 +164,10 @@ struct Transform {
    * performs slerp between the two rotations, and a linear interpolation
    * of scale and translation.
    *
-   * @param progress
-   * @param lhs
-   * @param rhs
-   * @return
+   * @param animationProgress of the animation
+   * @param lhs start of the interpolation
+   * @param rhs end of the interpolation
+   * @return the Transformation
    */
   static Transform Interpolate(
       Float animationProgress,

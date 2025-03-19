@@ -14,8 +14,10 @@
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTInvalidating.h>
-#import <React/RCTUIUtils.h>
+#import <React/RCTKeyWindowValuesProxy.h>
 #import <React/RCTUtils.h>
+#import <React/RCTWindowSafeAreaProxy.h>
+#import <atomic>
 
 #import "CoreModulesPlugins.h"
 
@@ -28,16 +30,24 @@ using namespace facebook::react;
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
-  BOOL _invalidated;
+  std::atomic<BOOL> _invalidated;
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    [[RCTKeyWindowValuesProxy sharedInstance] startObservingWindowSizeIfNecessary];
+  }
+  return self;
+}
+
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -66,12 +76,12 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
-                                               name:RCTWindowFrameDidChangeNotification
+                                               name:UIApplicationDidBecomeActiveNotification
                                              object:nil];
 
 #if TARGET_OS_IOS
 
-  _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
+  _currentInterfaceOrientation = [RCTKeyWindowValuesProxy sharedInstance].currentInterfaceOrientation;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
@@ -92,10 +102,9 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  if (_invalidated) {
+  if (_invalidated.exchange(YES)) {
     return;
   }
-  _invalidated = YES;
   [self _cleanupObservers];
 }
 
@@ -108,8 +117,6 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTUserInterfaceStyleDidChangeNotification object:nil];
-
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTWindowFrameDidChangeNotification object:nil];
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 
@@ -125,10 +132,8 @@ static BOOL RCTIsIPhoneNotched()
 
 #if TARGET_OS_IOS
   dispatch_once(&onceToken, ^{
-    RCTAssertMainQueue();
-
     // 20pt is the top safeArea value in non-notched devices
-    isIPhoneNotched = RCTSharedApplication().keyWindow.safeAreaInsets.top > 20;
+    isIPhoneNotched = [RCTWindowSafeAreaProxy sharedInstance].currentSafeAreaInsets.top > 20;
   });
 #endif
 
@@ -137,21 +142,24 @@ static BOOL RCTIsIPhoneNotched()
 
 static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 {
-  RCTAssertMainQueue();
-  RCTDimensions dimensions = RCTGetDimensions(fontScale);
-  __typeof(dimensions.window) window = dimensions.window;
+  UIScreen *mainScreen = UIScreen.mainScreen;
+  CGSize screenSize = mainScreen.bounds.size;
+
+  // We fallback to screen size if a key window is not found.
+  CGSize windowSize = [RCTKeyWindowValuesProxy sharedInstance].windowSize;
+
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
-    @"width" : @(window.width),
-    @"height" : @(window.height),
-    @"scale" : @(window.scale),
-    @"fontScale" : @(window.fontScale)
+    @"width" : @(windowSize.width),
+    @"height" : @(windowSize.height),
+    @"scale" : @(mainScreen.scale),
+    @"fontScale" : @(fontScale)
   };
-  __typeof(dimensions.screen) screen = dimensions.screen;
+
   NSDictionary<NSString *, NSNumber *> *dimsScreen = @{
-    @"width" : @(screen.width),
-    @"height" : @(screen.height),
-    @"scale" : @(screen.scale),
-    @"fontScale" : @(screen.fontScale)
+    @"width" : @(screenSize.width),
+    @"height" : @(screenSize.height),
+    @"scale" : @(mainScreen.scale),
+    @"fontScale" : @(fontScale)
   };
   return @{@"window" : dimsWindow, @"screen" : dimsScreen};
 }
@@ -174,20 +182,14 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
-  __block NSDictionary<NSString *, id> *constants;
-  __weak __typeof(self) weakSelf = self;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = @{
-      @"Dimensions" : [weakSelf _exportedDimensions],
-      // Note:
-      // This prop is deprecated and will be removed in a future release.
-      // Please use this only for a quick and temporary solution.
-      // Use <SafeAreaView> instead.
-      @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
-    };
-  });
-
-  return constants;
+  return @{
+    @"Dimensions" : [self _exportedDimensions],
+    // Note:
+    // This prop is deprecated and will be removed in a future release.
+    // Please use this only for a quick and temporary solution.
+    // Use <SafeAreaView> instead.
+    @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
+  };
 }
 
 - (void)didReceiveNewContentSizeMultiplier
@@ -206,20 +208,11 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (void)interfaceOrientationDidChange
 {
-  __weak __typeof(self) weakSelf = self;
-  RCTExecuteOnMainQueue(^{
-    [weakSelf _interfaceOrientationDidChange];
-  });
-}
-
-- (void)_interfaceOrientationDidChange
-{
 #if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
-  UIApplication *application = RCTSharedApplication();
-  UIInterfaceOrientation nextOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
+  UIWindow *keyWindow = RCTKeyWindow();
+  UIInterfaceOrientation nextOrientation = keyWindow.windowScene.interfaceOrientation;
 
-  BOOL isRunningInFullScreen =
-      CGRectEqualToRect(application.delegate.window.frame, application.delegate.window.screen.bounds);
+  BOOL isRunningInFullScreen = CGRectEqualToRect(keyWindow.frame, keyWindow.screen.bounds);
   // We are catching here two situations for multitasking view:
   // a) The app is in Split View and the container gets resized -> !isRunningInFullScreen
   // b) The app changes to/from fullscreen example: App runs in slide over mode and goes into fullscreen->

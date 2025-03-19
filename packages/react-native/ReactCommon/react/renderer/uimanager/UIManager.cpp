@@ -8,13 +8,13 @@
 #include "UIManager.h"
 
 #include <cxxreact/JSExecutor.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/uimanager/SurfaceRegistryBinding.h>
+#include <react/renderer/uimanager/AppRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/UIManagerMountHook.h>
@@ -71,7 +71,7 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
     SurfaceId surfaceId,
     RawProps rawProps,
     InstanceHandle::Shared instanceHandle) const {
-  SystraceSection s("UIManager::createNode", "componentName", name);
+  TraceSection s("UIManager::createNode", "componentName", name);
 
   auto& componentDescriptor = componentDescriptorRegistry_->at(name);
   auto fallbackDescriptor =
@@ -114,7 +114,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
     const ShadowNode& shadowNode,
     const ShadowNode::SharedListOfShared& children,
     RawProps rawProps) const {
-  SystraceSection s(
+  TraceSection s(
       "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
   PropsParserContext propsParserContext{
@@ -126,20 +126,41 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
 
   if (!rawProps.isEmpty()) {
     if (family.nativeProps_DEPRECATED != nullptr) {
+      // 1. update the nativeProps_DEPRECATED props.
+      //
+      // In this step, we want the most recent value for the props
+      // managed by setNativeProps.
       // Values in `rawProps` patch (take precedence over)
-      // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
-      // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
-      // was previously in `nativeProps_DEPRECATED`.
+      // `nativeProps_DEPRECATED`. For example, if both
+      // `nativeProps_DEPRECATED` and `rawProps` contain key 'A'.
+      // Value from `rawProps` overrides what was previously in
+      // `nativeProps_DEPRECATED`. Notice that the `nativeProps_DEPRECATED`
+      // patch will not get more props from `rawProps`: if the key is not
+      // present in `nativeProps_DEPRECATED`, it will not be added.
+      //
+      // The result of this operation is the new `nativeProps_DEPRECATED`.
       family.nativeProps_DEPRECATED =
           std::make_unique<folly::dynamic>(mergeDynamicProps(
-              *family.nativeProps_DEPRECATED,
-              (folly::dynamic)rawProps,
+              *family.nativeProps_DEPRECATED, // source
+              (folly::dynamic)rawProps, // patch
               NullValueStrategy::Ignore));
 
+      // 2. Compute the final set of props.
+      //
+      // This step takes the new props handled by `setNativeProps` and
+      // merges them in the `rawProps` managed by React.
+      // The new props handled by `nativeProps` now takes precedence
+      // on the props handled by React, as we want to make sure that
+      // all the props are applied to the component.
+      // We use these finalProps as source of truth for the component.
+      auto finalProps = mergeDynamicProps(
+          (folly::dynamic)rawProps, // source
+          *family.nativeProps_DEPRECATED, // patch
+          NullValueStrategy::Override);
+
+      // 3. Clone the props by using finalProps.
       props = componentDescriptor.cloneProps(
-          propsParserContext,
-          shadowNode.getProps(),
-          RawProps(*family.nativeProps_DEPRECATED));
+          propsParserContext, shadowNode.getProps(), RawProps(finalProps));
     } else {
       props = componentDescriptor.cloneProps(
           propsParserContext, shadowNode.getProps(), std::move(rawProps));
@@ -160,7 +181,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
 void UIManager::appendChild(
     const ShadowNode::Shared& parentShadowNode,
     const ShadowNode::Shared& childShadowNode) const {
-  SystraceSection s("UIManager::appendChild");
+  TraceSection s("UIManager::appendChild");
 
   auto& componentDescriptor = parentShadowNode->getComponentDescriptor();
   componentDescriptor.appendChild(parentShadowNode, childShadowNode);
@@ -170,7 +191,7 @@ void UIManager::completeSurface(
     SurfaceId surfaceId,
     const ShadowNode::UnsharedListOfShared& rootChildren,
     ShadowTree::CommitOptions commitOptions) {
-  SystraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
+  TraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     auto result = shadowTree.commit(
@@ -208,34 +229,40 @@ void UIManager::startSurface(
     ShadowTree::Unique&& shadowTree,
     const std::string& moduleName,
     const folly::dynamic& props,
-    DisplayMode displayMode) const {
-  SystraceSection s("UIManager::startSurface");
+    DisplayMode displayMode) const noexcept {
+  TraceSection s("UIManager::startSurface");
 
   auto surfaceId = shadowTree->getSurfaceId();
   shadowTreeRegistry_.add(std::move(shadowTree));
 
   runtimeExecutor_([=](jsi::Runtime& runtime) {
-    SystraceSection s("UIManager::startSurface::onRuntime");
-    SurfaceRegistryBinding::startSurface(
+    TraceSection s("UIManager::startSurface::onRuntime");
+    AppRegistryBinding::startSurface(
         runtime, surfaceId, moduleName, props, displayMode);
   });
+}
+
+void UIManager::startEmptySurface(
+    ShadowTree::Unique&& shadowTree) const noexcept {
+  TraceSection s("UIManager::startEmptySurface");
+  shadowTreeRegistry_.add(std::move(shadowTree));
 }
 
 void UIManager::setSurfaceProps(
     SurfaceId surfaceId,
     const std::string& moduleName,
     const folly::dynamic& props,
-    DisplayMode displayMode) const {
-  SystraceSection s("UIManager::setSurfaceProps");
+    DisplayMode displayMode) const noexcept {
+  TraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime& runtime) {
-    SurfaceRegistryBinding::setSurfaceProps(
+    AppRegistryBinding::setSurfaceProps(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
 
 ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
-  SystraceSection s("UIManager::stopSurface");
+  TraceSection s("UIManager::stopSurface");
 
   // Stop any ongoing animations.
   stopSurfaceForAnimationDelegate(surfaceId);
@@ -249,7 +276,7 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
     // commits from the JavaScript side will not be able to reference a
     // `ShadowTree` and will fail silently.
     runtimeExecutor_([=](jsi::Runtime& runtime) {
-      SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
+      AppRegistryBinding::stopSurface(runtime, surfaceId);
     });
 
     if (leakChecker_) {
@@ -321,7 +348,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
     const ShadowNode& shadowNode,
     const ShadowNode* ancestorShadowNode,
     LayoutableShadowNode::LayoutInspectingPolicy policy) const {
-  SystraceSection s("UIManager::getRelativeLayoutMetrics");
+  TraceSection s("UIManager::getRelativeLayoutMetrics");
 
   // We might store here an owning pointer to `ancestorShadowNode` to ensure
   // that the node is not deallocated during method execution lifetime.
@@ -354,16 +381,13 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 }
 
 void UIManager::updateState(const StateUpdate& stateUpdate) const {
-  SystraceSection s(
+  TraceSection s(
       "UIManager::updateState",
       "componentName",
       stateUpdate.family->getComponentName());
   auto& callback = stateUpdate.callback;
   auto& family = stateUpdate.family;
   auto& componentDescriptor = family->getComponentDescriptor();
-  auto clonedByNativeStateTraits = ShadowNodeTraits();
-  clonedByNativeStateTraits.set(
-      ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](const ShadowTree& shadowTree) {
@@ -372,8 +396,7 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
               auto isValid = true;
 
               auto rootNode = oldRootShadowNode.cloneTree(
-                  *family,
-                  [&](const ShadowNode& oldShadowNode) {
+                  *family, [&](const ShadowNode& oldShadowNode) {
                     auto newData =
                         callback(oldShadowNode.getState()->getDataPointer());
 
@@ -389,10 +412,8 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
                     return oldShadowNode.clone(
                         {.props = ShadowNodeFragment::propsPlaceholder(),
                          .children = ShadowNodeFragment::childrenPlaceholder(),
-                         .state = newState,
-                         .traits = clonedByNativeStateTraits});
-                  },
-                  clonedByNativeStateTraits);
+                         .state = newState});
+                  });
 
               return isValid
                   ? std::static_pointer_cast<RootShadowNode>(rootNode)
@@ -598,24 +619,25 @@ void UIManager::unregisterMountHook(UIManagerMountHook& mountHook) {
 RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     const ShadowTree& shadowTree,
     const RootShadowNode::Shared& oldRootShadowNode,
-    const RootShadowNode::Unshared& newRootShadowNode) const {
-  SystraceSection s("UIManager::shadowTreeWillCommit");
+    const RootShadowNode::Unshared& newRootShadowNode,
+    const ShadowTree::CommitOptions& commitOptions) const {
+  TraceSection s("UIManager::shadowTreeWillCommit");
 
   std::shared_lock lock(commitHookMutex_);
 
   auto resultRootShadowNode = newRootShadowNode;
   for (auto* commitHook : commitHooks_) {
     resultRootShadowNode = commitHook->shadowTreeWillCommit(
-        shadowTree, oldRootShadowNode, resultRootShadowNode);
+        shadowTree, oldRootShadowNode, resultRootShadowNode, commitOptions);
   }
 
   return resultRootShadowNode;
 }
 
 void UIManager::shadowTreeDidFinishTransaction(
-    MountingCoordinator::Shared mountingCoordinator,
+    std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) const {
-  SystraceSection s("UIManager::shadowTreeDidFinishTransaction");
+  TraceSection s("UIManager::shadowTreeDidFinishTransaction");
 
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidFinishTransaction(
@@ -624,7 +646,7 @@ void UIManager::shadowTreeDidFinishTransaction(
 }
 
 void UIManager::reportMount(SurfaceId surfaceId) const {
-  SystraceSection s("UIManager::reportMount");
+  TraceSection s("UIManager::reportMount");
 
   auto time = JSExecutor::performanceNow();
 

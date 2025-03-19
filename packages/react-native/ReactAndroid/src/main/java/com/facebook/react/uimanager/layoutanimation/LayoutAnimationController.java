@@ -16,6 +16,9 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
@@ -24,7 +27,13 @@ import javax.annotation.concurrent.NotThreadSafe;
  * performing an animation.
  */
 @NotThreadSafe
+@LegacyArchitecture
 public class LayoutAnimationController {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "LayoutAnimationController", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private final AbstractLayoutAnimation mLayoutCreateAnimation = new LayoutCreateAnimation();
   private final AbstractLayoutAnimation mLayoutUpdateAnimation = new LayoutUpdateAnimation();
@@ -78,6 +87,12 @@ public class LayoutAnimationController {
     mCompletionRunnable = null;
     mShouldAnimateLayout = false;
     mMaxAnimationDuration = -1;
+    for (int i = mLayoutHandlers.size() - 1; i >= 0; i--) {
+      LayoutHandlingAnimation animation = mLayoutHandlers.valueAt(i);
+      if (!animation.isValid()) {
+        mLayoutHandlers.removeAt(i);
+      }
+    }
   }
 
   public boolean shouldAnimateLayout(View viewToAnimate) {
@@ -112,8 +127,12 @@ public class LayoutAnimationController {
     // the existing animation would still animate to the old layout.
     LayoutHandlingAnimation existingAnimation = mLayoutHandlers.get(reactTag);
     if (existingAnimation != null) {
-      existingAnimation.onLayoutUpdate(x, y, width, height);
-      return;
+      if (!existingAnimation.isValid()) {
+        mLayoutHandlers.remove(reactTag);
+      } else {
+        existingAnimation.onLayoutUpdate(x, y, width, height);
+        return;
+      }
     }
 
     // Determine which animation to use : if view is initially invisible, use create animation,

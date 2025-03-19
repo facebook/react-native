@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
@@ -19,6 +20,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +37,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.SystraceSection;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -52,7 +54,6 @@ import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
-import com.facebook.react.views.view.ReactViewBackgroundManager;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +80,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mShouldAdjustSpannableFontSize;
   private Overflow mOverflow = Overflow.VISIBLE;
 
-  private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
 
   public ReactTextView(Context context) {
@@ -93,12 +93,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
    * ReactTextView is recycled.
    */
   private void initView() {
-    if (mReactBackgroundManager != null) {
-      // make sure old background manager doesn't have any references back to this View
-      mReactBackgroundManager.cleanup();
-    }
-    mReactBackgroundManager = new ReactViewBackgroundManager(this);
-
     mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
     mAdjustsFontSizeToFit = false;
     mLinkifyMaskType = 0;
@@ -117,9 +111,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // Set default field values
     initView();
 
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.reset(this);
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
     }
+
+    BackgroundStyleApplicator.reset(this);
 
     // Defaults for these fields:
     // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/widget/TextView.java#L1061
@@ -375,85 +373,94 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   @Override
   protected void onDraw(Canvas canvas) {
-    if (mAdjustsFontSizeToFit && getSpanned() != null && mShouldAdjustSpannableFontSize) {
-      mShouldAdjustSpannableFontSize = false;
-      TextLayoutManager.adjustSpannableFontToFit(
-          getSpanned(),
-          getWidth(),
-          YogaMeasureMode.EXACTLY,
-          getHeight(),
-          YogaMeasureMode.EXACTLY,
-          mMinimumFontSize,
-          mNumberOfLines,
-          getIncludeFontPadding(),
-          getBreakStrategy(),
-          getHyphenationFrequency(),
-          // always passing ALIGN_NORMAL here should be fine, since this method doesn't depend on
-          // how exacly lines are aligned, just their width
-          Layout.Alignment.ALIGN_NORMAL);
-      setText(getSpanned());
-    }
+    try (SystraceSection s = new SystraceSection("ReactTextView.onDraw")) {
+      if (mAdjustsFontSizeToFit && getSpanned() != null && mShouldAdjustSpannableFontSize) {
+        mShouldAdjustSpannableFontSize = false;
+        TextLayoutManager.adjustSpannableFontToFit(
+            getSpanned(),
+            getWidth(),
+            YogaMeasureMode.EXACTLY,
+            getHeight(),
+            YogaMeasureMode.EXACTLY,
+            mMinimumFontSize,
+            mNumberOfLines,
+            getIncludeFontPadding(),
+            getBreakStrategy(),
+            getHyphenationFrequency(),
+            // always passing ALIGN_NORMAL here should be fine, since this method doesn't depend on
+            // how exactly lines are aligned, just their width
+            Layout.Alignment.ALIGN_NORMAL,
+            (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? -1 : getJustificationMode(),
+            getPaint());
+        setText(getSpanned());
+      }
 
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
       if (mOverflow != Overflow.VISIBLE) {
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
       }
-    } else {
-      mReactBackgroundManager.maybeClipToPaddingBox(canvas);
-    }
 
-    super.onDraw(canvas);
+      super.onDraw(canvas);
+    }
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    try (SystraceSection s = new SystraceSection("ReactTextView.onMeasure")) {
+      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
   }
 
   public void setText(ReactTextUpdate update) {
-    mContainsImages = update.containsImages();
-    // Android's TextView crashes when it tries to relayout if LayoutParams are
-    // null; explicitly set the LayoutParams to prevent this crash. See:
-    // https://github.com/facebook/react-native/pull/7011
-    if (getLayoutParams() == null) {
-      setLayoutParams(EMPTY_LAYOUT_PARAMS);
-    }
-    Spannable spannable = update.getText();
-    if (mLinkifyMaskType > 0) {
-      Linkify.addLinks(spannable, mLinkifyMaskType);
-      setMovementMethod(LinkMovementMethod.getInstance());
-    }
-    setText(spannable);
-    float paddingLeft = update.getPaddingLeft();
-    float paddingTop = update.getPaddingTop();
-    float paddingRight = update.getPaddingRight();
-    float paddingBottom = update.getPaddingBottom();
-
-    // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
-    // operation
-    // TODO T56559197: remove this condition when we migrate 100% to Fabric
-    if (paddingLeft != ReactConstants.UNSET
-        && paddingTop != ReactConstants.UNSET
-        && paddingRight != ReactConstants.UNSET
-        && paddingBottom != ReactConstants.UNSET) {
-
-      setPadding(
-          (int) Math.floor(paddingLeft),
-          (int) Math.floor(paddingTop),
-          (int) Math.floor(paddingRight),
-          (int) Math.floor(paddingBottom));
-    }
-
-    int nextTextAlign = update.getTextAlign();
-    if (nextTextAlign != getGravityHorizontal()) {
-      setGravityHorizontal(nextTextAlign);
-    }
-    if (getBreakStrategy() != update.getTextBreakStrategy()) {
-      setBreakStrategy(update.getTextBreakStrategy());
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (getJustificationMode() != update.getJustificationMode()) {
-        setJustificationMode(update.getJustificationMode());
+    try (SystraceSection s = new SystraceSection("ReactTextView.setText(ReactTextUpdate)")) {
+      mContainsImages = update.containsImages();
+      // Android's TextView crashes when it tries to relayout if LayoutParams are
+      // null; explicitly set the LayoutParams to prevent this crash. See:
+      // https://github.com/facebook/react-native/pull/7011
+      if (getLayoutParams() == null) {
+        setLayoutParams(EMPTY_LAYOUT_PARAMS);
       }
-    }
+      Spannable spannable = update.getText();
+      if (mLinkifyMaskType > 0) {
+        Linkify.addLinks(spannable, mLinkifyMaskType);
+        setMovementMethod(LinkMovementMethod.getInstance());
+      }
+      setText(spannable);
+      float paddingLeft = update.getPaddingLeft();
+      float paddingTop = update.getPaddingTop();
+      float paddingRight = update.getPaddingRight();
+      float paddingBottom = update.getPaddingBottom();
 
-    // Ensure onLayout is called so the inline views can be repositioned.
-    requestLayout();
+      // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
+      // operation
+      // TODO T56559197: remove this condition when we migrate 100% to Fabric
+      if (paddingLeft != ReactConstants.UNSET
+          && paddingTop != ReactConstants.UNSET
+          && paddingRight != ReactConstants.UNSET
+          && paddingBottom != ReactConstants.UNSET) {
+
+        setPadding(
+            (int) Math.floor(paddingLeft),
+            (int) Math.floor(paddingTop),
+            (int) Math.floor(paddingRight),
+            (int) Math.floor(paddingBottom));
+      }
+
+      int nextTextAlign = update.getTextAlign();
+      if (nextTextAlign != getGravityHorizontal()) {
+        setGravityHorizontal(nextTextAlign);
+      }
+      if (getBreakStrategy() != update.getTextBreakStrategy()) {
+        setBreakStrategy(update.getTextBreakStrategy());
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (getJustificationMode() != update.getJustificationMode()) {
+          setJustificationMode(update.getJustificationMode());
+        }
+      }
+
+      // Ensure onLayout is called so the inline views can be repositioned.
+      requestLayout();
+    }
   }
 
   @Override
@@ -697,28 +704,16 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   @Override
   public void setBackgroundColor(int color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(this, color);
-    } else {
-      mReactBackgroundManager.setBackgroundColor(color);
-    }
+    BackgroundStyleApplicator.setBackgroundColor(this, color);
   }
 
   public void setBorderWidth(int position, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(
-          this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
-    } else {
-      mReactBackgroundManager.setBorderWidth(position, width);
-    }
+    BackgroundStyleApplicator.setBorderWidth(
+        this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
   }
 
   public void setBorderColor(int position, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
-    } else {
-      mReactBackgroundManager.setBorderColor(position, color);
-    }
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
   }
 
   public void setBorderRadius(float borderRadius) {
@@ -726,26 +721,18 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      LengthPercentage radius =
-          Float.isNaN(borderRadius)
-              ? null
-              : new LengthPercentage(
-                  PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
-    } else {
-      mReactBackgroundManager.setBorderRadius(borderRadius, position);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(
+                PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderStyle(
-          this, style == null ? null : BorderStyle.fromString(style));
-    } else {
-      mReactBackgroundManager.setBorderStyle(style);
-    }
+    BackgroundStyleApplicator.setBorderStyle(
+        this, style == null ? null : BorderStyle.fromString(style));
   }
 
   public void setSpanned(Spannable spanned) {
@@ -777,6 +764,30 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     return super.dispatchHoverEvent(event);
   }
 
+  @Override
+  public final void onFocusChanged(
+      boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    AccessibilityDelegateCompat accessibilityDelegateCompat =
+        ViewCompat.getAccessibilityDelegate(this);
+    if (accessibilityDelegateCompat != null
+        && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate) {
+      ((ReactTextViewAccessibilityDelegate) accessibilityDelegateCompat)
+          .onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    }
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    AccessibilityDelegateCompat accessibilityDelegateCompat =
+        ViewCompat.getAccessibilityDelegate(this);
+    return (accessibilityDelegateCompat != null
+            && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate
+            && ((ReactTextViewAccessibilityDelegate) accessibilityDelegateCompat)
+                .dispatchKeyEvent(event))
+        || super.dispatchKeyEvent(event);
+  }
+
   private void applyTextAttributes() {
     // Workaround for an issue where text can be cut off with an ellipsis when
     // using certain font sizes and padding. Sets the provided text size and
@@ -798,7 +809,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       mOverflow = parsedOverflow == null ? Overflow.VISIBLE : parsedOverflow;
     }
 
-    mReactBackgroundManager.setOverflow(overflow);
     invalidate();
   }
 }

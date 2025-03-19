@@ -7,15 +7,14 @@
 
 #include "JFabricUIManager.h"
 
-#include "Binding.h"
+#include "FabricUIManagerBinding.h"
 
 namespace facebook::react {
 
-Binding* JFabricUIManager::getBinding() {
+FabricUIManagerBinding* JFabricUIManager::getBinding() {
   static const auto bindingField =
-      javaClassStatic()->getField<JBinding::javaobject>("mBinding");
-
-  return jni::static_ref_cast<Binding::javaobject>(getFieldValue(bindingField))
-      ->cthis();
+      javaClassStatic()->getField<FabricUIManagerBinding::javaobject>(
+          "mBinding");
+  return getFieldValue(bindingField)->cthis();
 }
 } // namespace facebook::react

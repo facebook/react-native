@@ -11,10 +11,12 @@ import com.facebook.proguard.annotations.DoNotStrip
 
 /** JNI wrapper for `jsinspector_modern::InspectorFlags`. */
 @DoNotStrip
-public object InspectorFlags {
+internal object InspectorFlags {
   init {
     DevSupportSoLoader.staticInit()
   }
 
-  @DoNotStrip @JvmStatic public external fun getFuseboxEnabled(): Boolean
+  @DoNotStrip @JvmStatic external fun getFuseboxEnabled(): Boolean
+
+  @DoNotStrip @JvmStatic external fun getIsProfilingBuild(): Boolean
 }

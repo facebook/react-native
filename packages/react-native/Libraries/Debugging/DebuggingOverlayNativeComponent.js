@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../src/private/specs/components/DebuggingOverlayNativeComponent';
-import DebuggingOverlayNativeComponent from '../../src/private/specs/components/DebuggingOverlayNativeComponent';
+export * from '../../src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent';
+import DebuggingOverlayNativeComponent from '../../src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent';
 export default DebuggingOverlayNativeComponent;

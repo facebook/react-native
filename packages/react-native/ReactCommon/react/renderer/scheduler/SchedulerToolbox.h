@@ -49,11 +49,10 @@ struct SchedulerToolbox final {
   RuntimeExecutor runtimeExecutor;
 
   /*
-   * Asynchronous & synchronous event beats.
    * Represent connections with the platform-specific run loops and general
    * purpose background queue.
    */
-  EventBeat::Factory asynchronousEventBeatFactory;
+  EventBeat::Factory eventBeatFactory;
 
   /*
    * A list of `UIManagerCommitHook`s that should be registered in `UIManager`.

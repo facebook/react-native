@@ -8,17 +8,15 @@
  * @format
  */
 
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../src/private/types/HostComponent';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import RCTTextInputViewConfig from './RCTTextInputViewConfig';
 
-type NativeType = HostComponent<mixed>;
+type NativeType = HostComponent<{...}>;
 
 type NativeCommands = TextInputNativeCommands<NativeType>;
 
@@ -31,11 +29,13 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   ...RCTTextInputViewConfig,
 };
 
-const SinglelineTextInputNativeComponent: HostComponent<mixed> =
-  NativeComponentRegistry.get<mixed>(
+const SinglelineTextInputNativeComponent: HostComponent<{...}> =
+  NativeComponentRegistry.get<{...}>(
     'RCTSinglelineTextInputView',
     () => __INTERNAL_VIEW_CONFIG,
   );
 
 // flowlint-next-line unclear-type:off
-export default ((SinglelineTextInputNativeComponent: any): HostComponent<mixed>);
+export default ((SinglelineTextInputNativeComponent: any): HostComponent<{
+  ...
+}>);

@@ -15,17 +15,19 @@ namespace facebook::react::jsinspector_modern {
 
 JCxxInspectorPackagerConnection::JCxxInspectorPackagerConnection(
     const std::string& url,
+    const std::string& deviceName,
     const std::string& packageName,
     alias_ref<JDelegateImpl::javaobject> delegate)
-    : cxxImpl_(url, packageName, delegate->wrapInUniquePtr()) {}
+    : cxxImpl_(url, deviceName, packageName, delegate->wrapInUniquePtr()) {}
 
 local_ref<JCxxInspectorPackagerConnection::jhybriddata>
 JCxxInspectorPackagerConnection::initHybrid(
     alias_ref<jclass>,
     const std::string& url,
+    const std::string& deviceName,
     const std::string& packageName,
     alias_ref<JDelegateImpl::javaobject> delegate) {
-  return makeCxxInstance(url, packageName, delegate);
+  return makeCxxInstance(url, deviceName, packageName, delegate);
 }
 
 void JCxxInspectorPackagerConnection::connect() {

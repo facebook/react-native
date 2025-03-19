@@ -41,11 +41,19 @@ runs:
       shell: bash
       run: ls -lR "$HERMES_WS_DIR"
     - name: Run yarn
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Setup ruby
       uses: ruby/setup-ruby@v1.170.0
       with:
         ruby-version: ${{ inputs.ruby-version }}
+    - name: Download ReactNativeDependencies
+      uses: actions/download-artifact@v4
+      with:
+        name: ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz
+        path: /tmp/third-party
+    - name: Print third-party folder
+      shell: bash
+      run: ls -lR /tmp/third-party
     - name: Install iOS dependencies - Configuration ${{ inputs.flavor }}; New Architecture ${{ inputs.architecture }}; JS Engine ${{ inputs.jsengine }}
       shell: bash
       run: |
@@ -77,8 +85,10 @@ runs:
 
           BUILD_TYPE="${{ inputs.flavor }}"
           TARBALL_FILENAME=$(node ../react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
-          HERMES_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
-          HERMES_ENGINE_TARBALL_PATH="$HERMES_PATH" yarn bootstrap ios "${args[@]}" | cat
+          export HERMES_ENGINE_TARBALL_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
+          export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
+
+          yarn bootstrap ios "${args[@]}" | cat
         fi
     - name: Build HelloWorld  project
       shell: bash

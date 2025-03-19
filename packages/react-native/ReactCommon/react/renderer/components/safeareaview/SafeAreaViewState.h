@@ -9,6 +9,10 @@
 
 #include <react/renderer/graphics/RectangleEdges.h>
 
+#ifdef ANDROID
+#include <folly/dynamic.h>
+#endif
+
 namespace facebook::react {
 
 /*
@@ -16,6 +20,22 @@ namespace facebook::react {
  */
 class SafeAreaViewState final {
  public:
+#ifdef ANDROID
+  SafeAreaViewState() = default;
+
+  SafeAreaViewState(
+      const SafeAreaViewState& /*previousState*/,
+      folly::dynamic data)
+      : padding(EdgeInsets{
+            (Float)data["left"].getDouble(),
+            (Float)data["top"].getDouble(),
+            (Float)data["right"].getDouble(),
+            (Float)data["bottom"].getDouble(),
+        }){};
+
+  folly::dynamic getDynamic() const;
+#endif
+
   EdgeInsets padding{};
 };
 

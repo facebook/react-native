@@ -9,7 +9,13 @@
  * @oncall react_native
  */
 
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as StaticViewConfigValidator from '../StaticViewConfigValidator';
+
+beforeAll(() => {
+  // $FlowExpectedError[cannot-write]
+  ReactNativeFeatureFlags.enableNativeCSSParsing = () => false;
+});
 
 test('passes for identical configs', () => {
   const name = 'RCTView';
@@ -174,7 +180,7 @@ StaticViewConfigValidator: Invalid static view config for 'RCTView'.
   );
 });
 
-test('fails for unexpected attributes', () => {
+test('allows static viewconfigs to have more properties than native viewconfigs', () => {
   const name = 'RCTView';
   const nativeViewConfig = {
     uiViewClassName: 'RCTView',
@@ -194,19 +200,13 @@ test('fails for unexpected attributes', () => {
     },
   };
 
-  expectSVCToNotMatchNVC(
+  const validationResult = StaticViewConfigValidator.validate(
     name,
     nativeViewConfig,
     staticViewConfig,
-    `
-StaticViewConfigValidator: Invalid static view config for 'RCTView'.
-
-- 'validAttributes.style.height' is present but not expected to be.
-- 'validAttributes.style.width' is present but not expected to be.
-- 'validAttributes.collapsable' is present but not expected to be.
-- 'validAttributes.nativeID' is present but not expected to be.
-`.trimStart(),
   );
+
+  expect(validationResult.type).toBe('valid');
 });
 
 function expectSVCToNotMatchNVC(

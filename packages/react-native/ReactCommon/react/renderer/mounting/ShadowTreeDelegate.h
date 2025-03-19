@@ -12,6 +12,7 @@
 namespace facebook::react {
 
 class ShadowTree;
+struct ShadowTreeCommitOptions;
 
 /*
  * Abstract class for ShadowTree's delegate.
@@ -27,13 +28,14 @@ class ShadowTreeDelegate {
   virtual RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& shadowTree,
       const RootShadowNode::Shared& oldRootShadowNode,
-      const RootShadowNode::Unshared& newRootShadowNode) const = 0;
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTreeCommitOptions& commitOptions) const = 0;
 
   /*
    * Called right after Shadow Tree commit a new state of the tree.
    */
   virtual void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) const = 0;
 
   virtual ~ShadowTreeDelegate() noexcept = default;

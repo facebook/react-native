@@ -12,7 +12,7 @@ import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';
 import {NativeMethods} from '../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../StyleSheet/StyleSheet';
-import {TextStyle} from '../StyleSheet/StyleSheetTypes';
+import {TextStyle, ViewStyle} from '../StyleSheet/StyleSheetTypes';
 import {
   GestureResponderEvent,
   LayoutChangeEvent,
@@ -178,7 +178,7 @@ export interface TextProps
 
   /**
    * This function is called on long press.
-   * e.g., `onLongPress={this.increaseSize}>``
+   * e.g., `onLongPress={this.increaseSize}>`
    */
   onLongPress?: ((event: GestureResponderEvent) => void) | undefined;
 
@@ -209,6 +209,11 @@ export interface TextProps
    * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
    */
   minimumFontScale?: number | undefined;
+
+  /**
+   * Controls how touch events are handled. Similar to `View`'s `pointerEvents`.
+   */
+  pointerEvents?: ViewStyle['pointerEvents'] | undefined;
 }
 
 /**

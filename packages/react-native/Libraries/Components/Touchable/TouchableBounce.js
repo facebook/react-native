@@ -19,7 +19,7 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
 
   onPressAnimationComplete?: ?() => void,
@@ -28,13 +28,13 @@ type Props = $ReadOnly<{|
   releaseVelocity?: ?number,
   style?: ?ViewStyleProp,
 
-  hostRef: React.Ref<typeof Animated.View>,
-|}>;
+  hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+}>;
 
-type State = $ReadOnly<{|
+type State = $ReadOnly<{
   pressability: Pressability,
   scale: Animated.Value,
-|}>;
+}>;
 
 class TouchableBounce extends React.Component<Props, State> {
   state: State = {
@@ -189,6 +189,7 @@ class TouchableBounce extends React.Component<Props, State> {
           this.props.onPress !== undefined &&
           !this.props.disabled
         }
+        // $FlowFixMe[prop-missing]
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {this.props.children}
@@ -213,6 +214,9 @@ class TouchableBounce extends React.Component<Props, State> {
   }
 }
 
-module.exports = (React.forwardRef((props, hostRef) => (
+export default (React.forwardRef((props, hostRef: React.RefSetter<mixed>) => (
   <TouchableBounce {...props} hostRef={hostRef} />
-)): React.AbstractComponent<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);
+)): component(
+  ref: React.RefSetter<mixed>,
+  ...props: $ReadOnly<$Diff<Props, {hostRef: mixed}>>
+));

@@ -13,10 +13,10 @@ import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.systrace.Systrace
 
 /** Logs requests to Systrace */
-public class SystraceRequestListener : BaseRequestListener() {
+internal class SystraceRequestListener : BaseRequestListener() {
   private var currentId: Int = 0
-  private var producerId: MutableMap<String, Pair<Int, String>> = mutableMapOf()
-  private var requestsId: MutableMap<String, Pair<Int, String>> = mutableMapOf()
+  private val producerId: MutableMap<String, Pair<Int, String>> = mutableMapOf()
+  private val requestsId: MutableMap<String, Pair<Int, String>> = mutableMapOf()
 
   override fun onProducerStart(requestId: String, producerName: String) {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT_FRESCO)) {
@@ -39,8 +39,9 @@ public class SystraceRequestListener : BaseRequestListener() {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT_FRESCO)) {
       return
     }
-    if (producerId.containsKey(requestId)) {
-      val entry = producerId[requestId]!!
+
+    val entry = producerId[requestId]
+    if (entry != null) {
       Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_FRESCO, entry.second, entry.first)
       producerId.remove(requestId)
     }
@@ -55,8 +56,9 @@ public class SystraceRequestListener : BaseRequestListener() {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT_FRESCO)) {
       return
     }
-    if (producerId.containsKey(requestId)) {
-      val entry = producerId[requestId]!!
+
+    val entry = producerId[requestId]
+    if (entry != null) {
       Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_FRESCO, entry.second, entry.first)
       producerId.remove(requestId)
     }
@@ -70,8 +72,9 @@ public class SystraceRequestListener : BaseRequestListener() {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT_FRESCO)) {
       return
     }
-    if (producerId.containsKey(requestId)) {
-      val entry = producerId[requestId]!!
+
+    val entry = producerId[requestId]
+    if (entry != null) {
       Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_FRESCO, entry.second, entry.first)
       producerId.remove(requestId)
     }
@@ -101,6 +104,7 @@ public class SystraceRequestListener : BaseRequestListener() {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT_FRESCO)) {
       return
     }
+
     val entryName = StringBuilder()
     entryName.append("FRESCO_REQUEST_")
     entryName.append(request.sourceUri.toString().replace(':', '_'))
@@ -114,8 +118,9 @@ public class SystraceRequestListener : BaseRequestListener() {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT_FRESCO)) {
       return
     }
-    if (requestsId.containsKey(requestId)) {
-      val entry = requestsId[requestId]!!
+
+    val entry = requestsId[requestId]
+    if (entry != null) {
       Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_FRESCO, entry.second, entry.first)
       requestsId.remove(requestId)
     }
@@ -130,8 +135,9 @@ public class SystraceRequestListener : BaseRequestListener() {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT_FRESCO)) {
       return
     }
-    if (requestsId.containsKey(requestId)) {
-      val entry = requestsId[requestId]!!
+
+    val entry = requestsId[requestId]
+    if (entry != null) {
       Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_FRESCO, entry.second, entry.first)
       requestsId.remove(requestId)
     }
@@ -141,8 +147,9 @@ public class SystraceRequestListener : BaseRequestListener() {
     if (!Systrace.isTracing(Systrace.TRACE_TAG_REACT_FRESCO)) {
       return
     }
-    if (requestsId.containsKey(requestId)) {
-      val entry = requestsId[requestId]!!
+
+    val entry = requestsId[requestId]
+    if (entry != null) {
       Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_FRESCO, entry.second, entry.first)
       requestsId.remove(requestId)
     }

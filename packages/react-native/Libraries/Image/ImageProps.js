@@ -17,22 +17,42 @@ import type {
   ImageStyleProp,
   ViewStyleProp,
 } from '../StyleSheet/StyleSheet';
-import type {LayoutEvent, SyntheticEvent} from '../Types/CoreEventTypes';
+import type {
+  LayoutChangeEvent,
+  NativeSyntheticEvent,
+} from '../Types/CoreEventTypes';
 import typeof Image from './Image';
-import type {ImageSource} from './ImageSource';
-import type {Node, Ref} from 'react';
+import type {ImageResizeMode} from './ImageResizeMode';
+import type {ImageSource, ImageURISource} from './ImageSource';
+import type {ElementRef, Node, RefSetter} from 'react';
 
-export type ImageLoadEvent = SyntheticEvent<
-  $ReadOnly<{|
-    source: $ReadOnly<{|
-      width: number,
-      height: number,
-      uri: string,
-    |}>,
-  |}>,
+export type ImageSourcePropType = ImageSource;
+
+/**
+ * @see ImagePropsIOS.onProgress
+ */
+export type ImageProgressEventDataIOS = {
+  loaded: number,
+  total: number,
+};
+
+export type ImageErrorEventData = {
+  error: string,
+};
+
+export type ImageLoadEventData = {
+  source: {
+    height: number,
+    width: number,
+    uri: string,
+  },
+};
+
+export type ImageLoadEvent = NativeSyntheticEvent<
+  $ReadOnly<ImageLoadEventData>,
 >;
 
-type IOSImageProps = $ReadOnly<{|
+export type ImagePropsIOS = $ReadOnly<{
   /**
    * A static image to display while loading the image source.
    *
@@ -51,21 +71,44 @@ type IOSImageProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/image#onprogress
    */
   onProgress?: ?(
-    event: SyntheticEvent<$ReadOnly<{|loaded: number, total: number|}>>,
+    event: NativeSyntheticEvent<$ReadOnly<ImageProgressEventDataIOS>>,
   ) => void,
-|}>;
+}>;
 
-type AndroidImageProps = $ReadOnly<{|
-  loadingIndicatorSource?: ?(number | $ReadOnly<{|uri: string|}>),
+export type ImagePropsAndroid = $ReadOnly<{
+  /**
+   * similarly to `source`, this property represents the resource used to render
+   * the loading indicator for the image, displayed until image is ready to be
+   * displayed, typically after when it got downloaded from network.
+   */
+  loadingIndicatorSource?: ?(number | $ReadOnly<ImageURISource>),
   progressiveRenderingEnabled?: ?boolean,
   fadeDuration?: ?number,
 
   /**
-   * The mechanism that should be used to resize the image when the image's
-   * dimensions differ from the image view's dimensions. Defaults to `'auto'`.
-   * See https://reactnative.dev/docs/image#resizemethod-android
+   * The mechanism that should be used to resize the image when the image's dimensions
+   * differ from the image view's dimensions. Defaults to `auto`.
+   *
+   * - `auto`: Use heuristics to pick between `resize` and `scale`.
+   *
+   * - `resize`: A software operation which changes the encoded image in memory before it
+   * gets decoded. This should be used instead of `scale` when the image is much larger
+   * than the view.
+   *
+   * - `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is
+   * faster (usually hardware accelerated) and produces higher quality images. This
+   * should be used if the image is smaller than the view. It should also be used if the
+   * image is slightly bigger than the view.
+   *
+   * - `none`: No sampling is performed and the image is displayed in its full resolution. This
+   * should only be used in rare circumstances because it is considered unsafe as Android will
+   * throw a runtime exception when trying to render images that consume too much memory.
+   *
+   * More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing-rotating.html.
+   *
+   * @platform android
    */
-  resizeMethod?: ?('auto' | 'resize' | 'scale'),
+  resizeMethod?: ?('auto' | 'resize' | 'scale' | 'none'),
 
   /**
    * When the `resizeMethod` is set to `resize`, the destination dimensions are
@@ -75,13 +118,10 @@ type AndroidImageProps = $ReadOnly<{|
    * Defaults to 1.0.
    */
   resizeMultiplier?: ?number,
-|}>;
+}>;
 
-export type ImageProps = {|
-  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
-  ...IOSImageProps,
-  ...AndroidImageProps,
-
+export type ImagePropsBase = $ReadOnly<{
+  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
   /**
    * When true, indicates the image is an accessibility element.
    *
@@ -162,21 +202,20 @@ export type ImageProps = {|
    * See https://reactnative.dev/docs/image#onerror
    */
   onError?: ?(
-    event: SyntheticEvent<
-      $ReadOnly<{|
-        error: string,
-      |}>,
-    >,
+    event: NativeSyntheticEvent<$ReadOnly<ImageErrorEventData>>,
   ) => void,
 
   /**
+   * onLayout function
+   *
    * Invoked on mount and layout changes with
-   * `{nativeEvent: {layout: {x, y, width, height}}}`.
+   *
+   * {nativeEvent: { layout: {x, y, width, height} }}.
    *
    * See https://reactnative.dev/docs/image#onlayout
    */
 
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * Invoked when load completes successfully.
@@ -202,14 +241,15 @@ export type ImageProps = {|
   /**
    * The image source (either a remote URL or a local file resource).
    *
+   * This prop can also contain several remote URLs, specified together with their width and height and potentially with scale/other URI arguments.
+   * The native side will then choose the best uri to display based on the measured size of the image container.
+   * A cache property can be added to control how networked request interacts with the local cache.
+   *
+   * The currently supported formats are png, jpg, jpeg, bmp, gif, webp (Android only), psd (iOS only).
+   *
    * See https://reactnative.dev/docs/image#source
    */
   source?: ?ImageSource,
-
-  /**
-   * See https://reactnative.dev/docs/image#style
-   */
-  style?: ?ImageStyleProp,
 
   /**
    * A string indicating which referrer to use when fetching the resource.
@@ -232,9 +272,29 @@ export type ImageProps = {|
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
+   * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
+   * so that both dimensions (width and height) of the image will be equal
+   * to or larger than the corresponding dimension of the view (minus padding).
+   *
+   * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
+   * so that both dimensions (width and height) of the image will be equal to
+   * or less than the corresponding dimension of the view (minus padding).
+   *
+   * 'stretch': Scale width and height independently, This may change the
+   * aspect ratio of the src.
+   *
+   * 'repeat': Repeat the image to cover the frame of the view.
+   * The image will keep it's size and aspect ratio. (iOS only)
+   *
+   * 'center': Scale the image down so that it is completely visible,
+   * if bigger than the area of the view.
+   * The image will not be scaled up.
+   *
+   * 'none': Do not resize the image. The image will be displayed at its intrinsic size.
+   *
    * See https://reactnative.dev/docs/image#resizemode
    */
-  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
+  resizeMode?: ?ImageResizeMode,
 
   /**
    * A unique identifier for this element to be used in UI Automation
@@ -266,9 +326,20 @@ export type ImageProps = {|
    */
   srcSet?: ?string,
   children?: empty,
-|};
+}>;
 
-export type ImageBackgroundProps = $ReadOnly<{|
+export type ImageProps = $ReadOnly<{
+  ...ImagePropsIOS,
+  ...ImagePropsAndroid,
+  ...ImagePropsBase,
+
+  /**
+   * See https://reactnative.dev/docs/image#style
+   */
+  style?: ?ImageStyleProp,
+}>;
+
+export type ImageBackgroundProps = $ReadOnly<{
   ...ImageProps,
   children?: Node,
 
@@ -291,5 +362,5 @@ export type ImageBackgroundProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/imagebackground#imageref
    */
-  imageRef?: Ref<Image>,
-|}>;
+  imageRef?: RefSetter<ElementRef<Image>>,
+}>;

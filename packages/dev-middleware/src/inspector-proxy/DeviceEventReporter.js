@@ -59,9 +59,12 @@ class DeviceEventReporter {
 
   #metadata: DeviceMetadata;
 
+  #deviceConnectedTimestamp: number;
+
   constructor(eventReporter: EventReporter, metadata: DeviceMetadata) {
     this.#eventReporter = eventReporter;
     this.#metadata = metadata;
+    this.#deviceConnectedTimestamp = Date.now();
   }
 
   logRequest(
@@ -99,6 +102,7 @@ class DeviceEventReporter {
         pageId: metadata.pageId,
         frontendUserAgent: metadata.frontendUserAgent,
         prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
+        connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
       return;
     }
@@ -125,6 +129,7 @@ class DeviceEventReporter {
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
         prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
+        connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
       return;
     }
@@ -142,6 +147,18 @@ class DeviceEventReporter {
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
       prefersFuseboxFrontend: metadata.prefersFuseboxFrontend,
+      connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
+    });
+  }
+
+  logProfilingTargetRegistered() {
+    this.#eventReporter.logEvent({
+      type: 'profiling_target_registered',
+      status: 'success',
+      appId: this.#metadata.appId,
+      deviceName: this.#metadata.deviceName,
+      deviceId: this.#metadata.deviceId,
+      pageId: null,
     });
   }
 
@@ -188,6 +205,7 @@ class DeviceEventReporter {
         pageId: pendingCommand.metadata.pageId,
         frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
         prefersFuseboxFrontend: pendingCommand.metadata.prefersFuseboxFrontend,
+        connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
       });
     }
     this.#pendingCommands.clear();
@@ -209,6 +227,13 @@ class DeviceEventReporter {
       deviceId: this.#metadata.deviceId,
       deviceName: this.#metadata.deviceName,
       pageId: null,
+      connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
+    });
+  }
+
+  logFuseboxConsoleNotice(): void {
+    this.#eventReporter.logEvent({
+      type: 'fusebox_console_notice',
     });
   }
 
@@ -228,6 +253,7 @@ class DeviceEventReporter {
       pageId: pendingCommand.metadata.pageId,
       frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
       prefersFuseboxFrontend: pendingCommand.metadata.prefersFuseboxFrontend,
+      connectionUptime: this.#deviceConnectedTimestamp - Date.now(),
     });
   }
 }

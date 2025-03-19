@@ -14,6 +14,8 @@ GEM
       httpclient (~> 2.8, >= 2.8.3)
       json (>= 1.5.1)
     atomos (0.1.3)
+    benchmark (0.4.0)
+    bigdecimal (3.1.9)
     claide (1.1.0)
     cocoapods (1.14.2)
       addressable (~> 2.8)
@@ -65,8 +67,10 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     json (2.6.3)
+    logger (1.6.5)
     minitest (5.20.0)
     molinillo (0.8.0)
+    mutex_m (0.3.0)
     nanaimo (0.3.0)
     nap (1.1.0)
     netrc (0.11.0)
@@ -90,7 +94,13 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (>= 6.1.7.5, < 7.1.0)
+  benchmark
+  bigdecimal
   cocoapods (~> 1.13, != 1.15.1, != 1.15.0)
+  concurrent-ruby (<= 1.3.4)
+  logger
+  mutex_m
+  xcodeproj (< 1.26.0)
 
 RUBY VERSION
    ruby 3.2.0p0

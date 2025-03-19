@@ -10,10 +10,10 @@
 
 'use strict';
 
-import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
+import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
 declare const APIs: Array<RNTesterModuleInfo>;
 declare const Components: Array<RNTesterModuleInfo>;
-declare const Modules: {...};
+declare const Modules: {[key: string]: RNTesterModule};
 
 module.exports = {APIs, Components, Modules};

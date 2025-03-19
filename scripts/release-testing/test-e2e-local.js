@@ -72,7 +72,7 @@ const argv = yargs
  * Start the test for RNTester on iOS.
  *
  * Parameters:
- * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
+ * - @ciArtifacts manager object to manage all the download of ciArtifacts. If null, it will fallback not to use them.
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTesterIOS(
@@ -85,47 +85,73 @@ async function testRNTesterIOS(
     } version of RNTester iOS with the new Architecture enabled`,
   );
 
+  // if everything succeeded so far, we can launch Metro and the app
+  // start the Metro server in a separate window
+  launchPackagerInSeparateWindow(pwd().toString());
+
   // remember that for this to be successful
   // you should have run bundle install once
   // in your local setup
-  if (argv.hermes === true && ciArtifacts != null) {
-    const hermesURL = await ciArtifacts.artifactURLHermesDebug();
-    const hermesZipPath = path.join(ciArtifacts.baseTmpPath(), 'hermes.zip');
-    // download hermes source code from manifold
-    ciArtifacts.downloadArtifact(hermesURL, hermesZipPath);
-    // GHA zips by default the artifacts.
-    const outputFolder = path.join(ciArtifacts.baseTmpPath(), 'hermes');
-    exec(`rm -rf ${outputFolder}`);
-    exec(`unzip ${hermesZipPath} -d ${outputFolder}`);
-    const hermesPath = path.join(outputFolder, 'hermes-ios-Debug.tar.gz');
-
-    console.info(`Downloaded Hermes in ${hermesPath}`);
-    exec(
-      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
+  if (ciArtifacts != null) {
+    const appOutputFolder = path.join(
+      ciArtifacts.baseTmpPath(),
+      'RNTester.app',
     );
+    exec(`rm -rf ${appOutputFolder}`);
+    if (argv.hermes === true) {
+      // download hermes App
+      const hermesAppUrl = await ciArtifacts.artifactURLForHermesRNTesterApp();
+      const hermesAppZipPath = path.join(
+        ciArtifacts.baseTmpPath(),
+        'RNTesterAppHermes.zip',
+      );
+      ciArtifacts.downloadArtifact(hermesAppUrl, hermesAppZipPath);
+      exec(`unzip ${hermesAppZipPath} -d ${appOutputFolder}`);
+    } else {
+      // download JSC app
+      const hermesAppUrl = await ciArtifacts.artifactURLForJSCRNTesterApp();
+      const hermesAppZipPath = path.join(
+        ciArtifacts.baseTmpPath(),
+        'RNTesterAppJSC.zip',
+      );
+      ciArtifacts.downloadArtifact(hermesAppUrl, hermesAppZipPath);
+      exec(`unzip ${hermesAppZipPath} -d ${appOutputFolder}`);
+    }
+
+    // boot device
+    const bootedDevice = String(
+      exec('xcrun simctl list | grep "iPhone 16 Pro" | grep Booted', {
+        silent: true,
+      }),
+    ).trim();
+    if (!bootedDevice || bootedDevice.length === 0) {
+      exec('xcrun simctl boot "iPhone 16 Pro"');
+    }
+
+    // install app on device
+    exec(`xcrun simctl install booted ${appOutputFolder}`);
+
+    // launch the app on iOS simulator
+    exec('xcrun simctl launch booted com.meta.RNTester.localDevelopment');
   } else {
     exec(
       `USE_HERMES=${
         argv.hermes === true ? 1 : 0
       } CI=${onReleaseBranch.toString()} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
+
+    // launch the app on iOS simulator
+    exec(
+      'npx react-native run-ios --scheme RNTester --simulator "iPhone 15 Pro"',
+    );
   }
-
-  // if everything succeeded so far, we can launch Metro and the app
-  // start the Metro server in a separate window
-  launchPackagerInSeparateWindow(pwd().toString());
-
-  // launch the app on iOS simulator
-  exec(
-    'npx react-native run-ios --scheme RNTester --simulator "iPhone 15 Pro"',
-  );
 }
 
 /**
  * Start the test for RNTester on Android.
  *
  * Parameters:
- * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
+ * - @ciArtifacts manager object to manage all the download of ciArtifacts. If null, it will fallback not to use them.
  */
 async function testRNTesterAndroid(
   ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
@@ -143,7 +169,7 @@ async function testRNTesterAndroid(
 
   // Wait for the Android Emulator to be properly loaded and bootstrapped
   exec(
-    "adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'",
+    "adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;",
   );
 
   if (ciArtifacts != null) {
@@ -164,7 +190,7 @@ async function testRNTesterAndroid(
     exec(`unzip ${downloadPath} -d ${unzipFolder}`);
     let apkPath = path.join(
       unzipFolder,
-      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-release.apk`,
+      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-debug.apk`,
     );
 
     exec(`adb install ${apkPath}`);
@@ -191,11 +217,11 @@ async function testRNTesterAndroid(
  * Function that start testing on RNTester.
  *
  * Parameters:
- * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
+ * - @ciArtifacts manager object to manage all the download of ciArtifacts. If null, it will fallback not to use them.
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTester(
-  circleCIArtifacts /*:Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
+  ciArtifacts /*:Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
   onReleaseBranch /*: boolean */,
 ) {
   // FIXME: make sure that the commands retains colors
@@ -203,10 +229,16 @@ async function testRNTester(
   // see also https://github.com/shelljs/shelljs/issues/86
   pushd('packages/rn-tester');
 
+  // Build Codegen as we're on a empty environment and metro needs it.
+  // This can be removed once we have codegen hooked in the `yarn build` step.
+  exec(
+    '../../gradlew :packages:react-native:ReactAndroid:buildCodegenCLI --quiet',
+  );
+
   if (argv.platform === 'ios') {
-    await testRNTesterIOS(circleCIArtifacts, onReleaseBranch);
+    await testRNTesterIOS(ciArtifacts, onReleaseBranch);
   } else {
-    await testRNTesterAndroid(circleCIArtifacts);
+    await testRNTesterAndroid(ciArtifacts);
   }
   popd();
 }
@@ -300,9 +332,10 @@ async function testRNTestProject(
     'reactNativeArchitectures=arm64-v8a',
     'android/gradle.properties',
   );
+  const hermesEnabled = (await argv).hermes === true;
 
   // Update gradle properties to set Hermes as false
-  if (argv.hermes == null) {
+  if (!hermesEnabled) {
     sed(
       '-i',
       'hermesEnabled=true',
@@ -317,7 +350,7 @@ async function testRNTestProject(
     exec('bundle install');
     exec(
       `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
-        argv.hermes === true ? 1 : 0
+        hermesEnabled ? 1 : 0
       } bundle exec pod install --ansi`,
     );
 

@@ -6,18 +6,17 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"ReactNative\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_performance_timeline_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_performance_timeline OBJECT ${react_performance_timeline_SRC})
 
+target_compile_reactnative_options(react_performance_timeline PRIVATE "ReactNative")
+target_compile_options(react_performance_timeline PRIVATE -Wpedantic)
+
 target_include_directories(react_performance_timeline PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_performance_timeline
+        jsinspector_tracing
+        reactperflogger
         react_timing
         react_cxxreact)

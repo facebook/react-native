@@ -12,10 +12,13 @@ import Platform from '../Utilities/Platform';
 
 let isEnabled = false;
 
+/* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+ * Platform.flow.js */
 if (Platform.OS === 'web') {
   const canUseDOM = Boolean(
     typeof window !== 'undefined' &&
       window.document &&
+      // $FlowFixMe[method-unbinding]
       window.document.createElement,
   );
 

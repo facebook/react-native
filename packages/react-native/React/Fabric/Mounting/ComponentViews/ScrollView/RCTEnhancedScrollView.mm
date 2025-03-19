@@ -7,6 +7,7 @@
 
 #import "RCTEnhancedScrollView.h"
 #import <React/RCTUtils.h>
+#import <react/utils/FloatComparison.h>
 
 @interface RCTEnhancedScrollView () <UIScrollViewDelegate>
 @end
@@ -66,26 +67,50 @@
  * ScrollView, we force it to be centered, but when you zoom or the content otherwise
  * becomes larger than the ScrollView, there is no padding around the content but it
  * can still fill the whole view.
+ * This implementation is based on https://petersteinberger.com/blog/2013/how-to-center-uiscrollview/.
  */
+- (void)centerContentIfNeeded
+{
+  if (!_centerContent) {
+    return;
+  }
+
+  CGSize contentSize = self.contentSize;
+  CGSize boundsSize = self.bounds.size;
+  if (CGSizeEqualToSize(contentSize, CGSizeZero) || CGSizeEqualToSize(boundsSize, CGSizeZero)) {
+    return;
+  }
+
+  CGFloat top = 0, left = 0;
+  if (contentSize.width < boundsSize.width) {
+    left = (boundsSize.width - contentSize.width) * 0.5f;
+  }
+  if (contentSize.height < boundsSize.height) {
+    top = (boundsSize.height - contentSize.height) * 0.5f;
+  }
+  self.contentInset = UIEdgeInsetsMake(top, left, top, left);
+}
+
 - (void)setContentOffset:(CGPoint)contentOffset
 {
   if (_isSetContentOffsetDisabled) {
     return;
   }
-
-  if (_centerContent && !CGSizeEqualToSize(self.contentSize, CGSizeZero)) {
-    CGSize scrollViewSize = self.bounds.size;
-    if (self.contentSize.width <= scrollViewSize.width) {
-      contentOffset.x = -(scrollViewSize.width - self.contentSize.width) / 2.0;
-    }
-    if (self.contentSize.height <= scrollViewSize.height) {
-      contentOffset.y = -(scrollViewSize.height - self.contentSize.height) / 2.0;
-    }
-  }
-
   super.contentOffset = CGPointMake(
       RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
       RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
+}
+
+- (void)setFrame:(CGRect)frame
+{
+  [super setFrame:frame];
+  [self centerContentIfNeeded];
+}
+
+- (void)didAddSubview:(UIView *)subview
+{
+  [super didAddSubview:subview];
+  [self centerContentIfNeeded];
 }
 
 - (BOOL)touchesShouldCancelInContentView:(UIView *)view
@@ -257,11 +282,17 @@
   }
 }
 
+- (void)scrollViewDidZoom:(__unused UIScrollView *)scrollView
+{
+  [self centerContentIfNeeded];
+}
+
 #pragma mark -
 
 - (BOOL)isHorizontal:(UIScrollView *)scrollView
 {
-  return scrollView.contentSize.width > self.frame.size.width;
+  return !facebook::react::floatEquality(scrollView.contentSize.width, self.frame.size.width) &&
+      scrollView.contentSize.width > self.frame.size.width;
 }
 
 @end

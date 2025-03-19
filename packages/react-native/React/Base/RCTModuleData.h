@@ -34,7 +34,7 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                       bundleManager:(RCTBundleManager *)bundleManager
-                  callableJSModules:(RCTCallableJSModules *)callableJSModules;
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
                                 bridge:(RCTBridge *)bridge
@@ -103,12 +103,6 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
  * Whether the receiver has a valid `instance` which implements -batchDidComplete.
  */
 @property (nonatomic, assign, readonly) BOOL implementsBatchDidComplete;
-
-/**
- * Whether the receiver has a valid `instance` which implements
- * -partialBatchDidFlush.
- */
-@property (nonatomic, assign, readonly) BOOL implementsPartialBatchDidFlush;
 
 @property (nonatomic, weak, readwrite) id<RCTModuleDataCallInvokerProvider> callInvokerProvider;
 

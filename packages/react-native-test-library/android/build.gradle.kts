@@ -16,10 +16,7 @@ android {
   buildToolsVersion = libs.versions.buildTools.get()
   namespace = "com.facebook.react.osslibraryexample"
 
-  defaultConfig {
-    minSdk = libs.versions.minSdk.get().toInt()
-    targetSdk = libs.versions.targetSdk.get().toInt()
-  }
+  defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
 
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17

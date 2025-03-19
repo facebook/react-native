@@ -145,9 +145,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
-    height,
     src,
-    width,
     ...restProps
   } = props;
 
@@ -251,4 +249,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Image;
+export default Image;

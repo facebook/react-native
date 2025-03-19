@@ -16,17 +16,19 @@ import type {
   SectionBase as _SectionBase,
   VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
-import type {AbstractComponent, ElementRef} from 'react';
+import type {ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
-import {VirtualizedSectionList} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import React, {forwardRef, useImperativeHandle, useRef} from 'react';
+
+const VirtualizedSectionList = VirtualizedLists.VirtualizedSectionList;
 
 type Item = any;
 
 export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
 
-type RequiredProps<SectionT: SectionBase<any>> = {|
+type RequiredProps<SectionT: SectionBase<any>> = {
   /**
    * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist).
    *
@@ -39,9 +41,9 @@ type RequiredProps<SectionT: SectionBase<any>> = {|
    *     }>
    */
   sections: $ReadOnlyArray<SectionT>,
-|};
+};
 
-type OptionalProps<SectionT: SectionBase<any>> = {|
+type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
@@ -91,9 +93,9 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    * This may improve scroll performance for large lists.
    */
   removeClippedSubviews?: boolean,
-|};
+};
 
-export type Props<SectionT> = {|
+export type Props<SectionT: SectionBase<any>> = $ReadOnly<{
   ...$Diff<
     VirtualizedSectionListProps<SectionT>,
     {
@@ -115,7 +117,7 @@ export type Props<SectionT> = {|
   >,
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
-|};
+}>;
 
 /**
  * A performant interface for rendering sectioned lists, supporting the most handy features:
@@ -172,10 +174,10 @@ export type Props<SectionT> = {|
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-const SectionList: AbstractComponent<Props<SectionBase<any>>, any> = forwardRef<
-  Props<SectionBase<any>>,
-  any,
->((props, ref) => {
+const SectionList: component(
+  ref?: React.RefSetter<any>,
+  ...Props<SectionBase<any>>
+) = forwardRef<Props<SectionBase<any>>, any>((props, ref) => {
   const propsWithDefaults = {
     stickySectionHeadersEnabled: Platform.OS === 'ios',
     ...props,

@@ -9,15 +9,15 @@
  */
 
 declare export class URLSearchParams {
-  _searchParams: Array<Array<string>>;
-  constructor(params: any): void;
+  _searchParams: Array<[string, string]>;
+  constructor(params?: Record<string, string>): void;
   append(key: string, value: string): void;
-  delete(name: string): void;
-  get(name: string): void;
-  getAll(name: string): void;
-  has(name: string): void;
-  set(name: string, value: string): void;
-  sort(): void;
-  @@iterator: Iterator<Array<string>>;
+  delete(name: string): empty;
+  get(name: string): empty;
+  getAll(name: string): empty;
+  has(name: string): empty;
+  set(name: string, value: string): empty;
+  sort(): empty;
+  @@iterator(): Iterator<[string, string]>;
   toString(): string;
 }

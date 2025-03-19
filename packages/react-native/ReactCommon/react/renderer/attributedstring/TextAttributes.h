@@ -51,6 +51,7 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<FontStyle> fontStyle{};
   std::optional<FontVariant> fontVariant{};
   std::optional<bool> allowFontScaling{};
+  Float maxFontSizeMultiplier{std::numeric_limits<Float>::quiet_NaN()};
   std::optional<DynamicTypeRamp> dynamicTypeRamp{};
   Float letterSpacing{std::numeric_limits<Float>::quiet_NaN()};
   std::optional<TextTransform> textTransform{};
@@ -60,6 +61,7 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<TextAlignment> alignment{};
   std::optional<WritingDirection> baseWritingDirection{};
   std::optional<LineBreakStrategy> lineBreakStrategy{};
+  std::optional<LineBreakMode> lineBreakMode{};
 
   // Decoration
   SharedColor textDecorationColor{};
@@ -116,6 +118,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.opacity,
         textAttributes.fontFamily,
         textAttributes.fontSize,
+        textAttributes.maxFontSizeMultiplier,
         textAttributes.fontSizeMultiplier,
         textAttributes.fontWeight,
         textAttributes.fontStyle,
@@ -128,6 +131,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textAlignVertical,
         textAttributes.baseWritingDirection,
         textAttributes.lineBreakStrategy,
+        textAttributes.lineBreakMode,
         textAttributes.textDecorationColor,
         textAttributes.textDecorationLineType,
         textAttributes.textDecorationStyle,

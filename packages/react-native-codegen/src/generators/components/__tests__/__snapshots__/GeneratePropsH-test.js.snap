@@ -214,6 +214,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   std::vector<ArrayPropsNativeComponentObjectStruct> object{};
   std::vector<ArrayPropsNativeComponentArrayStruct> array{};
   std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject{};
+  std::vector<folly::dynamic> arrayOfMixed{};
 };
 
 } // namespace facebook::react

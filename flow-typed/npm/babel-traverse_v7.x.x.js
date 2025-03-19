@@ -900,7 +900,9 @@ declare module '@babel/traverse' {
     isImportAttribute(opts?: Opts): boolean;
     isImportDeclaration(opts?: Opts): boolean;
     isImportDefaultSpecifier(opts?: Opts): boolean;
+    isImportExpression(opts?: Opts): boolean;
     isImportNamespaceSpecifier(opts?: Opts): boolean;
+    isImportOrExportDeclaration(opts?: Opts): boolean;
     isImportSpecifier(opts?: Opts): boolean;
     isIndexedAccessType(opts?: Opts): boolean;
     isInferredPredicate(opts?: Opts): boolean;
@@ -1014,6 +1016,7 @@ declare module '@babel/traverse' {
     isTSDeclareFunction(opts?: Opts): boolean;
     isTSDeclareMethod(opts?: Opts): boolean;
     isTSEntityName(opts?: Opts): boolean;
+    isTSEnumBody(opts?: Opts): boolean;
     isTSEnumDeclaration(opts?: Opts): boolean;
     isTSEnumMember(opts?: Opts): boolean;
     isTSExportAssignment(opts?: Opts): boolean;
@@ -1051,6 +1054,7 @@ declare module '@babel/traverse' {
     isTSSatisfiesExpression(opts?: Opts): boolean;
     isTSStringKeyword(opts?: Opts): boolean;
     isTSSymbolKeyword(opts?: Opts): boolean;
+    isTSTemplateLiteralType(opts?: Opts): boolean;
     isTSThisType(opts?: Opts): boolean;
     isTSTupleType(opts?: Opts): boolean;
     isTSType(opts?: Opts): boolean;
@@ -1215,7 +1219,9 @@ declare module '@babel/traverse' {
     assertImportAttribute(opts?: Opts): void;
     assertImportDeclaration(opts?: Opts): void;
     assertImportDefaultSpecifier(opts?: Opts): void;
+    assertImportExpression(opts?: Opts): void;
     assertImportNamespaceSpecifier(opts?: Opts): void;
+    assertImportOrExportDeclaration(opts?: Opts): void;
     assertImportSpecifier(opts?: Opts): void;
     assertIndexedAccessType(opts?: Opts): void;
     assertInferredPredicate(opts?: Opts): void;
@@ -1329,6 +1335,7 @@ declare module '@babel/traverse' {
     assertTSDeclareFunction(opts?: Opts): void;
     assertTSDeclareMethod(opts?: Opts): void;
     assertTSEntityName(opts?: Opts): void;
+    assertTSEnumBody(opts?: Opts): void;
     assertTSEnumDeclaration(opts?: Opts): void;
     assertTSEnumMember(opts?: Opts): void;
     assertTSExportAssignment(opts?: Opts): void;
@@ -1366,6 +1373,7 @@ declare module '@babel/traverse' {
     assertTSSatisfiesExpression(opts?: Opts): void;
     assertTSStringKeyword(opts?: Opts): void;
     assertTSSymbolKeyword(opts?: Opts): void;
+    assertTSTemplateLiteralType(opts?: Opts): void;
     assertTSThisType(opts?: Opts): void;
     assertTSTupleType(opts?: Opts): void;
     assertTSType(opts?: Opts): void;
@@ -1571,8 +1579,13 @@ declare module '@babel/traverse' {
     ImportAttribute?: VisitNode<BabelNodeImportAttribute, TState>,
     ImportDeclaration?: VisitNode<BabelNodeImportDeclaration, TState>,
     ImportDefaultSpecifier?: VisitNode<BabelNodeImportDefaultSpecifier, TState>,
+    ImportExpression?: VisitNode<BabelNodeImportExpression, TState>,
     ImportNamespaceSpecifier?: VisitNode<
       BabelNodeImportNamespaceSpecifier,
+      TState,
+    >,
+    ImportOrExportDeclaration?: VisitNode<
+      BabelNodeImportOrExportDeclaration,
       TState,
     >,
     ImportSpecifier?: VisitNode<BabelNodeImportSpecifier, TState>,
@@ -1730,6 +1743,7 @@ declare module '@babel/traverse' {
     TSDeclareFunction?: VisitNode<BabelNodeTSDeclareFunction, TState>,
     TSDeclareMethod?: VisitNode<BabelNodeTSDeclareMethod, TState>,
     TSEntityName?: VisitNode<BabelNodeTSEntityName, TState>,
+    TSEnumBody?: VisitNode<BabelNodeTSEnumBody, TState>,
     TSEnumDeclaration?: VisitNode<BabelNodeTSEnumDeclaration, TState>,
     TSEnumMember?: VisitNode<BabelNodeTSEnumMember, TState>,
     TSExportAssignment?: VisitNode<BabelNodeTSExportAssignment, TState>,
@@ -1782,6 +1796,7 @@ declare module '@babel/traverse' {
     TSSatisfiesExpression?: VisitNode<BabelNodeTSSatisfiesExpression, TState>,
     TSStringKeyword?: VisitNode<BabelNodeTSStringKeyword, TState>,
     TSSymbolKeyword?: VisitNode<BabelNodeTSSymbolKeyword, TState>,
+    TSTemplateLiteralType?: VisitNode<BabelNodeTSTemplateLiteralType, TState>,
     TSThisType?: VisitNode<BabelNodeTSThisType, TState>,
     TSTupleType?: VisitNode<BabelNodeTSTupleType, TState>,
     TSType?: VisitNode<BabelNodeTSType, TState>,

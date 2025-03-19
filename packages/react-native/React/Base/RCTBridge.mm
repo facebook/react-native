@@ -15,6 +15,7 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
+#import <React/RCTInitializeUIKitProxies.h>
 #import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/InspectorInterfaces.h>
 #import <jsinspector-modern/ReactCdp.h>
@@ -148,16 +149,6 @@ void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logL
   bridgeProxyLoggingLevel = logLevel;
 }
 
-static BOOL useTurboModuleInteropForAllTurboModules = NO;
-BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void)
-{
-  return useTurboModuleInteropForAllTurboModules;
-}
-void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled)
-{
-  useTurboModuleInteropForAllTurboModules = enabled;
-}
-
 // Turn on TurboModule sync execution of void methods
 static BOOL gTurboModuleEnableSyncVoidMethods = NO;
 BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
@@ -167,6 +158,17 @@ BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
 void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
 {
   gTurboModuleEnableSyncVoidMethods = enabled;
+}
+
+static BOOL gBridgeModuleDisableBatchDidComplete = NO;
+BOOL RCTBridgeModuleBatchDidCompleteDisabled(void)
+{
+  return gBridgeModuleDisableBatchDidComplete;
+}
+
+void RCTDisableBridgeModuleBatchDidComplete(BOOL disabled)
+{
+  gBridgeModuleDisableBatchDidComplete = disabled;
 }
 
 BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
@@ -206,7 +208,7 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
   void onReload(const PageReloadRequest &request) override
   {
     RCTAssertMainQueue();
-    [bridge_ reload];
+    RCTTriggerReloadCommandListeners(@"Reloading due to PageReloadRequest from DevTools.");
   }
 
   void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override
@@ -312,6 +314,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)dealloc
 {
+  RCTBridge *batchedBridge = self.batchedBridge;
   /**
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainQueue();
@@ -331,7 +334,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     RCTExecuteOnMainQueue(^{
       facebook::react::jsinspector_modern::getInspectorInstance().removePage(*inspectorPageId);
       inspectorPageId.reset();
-      inspectorTarget.reset();
+      // NOTE: RCTBridgeHostTargetDelegate holds a weak reference to RCTBridge.
+      // Conditionally call `inspectorTarget.reset()` to avoid a crash.
+      if (batchedBridge) {
+        [batchedBridge
+            dispatchBlock:^{
+              inspectorTarget.reset();
+            }
+                    queue:RCTJSThread];
+      } else {
+        inspectorTarget.reset();
+      }
     });
   }
 }
@@ -472,7 +485,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
         });
     __weak RCTBridge *weakSelf = self;
     _inspectorPageId = facebook::react::jsinspector_modern::getInspectorInstance().addPage(
-        "React Native Bridge (Experimental)",
+        "React Native Bridge",
         /* vm */ "",
         [weakSelf](std::unique_ptr<facebook::react::jsinspector_modern::IRemoteConnection> remote)
             -> std::unique_ptr<facebook::react::jsinspector_modern::ILocalConnection> {
@@ -483,7 +496,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
           }
           return strongSelf->_inspectorTarget->connect(std::move(remote));
         },
-        {.nativePageReloads = true, .nativeSourceCodeFetching = true, .prefersFuseboxFrontend = true});
+        {.nativePageReloads = true, .prefersFuseboxFrontend = true});
   }
 
   Class bridgeClass = self.bridgeClass;
@@ -499,6 +512,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
   RCTExecuteOnMainQueue(^{
+    RCTInitializeUIKitProxies();
     RCTRegisterReloadCommandListener(self);
     RCTReloadCommandSetBundleURL(self->_bundleURL);
   });

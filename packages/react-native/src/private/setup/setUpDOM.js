@@ -4,12 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  */
 
-import DOMRect from '../webapis/dom/geometry/DOMRect';
-import DOMRectReadOnly from '../webapis/dom/geometry/DOMRectReadOnly';
+import {polyfillGlobal} from '../../../Libraries/Utilities/PolyfillFunctions';
 
 let initialized = false;
 
@@ -20,9 +19,58 @@ export default function setUpDOM() {
 
   initialized = true;
 
-  // $FlowExpectedError[cannot-write] The global isn't writable anywhere but here, where we define it
-  global.DOMRect = DOMRect;
+  polyfillGlobal(
+    'DOMRect',
+    () => require('../webapis/geometry/DOMRect').default,
+  );
 
-  // $FlowExpectedError[cannot-write] The global isn't writable anywhere but here, where we define it
-  global.DOMRectReadOnly = DOMRectReadOnly;
+  polyfillGlobal(
+    'DOMRectReadOnly',
+    () => require('../webapis/geometry/DOMRectReadOnly').default,
+  );
+
+  polyfillGlobal(
+    'DOMRectList',
+    () => require('../webapis/geometry/DOMRectList').default,
+  );
+
+  polyfillGlobal(
+    'HTMLCollection',
+    () => require('../webapis/dom/oldstylecollections/HTMLCollection').default,
+  );
+
+  polyfillGlobal(
+    'NodeList',
+    () => require('../webapis/dom/oldstylecollections/NodeList').default,
+  );
+
+  polyfillGlobal(
+    'Node',
+    () => require('../webapis/dom/nodes/ReadOnlyNode').default,
+  );
+
+  polyfillGlobal(
+    'Document',
+    () => require('../webapis/dom/nodes/ReactNativeDocument').default,
+  );
+
+  polyfillGlobal(
+    'CharacterData',
+    () => require('../webapis/dom/nodes/ReadOnlyCharacterData').default,
+  );
+
+  polyfillGlobal(
+    'Text',
+    () => require('../webapis/dom/nodes/ReadOnlyText').default,
+  );
+
+  polyfillGlobal(
+    'Element',
+    () => require('../webapis/dom/nodes/ReadOnlyElement').default,
+  );
+
+  polyfillGlobal(
+    'HTMLElement',
+    () => require('../webapis/dom/nodes/ReactNativeElement').default,
+  );
 }

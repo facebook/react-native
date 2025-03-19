@@ -35,6 +35,13 @@
 @optional
 
 /**
+ * This method is used to retrieve a factory object that can create a `facebook::react::TurboModule`,
+ * The class implementing `RCTTurboModuleProvider` must be an Objective-C class so that we can
+ * initialize it dynamically with Codegen.
+ */
+- (id<RCTModuleProvider>)getModuleProvider:(const char *)name;
+
+/**
  * Create an instance of a TurboModule without relying on any ObjC++ module instance.
  */
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
@@ -55,12 +62,6 @@
 
 @end
 
-@protocol RCTTurboModuleManagerRuntimeHandler <NSObject>
-
-- (facebook::react::RuntimeExecutor)runtimeExecutorForTurboModuleManager:(RCTTurboModuleManager *)turboModuleManager;
-
-@end
-
 @interface RCTTurboModuleManager : NSObject <RCTTurboModuleRegistry>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -75,7 +76,5 @@
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
 
 - (void)invalidate;
-
-@property (nonatomic, weak, readwrite) id<RCTTurboModuleManagerRuntimeHandler> runtimeHandler;
 
 @end

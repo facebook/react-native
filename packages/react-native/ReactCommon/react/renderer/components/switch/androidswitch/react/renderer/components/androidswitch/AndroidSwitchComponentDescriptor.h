@@ -36,10 +36,6 @@ class AndroidSwitchComponentDescriptor final
     // provide measurements to Yoga.
     androidSwitchShadowNode.setAndroidSwitchMeasurementsManager(
         measurementsManager_);
-
-    // All `AndroidSwitchShadowNode`s must have leaf Yoga nodes with properly
-    // setup measure function.
-    androidSwitchShadowNode.enableMeasurement();
   }
 
  private:

@@ -7,28 +7,41 @@
 
 #include "Props.h"
 
-#include <folly/dynamic.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/utils/CoreFeatures.h>
+
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include "DynamicPropsUtilities.h"
 
 namespace facebook::react {
 
 Props::Props(
     const PropsParserContext& context,
     const Props& sourceProps,
-    const RawProps& rawProps) {
-  initialize(context, sourceProps, rawProps);
+    const RawProps& rawProps,
+    const std::function<bool(const std::string&)>& filterObjectKeys) {
+  initialize(context, sourceProps, rawProps, filterObjectKeys);
 }
 
 void Props::initialize(
     const PropsParserContext& context,
     const Props& sourceProps,
-    const RawProps& rawProps) {
-  nativeId = CoreFeatures::enablePropIteratorSetter
+    const RawProps& rawProps,
+    [[maybe_unused]] const std::function<bool(const std::string&)>&
+        filterObjectKeys) {
+  nativeId = ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
       ? sourceProps.nativeId
       : convertRawProp(context, rawProps, "nativeID", sourceProps.nativeId, {});
 #ifdef ANDROID
-  this->rawProps = (folly::dynamic)rawProps;
+  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    auto& oldRawProps = sourceProps.rawProps;
+    auto newRawProps = rawProps.toDynamic(filterObjectKeys);
+    auto mergedRawProps = mergeDynamicProps(
+        oldRawProps, newRawProps, NullValueStrategy::Override);
+    this->rawProps = mergedRawProps;
+  } else {
+    this->rawProps = rawProps.toDynamic(filterObjectKeys);
+  }
 #endif
 }
 
@@ -43,5 +56,13 @@ void Props::setProp(
       return;
   }
 }
+
+#pragma mark - DebugStringConvertible
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+SharedDebugStringConvertibleList Props::getDebugProps() const {
+  return {debugStringConvertibleItem("nativeID", nativeId)};
+}
+#endif
 
 } // namespace facebook::react

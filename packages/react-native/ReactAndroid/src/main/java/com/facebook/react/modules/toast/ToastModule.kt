@@ -20,7 +20,7 @@ import com.facebook.react.module.annotations.ReactModule
 public class ToastModule(reactContext: ReactApplicationContext) :
     NativeToastAndroidSpec(reactContext) {
 
-  override public fun getTypedExportedConstants(): Map<String, Any> =
+  public override fun getTypedExportedConstants(): Map<String, Any> =
       mutableMapOf(
           DURATION_SHORT_KEY to Toast.LENGTH_SHORT,
           DURATION_LONG_KEY to Toast.LENGTH_LONG,
@@ -29,13 +29,13 @@ public class ToastModule(reactContext: ReactApplicationContext) :
           GRAVITY_CENTER to (Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL),
       )
 
-  override public fun show(message: String?, durationDouble: Double) {
+  public override fun show(message: String?, durationDouble: Double) {
     val duration = durationDouble.toInt()
     UiThreadUtil.runOnUiThread(
         Runnable { Toast.makeText(getReactApplicationContext(), message, duration).show() })
   }
 
-  override public fun showWithGravity(
+  public override fun showWithGravity(
       message: String?,
       durationDouble: Double,
       gravityDouble: Double
@@ -50,7 +50,7 @@ public class ToastModule(reactContext: ReactApplicationContext) :
         })
   }
 
-  override public fun showWithGravityAndOffset(
+  public override fun showWithGravityAndOffset(
       message: String?,
       durationDouble: Double,
       gravityDouble: Double,

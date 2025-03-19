@@ -44,13 +44,13 @@ public abstract class AnimatedNode {
 
   /**
    * Subclasses may want to override this method in order to store a reference to the parent of a
-   * given node that can then be used to calculate current node's value in {@link #update}. In that
-   * case it is important to also override {@link #onDetachedFromNode} to clear that reference once
-   * current node gets detached.
+   * given node that can then be used to calculate current node's value in [update]. In that case it
+   * is important to also override [onDetachedFromNode] to clear that reference once current node
+   * gets detached.
    */
   public open fun onAttachedToNode(parent: AnimatedNode): Unit = Unit
 
-  /** See {@link #onAttachedToNode} */
+  /** See [onAttachedToNode] */
   public open fun onDetachedFromNode(parent: AnimatedNode): Unit = Unit
 
   /**

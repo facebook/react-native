@@ -17,11 +17,11 @@ import type {
   AccessibilityState,
   Role,
 } from '../Components/View/ViewAccessibility';
-import type {TextStyleProp} from '../StyleSheet/StyleSheet';
+import type {ColorValue, TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  LayoutEvent,
+  GestureResponderEvent,
+  LayoutChangeEvent,
   PointerEvent,
-  PressEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 import type {Node} from 'react';
@@ -39,12 +39,90 @@ type PointerEventProps = $ReadOnly<{
   onPointerMove?: (event: PointerEvent) => void,
 }>;
 
-/**
- * @see https://reactnative.dev/docs/text#reference
- */
-export type TextProps = $ReadOnly<{
-  ...PointerEventProps,
+export type TextPropsIOS = {
+  /**
+   * Specifies whether font should be scaled down automatically to fit given style constraints.
+   *
+   * See https://reactnative.dev/docs/text#adjustsfontsizetofit
+   */
+  adjustsFontSizeToFit?: ?boolean,
 
+  /**
+   * The Dynamic Type scale ramp to apply to this element on iOS.
+   */
+  dynamicTypeRamp?: ?(
+    | 'caption2'
+    | 'caption1'
+    | 'footnote'
+    | 'subheadline'
+    | 'callout'
+    | 'body'
+    | 'headline'
+    | 'title3'
+    | 'title2'
+    | 'title1'
+    | 'largeTitle'
+  ),
+
+  /**
+   * When `true`, no visual change is made when text is pressed down. By
+   * default, a gray oval highlights the text on press down.
+   *
+   * See https://reactnative.dev/docs/text#supperhighlighting
+   */
+  suppressHighlighting?: ?boolean,
+
+  /**
+   * Set line break strategy on iOS.
+   *
+   * See https://reactnative.dev/docs/text.html#linebreakstrategyios
+   */
+  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
+};
+
+export type TextPropsAndroid = {
+  /**
+   * Specifies the disabled state of the text view for testing purposes.
+   *
+   * See https://reactnative.dev/docs/text#disabled
+   */
+  disabled?: ?boolean,
+
+  /**
+   * The highlight color of the text.
+   *
+   * See https://reactnative.dev/docs/text#selectioncolor
+   */
+  selectionColor?: ?ColorValue,
+
+  /**
+   * Determines the types of data converted to clickable URLs in the text element.
+   * By default no data types are detected.
+   */
+  dataDetectorType?: ?('phoneNumber' | 'link' | 'email' | 'none' | 'all'),
+
+  /**
+   * Set text break strategy on Android API Level 23+
+   * default is `highQuality`.
+   *
+   * See https://reactnative.dev/docs/text#textbreakstrategy
+   */
+  textBreakStrategy?: ?('balanced' | 'highQuality' | 'simple'),
+
+  /**
+   * iOS Only
+   */
+  adjustsFontSizeToFit?: ?boolean,
+
+  /**
+   * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
+   *
+   * See https://reactnative.dev/docs/text#minimumfontscale
+   */
+  minimumFontScale?: ?number,
+};
+
+type TextBaseProps = $ReadOnly<{
   /**
    * Indicates whether the view is an accessibility element.
    *
@@ -61,14 +139,8 @@ export type TextProps = $ReadOnly<{
   'aria-label'?: ?string,
 
   /**
-   * Whether font should be scaled down automatically.
-   *
-   * See https://reactnative.dev/docs/text#adjustsfontsizetofit
-   */
-  adjustsFontSizeToFit?: ?boolean,
-
-  /**
    * Whether fonts should scale to respect Text Size accessibility settings.
+   * The default is `true`.
    *
    * See https://reactnative.dev/docs/text#allowfontscaling
    */
@@ -103,12 +175,28 @@ export type TextProps = $ReadOnly<{
    * When `numberOfLines` is set, this prop defines how text will be
    * truncated.
    *
+   * This can be one of the following values:
+   *
+   * - `head` - The line is displayed so that the end fits in the container and the missing text
+   * at the beginning of the line is indicated by an ellipsis glyph. e.g., "...wxyz"
+   * - `middle` - The line is displayed so that the beginning and end fit in the container and the
+   * missing text in the middle is indicated by an ellipsis glyph. "ab...yz"
+   * - `tail` - The line is displayed so that the beginning fits in the container and the
+   * missing text at the end of the line is indicated by an ellipsis glyph. e.g., "abcd..."
+   * - `clip` - Lines are not drawn past the edge of the text container.
+   *
+   * The default is `tail`.
+   *
+   * `numberOfLines` must be set in conjunction with this prop.
+   *
+   * > `clip` is working only for iOS
+   *
    * See https://reactnative.dev/docs/text#ellipsizemode
    */
   ellipsizeMode?: ?('clip' | 'head' | 'middle' | 'tail'),
 
   /**
-   * Used to locate this view from native code.
+   * Used to reference react managed views from native code.
    *
    * See https://reactnative.dev/docs/text#nativeid
    */
@@ -131,7 +219,11 @@ export type TextProps = $ReadOnly<{
   nativeID?: ?string,
 
   /**
-   * Used to truncate the text with an ellipsis.
+   * Used to truncate the text with an ellipsis after computing the text
+   * layout, including line wrapping, such that the total number of lines
+   * does not exceed this number.
+   *
+   * This prop is commonly used with `ellipsizeMode`.
    *
    * See https://reactnative.dev/docs/text#numberoflines
    */
@@ -140,29 +232,33 @@ export type TextProps = $ReadOnly<{
   /**
    * Invoked on mount and layout changes.
    *
+   * {nativeEvent: { layout: {x, y, width, height}}}.
+   *
    * See https://reactnative.dev/docs/text#onlayout
    */
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * This function is called on long press.
+   * e.g., `onLongPress={this.increaseSize}>`
    *
    * See https://reactnative.dev/docs/text#onlongpress
    */
-  onLongPress?: ?(event: PressEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * This function is called on press.
+   * Text intrinsically supports press handling with a default highlight state (which can be disabled with suppressHighlighting).
    *
    * See https://reactnative.dev/docs/text#onpress
    */
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
-  onResponderGrant?: ?(event: PressEvent) => void,
-  onResponderMove?: ?(event: PressEvent) => void,
-  onResponderRelease?: ?(event: PressEvent) => void,
-  onResponderTerminate?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+  onResponderGrant?: ?(event: GestureResponderEvent) => void,
+  onResponderMove?: ?(event: GestureResponderEvent) => void,
+  onResponderRelease?: ?(event: GestureResponderEvent) => void,
+  onResponderTerminate?: ?(event: GestureResponderEvent) => void,
   onResponderTerminationRequest?: ?() => boolean,
   onStartShouldSetResponder?: ?() => boolean,
   onMoveShouldSetResponder?: ?() => boolean,
@@ -187,6 +283,10 @@ export type TextProps = $ReadOnly<{
    * See https://reactnative.dev/docs/text#selectable
    */
   selectable?: ?boolean,
+
+  /**
+   * @see https://reactnative.dev/docs/text#style
+   */
   style?: ?TextStyleProp,
 
   /**
@@ -195,74 +295,14 @@ export type TextProps = $ReadOnly<{
    * See https://reactnative.dev/docs/text#testid
    */
   testID?: ?string,
+}>;
 
-  /**
-   * Android Only
-   */
-
-  /**
-   * Specifies the disabled state of the text view for testing purposes.
-   *
-   * See https://reactnative.dev/docs/text#disabled
-   */
-  disabled?: ?boolean,
-
-  /**
-   * The highlight color of the text.
-   *
-   * See https://reactnative.dev/docs/text#selectioncolor
-   */
-  selectionColor?: ?string,
-
-  dataDetectorType?: ?('phoneNumber' | 'link' | 'email' | 'none' | 'all'),
-
-  /**
-   * Set text break strategy on Android.
-   *
-   * See https://reactnative.dev/docs/text#textbreakstrategy
-   */
-  textBreakStrategy?: ?('balanced' | 'highQuality' | 'simple'),
-
-  /**
-   * iOS Only
-   */
-  adjustsFontSizeToFit?: ?boolean,
-
-  /**
-   * The Dynamic Type scale ramp to apply to this element on iOS.
-   */
-  dynamicTypeRamp?: ?(
-    | 'caption2'
-    | 'caption1'
-    | 'footnote'
-    | 'subheadline'
-    | 'callout'
-    | 'body'
-    | 'headline'
-    | 'title3'
-    | 'title2'
-    | 'title1'
-    | 'largeTitle'
-  ),
-
-  /**
-   * Smallest possible scale a font can reach.
-   *
-   * See https://reactnative.dev/docs/text#minimumfontscale
-   */
-  minimumFontScale?: ?number,
-
-  /**
-   * When `true`, no visual change is made when text is pressed down.
-   *
-   * See https://reactnative.dev/docs/text#supperhighlighting
-   */
-  suppressHighlighting?: ?boolean,
-
-  /**
-   * Set line break strategy on iOS.
-   *
-   * See https://reactnative.dev/docs/text.html#linebreakstrategyios
-   */
-  lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
+/**
+ * @see https://reactnative.dev/docs/text#reference
+ */
+export type TextProps = $ReadOnly<{
+  ...PointerEventProps,
+  ...TextPropsIOS,
+  ...TextPropsAndroid,
+  ...TextBaseProps,
 }>;

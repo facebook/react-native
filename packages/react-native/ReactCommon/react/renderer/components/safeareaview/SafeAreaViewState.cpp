@@ -7,4 +7,13 @@
 
 #include "SafeAreaViewState.h"
 
-namespace facebook::react {} // namespace facebook::react
+namespace facebook::react {
+
+#ifdef ANDROID
+folly::dynamic SafeAreaViewState::getDynamic() const {
+  return folly::dynamic::object("left", padding.left)("top", padding.top)(
+      "right", padding.right)("bottom", padding.bottom);
+}
+#endif
+
+} // namespace facebook::react

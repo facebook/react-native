@@ -5,21 +5,6 @@
 
 require_relative './helpers.rb'
 
-# It builds the codegen CLI if it is not present
-#
-# Parameters:
-# - react_native_path: the path to the react native installation
-# - relative_installation_root: the path to the relative installation root of the pods
-# - dir_manager: a class that implements the `Dir` interface. Defaults to `Dir`, the Dependency can be injected for testing purposes.
-# @throws an error if it could not find the codegen folder.
-def build_codegen!(react_native_path, relative_installation_root, dir_manager: Dir)
-  codegen_repo_path = "#{basePath(react_native_path, relative_installation_root)}/../react-native-codegen"
-  return unless dir_manager.exist?(codegen_repo_path) && !dir_manager.exist?("#{codegen_repo_path}/lib")
-
-  Pod::UI.puts "[Codegen] building #{codegen_repo_path}"
-  system("#{codegen_repo_path}/scripts/oss/build.sh")
-end
-
 # keeping the run_codegen! method for testing purposes
 def run_codegen!(
   app_path,
@@ -35,6 +20,10 @@ def run_codegen!(
   folly_version: Helpers::Constants.folly_config()[:version],
   codegen_utils: CodegenUtils.new()
   )
+
+  if ENV["RCT_SKIP_CODEGEN"] == "1"
+    return
+  end
 
   codegen_utils.use_react_native_codegen_discovery!(
     disable_codegen,

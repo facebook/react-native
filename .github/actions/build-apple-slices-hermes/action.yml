@@ -9,7 +9,7 @@ inputs:
     description: The version of Hermes
   slice:
     required: true
-    description: The slice of hermes you want to build. It could be iphone, iphonesimulator, macos, catalyst, xros, or xrossimulator
+    description: The slice of hermes you want to build. It could be iphone, iphonesimulator, macos, catalyst, appletvos, appletvsimulator, xros, or xrossimulator
   flavor:
     required: true
     description: The flavor we want to build. It can be Debug or Release
@@ -30,7 +30,7 @@ runs:
       uses: actions/cache/restore@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
-        key: v5-hermes-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.slice }}-${{ inputs.flavor }}
+        key: v6-hermes-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.slice }}-${{ inputs.flavor }}
     - name: Build the Hermes ${{ inputs.slice }} frameworks
       shell: bash
       run: |
@@ -85,14 +85,19 @@ runs:
           echo "Please try again"
           exit 1
         fi
+    - name: Compress slices to preserve Symlinks
+      shell: bash
+      run: |
+        cd ./packages/react-native/sdks/hermes
+        tar -czv -f build_${{ matrix.slice }}_${{ matrix.flavor }}.tar.gz build_${{ matrix.slice }}_${{ matrix.flavor }}
     - name: Upload Artifact for Slice (${{ inputs.slice }}, ${{ inputs.flavor }}}
       uses: actions/upload-artifact@v4.3.4
       with:
         name: slice-${{ inputs.slice }}-${{ inputs.flavor }}
-        path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
+        path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}.tar.gz
     - name: Save slice cache
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
       uses: actions/cache/save@v4
       with:
         path: ./packages/react-native/sdks/hermes/build_${{ inputs.slice }}_${{ inputs.flavor }}
-        key: v5-hermes-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.SLICE }}-${{ inputs.FLAVOR }}
+        key: v6-hermes-apple-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashfiles('packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}-${{ inputs.SLICE }}-${{ inputs.FLAVOR }}

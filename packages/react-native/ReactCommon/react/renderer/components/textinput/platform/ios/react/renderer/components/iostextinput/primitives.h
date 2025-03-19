@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <react/renderer/components/textinput/basePrimitives.h>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace facebook::react {
 
@@ -45,14 +47,6 @@ enum class ReturnKeyType {
   Route,
   Yahoo,
   Continue,
-};
-
-// iOS & Android.
-enum class SubmitBehavior {
-  Default,
-  Submit,
-  BlurAndSubmit,
-  Newline,
 };
 
 // iOS-only
@@ -94,12 +88,6 @@ class Selection final {
  */
 class TextInputTraits final {
  public:
-  /*
-   * iOS & Android
-   * Default value: `false`.
-   */
-  bool multiline{false};
-
   /*
    * iOS & Android
    * Default value: `Sentences`.
@@ -176,12 +164,6 @@ class TextInputTraits final {
   bool secureTextEntry{false};
 
   /*
-   * iOS & Android
-   * Default value: `Default`.
-   */
-  SubmitBehavior submitBehavior{SubmitBehavior::Default};
-
-  /*
    * iOS-only (implemented only on iOS for now)
    * Default value: `false`.
    */
@@ -210,6 +192,12 @@ class TextInputTraits final {
    * Default value: `false`.
    */
   bool selectTextOnFocus{false};
+
+  /*
+   * iOS-only
+   * Default value: `empty` (`null`).
+   */
+  std::vector<std::string> dataDetectorTypes{};
 
   /*
    * iOS-only (inherently iOS-specific)

@@ -15,6 +15,8 @@
 #include "HermesPerfettoDataSource.h"
 #include "ReactPerfetto.h"
 
+namespace facebook::react {
+
 namespace {
 
 const int SAMPLING_HZ = 100;
@@ -56,11 +58,16 @@ void flushSample(
     uint64_t start,
     uint64_t end) {
   auto track = getPerfettoWebPerfTrackSync("JS Sampling");
-  size_t i = 0;
-  for (const auto& frame : stack) {
-    if (++i >= 50) {
-      // Limit
-      break;
+  for (size_t i = 0; i < stack.size(); i++) {
+    const auto& frame = stack[i];
+    // Omit elements that are not the first 25 or the last 25
+    if (i > 25 && i < stack.size() - 25) {
+      if (i == 26) {
+        TRACE_EVENT_BEGIN(
+            "react-native", perfetto::DynamicString{"..."}, track, start);
+        TRACE_EVENT_END("react-native", track, end);
+      }
+      continue;
     }
     std::string name = frame["name"].asString();
     TRACE_EVENT_BEGIN(
@@ -120,6 +127,9 @@ void HermesPerfettoDataSource::OnStop(const StopArgs& a) {
   facebook::hermes::HermesRuntime::disableSamplingProfiler();
 }
 
-PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS(HermesPerfettoDataSource);
+} // namespace facebook::react
+
+PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS(
+    facebook::react::HermesPerfettoDataSource);
 
 #endif // WITH_PERFETTO

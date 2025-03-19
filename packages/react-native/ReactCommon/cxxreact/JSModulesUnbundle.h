@@ -11,8 +11,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <folly/Conv.h>
-
 namespace facebook::react {
 
 class JSModulesUnbundle {
@@ -27,9 +25,9 @@ class JSModulesUnbundle {
   class ModuleNotFound : public std::out_of_range {
    public:
     using std::out_of_range::out_of_range;
-    ModuleNotFound(uint32_t moduleId)
+    explicit ModuleNotFound(uint32_t moduleId)
         : std::out_of_range::out_of_range(
-              folly::to<std::string>("Module not found: ", moduleId)) {}
+              "Module not found: " + std::to_string(moduleId)) {}
   };
   struct Module {
     std::string name;

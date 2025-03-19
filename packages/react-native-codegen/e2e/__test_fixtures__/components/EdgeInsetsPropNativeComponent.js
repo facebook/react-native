@@ -8,18 +8,18 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
   // TODO(T104760003) Fix EdgeInsetsValue in codegen
   // contentInset?: EdgeInsetsValue,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'EdgeInsetsPropNativeComponentView',

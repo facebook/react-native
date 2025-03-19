@@ -11,13 +11,12 @@
 
 import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';
 import type {BrowserLauncher} from './types/BrowserLauncher';
-import type {EventReporter} from './types/EventReporter';
+import type {EventReporter, ReportableEvent} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
 import type {Logger} from './types/Logger';
 import type {NextHandleFunction} from 'connect';
 
 import InspectorProxy from './inspector-proxy/InspectorProxy';
-import deprecated_openFlipperMiddleware from './middleware/deprecated_openFlipperMiddleware';
 import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
 import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
 import reactNativeDebuggerFrontendPath from '@react-native/debugger-frontend';
@@ -29,11 +28,8 @@ type Options = $ReadOnly<{
   projectRoot: string,
 
   /**
-   * The base URL to the dev server, as addressible from the local developer
-   * machine. This is used in responses which return URLs to other endpoints,
-   * e.g. the debugger frontend and inspector proxy targets.
-   *
-   * Example: `'http://localhost:8081'`.
+   * The base URL to the dev server, as reachable from the machine on which
+   * dev-middleware is hosted. Typically `http://localhost:${metroPort}`.
    */
   serverBaseUrl: string,
 
@@ -68,6 +64,13 @@ type Options = $ReadOnly<{
    * This is an unstable API with no semver guarantees.
    */
   unstable_customInspectorMessageHandler?: CreateCustomMessageHandlerFn,
+
+  /**
+   * Whether to measure the event loop performance of inspector proxy and log report it via the event reporter.
+   *
+   * This is an unstable API with no semver guarantees.
+   */
+  unstable_trackInspectorProxyEventLoopPerf?: boolean,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{
@@ -83,32 +86,42 @@ export default function createDevMiddleware({
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
   unstable_customInspectorMessageHandler,
+  unstable_trackInspectorProxyEventLoopPerf = false,
 }: Options): DevMiddlewareAPI {
   const experiments = getExperiments(experimentConfig);
+  const eventReporter = createWrappedEventReporter(
+    unstable_eventReporter,
+    logger,
+  );
 
   const inspectorProxy = new InspectorProxy(
     projectRoot,
     serverBaseUrl,
-    unstable_eventReporter,
+    eventReporter,
     experiments,
+    logger,
     unstable_customInspectorMessageHandler,
+    unstable_trackInspectorProxyEventLoopPerf,
   );
 
   const middleware = connect()
     .use(
       '/open-debugger',
-      experiments.enableNewDebugger
-        ? openDebuggerMiddleware({
-            serverBaseUrl,
-            inspectorProxy,
-            browserLauncher: unstable_browserLauncher,
-            eventReporter: unstable_eventReporter,
-            experiments,
-            logger,
-          })
-        : deprecated_openFlipperMiddleware({
-            logger,
-          }),
+      openDebuggerMiddleware({
+        serverBaseUrl,
+        inspectorProxy,
+        browserLauncher: unstable_browserLauncher,
+        eventReporter,
+        experiments,
+        logger,
+      }),
+    )
+    .use(
+      '/debugger-frontend/embedder-static/embedderScript.js',
+      (_req, res) => {
+        res.setHeader('Content-Type', 'application/javascript');
+        res.end('');
+      },
     )
     .use(
       '/debugger-frontend',
@@ -126,9 +139,39 @@ export default function createDevMiddleware({
 
 function getExperiments(config: ExperimentsConfig): Experiments {
   return {
-    enableNewDebugger: config.enableNewDebugger ?? false,
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
     enableNetworkInspector: config.enableNetworkInspector ?? false,
-    useFuseboxInternalBranding: config.useFuseboxInternalBranding ?? false,
+  };
+}
+
+/**
+ * Creates a wrapped EventReporter that locally intercepts events to
+ * log to the terminal.
+ */
+function createWrappedEventReporter(
+  reporter: ?EventReporter,
+  logger: ?Logger,
+): EventReporter {
+  return {
+    logEvent(event: ReportableEvent) {
+      switch (event.type) {
+        case 'profiling_target_registered':
+          logger?.info(
+            "Profiling build target '%s' registered for debugging",
+            event.appId ?? 'unknown',
+          );
+          break;
+        case 'fusebox_console_notice':
+          logger?.info(
+            '\u001B[1m\u001B[7m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
+              'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
+              'the terminal to open (requires Google Chrome or Microsoft Edge).' +
+              '\u001B[27m',
+          );
+          break;
+      }
+
+      reporter?.logEvent(event);
+    },
   };
 }

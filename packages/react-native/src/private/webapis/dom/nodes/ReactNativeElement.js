@@ -11,51 +11,78 @@
 // flowlint unsafe-getters-setters:off
 
 import type {
-  HostComponent,
-  INativeMethods,
   InternalInstanceHandle,
+  Node as ShadowNode,
+  ViewConfig,
+} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {
+  HostInstance,
+  LegacyHostInstanceMethods,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-  ViewConfig,
-} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
-import type {ElementRef} from 'react';
+} from '../../../types/HostInstance';
+import type {InstanceHandle} from './internals/NodeInternals';
+import type ReactNativeDocument from './ReactNativeDocument';
 
 import TextInputState from '../../../../../Libraries/Components/TextInput/TextInputState';
 import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
-import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
-import ReadOnlyNode from './ReadOnlyNode';
 import {
-  getPublicInstanceFromInternalInstanceHandle,
-  getShadowNode,
-} from './ReadOnlyNode';
+  getNativeElementReference,
+  getPublicInstanceFromInstanceHandle,
+  setInstanceHandle,
+  setOwnerDocument,
+} from './internals/NodeInternals';
+import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
 import NativeDOM from './specs/NativeDOM';
 import nullthrows from 'nullthrows';
 
 const noop = () => {};
 
-export default class ReactNativeElement
+// Ideally, this class would be exported as-is, but this implementation is
+// significantly slower than the existing `ReactFabricHostComponent`.
+// This is a very hot code path (this class is instantiated once per rendered
+// host component in the tree) and we can't regress performance here.
+//
+// This implementation is slower because this is a subclass and we have to call
+// super(), which is a very slow operation the way that Babel transforms it at
+// the moment.
+//
+// The optimization we're doing is using an old-style function constructor,
+// where we're not required to use `super()`, and we make that constructor
+// extend this class so it inherits all the methods and it sets the class
+// hierarchy correctly.
+//
+// An alternative implementation was to implement the constructor as a function
+// returning a manually constructed instance using `Object.create()` but that
+// was slower than this method because the engine has to create an object than
+// we then discard to create a new one.
+
+class ReactNativeElement
   extends ReadOnlyElement
-  implements INativeMethods
+  implements LegacyHostInstanceMethods
 {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;
-  __internalInstanceHandle: InternalInstanceHandle;
+  __internalInstanceHandle: InstanceHandle;
 
-  #viewConfig: ViewConfig;
+  __viewConfig: ViewConfig;
 
+  // This constructor isn't really used. See the `ReactNativeElement` function
+  // below.
   constructor(
     tag: number,
     viewConfig: ViewConfig,
-    internalInstanceHandle: InternalInstanceHandle,
+    instanceHandle: InstanceHandle,
+    ownerDocument: ReactNativeDocument,
   ) {
-    super(internalInstanceHandle);
+    super(instanceHandle, ownerDocument);
 
     this.__nativeTag = tag;
-    this.__internalInstanceHandle = internalInstanceHandle;
-    this.#viewConfig = viewConfig;
+    this.__internalInstanceHandle = instanceHandle;
+    this.__viewConfig = viewConfig;
   }
 
   get offsetHeight(): number {
@@ -65,7 +92,7 @@ export default class ReactNativeElement
   }
 
   get offsetLeft(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -76,7 +103,7 @@ export default class ReactNativeElement
   }
 
   get offsetParent(): ReadOnlyElement | null {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -85,7 +112,7 @@ export default class ReactNativeElement
       // in JavaScript yet.
       if (offset[0] != null) {
         const offsetParentInstanceHandle = offset[0];
-        const offsetParent = getPublicInstanceFromInternalInstanceHandle(
+        const offsetParent = getPublicInstanceFromInstanceHandle(
           offsetParentInstanceHandle,
         );
         // $FlowExpectedError[incompatible-type] The value returned by `getOffset` is always an instance handle for `ReadOnlyElement`.
@@ -98,7 +125,7 @@ export default class ReactNativeElement
   }
 
   get offsetTop(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -119,35 +146,37 @@ export default class ReactNativeElement
    */
 
   blur(): void {
-    // $FlowFixMe[incompatible-exact] Migrate all usages of `NativeMethods` to an interface to fix this.
     TextInputState.blurTextInput(this);
   }
 
   focus() {
-    // $FlowFixMe[incompatible-exact] Migrate all usages of `NativeMethods` to an interface to fix this.
     TextInputState.focusTextInput(this);
   }
 
   measure(callback: MeasureOnSuccessCallback) {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
-      nullthrows(getFabricUIManager()).measure(node, callback);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).measure(shadowNode, callback);
     }
   }
 
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
-      nullthrows(getFabricUIManager()).measureInWindow(node, callback);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).measureInWindow(shadowNode, callback);
     }
   }
 
   measureLayout(
-    relativeToNativeNode: number | ElementRef<HostComponent<mixed>>,
+    relativeToNativeNode: number | HostInstance,
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void /* currently unused */,
   ) {
-    if (!(relativeToNativeNode instanceof ReadOnlyNode)) {
+    if (!(relativeToNativeNode instanceof ReactNativeElement)) {
       if (__DEV__) {
         console.error(
           'Warning: ref.measureLayout must be called with a ref to a native component.',
@@ -157,13 +186,18 @@ export default class ReactNativeElement
       return;
     }
 
-    const toStateNode = getShadowNode(this);
-    const fromStateNode = getShadowNode(relativeToNativeNode);
+    const toStateNode = getNativeElementReference(this);
+    const fromStateNode = getNativeElementReference(relativeToNativeNode);
 
     if (toStateNode != null && fromStateNode != null) {
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const toStateShadowNode: ShadowNode = toStateNode;
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const fromStateShadowNode: ShadowNode = fromStateNode;
+
       nullthrows(getFabricUIManager()).measureLayout(
-        toStateNode,
-        fromStateNode,
+        toStateShadowNode,
+        fromStateShadowNode,
         onFail != null ? onFail : noop,
         onSuccess != null ? onSuccess : noop,
       );
@@ -172,18 +206,57 @@ export default class ReactNativeElement
 
   setNativeProps(nativeProps: {...}): void {
     if (__DEV__) {
-      warnForStyleProps(nativeProps, this.#viewConfig.validAttributes);
+      warnForStyleProps(nativeProps, this.__viewConfig.validAttributes);
     }
 
     const updatePayload = createAttributePayload(
       nativeProps,
-      this.#viewConfig.validAttributes,
+      this.__viewConfig.validAttributes,
     );
 
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null && updatePayload != null) {
-      nullthrows(getFabricUIManager()).setNativeProps(node, updatePayload);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).setNativeProps(
+        shadowNode,
+        updatePayload,
+      );
     }
   }
 }
+
+type ReactNativeElementT = ReactNativeElement;
+
+function replaceConstructorWithoutSuper(
+  ReactNativeElementClass: Class<ReactNativeElementT>,
+): Class<ReactNativeElementT> {
+  // Alternative constructor just implemented to provide a better performance than
+  // calling super() in the original class.
+  // eslint-disable-next-line no-shadow
+  function ReactNativeElement(
+    this: ReactNativeElementT,
+    tag: number,
+    viewConfig: ViewConfig,
+    internalInstanceHandle: InternalInstanceHandle,
+    ownerDocument: ReactNativeDocument,
+  ) {
+    // Inlined from `ReadOnlyNode`
+    setOwnerDocument(this, ownerDocument);
+    setInstanceHandle(this, internalInstanceHandle);
+
+    this.__nativeTag = tag;
+    this.__internalInstanceHandle = internalInstanceHandle;
+    this.__viewConfig = viewConfig;
+  }
+
+  ReactNativeElement.prototype = ReactNativeElementClass.prototype;
+
+  // $FlowExpectedError[incompatible-return]
+  return ReactNativeElement;
+}
+
+export default replaceConstructorWithoutSuper(
+  ReactNativeElement,
+) as typeof ReactNativeElement;

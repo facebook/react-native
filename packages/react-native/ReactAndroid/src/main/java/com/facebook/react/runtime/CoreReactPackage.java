@@ -23,6 +23,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
+import com.facebook.react.modules.debug.DevMenuModule;
 import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -35,6 +36,7 @@ import java.util.Map;
     nativeModules = {
       AndroidInfoModule.class,
       DeviceInfoModule.class,
+      DevMenuModule.class,
       DevSettingsModule.class,
       SourceCodeModule.class,
       LogBoxModule.class,
@@ -61,6 +63,8 @@ class CoreReactPackage extends BaseReactPackage {
         return new DeviceInfoModule(reactContext);
       case SourceCodeModule.NAME:
         return new SourceCodeModule(reactContext);
+      case DevMenuModule.NAME:
+        return new DevMenuModule(reactContext, mDevSupportManager);
       case DevSettingsModule.NAME:
         return new DevSettingsModule(reactContext, mDevSupportManager);
       case DeviceEventManagerModule.NAME:
@@ -108,6 +112,7 @@ class CoreReactPackage extends BaseReactPackage {
           AndroidInfoModule.class,
           DeviceInfoModule.class,
           SourceCodeModule.class,
+          DevMenuModule.class,
           DevSettingsModule.class,
           DeviceEventManagerModule.class,
           LogBoxModule.class,

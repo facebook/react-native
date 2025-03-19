@@ -9,10 +9,12 @@
 
 package com.facebook.react.defaults
 
+import com.facebook.react.common.ReleaseLevel
 import com.facebook.react.common.annotations.VisibleForTesting
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
-import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlagsDefaults
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android
 
 /**
  * A utility class that serves as an entry point for users setup the New Architecture.
@@ -27,6 +29,9 @@ import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatur
  * Bridgeless
  */
 public object DefaultNewArchitectureEntryPoint {
+
+  public var releaseLevel: ReleaseLevel = ReleaseLevel.STABLE
+
   @JvmStatic
   @JvmOverloads
   public fun load(
@@ -39,19 +44,20 @@ public object DefaultNewArchitectureEntryPoint {
     if (!isValid) {
       error(errorMessage)
     }
-    ReactFeatureFlags.useTurboModules = turboModulesEnabled
-    ReactFeatureFlags.enableFabricRenderer = fabricEnabled
 
-    if (bridgelessEnabled) {
-      ReactNativeFeatureFlags.override(
-          object : ReactNativeNewArchitectureFeatureFlagsDefaults(newArchitectureEnabled = true) {
-            override fun useFabricInterop(): Boolean = fabricEnabled
-
-            // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
-            // similar bugs related to pressable.
-            override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
-                fabricEnabled
-          })
+    when (releaseLevel) {
+      ReleaseLevel.EXPERIMENTAL -> {
+        ReactNativeFeatureFlags.override(
+            ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android())
+      }
+      ReleaseLevel.CANARY -> {
+        ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android())
+      }
+      ReleaseLevel.STABLE -> {
+        ReactNativeFeatureFlags.override(
+            ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android(
+                fabricEnabled, bridgelessEnabled, turboModulesEnabled))
+      }
     }
 
     privateFabricEnabled = fabricEnabled

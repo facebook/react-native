@@ -9,11 +9,13 @@
  * @oncall react_native
  */
 
-import {logger} from './logger';
+import type {Config} from '@react-native-community/cli-types';
+import type TerminalReporter from 'metro/src/lib/TerminalReporter';
+
 import chalk from 'chalk';
-import {readFileSync} from 'fs';
-import path from 'path';
 import semver from 'semver';
+
+const debug = require('debug')('ReactNative:CommunityCliPlugin');
 
 type Release = {
   // The current stable release
@@ -35,15 +37,6 @@ interface DiffPurge {
   node_id: string;
 }
 
-type Update = {
-  // Only populated if an upgrade is available
-  upgrade?: Release,
-  // The project's package's current version
-  current: string,
-  // The project's package's name
-  name: string,
-};
-
 type LatestVersions = {
   candidate?: string,
   stable: string,
@@ -54,74 +47,52 @@ type Headers = {
   [header: string]: string,
 };
 
-function getReactNativeVersion(projectRoot: string): string | void {
-  try {
-    const resolvedPath: string = require.resolve('react-native/package.json', {
-      paths: [projectRoot],
-    });
-    logger.debug(
-      `Found 'react-native' from '${projectRoot}' -> '${resolvedPath}'`,
-    );
-    return JSON.parse(readFileSync(resolvedPath, 'utf8')).version;
-  } catch {
-    logger.debug("Couldn't read the version of 'react-native'");
-    return;
-  }
-}
-
 /**
  * Logs out a message if the user's version is behind a stable version of React Native
  */
-export async function logIfUpdateAvailable(projectRoot: string): Promise<void> {
-  const versions = await latest(projectRoot);
-  if (!versions?.upgrade) {
-    return;
-  }
-  if (semver.gt(versions.upgrade.stable, versions.current)) {
-    logger.info(
-      `React Native v${versions.upgrade.stable} is now available (your project is running on v${versions.name}).
-Changelog: ${chalk.dim.underline(versions.upgrade?.changelogUrl ?? 'none')}
-Diff: ${chalk.dim.underline(versions.upgrade?.diffUrl ?? 'none')}
-`,
-    );
-  }
-}
+export async function logIfUpdateAvailable(
+  cliConfig: Config,
+  reporter: TerminalReporter,
+): Promise<void> {
+  const {reactNativeVersion: currentVersion} = cliConfig;
+  let newVersion = null;
 
-/**
- * Finds the latest stables version of React Native > current version
- */
-async function latest(projectRoot: string): Promise<Update | void> {
   try {
-    const currentVersion = getReactNativeVersion(projectRoot);
-    if (currentVersion == null) {
-      return;
-    }
-    const {name} = JSON.parse(
-      readFileSync(path.join(projectRoot, 'package.json'), 'utf8'),
-    );
-    const upgrade = await getLatestRelease(name, currentVersion);
+    const upgrade = await getLatestRelease(currentVersion);
 
     if (upgrade) {
-      return {
-        name,
-        current: currentVersion,
-        upgrade,
-      };
+      newVersion = upgrade;
     }
   } catch (e) {
     // We let the flow continue as this component is not vital for the rest of
     // the CLI.
-    logger.debug(
+    debug(
       'Cannot detect current version of React Native, ' +
         'skipping check for a newer release',
     );
-    logger.debug(e);
+    debug(e);
+  }
+
+  if (newVersion == null) {
+    return;
+  }
+
+  if (semver.gt(newVersion.stable, currentVersion)) {
+    reporter.update({
+      type: 'unstable_server_log',
+      level: 'info',
+      data: `React Native v${newVersion.stable} is now available (your project is running on v${currentVersion}).
+Changelog: ${chalk.dim.underline(newVersion?.changelogUrl ?? 'none')}
+Diff: ${chalk.dim.underline(newVersion?.diffUrl ?? 'none')}
+`,
+    });
   }
 }
 
 // $FlowFixMe
 function isDiffPurgeEntry(data: Partial<DiffPurge>): data is DiffPurge {
   return (
+    // $FlowFixMe[incompatible-type-guard]
     [data.name, data.zipball_url, data.tarball_url, data.node_id].filter(
       e => typeof e !== 'undefined',
     ).length === 0
@@ -136,12 +107,11 @@ function isDiffPurgeEntry(data: Partial<DiffPurge>): data is DiffPurge {
  * will return undefined.
  */
 export default async function getLatestRelease(
-  name: string,
   currentVersion: string,
 ): Promise<Release | void> {
-  logger.debug('Checking for a newer version of React Native');
+  debug('Checking for a newer version of React Native');
   try {
-    logger.debug(`Current version: ${currentVersion}`);
+    debug(`Current version: ${currentVersion}`);
 
     // if the version is a nightly/canary build, we want to bail
     // since they are nightlies or unreleased versions
@@ -149,14 +119,14 @@ export default async function getLatestRelease(
       return;
     }
 
-    logger.debug('Checking for newer releases on GitHub');
-    const latestVersion = await getLatestRnDiffPurgeVersion(name);
+    debug('Checking for newer releases on GitHub');
+    const latestVersion = await getLatestRnDiffPurgeVersion();
     if (latestVersion == null) {
-      logger.debug('Failed to get latest release');
+      debug('Failed to get latest release');
       return;
     }
     const {stable, candidate} = latestVersion;
-    logger.debug(`Latest release: ${stable} (${candidate ?? ''})`);
+    debug(`Latest release: ${stable} (${candidate ?? ''})`);
 
     if (semver.compare(stable, currentVersion) >= 0) {
       return {
@@ -167,10 +137,8 @@ export default async function getLatestRelease(
       };
     }
   } catch (e) {
-    logger.debug(
-      'Something went wrong with remote version checking, moving on',
-    );
-    logger.debug(e);
+    debug('Something went wrong with remote version checking, moving on');
+    debug(e);
   }
 }
 
@@ -185,9 +153,7 @@ function buildDiffUrl(oldVersion: string, newVersion: string) {
 /**
  * Returns the most recent React Native version available to upgrade to.
  */
-async function getLatestRnDiffPurgeVersion(
-  name: string,
-): Promise<LatestVersions | void> {
+async function getLatestRnDiffPurgeVersion(): Promise<LatestVersions | void> {
   const options = {
     // https://developer.github.com/v3/#user-agent-required
     headers: {'User-Agent': '@react-native/community-cli-plugin'} as Headers,

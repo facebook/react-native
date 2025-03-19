@@ -21,7 +21,7 @@ import com.facebook.yoga.YogaNode
  * Node responsible for holding the style of the ProgressBar, see under [ ] for possible styles.
  * ReactProgressBarViewManager manages how this style is applied to the ProgressBar.
  */
-public class ProgressBarShadowNode : LayoutShadowNode(), YogaMeasureFunction {
+internal class ProgressBarShadowNode : LayoutShadowNode(), YogaMeasureFunction {
   private val height: SparseIntArray = SparseIntArray()
   private val width: SparseIntArray = SparseIntArray()
   private val measured: MutableSet<Int> = HashSet()
@@ -31,7 +31,7 @@ public class ProgressBarShadowNode : LayoutShadowNode(), YogaMeasureFunction {
   }
 
   @set:ReactProp(name = ReactProgressBarViewManager.PROP_STYLE)
-  public var style: String? = ReactProgressBarViewManager.DEFAULT_STYLE
+  var style: String? = ReactProgressBarViewManager.DEFAULT_STYLE
     set(value) {
       field = value ?: ReactProgressBarViewManager.DEFAULT_STYLE
     }

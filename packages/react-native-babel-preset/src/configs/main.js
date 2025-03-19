@@ -25,7 +25,7 @@ function isTSXSource(fileName) {
 const loose = true;
 
 const defaultPlugins = [
-  [require('@babel/plugin-syntax-flow')],
+  [require('babel-plugin-syntax-hermes-parser'), {parseLangTypes: 'flow'}],
   [require('babel-plugin-transform-flow-enums')],
   [require('@babel/plugin-transform-block-scoping')],
   [require('@babel/plugin-transform-class-properties'), {loose}],
@@ -206,7 +206,7 @@ const getPreset = (src, options) => {
 
   return {
     comments: false,
-    compact: true,
+    compact: options.compact !== false,
     overrides: [
       // the flow strip types plugin must go BEFORE class properties!
       // there'll be a test case that fails if you don't.

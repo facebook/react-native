@@ -9,7 +9,6 @@ package com.facebook.react.bridge
 
 import android.annotation.SuppressLint
 import com.facebook.infer.annotation.Assertions
-import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStripAny
 
 /**
@@ -17,15 +16,14 @@ import com.facebook.proguard.annotations.DoNotStripAny
  * in native code so you shouldn't construct one yourself.
  */
 @DoNotStripAny
-public open class ReadableNativeMap protected constructor(hybridData: HybridData?) :
-    NativeMap(hybridData), ReadableMap {
+public open class ReadableNativeMap protected constructor() : NativeMap(), ReadableMap {
   private val keys: Array<String> by
       lazy(LazyThreadSafetyMode.SYNCHRONIZED) { importKeys().also { jniPassCounter++ } }
 
-  private val localMap: HashMap<String, Any> by
+  private val localMap: HashMap<String, Any?> by
       lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         val length = keys.size
-        val res = HashMap<String, Any>(length)
+        val res = HashMap<String, Any?>(length)
         val values = importValues()
         jniPassCounter++
         for (i in 0 until length) {
@@ -159,7 +157,7 @@ public open class ReadableNativeMap protected constructor(hybridData: HybridData
         false
       } else localMap == other.localMap
 
-  override fun toHashMap(): HashMap<String, Any> {
+  override fun toHashMap(): HashMap<String, Any?> {
     // we can almost just return getLocalMap(), but we need to convert nested arrays and maps to the
     // correct types first
     val hashMap = HashMap(localMap)
@@ -179,12 +177,9 @@ public open class ReadableNativeMap protected constructor(hybridData: HybridData
   }
 
   private companion object {
-    init {
-      ReactBridge.staticInit()
-    }
-
-    private var jniPassCounter: Int = 0
-
-    @JvmStatic public fun getJNIPassCounter(): Int = jniPassCounter
+    @get:JvmStatic
+    @get:JvmName("getJNIPassCounter")
+    var jniPassCounter: Int = 0
+      private set
   }
 }

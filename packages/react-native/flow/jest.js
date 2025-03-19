@@ -268,7 +268,7 @@ type EnzymeMatchersType = {
   toIncludeText(text: string): void,
   toMatchElement(
     element: React.MixedElement,
-    options?: {|ignoreProps?: boolean, verbose?: boolean|},
+    options?: {ignoreProps?: boolean, verbose?: boolean},
   ): void,
   toMatchSelector(selector: string): void,
   // 7.x
@@ -302,7 +302,7 @@ type DomTestingLibraryType = {
   toHaveStyle(css: string | {[name: string]: any, ...}): void,
   toHaveTextContent(
     text: string | RegExp,
-    options?: {|normalizeWhitespace: boolean|},
+    options?: {normalizeWhitespace: boolean},
   ): void,
   toHaveValue(value?: string | string[] | number): void,
 
@@ -607,14 +607,14 @@ type SnapshotDiffType = {
    */
   toMatchDiffSnapshot(
     valueB: any,
-    options?: {|
+    options?: {
       expand?: boolean,
       colors?: boolean,
       contextLines?: number,
       stablePatchmarks?: boolean,
       aAnnotation?: string,
       bAnnotation?: string,
-    |},
+    },
     testName?: string,
   ): void,
   ...
@@ -994,10 +994,10 @@ type JestObjectType = {
 
 type JestSpyType = {calls: JestCallsType, ...};
 
-type JestDoneFn = {|
+type JestDoneFn = {
   (error?: Error): void,
   fail: (error: Error) => void,
-|};
+};
 
 /** Runs this function after every test inside this context */
 declare function afterEach(
@@ -1040,10 +1040,12 @@ declare var describe: {
    * @param {table} table of Test
    */
   each(
-    ...table: Array<Array<mixed> | mixed> | [Array<string>, string]
+    ...table:
+      | $ReadOnlyArray<$ReadOnlyArray<mixed> | mixed>
+      | [$ReadOnlyArray<string>, string]
   ): (
     name: JestTestName,
-    fn?: (...args: Array<any>) => ?Promise<mixed>,
+    fn?: (...args: $ReadOnlyArray<any>) => ?Promise<mixed>,
     timeout?: number,
   ) => void,
   ...
@@ -1070,7 +1072,7 @@ declare var it: {
    * @param {Function} Test
    * @param {number} Timeout for the test, in milliseconds.
    */
-  only: {|
+  only: {
     (
       name: JestTestName,
       fn?: (done: JestDoneFn) => ?Promise<mixed>,
@@ -1083,7 +1085,7 @@ declare var it: {
       fn?: (...args: Array<any>) => ?Promise<mixed>,
       timeout?: number,
     ) => void,
-  |},
+  },
   /**
    * Skip running this test
    *
@@ -1091,7 +1093,7 @@ declare var it: {
    * @param {Function} Test
    * @param {number} Timeout for the test, in milliseconds.
    */
-  skip: {|
+  skip: {
     (
       name: JestTestName,
       fn?: (done: JestDoneFn) => ?Promise<mixed>,
@@ -1104,7 +1106,7 @@ declare var it: {
       fn?: (...args: Array<any>) => ?Promise<mixed>,
       timeout?: number,
     ) => void,
-  |},
+  },
   /**
    * Highlight planned tests in the summary output
    *
@@ -1188,7 +1190,7 @@ type JestPrettyFormatRefs = Array<any>;
 type JestPrettyFormatPrint = any => string;
 type JestPrettyFormatStringOrNull = string | null;
 
-type JestPrettyFormatOptions = {|
+type JestPrettyFormatOptions = {
   callToJSON: boolean,
   edgeSpacing: string,
   escapeRegex: boolean,
@@ -1199,14 +1201,14 @@ type JestPrettyFormatOptions = {|
   plugins: JestPrettyFormatPlugins,
   printFunctionName: boolean,
   spacing: string,
-  theme: {|
+  theme: {
     comment: string,
     content: string,
     prop: string,
     tag: string,
     value: string,
-  |},
-|};
+  },
+};
 
 type JestPrettyFormatPlugin = {
   print: (

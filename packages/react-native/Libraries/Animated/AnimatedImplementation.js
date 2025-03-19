@@ -373,7 +373,7 @@ const parallel = function (
   const stopTogether = !(config && config.stopTogether === false);
 
   const result = {
-    start: function (callback?: ?EndCallback) {
+    start: function (callback?: ?EndCallback, isLooping?: boolean) {
       if (doneCount === animations.length) {
         callback && callback({finished: true});
         return;
@@ -397,7 +397,7 @@ const parallel = function (
         if (!animation) {
           cb({finished: true});
         } else {
-          animation.start(cb);
+          animation.start(cb, isLooping);
         }
       });
     },

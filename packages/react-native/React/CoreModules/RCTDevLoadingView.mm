@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTDevLoadingView.h>
+#include <UIKit/UIKit.h>
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -30,6 +31,7 @@ using namespace facebook::react;
 @implementation RCTDevLoadingView {
   UIWindow *_window;
   UILabel *_label;
+  UIView *_container;
   NSDate *_showDate;
   BOOL _hiding;
   dispatch_block_t _initialMessageBlock;
@@ -112,38 +114,53 @@ RCT_EXPORT_MODULE()
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    self->_showDate = [NSDate date];
-
-    if (!self->_window && !RCTRunningInTestEnvironment()) {
-      UIWindow *window = RCTKeyWindow();
-      CGFloat windowWidth = window.bounds.size.width;
-
-      self->_window = [[UIWindow alloc] initWithWindowScene:window.windowScene];
-#if TARGET_OS_MACCATALYST
-      self->_window.frame = CGRectMake(0, window.safeAreaInsets.top, windowWidth, 20);
-      self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, windowWidth, 20)];
-#else
-      self->_window.frame = CGRectMake(0, 0, windowWidth, window.safeAreaInsets.top + 10);
-      self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, windowWidth, 20)];
-#endif
-      [self->_window addSubview:self->_label];
-
-      self->_window.windowLevel = UIWindowLevelStatusBar + 1;
-      // set a root VC so rotation is supported
-      self->_window.rootViewController = [UIViewController new];
-
-      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
-      self->_label.textAlignment = NSTextAlignmentCenter;
+    if (RCTRunningInTestEnvironment()) {
+      return;
     }
 
-    self->_label.text = message;
+    self->_showDate = [NSDate date];
+
+    UIWindow *mainWindow = RCTKeyWindow();
+    self->_window = [[UIWindow alloc] initWithWindowScene:mainWindow.windowScene];
+    self->_window.windowLevel = UIWindowLevelStatusBar + 1;
+    self->_window.rootViewController = [UIViewController new];
+
+    self->_container = [[UIView alloc] init];
+    self->_container.backgroundColor = backgroundColor;
+    self->_container.translatesAutoresizingMaskIntoConstraints = NO;
+
+    self->_label = [[UILabel alloc] init];
+    self->_label.translatesAutoresizingMaskIntoConstraints = NO;
+    self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
+    self->_label.textAlignment = NSTextAlignmentCenter;
     self->_label.textColor = color;
+    self->_label.text = message;
 
-    self->_window.backgroundColor = backgroundColor;
+    [self->_window.rootViewController.view addSubview:self->_container];
+    [self->_container addSubview:self->_label];
+
+    CGFloat topSafeAreaHeight = mainWindow.safeAreaInsets.top;
+    CGFloat height = topSafeAreaHeight + 25;
+    self->_window.frame = CGRectMake(0, 0, mainWindow.frame.size.width, height);
+
     self->_window.hidden = NO;
-  });
 
-  [self hideBannerAfter:15.0];
+    [self->_window layoutIfNeeded];
+
+    [NSLayoutConstraint activateConstraints:@[
+      // Container constraints
+      [self->_container.topAnchor constraintEqualToAnchor:self->_window.rootViewController.view.topAnchor],
+      [self->_container.leadingAnchor constraintEqualToAnchor:self->_window.rootViewController.view.leadingAnchor],
+      [self->_container.trailingAnchor constraintEqualToAnchor:self->_window.rootViewController.view.trailingAnchor],
+      [self->_container.heightAnchor constraintEqualToConstant:height],
+
+      // Label constraints
+      [self->_label.centerXAnchor constraintEqualToAnchor:self->_container.centerXAnchor],
+      [self->_label.bottomAnchor constraintEqualToAnchor:self->_container.bottomAnchor constant:-5],
+    ]];
+
+    [self hideBannerAfter:15.0];
+  });
 }
 
 RCT_EXPORT_METHOD(showMessage

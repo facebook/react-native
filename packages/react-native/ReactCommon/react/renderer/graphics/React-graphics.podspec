@@ -16,20 +16,10 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
-boost_compiler_flags = '-Wno-documentation'
-
 Pod::Spec.new do |s|
-  source_files = "**/*.{m,mm,cpp,h}"
+  source_files = "*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
   header_search_paths = [
-    "\"$(PODS_ROOT)/boost\"",
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
-    "\"$(PODS_ROOT)/RCT-Folly\"",
-    "\"$(PODS_ROOT)/DoubleConversion\"",
-    "\"$(PODS_ROOT)/fmt/include\""
   ]
 
   s.name                   = "React-graphics"
@@ -40,12 +30,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.source_files           = source_files
-  s.exclude_files          = "tests",
-                             "platform/android",
-                             "platform/cxx",
-                             "platform/windows",
   s.header_dir             = "react/renderer/graphics"
   s.framework = "UIKit"
 
@@ -60,11 +45,10 @@ Pod::Spec.new do |s|
                              "DEFINES_MODULE" => "YES",
                              "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
-  s.dependency "glog"
-  s.dependency "RCT-Folly/Fabric", folly_version
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
-  s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 end

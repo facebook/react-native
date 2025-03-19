@@ -15,6 +15,7 @@
  * when defining the types here. Consider both presence (`?`) as well as
  * writeability (`+`) when defining types.
  */
+// $FlowFixMe[libdef-override]
 declare var global: {
   // setUpGlobals
   +window: typeof global,

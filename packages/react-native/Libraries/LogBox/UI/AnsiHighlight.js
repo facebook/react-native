@@ -37,6 +37,8 @@ const COLORS = {
   'ansi-bright-white': 'rgb(247, 247, 247)',
 };
 
+const LRM = '\u200E'; // Left-to-Right Mark
+
 export default function Ansi({
   text,
   style,
@@ -68,7 +70,9 @@ export default function Ansi({
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   const getText = (content, key) => {
-    if (key === 1) {
+    if (key === 0) {
+      return LRM + content;
+    } else if (key === 1) {
       // Remove the vertical bar after line numbers
       return content.replace(/\| $/, ' ');
     } else if (key === 2 && commonWhitespaceLength < Infinity) {
@@ -80,25 +84,30 @@ export default function Ansi({
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       {parsedLines.map((items, i) => (
         <View style={styles.line} key={i}>
-          {items.map((bundle, key) => {
-            const textStyle =
-              bundle.fg && COLORS[bundle.fg]
-                ? {
-                    backgroundColor: bundle.bg && COLORS[bundle.bg],
-                    color: bundle.fg && COLORS[bundle.fg],
-                  }
-                : {
-                    backgroundColor: bundle.bg && COLORS[bundle.bg],
-                  };
-            return (
-              <Text style={[style, textStyle]} key={key}>
-                {getText(bundle.content, key)}
-              </Text>
-            );
-          })}
+          <Text>
+            {items.map((bundle, key) => {
+              const textStyle =
+                bundle.fg && COLORS[bundle.fg]
+                  ? {
+                      backgroundColor: bundle.bg && COLORS[bundle.bg],
+                      color: bundle.fg && COLORS[bundle.fg],
+                    }
+                  : {
+                      backgroundColor: bundle.bg && COLORS[bundle.bg],
+                    };
+              return (
+                <Text
+                  id="logbox_codeframe_contents_text"
+                  style={[style, textStyle]}
+                  key={key}>
+                  {getText(bundle.content, key)}
+                </Text>
+              );
+            })}
+          </Text>
         </View>
       ))}
     </View>
@@ -106,6 +115,10 @@ export default function Ansi({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    minWidth: '100%',
+    direction: 'ltr',
+  },
   line: {
     flexDirection: 'row',
   },

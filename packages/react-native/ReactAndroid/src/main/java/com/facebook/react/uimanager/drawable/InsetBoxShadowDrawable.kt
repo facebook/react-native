@@ -14,11 +14,13 @@ import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.annotation.RequiresApi
 import com.facebook.react.uimanager.FilterHelper
-import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
@@ -38,38 +40,24 @@ private val ZERO_RADII = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
 @RequiresApi(MIN_INSET_BOX_SHADOW_SDK_VERSION)
 internal class InsetBoxShadowDrawable(
     private val context: Context,
-    borderRadius: BorderRadiusStyle? = null,
-    borderInsets: BorderInsets? = null,
     private val shadowColor: Int,
     private val offsetX: Float,
     private val offsetY: Float,
     private val blurRadius: Float,
     private val spread: Float,
+    /*
+     * We assume borderRadius & borderInsets to be shared across multiple drawables
+     * therefore user should invalidate this drawable when changing either of them
+     */
+    var borderInsets: BorderInsets? = null,
+    var borderRadius: BorderRadiusStyle? = null,
 ) : Drawable() {
-  public var borderRadius = borderRadius
-    set(value) {
-      if (value != field) {
-        field = value
-        invalidateSelf()
-      }
-    }
-
-  public var borderInsets = borderInsets
-    set(value) {
-      if (value != field) {
-        field = value
-        invalidateSelf()
-      }
-    }
-
   private val shadowPaint =
       Paint().apply {
         color = shadowColor
-        if (blurRadius > 0) {
-          maskFilter =
-              BlurMaskFilter(
-                  FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE),
-                  BlurMaskFilter.Blur.NORMAL)
+        val convertedBlurRadius = FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE)
+        if (convertedBlurRadius > 0) {
+          maskFilter = BlurMaskFilter(convertedBlurRadius, BlurMaskFilter.Blur.NORMAL)
         }
       }
 
@@ -83,8 +71,15 @@ internal class InsetBoxShadowDrawable(
     invalidateSelf()
   }
 
-  override fun getOpacity(): Int =
-      ((shadowPaint.alpha / 255f) / (Color.alpha(shadowColor) / 255f) * 255f).roundToInt()
+  @Deprecated("Deprecated in Java")
+  override fun getOpacity(): Int {
+    val alpha = shadowPaint.alpha
+    return when (alpha) {
+      255 -> PixelFormat.OPAQUE
+      in 1..254 -> PixelFormat.TRANSLUCENT
+      else -> PixelFormat.TRANSPARENT
+    }
+  }
 
   override fun draw(canvas: Canvas) {
     val computedBorderRadii = computeBorderRadii()
@@ -109,9 +104,9 @@ internal class InsetBoxShadowDrawable(
               innerRadius(it.bottomLeft.vertical, computedBorderInsets?.bottom))
         }
 
-    val x = PixelUtil.toPixelFromDIP(offsetX)
-    val y = PixelUtil.toPixelFromDIP(offsetY)
-    val spreadExtent = PixelUtil.toPixelFromDIP(spread)
+    val x = offsetX.dpToPx()
+    val y = offsetY.dpToPx()
+    val spreadExtent = spread.dpToPx()
     val innerRect =
         RectF(paddingBoxRect).apply {
           inset(spreadExtent, spreadExtent)
@@ -122,7 +117,7 @@ internal class InsetBoxShadowDrawable(
     // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/box_painter_base.cc;l=338;drc=0a301506035e13015ea5c8dd39164d0d5954fa60
     val blurExtent = FilterHelper.sigmaToRadius(blurRadius)
     val outerRect =
-        RectF(innerRect).apply {
+        RectF(paddingBoxRect).apply {
           inset(-blurExtent, -blurExtent)
           if (spreadExtent < 0) {
             inset(spreadExtent, spreadExtent)
@@ -153,27 +148,27 @@ internal class InsetBoxShadowDrawable(
         borderRadius?.resolve(
             layoutDirection,
             context,
-            PixelUtil.toDIPFromPixel(bounds.width().toFloat()),
-            PixelUtil.toDIPFromPixel(bounds.height().toFloat()))
+            bounds.width().toFloat().pxToDp(),
+            bounds.height().toFloat().pxToDp())
 
     return if (resolvedBorderRadii?.hasRoundedBorders() == true) {
       ComputedBorderRadius(
           topLeft =
               CornerRadii(
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topLeft.horizontal),
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topLeft.vertical)),
+                  resolvedBorderRadii.topLeft.horizontal.dpToPx(),
+                  resolvedBorderRadii.topLeft.vertical.dpToPx()),
           topRight =
               CornerRadii(
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topRight.horizontal),
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.topRight.vertical)),
+                  resolvedBorderRadii.topRight.horizontal.dpToPx(),
+                  resolvedBorderRadii.topRight.vertical.dpToPx()),
           bottomLeft =
               CornerRadii(
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomLeft.horizontal),
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomLeft.vertical)),
+                  resolvedBorderRadii.bottomLeft.horizontal.dpToPx(),
+                  resolvedBorderRadii.bottomLeft.vertical.dpToPx()),
           bottomRight =
               CornerRadii(
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomRight.horizontal),
-                  PixelUtil.toPixelFromDIP(resolvedBorderRadii.bottomRight.vertical)),
+                  resolvedBorderRadii.bottomRight.horizontal.dpToPx(),
+                  resolvedBorderRadii.bottomRight.vertical.dpToPx()),
       )
     } else {
       null
@@ -182,11 +177,7 @@ internal class InsetBoxShadowDrawable(
 
   private fun computeBorderInsets(): RectF? =
       borderInsets?.resolve(layoutDirection, context)?.let {
-        RectF(
-            PixelUtil.toPixelFromDIP(it.left),
-            PixelUtil.toPixelFromDIP(it.top),
-            PixelUtil.toPixelFromDIP(it.right),
-            PixelUtil.toPixelFromDIP(it.bottom))
+        RectF(it.left.dpToPx(), it.top.dpToPx(), it.right.dpToPx(), it.bottom.dpToPx())
       }
 
   private fun innerRadius(radius: Float, borderInset: Float?): Float =

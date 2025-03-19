@@ -31,4 +31,4 @@ function normalizeColor(
   }
 }
 
-module.exports = normalizeColor;
+export default normalizeColor;

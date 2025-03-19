@@ -17,8 +17,10 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 @UnstableReactNativeAPI
 class FakeRCTEventEmitter : RCTEventEmitter {
 
-  override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) = Unit
+  @Deprecated("Deprecated in Java")
+  override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) = Unit
 
+  @Deprecated("Deprecated in Java")
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,

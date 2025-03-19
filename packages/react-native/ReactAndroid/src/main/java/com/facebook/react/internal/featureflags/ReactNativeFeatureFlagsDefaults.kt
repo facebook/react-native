@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<86db65691c73cff2843e81e053268892>>
+ * @generated SignedSource<<cbe1d77424b561149b0bda39955dffac>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 package com.facebook.react.internal.featureflags
@@ -25,37 +25,37 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
+  override fun animatedShouldSignalBatch(): Boolean = false
 
-  override fun batchRenderingUpdatesInEventLoop(): Boolean = false
+  override fun disableMountItemReorderingAndroid(): Boolean = false
 
-  override fun changeOrderOfMountingInstructionsOnAndroid(): Boolean = false
+  override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
-  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+  override fun enableBridgelessArchitecture(): Boolean = false
 
-  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
-
-  override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
-
-  override fun enableAndroidMixBlendModeProp(): Boolean = false
-
-  override fun enableBackgroundStyleApplicator(): Boolean = true
-
-  override fun enableCleanTextInputYogaNode(): Boolean = false
+  override fun enableCppPropsIteratorSetter(): Boolean = false
 
   override fun enableEagerRootViewAttachment(): Boolean = false
 
-  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = false
-
   override fun enableFabricLogs(): Boolean = false
 
-  override fun enableFabricRendererExclusively(): Boolean = false
+  override fun enableFabricRenderer(): Boolean = false
 
-  override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
+  override fun enableIOSViewClipToPaddingBox(): Boolean = false
+
+  override fun enableImagePrefetchingAndroid(): Boolean = false
+
+  override fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean = false
+
+  override fun enableLayoutAnimationsOnAndroid(): Boolean = false
+
+  override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableLongTaskAPI(): Boolean = false
 
-  override fun enableMicrotasks(): Boolean = false
+  override fun enableNativeCSSParsing(): Boolean = false
+
+  override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
@@ -65,51 +65,45 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableUIConsistency(): Boolean = false
 
+  override fun enableViewCulling(): Boolean = false
+
   override fun enableViewRecycling(): Boolean = false
 
-  override fun excludeYogaFromRawProps(): Boolean = false
+  override fun enableViewRecyclingForText(): Boolean = true
 
-  override fun fetchImagesInViewPreallocation(): Boolean = false
+  override fun enableViewRecyclingForView(): Boolean = true
 
-  override fun fixIncorrectScrollViewStateUpdateOnAndroid(): Boolean = false
+  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = true
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
-  override fun fixMissedFabricStateUpdatesOnAndroid(): Boolean = false
-
-  override fun forceBatchingMountItemsOnAndroid(): Boolean = false
-
-  override fun fuseboxEnabledDebug(): Boolean = true
+  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
-  override fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean = false
+  override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
   override fun lazyAnimationCallbacks(): Boolean = false
 
-  override fun loadVectorDrawablesOnImages(): Boolean = false
+  override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
 
-  override fun setAndroidLayoutDirection(): Boolean = false
+  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
+  override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
+
+  override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
+
   override fun useFabricInterop(): Boolean = false
-
-  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
-
-  override fun useModernRuntimeScheduler(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
-  override fun useNewReactImageViewBackgroundDrawing(): Boolean = false
+  override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
-  override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
-
-  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
-
-  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = false
-
-  override fun useStateAlignmentMechanism(): Boolean = false
+  override fun useRawPropsJsiValue(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
+
+  override fun useTurboModules(): Boolean = false
 }
