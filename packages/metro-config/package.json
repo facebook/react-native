@@ -28,7 +28,7 @@
   "dependencies": {
     "@react-native/js-polyfills": "0.77.1",
     "@react-native/metro-babel-transformer": "0.77.1",
-    "metro-config": "^0.81.0",
-    "metro-runtime": "^0.81.0"
+    "metro-config": "^0.81.3",
+    "metro-runtime": "^0.81.3"
   }
 }
