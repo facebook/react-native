@@ -105,6 +105,10 @@ type PressableBaseProps = $ReadOnly<{
    * Called when a touch is engaged before `onPress`.
    */
   onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  /**
+   * Called when the press location moves.
+   */
+  onPressMove?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Called when a touch is released before `onPress`.
@@ -185,6 +189,7 @@ function Pressable(
     onLongPress,
     onPress,
     onPressIn,
+    onPressMove,
     onPressOut,
     pressRetentionOffset,
     style,
@@ -263,7 +268,12 @@ function Pressable(
           onPressIn(event);
         }
       },
-      onPressMove: android_rippleConfig?.onPressMove,
+      onPressMove(event: GestureResponderEvent): void {
+        android_rippleConfig?.onPressMove(event);
+        if (onPressMove != null) {
+          onPressMove(event);
+        }
+      },
       onPressOut(event: GestureResponderEvent): void {
         if (android_rippleConfig != null) {
           android_rippleConfig.onPressOut(event);
@@ -288,6 +298,7 @@ function Pressable(
       onLongPress,
       onPress,
       onPressIn,
+      onPressMove,
       onPressOut,
       pressRetentionOffset,
       setPressed,
