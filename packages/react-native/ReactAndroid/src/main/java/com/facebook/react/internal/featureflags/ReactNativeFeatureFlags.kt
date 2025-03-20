@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<35c6c9e2445c897258198241fc98aaba>>
+ * @generated SignedSource<<8522ebea8b35daaca25b4d1ee4e93dd9>>
  */
 
 /**
@@ -18,6 +18,8 @@
  */
 
 package com.facebook.react.internal.featureflags
+
+import androidx.annotation.VisibleForTesting
 
 /**
  * This object provides access to internal React Native feature flags.
@@ -352,6 +354,7 @@ public object ReactNativeFeatureFlags {
    * This is just used to replace the default ReactNativeFeatureFlagsCxxAccessor
    * that uses JNI with a version that doesn't, to simplify testing.
    */
+  @VisibleForTesting
   internal fun setAccessorProvider(newAccessorProvider: () -> ReactNativeFeatureFlagsAccessor) {
     accessorProvider = newAccessorProvider
     accessor = accessorProvider()
