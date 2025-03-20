@@ -53,6 +53,16 @@ export interface ViewabilityConfig {
    * render.
    */
   waitForInteraction?: boolean | undefined;
+
+  /**
+   * Offset from top of the screen
+   */
+  absoluteTopOffset?: number | undefined;
+
+  /**
+   * Offset from bottom of the screen
+   */
+  absoluteBottomOffset?: number | undefined;
 }
 
 export interface ViewabilityConfigCallbackPair {
