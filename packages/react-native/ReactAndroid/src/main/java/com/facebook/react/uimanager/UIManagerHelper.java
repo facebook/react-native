@@ -22,6 +22,8 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherProvider;
@@ -69,6 +71,14 @@ public class UIManagerHelper {
       return uiManager;
     }
 
+    // The following code is compiled-out when `context.isBridgeless() == true &&
+    // ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true ` because:
+    // - BridgelessReactContext.isBridgeless() is set to true statically
+    // - BridgeReactContext is compiled-out when UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true
+    //
+    // To detect a potential regression we add the following assertion ERROR
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "UIManagerHelper.getUIManager(context, uiManagerType)", LegacyArchitectureLogLevel.ERROR);
     if (!context.hasCatalystInstance()) {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
