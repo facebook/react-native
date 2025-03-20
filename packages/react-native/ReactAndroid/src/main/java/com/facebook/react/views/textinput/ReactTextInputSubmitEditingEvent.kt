@@ -17,7 +17,7 @@ internal class ReactTextInputSubmitEditingEvent(
     surfaceId: Int,
     viewId: Int,
     private val text: String
-) : Event<ReactTextInputSubmitEditingEvent?>(surfaceId, viewId) {
+) : Event<ReactTextInputSubmitEditingEvent>(surfaceId, viewId) {
   @Deprecated(
     "Use the constructor with surfaceId instead",
     ReplaceWith("ReactTextInputSubmitEditingEvent(surfaceId, viewId, text)")
