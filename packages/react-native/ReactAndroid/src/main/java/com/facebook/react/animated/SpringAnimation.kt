@@ -17,7 +17,7 @@ import kotlin.math.*
  */
 internal class SpringAnimation(config: ReadableMap) : AnimationDriver() {
   // storage for the current and prior physics state while integration is occurring
-  private data class PhysicsState(var position: Double = 0.0, var velocity: Double = 0.0)
+  private class PhysicsState(var position: Double = 0.0, var velocity: Double = 0.0)
 
   private var lastTime: Long = 0
   private var springStarted = false

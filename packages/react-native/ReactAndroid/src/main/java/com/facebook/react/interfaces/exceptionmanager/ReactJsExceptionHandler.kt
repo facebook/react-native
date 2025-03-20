@@ -37,7 +37,7 @@ public fun interface ReactJsExceptionHandler {
   }
 
   @DoNotStripAny
-  private data class ProcessedErrorStackFrameImpl(
+  private class ProcessedErrorStackFrameImpl(
       override val file: String?,
       override val methodName: String,
       override val lineNumber: Int?,
@@ -45,7 +45,7 @@ public fun interface ReactJsExceptionHandler {
   ) : ProcessedError.StackFrame
 
   @DoNotStripAny
-  private data class ProcessedErrorImpl(
+  private class ProcessedErrorImpl(
       override val message: String,
       override val originalMessage: String?,
       override val name: String?,

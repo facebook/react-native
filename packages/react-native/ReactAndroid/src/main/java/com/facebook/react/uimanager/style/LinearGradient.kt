@@ -24,9 +24,9 @@ import kotlin.math.ln
 import kotlin.math.sqrt
 import kotlin.math.tan
 
-private data class ColorStop(var color: Int? = null, val position: LengthPercentage? = null)
+private class ColorStop(var color: Int? = null, val position: LengthPercentage? = null)
 
-private data class ProcessedColorStop(var color: Int? = null, val position: Float? = null)
+private class ProcessedColorStop(var color: Int? = null, val position: Float? = null)
 
 internal class LinearGradient(
     directionMap: ReadableMap,
@@ -34,7 +34,7 @@ internal class LinearGradient(
     private val context: Context
 ) {
   private sealed class Direction {
-    data class Angle(val value: Double) : Direction()
+    class Angle(val value: Double) : Direction()
 
     enum class Keywords {
       TO_TOP_RIGHT,
@@ -43,7 +43,7 @@ internal class LinearGradient(
       TO_BOTTOM_LEFT
     }
 
-    data class Keyword(val value: Keywords) : Direction()
+    class Keyword(val value: Keywords) : Direction()
   }
 
   private val direction: Direction =

@@ -19,7 +19,7 @@ public enum class LengthPercentageType {
   PERCENT,
 }
 
-public data class LengthPercentage(
+public class LengthPercentage(
     private val value: Float,
     public val type: LengthPercentageType,
 ) {

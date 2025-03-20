@@ -16,11 +16,11 @@ public enum class ComputedBorderRadiusProp {
 }
 
 /** Physical edge lengths (in DIPs) for a border-radius. */
-public data class ComputedBorderRadius(
-    val topLeft: CornerRadii,
-    val topRight: CornerRadii,
-    val bottomLeft: CornerRadii,
-    val bottomRight: CornerRadii,
+public class ComputedBorderRadius(
+    public val topLeft: CornerRadii,
+    public val topRight: CornerRadii,
+    public val bottomLeft: CornerRadii,
+    public val bottomRight: CornerRadii,
 ) {
   public fun hasRoundedBorders(): Boolean {
     return topLeft.horizontal > 0f ||

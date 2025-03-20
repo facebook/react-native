@@ -3859,16 +3859,10 @@ public final class com/facebook/react/uimanager/LengthPercentage {
 	public static final field Companion Lcom/facebook/react/uimanager/LengthPercentage$Companion;
 	public fun <init> ()V
 	public fun <init> (FLcom/facebook/react/uimanager/LengthPercentageType;)V
-	public final fun component2 ()Lcom/facebook/react/uimanager/LengthPercentageType;
-	public final fun copy (FLcom/facebook/react/uimanager/LengthPercentageType;)Lcom/facebook/react/uimanager/LengthPercentage;
-	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/LengthPercentage;FLcom/facebook/react/uimanager/LengthPercentageType;ILjava/lang/Object;)Lcom/facebook/react/uimanager/LengthPercentage;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getType ()Lcom/facebook/react/uimanager/LengthPercentageType;
-	public fun hashCode ()I
 	public final fun resolve (F)F
 	public final fun resolve (FF)Lcom/facebook/react/uimanager/style/CornerRadii;
 	public static final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;)Lcom/facebook/react/uimanager/LengthPercentage;
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/facebook/react/uimanager/LengthPercentage$Companion {
@@ -5491,24 +5485,13 @@ public final class com/facebook/react/uimanager/style/BoxShadow {
 	public static final field Companion Lcom/facebook/react/uimanager/style/BoxShadow$Companion;
 	public fun <init> (FFLjava/lang/Integer;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Boolean;)V
 	public synthetic fun <init> (FFLjava/lang/Integer;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()F
-	public final fun component2 ()F
-	public final fun component3 ()Ljava/lang/Integer;
-	public final fun component4 ()Ljava/lang/Float;
-	public final fun component5 ()Ljava/lang/Float;
-	public final fun component6 ()Ljava/lang/Boolean;
-	public final fun copy (FFLjava/lang/Integer;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Boolean;)Lcom/facebook/react/uimanager/style/BoxShadow;
-	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/style/BoxShadow;FFLjava/lang/Integer;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/Boolean;ILjava/lang/Object;)Lcom/facebook/react/uimanager/style/BoxShadow;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBlurRadius ()Ljava/lang/Float;
 	public final fun getColor ()Ljava/lang/Integer;
 	public final fun getInset ()Ljava/lang/Boolean;
 	public final fun getOffsetX ()F
 	public final fun getOffsetY ()F
 	public final fun getSpreadDistance ()Ljava/lang/Float;
-	public fun hashCode ()I
 	public static final fun parse (Lcom/facebook/react/bridge/ReadableMap;Landroid/content/Context;)Lcom/facebook/react/uimanager/style/BoxShadow;
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/facebook/react/uimanager/style/BoxShadow$Companion {
@@ -5518,22 +5501,13 @@ public final class com/facebook/react/uimanager/style/BoxShadow$Companion {
 public final class com/facebook/react/uimanager/style/ComputedBorderRadius {
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;)V
-	public final fun component1 ()Lcom/facebook/react/uimanager/style/CornerRadii;
-	public final fun component2 ()Lcom/facebook/react/uimanager/style/CornerRadii;
-	public final fun component3 ()Lcom/facebook/react/uimanager/style/CornerRadii;
-	public final fun component4 ()Lcom/facebook/react/uimanager/style/CornerRadii;
-	public final fun copy (Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
-	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/style/ComputedBorderRadius;Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;Lcom/facebook/react/uimanager/style/CornerRadii;ILjava/lang/Object;)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun get (Lcom/facebook/react/uimanager/style/ComputedBorderRadiusProp;)Lcom/facebook/react/uimanager/style/CornerRadii;
 	public final fun getBottomLeft ()Lcom/facebook/react/uimanager/style/CornerRadii;
 	public final fun getBottomRight ()Lcom/facebook/react/uimanager/style/CornerRadii;
 	public final fun getTopLeft ()Lcom/facebook/react/uimanager/style/CornerRadii;
 	public final fun getTopRight ()Lcom/facebook/react/uimanager/style/CornerRadii;
 	public final fun hasRoundedBorders ()Z
-	public fun hashCode ()I
 	public final fun isUniform ()Z
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/facebook/react/uimanager/style/ComputedBorderRadiusProp : java/lang/Enum {
@@ -5550,16 +5524,9 @@ public final class com/facebook/react/uimanager/style/CornerRadii {
 	public fun <init> ()V
 	public fun <init> (FF)V
 	public synthetic fun <init> (FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()F
-	public final fun component2 ()F
-	public final fun copy (FF)Lcom/facebook/react/uimanager/style/CornerRadii;
-	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/style/CornerRadii;FFILjava/lang/Object;)Lcom/facebook/react/uimanager/style/CornerRadii;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getHorizontal ()F
 	public final fun getVertical ()F
-	public fun hashCode ()I
 	public final fun toPixelFromDIP ()Lcom/facebook/react/uimanager/style/CornerRadii;
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract class com/facebook/react/uimanager/style/LogicalEdge : java/lang/Enum {

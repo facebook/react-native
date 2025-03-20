@@ -15,13 +15,13 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 
 /** Represents all logical properties and shorthands for border radius. */
-public data class BoxShadow(
-    val offsetX: Float,
-    val offsetY: Float,
-    @ColorInt val color: Int? = null,
-    val blurRadius: Float? = null,
-    val spreadDistance: Float? = null,
-    val inset: Boolean? = null,
+public class BoxShadow(
+    public val offsetX: Float,
+    public val offsetY: Float,
+    @ColorInt public val color: Int? = null,
+    public val blurRadius: Float? = null,
+    public val spreadDistance: Float? = null,
+    public val inset: Boolean? = null,
 ) {
   public companion object {
     @JvmStatic
