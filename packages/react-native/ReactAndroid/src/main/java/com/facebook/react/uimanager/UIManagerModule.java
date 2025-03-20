@@ -9,8 +9,8 @@ package com.facebook.react.uimanager;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
-import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
+import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
@@ -185,7 +185,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
     getReactApplicationContext().registerComponentCallbacks(mViewManagerRegistry);
     mEventDispatcher.registerEventEmitter(
-        DEFAULT, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
+        LEGACY, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
 
   @Override
@@ -851,7 +851,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Override
   public void receiveEvent(
       int surfaceId, int reactTag, String eventName, @Nullable WritableMap event) {
-    assert ViewUtil.getUIManagerType(reactTag) == DEFAULT;
+    assert ViewUtil.getUIManagerType(reactTag) == LEGACY;
     getReactApplicationContext()
         .getJSModule(RCTEventEmitter.class)
         .receiveEvent(reactTag, eventName, event);
