@@ -181,7 +181,7 @@ public class UIManagerHelper {
     int reactTag = view.getId();
 
     // In non-Fabric we don't have (or use) SurfaceId
-    if (getUIManagerType(reactTag) == UIManagerType.DEFAULT) {
+    if (getUIManagerType(reactTag) == UIManagerType.LEGACY) {
       return -1;
     }
 

@@ -9,8 +9,8 @@ package com.facebook.react;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.uimanager.BlendModeHelper.needsIsolatedLayer;
-import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
+import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
@@ -114,7 +114,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastHeight = 0;
   private int mLastOffsetX = Integer.MIN_VALUE;
   private int mLastOffsetY = Integer.MIN_VALUE;
-  private @UIManagerType int mUIManagerType = DEFAULT;
+  private @UIManagerType int mUIManagerType = LEGACY;
   private final AtomicInteger mState = new AtomicInteger(STATE_STOPPED);
 
   public ReactRootView(Context context) {
@@ -817,7 +817,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   public void setIsFabric(boolean isFabric) {
-    mUIManagerType = isFabric ? FABRIC : DEFAULT;
+    mUIManagerType = isFabric ? FABRIC : LEGACY;
   }
 
   @Override
