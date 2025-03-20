@@ -222,13 +222,13 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    // No-op since UIManagerModule handles actually laying out children.
+    // No-op since UIManager handles actually laying out children.
   }
 
   @Override
   @SuppressLint("MissingSuperCall")
   public void requestLayout() {
-    // No-op, terminate `requestLayout` here, UIManagerModule handles laying out children and
+    // No-op, terminate `requestLayout` here, UIManager handles laying out children and
     // `layout` is called on all RN-managed views by `NativeViewHierarchyManager`
   }
 
