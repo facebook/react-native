@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include "NetworkTypes.h"
+
 #include <atomic>
 #include <functional>
-#include <map>
-#include <optional>
 #include <string>
 
 namespace facebook::react::jsinspector_modern {
@@ -21,28 +21,6 @@ namespace facebook::react::jsinspector_modern {
  * The callback may be called from any thread.
  */
 using FrontendChannel = std::function<void(std::string_view messageJson)>;
-
-using Headers = std::map<std::string, std::string>;
-
-/**
- * Request info from the request caller.
- */
-struct RequestInfo {
-  std::string url;
-  std::string httpMethod;
-  std::optional<Headers> headers;
-  std::optional<std::string> httpBody;
-};
-
-/**
- * Response info from the request caller.
- */
-struct ResponseInfo {
-  std::string url;
-  uint16_t statusCode;
-  std::string statusText;
-  std::optional<Headers> headers;
-};
 
 /**
  * [Experimental] An interface for reporting network events to the modern
