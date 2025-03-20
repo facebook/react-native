@@ -78,10 +78,9 @@ RCT_EXPORT_MODULE()
                                                object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(darkerSystemColorsDidChange:)
+                                             selector:@selector(highContrastDidChange:)
                                                  name:UIAccessibilityDarkerSystemColorsStatusDidChangeNotification
                                                object:nil];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reduceTransparencyStatusDidChange:)
                                                  name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
@@ -98,7 +97,7 @@ RCT_EXPORT_MODULE()
     _isGrayscaleEnabled = initialValuesProxy.isGrayscaleEnabled;
     _isInvertColorsEnabled = initialValuesProxy.isInvertColorsEnabled;
     _isReduceMotionEnabled = initialValuesProxy.isReduceMotionEnabled;
-    _isDarkerSystemColorsEnabled = initialValuesProxy.isDarkerSystemColorsEnabled;
+    _isHighContrastEnabled = initialValuesProxy.isHighContrastEnabled;
     _isReduceTransparencyEnabled = initialValuesProxy.isReduceTransparencyEnabled;
     _isVoiceOverEnabled = initialValuesProxy.isVoiceOverEnabled;
   }
@@ -177,15 +176,18 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (void)darkerSystemColorsDidChange:(__unused NSNotification *)notification
+- (void)highContrastDidChange:(__unused NSNotification *)notification
 {
-  BOOL newDarkerSystemColorsEnabled = UIAccessibilityDarkerSystemColorsEnabled();
-  if (_isDarkerSystemColorsEnabled != newDarkerSystemColorsEnabled) {
-    _isDarkerSystemColorsEnabled = newDarkerSystemColorsEnabled;
+  BOOL newHighContrastEnabled = UIAccessibilityDarkerSystemColorsEnabled();
+  if (_isHighContrastEnabled != newHighContrastEnabled) {
+    _isHighContrastEnabled = newHighContrastEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    // TODO: Remove once `isDarkerSystemColorsEnabled` is removed from AccessibilityInfo.js
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"darkerSystemColorsChanged"
-                                                                          body:@(_isDarkerSystemColorsEnabled)];
+                                                                          body:@(_isHighContrastEnabled)];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"highContrastChanged"
+                                                                          body:@(_isHighContrastEnabled)];
 
 #pragma clang diagnostic pop
   }
@@ -380,7 +382,14 @@ RCT_EXPORT_METHOD(getCurrentDarkerSystemColorsState
                   : (RCTResponseSenderBlock)onSuccess onError
                   : (__unused RCTResponseSenderBlock)onError)
 {
-  onSuccess(@[ @(_isDarkerSystemColorsEnabled) ]);
+  onSuccess(@[ @(_isHighContrastEnabled) ]);
+}
+
+RCT_EXPORT_METHOD(getCurrentHighContrastState
+                  : (RCTResponseSenderBlock)onSuccess onError
+                  : (__unused RCTResponseSenderBlock)onError)
+{
+  onSuccess(@[ @(_isHighContrastEnabled) ]);
 }
 
 RCT_EXPORT_METHOD(getCurrentPrefersCrossFadeTransitionsState

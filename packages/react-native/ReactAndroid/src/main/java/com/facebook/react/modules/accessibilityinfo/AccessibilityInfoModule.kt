@@ -63,7 +63,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         }
       }
   // Listener that is notified when the ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED changes.
-  private val highTextContrastObserver: ContentObserver =
+  private val highContrastObserver: ContentObserver =
       object : ContentObserver(UiThreadUtil.getUiThreadHandler()) {
         override fun onChange(selfChange: Boolean) {
           this.onChange(selfChange, null)
@@ -71,7 +71,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
           if (getReactApplicationContext().hasActiveReactInstance()) {
-            updateAndSendHighTextContrastChangeEvent()
+            updateAndSendHighContrastChangeEvent()
           }
         }
       }
@@ -82,7 +82,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       ReactAccessibilityServiceChangeListener()
   private val contentResolver: ContentResolver
   private var reduceMotionEnabled = false
-  private var highTextContrastEnabled = false
+  private var highContrastEnabled = false
   private var touchExplorationEnabled = false
   private var accessibilityServiceEnabled = false
   private var recommendedTimeout = 0
@@ -97,7 +97,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
     accessibilityServiceEnabled = accessibilityManager.isEnabled
     reduceMotionEnabled = isReduceMotionEnabledValue
-    highTextContrastEnabled = isHighTextContrastEnabledValue
+    highContrastEnabled = isHighContrastEnabledValue
     grayscaleModeEnabled = isGrayscaleEnabledValue
   }
 
@@ -141,7 +141,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
 
   @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private val isHighTextContrastEnabledValue: Boolean
+  private val isHighContrastEnabledValue: Boolean
     get() {
       return Settings.Secure.getInt(
           contentResolver,
@@ -163,8 +163,12 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   override fun isHighTextContrastEnabled(successCallback: Callback) {
-    successCallback.invoke(highTextContrastEnabled)
+    successCallback.invoke(highContrastEnabled)
   }
+
+  override fun isHighContrastEnabled(successCallback: Callback) {
+     successCallback.invoke(highContrastEnabled)
+   }
 
   override fun isTouchExplorationEnabled(successCallback: Callback) {
     successCallback.invoke(touchExplorationEnabled)
@@ -196,15 +200,20 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
   }
 
-  private fun updateAndSendHighTextContrastChangeEvent() {
-    val isHighTextContrastEnabled = isHighTextContrastEnabledValue
-    if (highTextContrastEnabled != isHighTextContrastEnabled) {
-      highTextContrastEnabled = isHighTextContrastEnabled
+  private fun updateAndSendHighContrastChangeEvent() {
+    val isHighContrastEnabled = isHighContrastEnabledValue
+    if (highContrastEnabled != isHighContrastEnabled) {
+      highContrastEnabled = isHighContrastEnabled
       val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       if (reactApplicationContext != null) {
+        // TODO: Remove once `AccessibilityInfo.js` removes isHighTextContrastEnabled
         reactApplicationContext.emitDeviceEvent(
             HIGH_TEXT_CONTRAST_EVENT_NAME,
-            highTextContrastEnabled,
+            highContrastEnabled,
+        )
+        reactApplicationContext.emitDeviceEvent(
+            HIGH_CONTRAST_EVENT_NAME,
+            highContrastEnabled,
         )
       }
     }
@@ -250,14 +259,14 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityManager?.addAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     val transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE)
     contentResolver.registerContentObserver(transitionUri, false, animationScaleObserver)
-    val highTextContrastUri =
+    val highContrastUri =
         Settings.Global.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
-    contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
+    contentResolver.registerContentObserver(highContrastUri, false, highContrastObserver)
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
-    updateAndSendHighTextContrastChangeEvent()
+    updateAndSendHighContrastChangeEvent()
     updateAndSendInvertColorsChangeEvent()
     updateAndSendGrayscaleModeChangeEvent()
   }
@@ -268,7 +277,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         touchExplorationStateChangeListener)
     accessibilityManager?.removeAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     contentResolver.unregisterContentObserver(animationScaleObserver)
-    contentResolver.unregisterContentObserver(highTextContrastObserver)
+    contentResolver.unregisterContentObserver(highContrastObserver)
   }
 
   override fun initialize() {
@@ -277,7 +286,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
-    updateAndSendHighTextContrastChangeEvent()
+    updateAndSendHighContrastChangeEvent()
   }
 
   override fun invalidate() {
@@ -320,6 +329,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     const val NAME: String = NativeAccessibilityInfoSpec.NAME
     private const val REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange"
     private const val HIGH_TEXT_CONTRAST_EVENT_NAME = "highTextContrastDidChange"
+    private const val HIGH_CONTRAST_EVENT_NAME = "highContrastDidChange"
     private const val TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange"
     private const val ACCESSIBILITY_SERVICE_EVENT_NAME = "accessibilityServiceDidChange"
     private const val ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT =

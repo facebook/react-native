@@ -1386,6 +1386,7 @@ type AccessibilityEventDefinitions = {
   change: [boolean],
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
+  highContrastChanged: [boolean],
 };
 type AccessibilityEventTypes = \\"click\\" | \\"focus\\" | \\"viewHoverEnter\\";
 declare const AccessibilityInfo: {
@@ -1395,6 +1396,7 @@ declare const AccessibilityInfo: {
   isReduceMotionEnabled(): Promise<boolean>,
   isHighTextContrastEnabled(): Promise<boolean>,
   isDarkerSystemColorsEnabled(): Promise<boolean>,
+  isHighContrastEnabled: () => Promise<boolean>,
   prefersCrossFadeTransitions(): Promise<boolean>,
   isReduceTransparencyEnabled(): Promise<boolean>,
   isScreenReaderEnabled(): Promise<boolean>,
