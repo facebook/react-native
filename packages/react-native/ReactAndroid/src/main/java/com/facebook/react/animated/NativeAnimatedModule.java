@@ -232,7 +232,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
   private boolean mEnqueuedAnimationOnFrame = false;
-  private @UIManagerType int mUIManagerType = UIManagerType.DEFAULT;
+  private @UIManagerType int mUIManagerType = UIManagerType.LEGACY;
   private int mNumFabricAnimations = 0;
   private int mNumNonFabricAnimations = 0;
 
@@ -542,8 +542,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       mUIManagerType = UIManagerType.FABRIC;
     } else if (mNumFabricAnimations == 0
         && mNumNonFabricAnimations > 0
-        && mUIManagerType != UIManagerType.DEFAULT) {
-      mUIManagerType = UIManagerType.DEFAULT;
+        && mUIManagerType != UIManagerType.LEGACY) {
+      mUIManagerType = UIManagerType.LEGACY;
     }
   }
 

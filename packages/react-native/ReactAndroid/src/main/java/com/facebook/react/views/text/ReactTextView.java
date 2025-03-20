@@ -217,7 +217,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     ReactContext reactContext = getReactContext();
     UIManager uiManager =
-        Assertions.assertNotNull(UIManagerHelper.getUIManager(reactContext, UIManagerType.DEFAULT));
+        Assertions.assertNotNull(UIManagerHelper.getUIManager(reactContext, UIManagerType.LEGACY));
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
