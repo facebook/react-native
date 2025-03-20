@@ -149,7 +149,13 @@
       {
         "name": "FBReactNativeSpec",
         "type": "modules",
-        "ios": {},
+        "ios": {
+          "modules": {
+            "PlatformConstants": {
+              "unstableRequiresMainQueueSetup": true
+            }
+          }
+        },
         "android": {},
         "jsSrcsDir": "src"
       },

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<df008a78acc9b0104c54e06849d5e9b9>>
+ * @generated SignedSource<<49a61b2330d748fc05bd5e8ce042bf72>>
  */
 
 /**
@@ -117,6 +117,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLongTaskAPI(): Boolean = accessor.enableLongTaskAPI()
+
+  /**
+   * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
+   */
+  @JvmStatic
+  public fun enableMainQueueModulesOnIOS(): Boolean = accessor.enableMainQueueModulesOnIOS()
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<36b55f5cfd86d9aaad26c760dec7c875>>
+ * @generated SignedSource<<a1d9ca51c1318434affebf7e01a3cd39>>
  */
 
 /**
@@ -66,6 +66,8 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
+
+  bool enableMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
 
