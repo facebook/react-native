@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherProvider;
@@ -59,7 +60,7 @@ public class UIManagerHelper {
       ReactContext context,
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
-    if (context.isBridgeless()) {
+    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE || context.isBridgeless()) {
       @Nullable UIManager uiManager = context.getFabricUIManager();
       if (uiManager == null) {
         ReactSoftExceptionLogger.logSoftException(
