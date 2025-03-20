@@ -38,7 +38,7 @@ function currentlyFocusedField(): ?number {
     );
   }
 
-  return findNodeHandle(currentlyFocusedInputRef);
+  return findNodeHandle<$FlowFixMe>(currentlyFocusedInputRef);
 }
 
 function focusInput(textField: ?HostInstance): void {

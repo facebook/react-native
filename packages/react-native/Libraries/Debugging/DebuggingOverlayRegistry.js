@@ -226,7 +226,7 @@ class DebuggingOverlayRegistry {
         return;
       }
 
-      const instanceReactTag = findNodeHandle(node);
+      const instanceReactTag = findNodeHandle<$FlowFixMe>(node);
       if (instanceReactTag == null) {
         return;
       }

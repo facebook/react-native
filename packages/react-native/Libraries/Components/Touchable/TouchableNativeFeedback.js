@@ -253,7 +253,7 @@ class TouchableNativeFeedback extends React.Component<
 
   _dispatchPressedStateChange(pressed: boolean): void {
     if (Platform.OS === 'android') {
-      const hostComponentRef = findHostInstance_DEPRECATED(this);
+      const hostComponentRef = findHostInstance_DEPRECATED<$FlowFixMe>(this);
       if (hostComponentRef == null) {
         console.warn(
           'Touchable: Unable to find HostComponent instance. ' +
@@ -268,7 +268,7 @@ class TouchableNativeFeedback extends React.Component<
   _dispatchHotspotUpdate(event: GestureResponderEvent): void {
     if (Platform.OS === 'android') {
       const {locationX, locationY} = event.nativeEvent;
-      const hostComponentRef = findHostInstance_DEPRECATED(this);
+      const hostComponentRef = findHostInstance_DEPRECATED<$FlowFixMe>(this);
       if (hostComponentRef == null) {
         console.warn(
           'Touchable: Unable to find HostComponent instance. ' +

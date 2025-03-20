@@ -241,7 +241,7 @@ class ActionSheetAnchorExample extends React.Component<
         cancelButtonIndex: CANCEL_INDEX,
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         anchor: this.anchorRef.current
-          ? findNodeHandle(this.anchorRef.current)
+          ? findNodeHandle<$FlowFixMe>(this.anchorRef.current)
           : undefined,
       },
       buttonIndex => {
@@ -471,7 +471,7 @@ class ShareScreenshotAnchorExample extends React.Component<
             url: uri,
             excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
             anchor: this.anchorRef.current
-              ? findNodeHandle(this.anchorRef.current)
+              ? findNodeHandle<$FlowFixMe>(this.anchorRef.current)
               : undefined,
           },
           error => Alert.alert('Error', error?.message),

@@ -315,7 +315,7 @@ class VirtualizedList extends StateSafePureComponent<
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
-      return findNodeHandle(this._scrollRef);
+      return findNodeHandle<$FlowFixMe>(this._scrollRef);
     }
   }
 
