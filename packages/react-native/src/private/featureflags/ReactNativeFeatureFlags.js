@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8e4f25dbb96b6c7a9fe645d67172d0ab>>
+ * @generated SignedSource<<b973b1eb2e4efa426813615bc784816e>>
  * @flow strict
  */
 
@@ -170,11 +170,11 @@ export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = create
  */
 export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter('animatedShouldSignalBatch', false);
 /**
- * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+ * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
 /**
- * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+ * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
  */
 export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
 /**
@@ -202,7 +202,7 @@ export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('ena
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
 /**
- * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+ * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
  */
 export const enableImagePrefetchingAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingAndroid', false);
 /**

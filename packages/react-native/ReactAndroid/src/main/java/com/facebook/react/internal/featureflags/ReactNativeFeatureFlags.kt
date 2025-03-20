@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<edf4c2ab2e44fef4f86f9384a1df723f>>
+ * @generated SignedSource<<35c6c9e2445c897258198241fc98aaba>>
  */
 
 /**
@@ -41,13 +41,13 @@ public object ReactNativeFeatureFlags {
   public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
 
   /**
-   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
 
   /**
-   * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+   * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   @JvmStatic
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
@@ -89,7 +89,7 @@ public object ReactNativeFeatureFlags {
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
 
   /**
-   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
    */
   @JvmStatic
   public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()

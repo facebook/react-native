@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c99cde305f1aa12565bf8797ed0b95fe>>
+ * @generated SignedSource<<25a17c52439f8f8cd607d91f28fadb07>>
  */
 
 /**
@@ -50,12 +50,12 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool animatedShouldSignalBatch();
 
   /**
-   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
 
   /**
-   * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+   * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
@@ -90,7 +90,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
-   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
    */
   RN_EXPORT static bool enableImagePrefetchingAndroid();
 

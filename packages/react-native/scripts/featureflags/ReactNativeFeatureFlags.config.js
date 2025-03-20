@@ -75,7 +75,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-10-26',
         description:
-          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
+          'Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -86,7 +86,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-12-10',
         description:
-          'When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.',
+          'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -157,7 +157,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-11-19',
         description:
-          'When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout',
+          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
