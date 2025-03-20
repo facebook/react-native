@@ -172,6 +172,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
           device.getApp(),
           device.getName(),
         );
+
+        this.#eventReporter?.logEvent({
+          type: 'no_debug_pages_for_device',
+        });
       }
 
       result = result.concat(devicePages);
