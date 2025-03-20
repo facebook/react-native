@@ -85,6 +85,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
   NSDictionary *_launchOptions;
+  void (^_waitUntilModuleSetupComplete)();
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
@@ -314,6 +315,33 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
 
+  if (ReactNativeFeatureFlags::enableMainQueueModulesOnIOS()) {
+    /**
+     * Some native modules need to capture uikit objects on the main thread.
+     * Start initializing those modules on the main queue here. The JavaScript thread
+     * will wait until this module init finishes, before executing the js bundle.
+     */
+    NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
+    if ([modulesRequiringMainQueueSetup count] > 0) {
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+      _waitUntilModuleSetupComplete = ^{
+        if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
+          RCTLogError(
+              @"Timed out waiting for native modules to be setup on the main queue: %@",
+              modulesRequiringMainQueueSetup);
+        };
+      };
+
+      // TODO(T218039767): Integrate perf logging into main queue module init
+      RCTExecuteOnMainQueue(^{
+        for (NSString *moduleName in modulesRequiringMainQueueSetup) {
+          [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
+        }
+        dispatch_semaphore_signal(semaphore);
+      });
+    }
+  }
+
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
 
@@ -496,9 +524,16 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   auto script = std::make_unique<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
-  _reactInstance->loadScript(std::move(script), url, [](jsi::Runtime &_) {
+
+  auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
+    if (waitUntilModuleSetupComplete) {
+      waitUntilModuleSetupComplete();
+    }
+  };
+  auto afterLoad = [](jsi::Runtime &_) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
-  });
+  };
+  _reactInstance->loadScript(std::move(script), url, beforeLoad, afterLoad);
 }
 
 - (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime

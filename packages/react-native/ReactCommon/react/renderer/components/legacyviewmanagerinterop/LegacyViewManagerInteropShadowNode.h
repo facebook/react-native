@@ -8,7 +8,6 @@
 #pragma once
 
 #include <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropState.h>
-#include <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewEventEmitter.h>
 #include <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
@@ -19,7 +18,7 @@ extern const char LegacyViewManagerInteropComponentName[];
 using LegacyViewManagerInteropShadowNode = ConcreteViewShadowNode<
     LegacyViewManagerInteropComponentName,
     LegacyViewManagerInteropViewProps,
-    LegacyViewManagerInteropViewEventEmitter,
+    ViewEventEmitter,
     LegacyViewManagerInteropState>;
 
 } // namespace facebook::react

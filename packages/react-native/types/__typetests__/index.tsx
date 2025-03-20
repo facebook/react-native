@@ -429,8 +429,8 @@ class CustomView extends React.Component {
 class Welcome extends React.Component<
   ElementProps<View> & {color: string; bgColor?: null | undefined | string}
 > {
-  rootViewRef = React.useRef<View>(null);
-  customViewRef = React.useRef<CustomView>(null);
+  rootViewRef = React.createRef<View>();
+  customViewRef = React.createRef<CustomView>();
 
   testNativeMethods() {
     if (this.rootViewRef.current != null) {

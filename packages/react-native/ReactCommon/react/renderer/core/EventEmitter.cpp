@@ -57,20 +57,20 @@ EventEmitter::EventEmitter(
 
 void EventEmitter::dispatchEvent(
     std::string type,
-    const folly::dynamic& payload,
+    folly::dynamic&& payload,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      std::make_shared<DynamicEventPayload>(folly::dynamic(payload)),
+      std::make_shared<DynamicEventPayload>(std::move(payload)),
       category);
 }
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
-    const folly::dynamic& payload) const {
+    folly::dynamic&& payload) const {
   dispatchUniqueEvent(
       std::move(type),
-      std::make_shared<DynamicEventPayload>(folly::dynamic(payload)));
+      std::make_shared<DynamicEventPayload>(std::move(payload)));
 }
 
 void EventEmitter::dispatchEvent(

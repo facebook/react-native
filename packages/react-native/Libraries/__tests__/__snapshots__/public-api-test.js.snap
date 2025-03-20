@@ -1719,6 +1719,7 @@ type PressableBaseProps = $ReadOnly<{
   onLongPress?: ?(event: GestureResponderEvent) => mixed,
   onPress?: ?(event: GestureResponderEvent) => mixed,
   onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressMove?: ?(event: GestureResponderEvent) => mixed,
   onPressOut?: ?(event: GestureResponderEvent) => mixed,
   style?:
     | ViewStyleProp

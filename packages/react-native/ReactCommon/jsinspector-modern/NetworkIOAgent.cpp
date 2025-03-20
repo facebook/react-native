@@ -284,6 +284,12 @@ bool NetworkIOAgent::handleRequest(
       frontendChannel_(cdp::jsonResult(req.id));
       return true;
     }
+
+    // @cdp Network.getResponseBody support is experimental.
+    if (req.method == "Network.getResponseBody") {
+      // TODO(T218468200)
+      return false;
+    }
   }
 
   return false;

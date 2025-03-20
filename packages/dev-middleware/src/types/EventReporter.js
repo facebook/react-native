@@ -90,6 +90,9 @@ export type ReportableEvent =
       type: 'fusebox_console_notice',
     }
   | {
+      type: 'no_debug_pages_for_device',
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',
