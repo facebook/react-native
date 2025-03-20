@@ -44,8 +44,15 @@
       "javaPackageName": "com.facebook.fbreact.specs"
     },
     "ios": {
-      "componentProvider": {
-        "RNTMyNativeView": "RNTMyNativeViewComponentView"
+      "modules": {
+        "SampleTurboModule": {
+          "unstableRequiresMainQueueSetup": true
+        }
+      },
+      "components": {
+        "RNTMyNativeView": {
+          "className": "RNTMyNativeViewComponentView"
+        }
       }
     }
   },
