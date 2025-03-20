@@ -312,7 +312,7 @@ public object ReactScrollViewHelper {
       FLog.i(
           TAG, "updateFabricScrollState[%d] scrollX %d scrollY %d", scrollView.id, scrollX, scrollY)
     }
-    if (ViewUtil.getUIManagerType(scrollView.id) == UIManagerType.DEFAULT) {
+    if (ViewUtil.getUIManagerType(scrollView.id) == UIManagerType.LEGACY) {
       return
     }
     // NOTE: if the state wrapper is null, we shouldn't even update
