@@ -6,7 +6,6 @@
  */
 
 #include "HostAgent.h"
-#include "CdpJson.h"
 #include "InstanceAgent.h"
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
@@ -17,6 +16,7 @@
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
+#include <jsinspector-modern/cdp/CdpJson.h>
 
 #include <chrono>
 #include <functional>

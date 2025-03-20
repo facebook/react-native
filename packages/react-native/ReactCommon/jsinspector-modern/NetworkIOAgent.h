@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include "CdpJson.h"
 #include "InspectorInterfaces.h"
 #include "ScopedExecutor.h"
 
 #include <folly/dynamic.h>
+#include <jsinspector-modern/cdp/CdpJson.h>
+
 #include <string>
 #include <unordered_map>
 #include <utility>
