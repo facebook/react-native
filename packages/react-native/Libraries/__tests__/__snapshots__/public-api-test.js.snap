@@ -5027,7 +5027,7 @@ type PassiveCallback = (
   event: GestureResponderEvent,
   gestureState: PanResponderGestureState
 ) => mixed;
-export type GestureResponderHandlers = {
+export type GestureResponderHandlerMethods = {
   onMoveShouldSetResponder: (event: GestureResponderEvent) => boolean,
   onMoveShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
   onResponderEnd: (event: GestureResponderEvent) => void,
@@ -5059,7 +5059,7 @@ export type PanResponderCallbacks = $ReadOnly<{
 declare const PanResponder: {
   create(config: PanResponderCallbacks): {
     getInteractionHandle: () => ?number,
-    panHandlers: GestureResponderHandlers,
+    panHandlers: GestureResponderHandlerMethods,
   },
 };
 export type PanResponderInstance = ReturnType<(typeof PanResponder)[\\"create\\"]>;
