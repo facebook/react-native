@@ -38,6 +38,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.VisibleForTesting
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
@@ -502,25 +503,30 @@ public class ReactModalHostView(context: ThemedReactContext) :
       val realWidth: Float = width.toFloat().pxToDp()
       val realHeight: Float = height.toFloat().pxToDp()
 
-      stateWrapper?.let { sw ->
+      val sw = stateWrapper
+      if (sw != null) {
         // new architecture
         val newStateData: WritableMap = WritableNativeMap()
         newStateData.putDouble("screenWidth", realWidth.toDouble())
         newStateData.putDouble("screenHeight", realHeight.toDouble())
         sw.updateState(newStateData)
+      } else if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+        // When UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE = true, means the Legacy Architecture is
+        // fully disabled and can be minified.
+        // The goal is to compile-out UIManagerModule from the following code block:
+        run {
+          // old architecture
+          // TODO: T44725185 remove after full migration to Fabric
+          reactContext.runOnNativeModulesQueueThread(
+              object : GuardedRunnable(reactContext) {
+                override fun runGuarded() {
+                  reactContext.reactApplicationContext
+                      .getNativeModule(UIManagerModule::class.java)
+                      ?.updateNodeSize(id, viewWidth, viewHeight)
+                }
+              })
+        }
       }
-          ?: run {
-            // old architecture
-            // TODO: T44725185 remove after full migration to Fabric
-            reactContext.runOnNativeModulesQueueThread(
-                object : GuardedRunnable(reactContext) {
-                  override fun runGuarded() {
-                    reactContext.reactApplicationContext
-                        .getNativeModule(UIManagerModule::class.java)
-                        ?.updateNodeSize(id, viewWidth, viewHeight)
-                  }
-                })
-          }
     }
 
     override fun handleException(t: Throwable) {
