@@ -29,6 +29,7 @@ using namespace facebook::react;
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
   std::atomic<BOOL> _invalidated;
+  NSDictionary *_constants;
 }
 
 static NSString *const kFrameKeyPath = @"frame";
@@ -109,6 +110,15 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(invalidate)
                                                name:RCTBridgeWillInvalidateModulesNotification
                                              object:nil];
+
+  _constants = @{
+    @"Dimensions" : [self _exportedDimensions],
+    // Note:
+    // This prop is deprecated and will be removed in a future release.
+    // Please use this only for a quick and temporary solution.
+    // Use <SafeAreaView> instead.
+    @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
+  };
 }
 
 - (void)invalidate
@@ -202,20 +212,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
-  __block NSDictionary<NSString *, id> *constants;
-  __weak __typeof(self) weakSelf = self;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = @{
-      @"Dimensions" : [weakSelf _exportedDimensions],
-      // Note:
-      // This prop is deprecated and will be removed in a future release.
-      // Please use this only for a quick and temporary solution.
-      // Use <SafeAreaView> instead.
-      @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
-    };
-  });
-
-  return constants;
+  return _constants;
 }
 
 - (void)didReceiveNewContentSizeMultiplier
