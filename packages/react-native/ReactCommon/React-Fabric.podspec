@@ -109,7 +109,6 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "view" do |sss|
-      sss.dependency             "React-renderercss"
       sss.dependency             "Yoga"
       sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/view/tests", "react/renderer/components/view/platform/android", "react/renderer/components/view/platform/windows"
