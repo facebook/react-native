@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef74757e57be86fbc860f5fd02973885>>
+ * @generated SignedSource<<c99cde305f1aa12565bf8797ed0b95fe>>
  */
 
 /**
@@ -296,7 +296,7 @@ class ReactNativeFeatureFlags {
    * This is **dangerous** because it can introduce consistency issues that will
    * be much harder to debug. For example, it could hide the fact that feature
    * flags are read before you set the values you want to use everywhere. It
-   * could also cause a workflow to suddently have different feature flags for
+   * could also cause a workflow to suddenly have different feature flags for
    * behaviors that were configured with different values before.
    *
    * Please see the documentation of `dangerouslyReset` for additional details.
