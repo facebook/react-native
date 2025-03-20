@@ -77,7 +77,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
       return;
     }
     mListening = true;
-    getUIManagerModule().addUIManagerEventListener(this);
+    getUIManager().addUIManagerEventListener(this);
   }
 
   /** Stop listening to view hierarchy updates. Should be called before this is destroyed. */
@@ -86,7 +86,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
       return;
     }
     mListening = false;
-    getUIManagerModule().removeUIManagerEventListener(this);
+    getUIManager().removeUIManagerEventListener(this);
   }
 
   /**
@@ -143,7 +143,7 @@ class MaintainVisibleScrollPositionHelper<ScrollViewT extends ViewGroup & HasSmo
     return (ReactViewGroup) mScrollView.getChildAt(0);
   }
 
-  private UIManager getUIManagerModule() {
+  private UIManager getUIManager() {
     return Assertions.assertNotNull(
         UIManagerHelper.getUIManager(
             (ReactContext) mScrollView.getContext(),
