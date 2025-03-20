@@ -28,10 +28,10 @@ import com.facebook.react.uimanager.IllegalViewOperationException
  */
 @LegacyArchitecture
 internal abstract class AbstractLayoutAnimation {
-  @VisibleForTesting var interpolator: Interpolator? = null
-  @VisibleForTesting var delayMs: Int = 0
-  @VisibleForTesting var animatedProperty: AnimatedPropertyType? = null
-  @VisibleForTesting var durationMs: Int = 0
+  var interpolator: Interpolator? = null
+  var delayMs: Int = 0
+  var animatedProperty: AnimatedPropertyType? = null
+  var durationMs: Int = 0
 
   internal abstract fun isValid(): Boolean
 
@@ -56,10 +56,11 @@ internal abstract class AbstractLayoutAnimation {
   }
 
   fun initializeFromConfig(data: ReadableMap, globalDuration: Int) {
-    animatedProperty =
-    if (data.hasKey("property"))
+    animatedProperty = if (data.hasKey("property")) {
       AnimatedPropertyType.fromString(data.getString("property") ?: "")
-    else null
+    } else {
+      null
+    }
     durationMs = if (data.hasKey("duration")) data.getInt("duration") else globalDuration
     delayMs = if (data.hasKey("delay")) data.getInt("delay") else 0
     require(data.hasKey("type")) { "Missing interpolation type." }
