@@ -8,6 +8,7 @@
 #import "RCTAppDependencyProvider.h"
 #import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
 #import <ReactCodegen/RCTThirdPartyComponentsProvider.h>
+#import <ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.h>
 #import <ReactCodegen/RCTModuleProviders.h>
 
 @implementation RCTAppDependencyProvider
@@ -22,6 +23,10 @@
 
 - (nonnull NSArray<NSString *> *)imageURLLoaderClassNames {
   return RCTModulesConformingToProtocolsProvider.imageURLLoaderClassNames;
+}
+
+- (nonnull NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup {
+  return RCTUnstableModulesRequiringMainQueueSetupProvider.modules;
 }
 
 - (nonnull NSDictionary<NSString *,Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents {
