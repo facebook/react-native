@@ -12,10 +12,10 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class DebugCorePackage extends BaseReactPackage implements ViewManagerOnD
   }
 
   /**
-   * @return a map of view managers that should be registered with {@link UIManagerModule}
+   * @return a map of view managers that should be registered with {@link UIManager}
    */
   private Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
