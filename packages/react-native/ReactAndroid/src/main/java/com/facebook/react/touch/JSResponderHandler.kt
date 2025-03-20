@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.view.ViewParent
 
 /**
- * This class coordinates JSResponder commands for [UIManagerModule]. It should be set as
+ * This class coordinates JSResponder commands for [UIManager]. It should be set as
  * OnInterceptTouchEventListener for all newly created native views that implements [ ] and thanks
  * to the information whether JSResponder is set and to which view it will correctly coordinate the
  * return values of [OnInterceptTouchEventListener] such that touch events will be dispatched to the

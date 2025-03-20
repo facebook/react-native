@@ -26,7 +26,7 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
   public enum class CallbackType(internal val order: Int) {
     /** For use by perf markers that need to happen immediately after draw */
     PERF_MARKERS(0),
-    /** For use by [com.facebook.react.uimanager.UIManagerModule] */
+    /** For use by [com.facebook.react.bridge.UIManager] */
     DISPATCH_UI(1),
     /** For use by [com.facebook.react.animated.NativeAnimatedModule] */
     NATIVE_ANIMATED_MODULE(2),
