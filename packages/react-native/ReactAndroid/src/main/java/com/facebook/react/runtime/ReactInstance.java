@@ -7,6 +7,9 @@
 
 package com.facebook.react.runtime;
 
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
+
 import android.content.res.AssetManager;
 import android.view.View;
 import com.facebook.common.logging.FLog;
@@ -29,6 +32,7 @@ import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
@@ -60,7 +64,6 @@ import com.facebook.react.uimanager.ComponentNameResolverBinding;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.UIConstantsProviderBinding;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIManagerModuleConstantsHelper;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
@@ -68,6 +71,7 @@ import com.facebook.react.uimanager.ViewManagerResolver;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -242,15 +246,13 @@ final class ReactInstance {
             if (viewManager == null) {
               return null;
             }
-            return (NativeMap)
-                UIManagerModule.getConstantsForViewManager(viewManager, customDirectEvents);
+            return getConstantsForViewManager(viewManager, customDirectEvents);
           },
           () -> {
             List<ViewManager> viewManagers =
                 new ArrayList<>(mViewManagerResolver.getEagerViewManagerMap().values());
 
-            Map<String, Object> constants =
-                UIManagerModule.createConstants(viewManagers, null, customDirectEvents);
+            Map<String, Object> constants = createConstants(viewManagers, null, customDirectEvents);
 
             Collection<String> lazyViewManagers = mViewManagerResolver.getLazyViewManagerNames();
             if (lazyViewManagers.size() > 0) {
@@ -285,6 +287,40 @@ final class ReactInstance {
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  private static Map<String, Object> createConstants(
+      List<ViewManager> viewManagers,
+      @Nullable Map<String, Object> customBubblingEvents,
+      @Nullable Map<String, Object> customDirectEvents) {
+    ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+        .arg("Lazy", false)
+        .flush();
+    try {
+      return UIManagerModuleConstantsHelper.createConstants(
+          viewManagers, customBubblingEvents, customDirectEvents);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
+    }
+  }
+
+  private static NativeMap getConstantsForViewManager(
+      ViewManager viewManager, Map<String, Object> customDirectEvents) {
+    SystraceMessage.beginSection(
+            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.getConstantsForViewManager")
+        .arg("ViewManager", viewManager.getName())
+        .arg("Lazy", true)
+        .flush();
+    try {
+      Map<String, Object> viewManagerConstants =
+          UIManagerModuleConstantsHelper.createConstantsForViewManager(
+              viewManager, null, null, null, customDirectEvents);
+      return Arguments.makeNativeMap(viewManagerConstants);
+    } finally {
+      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+    }
   }
 
   void initializeEagerTurboModules() {
