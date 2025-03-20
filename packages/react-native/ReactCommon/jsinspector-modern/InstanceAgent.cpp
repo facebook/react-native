@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/InstanceAgent.h>
-#include "CdpJson.h"
+#include "InstanceAgent.h"
 #include "RuntimeTarget.h"
+
+#include <jsinspector-modern/cdp/CdpJson.h>
 
 namespace facebook::react::jsinspector_modern {
 
