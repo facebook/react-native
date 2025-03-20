@@ -56,6 +56,10 @@ exports[`execute "RCTAppDependencyProvider.mm" should match snapshot 1`] = `
   return RCTModulesConformingToProtocolsProvider.imageURLLoaderClassNames;
 }
 
+- (nonnull NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup {
+  return RCTUnstableModulesRequiringMainQueueSetupProvider.modules;
+}
+
 - (nonnull NSDictionary<NSString *,Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents {
   return RCTThirdPartyComponentsProvider.thirdPartyFabricComponents;
 }
@@ -294,6 +298,58 @@ exports[`execute "RCTThirdPartyComponentsProvider.mm" should match snapshot 1`] 
   });
 
   return thirdPartyComponents;
+}
+
+@end
+"
+`;
+
+exports[`execute "RCTUnstableModulesRequiringMainQueueSetupProvider.h" should match snapshot 1`] = `
+"/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#import <Foundation/Foundation.h>
+
+@interface RCTUnstableModulesRequiringMainQueueSetupProvider: NSObject
+
++(NSArray<NSString *> *)modules;
+
+@end
+"
+`;
+
+exports[`execute "RCTUnstableModulesRequiringMainQueueSetupProvider.mm" should match snapshot 1`] = `
+"/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#import \\"RCTUnstableModulesRequiringMainQueueSetupProvider.h\\"
+
+@implementation RCTUnstableModulesRequiringMainQueueSetupProvider
+
++(NSArray<NSString *> *)modules
+{
+  return @[
+    @\\"RCTTestAppDeprecatedImageURLLoader\\",
+		@\\"RCTTestAppDeprecatedURLRequestHandler\\",
+		@\\"RCTTestAppDeprecatedImageDataDecoder\\",
+		@\\"RCTTestLibraryDeprecatedImageURLLoader\\",
+		@\\"RCTTestLibraryDeprecatedURLRequestHandler\\",
+		@\\"RCTTestLibraryDeprecatedImageDataDecoder\\",
+		@\\"TestAppImageURLLoader\\",
+		@\\"TestAppURLRequestHandler\\",
+		@\\"TestAppImageDataDecoder\\",
+		@\\"TestLibraryImageURLLoader\\",
+		@\\"TestLibraryURLRequestHandler\\",
+		@\\"TestLibraryImageDataDecoder\\"
+  ];
 }
 
 @end

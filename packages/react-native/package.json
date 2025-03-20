@@ -160,6 +160,28 @@
         "android": {},
         "jsSrcsDir": "src"
       }
-    ]
+    ],
+    "ios": {
+      "modules": {
+        "AccessibilityManager": {
+          "unstableRequiresMainQueueSetup": true
+        },
+        "AppState": {
+          "unstableRequiresMainQueueSetup": true
+        },
+        "Appearance": {
+          "unstableRequiresMainQueueSetup": true
+        },
+        "DeviceInfo": {
+          "unstableRequiresMainQueueSetup": true
+        },
+        "PlatformConstants": {
+          "unstableRequiresMainQueueSetup": true
+        },
+        "StatusBarManager": {
+          "unstableRequiresMainQueueSetup": true
+        }
+      }
+    }
   }
 }

@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTTraitCollectionProxy.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTUtils.h>
 #import <React/RCTVersion.h>
 
@@ -40,37 +40,26 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom)
   }
 }
 
-@interface RCTPlatform () <NativePlatformConstantsIOSSpec>
+@interface RCTPlatform () <NativePlatformConstantsIOSSpec, RCTInitializing>
 @end
 
-@implementation RCTPlatform
+@implementation RCTPlatform {
+  ModuleConstants<JS::NativePlatformConstantsIOS::Constants> _constants;
+}
 
 RCT_EXPORT_MODULE(PlatformConstants)
 
 + (BOOL)requiresMainQueueSetup
 {
-  return NO;
+  return YES;
 }
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
-// TODO: Use the generated struct return type.
-- (ModuleConstants<JS::NativePlatformConstantsIOS::Constants>)constantsToExport
-{
-  return (ModuleConstants<JS::NativePlatformConstantsIOS::Constants>)[self getConstants];
-}
-
-- (ModuleConstants<JS::NativePlatformConstantsIOS::Constants>)getConstants
+- (void)initialize
 {
   UIDevice *device = [UIDevice currentDevice];
-  bool isForceTouchAvailable = [RCTTraitCollectionProxy sharedInstance].currentTraitCollection.forceTouchCapability ==
-      UIForceTouchCapabilityAvailable;
   auto versions = RCTGetReactNativeVersion();
-  return typedConstants<JS::NativePlatformConstantsIOS::Constants>({
-      .forceTouchAvailable = isForceTouchAvailable,
+  _constants = typedConstants<JS::NativePlatformConstantsIOS::Constants>({
+      .forceTouchAvailable = RCTForceTouchAvailable() ? true : false,
       .osVersion = [device systemVersion],
       .systemName = [device systemName],
       .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
@@ -86,6 +75,22 @@ RCT_EXPORT_MODULE(PlatformConstants)
       .isMacCatalyst = false,
 #endif
   });
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
+// TODO: Use the generated struct return type.
+- (ModuleConstants<JS::NativePlatformConstantsIOS::Constants>)constantsToExport
+{
+  return _constants;
+}
+
+- (ModuleConstants<JS::NativePlatformConstantsIOS::Constants>)getConstants
+{
+  return _constants;
 }
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params

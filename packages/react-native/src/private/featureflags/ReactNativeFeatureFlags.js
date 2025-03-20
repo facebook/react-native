@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e76d584cb67e2feae209795beb2009d6>>
+ * @generated SignedSource<<8e4f25dbb96b6c7a9fe645d67172d0ab>>
  * @flow strict
  */
 
@@ -62,6 +62,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
+  enableMainQueueModulesOnIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
@@ -220,6 +221,10 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
  */
 export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
+/**
+ * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
+ */
+export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
 /**
  * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
  */

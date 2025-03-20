@@ -28,6 +28,9 @@ const {
 const {generateReactCodegenPodspec} = require('./generateReactCodegenPodspec');
 const {generateSchemaInfos} = require('./generateSchemaInfos');
 const {
+  generateUnstableModulesRequiringMainQueueSetupProvider,
+} = require('./generateUnstableModulesRequiringMainQueueSetupProvider');
+const {
   buildCodegenIfNeeded,
   cleanupEmptyFilesAndFolders,
   codegenLog,
@@ -115,6 +118,10 @@ function execute(
         generateRCTThirdPartyComponents(libraries, outputPath);
         generateRCTModuleProviders(projectRoot, pkgJson, libraries, outputPath);
         generateCustomURLHandlers(libraries, outputPath);
+        generateUnstableModulesRequiringMainQueueSetupProvider(
+          libraries,
+          outputPath,
+        );
         generateAppDependencyProvider(outputPath);
       }
       generateReactCodegenPodspec(
