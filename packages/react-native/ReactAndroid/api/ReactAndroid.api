@@ -3680,6 +3680,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setAccessibilityLabel (Landroid/view/View;Ljava/lang/String;)V
 	public fun setAccessibilityLabelledBy (Landroid/view/View;Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setAccessibilityLiveRegion (Landroid/view/View;Ljava/lang/String;)V
+	public fun setAccessibilityOrder (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setAccessibilityRole (Landroid/view/View;Ljava/lang/String;)V
 	public fun setAccessibilityValue (Landroid/view/View;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setBackgroundColor (Landroid/view/View;I)V
@@ -4992,6 +4993,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field ACCESSIBILITY_LABEL Ljava/lang/String;
 	public static final field ACCESSIBILITY_LABELLED_BY Ljava/lang/String;
 	public static final field ACCESSIBILITY_LIVE_REGION Ljava/lang/String;
+	public static final field ACCESSIBILITY_ORDER Ljava/lang/String;
 	public static final field ACCESSIBILITY_ROLE Ljava/lang/String;
 	public static final field ACCESSIBILITY_STATE Ljava/lang/String;
 	public static final field ACCESSIBILITY_VALUE Ljava/lang/String;
