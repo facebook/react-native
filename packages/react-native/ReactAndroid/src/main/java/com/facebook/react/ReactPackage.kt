@@ -9,9 +9,9 @@ package com.facebook.react
 
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 import com.facebook.react.common.annotations.StableReactNativeAPI
-import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.ViewManager
 
 /**
@@ -37,7 +37,7 @@ public interface ReactPackage {
   @DeprecatedInNewArchitecture(message = "Migrate to BaseReactPackage and implement getModule")
   public fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule>
 
-  /** @return a list of view managers that should be registered with [UIManagerModule] */
+  /** @return a list of view managers that should be registered with [UIManager] */
   public fun createViewManagers(
       reactContext: ReactApplicationContext
   ): List<ViewManager<in Nothing, in Nothing>>
