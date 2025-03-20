@@ -27,6 +27,7 @@ import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -387,9 +388,13 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (mOperations.isEmpty() && mPreOperations.isEmpty()) {
       return;
     }
-    if (mUIManagerType == UIManagerType.FABRIC) {
+    if (mUIManagerType == UIManagerType.FABRIC
+        || ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       return;
     }
+    // The following code ONLY executes for non-fabric
+    // When ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE is true, the folowing code
+    // might be stripped out.
 
     final long frameNo = mCurrentBatchNumber++;
 
