@@ -32,12 +32,12 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
   }
 
   fun register(@UIManagerType uiManagerType: Int, eventEmitter: RCTEventEmitter?) {
-    check(uiManagerType == UIManagerType.DEFAULT)
+    check(uiManagerType == UIManagerType.LEGACY)
     defaultEventEmitter = eventEmitter
   }
 
   fun unregister(@UIManagerType uiManagerType: Int) {
-    if (uiManagerType == UIManagerType.DEFAULT) {
+    if (uiManagerType == UIManagerType.LEGACY) {
       defaultEventEmitter = null
     } else {
       fabricEventEmitter = null
@@ -73,7 +73,7 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
 
     val reactTag = touches.getMap(0)?.getInt(TouchesHelper.TARGET_KEY) ?: 0
     @UIManagerType val uiManagerType = getUIManagerType(reactTag)
-    if (uiManagerType == UIManagerType.DEFAULT) {
+    if (uiManagerType == UIManagerType.LEGACY) {
       ensureDefaultEventEmitter()?.receiveTouches(eventName, touches, changedIndices)
     }
   }
@@ -83,7 +83,7 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
     @UIManagerType val uiManagerType = getUIManagerType(event.viewTag, event.surfaceId)
     if (uiManagerType == UIManagerType.FABRIC) {
       fabricEventEmitter?.let { TouchesHelper.sendTouchEvent(it, event) }
-    } else if (uiManagerType == UIManagerType.DEFAULT) {
+    } else if (uiManagerType == UIManagerType.LEGACY) {
       ensureDefaultEventEmitter()?.let { TouchesHelper.sendTouchesLegacy(it, event) }
     }
   }
@@ -119,7 +119,7 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
     if (uiManagerType == UIManagerType.FABRIC) {
       fabricEventEmitter?.receiveEvent(
           surfaceId, targetTag, eventName, canCoalesceEvent, customCoalesceKey, params, category)
-    } else if (uiManagerType == UIManagerType.DEFAULT) {
+    } else if (uiManagerType == UIManagerType.LEGACY) {
       ensureDefaultEventEmitter()?.receiveEvent(targetTag, eventName, params)
     }
   }
