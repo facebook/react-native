@@ -54,7 +54,9 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
 
   configureNewArchPackagingOptions(project, config, variant)
   configureJsEnginePackagingOptions(config, variant, isHermesEnabledInThisVariant, useThirdPartyJSC)
-  if (!isHermesEnabledInThisVariant && !useThirdPartyJSC) {
+  if (!isHermesEnabledInThisVariant &&
+      !useThirdPartyJSC &&
+      rootProject.name != "react-native-github") {
     showJSCRemovalMessage(project)
   }
 
