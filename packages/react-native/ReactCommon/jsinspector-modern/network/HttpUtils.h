@@ -14,6 +14,11 @@
 namespace facebook::react::jsinspector_modern {
 
 /**
+ * Get the HTTP reason phrase for a given status code (RFC 9110).
+ */
+std::string httpReasonPhrase(uint16_t status);
+
+/**
  * Get the MIME type for a response based on the 'Content-Type' header. If
  * the header is not present, returns 'application/octet-stream'.
  */
