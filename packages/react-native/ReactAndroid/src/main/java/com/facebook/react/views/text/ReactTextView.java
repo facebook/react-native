@@ -34,16 +34,18 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.SystraceSection;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
@@ -195,7 +197,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
     int reactTag = getId();
     if (!(getText() instanceof Spanned)
-        || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC) {
+        || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC
+        || ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       /**
        * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
        * before we are laid out. This ordering is a requirement because we utilize the data from
@@ -213,8 +216,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     ReactContext reactContext = getReactContext();
-    UIManagerModule uiManager =
-        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
+    UIManager uiManager =
+        Assertions.assertNotNull(UIManagerHelper.getUIManager(reactContext, UIManagerType.DEFAULT));
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
