@@ -86,7 +86,9 @@ public class UIManagerModuleConstantsHelper {
    * into the map of {@link UIManagerModule} base constants that is stored in {@link
    * UIManagerModuleConstants}. TODO(6845124): Create a test for this
    */
-  /* package */ static Map<String, Object> createConstants(
+  // NOTE: When converted to Kotlin this method should be `internal` due to
+  // visibility restriction for `ReactInstance`
+  public static Map<String, Object> createConstants(
       List<ViewManager> viewManagers,
       @Nullable Map<String, Object> allBubblingEventTypes,
       @Nullable Map<String, Object> allDirectEventTypes) {
@@ -124,7 +126,9 @@ public class UIManagerModuleConstantsHelper {
     return constants;
   }
 
-  /* package */ static Map<String, Object> createConstantsForViewManager(
+  // NOTE: When converted to Kotlin this method should be `internal` due to
+  // visibility restriction for `ReactInstance`
+  public static Map<String, Object> createConstantsForViewManager(
       ViewManager viewManager,
       @Nullable Map defaultBubblingEvents,
       @Nullable Map defaultDirectEvents,
