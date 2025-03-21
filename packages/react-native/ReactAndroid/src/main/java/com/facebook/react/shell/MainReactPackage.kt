@@ -21,6 +21,7 @@ import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfo.Companion.classIsTurboModule
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule
+import com.facebook.react.modules.accessibilityinfosync.AccessibilityInfoModuleSync
 import com.facebook.react.modules.appearance.AppearanceModule
 import com.facebook.react.modules.appstate.AppStateModule
 import com.facebook.react.modules.blob.BlobModule
@@ -71,6 +72,7 @@ import com.facebook.react.views.view.ReactViewManager
     nativeModules =
         [
             AccessibilityInfoModule::class,
+            AccessibilityInfoModuleSync::class,
             AppearanceModule::class,
             AppStateModule::class,
             BlobModule::class,
@@ -103,6 +105,7 @@ constructor(private val config: MainPackageConfig? = null) :
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
       when (name) {
         AccessibilityInfoModule.NAME -> AccessibilityInfoModule(reactContext)
+        AccessibilityInfoModuleSync.NAME -> AccessibilityInfoModuleSync(reactContext)
         AppearanceModule.NAME -> AppearanceModule(reactContext)
         AppStateModule.NAME -> AppStateModule(reactContext)
         BlobModule.NAME -> BlobModule(reactContext)
@@ -229,6 +232,7 @@ constructor(private val config: MainPackageConfig? = null) :
     val moduleList: Array<Class<*>> =
         arrayOf(
             AccessibilityInfoModule::class.java,
+            AccessibilityInfoModuleSync::class.java,
             AppearanceModule::class.java,
             AppStateModule::class.java,
             BlobModule::class.java,
