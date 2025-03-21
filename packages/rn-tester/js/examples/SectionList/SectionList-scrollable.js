@@ -143,8 +143,9 @@ const renderItemComponent =
 
 const onScrollToIndexFailed = (info: {
   index: number,
-  c: number,
+  highestMeasuredFrameIndex: number,
   averageItemLength: number,
+  ...
 }) => {
   console.warn('onScrollToIndexFailed. See comment in callback', info);
   /**

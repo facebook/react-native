@@ -644,13 +644,15 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/createAnimatedComponent.js 1`] = `
-"export type AnimatedProps<Props: { ... }> = {
-  +[_K in keyof (Props &
-      $ReadOnly<{
-        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
-          typeof View,
-        >,
-      }>)]: any,
+"type Nullable = void | null;
+type Builtin = (...$ReadOnlyArray<empty>) => mixed | Date | Error | RegExp;
+export type WithAnimatedValue<+T> = T extends Builtin | Nullable ? T : any;
+export type AnimatedProps<Props: { ... }> = {
+  +[K in keyof Props]: WithAnimatedValue<Props[K]>,
+} & {
+  passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+    typeof View,
+  > | null,
 };
 export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
   ...$Exact<Props>,
