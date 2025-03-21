@@ -1398,6 +1398,8 @@ declare const AccessibilityInfo: {
   prefersCrossFadeTransitions(): Promise<boolean>,
   isReduceTransparencyEnabled(): Promise<boolean>,
   isScreenReaderEnabled(): Promise<boolean>,
+  isTouchExplorationEnabled(): boolean,
+  getCurrentVoiceOverState(): boolean,
   isAccessibilityServiceEnabled(): Promise<boolean>,
   addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
@@ -9049,6 +9051,11 @@ exports[`public API should not change unintentionally Libraries/Utilities/useCol
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Utilities/useIsScreenReaderEnabled.js 1`] = `
+"declare export default function useIsScreenReaderEnabled(): boolean;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Utilities/useMergeRefs.js 1`] = `
 "declare export default function useMergeRefs<Instance>(
   ...refs: $ReadOnlyArray<?React.RefSetter<Instance>>
@@ -9395,6 +9402,7 @@ export { unstable_batchedUpdates } from \\"./Libraries/ReactNative/RendererProxy
 export { default as useAnimatedValue } from \\"./Libraries/Animated/useAnimatedValue\\";
 export { default as useColorScheme } from \\"./Libraries/Utilities/useColorScheme\\";
 export { default as useWindowDimensions } from \\"./Libraries/Utilities/useWindowDimensions\\";
+export { default as experimental_useIsScreenReaderEnabled } from \\"./Libraries/Utilities/useIsScreenReaderEnabled\\";
 export { default as UTFSequence } from \\"./Libraries/UTFSequence\\";
 export { default as Vibration } from \\"./Libraries/Vibration/Vibration\\";
 "

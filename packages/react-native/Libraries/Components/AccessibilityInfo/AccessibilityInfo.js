@@ -11,6 +11,8 @@
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 
+import NativeAccessibilityInfoSyncAndroid from '../../../src/private/accessibility/NativeAccessibilityInfoSync';
+import NativeAccessibilityManagerSyncIOS from '../../../src/private/accessibility/NativeAccessibilityManagerSync';
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import {sendAccessibilityEvent} from '../../ReactNative/RendererProxy';
 import Platform from '../../Utilities/Platform';
@@ -296,12 +298,16 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Query whether a screen reader is currently enabled.
+   * Cross-platform asynchronous API to query whether a screen reader is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when a screen reader is enabled and `false` otherwise.
    *
    * See https://reactnative.dev/docs/accessibilityinfo#isScreenReaderEnabled
+   *
+   * @deprecated this API is asynchronous, please use a synchronous alternative like
+   * useIsScreenReaderEnabled hook for cross-platform and isTouchExplorationEnabled for
+   * Android or getCurrentVoiceOverState for iOS.
    */
   isScreenReaderEnabled(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -322,6 +328,42 @@ const AccessibilityInfo = {
         }
       }
     });
+  },
+
+  /**
+   * Android only. Synchronous. Query whether TalkBack is currently enabled.
+   *
+   * Returns a boolean boolean.
+   * The result is `true` when TalkBack is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#isScreenReaderEnabled
+   */
+  isTouchExplorationEnabled(): boolean {
+    if (Platform.OS === 'android') {
+      return (
+        NativeAccessibilityInfoSyncAndroid?.isTouchExplorationEnabled() || false
+      );
+    } else {
+      return false;
+    }
+  },
+
+  /**
+   * iOS only. Synchronous. Query whether VoiceOver is currently enabled.
+   *
+   * Returns a boolean.
+   * The result is `true` when VoiceOver is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#isScreenReaderEnabled
+   */
+  getCurrentVoiceOverState(): boolean {
+    if (Platform.OS === 'android') {
+      return false;
+    } else {
+      return (
+        NativeAccessibilityManagerSyncIOS?.getCurrentVoiceOverState() || false
+      );
+    }
   },
 
   /**
