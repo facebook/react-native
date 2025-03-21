@@ -14,15 +14,13 @@ add_compile_options(
         -Wall
         -Wpedantic)
 
-file(GLOB jsinspector_network_SRC CONFIGURE_DEPENDS *.cpp)
+file(GLOB jsinspector_cdp_SRC CONFIGURE_DEPENDS *.cpp)
 
-add_library(jsinspector_network OBJECT ${jsinspector_network_SRC})
-target_merge_so(jsinspector_network)
+add_library(jsinspector_cdp OBJECT ${jsinspector_cdp_SRC})
+target_merge_so(jsinspector_cdp)
 
-target_include_directories(jsinspector_network PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(jsinspector_cdp PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(jsinspector_network
+target_link_libraries(jsinspector_cdp
         folly_runtime
-        glog
-        jsinspector_cdp
 )

@@ -5,7 +5,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "..", "..", "..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -19,16 +19,16 @@ end
 header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
-  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/..\""
+  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../..\""
 end
 
-header_dir = 'jsinspector-modern'
-module_name = "jsinspector_modern"
+header_dir = 'jsinspector-modern/cdp'
+module_name = "jsinspector_moderncdp"
 
 Pod::Spec.new do |s|
-  s.name                   = "React-jsinspector"
+  s.name                   = "React-jsinspectorcdp"
   s.version                = version
-  s.summary                = "React Native subsystem for modern debugging over the Chrome DevTools Protocol (CDP)"
+  s.summary                = "Common helper functions for working with CDP messages in jsinspector-modern"
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
@@ -39,24 +39,11 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-                               "DEFINES_MODULE" => "YES"
-  }.merge!(ENV['USE_FRAMEWORKS'] ? {
-    "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
-  } : {})
+    "DEFINES_MODULE" => "YES"}
 
   if ENV['USE_FRAMEWORKS']
     s.module_name = module_name
-  end
-
-  s.dependency "React-featureflags"
-  s.dependency "React-runtimeexecutor", version
-  s.dependency "React-jsi"
-  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
-  add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
-  add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
-  s.dependency "React-perflogger", version
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
+    s.header_mappings_dir = "../.."
   end
 
   add_rn_third_party_dependencies(s)
