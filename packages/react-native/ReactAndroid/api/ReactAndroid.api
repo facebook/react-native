@@ -7131,7 +7131,7 @@ public class com/facebook/react/views/textinput/ReactTextChangedEvent : com/face
 
 public final class com/facebook/react/views/textinput/ReactTextInputLocalData {
 	public fun <init> (Landroid/widget/EditText;)V
-	public fun apply (Landroid/widget/EditText;)V
+	public final fun apply (Landroid/widget/EditText;)V
 }
 
 public class com/facebook/react/views/textinput/ReactTextInputManager : com/facebook/react/uimanager/BaseViewManager {
