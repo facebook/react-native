@@ -97,6 +97,7 @@ class NewArchitectureHelper
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-debug", "React_debug", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-ImageManager", "React_ImageManager", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-rendererdebug", "React_rendererdebug", []))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-renderercss", "React_renderercss", []))
                 .each { |search_path|
                     header_search_paths << "\"#{search_path}\""
                 }
@@ -136,6 +137,7 @@ class NewArchitectureHelper
         # This dependency is required for the cases when the pod includes generated sources, specifically Props.cpp.
         spec.dependency "DoubleConversion"
         spec.dependency 'React-jsi'
+        spec.dependency 'React-renderercss'
 
         depend_on_js_engine(spec)
 
