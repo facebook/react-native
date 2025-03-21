@@ -68,6 +68,11 @@ class SimpleThreadSafeCache {
     map_.set(std::move(key), std::move(value));
   }
 
+  void clear() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    map_.clear();
+  }
+
  private:
   mutable folly::EvictingCacheMap<KeyT, ValueT> map_;
   mutable std::mutex mutex_;

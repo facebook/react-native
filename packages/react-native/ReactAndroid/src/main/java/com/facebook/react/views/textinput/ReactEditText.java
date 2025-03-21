@@ -48,6 +48,8 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -68,6 +70,7 @@ import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
+import com.facebook.react.views.text.TextConfigurationChangedListener;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
@@ -1070,6 +1073,8 @@ public class ReactEditText extends AppCompatEditText {
         span.onDetachedFromWindow();
       }
     }
+
+    TextConfigurationChangedListener.INSTANCE.removeListener(this);
   }
 
   @Override
@@ -1115,6 +1120,18 @@ public class ReactEditText extends AppCompatEditText {
         requestFocusInternal();
       }
     }
+
+    TextConfigurationChangedListener.INSTANCE.addListener(this, () -> {
+      if (mStateWrapper != null) {
+        WritableMap newStateData = new WritableNativeMap();
+        newStateData.putInt("mostRecentEventCount", mNativeEventCount);
+        newStateData.putInt("opaqueCacheId", 0);
+        newStateData.putBoolean("hasNewFontSizeMultiplier", true);
+        mStateWrapper.updateState(newStateData);
+      }
+
+      return null;
+    });
 
     mDidAttachToWindow = true;
   }

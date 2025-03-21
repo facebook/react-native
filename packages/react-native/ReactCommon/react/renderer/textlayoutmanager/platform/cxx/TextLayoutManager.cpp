@@ -38,6 +38,11 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 }
 #endif
 
+void TextLayoutManager::clearCache() const {
+  textMeasureCache_.clear();
+  lineMeasureCache_.clear();
+}
+
 LinesMeasurements TextLayoutManager::measureLines(
     const AttributedStringBox& /*attributedStringBox*/,
     const ParagraphAttributes& /*paragraphAttributes*/,

@@ -37,6 +37,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.SystraceSection;
@@ -45,6 +46,7 @@ import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -83,6 +85,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private Overflow mOverflow = Overflow.VISIBLE;
 
   private Spannable mSpanned;
+
+  StateWrapper mStateWrapper = null;
 
   public ReactTextView(Context context) {
     super(context);
@@ -557,6 +561,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         span.onDetachedFromWindow();
       }
     }
+
+    TextConfigurationChangedListener.INSTANCE.removeListener(this);
   }
 
   @Override
@@ -588,6 +594,15 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         span.onAttachedToWindow();
       }
     }
+
+    TextConfigurationChangedListener.INSTANCE.addListener(this, () -> {
+      if (mStateWrapper != null) {
+        WritableNativeMap newStateData = new WritableNativeMap();
+        newStateData.putBoolean("hasNewFontSizeMultiplier", true);
+        mStateWrapper.updateState(newStateData);
+      }
+      return null;
+    });
   }
 
   @Override
