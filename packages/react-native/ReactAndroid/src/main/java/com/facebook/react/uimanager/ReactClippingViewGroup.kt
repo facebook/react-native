@@ -9,6 +9,7 @@ package com.facebook.react.uimanager
 
 import android.graphics.Rect
 import android.view.View
+import androidx.core.view.ViewCompat.FocusRealDirection
 
 /**
  * Interface that should be implemented by [View] subclasses that support `removeClippedSubviews`
@@ -31,6 +32,8 @@ public interface ReactClippingViewGroup {
    * and clipping rect change of the current view may affect clipping rect of this child.
    */
   public fun updateClippingRect()
+
+  public fun updateClippingRectForNavigation(excludedView: Int?)
 
   /**
    * Get rectangular bounds to which view is currently clipped to. Called only on views that has set

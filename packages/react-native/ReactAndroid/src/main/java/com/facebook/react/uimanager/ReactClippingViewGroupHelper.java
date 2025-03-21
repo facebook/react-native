@@ -10,6 +10,8 @@ package com.facebook.react.uimanager;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewParent;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.concurrent.NotThreadSafe;
 
