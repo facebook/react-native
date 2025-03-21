@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
 import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
@@ -25,7 +26,7 @@ import okhttp3.WebSocketListener;
 /* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
 class CxxInspectorPackagerConnection implements IInspectorPackagerConnection {
   static {
-    DevSupportSoLoader.staticInit();
+    SoLoader.loadLibrary("react_devsupportjni");
   }
 
   @DoNotStrip private final HybridData mHybridData;
