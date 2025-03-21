@@ -60,6 +60,8 @@ class TextLayoutManager {
       const LayoutConstraints& layoutConstraints) const;
 #endif
 
+  virtual void clearCache() const;
+
   /*
    * Measures lines of `attributedString` using native text rendering
    * infrastructure.

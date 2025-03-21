@@ -54,6 +54,8 @@ class ParagraphState final {
    */
   std::weak_ptr<const TextLayoutManager> layoutManager;
 
+  bool hasNewFontSizeMultiplier{false};
+
 #ifdef ANDROID
   ParagraphState(
       const AttributedString& attributedString,
@@ -65,9 +67,11 @@ class ParagraphState final {
   ParagraphState() = default;
   ParagraphState(
       const ParagraphState& previousState,
-      const folly::dynamic& data) {
-    react_native_assert(false && "Not supported");
-  };
+      const folly::dynamic& data)
+      : attributedString(previousState.attributedString),
+        paragraphAttributes(previousState.paragraphAttributes),
+        layoutManager(previousState.layoutManager),
+        hasNewFontSizeMultiplier(data["hasNewFontSizeMultiplier"].getBool()){};
   folly::dynamic getDynamic() const;
   MapBuffer getMapBuffer() const;
 #endif

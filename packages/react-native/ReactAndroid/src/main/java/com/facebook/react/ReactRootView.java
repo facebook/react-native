@@ -863,6 +863,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     private boolean mKeyboardIsVisible = false;
     private int mKeyboardHeight = 0; // Only used in checkForKeyboardEventsLegacy path
     private int mDeviceRotation = 0;
+    private float mFontScale = 0;
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
@@ -884,6 +885,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       checkForDeviceOrientationChanges();
       checkForDeviceDimensionsChanges();
+      checkForFontScaleChanges();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
@@ -995,6 +997,15 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     private void checkForDeviceDimensionsChanges() {
       // DeviceInfoModule caches the last dimensions emitted to JS, so we don't need to check here.
       emitUpdateDimensionsEvent();
+    }
+
+    private void checkForFontScaleChanges() {
+      float fontScale = getContext().getResources().getConfiguration().fontScale;
+      if (fontScale == mFontScale) {
+        return;
+      }
+      mFontScale = fontScale;
+      DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
     }
 
     private void emitOrientationChanged(final int newRotation) {

@@ -34,7 +34,13 @@ class ParagraphComponentDescriptor final
     ConcreteComponentDescriptor::adopt(shadowNode);
 
     auto& paragraphShadowNode = static_cast<ParagraphShadowNode&>(shadowNode);
+    auto state = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(paragraphShadowNode.getState());
+    auto stateData = state->getData();
 
+    if (stateData.hasNewFontSizeMultiplier) {
+      paragraphShadowNode.dirtyLayout();
+      textLayoutManager_->clearCache();
+    }
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.
     paragraphShadowNode.setTextLayoutManager(textLayoutManager_);

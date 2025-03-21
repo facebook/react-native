@@ -145,6 +145,12 @@ class AndroidTextInputComponentDescriptor final
       }
     }
 
+    auto state = std::static_pointer_cast<const AndroidTextInputShadowNode::ConcreteState>(textInputShadowNode.getState());
+    auto stateData = state->getData();
+    if (stateData.hasNewFontSizeMultiplier) {
+      textLayoutManager_->clearCache();
+    }
+
     textInputShadowNode.dirtyLayout();
 
     ConcreteComponentDescriptor::adopt(shadowNode);

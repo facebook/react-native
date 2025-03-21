@@ -54,8 +54,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   void updateYogaChildren();
 
   void updateYogaProps();
-    
-  void invalidateLayoutCaches();
 
   /*
    * Sets layoutable size of node.

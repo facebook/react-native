@@ -28,6 +28,15 @@ class TextInputComponentDescriptor final
     ConcreteComponentDescriptor::adopt(shadowNode);
 
     auto& concreteShadowNode = static_cast<TextInputShadowNode&>(shadowNode);
+    
+    auto state = std::static_pointer_cast<const TextInputShadowNode::ConcreteState>(concreteShadowNode.getState());
+    auto stateData = state->getData();
+
+    if (stateData.hasNewFontSizeMultiplier) {
+      concreteShadowNode.dirtyLayout();
+      textLayoutManager_->clearCache();
+    }
+    
     concreteShadowNode.setTextLayoutManager(textLayoutManager_);
   }
 
