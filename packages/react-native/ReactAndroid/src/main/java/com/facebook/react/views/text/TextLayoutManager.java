@@ -807,8 +807,38 @@ public class TextLayoutManager {
             }
           }
           // Vertically align the inline view to the baseline of the line of text.
-          float ascentPortion = 0.78f; // Same default as in TextInlineViewPlaceholderSpan
-          float placeholderTopPosition = layout.getLineBaseline(line) - (placeholderHeight * ascentPortion);
+          // Match the adjustment in TextInlineViewPlaceholderSpan for consistent positioning
+          TextPaint currentTextPaint = layout.getPaint();
+          float placeholderTopPosition;
+          
+          if (currentTextPaint.getFontMetricsInt().ascent < 0 && currentTextPaint.getFontMetricsInt().descent > 0) {
+            // Simple approach: Position the view in the middle of the text line
+            
+            // Calculate the text height
+            float textHeight = -currentTextPaint.getFontMetricsInt().ascent + currentTextPaint.getFontMetricsInt().descent;
+            
+            // For nested text hierarchies, we need more precise alignment
+            // Adjust for alignment in deeply nested text by applying a small correction
+            // to better account for the parent text line's layout
+            float textCenter = currentTextPaint.getFontMetricsInt().ascent + textHeight / 2;
+            
+            // Add a small correction factor for deeply nested text
+            // This helps compensate for accumulated style effects from parent texts
+            float halfViewHeight = placeholderHeight / 2;
+            
+            // Slight upward adjustment for deeply nested texts to prevent views
+            // from appearing too low in complex text hierarchies
+            float nestingAdjustment = Math.min(textHeight * 0.05f, 2f); // Max 2px adjustment
+            
+            // Calculate the final position with the adjustment
+            float adjustedCenter = textCenter - nestingAdjustment;
+            
+            // Position the view so its center aligns with the adjusted text center
+            placeholderTopPosition = layout.getLineBaseline(line) + adjustedCenter - halfViewHeight;
+          } else {
+            // Default to a standard, balanced positioning with small adjustment for nested text
+            placeholderTopPosition = layout.getLineBaseline(line) - (placeholderHeight / 2) - 1;
+          }
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =

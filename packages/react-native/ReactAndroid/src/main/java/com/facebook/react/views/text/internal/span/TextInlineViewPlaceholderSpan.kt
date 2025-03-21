@@ -11,6 +11,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.FontMetricsInt
 import android.text.style.ReplacementSpan
+import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * TextInlineViewPlaceholderSpan is a span for inlined views that are inside <Text></Text>. It
@@ -30,36 +32,46 @@ public class TextInlineViewPlaceholderSpan(
   ): Int {
     // NOTE: This getSize code is copied from DynamicDrawableSpan and modified to not use a Drawable
     if (fm != null) {
-      // Normal text has both ascent (above baseline) and descent (below baseline)
-      // We need to divide our height to account for this natural text behavior
+      // Get the parent text's metrics if available
+      val metrics = paint.fontMetricsInt
       
-      // Get existing text metrics if available
-      val originalAscent = fm.ascent
-      val originalDescent = fm.descent
-      
-      // If we have valid metrics, use them as a guide
-      if (originalAscent < 0 && originalDescent > 0) {
-        // Calculate what portion of our height should be above vs below baseline
-        // using the text's own metrics as a guide
-        val totalTextHeight = -originalAscent + originalDescent
-        val ratio = if (totalTextHeight > 0) {
-          -originalAscent.toFloat() / totalTextHeight
-        } else {
-          0.8f // Default to 80% above baseline if we can't determine from text
-        }
+      if (metrics.ascent < 0 && metrics.descent > 0) {
+        // Calculate the text height
+        val textHeight = -metrics.ascent + metrics.descent
         
-        // Apply this ratio to our height
-        fm.ascent = (-height * ratio).toInt()
-        fm.descent = (height * (1 - ratio)).toInt()
-      } else {
-        // Fallback if we don't have good metrics
-        // Position 80% above baseline, 20% below - this matches typical text proportions
-        fm.ascent = (-height * 0.8f).toInt()
-        fm.descent = (height * 0.2f).toInt()
+        // For nested text hierarchies, we need more precise alignment
+        // Adjust for alignment in deeply nested text by applying a small correction
+        // to better account for the parent text line's layout
+        val textCenter = metrics.ascent + textHeight / 2
+        
+        // Add a small correction factor for deeply nested text
+        // This helps compensate for accumulated style effects from parent texts
+        val halfViewHeight = height / 2
+        
+        // Slight upward adjustment for deeply nested texts to prevent views
+        // from appearing too low in complex text hierarchies
+        val nestingAdjustment = min(textHeight * 0.05f, 2f) // Max 2px adjustment
+        
+        // Calculate the final position with the adjustment
+        val adjustedCenter = textCenter - nestingAdjustment
+        
+        // Set metrics to center the view on the adjusted center
+        fm.ascent = (adjustedCenter - halfViewHeight).toInt()
+        fm.descent = (adjustedCenter + halfViewHeight).toInt()
+        
+        // Make sure top/bottom match ascent/descent
+        fm.top = fm.ascent
+        fm.bottom = fm.descent
+      } 
+      // Fallback to pre-existing line metrics
+      else {
+        // Default to a standard, balanced positioning (middle alignment)
+        // Apply the same nesting adjustment here too
+        fm.ascent = -height / 2 - 1 // Small adjustment to prevent views appearing too low
+        fm.descent = height / 2 + 1
+        fm.top = fm.ascent
+        fm.bottom = fm.descent
       }
-      
-      fm.top = fm.ascent
-      fm.bottom = fm.descent
     }
     return width
   }

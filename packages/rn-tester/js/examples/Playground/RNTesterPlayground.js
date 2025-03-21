@@ -120,7 +120,7 @@ function Playground() {
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContentContainer}>
-        {/* <Text style={[styles.text, styles.greenOverlay]}>
+        <Text style={[styles.text, styles.greenOverlay]}>
           Text without nested text.
         </Text>
 
@@ -147,7 +147,7 @@ function Playground() {
           .
         </Text>
 
-        <View style={styles.spacing} /> */}
+        <View style={styles.spacing} />
 
         <Pressable
           onPress={() => {
@@ -162,7 +162,7 @@ function Playground() {
           </Text>
         )}
 
-        {/* <View style={styles.spacing} />
+        <View style={styles.spacing} />
 
         <Text style={[styles.text, styles.greenOverlay]}>
           Text with{' '}
@@ -201,6 +201,95 @@ function Playground() {
 
         <View style={styles.spacing} />
 
+        {/* New test cases with different font sizes */}
+        <Text style={[styles.largeText, styles.greenOverlay]}>
+          Large text with <View style={[styles.emptyView, styles.redOverlay]} />{' '}
+          nested view.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        <Text style={[styles.smallText, styles.greenOverlay]}>
+          Small text with <View style={[styles.emptyView, styles.redOverlay]} />{' '}
+          nested view.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test cases with different line heights */}
+        <Text style={[styles.condensedText, styles.greenOverlay]}>
+          Condensed line height text with{' '}
+          <View style={[styles.emptyView, styles.redOverlay]} /> nested view.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        <Text style={[styles.expandedText, styles.greenOverlay]}>
+          Expanded line height text with{' '}
+          <View style={[styles.emptyView, styles.redOverlay]} /> nested view.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test cases with mixed font sizes in the same line */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text with{' '}
+          <Text style={[styles.largeText, styles.purpleOverlay]}>
+            larger nested text with{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} /> view
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text with{' '}
+          <Text style={[styles.smallText, styles.purpleOverlay]}>
+            smaller nested text with{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} /> view
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test cases with different view sizes */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Text with taller view{' '}
+          <View style={[styles.tallView, styles.redOverlay]} /> in the middle.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test cases with padding and margin */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Text with padded view{' '}
+          <View style={[styles.viewWithPadding, styles.redOverlay]} /> in the
+          middle.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Text with view having margin{' '}
+          <View style={[styles.viewWithMargin, styles.redOverlay]} /> in the
+          middle.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test cases with multiple views in a line */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Text with multiple views{' '}
+          <View style={[styles.emptyView, styles.redOverlay]} />{' '}
+          <View style={[styles.tallView, styles.purpleOverlay]} />{' '}
+          <View style={[styles.viewWithPadding, styles.yellowOverlay]} /> in a
+          line.
+        </Text>
+
+        <View style={styles.spacing} />
+
         <Text style={[styles.text, styles.greenOverlay]}>
           Lorem ipsum dolor sit amet,{' '}
           <InlineCodeBlock>
@@ -222,7 +311,134 @@ function Playground() {
           <InlineCodeBlock>qui officia</InlineCodeBlock>{' '}
           <InlineCodeBlock>deserunt mollit</InlineCodeBlock> anim id est
           laborum.
-        </Text> */}
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* NEW TEST CASES FOR ADDITIONAL VERIFICATION */}
+
+        {/* Test case: Just a view next to text */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Simple text with view{' '}
+          <View style={[styles.emptyView, styles.redOverlay]} /> right next to
+          it.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: Multiple views with different sizes in a row */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Text with small <View style={[styles.smallView, styles.redOverlay]} />
+          , medium <View style={[styles.emptyView, styles.purpleOverlay]} /> and
+          large <View style={[styles.largeView, styles.yellowOverlay]} /> views.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: Font weight variations */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text with{' '}
+          <Text style={[styles.boldText, styles.purpleOverlay]}>
+            bold text with{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} /> view
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: Font style variations */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text with{' '}
+          <Text style={[styles.italicText, styles.purpleOverlay]}>
+            italic text with{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} /> view
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: Combined font weight and style */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text with{' '}
+          <Text style={[styles.boldItalicText, styles.purpleOverlay]}>
+            bold italic text with{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} /> view
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: Very complex nesting with multiple styles */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text{' '}
+          <Text style={[styles.boldText, styles.purpleOverlay]}>
+            with bold{' '}
+            <Text style={[styles.largeText, styles.yellowOverlay]}>
+              and large{' '}
+              <Text style={[styles.italicText, styles.redOverlay]}>
+                and italic with{' '}
+                <View style={[styles.emptyView, styles.redOverlay]} /> view
+              </Text>
+            </Text>
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: Text with letterspacing */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text with{' '}
+          <Text style={[styles.spacedText, styles.purpleOverlay]}>
+            letter-spaced text with{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} /> view
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: View inside Text with custom fonts */}
+        <Text style={[styles.text, styles.greenOverlay, {fontFamily: 'serif'}]}>
+          Serif font text with{' '}
+          <View style={[styles.emptyView, styles.redOverlay]} /> view in the
+          middle.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: Text with text decorations */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text with{' '}
+          <Text style={[styles.underlineText, styles.purpleOverlay]}>
+            underlined text with{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} /> view
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test case: Text with strike-through */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Normal text with{' '}
+          <Text style={[styles.strikethroughText, styles.purpleOverlay]}>
+            strikethrough text with{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} /> view
+          </Text>{' '}
+          and back to normal.
+        </Text>
+
+        <View style={styles.spacing} />
+
+        {/* Test cases with different view sizes */}
+        <Text style={[styles.text, styles.greenOverlay]}>
+          Text with taller view{' '}
+          <View style={[styles.tallView, styles.redOverlay]} /> in the middle.
+        </Text>
       </ScrollView>
     </View>
   );
@@ -247,10 +463,40 @@ const styles = StyleSheet.create({
   redText: {
     color: '#FF0000',
   },
+  largeText: {
+    fontSize: 24,
+    lineHeight: 30,
+  },
+  smallText: {
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  condensedText: {
+    fontSize: 16,
+    lineHeight: 16, // Same as font size for tight line height
+  },
+  expandedText: {
+    fontSize: 16,
+    lineHeight: 32, // Double the font size for expanded line height
+  },
 
   emptyView: {
     width: 20,
     height: 20,
+  },
+  tallView: {
+    width: 20,
+    height: 40,
+  },
+  viewWithPadding: {
+    width: 20,
+    height: 20,
+    padding: 5,
+  },
+  viewWithMargin: {
+    width: 20,
+    height: 20,
+    margin: 5,
   },
 
   inlineCodeBlockWrapper: {
@@ -292,6 +538,41 @@ const styles = StyleSheet.create({
   },
   blueOverlay: {
     backgroundColor: 'rgba(0, 0, 255, 0.2)',
+  },
+  purpleOverlay: {
+    backgroundColor: 'rgba(128, 0, 128, 0.2)',
+  },
+  yellowOverlay: {
+    backgroundColor: 'rgba(255, 255, 0, 0.2)',
+  },
+
+  // New style definitions for additional test cases
+  smallView: {
+    width: 10,
+    height: 10,
+  },
+  largeView: {
+    width: 30,
+    height: 30,
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+  italicText: {
+    fontStyle: 'italic',
+  },
+  boldItalicText: {
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
+  spacedText: {
+    letterSpacing: 2,
+  },
+  underlineText: {
+    textDecorationLine: 'underline',
+  },
+  strikethroughText: {
+    textDecorationLine: 'line-through',
   },
 });
 
