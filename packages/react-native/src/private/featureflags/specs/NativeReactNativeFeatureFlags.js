@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b305837c79b4099dad5dac1431ec27a0>>
+ * @generated SignedSource<<e79622d7605c241135c7cdc947c9403b>>
  * @flow strict
  */
 
@@ -55,7 +55,6 @@ export interface Spec extends TurboModule {
   +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
-  +lazyAnimationCallbacks?: () => boolean;
   +removeTurboModuleManagerDelegateMutex?: () => boolean;
   +throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;

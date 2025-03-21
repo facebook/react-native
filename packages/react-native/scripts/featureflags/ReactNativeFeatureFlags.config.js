@@ -374,17 +374,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    lazyAnimationCallbacks: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-05-01',
-        description:
-          'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     removeTurboModuleManagerDelegateMutex: {
       defaultValue: false,
       metadata: {

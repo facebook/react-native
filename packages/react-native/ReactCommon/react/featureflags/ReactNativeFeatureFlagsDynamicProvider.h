@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28915a06a3c24b532384b481cc91d863>>
+ * @generated SignedSource<<1d0d1004706ba33b0896b671feca74a0>>
  */
 
 /**
@@ -322,15 +322,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled();
-  }
-
-  bool lazyAnimationCallbacks() override {
-    auto value = values_["lazyAnimationCallbacks"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::lazyAnimationCallbacks();
   }
 
   bool removeTurboModuleManagerDelegateMutex() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53c858fa9ec8c4e3b9849f7513fdb441>>
+ * @generated SignedSource<<f694a97b02b01d4b56b5eac7f2a348e5>>
  */
 
 /**
@@ -48,8 +48,6 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
   bool enableFabricRenderer() override {
     return true;
   }
-
-
 
 
 

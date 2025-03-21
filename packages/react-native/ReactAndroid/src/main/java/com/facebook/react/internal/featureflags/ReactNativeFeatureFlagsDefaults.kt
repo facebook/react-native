@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f6242ae2989dd2da5ad73861933787f2>>
+ * @generated SignedSource<<8383768fde5c98d3a0ecd3bc69ab3332>>
  */
 
 /**
@@ -84,8 +84,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fuseboxEnabledRelease(): Boolean = false
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
-
-  override fun lazyAnimationCallbacks(): Boolean = false
 
   override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
 

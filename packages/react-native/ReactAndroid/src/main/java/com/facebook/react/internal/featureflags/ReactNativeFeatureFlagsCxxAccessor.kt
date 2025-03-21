@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<86fe1d1217f974eb9cbe2fc6b556b6f3>>
+ * @generated SignedSource<<db16919323fef2205be8b37537510c1d>>
  */
 
 /**
@@ -51,7 +51,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
-  private var lazyAnimationCallbacksCache: Boolean? = null
   private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
   private var throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
@@ -339,15 +338,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxNetworkInspectionEnabled()
       fuseboxNetworkInspectionEnabledCache = cached
-    }
-    return cached
-  }
-
-  override fun lazyAnimationCallbacks(): Boolean {
-    var cached = lazyAnimationCallbacksCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.lazyAnimationCallbacks()
-      lazyAnimationCallbacksCache = cached
     }
     return cached
   }

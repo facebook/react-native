@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d6f2e867002cef542b6915dc4b8a7131>>
+ * @generated SignedSource<<30a4515935eedcbec28b00e2f5ed8baa>>
  */
 
 /**
@@ -197,11 +197,6 @@ bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
 bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
-}
-
-bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::lazyAnimationCallbacks();
 }
 
 bool NativeReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex(

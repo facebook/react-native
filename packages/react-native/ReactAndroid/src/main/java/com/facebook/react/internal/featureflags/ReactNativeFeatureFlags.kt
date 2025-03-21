@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8522ebea8b35daaca25b4d1ee4e93dd9>>
+ * @generated SignedSource<<661dc1be35759bceb19c3521ed97c106>>
  */
 
 /**
@@ -215,12 +215,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
-
-  /**
-   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
-   */
-  @JvmStatic
-  public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
 
   /**
    * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
