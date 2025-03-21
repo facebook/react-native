@@ -43,6 +43,7 @@ Pod::Spec.new do |s|
   s.dependency "React-RuntimeCore"
   s.dependency "React-featureflags"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 
   s.dependency "React-hermes"
