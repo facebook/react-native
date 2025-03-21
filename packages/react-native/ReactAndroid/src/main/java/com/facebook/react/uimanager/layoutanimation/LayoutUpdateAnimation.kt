@@ -21,7 +21,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
-  internal override fun isValid(): Boolean = mDurationMs > 0
+  internal override fun isValid(): Boolean = durationMs > 0
 
   internal override fun createAnimationImpl(
       view: View,
