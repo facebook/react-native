@@ -1703,6 +1703,7 @@ PODS:
     - glog
     - RCT-Folly
     - RCT-Folly/Fabric
+    - React-jsinspectorcdp
     - SocketRocket
   - React-jsinspectortracing (1000.0.0):
     - boost
@@ -1900,6 +1901,7 @@ PODS:
     - React-jsi
     - React-jsinspector
     - React-jsinspectorcdp
+    - React-jsinspectornetwork
     - React-jsinspectortracing
     - React-performancetimeline
     - React-RCTAnimation
@@ -1964,6 +1966,8 @@ PODS:
     - RCTTypeSafety
     - React-Core/RCTNetworkHeaders
     - React-jsi
+    - React-jsinspectorcdp
+    - React-jsinspectornetwork
     - React-NativeModulesApple
     - React-RCTFBReactNativeSpec
     - ReactCommon
@@ -2590,7 +2594,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 569425f7cd2c3e005a17e5211843e541c11d6916
   React-jsinspector: 885e8180e898f07e4d7df29e2681a89e69d736d3
   React-jsinspectorcdp: 5fb266e5f23d3a2819ba848e9d4d0b6b00f95934
-  React-jsinspectornetwork: 79fbc86b7c308aeb29e883177b8573d953f6b5e2
+  React-jsinspectornetwork: 207422b56a7918e83c94c207570849f83ab9052a
   React-jsinspectortracing: 80e9418ac67630c76f15ef06534087037a822330
   React-jsitooling: b1af12acbfcb039bf87f8f2a82bde3a79c2ddade
   React-jsitracing: ce443686f52538d1033ce7db1e7d643e866262f0
@@ -2605,11 +2609,11 @@ SPEC CHECKSUMS:
   React-RCTAnimation: 263593e66c89bf810604b1ace15dfa382a1ca2df
   React-RCTAppDelegate: 3d35d7226338009b22d1cf9621eaa827acb8fd1d
   React-RCTBlob: 7b76230c53fe87d305eeeb250b0aae031bb6cbae
-  React-RCTFabric: b3746cb91560703c95028002fb6db618aebb3b61
+  React-RCTFabric: 78b6aec5985ef438a9c088032c0e89d2bd77b3ba
   React-RCTFBReactNativeSpec: 503491a0584dc29f03ef9f8ed366794604cd59ef
   React-RCTImage: de404b6b0ebe53976a97e3a0dee819c83e12977b
   React-RCTLinking: 06742cfad41c506091403a414370743a4ed75af3
-  React-RCTNetwork: 091d9c4c3e24f0800d782d0c2a0077419b478d66
+  React-RCTNetwork: f8f7ac330958ac85300827267390bc8decc06ba0
   React-RCTPushNotification: ea11178d499696516e0ff9ae335edbe99b06f94b
   React-RCTRuntime: 07b41aed797e8d950ada851c6363ecf931335663
   React-RCTSettings: d3c2dd305ec81f7faf42762ec598d57f07fd43be
