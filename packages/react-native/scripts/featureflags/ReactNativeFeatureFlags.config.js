@@ -70,6 +70,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    cxxNativeAnimatedEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-03-14',
+        description:
+          'Use a C++ implementation of Native Animated instead of the platform implementation.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {

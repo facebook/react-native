@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.ClassFinder
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
 import com.facebook.react.module.model.ReactModuleInfo
@@ -115,7 +116,9 @@ constructor(private val config: MainPackageConfig? = null) :
         ImageLoaderModule.NAME -> ImageLoaderModule(reactContext)
         ImageStoreManager.NAME -> ImageStoreManager(reactContext)
         IntentModule.NAME -> IntentModule(reactContext)
-        NativeAnimatedModule.NAME -> NativeAnimatedModule(reactContext)
+        NativeAnimatedModule.NAME ->
+            if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) null
+            else NativeAnimatedModule(reactContext)
         NetworkingModule.NAME -> NetworkingModule(reactContext)
         PermissionsModule.NAME -> PermissionsModule(reactContext)
         ShareModule.NAME -> ShareModule(reactContext)
@@ -241,7 +244,8 @@ constructor(private val config: MainPackageConfig? = null) :
             ImageLoaderModule::class.java,
             ImageStoreManager::class.java,
             IntentModule::class.java,
-            NativeAnimatedModule::class.java,
+            if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) null
+            else NativeAnimatedModule::class.java,
             NetworkingModule::class.java,
             PermissionsModule::class.java,
             ReactDevToolsSettingsManagerModule::class.java,

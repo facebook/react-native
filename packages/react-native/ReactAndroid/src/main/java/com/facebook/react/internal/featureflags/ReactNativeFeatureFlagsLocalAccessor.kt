@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca1ebdf95e0813e7946ffa781e35e0ff>>
+ * @generated SignedSource<<9c76448969731f3626938de0172c2b0f>>
  */
 
 /**
@@ -26,6 +26,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
 
   private var commonTestFlagCache: Boolean? = null
   private var animatedShouldSignalBatchCache: Boolean? = null
+  private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -83,6 +84,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.animatedShouldSignalBatch()
       accessedFeatureFlags.add("animatedShouldSignalBatch")
       animatedShouldSignalBatchCache = cached
+    }
+    return cached
+  }
+
+  override fun cxxNativeAnimatedEnabled(): Boolean {
+    var cached = cxxNativeAnimatedEnabledCache
+    if (cached == null) {
+      cached = currentProvider.cxxNativeAnimatedEnabled()
+      accessedFeatureFlags.add("cxxNativeAnimatedEnabled")
+      cxxNativeAnimatedEnabledCache = cached
     }
     return cached
   }

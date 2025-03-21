@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83452819d876ba79d0ce3b45adfe70ce>>
+ * @generated SignedSource<<a693bf740ca0d9e68afbb8bc4de6a2e4>>
  */
 
 /**
@@ -48,6 +48,11 @@ class ReactNativeFeatureFlags {
    * Enables start- and finishOperationBatch on any platform.
    */
   RN_EXPORT static bool animatedShouldSignalBatch();
+
+  /**
+   * Use a C++ implementation of Native Animated instead of the platform implementation.
+   */
+  RN_EXPORT static bool cxxNativeAnimatedEnabled();
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
