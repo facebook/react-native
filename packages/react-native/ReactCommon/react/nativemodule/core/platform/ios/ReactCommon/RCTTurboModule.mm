@@ -57,7 +57,7 @@ static jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *va
 
 static jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-  return jsi::String::createFromUtf8(runtime, [value UTF8String] ?: "");
+  return jsi::String::createFromUtf8(runtime, [value UTF8String] ? [value UTF8String] : "");
 }
 
 static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
@@ -195,7 +195,11 @@ static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string 
 /**
  * Creates JSError with current JS runtime and NSException stack trace.
  */
-static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSException *exception)
+static jsi::JSError convertNSExceptionToJSError(
+    jsi::Runtime &runtime,
+    NSException *exception,
+    const std::string &moduleName,
+    const std::string &methodName)
 {
   std::string reason = [exception.reason UTF8String];
 
@@ -206,7 +210,8 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   cause.setProperty(
       runtime, "stackReturnAddresses", convertNSArrayToJSIArray(runtime, exception.callStackReturnAddresses));
 
-  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
+  std::string message = moduleName + "." + methodName + " raised an exception: " + reason;
+  jsi::Value error = createJSRuntimeError(runtime, message);
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
   return {runtime, std::move(error)};
 }
@@ -338,28 +343,34 @@ id ObjCTurboModule::performMethodInvocation(
     }
 
     if (isSync) {
-      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
+      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodName);
     } else {
-      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodName, asyncCallCounter);
     }
 
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception);
+      if (isSync) {
+        // We can only convert NSException to JSError in sync method calls.
+        // See https://github.com/reactwg/react-native-new-architecture/discussions/276#discussioncomment-12567155
+        throw convertNSExceptionToJSError(runtime, exception, std::string{moduleName}, methodNameStr);
+      } else {
+        @throw exception;
+      }
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
 
     if (!isSync) {
-      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodName, asyncCallCounter);
       return;
     }
 
     void *rawResult;
     [inv getReturnValue:&rawResult];
     result = (__bridge id)rawResult;
-    TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
+    TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodName);
   };
 
   if (isSync) {
@@ -401,23 +412,23 @@ void ObjCTurboModule::performVoidMethodInvocation(
     }
 
     if (shouldVoidMethodsExecuteSync_) {
-      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
+      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodName);
     } else {
-      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodName, asyncCallCounter);
     }
 
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception);
+      throw convertNSExceptionToJSError(runtime, exception, std::string{moduleName}, methodNameStr);
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
 
     if (shouldVoidMethodsExecuteSync_) {
-      TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
+      TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodName);
     } else {
-      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodName, asyncCallCounter);
     }
 
     return;
