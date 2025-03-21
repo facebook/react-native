@@ -10,6 +10,7 @@
 
 import type {RNTesterModuleInfo, ScreenTypes} from './types/RNTesterTypes';
 
+import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
@@ -26,7 +27,6 @@ import {
   getExamplesListWithRecentlyUsed,
   initialNavigationState,
 } from './utils/testerStateUtils';
-import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import * as React from 'react';
 import {
   BackHandler,
