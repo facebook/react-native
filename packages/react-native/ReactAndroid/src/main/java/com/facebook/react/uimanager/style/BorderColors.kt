@@ -13,7 +13,7 @@ import android.util.LayoutDirection
 import androidx.annotation.ColorInt
 import com.facebook.react.modules.i18nmanager.I18nUtil
 
-internal data class ColorEdges(
+internal class ColorEdges(
     @ColorInt val left: Int = Color.BLACK,
     @ColorInt val top: Int = Color.BLACK,
     @ColorInt val right: Int = Color.BLACK,
