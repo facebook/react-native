@@ -8,15 +8,15 @@
 package com.facebook.react.internal.turbomodule.core
 
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.internal.turbomodule.core.NativeModuleSoLoader.Companion.maybeLoadSoLibrary
 import com.facebook.react.reactperflogger.NativeModulePerfLogger
+import com.facebook.soloader.SoLoader
 
 @DoNotStrip
 internal object TurboModulePerfLogger {
   private var nativeModulePerfLogger: NativeModulePerfLogger? = null
 
   init {
-    maybeLoadSoLibrary()
+    SoLoader.loadLibrary("turbomodulejsijni")
   }
 
   @JvmStatic
