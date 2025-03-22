@@ -34,6 +34,7 @@ export type {
   VirtualizedSectionListProps,
   ScrollToLocationParamsType,
   SectionBase,
+  SectionData,
 } from './Lists/VirtualizedSectionList';
 export type {FillRateInfo} from './Lists/FillRateHelper';
 
@@ -43,7 +44,7 @@ export default {
   get VirtualizedList(): VirtualizedList {
     return require('./Lists/VirtualizedList').default;
   },
-  get VirtualizedSectionList(): VirtualizedSectionList {
+  get VirtualizedSectionList(): VirtualizedSectionList<any, any> {
     return require('./Lists/VirtualizedSectionList').default;
   },
   get VirtualizedListContextResetter(): VirtualizedListContextResetter {
