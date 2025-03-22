@@ -59,7 +59,7 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
     for (listener in listeners) {
       listener.onEventDispatch(event)
     }
-    if (event.experimental_isSynchronous()) {
+    if (event.internal_experimental_isSynchronous()) {
       dispatchSynchronous(event)
     } else {
       event.dispatchModern(reactEventEmitter)
@@ -72,7 +72,7 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
   private fun dispatchSynchronous(event: Event<*>) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "FabricEventDispatcher.dispatchSynchronous('" + event.eventName + "')")
+        "FabricEventDispatcher.dispatchSynchronous('" + event.getEventName() + "')")
     try {
       val fabricUIManager: UIManager? =
           UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
@@ -81,10 +81,10 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
         (fabricUIManager as SynchronousEventReceiver).receiveEvent(
             event.surfaceId,
             event.viewTag,
-            event.eventName,
+            event.getEventName(),
             event.canCoalesce(),
-            event.eventData,
-            event.eventCategory,
+            event.internal_getEventData(),
+            event.internal_getEventCategory(),
             true)
       } else {
         ReactSoftExceptionLogger.logSoftException(
