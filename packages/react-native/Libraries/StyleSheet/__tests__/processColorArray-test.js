@@ -34,6 +34,19 @@ describe('processColorArray', () => {
       expect(colorFromStringArray).toEqual(expectedIntArray);
     });
 
+    it('should convert array of color type color(display-p3 x y z)', () => {
+      const colorFromDisplayP3Array = processColorArray([
+        'color(display-p3 0.1 0.2 0.3)',
+        'color(display-p3 0.2 0.3 0.4)',
+        'color(display-p3 0.3 0.4 0.5)',
+      ]);
+      expect(colorFromDisplayP3Array).toEqual([
+        {space: 'display-p3', r: 0.1, g: 0.2, b: 0.3, a: 1},
+        {space: 'display-p3', r: 0.2, g: 0.3, b: 0.4, a: 1},
+        {space: 'display-p3', r: 0.3, g: 0.4, b: 0.5, a: 1},
+      ]);
+    });
+
     it('should convert array of color type rgb(x, y, z)', () => {
       const colorFromRGBArray = processColorArray([
         'rgb(10, 20, 30)',
