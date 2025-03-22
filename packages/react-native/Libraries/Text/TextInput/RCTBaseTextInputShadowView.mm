@@ -195,48 +195,40 @@
 
 - (void)postprocessAttributedText:(NSMutableAttributedString *)attributedText
 {
-  __block CGFloat maximumLineHeight = 0;
+    // Retrieve paragraph line height value
+    __block CGFloat paragraphLineHeight = 0;
+    [attributedText enumerateAttribute:NSParagraphStyleAttributeName
+                               inRange:NSMakeRange(0, attributedText.length)
+                               options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                            usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
+                              if (!paragraphStyle) {
+                                return;
+                              }
 
-  [attributedText enumerateAttribute:NSParagraphStyleAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
-                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                          usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
-                            if (!paragraphStyle) {
-                              return;
-                            }
+                              paragraphLineHeight = paragraphStyle.maximumLineHeight;
+                            }];
 
-                            maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
-                          }];
+    // Retrieve font size and font line height values
+    __block CGFloat fontSize = 0;
+    __block CGFloat fontLineHeight = 0;
+    [attributedText enumerateAttribute:NSFontAttributeName
+                               inRange:NSMakeRange(0, attributedText.length)
+                               options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                            usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
+                              if (!font) {
+                                return;
+                              }
+                    
+                              fontSize = font.pointSize;
+                              fontLineHeight = font.lineHeight;
+                            }];
 
-  if (maximumLineHeight == 0) {
-    // `lineHeight` was not specified, nothing to do.
-    return;
-  }
-
-  __block CGFloat maximumFontLineHeight = 0;
-
-  [attributedText enumerateAttribute:NSFontAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
-                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                          usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
-                            if (!font) {
-                              return;
-                            }
-
-                            if (maximumFontLineHeight <= font.lineHeight) {
-                              maximumFontLineHeight = font.lineHeight;
-                            }
-                          }];
-
-  if (maximumLineHeight < maximumFontLineHeight) {
-    return;
-  }
-
-  CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
-
-  [attributedText addAttribute:NSBaselineOffsetAttributeName
-                         value:@(baseLineOffset)
-                         range:NSMakeRange(0, attributedText.length)];
+    // Calculate baseline offset based on font size and maximum available line height value
+    CGFloat maximumLineHeight = MAX(paragraphLineHeight, fontLineHeight);
+    CGFloat baselineOffset = (fontSize - maximumLineHeight) / 1.5;
+    [attributedText addAttribute:NSBaselineOffsetAttributeName
+                           value:@(baselineOffset)
+                           range:NSMakeRange(0, attributedText.length)];
 }
 
 #pragma mark -
