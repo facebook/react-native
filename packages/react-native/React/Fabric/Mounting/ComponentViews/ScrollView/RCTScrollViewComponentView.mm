@@ -761,13 +761,18 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   [self _handleFinishedScrolling:scrollView];
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
 }
 
-- (void)didMoveToWindow
+- (void)willMoveToWindow:(UIWindow *)newWindow
 {
-  [super didMoveToWindow];
-
-  if (!self.window) {
+  [super willMoveToWindow:newWindow];
+  if (!newWindow) {
     // The view is being removed, ensure that the scroll end event is dispatched
     [self _handleScrollEndIfNeeded];
   }
@@ -775,11 +780,10 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)_handleScrollEndIfNeeded
 {
-  if (_scrollView.isDecelerating || !_scrollView.isTracking) {
-    if (!_eventEmitter) {
-      return;
+  if (_scrollView.isDecelerating) {
+    if (_eventEmitter) {
+      static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
     }
-    static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
 
     [self _updateStateWithContentOffset];
     _isUserTriggeredScrolling = NO;
@@ -790,12 +794,6 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 {
   [self _forceDispatchNextScrollEvent];
   [self scrollViewDidScroll:scrollView];
-
-  if (!_eventEmitter) {
-    return;
-  }
-
-  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
 }
 
@@ -941,6 +939,12 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   [self _forceDispatchNextScrollEvent];
+
+  // Notify of momentum scroll begin before setting content offset or events can fire out of order and scrollview gets
+  // stuck in "animating" state
+  if (animated && _eventEmitter) {
+    static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollBegin([self _scrollViewMetrics]);
+  }
 
   [_scrollView setContentOffset:offset animated:animated];
 
