@@ -155,34 +155,29 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 }
 
 AttributedString AndroidTextInputShadowNode::getAttributedString() const {
-  // Use BaseTextShadowNode to get attributed string from children
-  auto childTextAttributes = TextAttributes::defaultTextAttributes();
-  childTextAttributes.apply(getConcreteProps().textAttributes);
+  const auto& props = BaseShadowNode::getConcreteProps();
+
+  auto textAttributes = TextAttributes::defaultTextAttributes();
+  textAttributes.apply(props.textAttributes);
   // Don't propagate the background color of the TextInput onto the attributed
   // string. Android tries to render shadow of the background alongside the
   // shadow of the text which results in weird artifacts.
-  childTextAttributes.backgroundColor = HostPlatformColor::UndefinedColor;
+  textAttributes.backgroundColor = clearColor();
 
-  auto attributedString = AttributedString{};
+  AttributedString attributedString;
   auto attachments = BaseTextShadowNode::Attachments{};
+  // Use BaseTextShadowNode to get attributed string from children
   BaseTextShadowNode::buildAttributedString(
-      childTextAttributes, *this, attributedString, attachments);
-  attributedString.setBaseTextAttributes(childTextAttributes);
+      textAttributes, *this, attributedString, attachments);
+  attributedString.setBaseTextAttributes(textAttributes);
 
   // BaseTextShadowNode only gets children. We must detect and prepend text
   // value attributes manually.
-  if (!getConcreteProps().text.empty()) {
-    auto textAttributes = TextAttributes::defaultTextAttributes();
-    textAttributes.apply(getConcreteProps().textAttributes);
-    auto fragment = AttributedString::Fragment{};
-    fragment.string = getConcreteProps().text;
-    fragment.textAttributes = textAttributes;
-    // If the TextInput opacity is 0 < n < 1, the opacity of the TextInput and
-    // text value's background will stack. This is a hack/workaround to prevent
-    // that effect.
-    fragment.textAttributes.backgroundColor = clearColor();
-    fragment.parentShadowView = ShadowView(*this);
-    attributedString.prependFragment(std::move(fragment));
+  if (!props.text.empty()) {
+    attributedString.appendFragment(AttributedString::Fragment{
+        .string = props.text,
+        .textAttributes = textAttributes,
+        .parentShadowView = ShadowView(*this)});
   }
 
   return attributedString;
