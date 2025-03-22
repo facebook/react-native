@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
   if ENV['USE_FRAMEWORKS']
     header_search_path = header_search_path + [
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
+      "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/image/platform/cxx\"",
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
     ]
@@ -71,6 +72,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-Fabric", :additional_framework_paths => [
+    "react/renderer/components/image/platform/cxx",
     "react/renderer/components/view/platform/cxx",
     "react/renderer/imagemanager/platform/ios"
   ])
