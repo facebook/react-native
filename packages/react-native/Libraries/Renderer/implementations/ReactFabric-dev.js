@@ -2026,7 +2026,8 @@ __DEV__ &&
         "RCTMultilineTextInputView" === nextContext ||
         "RCTSinglelineTextInputView" === nextContext ||
         "RCTText" === nextContext ||
-        "RCTVirtualText" === nextContext;
+        "RCTVirtualText" === nextContext ||
+        nextContext.startsWith("RCTTextExtension-");
       nextContext =
         context.isInAParentText !== nextContext
           ? { isInAParentText: nextContext }
