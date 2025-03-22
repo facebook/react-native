@@ -1773,6 +1773,40 @@ TEST_P(JSITest, ObjectCreateWithPrototype) {
   EXPECT_TRUE(child.getPrototype(rd).isNull());
 }
 
+TEST_P(JSITest, SetRuntimeData) {
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void setRuntimeData(
+        const uint8_t uuid[16],
+        const std::shared_ptr<void>& data) override {
+      Runtime::setRuntimeData(uuid, data);
+    }
+
+    std::shared_ptr<void> getRuntimeData(const uint8_t uuid[16]) override {
+      return Runtime::getRuntimeData(uuid);
+    }
+  };
+
+  RD rd = RD(rt);
+  uint8_t uuid1[16] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+  std::string data1 = "test data";
+  rd.setRuntimeData(uuid1, std::make_shared<std::string>(data1));
+
+  uint8_t uuid2[16] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
+  std::string data2 = "different test data";
+  rd.setRuntimeData(uuid2, std::make_shared<std::string>(data2));
+
+  auto ret1 = std::static_pointer_cast<std::string>(rd.getRuntimeData(uuid1));
+  auto ret2 = std::static_pointer_cast<std::string>(rd.getRuntimeData(uuid2));
+  EXPECT_EQ(*ret1, data1);
+  EXPECT_EQ(*ret2, data2);
+
+  uint8_t uuid3[16] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 0};
+  EXPECT_FALSE(rd.getRuntimeData(uuid3));
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

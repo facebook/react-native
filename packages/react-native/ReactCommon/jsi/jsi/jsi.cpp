@@ -5,9 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <map>
+#include <mutex>
 #include <stdexcept>
 
 #include <jsi/instrumentation.h>
@@ -17,6 +20,26 @@ namespace facebook {
 namespace jsi {
 
 namespace {
+
+/// A global map used to store custom runtime data for VMs that do not provide
+/// their own default implementation of setRuntimeData and getRuntimeData.
+struct RuntimeDataGlobal {
+  /// Mutex protecting the Runtime data map
+  std::mutex mutex{};
+  std::map<std::array<uint8_t, 16>, std::shared_ptr<void>> dataMap_;
+};
+
+RuntimeDataGlobal& getRuntimeDataGlobal() {
+  static RuntimeDataGlobal runtimeData{};
+  return runtimeData;
+}
+
+// Return a std::array containing the elements from the C-style array \p uuid
+std::array<uint8_t, 16> getUUIDArray(const uint8_t uuid[16]) {
+  std::array<uint8_t, 16> arr;
+  std::copy(uuid, uuid + 16, arr.begin());
+  return arr;
+}
 
 // This is used for generating short exception strings.
 std::string kindToString(const Value& v, Runtime* rt = nullptr) {
@@ -351,6 +374,26 @@ Object Runtime::createObjectWithPrototype(const Value& prototype) {
                       .getPropertyAsObject(*this, "Object")
                       .getPropertyAsFunction(*this, "create");
   return createFn.call(*this, prototype).asObject(*this);
+}
+
+void Runtime::setRuntimeData(
+    const uint8_t uuid[16],
+    const std::shared_ptr<void>& data) {
+  auto& runtimeData = getRuntimeDataGlobal();
+  std::lock_guard<std::mutex> lock(runtimeData.mutex);
+  auto key = getUUIDArray(uuid);
+  runtimeData.dataMap_.insert({key, data});
+}
+
+std::shared_ptr<void> Runtime::getRuntimeData(const uint8_t uuid[16]) {
+  auto& runtimeData = getRuntimeDataGlobal();
+  std::lock_guard<std::mutex> lock(runtimeData.mutex);
+  auto key = getUUIDArray(uuid);
+  const auto it = runtimeData.dataMap_.find(key);
+  if (it == runtimeData.dataMap_.end()) {
+    return nullptr;
+  }
+  return it->second;
 }
 
 Pointer& Pointer::operator=(Pointer&& other) noexcept {
