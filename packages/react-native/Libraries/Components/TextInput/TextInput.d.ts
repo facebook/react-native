@@ -367,6 +367,15 @@ export interface TextInputAndroidProps {
   cursorColor?: ColorValue | null | undefined;
 
   /**
+   * When `true`, the text input will no longer receive data from drag and drop
+   * events. This means the text input will not change focus nor will dropping
+   * a dragged item have any effect.
+   * Defaults to `false`.
+   * @platform android
+   */
+  disableDragAndDropPasting?: boolean | undefined;
+
+  /**
    * When provided it will set the color of the selection handles when highlighting text.
    * Unlike the behavior of `selectionColor` the handle color will be set independently
    * from the color of the text selection box.
