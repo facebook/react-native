@@ -7121,12 +7121,15 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
 }
 
-public class com/facebook/react/views/textinput/ReactTextChangedEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/textinput/ReactTextChangedEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/views/textinput/ReactTextChangedEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
 	public fun <init> (IILjava/lang/String;I)V
 	public fun <init> (ILjava/lang/String;I)V
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/textinput/ReactTextChangedEvent$Companion {
 }
 
 public final class com/facebook/react/views/textinput/ReactTextInputLocalData {
