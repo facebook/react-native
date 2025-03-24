@@ -91,8 +91,7 @@ export function createAnimatedPropsMemoHook(
     const prev = prevRef.current;
 
     const next =
-      prev != null &&
-      areCompositeKeysEqual(prev.compositeKey, compositeKey, allowlist)
+      prev != null && areCompositeKeysEqual(prev.compositeKey, compositeKey)
         ? prev
         : {
             compositeKey,
