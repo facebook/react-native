@@ -81,11 +81,16 @@ using namespace facebook::react;
                            enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
                                         frame:_frame
                                    usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
-                                     if ([fragmentText isEqualToString:firstElement.accessibilityLabel]) {
-                                       // The fragment is the entire paragraph. This is handled as `firstElement`.
+                                     if ((![value isEqualToString:@"button"] && ![value isEqualToString:@"link"])) {
                                        return;
                                      }
-                                     if ((![value isEqualToString:@"button"] && ![value isEqualToString:@"link"])) {
+                                     if ([fragmentText isEqualToString:firstElement.accessibilityLabel]) {
+                                       if ([value isEqualToString:@"link"]) {
+                                         firstElement.accessibilityTraits |= UIAccessibilityTraitLink;
+                                       } else if ([value isEqualToString:@"button"]) {
+                                         firstElement.accessibilityTraits |= UIAccessibilityTraitButton;
+                                       }
+                                       // The fragment is the entire paragraph. This is handled as `firstElement`.
                                        return;
                                      }
                                      if ([value isEqualToString:@"button"] &&
