@@ -131,13 +131,6 @@ export type ReportableEvent =
       duration: number,
       ...ConnectionUptime,
       ...DebuggerSessionIDs,
-    }
-  | {
-      type: 'device_high_message_queue',
-      maxCDPMessageQueueSize: number,
-      maxCDPMessageQueueMemory: number,
-      ...ConnectionUptime,
-      ...DebuggerSessionIDs,
     };
 
 /**
