@@ -1,6 +1,6 @@
 {
   "name": "@react-native/oss-library-example",
-  "version": "0.76.11",
+  "version": "0.76.12",
   "private": true,
   "description": "Package that includes native module exapmle, native component example, targets both the old and the new architecture. It should serve as an example of a real-world OSS library.",
   "license": "MIT",

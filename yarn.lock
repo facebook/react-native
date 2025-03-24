@@ -3643,7 +3643,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native/oss-library-example@npm:0.76.11, @react-native/oss-library-example@workspace:packages/react-native-test-library":
+"@react-native/oss-library-example@npm:0.76.12, @react-native/oss-library-example@workspace:packages/react-native-test-library":
   version: 0.0.0-use.local
   resolution: "@react-native/oss-library-example@workspace:packages/react-native-test-library"
   dependencies:
@@ -3693,7 +3693,7 @@ __metadata:
     "@react-native-community/cli-platform-android": "npm:15.0.1"
     "@react-native-community/cli-platform-apple": "npm:15.0.1"
     "@react-native-community/cli-platform-ios": "npm:15.0.1"
-    "@react-native/oss-library-example": "npm:0.76.11"
+    "@react-native/oss-library-example": "npm:0.76.12"
     "@react-native/popup-menu-android": "workspace:*"
     flow-enums-runtime: "npm:^0.0.6"
     invariant: "npm:^2.2.4"
