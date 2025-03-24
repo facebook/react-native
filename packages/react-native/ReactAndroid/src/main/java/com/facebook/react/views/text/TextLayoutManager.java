@@ -812,32 +812,29 @@ public class TextLayoutManager {
           float placeholderTopPosition;
           
           if (currentTextPaint.getFontMetricsInt().ascent < 0 && currentTextPaint.getFontMetricsInt().descent > 0) {
-            // Simple approach: Position the view in the middle of the text line
-            
             // Calculate the text height
             float textHeight = -currentTextPaint.getFontMetricsInt().ascent + currentTextPaint.getFontMetricsInt().descent;
             
-            // For nested text hierarchies, we need more precise alignment
-            // Adjust for alignment in deeply nested text by applying a small correction
-            // to better account for the parent text line's layout
-            float textCenter = currentTextPaint.getFontMetricsInt().ascent + textHeight / 2;
+            // Find the vertical center of the text
+            float textMiddle = currentTextPaint.getFontMetricsInt().ascent + textHeight / 2;
             
-            // Add a small correction factor for deeply nested text
-            // This helps compensate for accumulated style effects from parent texts
+            // Apply a moderate upward adjustment (7% of text height)
+            // This is enough to make a visual difference without breaking layout
+            float adjustment = textHeight * 0.07f;
+            float adjustedMiddle = textMiddle - adjustment;
+            
+            // Center the view on the adjusted middle point
             float halfViewHeight = placeholderHeight / 2;
             
-            // Slight upward adjustment for deeply nested texts to prevent views
-            // from appearing too low in complex text hierarchies
-            float nestingAdjustment = Math.min(textHeight * 0.05f, 2f); // Max 2px adjustment
-            
-            // Calculate the final position with the adjustment
-            float adjustedCenter = textCenter - nestingAdjustment;
-            
-            // Position the view so its center aligns with the adjusted text center
-            placeholderTopPosition = layout.getLineBaseline(line) + adjustedCenter - halfViewHeight;
+            // Position the view so its center is at the adjusted position
+            placeholderTopPosition = layout.getLineBaseline(line) + adjustedMiddle - halfViewHeight;
           } else {
-            // Default to a standard, balanced positioning with small adjustment for nested text
-            placeholderTopPosition = layout.getLineBaseline(line) - (placeholderHeight / 2) - 1;
+            // Fallback to improved vertical centering if metrics aren't valid
+            // 60/40 split with a moderate upward adjustment
+            float aboveRatio = 0.6f;  // 60% above baseline
+            float upwardAdjustment = placeholderHeight * 0.07f;  // 7% upward shift
+            
+            placeholderTopPosition = layout.getLineBaseline(line) - (placeholderHeight * aboveRatio + upwardAdjustment);
           }
 
           // The attachment array returns the positions of each of the attachments as
