@@ -17,14 +17,17 @@ import useMergeRefs from '../Utilities/useMergeRefs';
 import * as React from 'react';
 import {useMemo} from 'react';
 
+type Nullable = void | null;
+type Builtin = (...$ReadOnlyArray<empty>) => mixed | Date | Error | RegExp;
+
+export type WithAnimatedValue<+T> = T extends Builtin | Nullable ? T : any;
+
 export type AnimatedProps<Props: {...}> = {
-  // eslint-disable-next-line no-unused-vars
-  +[_K in keyof (Props &
-      $ReadOnly<{
-        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
-          typeof View,
-        >,
-      }>)]: any,
+  +[K in keyof Props]: WithAnimatedValue<Props[K]>,
+} & {
+  passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+    typeof View,
+  > | null,
 };
 
 // We could use a mapped type here to introduce acceptable Animated variants
@@ -53,7 +56,10 @@ export default function createAnimatedComponent<
   $ReadOnly<React.ElementProps<TInstance>>,
   React.ElementRef<TInstance>,
 > {
-  return unstable_createAnimatedComponentWithAllowlist(Component, null);
+  return unstable_createAnimatedComponentWithAllowlist(
+    Component,
+    null,
+  ) as $FlowFixMe;
 }
 
 export function unstable_createAnimatedComponentWithAllowlist<
