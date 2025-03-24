@@ -20,7 +20,9 @@ export class URLSearchParams {
         .replace(/^\?/, '')
         .split('&')
         .forEach(pair => {
-          if (!pair) return;
+          if (!pair) {
+            return;
+          }
           const [key, value] = pair.split('=').map(decodeURIComponent);
           this.append(key, value);
         });
