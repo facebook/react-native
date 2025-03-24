@@ -8,7 +8,16 @@
  * @format
  */
 
+import type AnimatedAddition from './nodes/AnimatedAddition';
+import type AnimatedDiffClamp from './nodes/AnimatedDiffClamp';
+import type AnimatedDivision from './nodes/AnimatedDivision';
+import type AnimatedInterpolation from './nodes/AnimatedInterpolation';
+import type AnimatedModulo from './nodes/AnimatedModulo';
+import type AnimatedMultiplication from './nodes/AnimatedMultiplication';
+import type AnimatedNode from './nodes/AnimatedNode';
 import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
+import type AnimatedSubtraction from './nodes/AnimatedSubtraction';
+import type AnimatedValue from './nodes/AnimatedValue';
 
 import createAnimatedPropsHook from '../../src/private/animated/createAnimatedPropsHook';
 import composeStyles from '../../src/private/styles/composeStyles';
@@ -18,16 +27,44 @@ import * as React from 'react';
 import {useMemo} from 'react';
 
 type Nullable = void | null;
+type Primitive = string | number | boolean | symbol | void;
 type Builtin = (...$ReadOnlyArray<empty>) => mixed | Date | Error | RegExp;
 
-export type WithAnimatedValue<+T> = T extends Builtin | Nullable ? T : any;
+export type WithAnimatedValue<+T> = T extends Builtin | Nullable
+  ? T
+  : T extends Primitive
+    ?
+        | T
+        | AnimatedNode
+        | AnimatedAddition
+        | AnimatedSubtraction
+        | AnimatedDivision
+        | AnimatedMultiplication
+        | AnimatedModulo
+        | AnimatedDiffClamp
+        | AnimatedValue
+        | AnimatedInterpolation<number | string>
+        | AnimatedInterpolation<number>
+        | AnimatedInterpolation<string>
+    : T extends $ReadOnlyArray<infer P>
+      ? $ReadOnlyArray<WithAnimatedValue<P>>
+      : T extends {...}
+        ? {+[K in keyof T]: WithAnimatedValue<T[K]>}
+        : T;
 
-export type AnimatedProps<Props: {...}> = {
-  +[K in keyof Props]: WithAnimatedValue<Props[K]>,
-} & {
+type NonAnimatedProps = 'ref' | 'innerViewRef' | 'scrollViewRef';
+type PassThroughProps = $ReadOnly<{
   passthroughAnimatedPropExplicitValues?: React.ElementConfig<
     typeof View,
   > | null,
+}>;
+
+export type AnimatedProps<Props: {...}> = {
+  [K in keyof (Props & PassThroughProps)]: K extends $Keys<PassThroughProps>
+    ? PassThroughProps[K]
+    : K extends NonAnimatedProps
+      ? Props[K]
+      : WithAnimatedValue<Props[K]>,
 };
 
 // We could use a mapped type here to introduce acceptable Animated variants

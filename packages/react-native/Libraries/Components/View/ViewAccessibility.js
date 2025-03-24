@@ -53,7 +53,8 @@ export type AccessibilityRole =
   | 'webview'
   | 'drawerlayout'
   | 'slidingdrawer'
-  | 'iconmenu';
+  | 'iconmenu'
+  | string;
 
 // Role types for web
 export type Role =

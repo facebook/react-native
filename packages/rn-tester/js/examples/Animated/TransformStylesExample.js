@@ -70,6 +70,7 @@ function AnimatedView({
         Apply Selected Transforms
       </RNTesterButton>
       <Animated.View
+        // $FlowFixMe[incompatible-type] - properties are not exact
         style={[styles.animatedView, {transform: transformStyles}]}
       />
     </>

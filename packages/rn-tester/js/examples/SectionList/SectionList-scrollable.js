@@ -318,6 +318,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
           )
         }
         onEndReachedThreshold={0}
+        // $FlowFixMe[incompatible-type] - incompatible redenerItem type
         sections={filteredSectionData}
         style={styles.list}
         viewabilityConfig={VIEWABILITY_CONFIG}
