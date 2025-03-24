@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.79.0-rc.3
+
+### Changed
+
+#### Android specific
+
+- **Gradle:** Better compatibility with Kotlin 2.1.x ([a0528d834c](https://github.com/facebook/react-native/commit/a0528d834c644766a78cff8b092ca1c5447e20b5) by [@cortinico](https://github.com/cortinico))
+
+### Fixed
+
+- **Codegen:** Fix codegen to avoid the creation of `<appName>,` folders ([9498b71438](https://github.com/facebook/react-native/commit/9498b714381d060109fa6a9673db264bc6659f64) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- **Runtime:** Marked acquireWakeLockNow as static ([2a58201322](https://github.com/facebook/react-native/commit/2a582013228d7b729141c781ac98034f8a70578b) by [@mstrokin](https://github.com/mstrokin))
+
+#### iOS specific
+
+- **CocoaPods:** Make sure 3p libraries depends on React-renderercss to work with use_frameworks ([cc12caa0a9](https://github.com/facebook/react-native/commit/cc12caa0a9dcb08d11fe18c9b34290352ca1909e) by [@cipolleschi](https://github.com/cipolleschi))
+
+- **Runtime:** Convert to JSException only NSException from sync methods ([9805a4f](https://github.com/facebook/react-native/commit/9805a4f89a8b23b5aa7201ed1013e5da5932e084) by [@cipolleschi](https://github.com/cipolleschi))
+
+- **Runtime:** Handle null params in the Interop TM layer ([6314925](https://github.com/facebook/react-native/commit/63149256c0e19ecbd008d1bf8f0ff1e79bb63cf2) by [@cipolleschi](https://github.com/cipolleschi))
+
+
 ## v0.79.0-rc.2
 
 ### Changed
