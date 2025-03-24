@@ -173,7 +173,8 @@ class TouchableBounce extends React.Component<Props, State> {
         importantForAccessibility={
           this.props['aria-hidden'] === true
             ? 'no-hide-descendants'
-            : this.props.importantForAccessibility
+            : // $FlowFixMe[incompatible-type] - AnimatedProps types were made more strict and need refining at this call site
+              this.props.importantForAccessibility
         }
         accessibilityViewIsModal={
           this.props['aria-modal'] ?? this.props.accessibilityViewIsModal
