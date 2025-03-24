@@ -183,7 +183,7 @@ export default class AnimatedProps extends AnimatedNode {
 
   __detach(): void {
     if (this.__isNative && this.#targetInstance != null) {
-      this.__disconnectAnimatedView();
+      this.#disconnectAnimatedView(this.#targetInstance);
     }
     this.#targetInstance = null;
 
@@ -211,12 +211,12 @@ export default class AnimatedProps extends AnimatedNode {
       this.__isNative = true;
 
       // Since this does not call the super.__makeNative, we need to store the
-      // supplied platformConfig here, before calling __connectAnimatedView
+      // supplied platformConfig here, before calling #connectAnimatedView
       // where it will be needed to traverse the graph of attached values.
       super.__setPlatformConfig(platformConfig);
 
       if (this.#targetInstance != null) {
-        this.__connectAnimatedView();
+        this.#connectAnimatedView(this.#targetInstance);
       }
     }
   }
@@ -227,13 +227,13 @@ export default class AnimatedProps extends AnimatedNode {
     }
     this.#targetInstance = targetInstance;
     if (this.__isNative) {
-      this.__connectAnimatedView();
+      this.#connectAnimatedView(this.#targetInstance);
     }
   }
 
-  __connectAnimatedView(): void {
+  #connectAnimatedView(targetInstance: TargetViewInstance): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    let nativeViewTag: ?number = findNodeHandle(this.#targetInstance);
+    let nativeViewTag: ?number = findNodeHandle(targetInstance);
     if (nativeViewTag == null) {
       if (process.env.NODE_ENV === 'test') {
         nativeViewTag = -1;
@@ -247,9 +247,9 @@ export default class AnimatedProps extends AnimatedNode {
     );
   }
 
-  __disconnectAnimatedView(): void {
+  #disconnectAnimatedView(targetInstance: TargetViewInstance): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    let nativeViewTag: ?number = findNodeHandle(this.#targetInstance);
+    let nativeViewTag: ?number = findNodeHandle(targetInstance);
     if (nativeViewTag == null) {
       if (process.env.NODE_ENV === 'test') {
         nativeViewTag = -1;
