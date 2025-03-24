@@ -31,7 +31,4 @@ public interface RCTModernEventEmitter : RCTEventEmitter {
       params: WritableMap?,
       @EventCategoryDef category: Int
   )
-
-  @Deprecated("Dispatch the TouchEvent using [EventDispatcher] instead")
-  public fun receiveTouches(event: TouchEvent)
 }
