@@ -106,12 +106,11 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDe
         initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
           NSArray *URLRequestHandlerModules =
               extractModuleConformingToProtocol(moduleRegistry, @protocol(RCTURLRequestHandler));
-          return [@[
-            [RCTHTTPRequestHandler new],
-            [RCTDataRequestHandler new],
-            [RCTFileRequestHandler new],
-            [moduleRegistry moduleForName:"BlobModule"],
-          ] arrayByAddingObjectsFromArray:URLRequestHandlerModules];
+          return [[NSArray arrayWithObjects:[RCTHTTPRequestHandler new],
+                                            [RCTDataRequestHandler new],
+                                            [RCTFileRequestHandler new],
+                                            [moduleRegistry moduleForName:"BlobModule"],
+                                            nil] arrayByAddingObjectsFromArray:URLRequestHandlerModules];
         }];
   }
   // No custom initializer here.
