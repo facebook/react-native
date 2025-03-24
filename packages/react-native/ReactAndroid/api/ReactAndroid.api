@@ -7034,12 +7034,15 @@ public abstract interface class com/facebook/react/views/textinput/ContentSizeWa
 	public abstract fun onLayout ()V
 }
 
-public class com/facebook/react/views/textinput/ReactContentSizeChangedEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/textinput/ReactContentSizeChangedEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/views/textinput/ReactContentSizeChangedEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
 	public fun <init> (IFF)V
 	public fun <init> (IIFF)V
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/textinput/ReactContentSizeChangedEvent$Companion {
 }
 
 public class com/facebook/react/views/textinput/ReactEditText : androidx/appcompat/widget/AppCompatEditText {
