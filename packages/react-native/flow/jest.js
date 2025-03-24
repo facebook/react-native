@@ -219,7 +219,7 @@ type JestStyledComponentsMatcherValue =
   | string
   | JestAsymmetricEqualityType
   | RegExp
-  | typeof undefined;
+  | void;
 
 type JestStyledComponentsMatcherOptions = {
   media?: string,
@@ -755,13 +755,11 @@ interface JestExpectType {
    * specific arguments.
    */
   toHaveBeenCalledWith(...args: Array<any>): void;
-  toBeCalledWith(...args: Array<any>): void;
   /**
    * Use .toHaveBeenLastCalledWith to ensure that a mock function was last called
    * with specific arguments.
    */
   toHaveBeenLastCalledWith(...args: Array<any>): void;
-  lastCalledWith(...args: Array<any>): void;
   /**
    * Check that an object has a .length property and it is set to a certain
    * numeric value.
@@ -1131,7 +1129,9 @@ declare var it: {
    * @param {table} table of Test
    */
   each(
-    ...table: Array<Array<mixed> | mixed> | [Array<string>, string]
+    ...table:
+      | $ReadOnlyArray<$ReadOnlyArray<mixed> | mixed>
+      | [$ReadOnlyArray<string>, string]
   ): (
     name: JestTestName,
     fn?: (...args: Array<any>) => ?Promise<mixed>,
