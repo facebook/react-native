@@ -738,6 +738,9 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "stopSurfaceWithSurfaceHandler",
           FabricUIManagerBinding::stopSurfaceWithSurfaceHandler),
+      makeNativeMethod(
+          "findNextFocusableElementMetrics",
+          FabricUIManagerBinding::findNextFocusableElementMetrics),
   });
 }
 
