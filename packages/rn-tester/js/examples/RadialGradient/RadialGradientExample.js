@@ -153,8 +153,12 @@ exports.examples = [
         <GradientBox
           testID="radial-gradient-with-non-uniform-borders"
           style={{
-            experimental_backgroundImage:
-              'radial-gradient(circle at center, yellow, green)',
+            experimental_backgroundImage: `radial-gradient(
+              circle at 70% 30%,
+              #8a2be2 0%,
+              #4b0082 50%,
+              #191970 100%
+            )`,
             borderTopLeftRadius: 16,
             borderTopRightRadius: 0,
             borderBottomLeftRadius: 0,
