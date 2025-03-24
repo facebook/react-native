@@ -78,12 +78,5 @@ public data class LengthPercentage(
     return value
   }
 
-  public fun resolveToPixel(referenceLength: Float): Float {
-    if (type == LengthPercentageType.PERCENT) {
-      return (value / 100) * referenceLength
-    }
-    return PixelUtil.toPixelFromDIP(value)
-  }
-
   public constructor() : this(0f, LengthPercentageType.POINT)
 }

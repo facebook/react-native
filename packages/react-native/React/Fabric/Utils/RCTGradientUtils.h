@@ -8,13 +8,11 @@
 #include <react/renderer/graphics/ColorStop.h>
 #import <vector>
 
-using namespace facebook::react;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTGradientUtils : NSObject
 
-+ (std::vector<ProcessedColorStop>)getFixedColorStops:(const std::vector<ColorStop> &)colorStops gradientLineLength:(CGFloat)gradientLineLength;
++ (std::vector<facebook::react::ProcessedColorStop>)getFixedColorStops:(const std::vector<facebook::react::ColorStop> &)colorStops gradientLineLength:(CGFloat)gradientLineLength;
 @end
 
 NS_ASSUME_NONNULL_END

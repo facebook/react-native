@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReadableType
 import com.facebook.react.uimanager.FloatUtil
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
+import com.facebook.react.uimanager.PixelUtil.dpToPx
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -193,15 +194,31 @@ internal class RadialGradient(
     var centerY: Float = height / 2f
     
     if (position.top != null) {
-      centerY = position.top.resolveToPixel(height)
+      centerY =
+        if (position.top.type == LengthPercentageType.PERCENT)
+          position.top.resolve(height)
+        else
+          position.top.resolve(height).dpToPx()
     } else if (position.bottom != null) {
-      centerY = height - position.bottom.resolveToPixel(height)
+      centerY =
+        if (position.bottom.type == LengthPercentageType.PERCENT)
+          height - position.bottom.resolve(height)
+        else
+          height - position.bottom.resolve(height).dpToPx()
     }
 
     if (position.left != null) {
-      centerX = position.left.resolveToPixel(width)
+      centerX =
+        if (position.left.type == LengthPercentageType.PERCENT)
+          position.left.resolve(width)
+        else
+          position.left.resolve(width).dpToPx()
     } else if (position.right != null) {
-      centerX = width - position.right.resolveToPixel(width)
+      centerX =
+        if (position.right.type == LengthPercentageType.PERCENT)
+          width - position.right.resolve(width)
+        else
+          width - position.right.resolve(width).dpToPx()
     }
 
     val (radiusX, radiusY) = calculateRadius(centerX, centerY, width, height)
@@ -363,8 +380,16 @@ internal class RadialGradient(
       }
     } else {
       val dimensions = size.value as GradientSize.Dimensions
-      val radiusX = dimensions.x.resolveToPixel(width)
-      val radiusY = dimensions.y.resolveToPixel(height)
+      val radiusX =
+        if (dimensions.x.type == LengthPercentageType.PERCENT)
+          dimensions.x.resolve(width)
+        else
+          dimensions.x.resolve(width).dpToPx()
+      val radiusY =
+        if (dimensions.y.type == LengthPercentageType.PERCENT)
+          dimensions.y.resolve(height)
+        else
+          dimensions.y.resolve(height).dpToPx()
 
       return if (isCircle) {
         val radius = max(radiusX, radiusY)
