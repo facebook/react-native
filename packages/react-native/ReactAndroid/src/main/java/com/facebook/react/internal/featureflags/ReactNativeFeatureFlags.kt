@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<661dc1be35759bceb19c3521ed97c106>>
+ * @generated SignedSource<<9a17ecc37b3ecd8c0830d9875e8b4453>>
  */
 
 /**
@@ -185,12 +185,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecyclingForView(): Boolean = accessor.enableViewRecyclingForView()
-
-  /**
-   * Fixes a bug in Differentiator where parent views may be referenced before they're created
-   */
-  @JvmStatic
-  public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = accessor.fixDifferentiatorEmittingUpdatesWithWrongParentTag()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

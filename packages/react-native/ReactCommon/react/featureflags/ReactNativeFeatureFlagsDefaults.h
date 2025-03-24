@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<799b8ba7a7c666ee5985777c26ce99a3>>
+ * @generated SignedSource<<f645ab08e2783763a91d685e8c1ddd02>>
  */
 
 /**
@@ -128,10 +128,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableViewRecyclingForView() override {
-    return true;
-  }
-
-  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {
     return true;
   }
 
