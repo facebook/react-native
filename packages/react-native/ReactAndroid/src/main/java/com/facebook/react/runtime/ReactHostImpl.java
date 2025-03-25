@@ -664,7 +664,7 @@ public class ReactHostImpl implements ReactHost {
   /* package */ EventDispatcher getEventDispatcher() {
     final ReactInstance reactInstance = mReactInstance;
     if (reactInstance == null) {
-      return BlackHoleEventDispatcher.get();
+      return BlackHoleEventDispatcher.INSTANCE;
     }
 
     return reactInstance.getEventDispatcher();

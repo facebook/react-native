@@ -20,34 +20,22 @@ import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 
 /**
  * This class handles event emitting across the legacy and Fabric event emitting mechanisms. Based
- * on the surfaceId and targetTag, it will route the event to the appropriate event emitter.
+ * on the surfaceId and targetTag, it will route the event to the appropriate event emitter. It
+ * shims the RCTModernEventEmitter API for legacy Paper events.
  *
  * This class is constructed both by Paper's EventDispatcherImpl and the FabricEventDispatcher.
  */
-internal class ReactEventEmitter(private val reactContext: ReactApplicationContext) :
-    RCTModernEventEmitter {
+internal class EventEmitterImpl(
+    private val reactContext: ReactApplicationContext,
+) : RCTModernEventEmitter {
+  /** Corresponds to (Paper) EventEmitter, which is a JS interface */
+  private var legacyEventEmitter: RCTEventEmitter? = null
+
   /** Corresponds to [com.facebook.react.fabric.events.FabricEventEmitter] */
   private var fabricEventEmitter: RCTModernEventEmitter? = null
 
-  /** Corresponds to (Paper) EventEmitter, which is a JS interface */
-  private var defaultEventEmitter: RCTEventEmitter? = null
-
-  fun register(@UIManagerType uiManagerType: Int, eventEmitter: RCTModernEventEmitter?) {
-    check(uiManagerType == UIManagerType.FABRIC)
+  fun registerFabricEventEmitter(eventEmitter: RCTModernEventEmitter?) {
     fabricEventEmitter = eventEmitter
-  }
-
-  fun register(@UIManagerType uiManagerType: Int, eventEmitter: RCTEventEmitter?) {
-    check(uiManagerType == UIManagerType.LEGACY)
-    defaultEventEmitter = eventEmitter
-  }
-
-  fun unregister(@UIManagerType uiManagerType: Int) {
-    if (uiManagerType == UIManagerType.LEGACY) {
-      defaultEventEmitter = null
-    } else {
-      fabricEventEmitter = null
-    }
   }
 
   @Deprecated("Please use RCTModernEventEmitter")
@@ -79,7 +67,7 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
     val reactTag = touches.getMap(0)?.getInt(TouchesHelper.TARGET_KEY) ?: 0
     @UIManagerType val uiManagerType = getUIManagerType(reactTag)
     if (uiManagerType == UIManagerType.LEGACY) {
-      ensureDefaultEventEmitter()?.receiveTouches(eventName, touches, changedIndices)
+      ensureLegacyEventEmitter()?.receiveTouches(eventName, touches, changedIndices)
     }
   }
 
@@ -87,10 +75,10 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
    * Get default/Paper event emitter. Callers should have verified that this is not an event for a
    * View managed by Fabric
    */
-  private fun ensureDefaultEventEmitter(): RCTEventEmitter? {
-    if (defaultEventEmitter == null) {
+  private fun ensureLegacyEventEmitter(): RCTEventEmitter? {
+    if (legacyEventEmitter == null) {
       if (reactContext.hasActiveReactInstance()) {
-        defaultEventEmitter = reactContext.getJSModule(RCTEventEmitter::class.java)
+        legacyEventEmitter = reactContext.getJSModule(RCTEventEmitter::class.java)
       } else {
         logSoftException(
             TAG,
@@ -98,7 +86,7 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
                 "Cannot get RCTEventEmitter from Context, no active Catalyst instance!"))
       }
     }
-    return defaultEventEmitter
+    return legacyEventEmitter
   }
 
   override fun receiveEvent(
@@ -112,10 +100,17 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
   ) {
     @UIManagerType val uiManagerType = getUIManagerType(targetTag, surfaceId)
     if (uiManagerType == UIManagerType.FABRIC) {
-      fabricEventEmitter?.receiveEvent(
-          surfaceId, targetTag, eventName, canCoalesceEvent, customCoalesceKey, params, category)
+      checkNotNull(fabricEventEmitter)
+          .receiveEvent(
+              surfaceId,
+              targetTag,
+              eventName,
+              canCoalesceEvent,
+              customCoalesceKey,
+              params,
+              category)
     } else if (uiManagerType == UIManagerType.LEGACY) {
-      ensureDefaultEventEmitter()?.receiveEvent(targetTag, eventName, params)
+      ensureLegacyEventEmitter()?.receiveEvent(targetTag, eventName, params)
     }
   }
 
