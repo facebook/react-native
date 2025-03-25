@@ -12,10 +12,11 @@
  */
 
 import 'react-native/Libraries/Core/InitializeCore.js';
+
+import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Modal, ScrollView, View} from 'react-native';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('basic culling', () => {

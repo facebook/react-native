@@ -16,8 +16,8 @@ import type {Root} from '@react-native/fantom';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Modal, ScrollView, Text, TextInput, View} from 'react-native';
+import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 

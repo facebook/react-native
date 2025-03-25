@@ -10,18 +10,18 @@
  * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
+import 'react-native/Libraries/Core/InitializeCore';
+
 import type IntersectionObserverType from '../IntersectionObserver';
 import type {Root} from '@react-native/fantom';
 
+import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import ScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
 import View from 'react-native/Libraries/Components/View/View';
 import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
-
-import 'react-native/Libraries/Core/InitializeCore';
 
 declare const IntersectionObserver: Class<IntersectionObserverType>;
 
