@@ -690,4 +690,19 @@ void UIManager::animationTick() const {
   }
 }
 
+void UIManager::synchronouslyUpdateViewOnUIThread(
+    Tag tag,
+    const folly::dynamic& props) {
+  std::unique_lock lock(synchronousViewUpdateCallbackMutex_);
+  if (synchronousViewUpdateCallback_) {
+    synchronousViewUpdateCallback_(tag, props);
+  }
+}
+
+void UIManager::setSynchronousViewUpdateCallback(
+    SynchronousViewUpdateCallback&& callback) {
+  std::unique_lock lock(synchronousViewUpdateCallbackMutex_);
+  synchronousViewUpdateCallback_ = std::move(callback);
+}
+
 } // namespace facebook::react
