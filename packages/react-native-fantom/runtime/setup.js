@@ -13,6 +13,7 @@ import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
 import expect from './expect';
 import {createMockFunction} from './mocks';
+import patchWeakRef from './patchWeakRef';
 import {setupSnapshotConfig, snapshotContext} from './snapshotContext';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
@@ -408,3 +409,5 @@ export function registerTest(
     setUpTest();
   });
 }
+
+patchWeakRef();
