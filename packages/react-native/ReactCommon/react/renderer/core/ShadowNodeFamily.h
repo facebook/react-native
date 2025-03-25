@@ -33,6 +33,7 @@ struct ShadowNodeFamilyFragment {
   const Tag tag;
   const SurfaceId surfaceId;
   const std::shared_ptr<const InstanceHandle> instanceHandle;
+  const std::shared_ptr<const EventEmitterListener> eventEmitterListener;
 };
 
 /*
