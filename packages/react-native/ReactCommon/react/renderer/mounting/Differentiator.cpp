@@ -616,10 +616,7 @@ static void calculateShadowViewMutationsFlattener(
             ShadowViewMutation::UpdateMutation(
                 oldTreeNodePair.shadowView,
                 newTreeNodePair.shadowView,
-                ReactNativeFeatureFlags::
-                        fixDifferentiatorEmittingUpdatesWithWrongParentTag()
-                    ? parentTagForUpdate
-                    : node.shadowView.tag));
+                parentTagForUpdate));
       }
 
       auto adjustedOldCullingContext =

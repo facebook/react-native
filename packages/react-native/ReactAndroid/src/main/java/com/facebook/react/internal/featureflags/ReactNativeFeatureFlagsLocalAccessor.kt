@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca1ebdf95e0813e7946ffa781e35e0ff>>
+ * @generated SignedSource<<22c91abf446f63afd0c09b02536b13f0>>
  */
 
 /**
@@ -50,7 +50,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
-  private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
@@ -323,16 +322,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableViewRecyclingForView()
       accessedFeatureFlags.add("enableViewRecyclingForView")
       enableViewRecyclingForViewCache = cached
-    }
-    return cached
-  }
-
-  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean {
-    var cached = fixDifferentiatorEmittingUpdatesWithWrongParentTagCache
-    if (cached == null) {
-      cached = currentProvider.fixDifferentiatorEmittingUpdatesWithWrongParentTag()
-      accessedFeatureFlags.add("fixDifferentiatorEmittingUpdatesWithWrongParentTag")
-      fixDifferentiatorEmittingUpdatesWithWrongParentTagCache = cached
     }
     return cached
   }

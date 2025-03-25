@@ -321,16 +321,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
-      defaultValue: true,
-      metadata: {
-        description:
-          "Fixes a bug in Differentiator where parent views may be referenced before they're created",
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
