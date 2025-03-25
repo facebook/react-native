@@ -184,8 +184,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public void initialize() {
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
     getReactApplicationContext().registerComponentCallbacks(mViewManagerRegistry);
-    mEventDispatcher.registerEventEmitter(
-        LEGACY, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
 
   @Override

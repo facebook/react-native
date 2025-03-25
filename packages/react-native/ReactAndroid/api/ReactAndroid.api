@@ -5249,11 +5249,8 @@ public abstract interface class com/facebook/react/uimanager/events/EventDispatc
 	public abstract fun dispatchAllEvents ()V
 	public abstract fun dispatchEvent (Lcom/facebook/react/uimanager/events/Event;)V
 	public abstract fun onCatalystInstanceDestroyed ()V
-	public abstract fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTEventEmitter;)V
-	public abstract fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
 	public abstract fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
 	public abstract fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public abstract fun unregisterEventEmitter (I)V
 }
 
 public class com/facebook/react/uimanager/events/EventDispatcherImpl : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/uimanager/events/EventDispatcher {
@@ -5266,11 +5263,8 @@ public class com/facebook/react/uimanager/events/EventDispatcherImpl : com/faceb
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTEventEmitter;)V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
 	public fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
 	public fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun unregisterEventEmitter (I)V
 }
 
 public abstract interface class com/facebook/react/uimanager/events/EventDispatcherListener {
@@ -5279,23 +5273,6 @@ public abstract interface class com/facebook/react/uimanager/events/EventDispatc
 
 public abstract interface class com/facebook/react/uimanager/events/EventDispatcherProvider {
 	public abstract fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-}
-
-public class com/facebook/react/uimanager/events/FabricEventDispatcher : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/uimanager/events/EventDispatcher {
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun addBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun addListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun dispatchAllEvents ()V
-	public fun dispatchEvent (Lcom/facebook/react/uimanager/events/Event;)V
-	public fun onCatalystInstanceDestroyed ()V
-	public fun onHostDestroy ()V
-	public fun onHostPause ()V
-	public fun onHostResume ()V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTEventEmitter;)V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
-	public fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun unregisterEventEmitter (I)V
 }
 
 public final class com/facebook/react/uimanager/events/NativeGestureUtil {

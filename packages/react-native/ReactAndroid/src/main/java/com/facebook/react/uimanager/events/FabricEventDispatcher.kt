@@ -12,7 +12,6 @@ import android.view.Choreographer
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactSoftExceptionLogger
-import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -28,14 +27,19 @@ private const val TAG = "FabricEventDispatcher"
 /**
  * A singleton class that overrides [EventDispatcher] with no-op methods, to be used by callers that
  * expect an EventDispatcher when the instance doesn't exist.
+ *
+ * While this class is Fabric-specific, it lives in the uimanager.events package to allow access to
+ * Event internals.
  */
-public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
-    EventDispatcher, LifecycleEventListener {
-  private val reactEventEmitter: ReactEventEmitter
-  private val reactContext: ReactApplicationContext = reactContext
+internal class FabricEventDispatcher(
+    private val reactContext: ReactApplicationContext,
+    fabricEventEmitter: RCTModernEventEmitter
+) : EventDispatcher, LifecycleEventListener {
+  // TODO: Remove EventEmitterImpl indirection when new Fabric is fully rolled out
+  private val eventEmitter = EventEmitterImpl(reactContext)
   private val listeners = CopyOnWriteArrayList<EventDispatcherListener>()
   private val postEventDispatchListeners = CopyOnWriteArrayList<BatchEventDispatchedListener>()
-  private val currentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
+  private val currentFrameCallback = ScheduleDispatchFrameCallback()
 
   private var isDispatchScheduled = false
   private val dispatchEventsRunnable = Runnable {
@@ -51,8 +55,8 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
   }
 
   init {
-    this.reactContext.addLifecycleEventListener(this)
-    reactEventEmitter = ReactEventEmitter(this.reactContext)
+    reactContext.addLifecycleEventListener(this)
+    eventEmitter.registerFabricEventEmitter(fabricEventEmitter)
   }
 
   public override fun dispatchEvent(event: Event<*>) {
@@ -62,7 +66,7 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
     if (event.experimental_isSynchronous()) {
       dispatchSynchronous(event)
     } else {
-      event.dispatchModern(reactEventEmitter)
+      event.dispatchModern(eventEmitter)
     }
 
     event.dispose()
@@ -74,8 +78,7 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "FabricEventDispatcher.dispatchSynchronous('" + event.eventName + "')")
     try {
-      val fabricUIManager: UIManager? =
-          UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
+      val fabricUIManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
       @OptIn(UnstableReactNativeAPI::class)
       if (fabricUIManager is SynchronousEventReceiver) {
         (fabricUIManager as SynchronousEventReceiver).receiveEvent(
@@ -145,8 +148,15 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
     cancelDispatchOfBatchedEvents()
   }
 
+  public fun invalidate() {
+    eventEmitter.registerFabricEventEmitter(null)
+
+    UiThreadUtil.runOnUiThread { cancelDispatchOfBatchedEvents() }
+  }
+
+  @Deprecated("Private API, should only be used when the concrete implementation is known.")
   public override fun onCatalystInstanceDestroyed() {
-    UiThreadUtil.runOnUiThread(Runnable { cancelDispatchOfBatchedEvents() })
+    invalidate()
   }
 
   private fun cancelDispatchOfBatchedEvents() {
@@ -157,26 +167,6 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
     } else {
       currentFrameCallback.stop()
     }
-  }
-
-  @Deprecated("Use the modern version with RCTModernEventEmitter")
-  @Suppress("DEPRECATION")
-  public override fun registerEventEmitter(
-      @UIManagerType uiManagerType: Int,
-      eventEmitter: RCTEventEmitter
-  ) {
-    reactEventEmitter.register(uiManagerType, eventEmitter)
-  }
-
-  public override fun registerEventEmitter(
-      @UIManagerType uiManagerType: Int,
-      eventEmitter: RCTModernEventEmitter
-  ) {
-    reactEventEmitter.register(uiManagerType, eventEmitter)
-  }
-
-  public override fun unregisterEventEmitter(@UIManagerType uiManagerType: Int) {
-    reactEventEmitter.unregister(uiManagerType)
   }
 
   private inner class ScheduleDispatchFrameCallback : Choreographer.FrameCallback {
