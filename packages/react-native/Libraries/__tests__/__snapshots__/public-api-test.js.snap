@@ -118,8 +118,8 @@ declare export default typeof Animated;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/Animated.js.flow 1`] = `
-"export type { CompositeAnimation, Numeric } from \\"./AnimatedImplementation\\";
-declare export default typeof Animated;
+"export * as default from \\"./AnimatedExports\\";
+export type { CompositeAnimation, Numeric } from \\"./AnimatedImplementation\\";
 "
 `;
 
