@@ -46,7 +46,7 @@ public open class CxxModuleWrapperBase protected constructor(
     }
   }
 
-  public companion object {
+  private companion object {
     init {
       ReactBridge.staticInit()
       LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
