@@ -645,14 +645,41 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 
 exports[`public API should not change unintentionally Libraries/Animated/createAnimatedComponent.js 1`] = `
 "type Nullable = void | null;
+type Primitive = string | number | boolean | symbol | void;
 type Builtin = (...$ReadOnlyArray<empty>) => mixed | Date | Error | RegExp;
-export type WithAnimatedValue<+T> = T extends Builtin | Nullable ? T : any;
-export type AnimatedProps<Props: { ... }> = {
-  +[K in keyof Props]: WithAnimatedValue<Props[K]>,
-} & {
+export type WithAnimatedValue<+T> = T extends Builtin | Nullable
+  ? T
+  : T extends Primitive
+    ?
+        | T
+        | AnimatedNode
+        | AnimatedAddition
+        | AnimatedSubtraction
+        | AnimatedDivision
+        | AnimatedMultiplication
+        | AnimatedModulo
+        | AnimatedDiffClamp
+        | AnimatedValue
+        | AnimatedInterpolation<number | string>
+        | AnimatedInterpolation<number>
+        | AnimatedInterpolation<string>
+    : T extends $ReadOnlyArray<infer P>
+      ? $ReadOnlyArray<WithAnimatedValue<P>>
+      : T extends { ... }
+        ? { +[K in keyof T]: WithAnimatedValue<T[K]> }
+        : T;
+type NonAnimatedProps = \\"ref\\" | \\"innerViewRef\\" | \\"scrollViewRef\\";
+type PassThroughProps = $ReadOnly<{
   passthroughAnimatedPropExplicitValues?: React.ElementConfig<
     typeof View,
   > | null,
+}>;
+export type AnimatedProps<Props: { ... }> = {
+  [K in keyof (Props & PassThroughProps)]: K extends $Keys<PassThroughProps>
+    ? PassThroughProps[K]
+    : K extends NonAnimatedProps
+      ? Props[K]
+      : WithAnimatedValue<Props[K]>,
 };
 export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
   ...$Exact<Props>,
@@ -998,7 +1025,9 @@ declare export default class AnimatedValueXY extends AnimatedWithChildren {
   removeListener(id: string): void;
   removeAllListeners(): void;
   getLayout(): { [key: string]: AnimatedValue, ... };
-  getTranslateTransform(): Array<{ [key: string]: AnimatedValue, ... }>;
+  getTranslateTransform(): Array<
+    { translateX: AnimatedValue } | { translateY: AnimatedValue },
+  >;
 }
 "
 `;
@@ -3800,7 +3829,8 @@ exports[`public API should not change unintentionally Libraries/Components/View/
   | \\"webview\\"
   | \\"drawerlayout\\"
   | \\"slidingdrawer\\"
-  | \\"iconmenu\\";
+  | \\"iconmenu\\"
+  | string;
 export type Role =
   | \\"alert\\"
   | \\"alertdialog\\"
