@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<adb29ea8a9fe70bb16af9a46d394c68d>>
+ * @generated SignedSource<<bb1c3b4c3d3d20ab463e4d0131efc3d9>>
  * @flow strict
  */
 
@@ -49,6 +49,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
+  cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -167,6 +168,10 @@ export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = create
  * Enables start- and finishOperationBatch on any platform.
  */
 export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter('animatedShouldSignalBatch', false);
+/**
+ * Use a C++ implementation of Native Animated instead of the platform implementation.
+ */
+export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
 /**
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
