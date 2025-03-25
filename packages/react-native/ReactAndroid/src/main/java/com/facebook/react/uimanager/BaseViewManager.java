@@ -307,6 +307,31 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_order, nativeIds);
     view.setTag(R.id.accessibility_order_dirty, true);
 
+    if (view instanceof ViewGroup) {
+      ((ViewGroup) view)
+          .setOnHierarchyChangeListener(
+              new ViewGroup.OnHierarchyChangeListener() {
+                @Override
+                public void onChildViewAdded(View parent, View child) {
+                  view.setTag(R.id.accessibility_order_dirty, true);
+
+                  // We also want to listen to changes on the hierarchy of nested ViewGroups
+                  if (child instanceof ViewGroup) {
+                    ViewGroup childGroup = (ViewGroup) child;
+                    childGroup.setOnHierarchyChangeListener(this);
+                    for (int i = 0; i < childGroup.getChildCount(); i++) {
+                      onChildViewAdded(childGroup, childGroup.getChildAt(i));
+                    }
+                  }
+                }
+
+                @Override
+                public void onChildViewRemoved(View parent, View child) {
+                  view.setTag(R.id.accessibility_order_dirty, true);
+                }
+              });
+    }
+
     ReactAxOrderHelper.unsetAccessibilityOrder(view);
     ((ViewGroup) view)
         .notifySubtreeAccessibilityStateChanged(
