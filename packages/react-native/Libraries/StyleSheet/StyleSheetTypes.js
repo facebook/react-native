@@ -725,7 +725,7 @@ export type DropShadowValue = {
   color?: ____ColorValue_Internal,
 };
 
-export type GradientValue = {
+type LinearGradientValue = {
   type: 'linearGradient',
   // Angle or direction enums
   direction?: string,
@@ -734,6 +734,46 @@ export type GradientValue = {
     positions?: $ReadOnlyArray<string>,
   }>,
 };
+
+type RadialExtent =
+  | 'closest-corner'
+  | 'closest-side'
+  | 'farthest-corner'
+  | 'farthest-side';
+type RadialGradientPosition =
+  | {
+      top: number | string,
+      left: number | string,
+    }
+  | {
+      top: number | string,
+      right: number | string,
+    }
+  | {
+      bottom: number | string,
+      left: number | string,
+    }
+  | {
+      bottom: number | string,
+      right: number | string,
+    };
+type RadialGradientValue = {
+  type: 'radialGradient',
+  shape: 'circle' | 'ellipse',
+  size:
+    | RadialExtent
+    | {
+        x: number | string,
+        y: number | string,
+      },
+  position: RadialGradientPosition,
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    positions?: $ReadOnlyArray<string>,
+  }>,
+};
+
+export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
 
 export type BoxShadowValue = {
   offsetX: number | string,
@@ -808,7 +848,7 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
   filter?: $ReadOnlyArray<FilterFunction> | string,
   mixBlendMode?: ____BlendMode_Internal,
-  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
+  experimental_backgroundImage?: $ReadOnlyArray<BackgroundImageValue> | string,
   isolation?: 'auto' | 'isolate',
 }>;
 

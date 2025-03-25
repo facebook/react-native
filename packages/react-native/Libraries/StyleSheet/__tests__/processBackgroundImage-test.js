@@ -891,4 +891,242 @@ describe('processBackgroundImage', () => {
       {color: processColor('blue'), position: 40},
     ]);
   });
+
+  it('should process radial gradient object syntax', () => {
+    const input = [
+      {
+        type: 'radialGradient',
+        shape: 'circle',
+        colorStops: [
+          {color: 'red', positions: ['10%', 20]},
+          {color: 'blue', positions: ['30%', 40]},
+        ],
+        position: {top: '50%', left: '50%'},
+        size: 'closest-side',
+      },
+      {
+        type: 'radialGradient',
+        shape: 'circle',
+        colorStops: [
+          {color: 'red', positions: ['10%', 20]},
+          {color: 'blue', positions: ['30%', 40]},
+        ],
+        position: {top: '50%', left: 50},
+        size: {
+          x: 100,
+          y: 100,
+        },
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: '10%'},
+      {color: processColor('red'), position: 20},
+      {color: processColor('blue'), position: '30%'},
+      {color: processColor('blue'), position: 40},
+    ]);
+    expect(result[0].position).toEqual({top: '50%', left: '50%'});
+    expect(result[0].size).toEqual('closest-side');
+    expect(result[0].shape).toEqual('circle');
+    expect(result[0].type).toEqual('radialGradient');
+
+    expect(result[1].size).toEqual({
+      x: 100,
+      y: 100,
+    });
+  });
+
+  it('should process radial gradient without shape, size and position', () => {
+    const input = 'radial-gradient(red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
+    ]);
+    expect(result[0].position).toEqual({top: '50%', left: '50%'});
+    expect(result[0].size).toEqual('farthest-corner');
+    expect(result[0].shape).toEqual('ellipse');
+    expect(result[0].type).toEqual('radialGradient');
+  });
+
+  it('should process radial gradient with shape circle', () => {
+    const input = 'radial-gradient(circle, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
+    ]);
+    expect(result[0].position).toEqual({top: '50%', left: '50%'});
+    expect(result[0].size).toEqual('farthest-corner');
+    expect(result[0].shape).toEqual('circle');
+    expect(result[0].type).toEqual('radialGradient');
+  });
+
+  it('should infer radial gradient circle shape from single length', () => {
+    const input = 'radial-gradient(100px, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].size).toEqual({x: 100, y: 100});
+    expect(result[0].shape).toEqual('circle');
+  });
+
+  it('should infer radial gradient ellipse shape from double length', () => {
+    const input = 'radial-gradient(100px 50px, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].size).toEqual({x: 100, y: 50});
+    expect(result[0].shape).toEqual('ellipse');
+  });
+
+  it('should handle radial gradient with explicit shape with size', () => {
+    const input = 'radial-gradient(circle 100px at center, red, blue 80%)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: '80%'},
+    ]);
+    expect(result[0].position).toEqual({top: '50%', left: '50%'});
+    expect(result[0].size).toEqual({x: 100, y: 100});
+    expect(result[0].shape).toEqual('circle');
+    expect(result[0].type).toEqual('radialGradient');
+  });
+
+  // 1. position syntax: [ left | center | right | top | bottom | <length-percentage> ]
+  it('should handle radial gradient position length syntax', () => {
+    const input = 'radial-gradient(circle at 20px, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].position).toEqual({left: 20, top: '50%'});
+  });
+
+  // 2. position syntax: [ left | center | right ] && [ top | center | bottom ]
+  it('should handle radial gradient position keywords syntax', () => {
+    const input = 'radial-gradient(circle at left top, red, blue)';
+    const input1 = 'radial-gradient(circle at top left, red, blue)';
+    const result = processBackgroundImage(input);
+    const result1 = processBackgroundImage(input1);
+    expect(result[0].position).toEqual({left: '0%', top: '0%'});
+    expect(result1[0].position).toEqual({left: '0%', top: '0%'});
+  });
+
+  // 3. position syntax: [ left | center | right | <length-percentage> ] [ top | center | bottom | <length-percentage> ]
+  it('should handle left position top position syntax', () => {
+    const input = 'radial-gradient(circle at left 20px, red, blue)';
+    const input1 = 'radial-gradient(circle at 20px 20px, red, blue)';
+    const input2 = 'radial-gradient(circle at right 50px, red, blue)';
+    const result = processBackgroundImage(input);
+    const result1 = processBackgroundImage(input1);
+    const result2 = processBackgroundImage(input2);
+    expect(result[0].position).toEqual({left: '0%', top: 20});
+    expect(result1[0].position).toEqual({left: 20, top: 20});
+    expect(result2[0].position).toEqual({left: '100%', top: 50});
+  });
+
+  // 4. position syntax: [ [ left | right ] <length-percentage> ] && [ [ top | bottom ] <length-percentage> ]
+  it('should handle left position top position syntax', () => {
+    const input = 'radial-gradient(at top 0% right 10%, red, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].position).toEqual({right: '10%', top: '0%'});
+  });
+
+  it('should handle color stops with transition hints in radial gradients', () => {
+    const input =
+      'radial-gradient(circle, red 0%, 25%, blue 50%, 75%, green 100%)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: '0%'},
+      {color: null, position: '25%'},
+      {color: processColor('blue'), position: '50%'},
+      {color: null, position: '75%'},
+      {color: processColor('green'), position: '100%'},
+    ]);
+    expect(result[0].shape).toEqual('circle');
+    expect(result[0].type).toEqual('radialGradient');
+  });
+
+  it('should process multiple gradients with both radial and linear', () => {
+    const input = `
+      radial-gradient(circle at top left, red, blue),
+      linear-gradient(to bottom, green, yellow)
+    `;
+    const result = processBackgroundImage(input);
+    expect(result).toHaveLength(2);
+    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].shape).toEqual('circle');
+    expect(result[0].position).toEqual({top: '0%', left: '0%'});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
+    ]);
+    expect(result[1].type).toEqual('linearGradient');
+    expect(result[1].direction).toEqual({
+      type: 'angle',
+      value: 180,
+    });
+    expect(result[1].colorStops).toEqual([
+      {color: processColor('green'), position: null},
+      {color: processColor('yellow'), position: null},
+    ]);
+  });
+
+  it('should handle mixed case in radial gradient syntax', () => {
+    const input = 'RaDiAl-GrAdIeNt(CiRcLe ClOsEsT-sIdE aT cEnTeR, rEd, bLuE)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
+    ]);
+    expect(result[0].position).toEqual({top: '50%', left: '50%'});
+    expect(result[0].size).toEqual('closest-side');
+    expect(result[0].shape).toEqual('circle');
+    expect(result[0].type).toEqual('radialGradient');
+  });
+
+  it('should handle whitespace variations in radial gradients', () => {
+    const input =
+      'radial-gradient(   circle    farthest-corner    at    25%    75%   ,   red   0%   ,   blue    100%   )';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: '0%'},
+      {color: processColor('blue'), position: '100%'},
+    ]);
+    expect(result[0].position).toEqual({left: '25%', top: '75%'});
+    expect(result[0].size).toEqual('farthest-corner');
+    expect(result[0].shape).toEqual('circle');
+    expect(result[0].type).toEqual('radialGradient');
+  });
+
+  it('should handle position keywords in different orders', () => {
+    const input1 = 'radial-gradient(circle at top left, red, blue)';
+    const input2 = 'radial-gradient(circle at left top, red, blue)';
+    const result1 = processBackgroundImage(input1);
+    const result2 = processBackgroundImage(input2);
+
+    expect(result1[0].position).toEqual({top: '0%', left: '0%'});
+    expect(result2[0].position).toEqual({top: '0%', left: '0%'});
+  });
+
+  it('should handle invalid radial gradient syntax', () => {
+    const input = 'radial-gradient(circle at top leftt, red, blue, green)';
+    const input1 = 'radial-gradient(circle at, red, blue, green)';
+    const input2 = 'radial-gradient(ellipse 100px, red, blue, green)';
+    const input3 =
+      'radial-gradient(ellipse at top 20% top 50%, red, blue, green)';
+    const result = processBackgroundImage(input);
+    const result1 = processBackgroundImage(input1);
+    const result2 = processBackgroundImage(input2);
+    const result3 = processBackgroundImage(input3);
+    expect(result).toEqual([]);
+    expect(result1).toEqual([]);
+    expect(result2).toEqual([]);
+    expect(result3).toEqual([]);
+  });
+
+  it('should handle multiple color stops with radial gradient syntax', () => {
+    const input = 'radial-gradient(red 0%, yellow 30%, green 60%, blue 100%)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: '0%'},
+      {color: processColor('yellow'), position: '30%'},
+      {color: processColor('green'), position: '60%'},
+      {color: processColor('blue'), position: '100%'},
+    ]);
+  });
 });
