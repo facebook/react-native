@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.soloader.SoLoader;
 import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
@@ -76,6 +77,7 @@ class CxxInspectorPackagerConnection implements IInspectorPackagerConnection {
    * Java counterpart of the C++ IWebSocket interface, allowing us to implement the interface in
    * Java.
    */
+  @DoNotStripAny
   private interface IWebSocket extends Closeable {
     void send(String message);
 
