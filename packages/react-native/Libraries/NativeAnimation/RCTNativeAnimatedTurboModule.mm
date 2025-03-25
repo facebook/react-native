@@ -51,7 +51,9 @@ RCT_EXPORT_MODULE();
 {
   // _surfacePresenter set in setSurfacePresenter:
   _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:nil surfacePresenter:_surfacePresenter];
-  [_surfacePresenter addObserver:self];
+  if (!facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+    [_surfacePresenter addObserver:self];
+  }
   [[self.moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
 }
 
@@ -60,7 +62,9 @@ RCT_EXPORT_MODULE();
   [super invalidate];
   [_nodesManager stopAnimationLoop];
   [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
-  [_surfacePresenter removeObserver:self];
+  if (!facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+    [_surfacePresenter removeObserver:self];
+  }
 }
 
 /*
@@ -325,10 +329,6 @@ RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArg
 
 - (void)willMountComponentsWithRootTag:(NSInteger)rootTag
 {
-  if (facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
-    return;
-  }
-
   RCTAssertMainQueue();
   RCTExecuteOnUIManagerQueue(^{
     NSArray<AnimatedOperation> *preOperations = self->_preOperations;
@@ -344,10 +344,6 @@ RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArg
 
 - (void)didMountComponentsWithRootTag:(NSInteger)rootTag
 {
-  if (facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
-    return;
-  }
-
   RCTAssertMainQueue();
   RCTExecuteOnUIManagerQueue(^{
     NSArray<AnimatedOperation> *operations = self->_operations;
