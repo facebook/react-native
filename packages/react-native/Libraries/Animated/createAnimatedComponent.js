@@ -73,6 +73,12 @@ export type AnimatedProps<Props: {...}> = {
       : WithAnimatedValue<Props[K]>,
 };
 
+export type AnimatedBaseProps<Props: {...}> = {
+  [K in keyof Props]: K extends NonAnimatedProps
+    ? Props[K]
+    : WithAnimatedValue<Props[K]>,
+};
+
 export type AnimatedComponentType<Props: {...}, +Instance = mixed> = component(
   ref?: React.RefSetter<Instance>,
   ...AnimatedProps<Props>
