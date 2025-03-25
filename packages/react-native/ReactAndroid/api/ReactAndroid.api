@@ -6713,11 +6713,11 @@ public final class com/facebook/react/views/text/ReactRawTextManager : com/faceb
 	public fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/text/ReactRawTextShadowNode : com/facebook/react/uimanager/ReactShadowNodeImpl {
+public final class com/facebook/react/views/text/ReactRawTextShadowNode : com/facebook/react/uimanager/ReactShadowNodeImpl {
 	public fun <init> ()V
-	public fun getText ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
 	public fun isVirtual ()Z
-	public fun setText (Ljava/lang/String;)V
+	public final fun setText (Ljava/lang/String;)V
 	public fun toString ()Ljava/lang/String;
 }
 
