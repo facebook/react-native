@@ -20,6 +20,20 @@ import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/Reac
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
+function isUnreachable<T: interface {}>(weakRef: WeakRef<T>): boolean {
+  let unreachable = true;
+
+  Fantom.runTask(() => {
+    global.gc();
+  });
+
+  Fantom.runTask(() => {
+    unreachable = weakRef.deref() === undefined;
+  });
+
+  return unreachable;
+}
+
 describe('ReactNativeDocument', () => {
   it('is connected until the surface is destroyed', () => {
     let lastNode;
@@ -231,21 +245,17 @@ describe('ReactNativeDocument', () => {
     });
 
     const weakDocument = nullthrows(maybeWeakDocument);
-    expect(weakDocument.deref()).toBeInstanceOf(ReactNativeDocument);
-
     const weakNode = nullthrows(maybeWeakNode);
-    expect(weakNode.deref()).toBeInstanceOf(ReactNativeElement);
+
+    expect(isUnreachable(weakDocument)).toBe(false);
+    expect(isUnreachable(weakNode)).toBe(false);
 
     Fantom.runTask(() => {
       root.destroy();
     });
 
-    Fantom.runTask(() => {
-      global.gc();
-    });
-
     expect(lastNode).toBe(null);
-    expect(weakNode.deref()).toBe(undefined);
-    expect(weakDocument.deref()).toBe(undefined);
+    expect(isUnreachable(weakDocument)).toBe(true);
+    expect(isUnreachable(weakNode)).toBe(true);
   });
 });
