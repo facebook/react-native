@@ -57,7 +57,9 @@ const eventListenerAnimationFinishedCallbacks: {
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
-const shouldSignalBatch = ReactNativeFeatureFlags.animatedShouldSignalBatch();
+const shouldSignalBatch =
+  ReactNativeFeatureFlags.animatedShouldSignalBatch() ||
+  ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
   const methodNames = [

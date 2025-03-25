@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a17ecc37b3ecd8c0830d9875e8b4453>>
+ * @generated SignedSource<<9f43ddaa47a45d604adda2e2296c1484>>
  */
 
 /**
@@ -41,6 +41,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
+
+  /**
+   * Use a C++ implementation of Native Animated instead of the platform implementation.
+   */
+  @JvmStatic
+  public fun cxxNativeAnimatedEnabled(): Boolean = accessor.cxxNativeAnimatedEnabled()
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread

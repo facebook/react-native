@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f645ab08e2783763a91d685e8c1ddd02>>
+ * @generated SignedSource<<988e6c024f8526a676dd586cab91c98e>>
  */
 
 /**
@@ -32,6 +32,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool animatedShouldSignalBatch() override {
+    return false;
+  }
+
+  bool cxxNativeAnimatedEnabled() override {
     return false;
   }
 
