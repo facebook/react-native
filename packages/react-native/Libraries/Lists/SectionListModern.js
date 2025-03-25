@@ -102,27 +102,9 @@ type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
 };
 
 export type Props<ItemT, SectionT = DefaultSectionT> = $ReadOnly<{
-  ...$Diff<
+  ...Omit<
     VirtualizedSectionListProps<ItemT, SectionT>,
-    {
-      getItem: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        'getItem',
-      >,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        'getItemCount',
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        'renderItem',
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        'keyExtractor',
-      >,
-      ...
-    },
+    'getItem' | 'getItemCount' | 'renderItem' | 'keyExtractor',
   >,
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,

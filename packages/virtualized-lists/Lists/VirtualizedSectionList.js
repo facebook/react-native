@@ -102,14 +102,7 @@ type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 export type VirtualizedSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
-  ...$Diff<
-    VirtualizedListProps,
-    {
-      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
-      data: $PropertyType<VirtualizedListProps, 'data'>,
-      ...
-    },
-  >,
+  ...Omit<VirtualizedListProps, 'data' | 'renderItem'>,
 };
 export type ScrollToLocationParamsType = {
   animated?: ?boolean,

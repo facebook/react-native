@@ -134,19 +134,16 @@ export interface ScrollViewScrollToOptions {
 
 // Public methods for ScrollView
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: $PropertyType<ScrollView, 'getScrollResponder'>;
-  +getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>;
-  +getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>;
-  +getInnerViewRef: $PropertyType<ScrollView, 'getInnerViewRef'>;
-  +getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>;
-  +scrollTo: $PropertyType<ScrollView, 'scrollTo'>;
-  +scrollToEnd: $PropertyType<ScrollView, 'scrollToEnd'>;
-  +flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>;
-  +scrollResponderZoomTo: $PropertyType<ScrollView, 'scrollResponderZoomTo'>;
-  +scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
-    ScrollView,
-    'scrollResponderScrollNativeHandleToKeyboard',
-  >;
+  +getScrollResponder: ScrollView['getScrollResponder'];
+  +getScrollableNode: ScrollView['getScrollableNode'];
+  +getInnerViewNode: ScrollView['getInnerViewNode'];
+  +getInnerViewRef: ScrollView['getInnerViewRef'];
+  +getNativeScrollRef: ScrollView['getNativeScrollRef'];
+  +scrollTo: ScrollView['scrollTo'];
+  +scrollToEnd: ScrollView['scrollToEnd'];
+  +flashScrollIndicators: ScrollView['flashScrollIndicators'];
+  +scrollResponderZoomTo: ScrollView['scrollResponderZoomTo'];
+  +scrollResponderScrollNativeHandleToKeyboard: ScrollView['scrollResponderScrollNativeHandleToKeyboard'];
 }
 
 export type DecelerationRateType = 'fast' | 'normal' | number;

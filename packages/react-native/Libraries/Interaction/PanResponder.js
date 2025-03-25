@@ -333,7 +333,7 @@ const PanResponder = {
    */
   _updateGestureStateOnMove(
     gestureState: PanResponderGestureState,
-    touchHistory: $PropertyType<GestureResponderEvent, 'touchHistory'>,
+    touchHistory: GestureResponderEvent['touchHistory'],
   ) {
     gestureState.numberActiveTouches = touchHistory.numberActiveTouches;
     gestureState.moveX = currentCentroidXOfTouchesChangedAfter(

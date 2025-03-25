@@ -118,7 +118,7 @@ export type DangerouslyImpreciseStyleProp =
  */
 export type TypeForStyleKey<
   +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
-> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+> = ____DangerouslyImpreciseStyle_Internal[key];
 
 /**
  * This type is an object of the different possible style

@@ -184,17 +184,14 @@ type FlatListBaseProps<ItemT> = {
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
 export type FlatListProps<ItemT> = {
-  ...$Diff<
+  ...Omit<
     VirtualizedListProps,
-    {
-      data: $PropertyType<VirtualizedListProps, 'data'>,
-      getItem: $PropertyType<VirtualizedListProps, 'getItem'>,
-      getItemCount: $PropertyType<VirtualizedListProps, 'getItemCount'>,
-      getItemLayout: $PropertyType<VirtualizedListProps, 'getItemLayout'>,
-      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
-      keyExtractor: $PropertyType<VirtualizedListProps, 'keyExtractor'>,
-      ...
-    },
+    | 'data'
+    | 'getItem'
+    | 'getItemCount'
+    | 'getItemLayout'
+    | 'renderItem'
+    | 'keyExtractor',
   >,
   ...FlatListBaseProps<ItemT>,
   ...

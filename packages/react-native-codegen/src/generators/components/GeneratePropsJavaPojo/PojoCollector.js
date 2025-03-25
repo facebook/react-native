@@ -112,10 +112,8 @@ class PojoCollector {
       }
       case 'ArrayTypeAnnotation': {
         const arrayTypeAnnotation = typeAnnotation;
-        const elementType: $PropertyType<
-          ComponentArrayTypeAnnotation,
-          'elementType',
-        > = arrayTypeAnnotation.elementType;
+        const elementType: ComponentArrayTypeAnnotation['elementType'] =
+          arrayTypeAnnotation.elementType;
 
         const pojoElementType = (() => {
           switch (elementType.type) {
