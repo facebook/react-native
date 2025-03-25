@@ -2462,7 +2462,6 @@ public final class com/facebook/react/fabric/events/FabricEventEmitter : com/fac
 	public fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public fun receiveEvent (IILjava/lang/String;ZILcom/facebook/react/bridge/WritableMap;I)V
 	public fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
-	public fun receiveTouches (Lcom/facebook/react/uimanager/events/TouchEvent;)V
 	public fun receiveTouches (Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
 }
 
@@ -3369,6 +3368,7 @@ public class com/facebook/react/packagerconnection/PackagerConnectionSettings {
 	public final fun getAdditionalOptionsForPackager ()Ljava/util/Map;
 	public fun getDebugServerHost ()Ljava/lang/String;
 	public final fun getPackageName ()Ljava/lang/String;
+	public fun resetDebugServerHost ()V
 	public final fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
 	public fun setDebugServerHost (Ljava/lang/String;)V
 }
@@ -3679,6 +3679,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setAccessibilityLabel (Landroid/view/View;Ljava/lang/String;)V
 	public fun setAccessibilityLabelledBy (Landroid/view/View;Lcom/facebook/react/bridge/Dynamic;)V
 	public fun setAccessibilityLiveRegion (Landroid/view/View;Ljava/lang/String;)V
+	public fun setAccessibilityOrder (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setAccessibilityRole (Landroid/view/View;Ljava/lang/String;)V
 	public fun setAccessibilityValue (Landroid/view/View;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setBackgroundColor (Landroid/view/View;I)V
@@ -3970,14 +3971,17 @@ public class com/facebook/react/uimanager/NativeViewHierarchyOptimizer {
 	public fun onBatchComplete ()V
 }
 
-public class com/facebook/react/uimanager/OnLayoutEvent : com/facebook/react/uimanager/events/Event {
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
+public final class com/facebook/react/uimanager/OnLayoutEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/uimanager/OnLayoutEvent$Companion;
 	public fun getEventName ()Ljava/lang/String;
-	protected fun init (IIIII)V
-	protected fun init (IIIIII)V
-	public static fun obtain (IIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
-	public static fun obtain (IIIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
+	public static final fun obtain (IIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
+	public static final fun obtain (IIIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
 	public fun onDispose ()V
+}
+
+public final class com/facebook/react/uimanager/OnLayoutEvent$Companion {
+	public final fun obtain (IIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
+	public final fun obtain (IIIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
 }
 
 public final class com/facebook/react/uimanager/PixelUtil {
@@ -4801,6 +4805,8 @@ public abstract interface class com/facebook/react/uimanager/UIManagerModule$Cus
 
 public class com/facebook/react/uimanager/UIManagerModuleConstantsHelper {
 	public fun <init> ()V
+	public static fun createConstants (Ljava/util/List;Ljava/util/Map;Ljava/util/Map;)Ljava/util/Map;
+	public static fun createConstantsForViewManager (Lcom/facebook/react/uimanager/ViewManager;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;)Ljava/util/Map;
 	public static fun getDefaultExportableEventTypes ()Ljava/util/Map;
 }
 
@@ -4988,6 +4994,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field ACCESSIBILITY_LABEL Ljava/lang/String;
 	public static final field ACCESSIBILITY_LABELLED_BY Ljava/lang/String;
 	public static final field ACCESSIBILITY_LIVE_REGION Ljava/lang/String;
+	public static final field ACCESSIBILITY_ORDER Ljava/lang/String;
 	public static final field ACCESSIBILITY_ROLE Ljava/lang/String;
 	public static final field ACCESSIBILITY_STATE Ljava/lang/String;
 	public static final field ACCESSIBILITY_VALUE Ljava/lang/String;
@@ -5163,11 +5170,13 @@ public abstract interface annotation class com/facebook/react/uimanager/common/U
 	public static final field Companion Lcom/facebook/react/uimanager/common/UIManagerType$Companion;
 	public static final field DEFAULT I
 	public static final field FABRIC I
+	public static final field LEGACY I
 }
 
 public final class com/facebook/react/uimanager/common/UIManagerType$Companion {
 	public static final field DEFAULT I
 	public static final field FABRIC I
+	public static final field LEGACY I
 }
 
 public final class com/facebook/react/uimanager/common/ViewUtil {
@@ -5379,7 +5388,6 @@ public abstract interface class com/facebook/react/uimanager/events/RCTEventEmit
 public abstract interface class com/facebook/react/uimanager/events/RCTModernEventEmitter : com/facebook/react/uimanager/events/RCTEventEmitter {
 	public abstract fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public abstract fun receiveEvent (IILjava/lang/String;ZILcom/facebook/react/bridge/WritableMap;I)V
-	public abstract fun receiveTouches (Lcom/facebook/react/uimanager/events/TouchEvent;)V
 }
 
 public final class com/facebook/react/uimanager/events/TouchEvent : com/facebook/react/uimanager/events/Event {
@@ -7024,12 +7032,15 @@ public abstract interface class com/facebook/react/views/textinput/ContentSizeWa
 	public abstract fun onLayout ()V
 }
 
-public class com/facebook/react/views/textinput/ReactContentSizeChangedEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/textinput/ReactContentSizeChangedEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/views/textinput/ReactContentSizeChangedEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
 	public fun <init> (IFF)V
 	public fun <init> (IIFF)V
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/textinput/ReactContentSizeChangedEvent$Companion {
 }
 
 public class com/facebook/react/views/textinput/ReactEditText : androidx/appcompat/widget/AppCompatEditText {
@@ -7111,17 +7122,20 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
 }
 
-public class com/facebook/react/views/textinput/ReactTextChangedEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/views/textinput/ReactTextChangedEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/views/textinput/ReactTextChangedEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
 	public fun <init> (IILjava/lang/String;I)V
 	public fun <init> (ILjava/lang/String;I)V
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
 	public fun getEventName ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/views/textinput/ReactTextChangedEvent$Companion {
 }
 
 public final class com/facebook/react/views/textinput/ReactTextInputLocalData {
 	public fun <init> (Landroid/widget/EditText;)V
-	public fun apply (Landroid/widget/EditText;)V
+	public final fun apply (Landroid/widget/EditText;)V
 }
 
 public class com/facebook/react/views/textinput/ReactTextInputManager : com/facebook/react/uimanager/BaseViewManager {

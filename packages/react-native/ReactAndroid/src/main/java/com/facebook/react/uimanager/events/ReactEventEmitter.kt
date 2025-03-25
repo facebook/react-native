@@ -18,6 +18,12 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 
+/**
+ * This class handles event emitting across the legacy and Fabric event emitting mechanisms. Based
+ * on the surfaceId and targetTag, it will route the event to the appropriate event emitter.
+ *
+ * This class is constructed both by Paper's EventDispatcherImpl and the FabricEventDispatcher.
+ */
 internal class ReactEventEmitter(private val reactContext: ReactApplicationContext) :
     RCTModernEventEmitter {
   /** Corresponds to [com.facebook.react.fabric.events.FabricEventEmitter] */
@@ -32,12 +38,12 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
   }
 
   fun register(@UIManagerType uiManagerType: Int, eventEmitter: RCTEventEmitter?) {
-    check(uiManagerType == UIManagerType.DEFAULT)
+    check(uiManagerType == UIManagerType.LEGACY)
     defaultEventEmitter = eventEmitter
   }
 
   fun unregister(@UIManagerType uiManagerType: Int) {
-    if (uiManagerType == UIManagerType.DEFAULT) {
+    if (uiManagerType == UIManagerType.LEGACY) {
       defaultEventEmitter = null
     } else {
       fabricEventEmitter = null
@@ -59,32 +65,21 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
     receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
   }
 
+  /*
+   * This method should be unused by Fabric event processing pipeline, but leaving it here to make sure
+   * that any custom code using it in legacy renderer is compatible
+   */
   @Deprecated("Dispatch the TouchEvent using [EventDispatcher] instead")
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
       changedIndices: WritableArray
   ) {
-    /*
-     * This method should be unused by default processing pipeline, but leaving it here to make sure
-     * that any custom code using it in legacy renderer is compatible
-     */
     check(touches.size() > 0)
-
     val reactTag = touches.getMap(0)?.getInt(TouchesHelper.TARGET_KEY) ?: 0
     @UIManagerType val uiManagerType = getUIManagerType(reactTag)
-    if (uiManagerType == UIManagerType.DEFAULT) {
+    if (uiManagerType == UIManagerType.LEGACY) {
       ensureDefaultEventEmitter()?.receiveTouches(eventName, touches, changedIndices)
-    }
-  }
-
-  @Deprecated("Dispatch the TouchEvent using [EventDispatcher] instead")
-  override fun receiveTouches(event: TouchEvent) {
-    @UIManagerType val uiManagerType = getUIManagerType(event.viewTag, event.surfaceId)
-    if (uiManagerType == UIManagerType.FABRIC) {
-      fabricEventEmitter?.let { TouchesHelper.sendTouchEvent(it, event) }
-    } else if (uiManagerType == UIManagerType.DEFAULT) {
-      ensureDefaultEventEmitter()?.let { TouchesHelper.sendTouchesLegacy(it, event) }
     }
   }
 
@@ -119,7 +114,7 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
     if (uiManagerType == UIManagerType.FABRIC) {
       fabricEventEmitter?.receiveEvent(
           surfaceId, targetTag, eventName, canCoalesceEvent, customCoalesceKey, params, category)
-    } else if (uiManagerType == UIManagerType.DEFAULT) {
+    } else if (uiManagerType == UIManagerType.LEGACY) {
       ensureDefaultEventEmitter()?.receiveEvent(targetTag, eventName, params)
     }
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b8be2ef692b468cdfee6d88c091abec3>>
+ * @generated SignedSource<<c600cb99e75a2c71e5241e4cc3ab7d35>>
  */
 
 /**
@@ -180,6 +180,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableLongTaskAPI();
   }
 
+  bool enableMainQueueModulesOnIOS() override {
+    auto value = values_["enableMainQueueModulesOnIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableMainQueueModulesOnIOS();
+  }
+
   bool enableNativeCSSParsing() override {
     auto value = values_["enableNativeCSSParsing"];
     if (!value.isNull()) {
@@ -270,15 +279,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableViewRecyclingForView();
   }
 
-  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {
-    auto value = values_["fixDifferentiatorEmittingUpdatesWithWrongParentTag"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::fixDifferentiatorEmittingUpdatesWithWrongParentTag();
-  }
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     auto value = values_["fixMappingOfEventPrioritiesBetweenFabricAndReact"];
     if (!value.isNull()) {
@@ -313,15 +313,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled();
-  }
-
-  bool lazyAnimationCallbacks() override {
-    auto value = values_["lazyAnimationCallbacks"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::lazyAnimationCallbacks();
   }
 
   bool removeTurboModuleManagerDelegateMutex() override {

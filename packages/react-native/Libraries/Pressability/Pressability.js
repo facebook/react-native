@@ -829,7 +829,7 @@ export default class Pressability {
   };
 
   _isTouchWithinResponderRegion(
-    touch: $PropertyType<GestureResponderEvent, 'nativeEvent'>,
+    touch: GestureResponderEvent['nativeEvent'],
     responderRegion: $ReadOnly<{
       bottom: number,
       left: number,

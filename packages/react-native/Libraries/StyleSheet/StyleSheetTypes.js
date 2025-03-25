@@ -21,6 +21,8 @@ import type {
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
+export type {____TransformStyle_Internal};
+
 declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
@@ -911,7 +913,7 @@ export type ____FontWeight_Internal =
   | 'heavy'
   | 'black';
 
-export type ____FontVariantArray_Internal = $ReadOnlyArray<
+export type ____FontVariant_Internal =
   | 'small-caps'
   | 'oldstyle-nums'
   | 'lining-nums'
@@ -944,8 +946,10 @@ export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | 'stylistic-seventeen'
   | 'stylistic-eighteen'
   | 'stylistic-nineteen'
-  | 'stylistic-twenty',
->;
+  | 'stylistic-twenty';
+
+export type ____FontVariantArray_Internal =
+  $ReadOnlyArray<____FontVariant_Internal>;
 
 type ____TextStyle_InternalBase = $ReadOnly<{
   color?: ____ColorValue_Internal,

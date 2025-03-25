@@ -36,11 +36,11 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   private val defaultJSExceptionHandler: DefaultJSExceptionHandler = DefaultJSExceptionHandler()
 
-  public override fun showNewJavaError(message: String?, e: Throwable?): Unit = Unit
+  public override fun showNewJavaError(message: String?, e: Throwable): Unit = Unit
 
   public override fun addCustomDevOption(
-      optionName: String?,
-      optionHandler: DevOptionHandler?
+      optionName: String,
+      optionHandler: DevOptionHandler
   ): Unit = Unit
 
   public override fun showNewJSError(
@@ -49,7 +49,7 @@ public open class ReleaseDevSupportManager : DevSupportManager {
       errorCookie: Int
   ): Unit = Unit
 
-  public override fun createRootView(appKey: String?): View? = null
+  public override fun createRootView(appKey: String): View? = null
 
   public override fun destroyRootView(rootView: View?): Unit = Unit
 
@@ -111,7 +111,7 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun downloadBundleResourceFromUrlSync(
       resourceURL: String,
-      outputFile: File?
+      outputFile: File
   ): File? = null
 
   public override val lastErrorTitle: String?
@@ -125,14 +125,14 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override val lastErrorCookie: Int = 0
 
-  public override fun registerErrorCustomizer(errorCustomizer: ErrorCustomizer?): Unit = Unit
+  public override fun registerErrorCustomizer(errorCustomizer: ErrorCustomizer): Unit = Unit
 
   public override fun processErrorCustomizers(
-      errorInfo: Pair<String, Array<StackFrame>>?
-  ): Pair<String, Array<StackFrame>>? = errorInfo
+      errorInfo: Pair<String, Array<StackFrame>>
+  ): Pair<String, Array<StackFrame>> = errorInfo
 
   public override fun setPackagerLocationCustomizer(
-      packagerLocationCustomizer: PackagerLocationCustomizer?
+      packagerLocationCustomizer: PackagerLocationCustomizer
   ): Unit = Unit
 
   public override fun handleException(e: Exception) {
@@ -145,7 +145,7 @@ public open class ReleaseDevSupportManager : DevSupportManager {
   public override val currentReactContext: ReactContext?
     get() = null
 
-  public override fun createSurfaceDelegate(moduleName: String?): SurfaceDelegate? = null
+  public override fun createSurfaceDelegate(moduleName: String): SurfaceDelegate? = null
 
   public override fun openDebugger(): Unit = Unit
 

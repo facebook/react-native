@@ -27,8 +27,8 @@ import * as React from 'react';
 
 const {useEffect, useState, useCallback} = React;
 
-const reactDevToolsHook: ReactDevToolsGlobalHook =
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+const reactDevToolsHook: ReactDevToolsGlobalHook = (window: $FlowFixMe)
+  .__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 // Required for React DevTools to view / edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.

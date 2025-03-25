@@ -392,9 +392,9 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     }
   }
 
-  if (oldViewProps.accessibilityElements != newViewProps.accessibilityElements) {
+  if (oldViewProps.accessibilityOrder != newViewProps.accessibilityOrder) {
     _accessibleElementsNativeIds = [NSMutableArray new];
-    for (const std::string &childId : newViewProps.accessibilityElements) {
+    for (const std::string &childId : newViewProps.accessibilityOrder) {
       [_accessibleElementsNativeIds addObject:RCTNSStringFromString(childId)];
     }
   }

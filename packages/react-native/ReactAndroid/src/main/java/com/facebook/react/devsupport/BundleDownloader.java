@@ -10,6 +10,7 @@ package com.facebook.react.devsupport;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -32,6 +33,7 @@ import okio.Sink;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BundleDownloader {
   private static final String TAG = "BundleDownloader";
 
@@ -140,22 +142,29 @@ public class BundleDownloader {
               final String url = response.request().url().toString();
               // Make sure the result is a multipart response and parse the boundary.
               String contentType = response.header("content-type");
+              if (contentType == null) {
+                // fallback to empty string for nullability
+                contentType = "";
+              }
               Pattern regex = Pattern.compile("multipart/mixed;.*boundary=\"([^\"]+)\"");
               Matcher match = regex.matcher(contentType);
-              if (match.find()) {
-                processMultipartResponse(url, r, match.group(1), outputFile, bundleInfo, callback);
+              if (!contentType.isEmpty() && match.find()) {
+                String boundary = Assertions.assertNotNull(match.group(1));
+                processMultipartResponse(url, r, boundary, outputFile, bundleInfo, callback);
               } else {
                 // In case the server doesn't support multipart/mixed responses, fallback to normal
                 // download.
                 try (ResponseBody body = r.body()) {
-                  processBundleResult(
-                      url,
-                      r.code(),
-                      r.headers(),
-                      r.body().source(),
-                      outputFile,
-                      bundleInfo,
-                      callback);
+                  if (body != null) {
+                    processBundleResult(
+                        url,
+                        r.code(),
+                        r.headers(),
+                        body.source(),
+                        outputFile,
+                        bundleInfo,
+                        callback);
+                  }
                 }
               }
             }
@@ -171,7 +180,17 @@ public class BundleDownloader {
       @Nullable final BundleInfo bundleInfo,
       final DevBundleDownloadListener callback)
       throws IOException {
-
+    if (response.body() == null) {
+      callback.onFailure(
+          new DebugServerException(
+              "Error while reading multipart response.\n\nResponse body was empty: "
+                  + response.code()
+                  + "\n\n"
+                  + "URL: "
+                  + url.toString()
+                  + "\n\n"));
+      return;
+    }
     MultipartStreamReader bodyReader =
         new MultipartStreamReader(response.body().source(), boundary);
     boolean completed =
@@ -243,7 +262,7 @@ public class BundleDownloader {
       Headers headers,
       BufferedSource body,
       File outputFile,
-      BundleInfo bundleInfo,
+      @Nullable BundleInfo bundleInfo,
       DevBundleDownloadListener callback)
       throws IOException {
     // Check for server errors. If the server error has the expected form, fail with more info.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<36b55f5cfd86d9aaad26c760dec7c875>>
+ * @generated SignedSource<<0e7396f960e18680d4384f8db501472b>>
  */
 
 /**
@@ -67,6 +67,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
 
+  bool enableMainQueueModulesOnIOS(jsi::Runtime& runtime);
+
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
 
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
@@ -87,8 +89,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
-  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(jsi::Runtime& runtime);
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
@@ -96,8 +96,6 @@ class NativeReactNativeFeatureFlags
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
-
-  bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
   bool removeTurboModuleManagerDelegateMutex(jsi::Runtime& runtime);
 

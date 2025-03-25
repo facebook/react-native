@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee83dc14463351d400cd75624c803176>>
+ * @generated SignedSource<<d6d24b5374dd661de4917bcc6f4ec53b>>
  */
 
 /**
@@ -75,6 +75,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableLongTaskAPI(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool enableMainQueueModulesOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool enableNativeCSSParsing(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -105,9 +108,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableViewRecyclingForView(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -118,9 +118,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fuseboxNetworkInspectionEnabled(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool lazyAnimationCallbacks(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool removeTurboModuleManagerDelegateMutex(

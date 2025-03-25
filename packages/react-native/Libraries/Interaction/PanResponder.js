@@ -193,7 +193,7 @@ type PassiveCallback = (
   gestureState: PanResponderGestureState,
 ) => mixed;
 
-export type GestureResponderHandlers = {
+export type GestureResponderHandlerMethods = {
   onMoveShouldSetResponder: (event: GestureResponderEvent) => boolean,
   onMoveShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
   onResponderEnd: (event: GestureResponderEvent) => void,
@@ -333,7 +333,7 @@ const PanResponder = {
    */
   _updateGestureStateOnMove(
     gestureState: PanResponderGestureState,
-    touchHistory: $PropertyType<GestureResponderEvent, 'touchHistory'>,
+    touchHistory: GestureResponderEvent['touchHistory'],
   ) {
     gestureState.numberActiveTouches = touchHistory.numberActiveTouches;
     gestureState.moveX = currentCentroidXOfTouchesChangedAfter(
@@ -403,7 +403,7 @@ const PanResponder = {
    */
   create(config: PanResponderCallbacks): {
     getInteractionHandle: () => ?number,
-    panHandlers: GestureResponderHandlers,
+    panHandlers: GestureResponderHandlerMethods,
   } {
     const interactionState = {
       handle: (null: ?number),

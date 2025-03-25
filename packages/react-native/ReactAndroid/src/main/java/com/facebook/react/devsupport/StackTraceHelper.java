@@ -8,6 +8,8 @@
 package com.facebook.react.devsupport;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableArray;
@@ -26,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class StackTraceHelper {
 
   public static final String COLUMN_KEY = "column";
@@ -49,27 +52,29 @@ public class StackTraceHelper {
 
   /** Represents a generic entry in a stack trace, be it originally from JS or Java. */
   public static class StackFrameImpl implements StackFrame {
-    private final String mFile;
+    @Nullable private final String mFile;
     private final String mMethod;
     private final int mLine;
     private final int mColumn;
-    private final String mFileName;
+    @Nullable private final String mFileName;
     private final boolean mIsCollapsed;
 
-    private StackFrameImpl(String file, String method, int line, int column, boolean isCollapsed) {
+    private StackFrameImpl(
+        @Nullable String file, String method, int line, int column, boolean isCollapsed) {
       mFile = file;
       mMethod = method;
       mLine = line;
       mColumn = column;
-      mFileName = file != null ? new File(file).getName() : "";
+      mFileName = file != null ? new File(file).getName() : null;
       mIsCollapsed = isCollapsed;
     }
 
-    private StackFrameImpl(String file, String method, int line, int column) {
+    private StackFrameImpl(@Nullable String file, String method, int line, int column) {
       this(file, method, line, column, false);
     }
 
-    private StackFrameImpl(String file, String fileName, String method, int line, int column) {
+    private StackFrameImpl(
+        @Nullable String file, @Nullable String fileName, String method, int line, int column) {
       mFile = file;
       mFileName = fileName;
       mMethod = method;
@@ -84,7 +89,8 @@ public class StackTraceHelper {
      * <p>JS traces return the full path to the file here, while Java traces only return the file
      * name (the path is not known).
      */
-    public String getFile() {
+    @Override
+    public @Nullable String getFile() {
       return mFile;
     }
 
@@ -109,7 +115,8 @@ public class StackTraceHelper {
      * <p>For JS traces this is different from {@link #getFile()} in that it only returns the file
      * name, not the full path. For Java traces there is no difference.
      */
-    public String getFileName() {
+    @Override
+    public @Nullable String getFileName() {
       return mFileName;
     }
 
@@ -119,9 +126,10 @@ public class StackTraceHelper {
 
     /** Convert the stack frame to a JSON representation. */
     public JSONObject toJSON() {
+      String file = getFile();
       return new JSONObject(
           MapBuilder.of(
-              "file", getFile(),
+              "file", (file == null) ? "" : file,
               "methodName", getMethod(),
               "lineNumber", getLine(),
               "column", getColumn(),
@@ -136,25 +144,33 @@ public class StackTraceHelper {
   public static StackFrame[] convertJsStackTrace(@Nullable ReadableArray stack) {
     int size = stack != null ? stack.size() : 0;
     StackFrame[] result = new StackFrame[size];
-    for (int i = 0; i < size; i++) {
-      ReadableType type = stack.getType(i);
-      if (type == ReadableType.Map) {
-        ReadableMap frame = stack.getMap(i);
-        String methodName = frame.getString("methodName");
-        String fileName = frame.getString("file");
-        boolean collapse =
-            frame.hasKey("collapse") && !frame.isNull("collapse") && frame.getBoolean("collapse");
-        int lineNumber = -1;
-        if (frame.hasKey(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
-          lineNumber = frame.getInt(LINE_NUMBER_KEY);
+    if (stack != null) {
+      for (int i = 0; i < size; i++) {
+        ReadableType type = stack.getType(i);
+        if (type == ReadableType.Map) {
+          ReadableMap frame = stack.getMap(i);
+          Assertions.assertNotNull(frame);
+          String methodName = frame.getString("methodName");
+          String fileName = frame.getString("file");
+          Assertions.assertNotNull(fileName);
+          Assertions.assertNotNull(methodName);
+          boolean collapse =
+              frame.hasKey("collapse") && !frame.isNull("collapse") && frame.getBoolean("collapse");
+          int lineNumber = -1;
+          if (frame.hasKey(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
+            lineNumber = frame.getInt(LINE_NUMBER_KEY);
+          }
+          int columnNumber = -1;
+          if (frame.hasKey(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
+            columnNumber = frame.getInt(COLUMN_KEY);
+          }
+          result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber, collapse);
+        } else if (type == ReadableType.String) {
+          String stackFrame = stack.getString(i);
+          if (stackFrame != null) {
+            result[i] = new StackFrameImpl(null, stackFrame, -1, -1);
+          }
         }
-        int columnNumber = -1;
-        if (frame.hasKey(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
-          columnNumber = frame.getInt(COLUMN_KEY);
-        }
-        result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber, collapse);
-      } else if (type == ReadableType.String) {
-        result[i] = new StackFrameImpl(null, stack.getString(i), -1, -1);
       }
     }
     return result;
@@ -203,15 +219,22 @@ public class StackTraceHelper {
       } else if (matcher1.find()) {
         matcher = matcher1;
       } else {
-        result[i] = new StackFrameImpl(null, stackTrace[i], -1, -1);
+        String unmatchedStackFrame = stackTrace[i];
+        if (unmatchedStackFrame != null) {
+          result[i] = new StackFrameImpl(null, unmatchedStackFrame, -1, -1);
+        }
+        continue;
+      }
+      String fileName = matcher.group(2);
+      String methodName = matcher.group(1) == null ? "(unknown)" : matcher.group(1);
+      String lineString = matcher.group(3);
+      String columnString = matcher.group(4);
+      if (methodName == null || fileName == null || lineString == null || columnString == null) {
         continue;
       }
       result[i] =
           new StackFrameImpl(
-              matcher.group(2),
-              matcher.group(1) == null ? "(unknown)" : matcher.group(1),
-              Integer.parseInt(matcher.group(3)),
-              Integer.parseInt(matcher.group(4)));
+              fileName, methodName, Integer.parseInt(lineString), Integer.parseInt(columnString));
     }
     return result;
   }

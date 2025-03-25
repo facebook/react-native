@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d47f61435ba3a74e84752a02def81c2>>
+ * @generated SignedSource<<3a47a14617ae6faad151ecd64a4613ff>>
  */
 
 /**
@@ -86,6 +86,10 @@ bool ReactNativeFeatureFlags::enableLongTaskAPI() {
   return getAccessor().enableLongTaskAPI();
 }
 
+bool ReactNativeFeatureFlags::enableMainQueueModulesOnIOS() {
+  return getAccessor().enableMainQueueModulesOnIOS();
+}
+
 bool ReactNativeFeatureFlags::enableNativeCSSParsing() {
   return getAccessor().enableNativeCSSParsing();
 }
@@ -126,10 +130,6 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
   return getAccessor().enableViewRecyclingForView();
 }
 
-bool ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag() {
-  return getAccessor().fixDifferentiatorEmittingUpdatesWithWrongParentTag();
-}
-
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
@@ -144,10 +144,6 @@ bool ReactNativeFeatureFlags::fuseboxEnabledRelease() {
 
 bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
   return getAccessor().fuseboxNetworkInspectionEnabled();
-}
-
-bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
-  return getAccessor().lazyAnimationCallbacks();
 }
 
 bool ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex() {

@@ -46,11 +46,12 @@ const AnimatedScrollView: AnimatedComponentType<Props, Instance> =
         props.style != null
       ) {
         return (
-          // $FlowFixMe[prop-missing]
+          // $FlowFixMe - It should return an Animated ScrollView but it returns a ScrollView with Animated props applied.
           <AnimatedScrollViewWithInvertedRefreshControl
             scrollEventThrottle={0.0001}
             {...props}
             ref={forwardedRef}
+            // $FlowFixMe[incompatible-type]
             refreshControl={props.refreshControl}
           />
         );

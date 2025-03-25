@@ -12,7 +12,6 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
-#import <React/RCTInitializeUIKitProxies.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTInspectorNetworkHelper.h>
 #import <React/RCTInspectorUtils.h>
@@ -49,12 +48,17 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   jsinspector_modern::HostTargetMetadata getMetadata() override
   {
     auto metadata = [RCTInspectorUtils getHostMetadata];
+#if TARGET_OS_IPHONE
+    NSString *osName = [[UIDevice currentDevice] systemName];
+#else
+    NSString *osName = @"macOS";
+#endif
 
     return {
         .appDisplayName = [metadata.appDisplayName UTF8String],
         .appIdentifier = [metadata.appIdentifier UTF8String],
         .deviceName = [metadata.deviceName UTF8String],
-        .integrationName = [[NSString stringWithFormat:@"%@ Bridgeless (RCTHost)", metadata.platform] UTF8String],
+        .integrationName = [[NSString stringWithFormat:@"%@ Bridgeless (RCTHost)", osName] UTF8String],
         .platform = [metadata.platform UTF8String],
         .reactNativeVersion = [metadata.reactNativeVersion UTF8String],
     };
@@ -194,7 +198,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     RCTExecuteOnMainQueue(^{
       // Listen to reload commands
       RCTRegisterReloadCommandListener(self);
-      RCTInitializeUIKitProxies();
     });
 
     _inspectorHostDelegate = std::make_unique<RCTHostHostTargetDelegate>(self);
@@ -306,6 +309,14 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 }
 
 #pragma mark - RCTInstanceDelegate
+
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
+{
+  if ([_hostDelegate respondsToSelector:@selector(unstableModulesRequiringMainQueueSetup)]) {
+    return [_hostDelegate unstableModulesRequiringMainQueueSetup];
+  }
+  return @[];
+}
 
 - (BOOL)instance:(RCTInstance *)instance
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack

@@ -203,6 +203,7 @@ const validAttributesForNonEventProps = {
   accessibilityState: true,
   accessibilityActions: true,
   accessibilityValue: true,
+  accessibilityOrder: true,
   importantForAccessibility: true,
   role: true,
   rotation: true,

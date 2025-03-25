@@ -9,13 +9,13 @@
  * @oncall react_native
  */
 
+const {HEADERS_FOLDER, TARGET_FOLDER} = require('./constants');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 /*::
 import type { Dependency, Platform } from './types';
-import {exec} from "child_process";
 */
 
 /**
@@ -64,6 +64,9 @@ async function createFramework(
   // Copy bundles into the framework
   copyBundles(scheme, dependencies, output, frameworkPaths);
 
+  // Copy headers to the framework - start by building the Header folder
+  await copyHeaders(scheme, dependencies, rootFolder);
+
   // Copy Symbols to symbols folder
   const symbolPaths = frameworkPaths.map(framework =>
     path.join(framework, `${scheme}.framework.dSYM`),
@@ -76,6 +79,40 @@ async function createFramework(
   if (identity) {
     signXCFramework(identity, output);
   }
+}
+
+/**
+ * Copies headers needed from the package to a Header folder that we'll pass to
+ * each framework arch type
+ */
+async function copyHeaders(
+  scheme /*: string */,
+  dependencies /*: $ReadOnlyArray<Dependency> */,
+  rootFolder /*: string */,
+) {
+  console.log('Copying header files for dependencies...');
+
+  // Create and clean the header folder
+  const headeDestinationFolder = path.join(
+    rootFolder,
+    `${scheme}.xcframework`,
+    'Headers',
+  );
+  fs.rmSync(headeDestinationFolder, {force: true, recursive: true});
+  fs.mkdirSync(headeDestinationFolder, {recursive: true});
+
+  // Now we can go through all dependencies and copy header files for each depencendy
+  dependencies.forEach(dep => {
+    const depHeaders = path.join(
+      rootFolder,
+      dep.name,
+      TARGET_FOLDER,
+      HEADERS_FOLDER,
+    );
+
+    // Copy all header files from the dependency to headerTempFolder
+    execSync(`cp -r ${depHeaders}/* ${headeDestinationFolder}/`);
+  });
 }
 
 /**
@@ -112,18 +149,11 @@ function copyBundles(
           const targetBundlePath = path.join(
             targetArchFolder,
             `${scheme}.framework`,
-            'Resources',
+            bundleName,
           );
-          if (
-            !fs.existsSync(path.join(targetArchFolder, `${scheme}.framework`))
-          ) {
-            console.warn("Target Bundle path doesn't exist", targetBundlePath);
-          }
-          if (!fs.existsSync(path.dirname(sourceBundlePath))) {
-            console.warn("Source bundle doesn't exist", sourceBundlePath);
-          }
+
           // A bundle is a directory, so we need to copy the whole directory
-          execSync(`cp -r ${sourceBundlePath} ${targetBundlePath}`);
+          execSync(`cp -r "${sourceBundlePath}/" "${targetBundlePath}"`);
         });
       } else {
         console.warn(`Bundle ${sourceBundlePath} not found`);

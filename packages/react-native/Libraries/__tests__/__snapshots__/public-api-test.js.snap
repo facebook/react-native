@@ -118,8 +118,8 @@ declare export default typeof Animated;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/Animated.js.flow 1`] = `
-"export type { CompositeAnimation, Numeric } from \\"./AnimatedImplementation\\";
-declare export default typeof Animated;
+"export * as default from \\"./AnimatedExports\\";
+export type { CompositeAnimation, Numeric } from \\"./AnimatedImplementation\\";
 "
 `;
 
@@ -172,7 +172,16 @@ export { default as Interpolation } from \\"./nodes/AnimatedInterpolation\\";
 export { default as Node } from \\"./nodes/AnimatedNode\\";
 export { default as Value } from \\"./nodes/AnimatedValue\\";
 export { default as ValueXY } from \\"./nodes/AnimatedValueXY\\";
+export type { default as AnimatedInterpolation } from \\"./nodes/AnimatedInterpolation\\";
+export type { default as AnimatedColor } from \\"./nodes/AnimatedColor\\";
 export type { AnimatedValueConfig as AnimatedConfig } from \\"./nodes/AnimatedValue\\";
+export type { default as AnimatedNode } from \\"./nodes/AnimatedNode\\";
+export type { default as AnimatedAddition } from \\"./nodes/AnimatedAddition\\";
+export type { default as AnimatedDiffClamp } from \\"./nodes/AnimatedDiffClamp\\";
+export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
+export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
+export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
+export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
 declare export const add: $FlowFixMe;
 declare export const attachNativeEvent: $FlowFixMe;
 declare export const createAnimatedComponent: $FlowFixMe;
@@ -613,7 +622,7 @@ declare export default typeof AnimatedScrollView;
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedSectionList.js 1`] = `
 "declare export default AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,
-  SectionList<SectionBase<any>>,
+  SectionList<any, SectionBase<any>>,
 >;
 "
 `;
@@ -635,13 +644,42 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/createAnimatedComponent.js 1`] = `
-"export type AnimatedProps<Props: { ... }> = {
-  +[_K in keyof (Props &
-      $ReadOnly<{
-        passthroughAnimatedPropExplicitValues?: React.ElementConfig<
-          typeof View,
-        >,
-      }>)]: any,
+"type Nullable = void | null;
+type Primitive = string | number | boolean | symbol | void;
+type Builtin = (...$ReadOnlyArray<empty>) => mixed | Date | Error | RegExp;
+export type WithAnimatedValue<+T> = T extends Builtin | Nullable
+  ? T
+  : T extends Primitive
+    ?
+        | T
+        | AnimatedNode
+        | AnimatedAddition
+        | AnimatedSubtraction
+        | AnimatedDivision
+        | AnimatedMultiplication
+        | AnimatedModulo
+        | AnimatedDiffClamp
+        | AnimatedValue
+        | AnimatedInterpolation<number | string>
+        | AnimatedInterpolation<number>
+        | AnimatedInterpolation<string>
+    : T extends $ReadOnlyArray<infer P>
+      ? $ReadOnlyArray<WithAnimatedValue<P>>
+      : T extends { ... }
+        ? { +[K in keyof T]: WithAnimatedValue<T[K]> }
+        : T;
+type NonAnimatedProps = \\"ref\\" | \\"innerViewRef\\" | \\"scrollViewRef\\";
+type PassThroughProps = $ReadOnly<{
+  passthroughAnimatedPropExplicitValues?: React.ElementConfig<
+    typeof View,
+  > | null,
+}>;
+export type AnimatedProps<Props: { ... }> = {
+  [K in keyof (Props & PassThroughProps)]: K extends $Keys<PassThroughProps>
+    ? PassThroughProps[K]
+    : K extends NonAnimatedProps
+      ? Props[K]
+      : WithAnimatedValue<Props[K]>,
 };
 export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
   ...$Exact<Props>,
@@ -987,7 +1025,9 @@ declare export default class AnimatedValueXY extends AnimatedWithChildren {
   removeListener(id: string): void;
   removeAllListeners(): void;
   getLayout(): { [key: string]: AnimatedValue, ... };
-  getTranslateTransform(): Array<{ [key: string]: AnimatedValue, ... }>;
+  getTranslateTransform(): Array<
+    { translateX: AnimatedValue } | { translateY: AnimatedValue },
+  >;
 }
 "
 `;
@@ -1036,7 +1076,7 @@ declare class AppStateImpl {
   constructor(): void;
   addEventListener<K: AppStateEvent>(
     type: K,
-    handler: (...$ElementType<AppStateEventDefinitions, K>) => void
+    handler: (...AppStateEventDefinitions[K]) => void
   ): EventSubscription;
 }
 declare const AppState: AppStateImpl;
@@ -1392,7 +1432,7 @@ declare const AccessibilityInfo: {
   isAccessibilityServiceEnabled(): Promise<boolean>,
   addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
-    handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void
+    handler: (...AccessibilityEventDefinitions[K]) => void
   ): EventSubscription,
   setAccessibilityFocus(reactTag: number): void,
   sendAccessibilityEvent(
@@ -1627,7 +1667,7 @@ declare class Keyboard {
   constructor(): void;
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
+    listener: (...KeyboardEventDefinitions[K]) => mixed,
     context?: mixed
   ): EventSubscription;
   removeAllListeners<K: $Keys<KeyboardEventDefinitions>>(eventType: ?K): void;
@@ -1691,7 +1731,7 @@ declare export default typeof LayoutConformanceNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
-"type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, \\"style\\">;
+"type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -1710,6 +1750,7 @@ type PressableBaseProps = $ReadOnly<{
   onLongPress?: ?(event: GestureResponderEvent) => mixed,
   onPress?: ?(event: GestureResponderEvent) => mixed,
   onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressMove?: ?(event: GestureResponderEvent) => mixed,
   onPressOut?: ?(event: GestureResponderEvent) => mixed,
   style?:
     | ViewStyleProp
@@ -1889,19 +1930,16 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   animated?: boolean;
 }
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: $PropertyType<ScrollView, \\"getScrollResponder\\">;
-  +getScrollableNode: $PropertyType<ScrollView, \\"getScrollableNode\\">;
-  +getInnerViewNode: $PropertyType<ScrollView, \\"getInnerViewNode\\">;
-  +getInnerViewRef: $PropertyType<ScrollView, \\"getInnerViewRef\\">;
-  +getNativeScrollRef: $PropertyType<ScrollView, \\"getNativeScrollRef\\">;
-  +scrollTo: $PropertyType<ScrollView, \\"scrollTo\\">;
-  +scrollToEnd: $PropertyType<ScrollView, \\"scrollToEnd\\">;
-  +flashScrollIndicators: $PropertyType<ScrollView, \\"flashScrollIndicators\\">;
-  +scrollResponderZoomTo: $PropertyType<ScrollView, \\"scrollResponderZoomTo\\">;
-  +scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
-    ScrollView,
-    \\"scrollResponderScrollNativeHandleToKeyboard\\",
-  >;
+  +getScrollResponder: ScrollView[\\"getScrollResponder\\"];
+  +getScrollableNode: ScrollView[\\"getScrollableNode\\"];
+  +getInnerViewNode: ScrollView[\\"getInnerViewNode\\"];
+  +getInnerViewRef: ScrollView[\\"getInnerViewRef\\"];
+  +getNativeScrollRef: ScrollView[\\"getNativeScrollRef\\"];
+  +scrollTo: ScrollView[\\"scrollTo\\"];
+  +scrollToEnd: ScrollView[\\"scrollToEnd\\"];
+  +flashScrollIndicators: ScrollView[\\"flashScrollIndicators\\"];
+  +scrollResponderZoomTo: ScrollView[\\"scrollResponderZoomTo\\"];
+  +scrollResponderScrollNativeHandleToKeyboard: ScrollView[\\"scrollResponderScrollNativeHandleToKeyboard\\"];
 }
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
@@ -3788,7 +3826,8 @@ exports[`public API should not change unintentionally Libraries/Components/View/
   | \\"webview\\"
   | \\"drawerlayout\\"
   | \\"slidingdrawer\\"
-  | \\"iconmenu\\";
+  | \\"iconmenu\\"
+  | string;
 export type Role =
   | \\"alert\\"
   | \\"alertdialog\\"
@@ -4384,12 +4423,12 @@ declare export default class NativeEventEmitter<
   constructor(nativeModule: ?NativeModule): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context?: mixed
   ): EventSubscription;
   emit<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    ...args: $ElementType<TEventToArgsMap, TEvent>
+    ...args: TEventToArgsMap[TEvent]
   ): void;
   removeAllListeners<TEvent: $Keys<TEventToArgsMap>>(eventType?: ?TEvent): void;
   listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number;
@@ -5017,7 +5056,7 @@ type PassiveCallback = (
   event: GestureResponderEvent,
   gestureState: PanResponderGestureState
 ) => mixed;
-export type GestureResponderHandlers = {
+export type GestureResponderHandlerMethods = {
   onMoveShouldSetResponder: (event: GestureResponderEvent) => boolean,
   onMoveShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
   onResponderEnd: (event: GestureResponderEvent) => void,
@@ -5049,7 +5088,7 @@ export type PanResponderCallbacks = $ReadOnly<{
 declare const PanResponder: {
   create(config: PanResponderCallbacks): {
     getInteractionHandle: () => ?number,
-    panHandlers: GestureResponderHandlers,
+    panHandlers: GestureResponderHandlerMethods,
   },
 };
 export type PanResponderInstance = ReturnType<(typeof PanResponder)[\\"create\\"]>;
@@ -5166,7 +5205,7 @@ declare class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor(): void;
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed
+    listener: (...LinkingEventDefinitions[K]) => mixed
   ): EventSubscription;
   openURL(url: string): Promise<void>;
   canOpenURL(url: string): Promise<boolean>;
@@ -5240,17 +5279,14 @@ type FlatListBaseProps<ItemT> = {
 };
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 export type FlatListProps<ItemT> = {
-  ...$Diff<
+  ...Omit<
     VirtualizedListProps,
-    {
-      data: $PropertyType<VirtualizedListProps, \\"data\\">,
-      getItem: $PropertyType<VirtualizedListProps, \\"getItem\\">,
-      getItemCount: $PropertyType<VirtualizedListProps, \\"getItemCount\\">,
-      getItemLayout: $PropertyType<VirtualizedListProps, \\"getItemLayout\\">,
-      renderItem: $PropertyType<VirtualizedListProps, \\"renderItem\\">,
-      keyExtractor: $PropertyType<VirtualizedListProps, \\"keyExtractor\\">,
-      ...
-    },
+    | \\"data\\"
+    | \\"getItem\\"
+    | \\"getItemCount\\"
+    | \\"getItemLayout\\"
+    | \\"renderItem\\"
+    | \\"keyExtractor\\",
   >,
   ...FlatListBaseProps<ItemT>,
   ...
@@ -5292,58 +5328,49 @@ declare export default typeof FlatList;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionList.js 1`] = `
 "declare const VirtualizedSectionList: $FlowFixMe;
-type Item = any;
-export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
-type RequiredProps<SectionT: SectionBase<any>> = {
-  sections: $ReadOnlyArray<SectionT>,
+type DefaultSectionT = {
+  [key: string]: any,
 };
-type OptionalProps<SectionT: SectionBase<any>> = {
-  renderItem?: (info: {
-    item: Item,
-    index: number,
-    section: SectionT,
-    separators: {
-      highlight: () => void,
-      unhighlight: () => void,
-      updateProps: (select: \\"leading\\" | \\"trailing\\", newProps: Object) => void,
-      ...
-    },
-    ...
-  }) => null | React.Node,
+export type SectionBase<
+  SectionItemT,
+  SectionT = DefaultSectionT,
+> = _SectionBase<SectionItemT, SectionT>;
+export type {
+  SectionData as SectionListData,
+  ScrollToLocationParamsType as SectionListScrollParams,
+};
+type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+};
+export type SectionListRenderItemInfo<ItemT, SectionT = DefaultSectionT> = {
+  ...ListRenderItemInfo<ItemT>,
+  section: SectionData<ItemT, SectionT>,
+  ...
+};
+export type SectionListRenderItem<ItemT, SectionT = DefaultSectionT> = (
+  info: SectionListRenderItemInfo<ItemT, SectionT>
+) => React.Node | null;
+type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
+  renderItem?: SectionListRenderItem<ItemT, SectionT>,
   extraData?: any,
   initialNumToRender?: ?number,
   inverted?: ?boolean,
-  keyExtractor?: ?(item: Item, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   onEndReached?: ?(info: { distanceFromEnd: number, ... }) => void,
   removeClippedSubviews?: boolean,
 };
-export type Props<SectionT> = {
-  ...$Diff<
-    VirtualizedSectionListProps<SectionT>,
-    {
-      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, \\"getItem\\">,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"getItemCount\\",
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"renderItem\\",
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"keyExtractor\\",
-      >,
-      ...
-    },
+export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
+  ...Omit<
+    VirtualizedSectionListProps<ItemT, SectionT>,
+    \\"getItem\\" | \\"getItemCount\\" | \\"renderItem\\" | \\"keyExtractor\\",
   >,
-  ...RequiredProps<SectionT>,
-  ...OptionalProps<SectionT>,
+  ...RequiredProps<ItemT, SectionT>,
+  ...OptionalProps<ItemT, SectionT>,
 };
-declare export default class SectionList<SectionT: SectionBase<any>>
-  extends React.PureComponent<Props<SectionT>, void>
+declare export default class SectionList<ItemT, SectionT = DefaultSectionT>
+  extends React.PureComponent<SectionListProps<ItemT, SectionT>>
 {
-  props: Props<SectionT>;
+  props: SectionListProps<ItemT, SectionT>;
   scrollToLocation(params: ScrollToLocationParamsType): void;
   recordInteraction(): void;
   flashScrollIndicators(): void;
@@ -5356,16 +5383,21 @@ declare export default class SectionList<SectionT: SectionBase<any>>
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionListModern.js 1`] = `
-"type Item = any;
-export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
-type RequiredProps<SectionT: SectionBase<any>> = {
-  sections: $ReadOnlyArray<SectionT>,
+"type DefaultSectionT = {
+  [key: string]: any,
 };
-type OptionalProps<SectionT: SectionBase<any>> = {
+export type SectionBase<
+  SectionItemT,
+  SectionT = DefaultSectionT,
+> = _SectionBase<SectionItemT, SectionT>;
+type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+};
+type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   renderItem?: (info: {
-    item: Item,
+    item: ItemT,
     index: number,
-    section: SectionT,
+    section: SectionData<ItemT, SectionT>,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -5377,36 +5409,21 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   extraData?: any,
   initialNumToRender?: ?number,
   inverted?: ?boolean,
-  keyExtractor?: ?(item: Item, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   onEndReached?: ?(info: { distanceFromEnd: number, ... }) => void,
   removeClippedSubviews?: boolean,
 };
-export type Props<SectionT: SectionBase<any>> = $ReadOnly<{
-  ...$Diff<
-    VirtualizedSectionListProps<SectionT>,
-    {
-      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, \\"getItem\\">,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"getItemCount\\",
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"renderItem\\",
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"keyExtractor\\",
-      >,
-      ...
-    },
+export type Props<ItemT, SectionT = DefaultSectionT> = $ReadOnly<{
+  ...Omit<
+    VirtualizedSectionListProps<ItemT, SectionT>,
+    \\"getItem\\" | \\"getItemCount\\" | \\"renderItem\\" | \\"keyExtractor\\",
   >,
-  ...RequiredProps<SectionT>,
-  ...OptionalProps<SectionT>,
+  ...RequiredProps<ItemT, SectionT>,
+  ...OptionalProps<ItemT, SectionT>,
 }>;
 declare const SectionList: component(
   ref?: React.RefSetter<any>,
-  ...Props<SectionBase<any>>
+  ...Props<any, DefaultSectionT>
 );
 declare export default typeof SectionList;
 "
@@ -6183,7 +6200,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 "declare const RCTNetworking: interface {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
     context?: mixed
   ): EventSubscription,
   sendRequest(
@@ -7360,8 +7377,15 @@ declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js 1`] = `
 "declare const StyleSheet: StyleSheetExports;
-export type { NativeColorValue } from \\"./StyleSheetTypes\\";
+export type {
+  BoxShadowValue,
+  NativeColorValue,
+  FilterFunction,
+} from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
+export type OpaqueColorValue = NativeColorValue;
+export type TransformsStyle = ____TransformStyle_Internal;
+export type FontVariant = ____FontVariant_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7369,7 +7393,7 @@ export type DangerouslyImpreciseStyleProp =
   ____DangerouslyImpreciseStyleProp_Internal;
 export type TypeForStyleKey<
   +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
-> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+> = ____DangerouslyImpreciseStyle_Internal[key];
 export type ViewStyle = ____ViewStyle_Internal;
 export type TextStyle = ____TextStyle_Internal;
 export type ImageStyle = ____ImageStyle_Internal;
@@ -7380,13 +7404,20 @@ declare export default typeof StyleSheet;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js.flow 1`] = `
 "export * as default from \\"./StyleSheetExports\\";
-export type { StyleProp } from \\"./StyleSheetTypes\\";
+export type {
+  StyleProp,
+  BoxShadowValue,
+  FilterFunction,
+} from \\"./StyleSheetTypes\\";
 export type StyleSheetProperties = {
   hairlineWidth: number,
   flatten<T: string>(style: T): T,
 };
 export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
+export type OpaqueColorValue = NativeColorValue;
+export type TransformsStyle = ____TransformStyle_Internal;
+export type FontVariant = ____FontVariant_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7394,7 +7425,7 @@ export type DangerouslyImpreciseStyleProp =
   ____DangerouslyImpreciseStyleProp_Internal;
 export type TypeForStyleKey<
   +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
-> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+> = ____DangerouslyImpreciseStyle_Internal[key];
 export type ViewStyle = ____ViewStyle_Internal;
 export type TextStyle = ____TextStyle_Internal;
 export type ImageStyle = ____ImageStyle_Internal;
@@ -7447,7 +7478,8 @@ declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheetTypes.js 1`] = `
-"declare export opaque type NativeColorValue;
+"export type { ____TransformStyle_Internal };
+declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {
@@ -7766,7 +7798,7 @@ export type ____FontWeight_Internal =
   | \\"condensed\\"
   | \\"heavy\\"
   | \\"black\\";
-export type ____FontVariantArray_Internal = $ReadOnlyArray<
+export type ____FontVariant_Internal =
   | \\"small-caps\\"
   | \\"oldstyle-nums\\"
   | \\"lining-nums\\"
@@ -7799,8 +7831,9 @@ export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | \\"stylistic-seventeen\\"
   | \\"stylistic-eighteen\\"
   | \\"stylistic-nineteen\\"
-  | \\"stylistic-twenty\\",
->;
+  | \\"stylistic-twenty\\";
+export type ____FontVariantArray_Internal =
+  $ReadOnlyArray<____FontVariant_Internal>;
 type ____TextStyle_InternalBase = $ReadOnly<{
   color?: ____ColorValue_Internal,
   fontFamily?: string,
@@ -7943,11 +7976,11 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/priva
         | { +scale: number | AnimatedNode }
         | { +scaleX: number | AnimatedNode }
         | { +scaleY: number | AnimatedNode }
-        | { +translateX: number | AnimatedNode }
-        | { +translateY: number | AnimatedNode }
+        | { +translateX: number | string | AnimatedNode }
+        | { +translateY: number | string | AnimatedNode }
         | {
             +translate:
-              | [number | AnimatedNode, number | AnimatedNode]
+              | [number | string | AnimatedNode, number | string | AnimatedNode]
               | AnimatedNode,
           }
         | { +skewX: string | AnimatedNode }
@@ -8743,10 +8776,15 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
   | \\"windows\\"
   | \\"web\\"
   | \\"native\\";
-export type PlatformSelectSpec<T> = {
-  default?: T,
-  [PlatformOSType]: T,
+type OptionalPlatformSelectSpec<T> = {
+  [_key in PlatformOSType]?: T,
 };
+export type PlatformSelectSpec<T> =
+  | {
+      ...OptionalPlatformSelectSpec<T>,
+      default: T,
+    }
+  | OptionalPlatformSelectSpec<T>;
 type IOSPlatform = {
   OS: \\"ios\\",
   get Version(): string,
@@ -8894,7 +8932,7 @@ declare export default typeof RCTLog;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/ReactNativeTestTools.js 1`] = `
-"export type ReactTestInstance = $PropertyType<ReactTestRendererType, \\"root\\">;
+"export type ReactTestInstance = ReactTestRendererType[\\"root\\"];
 export type Predicate = (node: ReactTestInstance) => boolean;
 export type ReactTestRendererJSON = ReturnType<ReactTestRenderer.create.toJSON>;
 declare function byClickable(): Predicate;

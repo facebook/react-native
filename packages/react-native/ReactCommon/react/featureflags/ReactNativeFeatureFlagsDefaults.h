@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<140e6580100dab5806194e780610f122>>
+ * @generated SignedSource<<f645ab08e2783763a91d685e8c1ddd02>>
  */
 
 /**
@@ -87,6 +87,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableMainQueueModulesOnIOS() override {
+    return false;
+  }
+
   bool enableNativeCSSParsing() override {
     return false;
   }
@@ -127,10 +131,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {
-    return true;
-  }
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -144,10 +144,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fuseboxNetworkInspectionEnabled() override {
-    return false;
-  }
-
-  bool lazyAnimationCallbacks() override {
     return false;
   }
 

@@ -75,7 +75,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-10-26',
         description:
-          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
+          'Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -86,7 +86,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-12-10',
         description:
-          'When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.',
+          'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -157,7 +157,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-11-19',
         description:
-          'When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout',
+          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -197,6 +197,16 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableMainQueueModulesOnIOS: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Makes modules requiring main queue setup initialize on the main thread, during React Native init.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -311,16 +321,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
-      defaultValue: true,
-      metadata: {
-        description:
-          "Fixes a bug in Differentiator where parent views may be referenced before they're created",
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -359,17 +359,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-01-31',
         description:
           'Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    lazyAnimationCallbacks: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-05-01',
-        description:
-          'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

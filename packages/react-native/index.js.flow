@@ -15,7 +15,7 @@
 // updating React Native's public API.
 // ----------------------------------------------------------------------------
 
-/// <reference path="src/types/globals.d.ts" />
+/// <reference path="../src/types/globals.d.ts" />
 
 // #region Components
 

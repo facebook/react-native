@@ -15,7 +15,7 @@ import * as React from 'react';
 import {SectionList, StyleSheet, View} from 'react-native';
 
 type SectionListProps = React.ElementProps<typeof SectionList>;
-type ViewabilityConfig = $PropertyType<SectionListProps, 'viewabilityConfig'>;
+type ViewabilityConfig = SectionListProps['viewabilityConfig'];
 
 const BASE_VIEWABILITY_CONFIG = {
   minimumViewTime: 1000,

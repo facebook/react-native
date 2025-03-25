@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<22d8e7623a2eee5182c786f2ec914401>>
+ * @generated SignedSource<<2418847290f10d51945f9593dcb03eb2>>
  * @flow strict
  */
 
@@ -39,6 +39,7 @@ export interface Spec extends TurboModule {
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
+  +enableMainQueueModulesOnIOS?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
   +enableNewBackgroundAndBorderDrawables?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
@@ -49,12 +50,10 @@ export interface Spec extends TurboModule {
   +enableViewRecycling?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
-  +fixDifferentiatorEmittingUpdatesWithWrongParentTag?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
-  +lazyAnimationCallbacks?: () => boolean;
   +removeTurboModuleManagerDelegateMutex?: () => boolean;
   +throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;

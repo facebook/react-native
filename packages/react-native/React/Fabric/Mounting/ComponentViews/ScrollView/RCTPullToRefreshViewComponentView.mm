@@ -76,7 +76,7 @@ using namespace facebook::react;
     return;
   }
 
-  const auto &oldConcreteProps = static_cast<const PullToRefreshViewProps &>(*oldProps);
+  const auto &oldConcreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
   const auto &newConcreteProps = static_cast<const PullToRefreshViewProps &>(*props);
 
   if (newConcreteProps.tintColor != oldConcreteProps.tintColor) {

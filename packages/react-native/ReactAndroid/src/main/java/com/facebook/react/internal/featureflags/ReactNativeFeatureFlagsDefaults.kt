@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cbe1d77424b561149b0bda39955dffac>>
+ * @generated SignedSource<<6144e43dc39f259ac7f4de359da03d03>>
  */
 
 /**
@@ -53,6 +53,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableLongTaskAPI(): Boolean = false
 
+  override fun enableMainQueueModulesOnIOS(): Boolean = false
+
   override fun enableNativeCSSParsing(): Boolean = false
 
   override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
@@ -73,8 +75,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableViewRecyclingForView(): Boolean = true
 
-  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = true
-
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
@@ -82,8 +82,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fuseboxEnabledRelease(): Boolean = false
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
-
-  override fun lazyAnimationCallbacks(): Boolean = false
 
   override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9813fd15c7f54d69d3de6084f733c3a6>>
+ * @generated SignedSource<<a510210d8ca4af5b17ea54113ace27b4>>
  */
 
 /**
@@ -35,6 +35,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
+  private var enableMainQueueModulesOnIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
@@ -45,12 +46,10 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
-  private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
-  private var lazyAnimationCallbacksCache: Boolean? = null
   private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
   private var throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
@@ -198,6 +197,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableMainQueueModulesOnIOS(): Boolean {
+    var cached = enableMainQueueModulesOnIOSCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableMainQueueModulesOnIOS()
+      enableMainQueueModulesOnIOSCache = cached
+    }
+    return cached
+  }
+
   override fun enableNativeCSSParsing(): Boolean {
     var cached = enableNativeCSSParsingCache
     if (cached == null) {
@@ -288,15 +296,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean {
-    var cached = fixDifferentiatorEmittingUpdatesWithWrongParentTagCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.fixDifferentiatorEmittingUpdatesWithWrongParentTag()
-      fixDifferentiatorEmittingUpdatesWithWrongParentTagCache = cached
-    }
-    return cached
-  }
-
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean {
     var cached = fixMappingOfEventPrioritiesBetweenFabricAndReactCache
     if (cached == null) {
@@ -329,15 +328,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxNetworkInspectionEnabled()
       fuseboxNetworkInspectionEnabledCache = cached
-    }
-    return cached
-  }
-
-  override fun lazyAnimationCallbacks(): Boolean {
-    var cached = lazyAnimationCallbacksCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.lazyAnimationCallbacks()
-      lazyAnimationCallbacksCache = cached
     }
     return cached
   }

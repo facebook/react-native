@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c16f7af743a6c4d7aaabf010c1c7327>>
+ * @generated SignedSource<<3e4b1e03b718d5c2ea03b0a29382d849>>
  */
 
 /**
@@ -53,6 +53,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
 
+  @DoNotStrip public fun enableMainQueueModulesOnIOS(): Boolean
+
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
   @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
@@ -73,8 +75,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
-  @DoNotStrip public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean
-
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
@@ -82,8 +82,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
-
-  @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 
   @DoNotStrip public fun removeTurboModuleManagerDelegateMutex(): Boolean
 

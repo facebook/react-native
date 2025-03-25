@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7493403280d2ac7ec348eb3d78d915c2>>
+ * @generated SignedSource<<2871e5ea1c6d695af6af757b27fbd54c>>
  */
 
 /**
@@ -119,6 +119,11 @@ bool NativeReactNativeFeatureFlags::enableLongTaskAPI(
   return ReactNativeFeatureFlags::enableLongTaskAPI();
 }
 
+bool NativeReactNativeFeatureFlags::enableMainQueueModulesOnIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
+}
+
 bool NativeReactNativeFeatureFlags::enableNativeCSSParsing(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableNativeCSSParsing();
@@ -169,11 +174,6 @@ bool NativeReactNativeFeatureFlags::enableViewRecyclingForView(
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
 }
 
-bool NativeReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag();
-}
-
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -192,11 +192,6 @@ bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
 bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
-}
-
-bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::lazyAnimationCallbacks();
 }
 
 bool NativeReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex(

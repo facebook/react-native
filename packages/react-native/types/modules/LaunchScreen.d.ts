@@ -12,7 +12,15 @@
 declare module 'react-native/Libraries/NewAppScreen' {
   export const Header: any;
   export const LearnMoreLinks: any;
-  export const Colors: any;
+  export const Colors: {
+    primary: string;
+    white: string;
+    lighter: string;
+    light: string;
+    dark: string;
+    darker: string;
+    black: string;
+  };
   export const DebugInstructions: any;
   export const ReloadInstructions: any;
 }

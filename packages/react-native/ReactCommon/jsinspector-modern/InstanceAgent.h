@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "CdpJson.h"
 #include "RuntimeTarget.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceTarget.h>
 #include <jsinspector-modern/RuntimeAgent.h>
+#include <jsinspector-modern/cdp/CdpJson.h>
 #include <jsinspector-modern/tracing/InstanceTracingProfile.h>
 
 #include <functional>

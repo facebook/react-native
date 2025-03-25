@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e76d584cb67e2feae209795beb2009d6>>
+ * @generated SignedSource<<adb29ea8a9fe70bb16af9a46d394c68d>>
  * @flow strict
  */
 
@@ -62,6 +62,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
+  enableMainQueueModulesOnIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
@@ -72,12 +73,10 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
-  fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
-  lazyAnimationCallbacks: Getter<boolean>,
   removeTurboModuleManagerDelegateMutex: Getter<boolean>,
   throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
@@ -169,11 +168,11 @@ export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = create
  */
 export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter('animatedShouldSignalBatch', false);
 /**
- * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+ * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
 /**
- * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+ * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
  */
 export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
 /**
@@ -201,7 +200,7 @@ export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('ena
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
 /**
- * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+ * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
  */
 export const enableImagePrefetchingAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingAndroid', false);
 /**
@@ -220,6 +219,10 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
  */
 export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
+/**
+ * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
+ */
+export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
 /**
  * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
  */
@@ -261,10 +264,6 @@ export const enableViewRecyclingForText: Getter<boolean> = createNativeFlagGette
  */
 export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForView', true);
 /**
- * Fixes a bug in Differentiator where parent views may be referenced before they're created
- */
-export const fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean> = createNativeFlagGetter('fixDifferentiatorEmittingUpdatesWithWrongParentTag', true);
-/**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
@@ -280,10 +279,6 @@ export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fu
  * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
  */
 export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', false);
-/**
- * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
- */
-export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('lazyAnimationCallbacks', false);
 /**
  * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
  */

@@ -36,6 +36,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "cxxreact"
 
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-callinvoker", version
   s.dependency "React-runtimeexecutor", version

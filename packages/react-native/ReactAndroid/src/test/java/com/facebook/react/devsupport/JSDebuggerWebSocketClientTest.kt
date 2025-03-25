@@ -41,7 +41,7 @@ class JSDebuggerWebSocketClientTest {
     val client = spy(JSDebuggerWebSocketClient())
     val injectedObjects = mapOf("key1" to "value1", "key2" to "value2")
     client.loadBundle(
-        "http://localhost:8080/index.js", injectedObjects as HashMap<String, String>?, cb)
+        "http://localhost:8080/index.js", injectedObjects as HashMap<String, String>, cb)
     verify(client)
         .sendMessage(
             0,

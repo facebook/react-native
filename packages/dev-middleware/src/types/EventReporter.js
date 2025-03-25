@@ -90,6 +90,9 @@ export type ReportableEvent =
       type: 'fusebox_console_notice',
     }
   | {
+      type: 'no_debug_pages_for_device',
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',
@@ -126,13 +129,6 @@ export type ReportableEvent =
       eventLoopUtilization: number,
       maxEventLoopDelayPercent: number,
       duration: number,
-      ...ConnectionUptime,
-      ...DebuggerSessionIDs,
-    }
-  | {
-      type: 'device_high_message_queue',
-      maxCDPMessageQueueSize: number,
-      maxCDPMessageQueueMemory: number,
       ...ConnectionUptime,
       ...DebuggerSessionIDs,
     };

@@ -134,19 +134,16 @@ export interface ScrollViewScrollToOptions {
 
 // Public methods for ScrollView
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: $PropertyType<ScrollView, 'getScrollResponder'>;
-  +getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>;
-  +getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>;
-  +getInnerViewRef: $PropertyType<ScrollView, 'getInnerViewRef'>;
-  +getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>;
-  +scrollTo: $PropertyType<ScrollView, 'scrollTo'>;
-  +scrollToEnd: $PropertyType<ScrollView, 'scrollToEnd'>;
-  +flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>;
-  +scrollResponderZoomTo: $PropertyType<ScrollView, 'scrollResponderZoomTo'>;
-  +scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
-    ScrollView,
-    'scrollResponderScrollNativeHandleToKeyboard',
-  >;
+  +getScrollResponder: ScrollView['getScrollResponder'];
+  +getScrollableNode: ScrollView['getScrollableNode'];
+  +getInnerViewNode: ScrollView['getInnerViewNode'];
+  +getInnerViewRef: ScrollView['getInnerViewRef'];
+  +getNativeScrollRef: ScrollView['getNativeScrollRef'];
+  +scrollTo: ScrollView['scrollTo'];
+  +scrollToEnd: ScrollView['scrollToEnd'];
+  +flashScrollIndicators: ScrollView['flashScrollIndicators'];
+  +scrollResponderZoomTo: ScrollView['scrollResponderZoomTo'];
+  +scrollResponderScrollNativeHandleToKeyboard: ScrollView['scrollResponderScrollNativeHandleToKeyboard'];
 }
 
 export type DecelerationRateType = 'fast' | 'normal' | number;
@@ -829,11 +826,11 @@ class ScrollView extends React.Component<ScrollViewProps, State> {
   };
 
   getScrollableNode: () => ?number = () => {
-    return findNodeHandle(this.getNativeScrollRef());
+    return findNodeHandle<$FlowFixMe>(this.getNativeScrollRef());
   };
 
   getInnerViewNode: () => ?number = () => {
-    return findNodeHandle(this._innerView.nativeInstance);
+    return findNodeHandle<$FlowFixMe>(this._innerView.nativeInstance);
   };
 
   getInnerViewRef: () => InnerViewInstance | null = () => {
@@ -941,7 +938,7 @@ class ScrollView extends React.Component<ScrollViewProps, State> {
     if (typeof nodeHandle === 'number') {
       UIManager.measureLayout(
         nodeHandle,
-        nullthrows(findNodeHandle(this)),
+        nullthrows(findNodeHandle<$FlowFixMe>(this)),
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,

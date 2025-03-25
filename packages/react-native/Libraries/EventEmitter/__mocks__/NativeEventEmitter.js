@@ -24,7 +24,7 @@ export default class NativeEventEmitter<
 {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context?: mixed,
   ): EventSubscription {
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
@@ -32,7 +32,7 @@ export default class NativeEventEmitter<
 
   emit<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    ...args: $ElementType<TEventToArgsMap, TEvent>
+    ...args: TEventToArgsMap[TEvent]
   ): void {
     RCTDeviceEventEmitter.emit(eventType, ...args);
   }

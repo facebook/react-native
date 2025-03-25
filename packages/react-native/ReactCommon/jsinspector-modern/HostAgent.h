@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "CdpJson.h"
 #include "HostTarget.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceAgent.h>
+#include <jsinspector-modern/cdp/CdpJson.h>
 
 namespace facebook::react::jsinspector_modern {
 

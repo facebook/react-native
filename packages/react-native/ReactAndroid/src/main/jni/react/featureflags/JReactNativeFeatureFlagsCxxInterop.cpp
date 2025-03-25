@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c866e69278d249dd79cb2fc193d1a7e2>>
+ * @generated SignedSource<<86e118b823d49cb08bfb204788fa7f73>>
  */
 
 /**
@@ -32,10 +32,10 @@ static jni::alias_ref<jni::JClass> getReactNativeFeatureFlagsProviderJavaClass()
  * Implementation of ReactNativeFeatureFlagsProvider that wraps a
  * ReactNativeFeatureFlagsProvider Java object.
  */
-class ReactNativeFeatureFlagsProviderHolder
+class ReactNativeFeatureFlagsJavaProvider
     : public ReactNativeFeatureFlagsProvider {
  public:
-  explicit ReactNativeFeatureFlagsProviderHolder(
+  explicit ReactNativeFeatureFlagsJavaProvider(
       jni::alias_ref<jobject> javaProvider)
       : javaProvider_(make_global(javaProvider)){};
 
@@ -129,6 +129,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enableMainQueueModulesOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMainQueueModulesOnIOS");
+    return method(javaProvider_);
+  }
+
   bool enableNativeCSSParsing() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNativeCSSParsing");
@@ -189,12 +195,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixDifferentiatorEmittingUpdatesWithWrongParentTag");
-    return method(javaProvider_);
-  }
-
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
@@ -216,12 +216,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool fuseboxNetworkInspectionEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxNetworkInspectionEnabled");
-    return method(javaProvider_);
-  }
-
-  bool lazyAnimationCallbacks() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("lazyAnimationCallbacks");
     return method(javaProvider_);
   }
 
@@ -370,6 +364,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI(
   return ReactNativeFeatureFlags::enableLongTaskAPI();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableNativeCSSParsing();
@@ -420,11 +419,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorEmittingUpdatesWithWrongParentTag(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -443,11 +437,6 @@ bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease(
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::lazyAnimationCallbacks();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::removeTurboModuleManagerDelegateMutex(
@@ -509,7 +498,7 @@ void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
   ReactNativeFeatureFlags::override(
-      std::make_unique<ReactNativeFeatureFlagsProviderHolder>(provider));
+      std::make_unique<ReactNativeFeatureFlagsJavaProvider>(provider));
 }
 
 void JReactNativeFeatureFlagsCxxInterop::dangerouslyReset(
@@ -521,7 +510,7 @@ jni::local_ref<jstring> JReactNativeFeatureFlagsCxxInterop::dangerouslyForceOver
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
   auto accessedFlags = ReactNativeFeatureFlags::dangerouslyForceOverride(
-             std::make_unique<ReactNativeFeatureFlagsProviderHolder>(provider));
+             std::make_unique<ReactNativeFeatureFlagsJavaProvider>(provider));
   if (accessedFlags.has_value()) {
     return jni::make_jstring(accessedFlags.value());
   }
@@ -582,6 +571,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableLongTaskAPI",
         JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI),
       makeNativeMethod(
+        "enableMainQueueModulesOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS),
+      makeNativeMethod(
         "enableNativeCSSParsing",
         JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing),
       makeNativeMethod(
@@ -612,9 +604,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableViewRecyclingForView",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView),
       makeNativeMethod(
-        "fixDifferentiatorEmittingUpdatesWithWrongParentTag",
-        JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorEmittingUpdatesWithWrongParentTag),
-      makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
       makeNativeMethod(
@@ -626,9 +615,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fuseboxNetworkInspectionEnabled",
         JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled),
-      makeNativeMethod(
-        "lazyAnimationCallbacks",
-        JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks),
       makeNativeMethod(
         "removeTurboModuleManagerDelegateMutex",
         JReactNativeFeatureFlagsCxxInterop::removeTurboModuleManagerDelegateMutex),

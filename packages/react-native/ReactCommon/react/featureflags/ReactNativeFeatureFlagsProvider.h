@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0845c9b1618ac1e18ce4aeb5d03a70f5>>
+ * @generated SignedSource<<6e544b793e8c7d01298b428c43af0463>>
  */
 
 /**
@@ -40,6 +40,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
   virtual bool enableLongTaskAPI() = 0;
+  virtual bool enableMainQueueModulesOnIOS() = 0;
   virtual bool enableNativeCSSParsing() = 0;
   virtual bool enableNewBackgroundAndBorderDrawables() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
@@ -50,12 +51,10 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecycling() = 0;
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
-  virtual bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
-  virtual bool lazyAnimationCallbacks() = 0;
   virtual bool removeTurboModuleManagerDelegateMutex() = 0;
   virtual bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
