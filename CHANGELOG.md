@@ -447,6 +447,30 @@ ChuiHW))
 - **Style:** Fixed `centerContent` losing taps and causing jitter ([fe7e97a2fd](https://github.com/facebook/react-native/commit/fe7e97a2fd272db0d9d9aa7d0561337a7c8e2c30) by [@gaearon](https://github.com/gaearon))
 - **Xcode:** Properly escape paths in Xcode build script used when bundling an app. ([2fee13094b](https://github.com/facebook/react-native/commit/2fee13094b3d384c071978776fd8b7cff0b6530f) by [@kraenhansen](https://github.com/kraenhansen))
 
+## v0.77.2
+
+### Added
+
+#### iOS specific
+
+- **Codegen:** Add the `source` parameter to generate-codegen-artifacts to avoid generating files not needed by libraries. ([98b8f17811](https://github.com/facebook/react-native/commit/98b8f178110472e5fed97de80766c03b0b5e988c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **DevTools:** Fix disconnections of DevTools when the network is under significant strain. ([b0974135bf](https://github.com/facebook/react-native/commit/b0974135bf1c0946d4a85bdc1fd423ff7dc612c5) by [@vzaidman](https://github.com/vzaidman))
+- **CLI:** Fix registering of `start` and `bundle` commands with community CLI and isolated node_modules. ([1f002f9999](https://github.com/facebook/react-native/commit/1f002f9999fb2a225f8e2cb3844badc97313b45f) by [@robhogan](https://github.com/robhogan))
+- **Metro:** Bump minimum Metro to 0.81.3, fix "_interopRequireDefault is not a function" with enablePackageExports ([b335436113](https://github.com/facebook/react-native/commit/b335436113aa11cc4f17eb696368e05708374c33) by [@robhogan](https://github.com/robhogan))
+
+#### Android specific
+
+- **Fabric:** Avoid NPE when touch event is triggered before SurfaceManager is initiated ([b8095f4692](https://github.com/facebook/react-native/commit/b8095f4692610c7f4631b851dc7d8dc9b149a277) by [@CHOIMINSEOK](https://github.com/CHOIMINSEOK))
+- **Image:** Fix defaultSource runtime error ([1c51b77868](https://github.com/facebook/react-native/commit/1c51b7786860fe364a115f7a4ed29228157f0f5c) by [@fbp93](https://github.com/fbp93))
+
+#### iOS specific
+
+- **Interop Layer:** Properly pass `nil` for nullable parameters instead of `NSNull` for legacy modules ([619d5dfbb2](https://github.com/facebook/react-native/commit/619d5dfbb280892fcc2a9f78d630eb88fb32960f) by [@cipolleschi](https://github.com/cipolleschi))
+- **TextInput:** Fix crashes when any text is entered while running as iOS app on apple silicon mac ([8d7aca30e7](https://github.com/facebook/react-native/commit/8d7aca30e7fb50c9c069931a7ed67d8d4a745a2a) by [@zhongwuzw](https://github.com/zhongwuzw))
+
 ## v0.77.1
 
 ### Fixed
