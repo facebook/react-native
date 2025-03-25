@@ -56,7 +56,7 @@ runs:
           echo "Stop recording. Saving to screen.mp4"
           adb pull /sdcard/screen.mp4
     - name: Store tests result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: e2e_android_${{ inputs.app-id }}_report_${{ inputs.jsengine }}
         path: |
