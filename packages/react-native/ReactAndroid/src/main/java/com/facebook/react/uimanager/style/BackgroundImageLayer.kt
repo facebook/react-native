@@ -14,16 +14,22 @@ import com.facebook.react.bridge.ReadableMap
 
 public class BackgroundImageLayer(gradientMap: ReadableMap?, context: Context) {
   private val gradient: Gradient? =
-      if (gradientMap != null) {
-        try {
-          Gradient(gradientMap, context)
-        } catch (e: IllegalArgumentException) {
-          // Gracefully reject invalid styles
-          null
+    if (gradientMap != null) {
+      val typeString = gradientMap.getString("type")
+      try {
+        when (typeString) {
+          "linearGradient" -> LinearGradient(gradientMap, context)
+          "radialGradient" -> RadialGradient(gradientMap, context)
+          else -> null
         }
-      } else {
+      } catch (e: IllegalArgumentException) {
+        // Gracefully reject invalid styles
         null
       }
+    } else {
+      null
+    }
 
-  public fun getShader(bounds: Rect): Shader? = gradient?.getShader(bounds)
+  public fun getShader(bounds: Rect): Shader? =
+    gradient?.getShader(bounds.width().toFloat(), bounds.height().toFloat())
 }
