@@ -26,7 +26,7 @@ import useAndroidRippleForView, {
 import * as React from 'react';
 import {useMemo, useRef, useState} from 'react';
 
-type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
+type ViewStyleProp = React.ElementConfig<typeof View>['style'];
 
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,

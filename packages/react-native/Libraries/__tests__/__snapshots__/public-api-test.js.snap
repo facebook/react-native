@@ -1076,7 +1076,7 @@ declare class AppStateImpl {
   constructor(): void;
   addEventListener<K: AppStateEvent>(
     type: K,
-    handler: (...$ElementType<AppStateEventDefinitions, K>) => void
+    handler: (...AppStateEventDefinitions[K]) => void
   ): EventSubscription;
 }
 declare const AppState: AppStateImpl;
@@ -1432,7 +1432,7 @@ declare const AccessibilityInfo: {
   isAccessibilityServiceEnabled(): Promise<boolean>,
   addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
-    handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void
+    handler: (...AccessibilityEventDefinitions[K]) => void
   ): EventSubscription,
   setAccessibilityFocus(reactTag: number): void,
   sendAccessibilityEvent(
@@ -1667,7 +1667,7 @@ declare class Keyboard {
   constructor(): void;
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
+    listener: (...KeyboardEventDefinitions[K]) => mixed,
     context?: mixed
   ): EventSubscription;
   removeAllListeners<K: $Keys<KeyboardEventDefinitions>>(eventType: ?K): void;
@@ -1731,7 +1731,7 @@ declare export default typeof LayoutConformanceNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
-"type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, \\"style\\">;
+"type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -1930,19 +1930,16 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   animated?: boolean;
 }
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: $PropertyType<ScrollView, \\"getScrollResponder\\">;
-  +getScrollableNode: $PropertyType<ScrollView, \\"getScrollableNode\\">;
-  +getInnerViewNode: $PropertyType<ScrollView, \\"getInnerViewNode\\">;
-  +getInnerViewRef: $PropertyType<ScrollView, \\"getInnerViewRef\\">;
-  +getNativeScrollRef: $PropertyType<ScrollView, \\"getNativeScrollRef\\">;
-  +scrollTo: $PropertyType<ScrollView, \\"scrollTo\\">;
-  +scrollToEnd: $PropertyType<ScrollView, \\"scrollToEnd\\">;
-  +flashScrollIndicators: $PropertyType<ScrollView, \\"flashScrollIndicators\\">;
-  +scrollResponderZoomTo: $PropertyType<ScrollView, \\"scrollResponderZoomTo\\">;
-  +scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
-    ScrollView,
-    \\"scrollResponderScrollNativeHandleToKeyboard\\",
-  >;
+  +getScrollResponder: ScrollView[\\"getScrollResponder\\"];
+  +getScrollableNode: ScrollView[\\"getScrollableNode\\"];
+  +getInnerViewNode: ScrollView[\\"getInnerViewNode\\"];
+  +getInnerViewRef: ScrollView[\\"getInnerViewRef\\"];
+  +getNativeScrollRef: ScrollView[\\"getNativeScrollRef\\"];
+  +scrollTo: ScrollView[\\"scrollTo\\"];
+  +scrollToEnd: ScrollView[\\"scrollToEnd\\"];
+  +flashScrollIndicators: ScrollView[\\"flashScrollIndicators\\"];
+  +scrollResponderZoomTo: ScrollView[\\"scrollResponderZoomTo\\"];
+  +scrollResponderScrollNativeHandleToKeyboard: ScrollView[\\"scrollResponderScrollNativeHandleToKeyboard\\"];
 }
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
@@ -4426,12 +4423,12 @@ declare export default class NativeEventEmitter<
   constructor(nativeModule: ?NativeModule): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context?: mixed
   ): EventSubscription;
   emit<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    ...args: $ElementType<TEventToArgsMap, TEvent>
+    ...args: TEventToArgsMap[TEvent]
   ): void;
   removeAllListeners<TEvent: $Keys<TEventToArgsMap>>(eventType?: ?TEvent): void;
   listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number;
@@ -5208,7 +5205,7 @@ declare class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor(): void;
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed
+    listener: (...LinkingEventDefinitions[K]) => mixed
   ): EventSubscription;
   openURL(url: string): Promise<void>;
   canOpenURL(url: string): Promise<boolean>;
@@ -5282,17 +5279,14 @@ type FlatListBaseProps<ItemT> = {
 };
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 export type FlatListProps<ItemT> = {
-  ...$Diff<
+  ...Omit<
     VirtualizedListProps,
-    {
-      data: $PropertyType<VirtualizedListProps, \\"data\\">,
-      getItem: $PropertyType<VirtualizedListProps, \\"getItem\\">,
-      getItemCount: $PropertyType<VirtualizedListProps, \\"getItemCount\\">,
-      getItemLayout: $PropertyType<VirtualizedListProps, \\"getItemLayout\\">,
-      renderItem: $PropertyType<VirtualizedListProps, \\"renderItem\\">,
-      keyExtractor: $PropertyType<VirtualizedListProps, \\"keyExtractor\\">,
-      ...
-    },
+    | \\"data\\"
+    | \\"getItem\\"
+    | \\"getItemCount\\"
+    | \\"getItemLayout\\"
+    | \\"renderItem\\"
+    | \\"keyExtractor\\",
   >,
   ...FlatListBaseProps<ItemT>,
   ...
@@ -5366,27 +5360,9 @@ type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   removeClippedSubviews?: boolean,
 };
 export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
-  ...$Diff<
+  ...Omit<
     VirtualizedSectionListProps<ItemT, SectionT>,
-    {
-      getItem: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        \\"getItem\\",
-      >,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        \\"getItemCount\\",
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        \\"renderItem\\",
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        \\"keyExtractor\\",
-      >,
-      ...
-    },
+    \\"getItem\\" | \\"getItemCount\\" | \\"renderItem\\" | \\"keyExtractor\\",
   >,
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
@@ -5438,27 +5414,9 @@ type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   removeClippedSubviews?: boolean,
 };
 export type Props<ItemT, SectionT = DefaultSectionT> = $ReadOnly<{
-  ...$Diff<
+  ...Omit<
     VirtualizedSectionListProps<ItemT, SectionT>,
-    {
-      getItem: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        \\"getItem\\",
-      >,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        \\"getItemCount\\",
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        \\"renderItem\\",
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<ItemT, SectionT>,
-        \\"keyExtractor\\",
-      >,
-      ...
-    },
+    \\"getItem\\" | \\"getItemCount\\" | \\"renderItem\\" | \\"keyExtractor\\",
   >,
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
@@ -6242,7 +6200,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 "declare const RCTNetworking: interface {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
     context?: mixed
   ): EventSubscription,
   sendRequest(
@@ -7435,7 +7393,7 @@ export type DangerouslyImpreciseStyleProp =
   ____DangerouslyImpreciseStyleProp_Internal;
 export type TypeForStyleKey<
   +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
-> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+> = ____DangerouslyImpreciseStyle_Internal[key];
 export type ViewStyle = ____ViewStyle_Internal;
 export type TextStyle = ____TextStyle_Internal;
 export type ImageStyle = ____ImageStyle_Internal;
@@ -7467,7 +7425,7 @@ export type DangerouslyImpreciseStyleProp =
   ____DangerouslyImpreciseStyleProp_Internal;
 export type TypeForStyleKey<
   +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
-> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+> = ____DangerouslyImpreciseStyle_Internal[key];
 export type ViewStyle = ____ViewStyle_Internal;
 export type TextStyle = ____TextStyle_Internal;
 export type ImageStyle = ____ImageStyle_Internal;
@@ -8894,7 +8852,7 @@ declare export default typeof RCTLog;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/ReactNativeTestTools.js 1`] = `
-"export type ReactTestInstance = $PropertyType<ReactTestRendererType, \\"root\\">;
+"export type ReactTestInstance = ReactTestRendererType[\\"root\\"];
 export type Predicate = (node: ReactTestInstance) => boolean;
 export type ReactTestRendererJSON = ReturnType<ReactTestRenderer.create.toJSON>;
 declare function byClickable(): Predicate;

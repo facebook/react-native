@@ -148,7 +148,7 @@ class Keyboard {
    */
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
+    listener: (...KeyboardEventDefinitions[K]) => mixed,
     context?: mixed,
   ): EventSubscription {
     return this._emitter.addListener(eventType, listener);
