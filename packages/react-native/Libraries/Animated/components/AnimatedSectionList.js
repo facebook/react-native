@@ -18,5 +18,5 @@ import * as React from 'react';
 export default (createAnimatedComponent(SectionList): AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,
   // $FlowExpectedError[unclear-type]
-  SectionList<SectionBase<any>>,
+  SectionList<any, SectionBase<any>>,
 >);
