@@ -53,7 +53,7 @@ void WritableNativeArray::pushLong(jlong value) {
 }
 
 void WritableNativeArray::pushString(jstring value) {
-  if (value == NULL) {
+  if (value == nullptr) {
     pushNull();
     return;
   }
@@ -62,7 +62,7 @@ void WritableNativeArray::pushString(jstring value) {
 }
 
 void WritableNativeArray::pushNativeArray(ReadableNativeArray* otherArray) {
-  if (otherArray == NULL) {
+  if (otherArray == nullptr) {
     pushNull();
     return;
   }
@@ -71,7 +71,7 @@ void WritableNativeArray::pushNativeArray(ReadableNativeArray* otherArray) {
 }
 
 void WritableNativeArray::pushNativeMap(ReadableNativeMap* map) {
-  if (map == NULL) {
+  if (map == nullptr) {
     pushNull();
     return;
   }
