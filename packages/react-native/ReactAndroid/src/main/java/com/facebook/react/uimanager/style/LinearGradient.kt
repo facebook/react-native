@@ -13,7 +13,6 @@ import android.content.Context
 import android.graphics.LinearGradient as AndroidLinearGradient
 import android.graphics.Shader
 import com.facebook.react.bridge.ColorPropConverter
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.uimanager.LengthPercentage
@@ -22,10 +21,9 @@ import kotlin.math.sqrt
 import kotlin.math.tan
 
 internal class LinearGradient(
-    directionMap: ReadableMap,
-    private val colorStopsArray: ReadableArray,
+    gradientMap: ReadableMap,
     private val context: Context
-) {
+) : Gradient {
   private sealed class Direction {
     data class Angle(val value: Double) : Direction()
 
@@ -39,31 +37,35 @@ internal class LinearGradient(
     data class Keyword(val value: Keywords) : Direction()
   }
 
-  private val direction: Direction =
-      when (val type = directionMap.getString("type")) {
-        "angle" -> {
-          val angle = directionMap.getDouble("value")
-          Direction.Angle(angle)
-        }
-
-        "keyword" -> {
-          val keyword =
-              when (directionMap.getString("value")) {
-                "to top right" -> Direction.Keywords.TO_TOP_RIGHT
-                "to bottom right" -> Direction.Keywords.TO_BOTTOM_RIGHT
-                "to top left" -> Direction.Keywords.TO_TOP_LEFT
-                "to bottom left" -> Direction.Keywords.TO_BOTTOM_LEFT
-                else ->
-                    throw IllegalArgumentException(
-                        "Invalid linear gradient direction keyword: ${directionMap.getString("value")}")
-              }
-          Direction.Keyword(keyword)
-        }
-
-        else -> throw IllegalArgumentException("Invalid direction type: $type")
+  private val direction: Direction = run {
+    val directionMap =
+      gradientMap.getMap("direction")
+        ?: throw IllegalArgumentException("Gradient must have direction")
+    when (val type = directionMap.getString("type")) {
+      "angle" -> {
+        val angle = directionMap.getDouble("value")
+        Direction.Angle(angle)
       }
-
+      "keyword" -> {
+        val keyword =
+          when (directionMap.getString("value")) {
+            "to top right" -> Direction.Keywords.TO_TOP_RIGHT
+            "to bottom right" -> Direction.Keywords.TO_BOTTOM_RIGHT
+            "to top left" -> Direction.Keywords.TO_TOP_LEFT
+            "to bottom left" -> Direction.Keywords.TO_BOTTOM_LEFT
+            else ->
+              throw IllegalArgumentException(
+                "Invalid linear gradient direction keyword: ${directionMap.getString("value")}")
+          }
+        Direction.Keyword(keyword)
+      }
+      else -> throw IllegalArgumentException("Invalid direction type: $type")
+    }
+  }
   private val colorStops: ArrayList<ColorStop> = run {
+    val colorStopsArray =
+      gradientMap.getArray("colorStops")
+        ?: throw IllegalArgumentException("Invalid colorStops array")
     val stops = ArrayList<ColorStop>(colorStopsArray.size())
     for (i in 0 until colorStopsArray.size()) {
       val colorStop = colorStopsArray.getMap(i) ?: continue
@@ -85,7 +87,7 @@ internal class LinearGradient(
     stops
   }
 
-  fun getShader(width: Float, height: Float): Shader {
+  override fun getShader(width: Float, height: Float): Shader {
     val angle =
         when (direction) {
           is Direction.Angle -> direction.value

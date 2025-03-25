@@ -27,12 +27,9 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 internal class RadialGradient(
-  shapeString: String,
-  private val sizeMap: ReadableMap?,
-  private val positionMap: ReadableMap?,
-  private val colorStopsArray: ReadableArray,
+  gradientMap: ReadableMap,
   private val context: Context
-) {
+) : Gradient {
   private enum class Shape {
     CIRCLE,
     ELLIPSE;
@@ -88,10 +85,14 @@ internal class RadialGradient(
     val bottom: LengthPercentage? = null
   )
 
-  private val shape: Shape = Shape.fromString(shapeString)
+  private val shape: Shape = run {
+    val shapeString = gradientMap.getString("shape") ?: throw IllegalArgumentException("Radial gradient must have shape")
+    Shape.fromString(shapeString)
+  }
   private val isCircle: Boolean = shape == Shape.CIRCLE
 
   private val position: Position = run {
+    val positionMap = gradientMap.getMap("position")
     val defaultPosition = Position(
       top = LengthPercentage(50f, LengthPercentageType.PERCENT),
       left = LengthPercentage(50f, LengthPercentageType.PERCENT)
@@ -130,33 +131,27 @@ internal class RadialGradient(
   }
 
   private val size: GradientSize = run {
-    if (sizeMap == null) {
-      return@run GradientSize(
-        GradientSize.SizeType.KEYWORD,
-        SizeKeyword.FARTHEST_CORNER
-      )
-    }
-
-    if (sizeMap.hasKey("keyword")) {
-      val keywordString = sizeMap.getString("keyword")
-      val keyword = SizeKeyword.fromString(keywordString)
-      return@run GradientSize(
-        GradientSize.SizeType.KEYWORD,
-        keyword
-      )
-    }
-
-    if (sizeMap.hasKey("x") && sizeMap.hasKey("y")) {
-      val xDynamic = sizeMap.getDynamic("x")
-      val yDynamic = sizeMap.getDynamic("y")
-      val x = LengthPercentage.setFromDynamic(xDynamic)
-      val y = LengthPercentage.setFromDynamic(yDynamic)
-
-      if (x != null && y != null) {
+    if (gradientMap.hasKey("size")) {
+      if (gradientMap.getType("size") == ReadableType.String) {
+        val sizeKeyword = gradientMap.getString("size");
         return@run GradientSize(
-          GradientSize.SizeType.DIMENSIONS,
-          GradientSize.Dimensions(x, y)
+          GradientSize.SizeType.KEYWORD,
+          SizeKeyword.fromString(sizeKeyword)
         )
+      } else if (gradientMap.getType("size") ==  ReadableType.Map) {
+        val sizeMap = gradientMap.getMap("size")
+        if (sizeMap != null) {
+          if (sizeMap.hasKey("x") && sizeMap.hasKey("y")) {
+            val x = LengthPercentage.setFromDynamic(sizeMap.getDynamic("x"))
+            val y = LengthPercentage.setFromDynamic(sizeMap.getDynamic("y"))
+            if (x != null && y != null) {
+              return@run GradientSize(
+                GradientSize.SizeType.DIMENSIONS,
+                GradientSize.Dimensions(x, y)
+              )
+            }
+          }
+        }
       }
     }
 
@@ -167,6 +162,9 @@ internal class RadialGradient(
   }
 
   private val colorStops: ArrayList<ColorStop> = run {
+    val colorStopsArray =
+      gradientMap.getArray("colorStops")
+        ?: throw IllegalArgumentException("Invalid colorStops array")
     val stops = ArrayList<ColorStop>(colorStopsArray.size())
     for (i in 0 until colorStopsArray.size()) {
       val colorStop = colorStopsArray.getMap(i) ?: continue
@@ -189,7 +187,7 @@ internal class RadialGradient(
     stops
   }
 
-  fun getShader(width: Float, height: Float): Shader {
+  override fun getShader(width: Float, height: Float): Shader {
     var centerX: Float = width / 2f
     var centerY: Float = height / 2f
     
