@@ -9,6 +9,8 @@
 
 #include <glog/logging.h>
 
+#include <stdexcept>
+
 namespace facebook::react::jsinspector_modern {
 
 NetworkReporter& NetworkReporter::getInstance() {
@@ -17,25 +19,77 @@ NetworkReporter& NetworkReporter::getInstance() {
 }
 
 bool NetworkReporter::enableDebugging() {
-  std::lock_guard lock(mutex_);
-  if (enabled_) {
+  if (debuggingEnabled_.load(std::memory_order_acquire)) {
     return false;
   }
 
-  enabled_ = true;
+  debuggingEnabled_.store(true, std::memory_order_release);
   LOG(INFO) << "Network debugging enabled" << std::endl;
   return true;
 }
 
 bool NetworkReporter::disableDebugging() {
-  std::lock_guard lock(mutex_);
-  if (!enabled_) {
+  if (!debuggingEnabled_.load(std::memory_order_acquire)) {
     return false;
   }
 
-  enabled_ = false;
+  debuggingEnabled_.store(false, std::memory_order_release);
   LOG(INFO) << "Network debugging disabled" << std::endl;
   return true;
+}
+
+void NetworkReporter::reportRequestStart(const std::string& /*requestId*/) {
+  if (!debuggingEnabled_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
+  // TODO(T216933356)
+  throw std::runtime_error("Not implemented");
+}
+
+void NetworkReporter::reportConnectionTiming(const std::string& /*requestId*/) {
+  if (!debuggingEnabled_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
+  // TODO(T218236597)
+  throw std::runtime_error("Not implemented");
+}
+
+void NetworkReporter::reportRequestFailed(const std::string& /*requestId*/) {
+  if (!debuggingEnabled_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
+  // TODO(T218236855)
+  throw std::runtime_error("Not implemented");
+}
+
+void NetworkReporter::reportResponseStart(const std::string& /*requestId*/) {
+  if (!debuggingEnabled_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
+  // TODO(T216933356)
+  throw std::runtime_error("Not implemented");
+}
+
+void NetworkReporter::reportDataReceived(const std::string& /*requestId*/) {
+  if (!debuggingEnabled_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
+  // TODO(T218236266)
+  throw std::runtime_error("Not implemented");
+}
+
+void NetworkReporter::reportResponseEnd(const std::string& /*requestId*/) {
+  if (!debuggingEnabled_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
+  // TODO(T216933356)
+  throw std::runtime_error("Not implemented");
 }
 
 } // namespace facebook::react::jsinspector_modern

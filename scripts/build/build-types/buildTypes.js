@@ -60,6 +60,11 @@ async function buildTypes(): Promise<void> {
       }
     }
   }
+
+  await fs.copyFile(
+    path.join(__dirname, 'templates/tsconfig.json'),
+    path.join(PACKAGES_DIR, 'react-native', OUTPUT_DIR, 'tsconfig.json'),
+  );
 }
 
 type DependencyEdges = Array<[string, string]>;
@@ -90,6 +95,7 @@ async function translateSourceFiles(
           translatedModuleTemplate({
             originalFileName: path.relative(REPO_ROOT, file),
             source: stripDocblock(typescriptDef),
+            tripleSlashDirectives: extractTripleSlashDirectives(source),
           }),
         );
       } catch (e) {
@@ -126,6 +132,16 @@ function getBuildPath(file: string): string {
 
 function stripDocblock(source: string): string {
   return source.replace(/\/\*\*[\s\S]*?\*\/\n/, '');
+}
+
+function extractTripleSlashDirectives(source: string): Array<string> {
+  const directives = source.match(/^\/\/\/.*$/gm);
+
+  if (directives == null) {
+    return [];
+  }
+
+  return directives.map(directive => directive.replace(/^\/\/\//g, '').trim());
 }
 
 module.exports = buildTypes;

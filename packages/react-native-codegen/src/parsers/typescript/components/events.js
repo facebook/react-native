@@ -51,7 +51,7 @@ function getPropertyType(
   annotation,
   parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
-  const topLevelType = parseTopLevelType(annotation);
+  const topLevelType = parseTopLevelType(annotation, parser);
   const typeAnnotation = topLevelType.type;
   const optional = optionalProperty || topLevelType.optional;
   const type =
@@ -247,6 +247,7 @@ function buildEventSchema(
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
+    parser,
     types,
   );
 

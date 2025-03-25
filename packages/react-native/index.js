@@ -31,14 +31,7 @@ const warnOnce = require('./Libraries/Utilities/warnOnce').default;
 const invariant = require('invariant');
 
 module.exports = {
-  get registerCallableModule() {
-    return require('./Libraries/Core/registerCallableModule').default;
-  },
   // #region Components
-  get AccessibilityInfo() {
-    return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo')
-      .default;
-  },
   get ActivityIndicator() {
     return require('./Libraries/Components/ActivityIndicator/ActivityIndicator')
       .default;
@@ -63,12 +56,12 @@ module.exports = {
     return require('./Libraries/Components/TextInput/InputAccessoryView')
       .default;
   },
-  get experimental_LayoutConformance() {
-    return require('./Libraries/Components/LayoutConformance/LayoutConformance')
-      .default;
-  },
   get KeyboardAvoidingView() {
     return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
+      .default;
+  },
+  get experimental_LayoutConformance() {
+    return require('./Libraries/Components/LayoutConformance/LayoutConformance')
       .default;
   },
   get Modal() {
@@ -141,6 +134,10 @@ module.exports = {
   },
   // #endregion
   // #region APIs
+  get AccessibilityInfo() {
+    return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo')
+      .default;
+  },
   get ActionSheetIOS() {
     return require('./Libraries/ActionSheetIOS/ActionSheetIOS').default;
   },
@@ -156,7 +153,7 @@ module.exports = {
     return require('./Libraries/Utilities/Appearance');
   },
   get AppRegistry() {
-    return require('./Libraries/ReactNative/AppRegistry').default;
+    return require('./Libraries/ReactNative/AppRegistry').AppRegistry;
   },
   get AppState() {
     return require('./Libraries/AppState/AppState').default;
@@ -173,6 +170,15 @@ module.exports = {
     );
     return require('./Libraries/Components/Clipboard/Clipboard').default;
   },
+  get codegenNativeCommands() {
+    return require('./Libraries/Utilities/codegenNativeCommands').default;
+  },
+  get codegenNativeComponent() {
+    return require('./Libraries/Utilities/codegenNativeComponent').default;
+  },
+  get DeviceEventEmitter() {
+    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter').default;
+  },
   get DeviceInfo() {
     return require('./Libraries/Utilities/DeviceInfo').default;
   },
@@ -184,6 +190,10 @@ module.exports = {
   },
   get Dimensions() {
     return require('./Libraries/Utilities/Dimensions').default;
+  },
+  get DynamicColorIOS() {
+    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
+      .DynamicColorIOS;
   },
   get Easing() {
     return require('./Libraries/Animated/Easing').default;
@@ -209,12 +219,18 @@ module.exports = {
   get LogBox() {
     return require('./Libraries/LogBox/LogBox').default;
   },
+  get NativeAppEventEmitter() {
+    return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter').default;
+  },
   get NativeDialogManagerAndroid() {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
       .default;
   },
   get NativeEventEmitter() {
     return require('./Libraries/EventEmitter/NativeEventEmitter').default;
+  },
+  get NativeModules() {
+    return require('./Libraries/BatchedBridge/NativeModules').default;
   },
   get Networking() {
     return require('./Libraries/Network/RCTNetworking').default;
@@ -228,6 +244,13 @@ module.exports = {
   get PixelRatio() {
     return require('./Libraries/Utilities/PixelRatio').default;
   },
+  get Platform() {
+    return require('./Libraries/Utilities/Platform').default;
+  },
+  get PlatformColor() {
+    return require('./Libraries/StyleSheet/PlatformColorValueTypes')
+      .PlatformColor;
+  },
   get PushNotificationIOS() {
     warnOnce(
       'pushNotificationIOS-moved',
@@ -237,6 +260,18 @@ module.exports = {
     );
     return require('./Libraries/PushNotificationIOS/PushNotificationIOS')
       .default;
+  },
+  get processColor() {
+    return require('./Libraries/StyleSheet/processColor').default;
+  },
+  get registerCallableModule() {
+    return require('./Libraries/Core/registerCallableModule').default;
+  },
+  get requireNativeComponent() {
+    return require('./Libraries/ReactNative/requireNativeComponent').default;
+  },
+  get RootTagContext() {
+    return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
   get Settings() {
     return require('./Libraries/Settings/Settings').default;
@@ -277,37 +312,6 @@ module.exports = {
   },
   get Vibration() {
     return require('./Libraries/Vibration/Vibration').default;
-  },
-  // #endregion
-  // #region Plugins
-  get DeviceEventEmitter() {
-    return require('./Libraries/EventEmitter/RCTDeviceEventEmitter').default;
-  },
-  get DynamicColorIOS() {
-    return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
-      .DynamicColorIOS;
-  },
-  get NativeAppEventEmitter() {
-    return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter').default;
-  },
-  get NativeModules() {
-    return require('./Libraries/BatchedBridge/NativeModules').default;
-  },
-  get Platform() {
-    return require('./Libraries/Utilities/Platform').default;
-  },
-  get PlatformColor() {
-    return require('./Libraries/StyleSheet/PlatformColorValueTypes')
-      .PlatformColor;
-  },
-  get processColor() {
-    return require('./Libraries/StyleSheet/processColor').default;
-  },
-  get requireNativeComponent() {
-    return require('./Libraries/ReactNative/requireNativeComponent').default;
-  },
-  get RootTagContext() {
-    return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
   // #endregion
 } as ReactNativePublicAPI;

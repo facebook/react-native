@@ -829,11 +829,11 @@ class ScrollView extends React.Component<ScrollViewProps, State> {
   };
 
   getScrollableNode: () => ?number = () => {
-    return findNodeHandle(this.getNativeScrollRef());
+    return findNodeHandle<$FlowFixMe>(this.getNativeScrollRef());
   };
 
   getInnerViewNode: () => ?number = () => {
-    return findNodeHandle(this._innerView.nativeInstance);
+    return findNodeHandle<$FlowFixMe>(this._innerView.nativeInstance);
   };
 
   getInnerViewRef: () => InnerViewInstance | null = () => {
@@ -941,7 +941,7 @@ class ScrollView extends React.Component<ScrollViewProps, State> {
     if (typeof nodeHandle === 'number') {
       UIManager.measureLayout(
         nodeHandle,
-        nullthrows(findNodeHandle(this)),
+        nullthrows(findNodeHandle<$FlowFixMe>(this)),
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,

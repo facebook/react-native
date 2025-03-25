@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9036faff5ff60a565c87210806a8c560>>
+ * @generated SignedSource<<39fea91b03578f55bcc1848f2abd15da>>
  */
 
 /**
@@ -24,6 +24,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
+
+  override fun animatedShouldSignalBatch(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
@@ -53,6 +55,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableLongTaskAPI(): Boolean = false
 
+  override fun enableMainQueueModulesOnIOS(): Boolean = false
+
   override fun enableNativeCSSParsing(): Boolean = false
 
   override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
@@ -73,8 +77,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableViewRecyclingForView(): Boolean = true
 
-  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = true
-
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
@@ -82,8 +84,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fuseboxEnabledRelease(): Boolean = false
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
-
-  override fun lazyAnimationCallbacks(): Boolean = false
 
   override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
 

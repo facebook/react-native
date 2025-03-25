@@ -7,12 +7,11 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableDOMDocumentAPI:false
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {ScrollView, View} from 'react-native';
 import {
@@ -253,8 +252,7 @@ describe('ReactNativeElement', () => {
 
     describe('getRootNode()', () => {
       // This is the desired implementation (not implemented yet).
-      // eslint-disable-next-line jest/no-disabled-tests
-      it.skip('returns a root node representing the document', () => {
+      it('returns a root node representing the document', () => {
         let lastParentANode;
         let lastParentBNode;
         let lastChildANode;
@@ -326,120 +324,6 @@ describe('ReactNativeElement', () => {
         // The root node of a disconnected node is itself
         expect(parentBNode.getRootNode()).toBe(parentBNode);
         expect(childBNode.getRootNode()).toBe(childBNode);
-      });
-
-      // This is the current (incorrect) behavior.
-      // TODO: fix this implementation and "unskip" the previous test.
-      it('returns the highest parent in the hierarchy', () => {
-        let lastParentNode;
-        let lastChildNode;
-        let lastGrandChildNode;
-
-        const root = Fantom.createRoot();
-        Fantom.runTask(() => {
-          root.render(
-            <View
-              key="parent"
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              <View
-                key="child"
-                ref={node => {
-                  lastChildNode = node;
-                }}>
-                <View
-                  key="grandchild"
-                  ref={node => {
-                    lastGrandChildNode = node;
-                  }}
-                />
-              </View>
-            </View>,
-          );
-        });
-
-        const parentNode = ensureReactNativeElement(lastParentNode);
-        const childNode = ensureReactNativeElement(lastChildNode);
-        const grandChildNode = ensureReactNativeElement(lastGrandChildNode);
-
-        expect(parentNode.getRootNode()).toBe(parentNode);
-        expect(childNode.getRootNode()).toBe(parentNode);
-        expect(grandChildNode.getRootNode()).toBe(parentNode);
-
-        // Remove the grandchild
-        Fantom.runTask(() => {
-          root.render(
-            <View key="parent">
-              <View key="child" />
-            </View>,
-          );
-        });
-
-        expect(parentNode.getRootNode()).toBe(parentNode);
-        expect(childNode.getRootNode()).toBe(parentNode);
-
-        // The root node of a disconnected node is itself
-        expect(grandChildNode.getRootNode()).toBe(grandChildNode);
-
-        // Unmount node
-        Fantom.runTask(() => {
-          root.render(<></>);
-        });
-
-        // The root node of a disconnected node is itself
-        expect(parentNode.getRootNode()).toBe(parentNode);
-        expect(childNode.getRootNode()).toBe(childNode);
-        expect(grandChildNode.getRootNode()).toBe(grandChildNode);
-      });
-
-      // This is the current (incorrect) behavior.
-      // TODO: fix this implementation and "unskip" the previous test.
-      it('returns the highest parent in the hierarchy (multiple root views)', () => {
-        let lastParentANode;
-        let lastParentBNode;
-        let lastChildANode;
-        let lastChildBNode;
-
-        const root = Fantom.createRoot();
-        Fantom.runTask(() => {
-          root.render(
-            <>
-              <View
-                key="parentA"
-                ref={node => {
-                  lastParentANode = node;
-                }}>
-                <View
-                  key="childA"
-                  ref={node => {
-                    lastChildANode = node;
-                  }}
-                />
-              </View>
-              <View
-                key="parentB"
-                ref={node => {
-                  lastParentBNode = node;
-                }}>
-                <View
-                  key="childB"
-                  ref={node => {
-                    lastChildBNode = node;
-                  }}
-                />
-              </View>
-            </>,
-          );
-        });
-
-        const parentANode = ensureReactNativeElement(lastParentANode);
-        const childANode = ensureReactNativeElement(lastChildANode);
-        const parentBNode = ensureReactNativeElement(lastParentBNode);
-        const childBNode = ensureReactNativeElement(lastChildBNode);
-
-        expect(childANode.getRootNode()).toBe(parentANode);
-        expect(childBNode.getRootNode()).toBe(parentBNode);
       });
     });
 

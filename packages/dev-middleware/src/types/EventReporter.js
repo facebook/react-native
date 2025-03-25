@@ -33,6 +33,10 @@ export type DebuggerSessionIDs = {
   pageId: string | null,
 };
 
+export type ConnectionUptime = {
+  connectionUptime: number,
+};
+
 export type ReportableEvent =
   | {
       type: 'launch_debugger_frontend',
@@ -64,6 +68,7 @@ export type ReportableEvent =
       responseOrigin: 'proxy' | 'device',
       timeSinceStart: number | null,
       ...DebuggerSessionIDs,
+      ...ConnectionUptime,
       frontendUserAgent: string | null,
       prefersFuseboxFrontend: boolean | null,
       ...
@@ -85,24 +90,30 @@ export type ReportableEvent =
       type: 'fusebox_console_notice',
     }
   | {
+      type: 'no_debug_pages_for_device',
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',
       message: string,
       error: string,
       errorStack: string,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'debugger_high_ping' | 'device_high_ping',
       duration: number,
       isIdle: boolean,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'debugger_timeout' | 'device_timeout',
       duration: number,
       isIdle: boolean,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
@@ -110,13 +121,15 @@ export type ReportableEvent =
       code: number,
       reason: string,
       isIdle: boolean,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'high_event_loop_delay',
       eventLoopUtilization: number,
-      maxEventLoopDelay: number,
+      maxEventLoopDelayPercent: number,
       duration: number,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     };
 

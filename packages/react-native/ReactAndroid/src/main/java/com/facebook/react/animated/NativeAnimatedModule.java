@@ -27,7 +27,7 @@ import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.GuardedFrameCallback;
@@ -232,7 +232,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
   private boolean mEnqueuedAnimationOnFrame = false;
-  private @UIManagerType int mUIManagerType = UIManagerType.DEFAULT;
+  private @UIManagerType int mUIManagerType = UIManagerType.LEGACY;
   private int mNumFabricAnimations = 0;
   private int mNumNonFabricAnimations = 0;
 
@@ -255,10 +255,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                 return;
               }
 
-              if (!ReactNativeFeatureFlags.lazyAnimationCallbacks()
-                  || nodesManager.hasActiveAnimations()) {
-                enqueueFrameCallback();
-              }
+              enqueueFrameCallback();
             } catch (Exception ex) {
               throw new RuntimeException(ex);
             }
@@ -387,9 +384,13 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (mOperations.isEmpty() && mPreOperations.isEmpty()) {
       return;
     }
-    if (mUIManagerType == UIManagerType.FABRIC) {
+    if (mUIManagerType == UIManagerType.FABRIC
+        || ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       return;
     }
+    // The following code ONLY executes for non-fabric
+    // When ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE is true, the folowing code
+    // might be stripped out.
 
     final long frameNo = mCurrentBatchNumber++;
 
@@ -542,8 +543,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       mUIManagerType = UIManagerType.FABRIC;
     } else if (mNumFabricAnimations == 0
         && mNumNonFabricAnimations > 0
-        && mUIManagerType != UIManagerType.DEFAULT) {
-      mUIManagerType = UIManagerType.DEFAULT;
+        && mUIManagerType != UIManagerType.LEGACY) {
+      mUIManagerType = UIManagerType.LEGACY;
     }
   }
 
@@ -1171,9 +1172,6 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++));
                   break;
                 case OP_CODE_START_ANIMATING_NODE:
-                  if (ReactNativeFeatureFlags.lazyAnimationCallbacks()) {
-                    enqueueFrameCallback();
-                  }
                   animatedNodesManager.startAnimatingNode(
                       // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++), opsAndArgs.getMap(i++), null);

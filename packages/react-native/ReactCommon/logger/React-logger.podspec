@@ -17,12 +17,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags] 
-
 Pod::Spec.new do |s|
   s.name                   = "React-logger"
   s.version                = version
@@ -33,9 +27,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "" }
   s.header_dir             = "logger"
 
-  s.dependency "glog"
+  add_rn_third_party_dependencies(s)
 end

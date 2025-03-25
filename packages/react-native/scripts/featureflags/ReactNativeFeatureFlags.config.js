@@ -60,12 +60,22 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
+    animatedShouldSignalBatch: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-03-07',
+        description: 'Enables start- and finishOperationBatch on any platform.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {
         dateAdded: '2024-10-26',
         description:
-          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
+          'Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -76,7 +86,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-12-10',
         description:
-          'When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.',
+          'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -147,7 +157,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-11-19',
         description:
-          'When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout',
+          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -197,6 +207,16 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableMainQueueModulesOnIOS: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Makes modules requiring main queue setup initialize on the main thread, during React Native init.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -311,16 +331,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
-      defaultValue: true,
-      metadata: {
-        description:
-          "Fixes a bug in Differentiator where parent views may be referenced before they're created",
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -359,17 +369,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-01-31',
         description:
           'Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    lazyAnimationCallbacks: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-05-01',
-        description:
-          'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -518,6 +517,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    avoidAnimatedRefInvalidation: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-03-12',
+        description:
+          'Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     avoidStateUpdateInAnimatedPropsMemo: {
       defaultValue: false,
       metadata: {
@@ -547,18 +557,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableDOMDocumentAPI: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-01-28',
-        description:
-          'Enables the DOM Document API, exposing instaces of document through `getRootNode` and `ownerDocument`, and providing access to the `documentElement` representing the root node. ' +
-          'This flag will be short-lived, only to test the Document API specifically, and then it will be collapsed into the enableAccessToHostTreeInFabric flag.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -621,17 +619,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    useRefsForTextInputState: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-08',
-        description:
-          'Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

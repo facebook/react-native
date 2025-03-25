@@ -9,11 +9,7 @@
  * @oncall react_native
  */
 
-const {HEADERS_FOLDER, TARGET_FOLDER} = require('./constants');
-const {getAllFilesRecursively} = require('./folders');
 const {execSync} = require('child_process');
-const fs = require('fs');
-const path = require('path');
 
 /*::
 import type { Dependency, Destination, Platform } from './types';
@@ -45,9 +41,6 @@ async function buildDepenencies(
       ),
     ),
   );
-
-  // Copy headers into framework
-  await copyHeadersToFrameworks(scheme, dependencies, rootFolder, buildFolder);
 }
 
 /**
@@ -70,79 +63,6 @@ async function buildPlatform(
     DEBUG_INFORMATION_FORMAT=dwarf-with-dsym';
 
   execSync(command, {cwd: rootFolder, stdio: 'inherit'});
-}
-
-/**
- * Copies headers needed from the package to the framework
- */
-async function copyHeadersToFrameworks(
-  scheme /*: string */,
-  dependencies /*: $ReadOnlyArray<Dependency> */,
-  rootFolder /*: string */,
-  buildFolder /*: string */,
-) {
-  const frameworkFolder = path.join(buildFolder, 'Build', 'Products');
-  const frameworks = fs
-    .readdirSync(frameworkFolder)
-    .filter(f => fs.statSync(path.join(frameworkFolder, f)).isDirectory());
-
-  console.log('Frameworks found:', frameworks.join(', '));
-  const frameworkPaths = frameworks.map(framework =>
-    path.join(frameworkFolder, framework),
-  );
-
-  // Create Header folder
-  frameworkPaths.forEach(fp => {
-    const headerFolder = path.join(
-      fp,
-      'PackageFrameworks',
-      `${scheme}.framework`,
-      'Headers',
-    );
-    // Delete and recreate the folder
-    fs.rmSync(headerFolder, {force: true, recursive: true});
-    fs.mkdirSync(headerFolder, {recursive: true});
-  });
-
-  // Now we can go through all dependencies and copy header files for each depencendy
-  dependencies.forEach(dep => {
-    const depHeadersFolder = path.join(
-      rootFolder,
-      dep.name,
-      TARGET_FOLDER,
-      HEADERS_FOLDER,
-    );
-    const publicHeaderFiles = path.join(depHeadersFolder);
-
-    // Get files in public header files
-    const headerFiles = getAllFilesRecursively(publicHeaderFiles);
-    console.log(
-      `Copying ${headerFiles.length} headers from "${dep.name}" to framework.`,
-    );
-
-    // Copy files into headers in framework
-    headerFiles.map(p => {
-      frameworkPaths.forEach(fp => {
-        const destination = path.join(
-          fp,
-          'PackageFrameworks',
-          `${scheme}.framework`,
-          'Headers',
-          p.replace(publicHeaderFiles, ''),
-        );
-
-        // Create folder if it doesn't exist
-        if (!fs.existsSync(path.dirname(destination))) {
-          fs.mkdirSync(path.dirname(destination), {
-            force: true,
-            recursive: true,
-          });
-        }
-        // Copy
-        fs.copyFileSync(p, destination);
-      });
-    });
-  });
 }
 
 module.exports = {

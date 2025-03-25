@@ -72,7 +72,7 @@ interface Spec extends TurboModule {
     category?: NativeEventCategory,
     isUnique?: boolean,
   ) => void;
-  scrollTo: (
+  enqueueScrollEvent: (
     shadowNode: mixed /* ShadowNode */,
     options: ScrollOptions,
   ) => void;

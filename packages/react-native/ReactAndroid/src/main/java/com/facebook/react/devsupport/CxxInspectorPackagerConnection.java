@@ -10,8 +10,10 @@ package com.facebook.react.devsupport;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
 import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
@@ -21,9 +23,10 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
 /** Java wrapper around a C++ InspectorPackagerConnection. */
-/* package */ class CxxInspectorPackagerConnection implements IInspectorPackagerConnection {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class CxxInspectorPackagerConnection implements IInspectorPackagerConnection {
   static {
-    DevSupportSoLoader.staticInit();
+    SoLoader.loadLibrary("react_devsupportjni");
   }
 
   @DoNotStrip private final HybridData mHybridData;
@@ -39,7 +42,7 @@ import okhttp3.WebSocketListener;
 
   public native void closeQuietly();
 
-  public native void sendEventToAllConnections(String event);
+  public native void sendEventToAllConnections(@Nullable String event);
 
   /** Java wrapper around a C++ IWebSocketDelegate, allowing us to call the interface from Java. */
   @DoNotStrip
@@ -49,6 +52,8 @@ import okhttp3.WebSocketListener;
     public native void didFailWithError(@Nullable Integer posixCode, String error);
 
     public native void didReceiveMessage(String message);
+
+    public native void didOpen();
 
     public native void didClose();
 
@@ -121,6 +126,17 @@ import okhttp3.WebSocketListener;
                       new Runnable() {
                         public void run() {
                           delegate.didReceiveMessage(text);
+                        }
+                      },
+                      0);
+                }
+
+                @Override
+                public void onOpen(WebSocket _webSocket, Response response) {
+                  scheduleCallback(
+                      new Runnable() {
+                        public void run() {
+                          delegate.didOpen();
                         }
                       },
                       0);

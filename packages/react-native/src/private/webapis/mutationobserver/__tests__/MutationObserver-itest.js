@@ -14,7 +14,7 @@ import 'react-native/Libraries/Core/InitializeCore';
 import type MutationObserverType from 'react-native/src/private/webapis/mutationobserver/MutationObserver';
 import type MutationRecordType from 'react-native/src/private/webapis/mutationobserver/MutationRecord';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {View} from 'react-native';

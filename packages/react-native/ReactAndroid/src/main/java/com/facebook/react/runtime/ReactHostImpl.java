@@ -699,7 +699,9 @@ public class ReactHostImpl implements ReactHost {
   /* package */
   @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
-    if (nativeModuleInterface == UIManagerModule.class) {
+    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
+        && nativeModuleInterface == UIManagerModule.class) {
+
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
           new ReactNoCrashBridgeNotAllowedSoftException(

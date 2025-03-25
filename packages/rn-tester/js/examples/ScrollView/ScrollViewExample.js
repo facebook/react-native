@@ -457,6 +457,16 @@ const examples: Array<RNTesterModuleExample> = [
       return <ClippingExampleHorizontal />;
     },
   },
+  {
+    name: 'touchableChildrenOverflowingContainerHorizontal',
+    title:
+      '<ScrollView> touchable children overflow content container (horizontal = true)\n',
+    description:
+      "Children that overflow ScrollView's content container should still receive touch events",
+    render() {
+      return <ChildrenWithTouchEventsOverflowingContainerHorizontal />;
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {
@@ -1348,6 +1358,56 @@ function ClippingExampleHorizontal() {
       ]}
       nestedScrollEnabled={true}>
       {ITEMS.map(createItemRow)}
+    </ScrollView>
+  );
+}
+
+function TouchableItem({index}: {index: number}) {
+  const [pressed, setPressed] = useState(false);
+
+  return (
+    <View
+      onTouchStart={() => setPressed(p => !p)}
+      testID={`touchable_item_${index}`}
+      style={{
+        position: 'relative',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: '25%',
+        margin: 5,
+        backgroundColor: pressed ? 'gray' : 'lightgray',
+      }}>
+      <Text>Item {index}</Text>
+    </View>
+  );
+}
+
+function ChildrenWithTouchEventsOverflowingContainerHorizontal() {
+  return (
+    <ScrollView
+      testID="touchable_overflowing_container_horizontal"
+      horizontal={true}
+      style={[styles.scrollView, {height: 200, width: '100%'}]}
+      contentContainerStyle={{
+        backgroundColor: 'red',
+      }}
+      nestedScrollEnabled={true}>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'stretch',
+          minHeight: 45,
+          minWidth: '100%',
+        }}>
+        <TouchableItem index={1} />
+        <TouchableItem index={2} />
+        <TouchableItem index={3} />
+      </View>
     </ScrollView>
   );
 }

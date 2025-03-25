@@ -16,20 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
 new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1' : ''
-
-header_search_paths = [
-  "\"$(PODS_ROOT)/boost\"",
-  "\"$(PODS_ROOT)/RCT-Folly\"",
-  "\"$(PODS_ROOT)/DoubleConversion\"",
-  "\"$(PODS_ROOT)/fast_float/include\"",
-  "\"$(PODS_ROOT)/fmt/include\""
-]
 
 module_name = "RCTRuntime"
 header_dir = "React"
@@ -44,7 +31,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "*.{h,mm}"
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + new_arch_flags
+  s.compiler_flags         = new_arch_flags
   s.header_dir             = header_dir
   s.module_name          = module_name
 
@@ -53,8 +40,7 @@ Pod::Spec.new do |s|
   end
 
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => header_search_paths,
-    "OTHER_CFLAGS" => "$(inherited) " + folly_compiler_flags + new_arch_flags,
+    "OTHER_CFLAGS" => "$(inherited) " + new_arch_flags,
     "DEFINES_MODULE" => "YES",
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }.merge!(ENV['USE_FRAMEWORKS'] != nil ? {
@@ -62,11 +48,10 @@ Pod::Spec.new do |s|
   }: {})
 
   s.dependency "React-Core"
-  s.dependency "RCT-Folly/Fabric", folly_version
-  s.dependency "glog"
   s.dependency "React-jsi"
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 
   add_dependency(s, "React-RuntimeCore")
@@ -82,4 +67,5 @@ Pod::Spec.new do |s|
     s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}"]
   end
   depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 end

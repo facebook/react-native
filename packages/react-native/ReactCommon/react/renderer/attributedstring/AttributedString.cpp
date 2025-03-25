@@ -47,10 +47,6 @@ bool Fragment::isContentEqual(const Fragment& rhs) const {
       std::tie(rhs.string, rhs.textAttributes);
 }
 
-bool Fragment::operator!=(const Fragment& rhs) const {
-  return !(*this == rhs);
-}
-
 #pragma mark - AttributedString
 
 void AttributedString::appendFragment(Fragment&& fragment) {
@@ -113,11 +109,8 @@ bool AttributedString::compareTextAttributesWithoutFrame(
 }
 
 bool AttributedString::operator==(const AttributedString& rhs) const {
-  return fragments_ == rhs.fragments_;
-}
-
-bool AttributedString::operator!=(const AttributedString& rhs) const {
-  return !(*this == rhs);
+  return std::tie(fragments_, baseAttributes_) ==
+      std::tie(rhs.fragments_, rhs.baseAttributes_);
 }
 
 bool AttributedString::isContentEqual(const AttributedString& rhs) const {

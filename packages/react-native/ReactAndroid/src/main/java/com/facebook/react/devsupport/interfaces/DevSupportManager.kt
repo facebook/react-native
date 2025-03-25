@@ -38,11 +38,11 @@ public interface DevSupportManager : JSExceptionHandler {
 
   public var devSupportEnabled: Boolean
 
-  public fun showNewJavaError(message: String?, e: Throwable?)
+  public fun showNewJavaError(message: String?, e: Throwable)
 
-  public fun addCustomDevOption(optionName: String?, optionHandler: DevOptionHandler?)
+  public fun addCustomDevOption(optionName: String, optionHandler: DevOptionHandler)
 
-  public fun createRootView(appKey: String?): View?
+  public fun createRootView(appKey: String): View?
 
   public fun destroyRootView(rootView: View?)
 
@@ -78,15 +78,15 @@ public interface DevSupportManager : JSExceptionHandler {
 
   public fun toggleElementInspector()
 
-  public fun downloadBundleResourceFromUrlSync(resourceURL: String, outputFile: File?): File?
+  public fun downloadBundleResourceFromUrlSync(resourceURL: String, outputFile: File): File?
 
-  public fun registerErrorCustomizer(errorCustomizer: ErrorCustomizer?)
+  public fun registerErrorCustomizer(errorCustomizer: ErrorCustomizer)
 
   public fun processErrorCustomizers(
-      errorInfo: Pair<String, Array<StackFrame>>?
-  ): Pair<String, Array<StackFrame>>?
+      errorInfo: Pair<String, Array<StackFrame>>
+  ): Pair<String, Array<StackFrame>>
 
-  public fun setPackagerLocationCustomizer(packagerLocationCustomizer: PackagerLocationCustomizer?)
+  public fun setPackagerLocationCustomizer(packagerLocationCustomizer: PackagerLocationCustomizer)
 
   /**
    * Create the surface delegate that the provided module should use to interact with
@@ -94,7 +94,7 @@ public interface DevSupportManager : JSExceptionHandler {
    * @param moduleName the module name that helps decide which surface it should interact with
    * @return a [SurfaceDelegate] instance
    */
-  public fun createSurfaceDelegate(moduleName: String?): SurfaceDelegate?
+  public fun createSurfaceDelegate(moduleName: String): SurfaceDelegate?
 
   /** Attempt to open the JS debugger on the host machine. */
   public fun openDebugger()

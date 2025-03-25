@@ -16,12 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
-
 Pod::Spec.new do |s|
     s.name                   = "React-NativeModulesApple"
     s.module_name            = "React_NativeModulesApple"
@@ -33,8 +27,7 @@ Pod::Spec.new do |s|
     s.author                 = "Meta Platforms, Inc. and its affiliates"
     s.platforms              = min_supported_versions
     s.source                 = source
-    s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-    s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_featureflags.framework/Headers\"",
+    s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_featureflags.framework/Headers\"",
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
@@ -44,7 +37,6 @@ Pod::Spec.new do |s|
 
     s.source_files = "ReactCommon/**/*.{mm,cpp,h}"
 
-    s.dependency "glog"
     s.dependency "ReactCommon/turbomodule/core"
     s.dependency "ReactCommon/turbomodule/bridging"
     s.dependency "React-callinvoker"
@@ -55,6 +47,8 @@ Pod::Spec.new do |s|
     s.dependency "React-runtimeexecutor"
     add_dependency(s, "React-featureflags")
     add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+    add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
 
     depend_on_js_engine(s)
+    add_rn_third_party_dependencies(s)
 end

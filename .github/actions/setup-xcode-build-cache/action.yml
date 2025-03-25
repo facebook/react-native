@@ -30,9 +30,9 @@ runs:
       uses: actions/cache@v4
       with:
         path: packages/rn-tester/Podfile.lock
-        key: v11-podfilelock-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version }}
+        key: v13-podfilelock-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version }}
     - name: Cache cocoapods
       uses: actions/cache@v4
       with:
         path: packages/rn-tester/Pods
-        key: v13-cocoapods-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}
+        key: v15-cocoapods-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}

@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -59,6 +60,7 @@ import okio.Sink;
  *   <li>Genymotion emulator with default settings: 10.0.3.2
  * </ul>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DevServerHelper {
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
@@ -205,10 +207,13 @@ public class DevServerHelper {
       protected Void doInBackground(Void... params) {
         Map<String, String> metadata =
             AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
-
+        String deviceName = metadata.get("deviceName");
+        if (deviceName == null) {
+          FLog.w(ReactConstants.TAG, "Could not get device name from Inspector Host Metadata.");
+          return null;
+        }
         mInspectorPackagerConnection =
-            new CxxInspectorPackagerConnection(
-                getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
+            new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), deviceName, mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }
@@ -322,7 +327,7 @@ public class DevServerHelper {
       DevBundleDownloadListener callback,
       File outputFile,
       String bundleURL,
-      BundleDownloader.BundleInfo bundleInfo) {
+      @Nullable BundleDownloader.BundleInfo bundleInfo) {
     mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
   }
 
@@ -330,7 +335,7 @@ public class DevServerHelper {
       DevBundleDownloadListener callback,
       File outputFile,
       String bundleURL,
-      BundleDownloader.BundleInfo bundleInfo,
+      @Nullable BundleDownloader.BundleInfo bundleInfo,
       Request.Builder requestBuilder) {
     mBundleDownloader.downloadBundleFromURL(
         callback, outputFile, bundleURL, bundleInfo, requestBuilder);
@@ -404,6 +409,11 @@ public class DevServerHelper {
   }
 
   private static String createResourceURL(String host, String resourcePath) {
+    // This is what we get for not using a proper URI library.
+    if (resourcePath.startsWith("/")) {
+      FLog.w(ReactConstants.TAG, "Resource path should not begin with `/`, removing it.");
+      resourcePath = resourcePath.substring(1);
+    }
     return String.format(Locale.US, "http://%s/%s", host, resourcePath);
   }
 
@@ -447,7 +457,7 @@ public class DevServerHelper {
     final Request request = new Request.Builder().url(resourceURL).build();
 
     try (Response response = mClient.newCall(request).execute()) {
-      if (!response.isSuccessful()) {
+      if (!response.isSuccessful() || response.body() == null) {
         return null;
       }
 

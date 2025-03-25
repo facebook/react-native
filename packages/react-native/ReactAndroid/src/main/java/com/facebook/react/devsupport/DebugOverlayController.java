@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
@@ -26,7 +27,8 @@ import com.facebook.react.common.ReactConstants;
  * Helper class for controlling overlay view with FPS and JS FPS info that gets added directly
  * to @{link WindowManager} instance.
  */
-/* package */ class DebugOverlayController {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class DebugOverlayController {
 
   public static void requestPermission(Context context) {
     // Get permission to show debug overlay in dev builds.
@@ -57,6 +59,7 @@ import com.facebook.react.common.ReactConstants;
       PackageInfo info =
           context
               .getPackageManager()
+              // NULLSAFE_FIXME[Nullable Dereference]
               .getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
       if (info.requestedPermissions != null) {
         for (String p : info.requestedPermissions) {
@@ -73,7 +76,7 @@ import com.facebook.react.common.ReactConstants;
 
   private static boolean canHandleIntent(Context context, Intent intent) {
     PackageManager packageManager = context.getPackageManager();
-    return intent.resolveActivity(packageManager) != null;
+    return packageManager != null && intent.resolveActivity(packageManager) != null;
   }
 
   private final WindowManager mWindowManager;

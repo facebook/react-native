@@ -14,7 +14,7 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useLayoutEffect} from 'react';
 import {ScrollView, Text} from 'react-native';
@@ -49,7 +49,7 @@ describe('UIConsistency', () => {
       expect(scrollViewNode.scrollTop).toBe(0);
 
       Fantom.runOnUIThread(() => {
-        Fantom.scrollTo(scrollViewNode, {x: 0, y: 100});
+        Fantom.enqueueScrollEvent(scrollViewNode, {x: 0, y: 100});
       });
 
       expect(scrollViewNode.scrollTop).toBe(0);
@@ -84,7 +84,7 @@ describe('UIConsistency', () => {
       // We never accessed the tree before the state update
 
       Fantom.runOnUIThread(() => {
-        Fantom.scrollTo(scrollViewNode, {x: 0, y: 100});
+        Fantom.enqueueScrollEvent(scrollViewNode, {x: 0, y: 100});
       });
 
       // The value is up-to-date immediately
@@ -142,7 +142,7 @@ describe('UIConsistency', () => {
               expect(scrollViewNode.scrollTop).toBe(0);
 
               Fantom.runOnUIThread(() => {
-                Fantom.scrollTo(scrollViewNode, {x: 0, y: 100});
+                Fantom.enqueueScrollEvent(scrollViewNode, {x: 0, y: 100});
               });
 
               expect(scrollViewNode.scrollTop).toBe(0);

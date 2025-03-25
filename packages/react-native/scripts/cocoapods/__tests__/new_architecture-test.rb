@@ -101,18 +101,15 @@ class NewArchitectureTests < Test::Unit::TestCase
         NewArchitectureHelper.modify_flags_for_new_architecture(installer, true)
 
         # Assert
-        folly_config = Helpers::Constants.folly_config
-        folly_compiler_flags = folly_config[:compiler_flags]
-
-        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_nil(first_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
-        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_nil(second_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
-        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_nil(react_core_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_nil(react_core_release_config.build_settings["OTHER_CFLAGS"])
         assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
         assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
@@ -134,15 +131,15 @@ class NewArchitectureTests < Test::Unit::TestCase
         folly_config = Helpers::Constants.folly_config
         folly_compiler_flags = folly_config[:compiler_flags]
 
-        assert_equal(spec.compiler_flags, "-DRCT_NEW_ARCH_ENABLED=1 #{NewArchitectureHelper.folly_compiler_flags}")
+        assert_equal(spec.compiler_flags, "-DRCT_NEW_ARCH_ENABLED=1")
         assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-featureflags/React_featureflags.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_equal(
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2024.10.14.00" },
+                { :dependency_name => "ReactNativeDependencies" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "ReactCodegen" },
@@ -168,7 +165,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         #  Arrange
         spec = SpecMock.new
         spec.compiler_flags = ''
-        other_flags = "\"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\""
+        other_flags = "\"$(ReactNativeDependencies)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\""
         spec.pod_target_xcconfig = {
             "HEADER_SEARCH_PATHS" => other_flags
         }

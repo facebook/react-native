@@ -16,7 +16,6 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InspectorPackagerConnection.h>
 
-#include <functional>
 #include <memory>
 
 #include "FollyDynamicMatchers.h"
@@ -41,10 +40,15 @@ class InspectorPackagerConnectionTestBase : public testing::Test {
             "my-device",
             "my-app",
             packagerConnectionDelegates_.make_unique(asyncExecutor_)}) {
+    auto makeSocket = webSockets_.lazily_make_unique<
+        const std::string&,
+        std::weak_ptr<IWebSocketDelegate>>();
     ON_CALL(*packagerConnectionDelegate(), connectWebSocket(_, _))
-        .WillByDefault(webSockets_.lazily_make_unique<
-                       const std::string&,
-                       std::weak_ptr<IWebSocketDelegate>>());
+        .WillByDefault([makeSocket](auto&&... args) {
+          auto socket = makeSocket(std::forward<decltype(args)>(args)...);
+          socket->getDelegate().didOpen();
+          return std::move(socket);
+        });
   }
 
   void TearDown() override {
