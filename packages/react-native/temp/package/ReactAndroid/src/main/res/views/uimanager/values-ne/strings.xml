@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: ne_NP -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">लिङ्क</string>
+    <string name="image_description" gender="unknown">फोटो</string>
+    <string name="imagebutton_description" gender="unknown">बटन, फोटो</string>
+    <string name="combobox_description" gender="unknown">कम्बो बक्स</string>
+    <string name="menu_description" gender="unknown">मेनु</string>
+    <string name="state_on_description" gender="unknown">अन</string>
+    <string name="state_off_description" gender="unknown">अफ</string>
+</resources>
