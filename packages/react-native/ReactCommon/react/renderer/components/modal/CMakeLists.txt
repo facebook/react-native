@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB rrc_modal_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(rrc_modal STATIC ${rrc_modal_SRC})
@@ -24,13 +18,15 @@ target_link_libraries(rrc_modal
         folly_runtime
         glog_init
         react_codegen_rncore
-        react_render_componentregistry
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_imagemanager
-        react_render_uimanager
+        react_renderer_componentregistry
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_imagemanager
+        react_renderer_uimanager
         rrc_image
         rrc_view
         yoga
 )
+target_compile_reactnative_options(rrc_modal PRIVATE "Fabric")
+target_compile_options(rrc_modal PRIVATE -Wpedantic)

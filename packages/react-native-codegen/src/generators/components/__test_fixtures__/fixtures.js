@@ -744,6 +744,16 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'arrayOfMixed',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'MixedTypeAnnotation',
+                },
+              },
+            },
           ],
           commands: [],
         },

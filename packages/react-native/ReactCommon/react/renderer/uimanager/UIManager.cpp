@@ -229,7 +229,7 @@ void UIManager::startSurface(
     ShadowTree::Unique&& shadowTree,
     const std::string& moduleName,
     const folly::dynamic& props,
-    DisplayMode displayMode) const {
+    DisplayMode displayMode) const noexcept {
   TraceSection s("UIManager::startSurface");
 
   auto surfaceId = shadowTree->getSurfaceId();
@@ -242,7 +242,8 @@ void UIManager::startSurface(
   });
 }
 
-void UIManager::startEmptySurface(ShadowTree::Unique&& shadowTree) const {
+void UIManager::startEmptySurface(
+    ShadowTree::Unique&& shadowTree) const noexcept {
   TraceSection s("UIManager::startEmptySurface");
   shadowTreeRegistry_.add(std::move(shadowTree));
 }
@@ -251,7 +252,7 @@ void UIManager::setSurfaceProps(
     SurfaceId surfaceId,
     const std::string& moduleName,
     const folly::dynamic& props,
-    DisplayMode displayMode) const {
+    DisplayMode displayMode) const noexcept {
   TraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime& runtime) {
@@ -618,7 +619,8 @@ void UIManager::unregisterMountHook(UIManagerMountHook& mountHook) {
 RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     const ShadowTree& shadowTree,
     const RootShadowNode::Shared& oldRootShadowNode,
-    const RootShadowNode::Unshared& newRootShadowNode) const {
+    const RootShadowNode::Unshared& newRootShadowNode,
+    const ShadowTree::CommitOptions& commitOptions) const {
   TraceSection s("UIManager::shadowTreeWillCommit");
 
   std::shared_lock lock(commitHookMutex_);
@@ -626,7 +628,7 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
   auto resultRootShadowNode = newRootShadowNode;
   for (auto* commitHook : commitHooks_) {
     resultRootShadowNode = commitHook->shadowTreeWillCommit(
-        shadowTree, oldRootShadowNode, resultRootShadowNode);
+        shadowTree, oldRootShadowNode, resultRootShadowNode, commitOptions);
   }
 
   return resultRootShadowNode;

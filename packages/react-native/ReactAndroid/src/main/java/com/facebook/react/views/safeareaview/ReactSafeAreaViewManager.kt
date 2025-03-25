@@ -33,10 +33,10 @@ internal class ReactSafeAreaViewManager() :
 
   override fun createShadowNodeInstance(): LayoutShadowNode = ReactSafeAreaViewShadowNode()
 
-  public override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
+  override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
       ReactSafeAreaViewShadowNode::class.java
 
-  public override fun updateState(
+  override fun updateState(
       view: ReactSafeAreaView,
       props: ReactStylesDiffMap,
       stateWrapper: StateWrapper

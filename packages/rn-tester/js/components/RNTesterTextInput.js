@@ -10,17 +10,17 @@
 
 'use strict';
 
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const React = require('react');
 const {Pressable, StyleSheet, Text} = require('react-native');
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   testID?: string,
   textTestID?: string,
   children?: React.Node,
-  onPress?: ?(event: PressEvent) => mixed,
-|}>;
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+}>;
 
 class RNTesterButton extends React.Component<Props> {
   render(): React.Node {

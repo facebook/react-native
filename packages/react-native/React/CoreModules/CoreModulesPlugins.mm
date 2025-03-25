@@ -40,7 +40,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"SourceCode", RCTSourceCodeCls},
     {"StatusBarManager", RCTStatusBarManagerCls},
     {"Timing", RCTTimingCls},
-    {"WebSocketExecutor", RCTWebSocketExecutorCls},
     {"WebSocketModule", RCTWebSocketModuleCls},
     {"BlobModule", RCTBlobManagerCls},
   };

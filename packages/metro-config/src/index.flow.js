@@ -26,7 +26,6 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/Libraries/Utilities/.+\\.js$',
     '/Libraries/vendor/.+\\.js$',
     '/Libraries/WebSocket/.+\\.js$',
-    '/Libraries/YellowBox/.+\\.js$',
     '/src/private/renderer/errorhandling/.+\\.js$',
     '/metro-runtime/.+\\.js$',
     '/node_modules/@babel/runtime/.+\\.js$',
@@ -54,7 +53,7 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['android', 'ios'],
-      unstable_conditionNames: ['require', 'import', 'react-native'],
+      unstable_conditionNames: ['react-native'],
     },
     serializer: {
       // Note: This option is overridden in cli-plugin-metro (getOverrideConfig)

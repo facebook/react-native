@@ -10,13 +10,13 @@
 
 'use strict';
 
-export type ResolvedAssetSource = {|
+export type ResolvedAssetSource = {
   +__packager_asset: boolean,
   +width: ?number,
   +height: ?number,
   +uri: string,
   +scale: number,
-|};
+};
 
 import type {
   AssetDestPathResolver,
@@ -24,7 +24,7 @@ import type {
 } from '@react-native/assets-registry/registry';
 
 const PixelRatio = require('../Utilities/PixelRatio').default;
-const Platform = require('../Utilities/Platform');
+const Platform = require('../Utilities/Platform').default;
 const {pickScale} = require('./AssetUtils');
 const {
   getAndroidResourceFolderName,
@@ -55,6 +55,17 @@ function getAssetPathInDrawableFolder(asset: PackagerAsset): string {
 
 /**
  * Returns true if the asset can be loaded over the network.
+ *
+ * This prevents an issue loading XML assets on Android. XML asset types like
+ * vector drawables can only be loaded from precompiled source. Android does
+ * not support loading these over the network, and AAPT precompiles data by
+ * breaking path data and resource information apart into multiple files,
+ * stuffing it all into the resource table. As a result, we should only attempt
+ * to load resources as we would in release builds: by the resource name.
+ *
+ * For more information, see:
+ * https://issuetracker.google.com/issues/62435069
+ * https://issuetracker.google.com/issues/68293189
  */
 function assetSupportsNetworkLoads(asset: PackagerAsset): boolean {
   return !(asset.type === 'xml' && Platform.OS === 'android');
@@ -199,4 +210,4 @@ class AssetSourceResolver {
     pickScale;
 }
 
-module.exports = AssetSourceResolver;
+export default AssetSourceResolver;

@@ -95,6 +95,21 @@ TEST(CSSTokenizer, number_values) {
       "+.123e+0",
       CSSToken{CSSTokenType::Number, +.123e+0},
       CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "3e-1000",
+      CSSToken{CSSTokenType::Number, 0},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "3e1000",
+      CSSToken{CSSTokenType::Number, std::numeric_limits<float>::infinity()},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "+.9999999999",
+      CSSToken{CSSTokenType::Number, +.9999999999},
+      CSSToken{CSSTokenType::EndOfFile});
 }
 
 TEST(CSSTokenizer, dimension_values) {
@@ -111,6 +126,11 @@ TEST(CSSTokenizer, dimension_values) {
   EXPECT_TOKENS(
       ".3xyz",
       CSSToken{CSSTokenType::Dimension, 0.3, "xyz"},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "-0.5em",
+      CSSToken{CSSTokenType::Dimension, -0.5, "em"},
       CSSToken{CSSTokenType::EndOfFile});
 }
 

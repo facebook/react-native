@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeDevLoadingView';
-import NativeDevLoadingView from '../../src/private/specs/modules/NativeDevLoadingView';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeDevLoadingView';
+import NativeDevLoadingView from '../../src/private/specs_DEPRECATED/modules/NativeDevLoadingView';
 export default NativeDevLoadingView;

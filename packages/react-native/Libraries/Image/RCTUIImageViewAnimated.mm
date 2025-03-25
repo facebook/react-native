@@ -33,7 +33,7 @@ static NSUInteger RCTDeviceFreeMemory(void)
   return (vm_stat.free_count - vm_stat.speculative_count) * page_size;
 }
 
-@interface RCTUIImageViewAnimated () <CALayerDelegate, RCTDisplayRefreshable>
+@interface RCTUIImageViewAnimated () <RCTDisplayRefreshable>
 
 @property (nonatomic, assign) NSUInteger maxBufferSize;
 @property (nonatomic, strong, readwrite) UIImage *currentFrame;
@@ -48,7 +48,6 @@ static NSUInteger RCTDeviceFreeMemory(void)
 @property (nonatomic, assign) NSUInteger maxBufferCount;
 @property (nonatomic, strong) NSOperationQueue *fetchQueue;
 @property (nonatomic, strong) dispatch_semaphore_t lock;
-@property (nonatomic, assign) CGFloat animatedImageScale;
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
 @end
@@ -78,7 +77,6 @@ static NSUInteger RCTDeviceFreeMemory(void)
   self.currentTime = 0;
   self.bufferMiss = NO;
   self.maxBufferCount = 0;
-  self.animatedImageScale = 1;
   [_fetchQueue cancelAllOperations];
   _fetchQueue = nil;
   dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
@@ -89,7 +87,8 @@ static NSUInteger RCTDeviceFreeMemory(void)
 
 - (void)setImage:(UIImage *)image
 {
-  if (self.image == image) {
+  UIImage *thisImage = self.animatedImage != nil ? self.animatedImage : super.image;
+  if (image == thisImage) {
     return;
   }
 
@@ -110,8 +109,6 @@ static NSUInteger RCTDeviceFreeMemory(void)
     // Get the current frame and loop count.
     self.totalLoopCount = self.animatedImage.animatedImageLoopCount;
 
-    self.animatedImageScale = image.scale;
-
     self.currentFrame = image;
 
     dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
@@ -126,11 +123,9 @@ static NSUInteger RCTDeviceFreeMemory(void)
     if ([self paused]) {
       [self start];
     }
-
-    [self.layer setNeedsDisplay];
-  } else {
-    super.image = image;
   }
+
+  super.image = image;
 }
 
 #pragma mark - Private
@@ -247,8 +242,8 @@ static NSUInteger RCTDeviceFreeMemory(void)
     }
     dispatch_semaphore_signal(self.lock);
     self.currentFrame = currentFrame;
+    super.image = currentFrame;
     self.bufferMiss = NO;
-    [self.layer setNeedsDisplay];
   } else {
     self.bufferMiss = YES;
   }
@@ -276,18 +271,6 @@ static NSUInteger RCTDeviceFreeMemory(void)
   }
 
   [self prefetchNextFrame:fetchFrame fetchFrameIndex:fetchFrameIndex];
-}
-
-#pragma mark - CALayerDelegate
-
-- (void)displayLayer:(CALayer *)layer
-{
-  if (_currentFrame) {
-    layer.contentsScale = self.animatedImageScale;
-    layer.contents = (__bridge id)_currentFrame.CGImage;
-  } else {
-    [super displayLayer:layer];
-  }
 }
 
 #pragma mark - Util

@@ -31,7 +31,7 @@ runs:
   steps:
     - name: Installing Maestro
       shell: bash
-      run: export MAESTRO_VERSION=1.39.5; curl -Ls "https://get.maestro.mobile.dev" | bash
+      run: export MAESTRO_VERSION=1.39.7; curl -Ls "https://get.maestro.mobile.dev" | bash
     - name: Installing Maestro dependencies
       shell: bash
       run: |
@@ -42,12 +42,12 @@ runs:
       with:
         java-version: '17'
         distribution: 'zulu'
+    - name: Run yarn install
+      uses: ./.github/actions/yarn-install
     - name: Start Metro in Debug
       shell: bash
       if: ${{ inputs.flavor == 'Debug' }}
       run: |
-        yarn install
-
         # build codegen or we will see a redbox
         ./packages/react-native-codegen/scripts/oss/build.sh
 

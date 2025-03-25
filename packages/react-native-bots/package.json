@@ -1,7 +1,7 @@
 {
   "name": "@react-native/bots",
   "description": "React Native Bots",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "private": true,
   "license": "MIT",
   "repository": {

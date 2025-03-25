@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <vector>
@@ -43,7 +44,8 @@ class MutationObserverManager final : public UIManagerCommitHook {
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& shadowTree,
       const RootShadowNode::Shared& oldRootShadowNode,
-      const RootShadowNode::Unshared& newRootShadowNode) noexcept override;
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTree::CommitOptions& commitOptions) noexcept override;
 
  private:
   std::unordered_map<

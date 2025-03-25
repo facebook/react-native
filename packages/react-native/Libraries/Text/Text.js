@@ -10,7 +10,7 @@
 
 import type {TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {____TextStyle_Internal as TextStyleInternal} from '../StyleSheet/StyleSheetTypes';
-import type {PressEvent} from '../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {NativeTextProps} from './TextNativeComponent';
 import type {PressRetentionOffset, TextProps} from './TextProps';
 
@@ -24,6 +24,8 @@ import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 
+export type {TextProps} from './TextProps';
+
 type TextForwardRef = React.ElementRef<
   typeof NativeText | typeof NativeVirtualText,
 >;
@@ -34,7 +36,7 @@ type TextForwardRef = React.ElementRef<
  * @see https://reactnative.dev/docs/text
  */
 const Text: component(
-  ref: React.RefSetter<TextForwardRef>,
+  ref?: React.RefSetter<TextForwardRef>,
   ...props: TextProps
 ) = React.forwardRef(
   (
@@ -331,14 +333,14 @@ const Text: component(
 Text.displayName = 'Text';
 
 type TextPressabilityProps = $ReadOnly<{
-  onLongPress?: ?(event: PressEvent) => mixed,
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
-  onResponderGrant?: ?(event: PressEvent) => void,
-  onResponderMove?: ?(event: PressEvent) => void,
-  onResponderRelease?: ?(event: PressEvent) => void,
-  onResponderTerminate?: ?(event: PressEvent) => void,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+  onResponderGrant?: ?(event: GestureResponderEvent) => void,
+  onResponderMove?: ?(event: GestureResponderEvent) => void,
+  onResponderRelease?: ?(event: GestureResponderEvent) => void,
+  onResponderTerminate?: ?(event: GestureResponderEvent) => void,
   onResponderTerminationRequest?: ?() => boolean,
   onStartShouldSetResponder?: ?() => boolean,
   pressRetentionOffset?: ?PressRetentionOffset,
@@ -375,12 +377,12 @@ function useTextPressability({
     // in the best case, and cause issues with text selection in the worst case. Forcing
     // the isHighlighted prop to false on all platforms except iOS.
     if (Platform.OS === 'ios') {
-      _onPressIn = (event: PressEvent) => {
+      _onPressIn = (event: GestureResponderEvent) => {
         setHighlighted(suppressHighlighting == null || !suppressHighlighting);
         onPressIn?.(event);
       };
 
-      _onPressOut = (event: PressEvent) => {
+      _onPressOut = (event: GestureResponderEvent) => {
         setHighlighted(false);
         onPressOut?.(event);
       };
@@ -412,25 +414,25 @@ function useTextPressability({
       eventHandlers == null
         ? null
         : {
-            onResponderGrant(event: PressEvent) {
+            onResponderGrant(event: GestureResponderEvent) {
               eventHandlers.onResponderGrant(event);
               if (onResponderGrant != null) {
                 onResponderGrant(event);
               }
             },
-            onResponderMove(event: PressEvent) {
+            onResponderMove(event: GestureResponderEvent) {
               eventHandlers.onResponderMove(event);
               if (onResponderMove != null) {
                 onResponderMove(event);
               }
             },
-            onResponderRelease(event: PressEvent) {
+            onResponderRelease(event: GestureResponderEvent) {
               eventHandlers.onResponderRelease(event);
               if (onResponderRelease != null) {
                 onResponderRelease(event);
               }
             },
-            onResponderTerminate(event: PressEvent) {
+            onResponderTerminate(event: GestureResponderEvent) {
               eventHandlers.onResponderTerminate(event);
               if (onResponderTerminate != null) {
                 onResponderTerminate(event);
@@ -534,4 +536,4 @@ const verticalAlignToTextAlignVerticalMap = {
   middle: 'center',
 };
 
-module.exports = Text;
+export default Text;

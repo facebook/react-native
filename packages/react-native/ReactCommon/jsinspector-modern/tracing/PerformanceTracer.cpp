@@ -7,20 +7,22 @@
 
 #include "PerformanceTracer.h"
 
+#include <oscompat/OSCompat.h>
+
 #include <folly/json.h>
 
+#include <array>
 #include <mutex>
-#include <unordered_set>
 
 namespace facebook::react::jsinspector_modern {
 
 namespace {
 
-/** Process ID for all emitted events. */
-const uint64_t PID = 1000;
-
-/** Default/starting track ID for the "Timings" track. */
-const uint64_t USER_TIMINGS_DEFAULT_TRACK = 1000;
+uint64_t getUnixTimestampOfNow() {
+  return std::chrono::duration_cast<std::chrono::microseconds>(
+             std::chrono::steady_clock::now().time_since_epoch())
+      .count();
+}
 
 } // namespace
 
@@ -29,91 +31,97 @@ PerformanceTracer& PerformanceTracer::getInstance() {
   return tracer;
 }
 
+PerformanceTracer::PerformanceTracer()
+    : processId_(oscompat::getCurrentProcessId()) {}
+
 bool PerformanceTracer::startTracing() {
-  std::lock_guard lock(mutex_);
-  if (tracing_) {
-    return false;
+  {
+    std::lock_guard lock(mutex_);
+    if (tracing_) {
+      return false;
+    }
+
+    tracing_ = true;
   }
-  tracing_ = true;
-  return true;
+
+  reportProcess(processId_, "React Native");
+
+  {
+    std::lock_guard lock(mutex_);
+    buffer_.push_back(TraceEvent{
+        .name = "TracingStartedInPage",
+        .cat = "disabled-by-default-devtools.timeline",
+        .ph = 'I',
+        .ts = getUnixTimestampOfNow(),
+        .pid = processId_,
+        .tid = oscompat::getCurrentThreadId(),
+        .args = folly::dynamic::object("data", folly::dynamic::object()),
+    });
+
+    return true;
+  }
 }
 
-bool PerformanceTracer::stopTracingAndCollectEvents(
-    const std::function<void(const folly::dynamic& eventsChunk)>&
-        resultCallback) {
+bool PerformanceTracer::stopTracing() {
   std::lock_guard lock(mutex_);
-
   if (!tracing_) {
     return false;
   }
 
+  // This is synthetic Trace Event, which should not be represented on a
+  // timeline. CDT is not using Profile or ProfileChunk events for determining
+  // trace timeline window, this is why trace that only contains JavaScript
+  // samples will be displayed as empty. We use this event to avoid that.
+  // This could happen for non-bridgeless apps, where Performance interface is
+  // not supported and no spec-compliant Event Loop implementation.
+  buffer_.push_back(TraceEvent{
+      .name = "ReactNative-TracingStopped",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'I',
+      .ts = getUnixTimestampOfNow(),
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
+  });
+
+  performanceMeasureCount_ = 0;
   tracing_ = false;
+  return true;
+}
+
+void PerformanceTracer::collectEvents(
+    const std::function<void(const folly::dynamic& eventsChunk)>&
+        resultCallback,
+    uint16_t chunkSize) {
+  std::lock_guard lock(mutex_);
+
   if (buffer_.empty()) {
-    customTrackIdMap_.clear();
-    return true;
-  }
-
-  // Register "Main" process
-  buffer_.push_back(TraceEvent{
-      .name = "process_name",
-      .cat = "__metadata",
-      .ph = 'M',
-      .ts = 0,
-      .pid = PID,
-      .tid = 0,
-      .args = folly::dynamic::object("name", "Main"),
-  });
-  // Register "Timings" track
-  // NOTE: This is a hack to make the Trace Viewer show a "Timings" track
-  // adjacent to custom tracks in our current build of Chrome DevTools.
-  // In future, we should align events exactly.
-  buffer_.push_back(TraceEvent{
-      .name = "thread_name",
-      .cat = "__metadata",
-      .ph = 'M',
-      .ts = 0,
-      .pid = PID,
-      .tid = USER_TIMINGS_DEFAULT_TRACK,
-      .args = folly::dynamic::object("name", "Timings"),
-  });
-
-  for (const auto& [trackName, trackId] : customTrackIdMap_) {
-    // Register custom tracks
-    buffer_.push_back(TraceEvent{
-        .name = "thread_name",
-        .cat = "__metadata",
-        .ph = 'M',
-        .ts = 0,
-        .pid = PID,
-        .tid = trackId,
-        .args = folly::dynamic::object("name", trackName),
-    });
+    return;
   }
 
   auto traceEvents = folly::dynamic::array();
-
   for (auto event : buffer_) {
     // Emit trace events
     traceEvents.push_back(serializeTraceEvent(event));
 
-    if (traceEvents.size() >= 1000) {
+    if (traceEvents.size() == chunkSize) {
       resultCallback(traceEvents);
       traceEvents = folly::dynamic::array();
     }
   }
-  customTrackIdMap_.clear();
-  buffer_.clear();
-
-  if (traceEvents.size() >= 1) {
+  if (!traceEvents.empty()) {
     resultCallback(traceEvents);
   }
 
-  return true;
+  buffer_.clear();
 }
 
 void PerformanceTracer::reportMark(
     const std::string_view& name,
     uint64_t start) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -124,9 +132,8 @@ void PerformanceTracer::reportMark(
       .cat = "blink.user_timing",
       .ph = 'I',
       .ts = start,
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
-                                         // thread ID.
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
   });
 }
 
@@ -135,41 +142,173 @@ void PerformanceTracer::reportMeasure(
     uint64_t start,
     uint64_t duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
   }
 
-  // NOTE: We synthetically create custom tracks as a hack to render them in
-  // our current build of Chrome DevTools frontend.
-  // TODO: Remove and align with web.
-  uint64_t threadId = USER_TIMINGS_DEFAULT_TRACK;
+  folly::dynamic beginEventArgs = folly::dynamic::object();
   if (trackMetadata.has_value()) {
-    std::string trackName = trackMetadata.value().track;
+    folly::dynamic devtoolsObject = folly::dynamic::object(
+        "devtools",
+        folly::dynamic::object("track", trackMetadata.value().track));
+    beginEventArgs =
+        folly::dynamic::object("detail", folly::toJson(devtoolsObject));
+  }
 
-    if (!customTrackIdMap_.contains(trackName)) {
-      uint64_t trackId =
-          USER_TIMINGS_DEFAULT_TRACK + customTrackIdMap_.size() + 1;
-      threadId = trackId;
+  ++performanceMeasureCount_;
+  auto currentThreadId = oscompat::getCurrentThreadId();
+  buffer_.push_back(TraceEvent{
+      .id = performanceMeasureCount_,
+      .name = std::string(name),
+      .cat = "blink.user_timing",
+      .ph = 'b',
+      .ts = start,
+      .pid = processId_,
+      .tid = currentThreadId,
+      .args = beginEventArgs,
+  });
+  buffer_.push_back(TraceEvent{
+      .id = performanceMeasureCount_,
+      .name = std::string(name),
+      .cat = "blink.user_timing",
+      .ph = 'e',
+      .ts = start + duration,
+      .pid = processId_,
+      .tid = currentThreadId,
+  });
+}
 
-      customTrackIdMap_.emplace(trackName, trackId);
-    }
+void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracing_) {
+    return;
   }
 
   buffer_.push_back(TraceEvent{
-      .name = std::string(name),
-      .cat = "blink.user_timing",
+      .name = "process_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = id,
+      .tid = 0,
+      .args = folly::dynamic::object("name", name),
+  });
+}
+
+void PerformanceTracer::reportJavaScriptThread() {
+  reportThread(oscompat::getCurrentThreadId(), "JavaScript");
+}
+
+void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "thread_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = processId_,
+      .tid = id,
+      .args = folly::dynamic::object("name", name),
+  });
+
+  // This is synthetic Trace Event, which should not be represented on a
+  // timeline. CDT will filter out threads that only have JavaScript samples and
+  // no timeline events or user timings. We use this event to avoid that.
+  // This could happen for non-bridgeless apps, where Performance interface is
+  // not supported and no spec-compliant Event Loop implementation.
+  buffer_.push_back(TraceEvent{
+      .name = "ReactNative-ThreadRegistered",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'I',
+      .ts = 0,
+      .pid = processId_,
+      .tid = id,
+  });
+}
+
+void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "RunTask",
+      .cat = "disabled-by-default-devtools.timeline",
       .ph = 'X',
       .ts = start,
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = threadId, // FIXME: This should be the real thread ID.
-      .dur = duration,
+      .pid = oscompat::getCurrentProcessId(),
+      .tid = oscompat::getCurrentThreadId(),
+      .dur = end - start,
+  });
+}
+
+folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
+    uint64_t threadId,
+    uint16_t profileId,
+    uint64_t eventUnixTimestamp) {
+  // CDT prioritizes event timestamp over startTime metadata field.
+  // https://fburl.com/lo764pf4
+  return serializeTraceEvent(TraceEvent{
+      .id = profileId,
+      .name = "Profile",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId_,
+      .tid = threadId,
+      .args = folly::dynamic::object(
+          "data", folly ::dynamic::object("startTime", eventUnixTimestamp)),
+  });
+}
+
+folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
+    uint16_t profileId,
+    uint64_t threadId,
+    uint64_t eventUnixTimestamp,
+    const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
+  return serializeTraceEvent(TraceEvent{
+      .id = profileId,
+      .name = "ProfileChunk",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId_,
+      .tid = threadId,
+      .args =
+          folly::dynamic::object("data", traceEventProfileChunk.asDynamic()),
   });
 }
 
 folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
   folly::dynamic result = folly::dynamic::object;
 
+  if (event.id.has_value()) {
+    std::array<char, 16> buffer{};
+    snprintf(buffer.data(), buffer.size(), "0x%08x", event.id.value());
+    result["id"] = buffer.data();
+  }
   result["name"] = event.name;
   result["cat"] = event.cat;
   result["ph"] = std::string(1, event.ph);

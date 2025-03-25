@@ -20,6 +20,7 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -698,7 +699,9 @@ public class ReactHostImpl implements ReactHost {
   /* package */
   @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
-    if (nativeModuleInterface == UIManagerModule.class) {
+    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
+        && nativeModuleInterface == UIManagerModule.class) {
+
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
           new ReactNoCrashBridgeNotAllowedSoftException(
@@ -1026,12 +1029,6 @@ public class ReactHostImpl implements ReactHost {
         TAG, new ReactNoCrashSoftException(method + ": " + message, throwable));
   }
 
-  private Executor getDefaultReactInstanceExecutor() {
-    return ReactNativeFeatureFlags.useImmediateExecutorInAndroidBridgeless()
-        ? Task.IMMEDIATE_EXECUTOR
-        : mBGExecutor;
-  }
-
   /** Schedule work on a ReactInstance that is already created. */
   private Task<Boolean> callWithExistingReactInstance(
       final String callingMethod,
@@ -1040,17 +1037,14 @@ public class ReactHostImpl implements ReactHost {
     final String method = "callWithExistingReactInstance(" + callingMethod + ")";
 
     if (executor == null) {
-      executor = getDefaultReactInstanceExecutor();
+      executor = Task.IMMEDIATE_EXECUTOR;
     }
 
     return mCreateReactInstanceTaskRef
         .get()
         .onSuccess(
             task -> {
-              final ReactInstance reactInstance =
-                  ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()
-                      ? task.getResult()
-                      : mReactInstance;
+              final ReactInstance reactInstance = task.getResult();
               if (reactInstance == null) {
                 raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
                 return FALSE;
@@ -1070,16 +1064,13 @@ public class ReactHostImpl implements ReactHost {
     final String method = "callAfterGetOrCreateReactInstance(" + callingMethod + ")";
 
     if (executor == null) {
-      executor = getDefaultReactInstanceExecutor();
+      executor = Task.IMMEDIATE_EXECUTOR;
     }
 
     return getOrCreateReactInstance()
         .onSuccess(
             task -> {
-              final ReactInstance reactInstance =
-                  ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()
-                      ? task.getResult()
-                      : mReactInstance;
+              final ReactInstance reactInstance = task.getResult();
               if (reactInstance == null) {
                 raiseSoftException(method, "Execute: reactInstance is null. Dropping work.");
                 return null;
@@ -1280,13 +1271,9 @@ public class ReactHostImpl implements ReactHost {
                 return reactInstance;
               };
 
-          if (ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()) {
-            creationTask.onSuccess(lifecycleUpdateTask, mUIExecutor);
-            return creationTask.onSuccess(
-                task -> task.getResult().mInstance, Task.IMMEDIATE_EXECUTOR);
-          } else {
-            return creationTask.onSuccess(lifecycleUpdateTask, mUIExecutor);
-          }
+          creationTask.onSuccess(lifecycleUpdateTask, mUIExecutor);
+          return creationTask.onSuccess(
+              task -> task.getResult().mInstance, Task.IMMEDIATE_EXECUTOR);
         });
   }
 
@@ -1318,7 +1305,11 @@ public class ReactHostImpl implements ReactHost {
        * throws an exception, the task will fault, and we'll go through the ReactHost error
        * reporting pipeline.
        */
-      return Task.call(() -> mReactHostDelegate.getJsBundleLoader());
+      try {
+        return Task.forResult(mReactHostDelegate.getJsBundleLoader());
+      } catch (Exception e) {
+        return Task.forError(e);
+      }
     }
   }
 
@@ -1480,12 +1471,10 @@ public class ReactHostImpl implements ReactHost {
     if (mReloadTask == null) {
       // When using the immediate executor, we want to avoid scheduling any further work immediately
       // when destruction is kicked off.
-      Task<ReactInstance> createTask =
-          ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()
-              ? mCreateReactInstanceTaskRef.getAndReset()
-              : mCreateReactInstanceTaskRef.get();
+      log(method, "Resetting createReactInstance task ref");
       mReloadTask =
-          createTask
+          mCreateReactInstanceTaskRef
+              .getAndReset()
               .continueWithTask(
                   (task) -> {
                     log(method, "Starting React Native reload");
@@ -1570,14 +1559,6 @@ public class ReactHostImpl implements ReactHost {
                       reactInstance.destroy();
                     }
 
-                    // Originally, we reset the instance task ref quite late, leading to potential
-                    // racing invocations while shutting down
-                    if (!ReactNativeFeatureFlags
-                        .completeReactInstanceCreationOnBgThreadOnAndroid()) {
-                      log(method, "Resetting createReactInstance task ref");
-                      mCreateReactInstanceTaskRef.reset();
-                    }
-
                     log(method, "Resetting start task ref");
                     mStartTask = null;
 
@@ -1656,13 +1637,10 @@ public class ReactHostImpl implements ReactHost {
     if (mDestroyTask == null) {
       // When using the immediate executor, we want to avoid scheduling any further work immediately
       // when destruction is kicked off.
-      Task<ReactInstance> createTask =
-          ReactNativeFeatureFlags.completeReactInstanceCreationOnBgThreadOnAndroid()
-              ? mCreateReactInstanceTaskRef.getAndReset()
-              : mCreateReactInstanceTaskRef.get();
-
+      log(method, "Resetting createReactInstance task ref");
       mDestroyTask =
-          createTask
+          mCreateReactInstanceTaskRef
+              .getAndReset()
               .continueWithTask(
                   task -> {
                     log(method, "Starting React Native destruction");
@@ -1768,14 +1746,6 @@ public class ReactHostImpl implements ReactHost {
                       reactInstance.destroy();
                     }
 
-                    // Originally, we reset the instance task ref quite late, leading to potential
-                    // racing invocations while shutting down
-                    if (!ReactNativeFeatureFlags
-                        .completeReactInstanceCreationOnBgThreadOnAndroid()) {
-                      log(method, "Resetting createReactInstance task ref");
-                      mCreateReactInstanceTaskRef.reset();
-                    }
-
                     log(method, "Resetting start task ref");
                     mStartTask = null;
 
@@ -1810,7 +1780,9 @@ public class ReactHostImpl implements ReactHost {
     return mDestroyTask;
   }
 
-  private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
+  @VisibleForTesting
+  /* package */ @Nullable
+  ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
     if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
       // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
       mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
@@ -1820,7 +1792,8 @@ public class ReactHostImpl implements ReactHost {
   }
 
   @ThreadConfined(UI)
-  private void unregisterInstanceFromInspector(final @Nullable ReactInstance reactInstance) {
+  @VisibleForTesting
+  /* package */ void unregisterInstanceFromInspector(final @Nullable ReactInstance reactInstance) {
     if (reactInstance != null) {
       if (InspectorFlags.getFuseboxEnabled()) {
         Assertions.assertCondition(

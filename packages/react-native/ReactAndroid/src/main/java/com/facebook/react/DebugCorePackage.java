@@ -8,13 +8,14 @@
 package com.facebook.react;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.Map;
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModuleList(nativeModules = {})
 /* package */
 public class DebugCorePackage extends BaseReactPackage implements ViewManagerOnDemandReactPackage {
@@ -52,7 +54,7 @@ public class DebugCorePackage extends BaseReactPackage implements ViewManagerOnD
   }
 
   /**
-   * @return a map of view managers that should be registered with {@link UIManagerModule}
+   * @return a map of view managers that should be registered with {@link UIManager}
    */
   private Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {

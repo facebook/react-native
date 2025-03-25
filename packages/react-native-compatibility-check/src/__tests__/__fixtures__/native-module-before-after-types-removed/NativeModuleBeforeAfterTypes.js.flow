@@ -1,0 +1,33 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+/* eslint-disable no-unused-vars */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+type SimpleObject = {||};
+
+type BeforeMismatchGeneric<T> = {||};
+
+type BeforeMatchingGeneric<T> = {||};
+type AfterMatchingGeneric<T> = {||};
+
+export interface Spec extends TurboModule {
+  +simpleObject: (a: SimpleObject) => void;
+  +beforeMismatchGeneric: <T>(a: BeforeMismatchGeneric<T>) => void;
+
+  +beforeMatchingGeneric: <T>(a: BeforeMatchingGeneric<T>) => void;
+  +afterMatchingGeneric: <T>(a: AfterMatchingGeneric<T>) => void;
+}
+
+(TurboModuleRegistry.getEnforcing<Spec>(
+  'NativeModuleTest',
+): Spec);

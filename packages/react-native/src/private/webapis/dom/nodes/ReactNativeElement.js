@@ -11,25 +11,31 @@
 // flowlint unsafe-getters-setters:off
 
 import type {
-  HostInstance,
-  INativeMethods,
   InternalInstanceHandle,
+  Node as ShadowNode,
+  ViewConfig,
+} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {
+  HostInstance,
+  LegacyHostInstanceMethods,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-  ViewConfig,
-} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+} from '../../../types/HostInstance';
+import type {InstanceHandle} from './internals/NodeInternals';
+import type ReactNativeDocument from './ReactNativeDocument';
 
 import TextInputState from '../../../../../Libraries/Components/TextInput/TextInputState';
 import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
-import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
-import ReadOnlyNode, {setInstanceHandle} from './ReadOnlyNode';
 import {
-  getPublicInstanceFromInternalInstanceHandle,
-  getShadowNode,
-} from './ReadOnlyNode';
+  getNativeElementReference,
+  getPublicInstanceFromInstanceHandle,
+  setInstanceHandle,
+  setOwnerDocument,
+} from './internals/NodeInternals';
+import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
 import NativeDOM from './specs/NativeDOM';
 import nullthrows from 'nullthrows';
 
@@ -54,13 +60,13 @@ const noop = () => {};
 // was slower than this method because the engine has to create an object than
 // we then discard to create a new one.
 
-class ReactNativeElementMethods
+class ReactNativeElement
   extends ReadOnlyElement
-  implements INativeMethods
+  implements LegacyHostInstanceMethods
 {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;
-  __internalInstanceHandle: InternalInstanceHandle;
+  __internalInstanceHandle: InstanceHandle;
 
   __viewConfig: ViewConfig;
 
@@ -69,12 +75,13 @@ class ReactNativeElementMethods
   constructor(
     tag: number,
     viewConfig: ViewConfig,
-    internalInstanceHandle: InternalInstanceHandle,
+    instanceHandle: InstanceHandle,
+    ownerDocument: ReactNativeDocument,
   ) {
-    super(internalInstanceHandle);
+    super(instanceHandle, ownerDocument);
 
     this.__nativeTag = tag;
-    this.__internalInstanceHandle = internalInstanceHandle;
+    this.__internalInstanceHandle = instanceHandle;
     this.__viewConfig = viewConfig;
   }
 
@@ -85,7 +92,7 @@ class ReactNativeElementMethods
   }
 
   get offsetLeft(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -96,7 +103,7 @@ class ReactNativeElementMethods
   }
 
   get offsetParent(): ReadOnlyElement | null {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -105,7 +112,7 @@ class ReactNativeElementMethods
       // in JavaScript yet.
       if (offset[0] != null) {
         const offsetParentInstanceHandle = offset[0];
-        const offsetParent = getPublicInstanceFromInternalInstanceHandle(
+        const offsetParent = getPublicInstanceFromInstanceHandle(
           offsetParentInstanceHandle,
         );
         // $FlowExpectedError[incompatible-type] The value returned by `getOffset` is always an instance handle for `ReadOnlyElement`.
@@ -118,7 +125,7 @@ class ReactNativeElementMethods
   }
 
   get offsetTop(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -139,26 +146,28 @@ class ReactNativeElementMethods
    */
 
   blur(): void {
-    // $FlowFixMe[incompatible-exact] Migrate all usages of `NativeMethods` to an interface to fix this.
     TextInputState.blurTextInput(this);
   }
 
   focus() {
-    // $FlowFixMe[incompatible-exact] Migrate all usages of `NativeMethods` to an interface to fix this.
     TextInputState.focusTextInput(this);
   }
 
   measure(callback: MeasureOnSuccessCallback) {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
-      nullthrows(getFabricUIManager()).measure(node, callback);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).measure(shadowNode, callback);
     }
   }
 
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
-      nullthrows(getFabricUIManager()).measureInWindow(node, callback);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).measureInWindow(shadowNode, callback);
     }
   }
 
@@ -167,7 +176,7 @@ class ReactNativeElementMethods
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void /* currently unused */,
   ) {
-    if (!(relativeToNativeNode instanceof ReadOnlyNode)) {
+    if (!(relativeToNativeNode instanceof ReactNativeElement)) {
       if (__DEV__) {
         console.error(
           'Warning: ref.measureLayout must be called with a ref to a native component.',
@@ -177,13 +186,18 @@ class ReactNativeElementMethods
       return;
     }
 
-    const toStateNode = getShadowNode(this);
-    const fromStateNode = getShadowNode(relativeToNativeNode);
+    const toStateNode = getNativeElementReference(this);
+    const fromStateNode = getNativeElementReference(relativeToNativeNode);
 
     if (toStateNode != null && fromStateNode != null) {
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const toStateShadowNode: ShadowNode = toStateNode;
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const fromStateShadowNode: ShadowNode = fromStateNode;
+
       nullthrows(getFabricUIManager()).measureLayout(
-        toStateNode,
-        fromStateNode,
+        toStateShadowNode,
+        fromStateShadowNode,
         onFail != null ? onFail : noop,
         onSuccess != null ? onSuccess : noop,
       );
@@ -200,32 +214,49 @@ class ReactNativeElementMethods
       this.__viewConfig.validAttributes,
     );
 
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null && updatePayload != null) {
-      nullthrows(getFabricUIManager()).setNativeProps(node, updatePayload);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).setNativeProps(
+        shadowNode,
+        updatePayload,
+      );
     }
   }
 }
 
-// Alternative constructor just implemented to provide a better performance than
-// calling super() in the original class.
-function ReactNativeElement(
-  this: ReactNativeElementMethods,
-  tag: number,
-  viewConfig: ViewConfig,
-  internalInstanceHandle: InternalInstanceHandle,
-) {
-  this.__nativeTag = tag;
-  this.__internalInstanceHandle = internalInstanceHandle;
-  this.__viewConfig = viewConfig;
-  setInstanceHandle(this, internalInstanceHandle);
+type ReactNativeElementT = ReactNativeElement;
+
+function replaceConstructorWithoutSuper(
+  ReactNativeElementClass: Class<ReactNativeElementT>,
+): Class<ReactNativeElementT> {
+  // Alternative constructor just implemented to provide a better performance than
+  // calling super() in the original class.
+  // eslint-disable-next-line no-shadow
+  function ReactNativeElement(
+    this: ReactNativeElementT,
+    tag: number,
+    viewConfig: ViewConfig,
+    internalInstanceHandle: InternalInstanceHandle,
+    ownerDocument: ReactNativeDocument,
+  ) {
+    // Inlined from `ReadOnlyNode`
+    setOwnerDocument(this, ownerDocument);
+    setInstanceHandle(this, internalInstanceHandle);
+
+    this.__nativeTag = tag;
+    this.__internalInstanceHandle = internalInstanceHandle;
+    this.__viewConfig = viewConfig;
+  }
+
+  ReactNativeElement.prototype = ReactNativeElementClass.prototype;
+
+  // $FlowExpectedError[incompatible-return]
+  return ReactNativeElement;
 }
 
-ReactNativeElement.prototype = Object.create(
-  ReactNativeElementMethods.prototype,
-);
-
-// $FlowExpectedError[prop-missing]
-// $FlowFixMe[incompatible-cast]
-export default ReactNativeElement as typeof ReactNativeElementMethods;
+export default replaceConstructorWithoutSuper(
+  ReactNativeElement,
+) as typeof ReactNativeElement;

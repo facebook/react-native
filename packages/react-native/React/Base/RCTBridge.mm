@@ -42,6 +42,97 @@ NSArray<Class> *RCTGetModuleClasses(void)
   return result;
 }
 
+NSSet<NSString *> *getCoreModuleClasses(void);
+NSSet<NSString *> *getCoreModuleClasses(void)
+{
+  static NSSet<NSString *> *coreModuleClasses = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    coreModuleClasses = [NSSet setWithArray:@[
+      @"RCTViewManager",
+      @"RCTActivityIndicatorViewManager",
+      @"RCTDebuggingOverlayManager",
+      @"RCTModalHostViewManager",
+      @"RCTModalManager",
+      @"RCTRefreshControlManager",
+      @"RCTSafeAreaViewManager",
+      @"RCTScrollContentViewManager",
+      @"RCTScrollViewManager",
+      @"RCTSwitchManager",
+      @"RCTUIManager",
+      @"RCTAccessibilityManager",
+      @"RCTActionSheetManager",
+      @"RCTAlertManager",
+      @"RCTAppearance",
+      @"RCTAppState",
+      @"RCTClipboard",
+      @"RCTDeviceInfo",
+      @"RCTDevLoadingView",
+      @"RCTDevMenu",
+      @"RCTDevSettings",
+      @"RCTDevToolsRuntimeSettingsModule",
+      @"RCTEventDispatcher",
+      @"RCTExceptionsManager",
+      @"RCTI18nManager",
+      @"RCTKeyboardObserver",
+      @"RCTLogBox",
+      @"RCTPerfMonitor",
+      @"RCTPlatform",
+      @"RCTRedBox",
+      @"RCTSourceCode",
+      @"RCTStatusBarManager",
+      @"RCTTiming",
+      @"RCTWebSocketModule",
+      @"RCTNativeAnimatedModule",
+      @"RCTNativeAnimatedTurboModule",
+      @"RCTBlobManager",
+      @"RCTFileReaderModule",
+      @"RCTBundleAssetImageLoader",
+      @"RCTGIFImageDecoder",
+      @"RCTImageEditingManager",
+      @"RCTImageLoader",
+      @"RCTImageStoreManager",
+      @"RCTImageViewManager",
+      @"RCTLocalAssetImageLoader",
+      @"RCTLinkingManager",
+      @"RCTDataRequestHandler",
+      @"RCTFileRequestHandler",
+      @"RCTHTTPRequestHandler",
+      @"RCTNetworking",
+      @"RCTPushNotificationManager",
+      @"RCTSettingsManager",
+      @"RCTBaseTextViewManager",
+      @"RCTBaseTextInputViewManager",
+      @"RCTInputAccessoryViewManager",
+      @"RCTMultilineTextInputViewManager",
+      @"RCTRawTextViewManager",
+      @"RCTSinglelineTextInputViewManager",
+      @"RCTTextViewManager",
+      @"RCTVirtualTextViewManager",
+      @"RCTVibration",
+    ]];
+  });
+
+  return coreModuleClasses;
+}
+
+static NSMutableArray<NSString *> *modulesLoadedWithOldArch;
+void addModuleLoadedWithOldArch(NSString *);
+void addModuleLoadedWithOldArch(NSString *moduleName)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    modulesLoadedWithOldArch = [NSMutableArray new];
+  });
+
+  [modulesLoadedWithOldArch addObject:moduleName];
+}
+
+NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void)
+{
+  return modulesLoadedWithOldArch;
+}
+
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.
@@ -50,6 +141,9 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
+  if (RCTIsNewArchEnabled() && ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
+    addModuleLoadedWithOldArch([moduleClass description]);
+  }
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
@@ -313,6 +407,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)dealloc
 {
+  RCTBridge *batchedBridge = self.batchedBridge;
   /**
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainQueue();
@@ -332,7 +427,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     RCTExecuteOnMainQueue(^{
       facebook::react::jsinspector_modern::getInspectorInstance().removePage(*inspectorPageId);
       inspectorPageId.reset();
-      inspectorTarget.reset();
+      // NOTE: RCTBridgeHostTargetDelegate holds a weak reference to RCTBridge.
+      // Conditionally call `inspectorTarget.reset()` to avoid a crash.
+      if (batchedBridge) {
+        [batchedBridge
+            dispatchBlock:^{
+              inspectorTarget.reset();
+            }
+                    queue:RCTJSThread];
+      } else {
+        inspectorTarget.reset();
+      }
     });
   }
 }

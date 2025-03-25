@@ -27,7 +27,6 @@ import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
-import com.facebook.react.utils.ProjectUtils.shouldWarnIfNewArchFlagIsSetInPrealpha
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
@@ -42,7 +41,6 @@ class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
-    checkIfNewArchFlagIsSet(project, extension)
 
     // We register a private extension on the rootProject so that project wide configs
     // like codegen config can be propagated from app project to libraries.
@@ -67,7 +65,7 @@ class ReactPlugin : Plugin<Project> {
         val versionString = versionAndGroupStrings.first
         val groupString = versionAndGroupStrings.second
         configureDependencies(project, versionString, groupString)
-        configureRepositories(project, reactNativeDir)
+        configureRepositories(project)
       }
 
       configureReactNativeNdk(project, extension)
@@ -83,6 +81,7 @@ class ReactPlugin : Plugin<Project> {
       }
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
+      configureResources(project, extension)
     }
 
     // Library Only Configuration
@@ -112,20 +111,13 @@ class ReactPlugin : Plugin<Project> {
     }
   }
 
-  private fun checkIfNewArchFlagIsSet(project: Project, extension: ReactExtension) {
-    if (project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension)) {
-      project.logger.warn(
-          """
-
-      ********************************************************************************
-
-      WARNING: This version of React Native is ignoring the `newArchEnabled` flag you set. Please set it to true or remove it to suppress this warning.
-
-
-      ********************************************************************************
-
-      """
-              .trimIndent())
+  /** This function configures Android resources - in this case just the bundle */
+  private fun configureResources(project: Project, reactExtension: ReactExtension) {
+    project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+      val bundleFileExtension = reactExtension.bundleAssetName.get().substringAfterLast('.', "")
+      if (!reactExtension.enableBundleCompression.get() && bundleFileExtension.isNotBlank()) {
+        ext.androidResources.noCompress.add(bundleFileExtension)
+      }
     }
   }
 
@@ -157,6 +149,7 @@ class ReactPlugin : Plugin<Project> {
               it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
               it.codegenDir.set(rootExtension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
+              it.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
 
               // We're reading the package.json at configuration time to properly feed
               // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
@@ -172,6 +165,20 @@ class ReactPlugin : Plugin<Project> {
               } else {
                 it.jsRootDir.set(localExtension.jsRootDir)
               }
+              it.jsInputFiles.set(
+                  project.fileTree(it.jsRootDir) { tree ->
+                    tree.include("**/*.js")
+                    tree.include("**/*.jsx")
+                    tree.include("**/*.ts")
+                    tree.include("**/*.tsx")
+
+                    tree.exclude("node_modules/**/*")
+                    tree.exclude("**/*.d.ts")
+                    // We want to exclude the build directory, to don't pick them up for execution
+                    // avoidance.
+                    tree.exclude("**/build/**/*")
+                  })
+
               val needsCodegenFromPackageJson =
                   project.needsCodegenFromPackageJson(rootExtension.root)
               it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
@@ -180,14 +187,16 @@ class ReactPlugin : Plugin<Project> {
     // We create the task to generate Java code from schema.
     val generateCodegenArtifactsTask =
         project.tasks.register(
-            "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
-              it.dependsOn(generateCodegenSchemaTask)
-              it.reactNativeDir.set(rootExtension.reactNativeDir)
-              it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
-              it.generatedSrcDir.set(generatedSrcDir)
-              it.packageJsonFile.set(findPackageJsonFile(project, rootExtension.root))
-              it.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
-              it.libraryName.set(localExtension.libraryName)
+            "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) { task
+              ->
+              task.dependsOn(generateCodegenSchemaTask)
+              task.reactNativeDir.set(rootExtension.reactNativeDir)
+              task.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
+              task.generatedSrcDir.set(generatedSrcDir)
+              task.packageJsonFile.set(findPackageJsonFile(project, rootExtension.root))
+              task.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
+              task.libraryName.set(localExtension.libraryName)
+              task.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
 
               // Please note that appNeedsCodegen is triggering a read of the package.json at
               // configuration time as we need to feed the onlyIf condition of this task.
@@ -198,7 +207,7 @@ class ReactPlugin : Plugin<Project> {
               val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
               val includesGeneratedCode =
                   parsedPackageJson?.codegenConfig?.includesGeneratedCode ?: false
-              it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
+              task.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
             }
 
     // We update the android configuration to include the generated sources.

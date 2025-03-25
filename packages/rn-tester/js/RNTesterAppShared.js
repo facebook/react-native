@@ -10,6 +10,7 @@
 
 import type {RNTesterModuleInfo, ScreenTypes} from './types/RNTesterTypes';
 
+import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
@@ -298,6 +299,7 @@ const RNTesterApp = ({
           handleNavBarPress={handleNavBarPress}
         />
       </View>
+      <ReportFullyDrawnView />
     </RNTesterThemeContext.Provider>
   );
 };

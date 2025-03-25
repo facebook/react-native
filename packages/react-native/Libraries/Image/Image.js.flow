@@ -10,4 +10,18 @@
 
 import type {Image} from './ImageTypes.flow';
 
-declare module.exports: Image;
+export type {
+  ImageProgressEventDataIOS,
+  ImagePropsIOS,
+  ImagePropsAndroid,
+  ImageSourcePropType,
+  ImageLoadEventData,
+  ImageErrorEventData,
+  ImagePropsBase,
+  ImageProps,
+  ImageBackgroundProps,
+} from './ImageProps';
+
+export type {ImageResolvedAssetSource, ImageSize} from './ImageTypes.flow';
+
+declare export default Image;

@@ -63,6 +63,9 @@ public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends 
       case \\"arrayOfArrayOfObject\\":
         mViewManager.setArrayOfArrayOfObject(view, (ReadableArray) value);
         break;
+      case \\"arrayOfMixed\\":
+        mViewManager.setArrayOfMixed(view, (ReadableArray) value);
+        break;
       default:
         super.setProperty(view, propName, value);
     }

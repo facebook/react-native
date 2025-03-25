@@ -1,6 +1,6 @@
 {
   "name": "@react-native/eslint-config",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "description": "ESLint config for React Native",
   "license": "MIT",
   "repository": {
@@ -22,7 +22,7 @@
   "dependencies": {
     "@babel/core": "^7.25.2",
     "@babel/eslint-parser": "^7.25.1",
-    "@react-native/eslint-plugin": "0.77.0-main",
+    "@react-native/eslint-plugin": "0.80.0-main",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "eslint-config-prettier": "^8.5.0",
@@ -30,7 +30,7 @@
     "eslint-plugin-ft-flow": "^2.0.1",
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-react": "^7.30.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-native": "^4.0.0"
   },
   "peerDependencies": {

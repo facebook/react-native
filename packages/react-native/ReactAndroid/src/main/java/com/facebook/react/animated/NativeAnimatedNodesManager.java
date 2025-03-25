@@ -11,6 +11,7 @@ import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
@@ -51,6 +52,7 @@ import java.util.Set;
  *
  * <p>IMPORTANT: This class should be accessed only from the UI Thread
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   private static final String TAG = "NativeAnimatedNodesManager";
@@ -252,7 +254,10 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   @UiThread
   public void startAnimatingNode(
-      int animationId, int animatedNodeTag, ReadableMap animationConfig, Callback endCallback) {
+      int animationId,
+      int animatedNodeTag,
+      ReadableMap animationConfig,
+      @Nullable Callback endCallback) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
       throw new JSApplicationIllegalArgumentException(
@@ -306,6 +311,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
+          // NULLSAFE_FIXME[Nullable Dereference]
           endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
           animation.endCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
@@ -315,6 +321,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.id);
           params.putBoolean("finished", false);
+          // NULLSAFE_FIXME[Nullable Dereference]
           params.putDouble("value", animation.animatedValue.nodeValue);
           if (events == null) {
             events = Arguments.createArray();
@@ -344,6 +351,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           // Invoke animation end callback with {finished: false}
           WritableMap endCallbackResponse = Arguments.createMap();
           endCallbackResponse.putBoolean("finished", false);
+          // NULLSAFE_FIXME[Nullable Dereference]
           endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
           animation.endCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
@@ -353,6 +361,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.id);
           params.putBoolean("finished", false);
+          // NULLSAFE_FIXME[Nullable Dereference]
           params.putDouble("value", animation.animatedValue.nodeValue);
           if (events == null) {
             events = Arguments.createArray();
@@ -537,8 +546,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     }
 
     ReadableArray path = eventMapping.getArray("nativeEventPath");
+    // NULLSAFE_FIXME[Nullable Dereference]
     List<String> pathList = new ArrayList<>(path.size());
+    // NULLSAFE_FIXME[Nullable Dereference]
     for (int i = 0; i < path.size(); i++) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       pathList.add(path.getString(i));
     }
 
@@ -562,8 +574,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     ListIterator<EventAnimationDriver> it = mEventDrivers.listIterator();
     while (it.hasNext()) {
       EventAnimationDriver driver = it.next();
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (eventName.equals(driver.eventName)
+          // NULLSAFE_FIXME[Nullable Dereference]
           && viewTag == driver.viewTag
+          // NULLSAFE_FIXME[Nullable Dereference]
           && animatedValueTag == driver.valueNode.tag) {
         it.remove();
         break;
@@ -664,6 +679,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           if (animation.endCallback != null) {
             WritableMap endCallbackResponse = Arguments.createMap();
             endCallbackResponse.putBoolean("finished", true);
+            // NULLSAFE_FIXME[Nullable Dereference]
             endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
             animation.endCallback.invoke(endCallbackResponse);
           } else if (mReactApplicationContext != null) {
@@ -673,6 +689,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
             WritableMap params = Arguments.createMap();
             params.putInt("animationId", animation.id);
             params.putBoolean("finished", true);
+            // NULLSAFE_FIXME[Nullable Dereference]
             params.putDouble("value", animation.animatedValue.nodeValue);
             if (events == null) {
               events = Arguments.createArray();
@@ -738,8 +755,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
     while (!nodesQueue.isEmpty()) {
       AnimatedNode nextNode = nodesQueue.poll();
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (nextNode.children != null) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         for (int i = 0; i < nextNode.children.size(); i++) {
+          // NULLSAFE_FIXME[Nullable Dereference]
           AnimatedNode child = nextNode.children.get(i);
           child.activeIncomingNodes++;
           if (child.BFSColor != mAnimatedGraphBFSColor) {
@@ -780,6 +800,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     while (!nodesQueue.isEmpty()) {
       AnimatedNode nextNode = nodesQueue.poll();
       try {
+        // NULLSAFE_FIXME[Nullable Dereference]
         nextNode.update();
         if (nextNode instanceof PropsAnimatedNode) {
           // Send property updates to native view manager
@@ -799,8 +820,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         // Potentially send events to JS when the node's value is updated
         ((ValueAnimatedNode) nextNode).onValueUpdate();
       }
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (nextNode.children != null) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         for (int i = 0; i < nextNode.children.size(); i++) {
+          // NULLSAFE_FIXME[Nullable Dereference]
           AnimatedNode child = nextNode.children.get(i);
           child.activeIncomingNodes--;
           if (child.BFSColor != mAnimatedGraphBFSColor && child.activeIncomingNodes == 0) {

@@ -14,6 +14,7 @@ import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import {hasComponentStack} from './Data/parseLogBoxLog';
+import * as React from 'react';
 
 export type {LogData, ExtendedExceptionData, IgnorePattern};
 
@@ -24,7 +25,7 @@ interface ILogBox {
   uninstall(): void;
   isInstalled(): boolean;
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void;
-  ignoreAllLogs(?boolean): void;
+  ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
   addException(error: ExtendedExceptionData): void;
@@ -115,10 +116,18 @@ if (__DEV__) {
       return isLogBoxInstalled;
     },
 
+    /**
+     * Silence any logs that match the given strings or regexes.
+     */
     ignoreLogs(patterns: $ReadOnlyArray<IgnorePattern>): void {
       LogBoxData.addIgnorePatterns(patterns);
     },
 
+    /**
+     * Toggle error and warning notifications
+     * Note: this only disables notifications, uncaught errors will still open a full screen LogBox.
+     * @param ignore whether to ignore logs or not
+     */
     ignoreAllLogs(value?: ?boolean): void {
       LogBoxData.setDisabled(value == null ? true : value);
     },
@@ -192,9 +201,20 @@ if (__DEV__) {
     }
 
     try {
+      let stack;
+      // $FlowFixMe[prop-missing] Not added to flow types yet.
+      if (!hasComponentStack(args) && React.captureOwnerStack != null) {
+        stack = React.captureOwnerStack();
+        if (!hasComponentStack(args)) {
+          if (stack != null && stack !== '') {
+            args[0] = args[0] += '%s';
+            args.push(stack);
+          }
+        }
+      }
       if (!isWarningModuleWarning(...args) && !hasComponentStack(args)) {
         // Only show LogBox for the 'warning' module, or React errors with
-        // component stacks, otherwise pass the error through.u
+        // component stacks, otherwise pass the error through.
         //
         // By passing through, this will get picked up by the React console override,
         // potentially adding the component stack. React then passes it back to the

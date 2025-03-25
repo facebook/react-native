@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {NativeMethods} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from 'react-native';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 
@@ -30,8 +30,8 @@ const DESTRUCTIVE_INDEX = 3;
 const CANCEL_INDEX = 4;
 const DISABLED_BUTTON_INDICES = [1, 2];
 
-type Props = $ReadOnly<{||}>;
-type State = {|clicked: string|};
+type Props = $ReadOnly<{}>;
+type State = {clicked: string};
 class ActionSheetExample extends React.Component<Props, State> {
   state: State = {
     clicked: 'none',
@@ -207,7 +207,7 @@ class ActionSheetAnchorExample extends React.Component<
     clicked: 'none',
   };
 
-  anchorRef: {current: null | $Exact<NativeMethods>} = React.createRef();
+  anchorRef: {current: null | HostInstance} = React.createRef();
 
   render(): React.Node {
     return (
@@ -241,7 +241,7 @@ class ActionSheetAnchorExample extends React.Component<
         cancelButtonIndex: CANCEL_INDEX,
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         anchor: this.anchorRef.current
-          ? findNodeHandle(this.anchorRef.current)
+          ? findNodeHandle<$FlowFixMe>(this.anchorRef.current)
           : undefined,
       },
       buttonIndex => {
@@ -359,11 +359,11 @@ class ShareActionSheetExample extends React.Component<
         subject: 'a subject to go in the email heading',
         excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
       },
-      error => Alert.alert('Error', error),
+      error => Alert.alert('Error', error?.message),
       (completed, method) => {
         let text;
         if (completed) {
-          text = `Shared via ${method}`;
+          text = `Shared via ${method ?? 'unknown'}`;
         } else {
           text = "You didn't share";
         }
@@ -410,11 +410,11 @@ class ShareScreenshotExample extends React.Component<
             url: uri,
             excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
           },
-          error => Alert.alert('Error', error),
+          error => Alert.alert('Error', error?.message),
           (completed, method) => {
             let text;
             if (completed) {
-              text = `Shared via ${method}`;
+              text = `Shared via ${method ?? 'unknown'}`;
             } else {
               text = "You didn't share";
             }
@@ -434,7 +434,7 @@ class ShareScreenshotAnchorExample extends React.Component<
     text: '',
   };
 
-  anchorRef: {current: null | $Exact<NativeMethods>} = React.createRef();
+  anchorRef: {current: null | HostInstance} = React.createRef();
 
   render(): React.Node {
     return (
@@ -471,14 +471,14 @@ class ShareScreenshotAnchorExample extends React.Component<
             url: uri,
             excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
             anchor: this.anchorRef.current
-              ? findNodeHandle(this.anchorRef.current)
+              ? findNodeHandle<$FlowFixMe>(this.anchorRef.current)
               : undefined,
           },
-          error => Alert.alert('Error', error),
+          error => Alert.alert('Error', error?.message),
           (completed, method) => {
             let text;
             if (completed) {
-              text = `Shared via ${method}`;
+              text = `Shared via ${method ?? 'unknown'}`;
             } else {
               text = "You didn't share";
             }

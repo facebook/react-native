@@ -23,6 +23,7 @@ import {
   Button,
   Platform,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -75,6 +76,9 @@ const styles = StyleSheet.create({
     left: 120,
     right: -5,
     bottom: -5,
+  },
+  wrappedText: {
+    maxWidth: 300,
   },
 });
 
@@ -216,7 +220,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
   }
 }
 
-type ExampleRef = {current: null | {focus(): void, ...}};
+type ExampleRef = {current: null | React.ElementRef<typeof ExampleTextInput>};
 
 class BlurOnSubmitExample extends React.Component<{...}> {
   ref1: ExampleRef = React.createRef();
@@ -494,10 +498,10 @@ class TokenizedTextExample extends React.Component<
 }
 
 type SelectionExampleState = {
-  selection: $ReadOnly<{|
+  selection: $ReadOnly<{
     start: number,
     end: number,
-  |}>,
+  }>,
   value: string,
   ...
 };
@@ -862,6 +866,7 @@ function DynamicContentWidth() {
     <View>
       <RNTesterText>Uncontrolled:</RNTesterText>
       <TextInput
+        testID="dynamic-width-uncontrolled-textinput"
         placeholder="Type..."
         style={{
           fontSize: 16,
@@ -871,6 +876,7 @@ function DynamicContentWidth() {
       />
       <RNTesterText>Controlled:</RNTesterText>
       <TextInput
+        testID="dynamic-width-controlled-textinput"
         placeholder="..."
         value={text}
         onChangeText={setText}
@@ -881,6 +887,43 @@ function DynamicContentWidth() {
         }}
       />
       <Button title="Update controlled Input" onPress={update} />
+    </View>
+  );
+}
+
+function AutogrowingTextInputExample({
+  style,
+  ...props
+}: React.ElementConfig<typeof TextInput>) {
+  const [multiline, setMultiline] = React.useState(true);
+  const [fullWidth, setFullWidth] = React.useState(true);
+  const [text, setText] = React.useState('');
+  const [contentSize, setContentSize] = React.useState({width: 0, height: 0});
+
+  return (
+    <View>
+      <RNTesterText>Full width:</RNTesterText>
+      <Switch value={fullWidth} onValueChange={setFullWidth} />
+
+      <RNTesterText>Multiline:</RNTesterText>
+      <Switch value={multiline} onValueChange={setMultiline} />
+
+      <RNTesterText>TextInput:</RNTesterText>
+      <ExampleTextInput
+        multiline={multiline}
+        style={[style, {width: fullWidth ? '100%' : '50%'}]}
+        onChangeText={setText}
+        onContentSizeChange={({nativeEvent}) => {
+          setContentSize({
+            width: nativeEvent.contentSize.width,
+            height: nativeEvent.contentSize.height,
+          });
+        }}
+        {...props}
+      />
+      <RNTesterText>Plain text value representation:</RNTesterText>
+      <RNTesterText>{text}</RNTesterText>
+      <RNTesterText>Content Size: {JSON.stringify(contentSize)}</RNTesterText>
     </View>
   );
 }
@@ -1193,6 +1236,29 @@ module.exports = ([
     name: 'dynamicWidth',
     render: function (): React.Node {
       return <DynamicContentWidth />;
+    },
+  },
+  {
+    title: 'Auto-expanding',
+    render: function (): React.Node {
+      return (
+        <View style={styles.wrappedText}>
+          <AutogrowingTextInputExample
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="done"
+            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}>
+            generic generic generic
+            <Text style={{fontSize: 6, color: 'red'}}>
+              small small small small small small
+            </Text>
+            <Text>regular regular</Text>
+            <Text style={{fontSize: 30, color: 'green'}}>
+              huge huge huge huge huge
+            </Text>
+            generic generic generic
+          </AutogrowingTextInputExample>
+        </View>
+      );
     },
   },
 ]: Array<RNTesterModuleExample>);

@@ -25,13 +25,6 @@ public open class ReactNativeNewArchitectureFeatureFlagsDefaults(
 ) : ReactNativeFeatureFlagsDefaults() {
   override fun enableBridgelessArchitecture(): Boolean = newArchitectureEnabled
 
-  override fun enableDeletionOfUnmountedViews(): Boolean = newArchitectureEnabled
-
-  // We turn this feature flag to true to fix #44610 and #45126 and other
-  // similar bugs related to pressable.
-  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
-      newArchitectureEnabled
-
   override fun enableFabricRenderer(): Boolean = newArchitectureEnabled
 
   override fun useFabricInterop(): Boolean = newArchitectureEnabled

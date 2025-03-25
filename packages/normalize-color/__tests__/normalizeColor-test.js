@@ -127,14 +127,15 @@ it('handles hsla properly', () => {
 });
 
 it('handles hwb properly', () => {
-  expect(normalizeColor('hwb(0, 0%, 100%)')).toBe(0x000000ff);
-  expect(normalizeColor('hwb(0, 100%, 0%)')).toBe(0xffffffff);
-  expect(normalizeColor('hwb(0, 0%, 0%)')).toBe(0xff0000ff);
-  expect(normalizeColor('hwb(70, 50%, 0%)')).toBe(0xeaff80ff);
-  expect(normalizeColor('hwb(0, 50%, 50%)')).toBe(0x808080ff);
-  expect(normalizeColor('hwb(360, 100%, 100%)')).toBe(0x808080ff);
+  expect(normalizeColor('hwb(0 0% 100%)')).toBe(0x000000ff);
+  expect(normalizeColor('hwb(0 100% 0%)')).toBe(0xffffffff);
   expect(normalizeColor('hwb(0 0% 0%)')).toBe(0xff0000ff);
   expect(normalizeColor('hwb(70 50% 0%)')).toBe(0xeaff80ff);
+  expect(normalizeColor('hwb(0 50% 50%)')).toBe(0x808080ff);
+  expect(normalizeColor('hwb(360 100% 100%)')).toBe(0x808080ff);
+  expect(normalizeColor('hwb(0 0% 0%)')).toBe(0xff0000ff);
+  expect(normalizeColor('hwb(70 50% 0%)')).toBe(0xeaff80ff);
+  expect(normalizeColor('hwb(0, 0%, 100%)')).toBe(null);
 });
 
 it('handles named colors properly', () => {

@@ -214,6 +214,14 @@ async function artifactURLForHermesRNTesterAPK(
   return getArtifactURL('rntester-hermes-debug');
 }
 
+async function artifactURLForJSCRNTesterApp() /*: Promise<string> */ {
+  return getArtifactURL('RNTesterApp-NewArch-JSC-Debug');
+}
+
+async function artifactURLForHermesRNTesterApp() /*: Promise<string> */ {
+  return getArtifactURL('RNTesterApp-NewArch-Hermes-Debug');
+}
+
 async function artifactURLForMavenLocal() /*: Promise<string> */ {
   return getArtifactURL('maven-local');
 }
@@ -247,6 +255,8 @@ module.exports = {
   downloadArtifact,
   artifactURLForJSCRNTesterAPK,
   artifactURLForHermesRNTesterAPK,
+  artifactURLForJSCRNTesterApp,
+  artifactURLForHermesRNTesterApp,
   artifactURLForMavenLocal,
   artifactURLHermesDebug,
   artifactURLForReactNative,

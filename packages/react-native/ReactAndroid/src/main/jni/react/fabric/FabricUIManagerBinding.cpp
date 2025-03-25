@@ -318,6 +318,15 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
         << this << ", surfaceId: " << surfaceHandler.getSurfaceId() << ").";
   }
 
+  // This is necessary to make sure we remove the surface handler from the
+  // registry before invalidating it. Otherwise, we can access an invalid
+  // reference in `reportMount`.
+  if (ReactNativeFeatureFlags::
+          fixMountingCoordinatorReportedPendingTransactionsOnAndroid()) {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    surfaceHandlerRegistry_.erase(surfaceHandler.getSurfaceId());
+  }
+
   surfaceHandler.stop();
 
   auto scheduler = getScheduler();
@@ -328,7 +337,8 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
   }
   scheduler->unregisterSurface(surfaceHandler);
 
-  {
+  if (!ReactNativeFeatureFlags::
+          fixMountingCoordinatorReportedPendingTransactionsOnAndroid()) {
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
     surfaceHandlerRegistry_.erase(surfaceHandler.getSurfaceId());
   }
@@ -565,8 +575,7 @@ void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
   // Only the Views of ShadowNode that were pre-allocated (forms views) needs
   // to be destroyed if the ShadowNode is destroyed but it was never mounted
   // on the screen.
-  if (ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() &&
-      shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+  if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     shadowNode.getFamily().onUnmountedFamilyDestroyed(
         [weakMountingManager =
              std::weak_ptr(mountingManager)](const ShadowNodeFamily& family) {

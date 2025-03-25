@@ -19,20 +19,20 @@ import com.facebook.react.uimanager.ThemedReactContext
 @ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
 internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualTextShadowNode>() {
 
-  public override fun getName(): String = REACT_CLASS
+  override fun getName(): String = REACT_CLASS
 
-  protected override fun createViewInstance(context: ThemedReactContext): View {
+  override fun createViewInstance(context: ThemedReactContext): View {
     throw IllegalStateException("Attempt to create a native view for RCTVirtualText")
   }
 
-  public override fun updateExtraData(view: View, extraData: Any): Unit {}
+  override fun updateExtraData(view: View, extraData: Any): Unit = Unit
 
-  public override fun getShadowNodeClass(): Class<ReactVirtualTextShadowNode> =
+  override fun getShadowNodeClass(): Class<ReactVirtualTextShadowNode> =
       ReactVirtualTextShadowNode::class.java
 
   override fun createShadowNodeInstance(): ReactVirtualTextShadowNode = ReactVirtualTextShadowNode()
 
   internal companion object {
-    public const val REACT_CLASS: String = "RCTVirtualText"
+    const val REACT_CLASS: String = "RCTVirtualText"
   }
 }

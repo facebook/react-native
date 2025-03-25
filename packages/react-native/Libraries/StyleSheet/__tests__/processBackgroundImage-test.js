@@ -12,7 +12,7 @@
 
 import processBackgroundImage from '../processBackgroundImage';
 
-const {OS} = require('../../Utilities/Platform');
+const {OS} = require('../../Utilities/Platform').default;
 const PlatformColorAndroid =
   require('../PlatformColorValueTypes.android').PlatformColor;
 const PlatformColorIOS =
@@ -30,8 +30,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         direction: {type: 'angle', value: 90},
         colorStops: [
-          {color: processColor('red'), position: 0},
-          {color: processColor('blue'), position: 1},
+          {color: processColor('red'), position: null},
+          {color: processColor('blue'), position: null},
         ],
       },
     ]);
@@ -45,8 +45,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         direction: {type: 'keyword', value: 'to bottom right'},
         colorStops: [
-          {color: processColor('red'), position: 0},
-          {color: processColor('blue'), position: 1},
+          {color: processColor('red'), position: null},
+          {color: processColor('blue'), position: null},
         ],
       },
     ]);
@@ -74,8 +74,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         direction: {type: 'keyword', value: 'to bottom right'},
         colorStops: [
-          {color: processColor('red'), position: 0},
-          {color: processColor('blue'), position: 1},
+          {color: processColor('red'), position: null},
+          {color: processColor('blue'), position: null},
         ],
       },
     ]);
@@ -90,8 +90,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         direction: {type: 'keyword', value: 'to bottom right'},
         colorStops: [
-          {color: processColor('red'), position: 0.3},
-          {color: processColor('blue'), position: 0.8},
+          {color: processColor('red'), position: '30%'},
+          {color: processColor('blue'), position: '80%'},
         ],
       },
     ]);
@@ -103,8 +103,8 @@ describe('processBackgroundImage', () => {
     expect(result[0].type).toBe('linearGradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 45});
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
     ]);
   });
 
@@ -114,8 +114,8 @@ describe('processBackgroundImage', () => {
     expect(result[0].type).toBe('linearGradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 45});
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
     ]);
   });
 
@@ -131,8 +131,8 @@ describe('processBackgroundImage', () => {
     expect(result[0].type).toBe('linearGradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 180});
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
     ]);
   });
 
@@ -148,8 +148,8 @@ describe('processBackgroundImage', () => {
     expect(result[0].type).toBe('linearGradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 45});
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
     ]);
   });
 
@@ -162,8 +162,8 @@ describe('processBackgroundImage', () => {
       value: 180,
     });
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
     ]);
   });
 
@@ -175,8 +175,8 @@ describe('processBackgroundImage', () => {
       value: 90,
     });
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
     ]);
   });
 
@@ -189,9 +189,9 @@ describe('processBackgroundImage', () => {
       value: 270,
     });
     expect(result[0].colorStops).toEqual([
-      {color: processColor('rgba(0, 0, 0, 0.5)'), position: 0},
-      {color: processColor('blue'), position: 0.5},
-      {color: processColor('hsla(0, 100%, 50%, 0.5)'), position: 1},
+      {color: processColor('rgba(0, 0, 0, 0.5)'), position: null},
+      {color: processColor('blue'), position: null},
+      {color: processColor('hsla(0, 100%, 50%, 0.5)'), position: null},
     ]);
   });
 
@@ -207,8 +207,8 @@ describe('processBackgroundImage', () => {
       value: 0,
     });
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
     ]);
     expect(result[1].type).toEqual('linearGradient');
     expect(result[1].direction).toEqual({
@@ -217,8 +217,8 @@ describe('processBackgroundImage', () => {
     });
 
     expect(result[1].colorStops).toEqual([
-      {color: processColor('green'), position: 0},
-      {color: processColor('yellow'), position: 1},
+      {color: processColor('green'), position: null},
+      {color: processColor('yellow'), position: null},
     ]);
   });
 
@@ -234,8 +234,8 @@ describe('processBackgroundImage', () => {
       value: 270,
     });
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('blue'), position: null},
     ]);
     expect(result[1].type).toEqual('linearGradient');
     expect(result[1].direction).toEqual({
@@ -244,8 +244,8 @@ describe('processBackgroundImage', () => {
     });
 
     expect(result[1].colorStops).toEqual([
-      {color: processColor('green'), position: 0},
-      {color: processColor('yellow'), position: 1},
+      {color: processColor('green'), position: null},
+      {color: processColor('yellow'), position: null},
     ]);
   });
 
@@ -253,9 +253,9 @@ describe('processBackgroundImage', () => {
     const input = 'linear-gradient(to bottom, red 0%, green 50%, blue 100%)';
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('green'), position: 0.5},
-      {color: processColor('blue'), position: 1},
+      {color: processColor('red'), position: '0%'},
+      {color: processColor('green'), position: '50%'},
+      {color: processColor('blue'), position: '100%'},
     ]);
   });
 
@@ -264,11 +264,11 @@ describe('processBackgroundImage', () => {
       'linear-gradient(to right, red, green, blue 60%, yellow, purple)';
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0},
-      {color: processColor('green'), position: 0.3},
-      {color: processColor('blue'), position: 0.6},
-      {color: processColor('yellow'), position: 0.8},
-      {color: processColor('purple'), position: 1},
+      {color: processColor('red'), position: null},
+      {color: processColor('green'), position: null},
+      {color: processColor('blue'), position: '60%'},
+      {color: processColor('yellow'), position: null},
+      {color: processColor('purple'), position: null},
     ]);
   });
 
@@ -277,8 +277,8 @@ describe('processBackgroundImage', () => {
       'linear-gradient(to right, rgba(255,0,0,0.5), rgba(0,0,255,0.8))';
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
-      {color: processColor('rgba(255,0,0,0.5)'), position: 0},
-      {color: processColor('rgba(0,0,255,0.8)'), position: 1},
+      {color: processColor('rgba(255,0,0,0.5)'), position: null},
+      {color: processColor('rgba(0,0,255,0.8)'), position: null},
     ]);
   });
 
@@ -286,8 +286,8 @@ describe('processBackgroundImage', () => {
     const input = `linear-gradient(hsl(330, 100%, 45.1%), hsl(0, 100%, 50%))`;
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
-      {color: processColor('hsl(330, 100%, 45.1%)'), position: 0},
-      {color: processColor('hsl(0, 100%, 50%)'), position: 1},
+      {color: processColor('hsl(330, 100%, 45.1%)'), position: null},
+      {color: processColor('hsl(0, 100%, 50%)'), position: null},
     ]);
   });
 
@@ -295,8 +295,8 @@ describe('processBackgroundImage', () => {
     const input = 'linear-gradient(#e66465, #9198e5)';
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
-      {color: processColor('#e66465'), position: 0},
-      {color: processColor('#9198e5'), position: 1},
+      {color: processColor('#e66465'), position: null},
+      {color: processColor('#9198e5'), position: null},
     ]);
   });
 
@@ -315,12 +315,12 @@ describe('processBackgroundImage', () => {
       value: 180,
     });
     expect(result[0].colorStops).toEqual([
-      {color: processColor('rgba(255,0,0,0.5)'), position: 0},
-      {color: processColor('rgba(0,0,255,0.8)'), position: 1},
+      {color: processColor('rgba(255,0,0,0.5)'), position: null},
+      {color: processColor('rgba(0,0,255,0.8)'), position: null},
     ]);
     expect(result[1].colorStops).toEqual([
-      {color: processColor('rgba(255,0,0,0.9)'), position: 0},
-      {color: processColor('rgba(0,0,255,0.2)'), position: 1},
+      {color: processColor('rgba(255,0,0,0.9)'), position: null},
+      {color: processColor('rgba(0,0,255,0.2)'), position: null},
     ]);
   });
 
@@ -365,8 +365,8 @@ describe('processBackgroundImage', () => {
         type: 'linearGradient',
         direction: {type: 'keyword', value: 'to bottom right'},
         colorStops: [
-          {color: processColor('red'), position: 0},
-          {color: processColor('blue'), position: 1},
+          {color: processColor('red'), position: '0%'},
+          {color: processColor('blue'), position: '100%'},
         ],
       },
     ]);
@@ -431,19 +431,19 @@ describe('processBackgroundImage', () => {
     const output = [
       {
         color: processColor('red'),
-        position: 0.4,
+        position: '40%',
       },
       {
         color: processColor('blue'),
-        position: 0.6,
+        position: null,
       },
       {
         color: processColor('green'),
-        position: 0.8,
+        position: null,
       },
       {
         color: processColor('purple'),
-        position: 1,
+        position: null,
       },
     ];
     const result = processBackgroundImage(input);
@@ -472,19 +472,19 @@ describe('processBackgroundImage', () => {
     const output = [
       {
         color: processColor('red'),
-        position: 0.4,
+        position: '40%',
       },
       {
         color: processColor('red'),
-        position: 0.8,
+        position: '80%',
       },
       {
         color: processColor('blue'),
-        position: 0.9,
+        position: null,
       },
       {
         color: processColor('green'),
-        position: 1,
+        position: null,
       },
     ];
     expect(result[0].colorStops).toEqual(output);
@@ -505,15 +505,15 @@ describe('processBackgroundImage', () => {
     const output = [
       {
         color: processColor('red'),
-        position: 0,
+        position: null,
       },
       {
         color: processColor('blue'),
-        position: 0.2,
+        position: '20%',
       },
       {
         color: processColor('green'),
-        position: 1,
+        position: null,
       },
     ];
     const result = processBackgroundImage(input);
@@ -538,15 +538,15 @@ describe('processBackgroundImage', () => {
     const output = [
       {
         color: processColor('red'),
-        position: -0.5,
+        position: '-50%',
       },
       {
         color: processColor('blue'),
-        position: 0.25,
+        position: null,
       },
       {
         color: processColor('green'),
-        position: 1,
+        position: null,
       },
     ];
     const result = processBackgroundImage(input);
@@ -572,19 +572,19 @@ describe('processBackgroundImage', () => {
     const output = [
       {
         color: processColor('red'),
-        position: 0,
+        position: null,
       },
       {
         color: processColor('blue'),
-        position: 0,
+        position: '-50%',
       },
       {
         color: processColor('green'),
-        position: 1.5,
+        position: '150%',
       },
       {
         color: processColor('yellow'),
-        position: 1.5,
+        position: null,
       },
     ];
     const result = processBackgroundImage(input);
@@ -600,11 +600,11 @@ describe('processBackgroundImage', () => {
       'linear-gradient(red 40%  20%, blue 90%  120% , green)',
     );
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0.4},
-      {color: processColor('red'), position: 0.4},
-      {color: processColor('blue'), position: 0.9},
-      {color: processColor('blue'), position: 1.2},
-      {color: processColor('green'), position: 1.2},
+      {color: processColor('red'), position: '40%'},
+      {color: processColor('red'), position: '20%'},
+      {color: processColor('blue'), position: '90%'},
+      {color: processColor('blue'), position: '120%'},
+      {color: processColor('green'), position: null},
     ]);
   });
 
@@ -613,12 +613,12 @@ describe('processBackgroundImage', () => {
       'linear-gradient(red 40%  20%, blue 90%  120% , green 200% 300%)',
     );
     expect(result[0].colorStops).toEqual([
-      {color: processColor('red'), position: 0.4},
-      {color: processColor('red'), position: 0.4},
-      {color: processColor('blue'), position: 0.9},
-      {color: processColor('blue'), position: 1.2},
-      {color: processColor('green'), position: 2},
-      {color: processColor('green'), position: 3},
+      {color: processColor('red'), position: '40%'},
+      {color: processColor('red'), position: '20%'},
+      {color: processColor('blue'), position: '90%'},
+      {color: processColor('blue'), position: '120%'},
+      {color: processColor('green'), position: '200%'},
+      {color: processColor('green'), position: '300%'},
     ]);
   });
 
@@ -696,5 +696,199 @@ describe('processBackgroundImage', () => {
         });
       });
     }
+  });
+
+  it('should process color transition hint in object style', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        direction: 'To Bottom',
+        colorStops: [{color: 'red'}, {positions: ['20%']}, {color: 'blue'}],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].direction).toEqual({type: 'angle', value: 180});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: null, position: '20%'},
+      {color: processColor('blue'), position: null},
+    ]);
+  });
+
+  it('should process color transition hint', () => {
+    const input = 'linear-gradient(red, 40%, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].direction).toEqual({type: 'angle', value: 180});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: null, position: '40%'},
+      {color: processColor('blue'), position: null},
+    ]);
+  });
+
+  it('should return empty array for invalid transition hints', () => {
+    let result = processBackgroundImage('linear-gradient(red, 40, blue)');
+    expect(result).toEqual([]);
+
+    // Multiple hints in a row
+    result = processBackgroundImage('linear-gradient(red, 20%, 40%, blue)');
+    expect(result).toEqual([]);
+
+    // Invalid object syntax
+    result = processBackgroundImage([
+      {
+        type: 'linearGradient',
+        colorStops: [{color: 'red'}, {positions: ['40']}, {color: 'blue'}],
+      },
+    ]);
+    expect(result).toEqual([]);
+  });
+
+  it('should process complex gradients with multiple transitioon hints', () => {
+    const input = 'linear-gradient(red, 20%, blue, 60%, green, 80%, yellow)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: null, position: '20%'},
+      {color: processColor('blue'), position: null},
+      {color: null, position: '60%'},
+      {color: processColor('green'), position: null},
+      {color: null, position: '80%'},
+      {color: processColor('yellow'), position: null},
+    ]);
+  });
+
+  it('should process object syntax with multiple hints', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        direction: 'to right',
+        colorStops: [
+          {color: 'red'},
+          {positions: ['20%']},
+          {color: 'blue'},
+          {positions: ['60%']},
+          {color: 'green'},
+          {positions: ['80%']},
+          {color: 'yellow'},
+        ],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: null, position: '20%'},
+      {color: processColor('blue'), position: null},
+      {color: null, position: '60%'},
+      {color: processColor('green'), position: null},
+      {color: null, position: '80%'},
+      {color: processColor('yellow'), position: null},
+    ]);
+  });
+
+  it('should process hints with explicit color stops', () => {
+    const input = 'linear-gradient(red 0%, 25%, blue 50%, 75%, green 100%)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: '0%'},
+      {color: null, position: '25%'},
+      {color: processColor('blue'), position: '50%'},
+      {color: null, position: '75%'},
+      {color: processColor('green'), position: '100%'},
+    ]);
+  });
+
+  it('should handle very complex gradients', () => {
+    const input = `linear-gradient(
+      red 0%,
+      20% ,
+      blue 30%,
+      45%,
+      green 50%,
+      65%,
+      yellow 70%  ,
+      85%,
+      purple 100%
+    )`;
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: '0%'},
+      {color: null, position: '20%'},
+      {color: processColor('blue'), position: '30%'},
+      {color: null, position: '45%'},
+      {color: processColor('green'), position: '50%'},
+      {color: null, position: '65%'},
+      {color: processColor('yellow'), position: '70%'},
+      {color: null, position: '85%'},
+      {color: processColor('purple'), position: '100%'},
+    ]);
+  });
+
+  it('should handle multiple gradients with hints', () => {
+    const input = `
+      linear-gradient(red, 30%, blue),
+      linear-gradient(to right, green, 60%, yellow)
+    `;
+    const result = processBackgroundImage(input);
+    expect(result).toHaveLength(2);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: null},
+      {color: null, position: '30%'},
+      {color: processColor('blue'), position: null},
+    ]);
+    expect(result[1].colorStops).toEqual([
+      {color: processColor('green'), position: null},
+      {color: null, position: '60%'},
+      {color: processColor('yellow'), position: null},
+    ]);
+  });
+
+  it('should handle invalid transition hint', () => {
+    const input = `
+      linear-gradient(red, 30%, blue, 60%, green, 80%)
+    `;
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([]);
+    const input1 = `
+    linear-gradient(red, 30%, 60%, green)
+  `;
+    const result1 = processBackgroundImage(input1);
+    expect(result1).toEqual([]);
+
+    const input2 = `
+    linear-gradient(20%, red, green)
+  `;
+    const result2 = processBackgroundImage(input2);
+    expect(result2).toEqual([]);
+  });
+
+  it('should process gradient with % and px color stop positions', () => {
+    const input = 'linear-gradient(red 10%, 20px, blue 30%, purple 40px)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: '10%'},
+      {color: null, position: 20},
+      {color: processColor('blue'), position: '30%'},
+      {color: processColor('purple'), position: 40},
+    ]);
+
+    const input1 = [
+      {
+        type: 'linearGradient',
+        colorStops: [
+          {color: 'red', positions: ['10%', 20]},
+          {color: 'blue', positions: ['30%', 40]},
+        ],
+      },
+    ];
+    const result1 = processBackgroundImage(input1);
+    expect(result1[0].colorStops).toEqual([
+      {color: processColor('red'), position: '10%'},
+      {color: processColor('red'), position: 20},
+      {color: processColor('blue'), position: '30%'},
+      {color: processColor('blue'), position: 40},
+    ]);
   });
 });

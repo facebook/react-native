@@ -68,6 +68,7 @@ local.properties
 *.iml
 /packages/react-native/android/*
 !/packages/react-native/android/README.md
+.kotlin/
 
 # Node
 node_modules
@@ -140,6 +141,11 @@ vendor/
 /packages/react-native/sdks/hermesc
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
+# iOS prebuilds
+/packages/react-native/third-party/
+fix_*.patch
+*.xcframework
+
 # Visual Studio Code (config dir - if present, this merges user defined
 # workspace settings on top of react-native.code-workspace)
 /.vscode
@@ -153,8 +159,9 @@ vendor/
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
 
-# CircleCI
-.circleci/generated_config.yml
-
 # Jest Integration
 /packages/react-native-fantom/build/
+/packages/react-native-fantom/tester/build/
+
+# [Experimental] Generated TS type definitions
+/packages/**/types_generated/

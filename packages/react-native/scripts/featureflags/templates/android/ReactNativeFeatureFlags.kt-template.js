@@ -37,6 +37,8 @@ ${DO_NOT_MODIFY_COMMENT}
 
 package com.facebook.react.internal.featureflags
 
+import androidx.annotation.VisibleForTesting
+
 /**
  * This object provides access to internal React Native feature flags.
  *
@@ -100,7 +102,7 @@ ${Object.entries(definitions.common)
    * This is **dangerous** because it can introduce consistency issues that will
    * be much harder to debug. For example, it could hide the fact that feature
    * flags are read before you set the values you want to use everywhere. It
-   * could also cause a workflow to suddently have different feature flags for
+   * could also cause a workflow to suddenly have different feature flags for
    * behaviors that were configured with different values before.
    *
    * It returns a string that contains the feature flags that were accessed
@@ -123,6 +125,7 @@ ${Object.entries(definitions.common)
    * This is just used to replace the default ReactNativeFeatureFlagsCxxAccessor
    * that uses JNI with a version that doesn't, to simplify testing.
    */
+  @VisibleForTesting
   internal fun setAccessorProvider(newAccessorProvider: () -> ReactNativeFeatureFlagsAccessor) {
     accessorProvider = newAccessorProvider
     accessor = accessorProvider()

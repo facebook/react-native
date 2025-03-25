@@ -13,6 +13,7 @@ import android.util.JsonWriter;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import java.io.IOException;
@@ -29,7 +30,8 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
 /** A wrapper around WebSocketClient that recognizes RN debugging message format. */
-public class JSDebuggerWebSocketClient extends WebSocketListener {
+@Nullsafe(Nullsafe.Mode.LOCAL)
+class JSDebuggerWebSocketClient extends WebSocketListener {
 
   private static final String TAG = "JSDebuggerWebSocketClient";
 
@@ -210,7 +212,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
   }
 
   @Override
-  public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+  public void onFailure(@Nullable WebSocket webSocket, Throwable t, @Nullable Response response) {
     abort("Websocket exception", t);
   }
 

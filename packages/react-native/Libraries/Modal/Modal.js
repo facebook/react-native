@@ -8,29 +8,35 @@
  * @flow strict-local
  */
 
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import {type ColorValue} from '../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
-import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
-import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
+import React from 'react';
 
-const ScrollView = require('../Components/ScrollView/ScrollView');
-const View = require('../Components/View/View');
-const AppContainer = require('../ReactNative/AppContainer');
-const I18nManager = require('../ReactNative/I18nManager');
+const ScrollView = require('../Components/ScrollView/ScrollView').default;
+const View = require('../Components/View/View').default;
+const AppContainer = require('../ReactNative/AppContainer').default;
+const I18nManager = require('../ReactNative/I18nManager').default;
 const {RootTagContext} = require('../ReactNative/RootTag');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Platform = require('../Utilities/Platform');
-const React = require('react');
+const StyleSheet = require('../StyleSheet/StyleSheet').default;
+const Platform = require('../Utilities/Platform').default;
+
+const VirtualizedListContextResetter =
+  VirtualizedLists.VirtualizedListContextResetter;
 
 type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],
 };
+
+export type PublicModalInstance = HostInstance;
 
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModalManager != null
@@ -53,24 +59,60 @@ const ModalEventEmitter =
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type OrientationChangeEvent = $ReadOnly<{|
+type OrientationChangeEvent = $ReadOnly<{
   orientation: 'portrait' | 'landscape',
-|}>;
+}>;
 
-export type Props = $ReadOnly<{|
-  ...ViewProps,
-
+export type ModalBaseProps = {
+  /**
+   * @deprecated Use animationType instead
+   */
+  animated?: boolean,
   /**
    * The `animationType` prop controls how the modal animates.
    *
-   * See https://reactnative.dev/docs/modal#animationtype
+   * - `slide` slides in from the bottom
+   * - `fade` fades into view
+   * - `none` appears without an animation
    */
   animationType?: ?('none' | 'slide' | 'fade'),
+  /**
+   * The `transparent` prop determines whether your modal will fill the entire view.
+   * Setting this to `true` will render the modal over a transparent background.
+   */
+  transparent?: ?boolean,
+  /**
+   * The `visible` prop determines whether your modal is visible.
+   */
+  visible?: ?boolean,
+  /**
+   * The `onRequestClose` callback is called when the user taps the hardware back button on Android or the menu button on Apple TV.
+   *
+   * This is required on Apple TV and Android.
+   */
+  // onRequestClose?: (event: NativeSyntheticEvent<any>) => void;
+  onRequestClose?: ?DirectEventHandler<null>,
+  /**
+   * The `onShow` prop allows passing a function that will be called once the modal has been shown.
+   */
+  // onShow?: (event: NativeSyntheticEvent<any>) => void;
+  onShow?: ?DirectEventHandler<null>,
 
   /**
-   * The `presentationStyle` prop controls how the modal appears.
-   *
-   * See https://reactnative.dev/docs/modal#presentationstyle
+   * The `backdropColor` props sets the background color of the modal's container.
+   * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
+   */
+  backdropColor?: ColorValue,
+
+  /**
+   * A ref to the native Modal component.
+   */
+  modalRef?: React.RefSetter<PublicModalInstance>,
+};
+
+export type ModalPropsIOS = {
+  /**
+   * The `presentationStyle` determines the style of modal to show
    */
   presentationStyle?: ?(
     | 'fullScreen'
@@ -80,76 +122,8 @@ export type Props = $ReadOnly<{|
   ),
 
   /**
-   * The `transparent` prop determines whether your modal will fill the
-   * entire view.
-   *
-   * See https://reactnative.dev/docs/modal#transparent
-   */
-  transparent?: ?boolean,
-
-  /**
-   * The `statusBarTranslucent` prop determines whether your modal should go under
-   * the system statusbar.
-   *
-   * See https://reactnative.dev/docs/modal.html#statusbartranslucent-android
-   */
-  statusBarTranslucent?: ?boolean,
-
-  /**
-   * The `navigationBarTranslucent` prop determines whether your modal should go under
-   * the system navigationbar.
-   *
-   * See https://reactnative.dev/docs/modal.html#navigationbartranslucent-android
-   */
-  navigationBarTranslucent?: ?boolean,
-
-  /**
-   * The `hardwareAccelerated` prop controls whether to force hardware
-   * acceleration for the underlying window.
-   *
-   * This prop works only on Android.
-   *
-   * See https://reactnative.dev/docs/modal#hardwareaccelerated
-   */
-  hardwareAccelerated?: ?boolean,
-
-  /**
-   * The `visible` prop determines whether your modal is visible.
-   *
-   * See https://reactnative.dev/docs/modal#visible
-   */
-  visible?: ?boolean,
-
-  /**
-   * The `onRequestClose` callback is called when the user taps the hardware
-   * back button on Android or the menu button on Apple TV.
-   *
-   * This is required on Apple TV and Android.
-   *
-   * See https://reactnative.dev/docs/modal#onrequestclose
-   */
-  onRequestClose?: ?DirectEventHandler<null>,
-
-  /**
-   * The `onShow` prop allows passing a function that will be called once the
-   * modal has been shown.
-   *
-   * See https://reactnative.dev/docs/modal#onshow
-   */
-  onShow?: ?DirectEventHandler<null>,
-
-  /**
-   * The `onDismiss` prop allows passing a function that will be called once
-   * the modal has been dismissed.
-   *
-   * See https://reactnative.dev/docs/modal#ondismiss
-   */
-  onDismiss?: ?() => mixed,
-
-  /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
-   *
-   * See https://reactnative.dev/docs/modal#supportedorientations
+   * On iOS, the modal is still restricted by what's specified in your app's Info.plist's UISupportedInterfaceOrientations field.
    */
   supportedOrientations?: ?$ReadOnlyArray<
     | 'portrait'
@@ -160,20 +134,46 @@ export type Props = $ReadOnly<{|
   >,
 
   /**
-   * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
-   *
-   * See https://reactnative.dev/docs/modal#onorientationchange
+   * The `onDismiss` prop allows passing a function that will be called once the modal has been dismissed.
    */
-  onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  // onDismiss?: (() => void) | undefined;
+  onDismiss?: ?() => void,
 
   /**
-   * The `backdropColor` props sets the background color of the modal's container.
-   * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
+   * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
+   * The orientation provided is only 'portrait' or 'landscape'. This callback is also called on initial render, regardless of the current orientation.
    */
-  backdropColor?: ?string,
-|}>;
+  // onOrientationChange?:
+  //   | ((event: NativeSyntheticEvent<any>) => void)
+  //   | undefined;
+  onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+};
 
-function confirmProps(props: Props) {
+export type ModalPropsAndroid = {
+  /**
+   *  Controls whether to force hardware acceleration for the underlying window.
+   */
+  hardwareAccelerated?: ?boolean,
+
+  /**
+   *  Determines whether your modal should go under the system statusbar.
+   */
+  statusBarTranslucent?: ?boolean,
+
+  /**
+   *  Determines whether your modal should go under the system navigationbar.
+   */
+  navigationBarTranslucent?: ?boolean,
+};
+
+export type ModalProps = {
+  ...ModalBaseProps,
+  ...ModalPropsIOS,
+  ...ModalPropsAndroid,
+  ...ViewProps,
+};
+
+function confirmProps(props: ModalProps) {
   if (__DEV__) {
     if (
       props.presentationStyle &&
@@ -201,8 +201,8 @@ type State = {
   isRendered: boolean,
 };
 
-class Modal extends React.Component<Props, State> {
-  static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
+class Modal extends React.Component<ModalProps, State> {
+  static defaultProps: {hardwareAccelerated: boolean, visible: boolean} = {
     visible: true,
     hardwareAccelerated: false,
   };
@@ -212,7 +212,7 @@ class Modal extends React.Component<Props, State> {
   _identifier: number;
   _eventSubscription: ?EventSubscription;
 
-  constructor(props: Props) {
+  constructor(props: ModalProps) {
     super(props);
     if (__DEV__) {
       confirmProps(props);
@@ -248,7 +248,7 @@ class Modal extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: ModalProps) {
     if (prevProps.visible === false && this.props.visible === true) {
       this.setState({isRendered: true});
     }
@@ -315,6 +315,7 @@ class Modal extends React.Component<Props, State> {
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
         onDismiss={onDismiss}
+        ref={this.props.modalRef}
         visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
         navigationBarTranslucent={this.props.navigationBarTranslucent}
@@ -361,7 +362,25 @@ const styles = StyleSheet.create({
   },
 });
 
-const ExportedModal: React.ComponentType<React.ElementConfig<typeof Modal>> =
-  ModalInjection.unstable_Modal ?? Modal;
+type ModalRefProps = $ReadOnly<{
+  ref?: React.RefSetter<PublicModalInstance>,
+}>;
 
-module.exports = ExportedModal;
+// NOTE: This wrapper component is necessary because `Modal` is a class
+// component and we need to map `ref` to a differently named prop. This can be
+// removed when `Modal` is a functional component.
+function Wrapper({
+  ref,
+  ...props
+}: {
+  ...ModalRefProps,
+  ...ModalProps,
+}): React.Node {
+  return <Modal {...props} modalRef={ref} />;
+}
+
+Wrapper.displayName = 'Modal';
+// $FlowExpectedError[prop-missing]
+Wrapper.Context = VirtualizedListContextResetter;
+
+export default Wrapper;

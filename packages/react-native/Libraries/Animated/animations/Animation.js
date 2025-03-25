@@ -145,10 +145,7 @@ export default class Animation {
           if (value != null) {
             animatedValue.__onAnimatedValueUpdateReceived(value);
 
-            if (
-              ReactNativeFeatureFlags.shouldSkipStateUpdatesForLoopingAnimations() &&
-              this.__isLooping === true
-            ) {
+            if (this.__isLooping === true) {
               return;
             }
 

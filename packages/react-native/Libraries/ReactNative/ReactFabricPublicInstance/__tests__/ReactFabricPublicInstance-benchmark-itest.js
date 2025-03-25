@@ -9,16 +9,17 @@
  * @oncall react_native
  */
 
-import '../../../Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
+
 import type {
   InternalInstanceHandle,
   ViewConfig,
-} from '../../../Renderer/shims/ReactNativeTypes';
+} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 
-import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import ReactFabricHostComponent from '../../../ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent';
-import {benchmark} from '@react-native/fantom';
-import nullthrows from 'nullthrows';
+import * as Fantom from '@react-native/fantom';
+import ReactFabricHostComponent from 'react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 // Create fake parameters for the class.
 const tag = 11;
@@ -30,32 +31,20 @@ const viewConfig: ViewConfig = {
 };
 // $FlowExpectedError[incompatible-type]
 const internalInstanceHandle: InternalInstanceHandle = {};
+// $FlowExpectedError[incompatible-type]
+const ownerDocument: ReactNativeDocument = {};
 
-benchmark
+/* eslint-disable no-new */
+Fantom.unstable_benchmark
   .suite('ReactNativeElement vs. ReactFabricHostComponent')
-  .add('ReactNativeElement', () => {
-    // eslint-disable-next-line no-new
-    new ReactNativeElement(tag, viewConfig, internalInstanceHandle);
+  .test('ReactNativeElement', () => {
+    new ReactNativeElement(
+      tag,
+      viewConfig,
+      internalInstanceHandle,
+      ownerDocument,
+    );
   })
-  .add('ReactFabricHostComponent', () => {
-    // eslint-disable-next-line no-new
+  .test('ReactFabricHostComponent', () => {
     new ReactFabricHostComponent(tag, viewConfig, internalInstanceHandle);
-  })
-  .verify(([modernImplResults, legacyImplResults]) => {
-    const minMedian = Math.min(
-      nullthrows(modernImplResults.latency.p50),
-      nullthrows(legacyImplResults.latency.p50),
-    );
-    const maxMedian = Math.max(
-      nullthrows(modernImplResults.latency.p50),
-      nullthrows(legacyImplResults.latency.p50),
-    );
-
-    const medianDifferencePercent = ((maxMedian - minMedian) / minMedian) * 100;
-    console.log(
-      `Difference in p50 values between ReactFabricHostComponent and ReactNativeElement is ${medianDifferencePercent.toFixed(2)}%`,
-    );
-
-    // No implementation should be more than 25% slower than the other.
-    expect(medianDifferencePercent).toBeLessThan(25);
   });

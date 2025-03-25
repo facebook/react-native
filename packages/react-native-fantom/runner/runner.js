@@ -195,6 +195,7 @@ module.exports = async function runTest(
     setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
     featureFlagsModulePath: `${path.relative(BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
     featureFlags: testConfig.flags.jsOnly,
+    reactInternalFeatureFlags: testConfig.flags.reactInternal,
     snapshotConfig: {
       updateSnapshot: snapshotState._updateSnapshot,
       data: getInitialSnapshotData(snapshotState),

@@ -7,24 +7,23 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
-import '../../../../../../Libraries/Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import ScrollView from '../../../../../../Libraries/Components/ScrollView/ScrollView';
-import View from '../../../../../../Libraries/Components/View/View';
+import * as Fantom from '@react-native/fantom';
+import * as React from 'react';
+import {ScrollView, View} from 'react-native';
 import {
   NativeText,
   NativeVirtualText,
-} from '../../../../../../Libraries/Text/TextNativeComponent';
-import ensureInstance from '../../../../utilities/ensureInstance';
-import HTMLCollection from '../../oldstylecollections/HTMLCollection';
-import NodeList from '../../oldstylecollections/NodeList';
-import ReactNativeElement from '../ReactNativeElement';
-import ReadOnlyNode from '../ReadOnlyNode';
-import * as Fantom from '@react-native/fantom';
-import * as React from 'react';
+} from 'react-native/Libraries/Text/TextNativeComponent';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+import ReadOnlyElement from 'react-native/src/private/webapis/dom/nodes/ReadOnlyElement';
+import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
+import HTMLCollection from 'react-native/src/private/webapis/dom/oldstylecollections/HTMLCollection';
+import NodeList from 'react-native/src/private/webapis/dom/oldstylecollections/NodeList';
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
@@ -51,6 +50,23 @@ describe('ReactNativeElement', () => {
   });
 
   describe('extends `ReadOnlyNode`', () => {
+    it('should be an instance of `ReadOnlyNode`', () => {
+      let lastNode;
+
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              lastNode = node;
+            }}
+          />,
+        );
+      });
+
+      expect(lastNode).toBeInstanceOf(ReadOnlyNode);
+    });
+
     describe('nodeType', () => {
       it('returns ReadOnlyNode.ELEMENT_NODE', () => {
         let lastParentNode;
@@ -236,7 +252,7 @@ describe('ReactNativeElement', () => {
 
     describe('getRootNode()', () => {
       // This is the desired implementation (not implemented yet).
-      it.skip('returns a root node representing the document', () => {
+      it('returns a root node representing the document', () => {
         let lastParentANode;
         let lastParentBNode;
         let lastChildANode;
@@ -308,120 +324,6 @@ describe('ReactNativeElement', () => {
         // The root node of a disconnected node is itself
         expect(parentBNode.getRootNode()).toBe(parentBNode);
         expect(childBNode.getRootNode()).toBe(childBNode);
-      });
-
-      // This is the current (incorrect) behavior.
-      // TODO: fix this implementation and "unskip" the previous test.
-      it('returns the highest parent in the hierarchy', () => {
-        let lastParentNode;
-        let lastChildNode;
-        let lastGrandChildNode;
-
-        const root = Fantom.createRoot();
-        Fantom.runTask(() => {
-          root.render(
-            <View
-              key="parent"
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              <View
-                key="child"
-                ref={node => {
-                  lastChildNode = node;
-                }}>
-                <View
-                  key="grandchild"
-                  ref={node => {
-                    lastGrandChildNode = node;
-                  }}
-                />
-              </View>
-            </View>,
-          );
-        });
-
-        const parentNode = ensureReactNativeElement(lastParentNode);
-        const childNode = ensureReactNativeElement(lastChildNode);
-        const grandChildNode = ensureReactNativeElement(lastGrandChildNode);
-
-        expect(parentNode.getRootNode()).toBe(parentNode);
-        expect(childNode.getRootNode()).toBe(parentNode);
-        expect(grandChildNode.getRootNode()).toBe(parentNode);
-
-        // Remove the grandchild
-        Fantom.runTask(() => {
-          root.render(
-            <View key="parent">
-              <View key="child" />
-            </View>,
-          );
-        });
-
-        expect(parentNode.getRootNode()).toBe(parentNode);
-        expect(childNode.getRootNode()).toBe(parentNode);
-
-        // The root node of a disconnected node is itself
-        expect(grandChildNode.getRootNode()).toBe(grandChildNode);
-
-        // Unmount node
-        Fantom.runTask(() => {
-          root.render(<></>);
-        });
-
-        // The root node of a disconnected node is itself
-        expect(parentNode.getRootNode()).toBe(parentNode);
-        expect(childNode.getRootNode()).toBe(childNode);
-        expect(grandChildNode.getRootNode()).toBe(grandChildNode);
-      });
-
-      // This is the current (incorrect) behavior.
-      // TODO: fix this implementation and "unskip" the previous test.
-      it('returns the highest parent in the hierarchy (multiple root views)', () => {
-        let lastParentANode;
-        let lastParentBNode;
-        let lastChildANode;
-        let lastChildBNode;
-
-        const root = Fantom.createRoot();
-        Fantom.runTask(() => {
-          root.render(
-            <>
-              <View
-                key="parentA"
-                ref={node => {
-                  lastParentANode = node;
-                }}>
-                <View
-                  key="childA"
-                  ref={node => {
-                    lastChildANode = node;
-                  }}
-                />
-              </View>
-              <View
-                key="parentB"
-                ref={node => {
-                  lastParentBNode = node;
-                }}>
-                <View
-                  key="childB"
-                  ref={node => {
-                    lastChildBNode = node;
-                  }}
-                />
-              </View>
-            </>,
-          );
-        });
-
-        const parentANode = ensureReactNativeElement(lastParentANode);
-        const childANode = ensureReactNativeElement(lastChildANode);
-        const parentBNode = ensureReactNativeElement(lastParentBNode);
-        const childBNode = ensureReactNativeElement(lastChildBNode);
-
-        expect(childANode.getRootNode()).toBe(parentANode);
-        expect(childBNode.getRootNode()).toBe(parentBNode);
       });
     });
 
@@ -773,6 +675,23 @@ describe('ReactNativeElement', () => {
   });
 
   describe('extends `ReadOnlyElement`', () => {
+    it('should be an instance of `ReadOnlyElement`', () => {
+      let lastNode;
+
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              lastNode = node;
+            }}
+          />,
+        );
+      });
+
+      expect(lastNode).toBeInstanceOf(ReadOnlyElement);
+    });
+
     describe('children / childElementCount', () => {
       it('return updated element children information', () => {
         let lastParentElement;
@@ -1287,7 +1206,26 @@ describe('ReactNativeElement', () => {
     });
   });
 
-  describe('implements specific `ReactNativeElement` methods', () => {
+  describe('extends `ReactNativeElement`', () => {
+    it('should be an instance of `ReactNativeElement`', () => {
+      let lastNode;
+
+      // Initial render with 3 children
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              lastNode = node;
+            }}
+          />,
+        );
+      });
+
+      const node = ensureReactNativeElement(lastNode);
+      expect(node).toBeInstanceOf(ReactNativeElement);
+    });
+
     describe('offsetWidth / offsetHeight', () => {
       it('return the rounded width and height, or 0 when disconnected', () => {
         let lastElement;

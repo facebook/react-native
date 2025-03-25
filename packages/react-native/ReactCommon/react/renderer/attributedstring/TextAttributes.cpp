@@ -46,6 +46,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   allowFontScaling = textAttributes.allowFontScaling.has_value()
       ? textAttributes.allowFontScaling
       : allowFontScaling;
+  maxFontSizeMultiplier = !std::isnan(textAttributes.maxFontSizeMultiplier)
+      ? textAttributes.maxFontSizeMultiplier
+      : maxFontSizeMultiplier;
   dynamicTypeRamp = textAttributes.dynamicTypeRamp.has_value()
       ? textAttributes.dynamicTypeRamp
       : dynamicTypeRamp;
@@ -143,7 +146,8 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              layoutDirection,
              accessibilityRole,
              role,
-             textTransform) ==
+             textTransform,
+             textAlignVertical) ==
       std::tie(
              rhs.foregroundColor,
              rhs.backgroundColor,
@@ -167,17 +171,15 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              rhs.layoutDirection,
              rhs.accessibilityRole,
              rhs.role,
-             rhs.textTransform) &&
+             rhs.textTransform,
+             rhs.textAlignVertical) &&
+      floatEquality(maxFontSizeMultiplier, rhs.maxFontSizeMultiplier) &&
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
       floatEquality(fontSizeMultiplier, rhs.fontSizeMultiplier) &&
       floatEquality(letterSpacing, rhs.letterSpacing) &&
       floatEquality(lineHeight, rhs.lineHeight) &&
       floatEquality(textShadowRadius, rhs.textShadowRadius);
-}
-
-bool TextAttributes::operator!=(const TextAttributes& rhs) const {
-  return !(*this == rhs);
 }
 
 TextAttributes TextAttributes::defaultTextAttributes() {
@@ -224,6 +226,10 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
           "allowFontScaling",
           allowFontScaling,
           textAttributes.allowFontScaling),
+      debugStringConvertibleItem(
+          "maxFontSizeMultiplier",
+          maxFontSizeMultiplier,
+          textAttributes.maxFontSizeMultiplier),
       debugStringConvertibleItem(
           "dynamicTypeRamp", dynamicTypeRamp, textAttributes.dynamicTypeRamp),
       debugStringConvertibleItem(

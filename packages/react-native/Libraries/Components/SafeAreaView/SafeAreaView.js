@@ -24,7 +24,7 @@ import * as React from 'react';
  * sensor housing area on iPhone X).
  */
 const exported: component(
-  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: ViewProps
 ) = Platform.select({
   ios: require('./RCTSafeAreaViewNativeComponent').default,

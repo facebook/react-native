@@ -14,8 +14,22 @@ import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeDevSettings from '../NativeModules/specs/NativeDevSettings';
 import Platform from '../Utilities/Platform';
 
+/**
+ * The DevSettings module exposes methods for customizing settings for developers in development.
+ */
 let DevSettings: {
+  /**
+   * Adds a custom menu item to the developer menu.
+   *
+   * @param title - The title of the menu item. Is internally used as id and should therefore be unique.
+   * @param handler - The callback invoked when pressing the menu item.
+   */
   addMenuItem(title: string, handler: () => mixed): void,
+  /**
+   * Reload the application.
+   *
+   * @param reason
+   */
   reload(reason?: string): void,
   onFastRefresh(): void,
 } = {
@@ -69,4 +83,4 @@ if (__DEV__) {
   };
 }
 
-module.exports = DevSettings;
+export default DevSettings;

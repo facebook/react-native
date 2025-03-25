@@ -16,45 +16,6 @@
 
 using namespace facebook::react;
 
-@implementation RCTWeakEventEmitterWrapper {
-  std::weak_ptr<const EventEmitter> _weakEventEmitter;
-}
-
-- (void)setEventEmitter:(SharedEventEmitter)eventEmitter
-{
-  _weakEventEmitter = eventEmitter;
-}
-
-- (SharedEventEmitter)eventEmitter
-{
-  return _weakEventEmitter.lock();
-}
-
-- (void)dealloc
-{
-  _weakEventEmitter.reset();
-}
-
-- (BOOL)isEqual:(id)object
-{
-  // We consider the underlying EventEmitter as the identity
-  if (![object isKindOfClass:[self class]]) {
-    return NO;
-  }
-
-  auto thisEventEmitter = [self eventEmitter];
-  auto otherEventEmitter = [((RCTWeakEventEmitterWrapper *)object) eventEmitter];
-  return thisEventEmitter == otherEventEmitter;
-}
-
-- (NSUInteger)hash
-{
-  // We consider the underlying EventEmitter as the identity
-  return (NSUInteger)_weakEventEmitter.lock().get();
-}
-
-@end
-
 inline static UIFontWeight RCTUIFontWeightFromInteger(NSInteger fontWeight)
 {
   assert(fontWeight > 50);
@@ -135,6 +96,7 @@ inline static CGFloat RCTBaseSizeForDynamicTypeRamp(const DynamicTypeRamp &dynam
 inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const TextAttributes &textAttributes)
 {
   if (textAttributes.allowFontScaling.value_or(true)) {
+    CGFloat fontSizeMultiplier = !isnan(textAttributes.fontSizeMultiplier) ? textAttributes.fontSizeMultiplier : 1.0;
     if (textAttributes.dynamicTypeRamp.has_value()) {
       DynamicTypeRamp dynamicTypeRamp = textAttributes.dynamicTypeRamp.value();
       UIFontMetrics *fontMetrics =
@@ -142,10 +104,11 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
       // Using a specific font size reduces rounding errors from -scaledValueForValue:
       CGFloat requestedSize =
           isnan(textAttributes.fontSize) ? RCTBaseSizeForDynamicTypeRamp(dynamicTypeRamp) : textAttributes.fontSize;
-      return [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
-    } else {
-      return textAttributes.fontSizeMultiplier;
+      fontSizeMultiplier = [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
     }
+    CGFloat maxFontSizeMultiplier =
+        !isnan(textAttributes.maxFontSizeMultiplier) ? textAttributes.maxFontSizeMultiplier : 0.0;
+    return maxFontSizeMultiplier >= 1.0 ? fminf(maxFontSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
   } else {
     return 1.0;
   }
@@ -407,10 +370,8 @@ static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFro
 {
   auto nsAttributedStringFragment = RCTNSAttributedStringFragmentFromFragment(fragment, placeholderImage);
 
-#if !TARGET_OS_MACCATALYST
   if (fragment.parentShadowView.componentHandle) {
-    RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
-    eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
+    auto eventEmitterWrapper = RCTWrapEventEmitter(fragment.parentShadowView.eventEmitter);
 
     NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
         @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
@@ -418,7 +379,6 @@ static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFro
     [nsAttributedStringFragment addAttributes:additionalTextAttributes
                                         range:NSMakeRange(0, nsAttributedStringFragment.length)];
   }
-#endif
 
   return nsAttributedStringFragment;
 }

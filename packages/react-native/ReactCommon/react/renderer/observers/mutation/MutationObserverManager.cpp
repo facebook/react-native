@@ -106,8 +106,11 @@ void MutationObserverManager::commitHookWasUnregistered(
 RootShadowNode::Unshared MutationObserverManager::shadowTreeWillCommit(
     const ShadowTree& shadowTree,
     const RootShadowNode::Shared& oldRootShadowNode,
-    const RootShadowNode::Unshared& newRootShadowNode) noexcept {
-  runMutationObservations(shadowTree, *oldRootShadowNode, *newRootShadowNode);
+    const RootShadowNode::Unshared& newRootShadowNode,
+    const ShadowTree::CommitOptions& commitOptions) noexcept {
+  if (commitOptions.source == ShadowTree::CommitSource::React) {
+    runMutationObservations(shadowTree, *oldRootShadowNode, *newRootShadowNode);
+  }
   return newRootShadowNode;
 }
 

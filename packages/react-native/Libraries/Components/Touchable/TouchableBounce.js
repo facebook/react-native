@@ -19,7 +19,7 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
 
   onPressAnimationComplete?: ?() => void,
@@ -29,12 +29,12 @@ type Props = $ReadOnly<{|
   style?: ?ViewStyleProp,
 
   hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
-|}>;
+}>;
 
-type State = $ReadOnly<{|
+type State = $ReadOnly<{
   pressability: Pressability,
   scale: Animated.Value,
-|}>;
+}>;
 
 class TouchableBounce extends React.Component<Props, State> {
   state: State = {
@@ -173,7 +173,8 @@ class TouchableBounce extends React.Component<Props, State> {
         importantForAccessibility={
           this.props['aria-hidden'] === true
             ? 'no-hide-descendants'
-            : this.props.importantForAccessibility
+            : // $FlowFixMe[incompatible-type] - AnimatedProps types were made more strict and need refining at this call site
+              this.props.importantForAccessibility
         }
         accessibilityViewIsModal={
           this.props['aria-modal'] ?? this.props.accessibilityViewIsModal
@@ -214,9 +215,9 @@ class TouchableBounce extends React.Component<Props, State> {
   }
 }
 
-module.exports = (React.forwardRef((props, hostRef) => (
+export default (React.forwardRef((props, hostRef: React.RefSetter<mixed>) => (
   <TouchableBounce {...props} hostRef={hostRef} />
 )): component(
   ref: React.RefSetter<mixed>,
-  ...props: $ReadOnly<$Diff<Props, {|hostRef: mixed|}>>
+  ...props: $ReadOnly<$Diff<Props, {hostRef: mixed}>>
 ));

@@ -12,7 +12,7 @@
 // the inlining decisions to avoid unnecessary code bloat. In effect RCTRequired
 // is a cost-free abstraction in non-DEBUG mode. In DEBUG mode we don't force
 // inlining for ease of debugging.
-#if DEBUG
+#ifdef DEBUG
 #define RCTREQUIRED_INLINE inline
 #else
 #define RCTREQUIRED_INLINE __attribute__((always_inline)) inline

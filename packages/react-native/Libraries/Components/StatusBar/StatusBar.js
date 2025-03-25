@@ -55,7 +55,7 @@ export type StatusBarAnimation = $Keys<{
   ...
 }>;
 
-type AndroidProps = $ReadOnly<{|
+export type StatusBarPropsAndroid = $ReadOnly<{
   /**
    * The background color of the status bar.
    * @platform android
@@ -69,9 +69,9 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   translucent?: ?boolean,
-|}>;
+}>;
 
-type IOSProps = $ReadOnly<{|
+export type StatusBarPropsIOS = $ReadOnly<{
   /**
    * If the network activity indicator should be visible.
    *
@@ -85,11 +85,9 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   showHideTransition?: ?('fade' | 'slide' | 'none'),
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
-  ...AndroidProps,
-  ...IOSProps,
+type StatusBarBaseProps = $ReadOnly<{
   /**
    * If the status bar is hidden.
    */
@@ -103,7 +101,31 @@ type Props = $ReadOnly<{|
    * Sets the color of the status bar text.
    */
   barStyle?: ?('default' | 'light-content' | 'dark-content'),
-|}>;
+}>;
+
+export type StatusBarProps = $ReadOnly<{
+  ...StatusBarPropsAndroid,
+  ...StatusBarPropsIOS,
+  ...StatusBarBaseProps,
+}>;
+
+type StackProps = {
+  backgroundColor: ?{
+    value: StatusBarProps['backgroundColor'],
+    animated: boolean,
+  },
+  barStyle: ?{
+    value: StatusBarProps['barStyle'],
+    animated: boolean,
+  },
+  translucent: StatusBarProps['translucent'],
+  hidden: ?{
+    value: boolean,
+    animated: boolean,
+    transition: StatusBarProps['showHideTransition'],
+  },
+  networkActivityIndicatorVisible: StatusBarProps['networkActivityIndicatorVisible'],
+};
 
 /**
  * Merges the prop stack with the default values.
@@ -129,7 +151,7 @@ function mergePropsStack(
  * Returns an object to insert in the props stack from the props
  * and the transition/animation info.
  */
-function createStackEntry(props: any): any {
+function createStackEntry(props: StatusBarProps): StackProps {
   const animated = props.animated ?? false;
   const showHideTransition = props.showHideTransition ?? 'fade';
   return {
@@ -202,8 +224,8 @@ function createStackEntry(props: any): any {
  *
  * `currentHeight` (Android only) The height of the status bar.
  */
-class StatusBar extends React.Component<Props> {
-  static _propsStack: Array<any> = [];
+class StatusBar extends React.Component<StatusBarProps> {
+  static _propsStack: Array<StackProps> = [];
 
   static _defaultProps: any = createStackEntry({
     backgroundColor:
@@ -218,12 +240,10 @@ class StatusBar extends React.Component<Props> {
   });
 
   // Timer for updating the native module values at the end of the frame.
-  // $FlowFixMe[missing-local-annot]
-  static _updateImmediate = null;
+  static _updateImmediate: ?number = null;
 
   // The current merged values from the props stack.
-  // $FlowFixMe[missing-local-annot]
-  static _currentValues = null;
+  static _currentValues: ?StackProps = null;
 
   // TODO(janic): Provide a real API to deal with status bar height. See the
   // discussion in #6195.
@@ -293,7 +313,7 @@ class StatusBar extends React.Component<Props> {
    * @param color Background color.
    * @param animated Animate the style change.
    */
-  static setBackgroundColor(color: string, animated?: boolean): void {
+  static setBackgroundColor(color: ColorValue, animated?: boolean): void {
     if (Platform.OS !== 'android') {
       console.warn('`setBackgroundColor` is only available on Android');
       return;
@@ -304,7 +324,7 @@ class StatusBar extends React.Component<Props> {
     const processedColor = processColor(color);
     if (processedColor == null) {
       console.warn(
-        `\`StatusBar.setBackgroundColor\`: Color ${color} parsed to null or undefined`,
+        `\`StatusBar.setBackgroundColor\`: Color ${String(color)} parsed to null or undefined`,
       );
       return;
     }
@@ -335,7 +355,7 @@ class StatusBar extends React.Component<Props> {
    *
    * @param props Object containing the StatusBar props to use in the stack entry.
    */
-  static pushStackEntry(props: any): any {
+  static pushStackEntry(props: StatusBarProps): StackProps {
     const entry = createStackEntry(props);
     StatusBar._propsStack.push(entry);
     StatusBar._updatePropsStack();
@@ -347,7 +367,7 @@ class StatusBar extends React.Component<Props> {
    *
    * @param entry Entry returned from `pushStackEntry`.
    */
-  static popStackEntry(entry: any) {
+  static popStackEntry(entry: StackProps) {
     const index = StatusBar._propsStack.indexOf(entry);
     if (index !== -1) {
       StatusBar._propsStack.splice(index, 1);
@@ -361,7 +381,10 @@ class StatusBar extends React.Component<Props> {
    * @param entry Entry returned from `pushStackEntry` to replace.
    * @param props Object containing the StatusBar props to use in the replacement stack entry.
    */
-  static replaceStackEntry(entry: any, props: any): any {
+  static replaceStackEntry(
+    entry: StackProps,
+    props: StatusBarProps,
+  ): StackProps {
     const newEntry = createStackEntry(props);
     const index = StatusBar._propsStack.indexOf(entry);
     if (index !== -1) {
@@ -371,8 +394,7 @@ class StatusBar extends React.Component<Props> {
     return newEntry;
   }
 
-  // $FlowFixMe[missing-local-annot]
-  _stackEntry = null;
+  _stackEntry: ?StackProps = null;
 
   componentDidMount() {
     // Every time a StatusBar component is mounted, we push it's prop to a stack
@@ -385,14 +407,18 @@ class StatusBar extends React.Component<Props> {
   componentWillUnmount() {
     // When a StatusBar is unmounted, remove itself from the stack and update
     // the native bar with the next props.
-    StatusBar.popStackEntry(this._stackEntry);
+    if (this._stackEntry != null) {
+      StatusBar.popStackEntry(this._stackEntry);
+    }
   }
 
   componentDidUpdate() {
-    this._stackEntry = StatusBar.replaceStackEntry(
-      this._stackEntry,
-      this.props,
-    );
+    if (this._stackEntry != null) {
+      this._stackEntry = StatusBar.replaceStackEntry(
+        this._stackEntry,
+        this.props,
+      );
+    }
   }
 
   /**
@@ -412,14 +438,14 @@ class StatusBar extends React.Component<Props> {
       if (Platform.OS === 'ios') {
         if (
           !oldProps ||
-          oldProps.barStyle.value !== mergedProps.barStyle.value
+          oldProps.barStyle?.value !== mergedProps.barStyle.value
         ) {
           NativeStatusBarManagerIOS.setStyle(
             mergedProps.barStyle.value,
             mergedProps.barStyle.animated || false,
           );
         }
-        if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
+        if (!oldProps || oldProps.hidden?.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerIOS.setHidden(
             mergedProps.hidden.value,
             mergedProps.hidden.animated
@@ -456,7 +482,7 @@ class StatusBar extends React.Component<Props> {
             mergedProps.backgroundColor.animated,
           );
         }
-        if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
+        if (!oldProps || oldProps.hidden?.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);
         }
         // Activities are not translucent by default, so always set if true.
@@ -478,4 +504,4 @@ class StatusBar extends React.Component<Props> {
   }
 }
 
-module.exports = StatusBar;
+export default StatusBar;

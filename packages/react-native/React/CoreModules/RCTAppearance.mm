@@ -10,7 +10,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventEmitter.h>
-#import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
 

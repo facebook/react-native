@@ -22,6 +22,7 @@ import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.systrace.Systrace;
+import java.util.Locale;
 
 /**
  * This class represents a batch of {@link MountItem}s, represented directly as int buffers to
@@ -199,7 +200,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
   public String toString() {
     try {
       StringBuilder s = new StringBuilder();
-      s.append(String.format("IntBufferBatchMountItem [surface:%d]:\n", mSurfaceId));
+      s.append(String.format(Locale.ROOT, "IntBufferBatchMountItem [surface:%d]:\n", mSurfaceId));
       int i = 0, j = 0;
       while (i < mIntBufferLen) {
         int rawType = mIntBuffer[i++];
@@ -211,49 +212,65 @@ final class IntBufferBatchMountItem implements BatchMountItem {
             j += 3;
             s.append(
                 String.format(
+                    Locale.ROOT,
                     "CREATE [%d] - layoutable:%d - %s\n",
-                    mIntBuffer[i++], mIntBuffer[i++], componentName));
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    componentName));
           } else if (type == INSTRUCTION_DELETE) {
-            s.append(String.format("DELETE [%d]\n", mIntBuffer[i++]));
+            s.append(String.format(Locale.ROOT, "DELETE [%d]\n", mIntBuffer[i++]));
           } else if (type == INSTRUCTION_INSERT) {
             s.append(
                 String.format(
-                    "INSERT [%d]->[%d] @%d\n", mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]));
+                    Locale.ROOT,
+                    "INSERT [%d]->[%d] @%d\n",
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++]));
           } else if (type == INSTRUCTION_REMOVE) {
             s.append(
                 String.format(
-                    "REMOVE [%d]->[%d] @%d\n", mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]));
+                    Locale.ROOT,
+                    "REMOVE [%d]->[%d] @%d\n",
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++]));
           } else if (type == INSTRUCTION_UPDATE_PROPS) {
             Object props = mObjBuffer[j++];
             String propsString =
                 IS_DEVELOPMENT_ENVIRONMENT
                     ? (props != null ? props.toString() : "<null>")
                     : "<hidden>";
-            s.append(String.format("UPDATE PROPS [%d]: %s\n", mIntBuffer[i++], propsString));
+            s.append(
+                String.format(
+                    Locale.ROOT, "UPDATE PROPS [%d]: %s\n", mIntBuffer[i++], propsString));
           } else if (type == INSTRUCTION_UPDATE_STATE) {
             StateWrapper state = (StateWrapper) mObjBuffer[j++];
             String stateString =
                 IS_DEVELOPMENT_ENVIRONMENT
                     ? (state != null ? state.toString() : "<null>")
                     : "<hidden>";
-            s.append(String.format("UPDATE STATE [%d]: %s\n", mIntBuffer[i++], stateString));
-          } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
-            int reactTag = mIntBuffer[i++];
-            int parentTag = mIntBuffer[i++];
-            int x = mIntBuffer[i++];
-            int y = mIntBuffer[i++];
-            int w = mIntBuffer[i++];
-            int h = mIntBuffer[i++];
-            int displayType = mIntBuffer[i++];
-            int layoutDirection = mIntBuffer[i++];
             s.append(
                 String.format(
-                    "UPDATE LAYOUT [%d]->[%d]: x:%d y:%d w:%d h:%d displayType:%d layoutDirection:"
-                        + " %d\n",
-                    parentTag, reactTag, x, y, w, h, displayType, layoutDirection));
+                    Locale.ROOT, "UPDATE STATE [%d]: %s\n", mIntBuffer[i++], stateString));
+          } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
+            s.append(
+                String.format(
+                    Locale.ROOT,
+                    "UPDATE LAYOUT [%d]->[%d]: x:%d y:%d w:%d h:%d displayType:%d"
+                        + " layoutDirection:%d\n",
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++],
+                    mIntBuffer[i++]));
           } else if (type == INSTRUCTION_UPDATE_PADDING) {
             s.append(
                 String.format(
+                    Locale.ROOT,
                     "UPDATE PADDING [%d]: top:%d right:%d bottom:%d left:%d\n",
                     mIntBuffer[i++],
                     mIntBuffer[i++],
@@ -263,6 +280,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
           } else if (type == INSTRUCTION_UPDATE_OVERFLOW_INSET) {
             s.append(
                 String.format(
+                    Locale.ROOT,
                     "UPDATE OVERFLOWINSET [%d]: left:%d top:%d right:%d bottom:%d\n",
                     mIntBuffer[i++],
                     mIntBuffer[i++],
@@ -271,7 +289,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
                     mIntBuffer[i++]));
           } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
             j += 1;
-            s.append(String.format("UPDATE EVENTEMITTER [%d]\n", mIntBuffer[i++]));
+            s.append(String.format(Locale.ROOT, "UPDATE EVENTEMITTER [%d]\n", mIntBuffer[i++]));
           } else {
             FLog.e(TAG, "String so far: " + s.toString());
             throw new IllegalArgumentException(

@@ -143,6 +143,10 @@ function getTypeAnnotationForArray<+T>(
       return {
         type: 'StringTypeAnnotation',
       };
+    case 'UnsafeMixed':
+      return {
+        type: 'MixedTypeAnnotation',
+      };
     case 'UnionTypeAnnotation':
       typeAnnotation.types.reduce((lastType, currType) => {
         if (lastType && currType.type !== lastType.type) {
@@ -398,23 +402,25 @@ type SchemaInfo = {
 function getSchemaInfo(
   property: PropAST,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): ?SchemaInfo {
   const name = property.key.name;
 
   const value = getValueFromTypes(property.value, types);
   let typeAnnotation =
     value.type === 'NullableTypeAnnotation' ? value.typeAnnotation : value;
+  let typeAnnotationName = parser.getTypeAnnotationName(typeAnnotation);
 
   const optional =
     value.type === 'NullableTypeAnnotation' ||
     property.optional ||
     (value.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.id.name === 'WithDefault');
+      typeAnnotationName === 'WithDefault');
 
   if (
     !property.optional &&
     value.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === 'WithDefault'
+    typeAnnotationName === 'WithDefault'
   ) {
     throw new Error(
       `key ${name} must be optional if used with WithDefault<> annotation`,
@@ -423,7 +429,7 @@ function getSchemaInfo(
   if (
     value.type === 'NullableTypeAnnotation' &&
     typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === 'WithDefault'
+    typeAnnotationName === 'WithDefault'
   ) {
     throw new Error(
       'WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it.',
@@ -433,8 +439,8 @@ function getSchemaInfo(
   let type = typeAnnotation.type;
   if (
     type === 'GenericTypeAnnotation' &&
-    (typeAnnotation.id.name === 'DirectEventHandler' ||
-      typeAnnotation.id.name === 'BubblingEventHandler')
+    (typeAnnotationName === 'DirectEventHandler' ||
+      typeAnnotationName === 'BubblingEventHandler')
   ) {
     return null;
   }
@@ -442,7 +448,7 @@ function getSchemaInfo(
   if (
     name === 'style' &&
     type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === 'ViewStyleProp'
+    typeAnnotationName === 'ViewStyleProp'
   ) {
     return null;
   }
@@ -451,7 +457,7 @@ function getSchemaInfo(
   let withNullDefault = false;
   if (
     type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === 'WithDefault'
+    typeAnnotationName === 'WithDefault'
   ) {
     if (typeAnnotation.typeParameters.params.length === 1) {
       throw new Error(
@@ -465,7 +471,7 @@ function getSchemaInfo(
     typeAnnotation = typeAnnotation.typeParameters.params[0];
     type =
       typeAnnotation.type === 'GenericTypeAnnotation'
-        ? typeAnnotation.id.name
+        ? typeAnnotationName
         : typeAnnotation.type;
 
     if (defaultValueType === 'NullLiteralTypeAnnotation') {

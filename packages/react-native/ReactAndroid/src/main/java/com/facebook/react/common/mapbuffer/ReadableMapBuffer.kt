@@ -7,7 +7,7 @@
 
 package com.facebook.react.common.mapbuffer
 
-import com.facebook.jni.HybridData
+import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer.Companion.KEY_RANGE
@@ -25,42 +25,25 @@ import javax.annotation.concurrent.NotThreadSafe
 @StableReactNativeAPI
 @NotThreadSafe
 @DoNotStrip
-public class ReadableMapBuffer : MapBuffer {
+public class ReadableMapBuffer
+@DoNotStrip
+private constructor(
+    // Byte data of the mapBuffer
+    private val buffer: ByteBuffer,
+    // Offset to the start of the MapBuffer
+    private val offsetToMapBuffer: Int
+) : HybridClassBase(), MapBuffer {
 
-  // Hybrid data must be kept in the `mHybridData` field for fbjni to work
-  @field:DoNotStrip private val mHybridData: HybridData?
-
-  // Byte data of the mapBuffer
-  private val buffer: ByteBuffer
-  // Offset to the start of the MapBuffer
-  private val offsetToMapBuffer: Int
   // Amount of items serialized on the ByteBuffer
   override var count: Int = 0
     private set
 
-  @DoNotStrip
-  private constructor(hybridData: HybridData) {
-    mHybridData = hybridData
-    buffer = importByteBuffer()
-    offsetToMapBuffer = 0
+  init {
     readHeader()
   }
 
-  private constructor(buffer: ByteBuffer) {
-    mHybridData = null
-    this.buffer = buffer
-    offsetToMapBuffer = 0
-    readHeader()
-  }
-
-  private constructor(buffer: ByteBuffer, offset: Int) {
-    mHybridData = null
-    this.buffer = buffer.duplicate().apply { position(offset) }
-    offsetToMapBuffer = offset
-    readHeader()
-  }
-
-  private external fun importByteBuffer(): ByteBuffer
+  private fun cloneWithOffset(offset: Int) =
+      ReadableMapBuffer(buffer.duplicate().apply { position(offset) }, offset)
 
   private fun readHeader() {
     // byte order
@@ -146,7 +129,7 @@ public class ReadableMapBuffer : MapBuffer {
 
   private fun readMapBufferValue(position: Int): ReadableMapBuffer {
     val offset = offsetForDynamicData + buffer.getInt(position)
-    return ReadableMapBuffer(buffer, offset + Int.SIZE_BYTES)
+    return cloneWithOffset(offset + Int.SIZE_BYTES)
   }
 
   private fun readMapBufferListValue(position: Int): List<ReadableMapBuffer> {
@@ -158,7 +141,7 @@ public class ReadableMapBuffer : MapBuffer {
     while (curLen < sizeMapBufferList) {
       val sizeMapBuffer = buffer.getInt(offset + curLen)
       curLen = curLen + Int.SIZE_BYTES
-      readMapBufferList.add(ReadableMapBuffer(buffer, offset + curLen))
+      readMapBufferList.add(cloneWithOffset(offset + curLen))
       curLen = curLen + sizeMapBuffer
     }
     return readMapBufferList
@@ -335,9 +318,5 @@ public class ReadableMapBuffer : MapBuffer {
 
     // 4 bytes = 2 (key) + 2 (type)
     private const val VALUE_OFFSET = 4
-
-    init {
-      MapBufferSoLoader.staticInit()
-    }
   }
 }

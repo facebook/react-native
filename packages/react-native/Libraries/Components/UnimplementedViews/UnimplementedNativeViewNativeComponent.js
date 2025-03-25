@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/UnimplementedNativeViewNativeComponent';
-import UnimplementedNativeViewNativeComponent from '../../../src/private/specs/components/UnimplementedNativeViewNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent';
+import UnimplementedNativeViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent';
 export default UnimplementedNativeViewNativeComponent;

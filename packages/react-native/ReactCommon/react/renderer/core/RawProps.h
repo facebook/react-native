@@ -43,7 +43,7 @@ class RawProps final {
   /*
    * Creates empty RawProps objects.
    */
-  RawProps();
+  RawProps() : mode_(Mode::Empty) {}
 
   /*
    * Creates an object with given `runtime` and `value`.
@@ -51,10 +51,10 @@ class RawProps final {
   RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept;
 
   explicit RawProps(const RawProps& rawProps) noexcept;
-  RawProps& operator=(const RawProps& other) noexcept;
-
   RawProps(RawProps&& other) noexcept = default;
-  RawProps& operator=(RawProps&& other) noexcept = default;
+
+  RawProps& operator=(const RawProps& other) noexcept = delete;
+  RawProps& operator=(RawProps&& other) noexcept = delete;
 
   /*
    * Creates an object with given `folly::dynamic` object.
@@ -83,15 +83,6 @@ class RawProps final {
           nullptr) const;
 
   /*
-   * Once called, Yoga style props will be filtered out during conversion to
-   * folly::dynamic. folly::dynamic conversion is only used on Android and props
-   * specific to Yoga do not need to be send over JNI to Android.
-   * This is a performance optimisation to minimise traffic between C++ and
-   * Java.
-   */
-  void filterYogaStylePropsInDynamicConversion() noexcept;
-
-  /*
    * Returns `true` if the object is empty.
    * Empty `RawProps` does not have any stored data.
    */
@@ -112,8 +103,9 @@ class RawProps final {
   /*
    * Source artefacts:
    */
+
   // Mode
-  mutable Mode mode_;
+  Mode mode_;
 
   // Case 1: Source data is represented as `jsi::Object`.
   jsi::Runtime* runtime_{};
@@ -134,8 +126,6 @@ class RawProps final {
    */
   mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
   mutable std::vector<RawValue> values_;
-
-  bool ignoreYogaStyleProps_{false};
 };
 
 /*

@@ -10,12 +10,15 @@
  */
 
 // eslint-disable-next-line lint/sort-imports
-import {performanceEntryTypeToRaw} from '../RawPerformanceEntry';
+import type Performance from '../Performance';
+import {performanceEntryTypeToRaw} from '../internals/RawPerformanceEntry';
 import {reportEntry} from '../specs/__mocks__/NativePerformanceMock';
 
 jest.mock('../specs/NativePerformance', () =>
   require('../specs/__mocks__/NativePerformanceMock'),
 );
+
+declare var performance: Performance;
 
 const NativePerformanceMock =
   require('../specs/__mocks__/NativePerformanceMock').default;
@@ -24,9 +27,9 @@ describe('Performance', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    const Performance = require('../Performance').default;
+    const PerformanceClass = require('../Performance').default;
     // $FlowExpectedError[cannot-write]
-    global.performance = new Performance();
+    global.performance = new PerformanceClass();
   });
 
   it('reports marks and measures', () => {

@@ -20,9 +20,9 @@ import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
-} from './RawPerformanceEntry';
+} from './internals/RawPerformanceEntry';
+import {warnNoNativePerformance} from './internals/Utilities';
 import NativePerformance from './specs/NativePerformance';
-import {warnNoNativePerformance} from './Utilities';
 
 export {PerformanceEntry} from './PerformanceEntry';
 
@@ -66,12 +66,12 @@ export type PerformanceObserverCallback = (
   options?: PerformanceObserverCallbackOptions,
 ) => void;
 
-export type PerformanceObserverInit = {
-  entryTypes?: Array<PerformanceEntryType>,
-  type?: PerformanceEntryType,
-  buffered?: boolean,
-  durationThreshold?: DOMHighResTimeStamp,
-};
+export interface PerformanceObserverInit {
+  +entryTypes?: Array<PerformanceEntryType>;
+  +type?: PerformanceEntryType;
+  +buffered?: boolean;
+  +durationThreshold?: DOMHighResTimeStamp;
+}
 
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
   if (!NativePerformance) {

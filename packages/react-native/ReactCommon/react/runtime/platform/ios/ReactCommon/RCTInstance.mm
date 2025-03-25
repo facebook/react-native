@@ -85,6 +85,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
   NSDictionary *_launchOptions;
+  void (^_waitUntilModuleSetupComplete)();
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
@@ -130,9 +131,25 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
     _launchOptions = launchOptions;
 
+    if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(_handleMemoryWarning)
+                                                   name:UIApplicationDidReceiveMemoryWarningNotification
+                                                 object:nil];
+    }
+
     [self _start];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidReceiveMemoryWarningNotification
+                                                  object:nil];
+  }
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
@@ -219,6 +236,14 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return @[];
 }
 
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(getModuleProvider:)]) {
+    return [_appTMMDelegate getModuleProvider:name];
+  }
+  return nil;
+}
+
 #pragma mark - Private
 
 - (void)_start
@@ -289,6 +314,33 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
+
+  if (ReactNativeFeatureFlags::enableMainQueueModulesOnIOS()) {
+    /**
+     * Some native modules need to capture uikit objects on the main thread.
+     * Start initializing those modules on the main queue here. The JavaScript thread
+     * will wait until this module init finishes, before executing the js bundle.
+     */
+    NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
+    if ([modulesRequiringMainQueueSetup count] > 0) {
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+      _waitUntilModuleSetupComplete = ^{
+        if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
+          RCTLogError(
+              @"Timed out waiting for native modules to be setup on the main queue: %@",
+              modulesRequiringMainQueueSetup);
+        };
+      };
+
+      // TODO(T218039767): Integrate perf logging into main queue module init
+      RCTExecuteOnMainQueue(^{
+        for (NSString *moduleName in modulesRequiringMainQueueSetup) {
+          [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
+        }
+        dispatch_semaphore_signal(semaphore);
+      });
+    }
+  }
 
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
@@ -460,7 +512,24 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         // Set up hot module reloading in Dev only.
         [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
         [devSettings setupHMRClientWithBundleURL:sourceURL];
+
+        [strongSelf _logOldArchitectureWarnings];
       }];
+}
+
+- (void)_logOldArchitectureWarnings
+{
+  NSMutableArray<NSString *> *modulesInOldArchMode = getModulesLoadedWithOldArch();
+  if (modulesInOldArchMode.count > 0) {
+    NSMutableString *moduleList = [NSMutableString new];
+    for (NSString *moduleName in modulesInOldArchMode) {
+      [moduleList appendFormat:@"- %@\n", moduleName];
+    }
+    RCTLogWarn(
+        @"The following modules have been registered using a RCT_EXPORT_MODULE. That's a Legacy Architecture API. Please migrate to the new approach as described in the https://reactnative.dev/docs/next/turbo-native-modules-introduction#register-the-native-module-in-your-app website or open a PR in the library repository:\n%@",
+        moduleList);
+    [modulesInOldArchMode removeAllObjects];
+  }
 }
 
 - (void)_loadScriptFromSource:(RCTSource *)source
@@ -472,9 +541,16 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   auto script = std::make_unique<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
-  _reactInstance->loadScript(std::move(script), url, [](jsi::Runtime &_) {
+
+  auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
+    if (waitUntilModuleSetupComplete) {
+      waitUntilModuleSetupComplete();
+    }
+  };
+  auto afterLoad = [](jsi::Runtime &_) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
-  });
+  };
+  _reactInstance->loadScript(std::move(script), url, beforeLoad, afterLoad);
 }
 
 - (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime
@@ -529,6 +605,15 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
     id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
     [exceptionsManager reportException:jsErrorData];
+  }
+}
+
+- (void)_handleMemoryWarning
+{
+  if (_valid) {
+    // Memory Pressure Unloading Level 15 represents TRIM_MEMORY_RUNNING_CRITICAL.
+    static constexpr int unloadLevel = 15;
+    _reactInstance->handleMemoryPressureJs(unloadLevel);
   }
 }
 

@@ -10,21 +10,21 @@
 
 // flowlint unsafe-getters-setters:off
 
+import type {IntersectionObserverId} from './internals/IntersectionObserverManager';
 import type IntersectionObserverEntry from './IntersectionObserverEntry';
-import type {IntersectionObserverId} from './IntersectionObserverManager';
 
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
-import * as IntersectionObserverManager from './IntersectionObserverManager';
+import * as IntersectionObserverManager from './internals/IntersectionObserverManager';
 
 export type IntersectionObserverCallback = (
   entries: Array<IntersectionObserverEntry>,
   observer: IntersectionObserver,
 ) => mixed;
 
-type IntersectionObserverInit = {
+export interface IntersectionObserverInit {
   // root?: ReactNativeElement, // This option exists on the Web but it's not currently supported in React Native.
   // rootMargin?: string, // This option exists on the Web but it's not currently supported in React Native.
-  threshold?: number | $ReadOnlyArray<number>,
+  threshold?: number | $ReadOnlyArray<number>;
 
   /**
    * This is a React Native specific option (not spec compliant) that specifies
@@ -36,8 +36,8 @@ type IntersectionObserverInit = {
    * Note: If `rnRootThreshold` is set, and `threshold` is not set,
    * `threshold` will not default to [0] (as per spec)
    */
-  rnRootThreshold?: number | $ReadOnlyArray<number>,
-};
+  rnRootThreshold?: number | $ReadOnlyArray<number>;
+}
 
 /**
  * The [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)

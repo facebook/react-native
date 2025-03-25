@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.ColorInt;
@@ -282,7 +283,34 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.NATIVE_ID)
   public void setNativeId(@NonNull T view, @Nullable String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
+
+    /*
+     * If we change the nativeId we need to notify the relevant accessibility parent to update the
+     * focusing order.
+     */
+    if (view.getTag(R.id.accessibility_order_parent) != null) {
+      ViewGroup accessibilityParent = (ViewGroup) view.getTag(R.id.accessibility_order_parent);
+
+      ReactAxOrderHelper.unsetAccessibilityOrder(accessibilityParent);
+      accessibilityParent.setTag(R.id.accessibility_order_dirty, true);
+
+      accessibilityParent.notifySubtreeAccessibilityStateChanged(
+          accessibilityParent, accessibilityParent, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+    }
+
     ReactFindViewUtil.notifyViewRendered(view);
+  }
+
+  @ReactProp(name = ViewProps.ACCESSIBILITY_ORDER)
+  public void setAccessibilityOrder(@NonNull T view, @Nullable ReadableArray nativeIds) {
+
+    view.setTag(R.id.accessibility_order, nativeIds);
+    view.setTag(R.id.accessibility_order_dirty, true);
+
+    ReactAxOrderHelper.unsetAccessibilityOrder(view);
+    ((ViewGroup) view)
+        .notifySubtreeAccessibilityStateChanged(
+            view, view, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
@@ -414,7 +442,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         contentDescription.add(text.asString());
       }
     }
-    if (contentDescription.size() > 0) {
+    if (!contentDescription.isEmpty()) {
       view.setContentDescription(TextUtils.join(", ", contentDescription));
     }
   }
@@ -626,7 +654,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     throw new IllegalStateException("Invalid float property value: " + value);
   }
 
-  private void updateViewAccessibility(@NonNull T view) {
+  protected void updateViewAccessibility(@NonNull T view) {
     ReactAccessibilityDelegate.setDelegate(
         view, view.isFocusable(), view.getImportantForAccessibility());
   }
@@ -798,62 +826,62 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   /* Experimental W3C Pointer events start */
-  @ReactProp(name = "onPointerEnter")
+  @ReactProp(name = ViewProps.ON_POINTER_ENTER)
   public void setPointerEnter(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.ENTER, value);
   }
 
-  @ReactProp(name = "onPointerEnterCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_ENTER_CAPTURE)
   public void setPointerEnterCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.ENTER_CAPTURE, value);
   }
 
-  @ReactProp(name = "onPointerOver")
+  @ReactProp(name = ViewProps.ON_POINTER_OVER)
   public void setPointerOver(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.OVER, value);
   }
 
-  @ReactProp(name = "onPointerOverCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_OVER_CAPTURE)
   public void setPointerOverCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.OVER_CAPTURE, value);
   }
 
-  @ReactProp(name = "onPointerOut")
+  @ReactProp(name = ViewProps.ON_POINTER_OUT)
   public void setPointerOut(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.OUT, value);
   }
 
-  @ReactProp(name = "onPointerOutCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_OUT_CAPTURE)
   public void setPointerOutCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.OUT_CAPTURE, value);
   }
 
-  @ReactProp(name = "onPointerLeave")
+  @ReactProp(name = ViewProps.ON_POINTER_LEAVE)
   public void setPointerLeave(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.LEAVE, value);
   }
 
-  @ReactProp(name = "onPointerLeaveCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_LEAVE_CAPTURE)
   public void setPointerLeaveCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.LEAVE_CAPTURE, value);
   }
 
-  @ReactProp(name = "onPointerMove")
+  @ReactProp(name = ViewProps.ON_POINTER_MOVE)
   public void setPointerMove(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE, value);
   }
 
-  @ReactProp(name = "onPointerMoveCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_MOVE_CAPTURE)
   public void setPointerMoveCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE_CAPTURE, value);
   }
 
-  @ReactProp(name = "onClick")
+  @ReactProp(name = ViewProps.ON_CLICK)
   public void setClick(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK, value);
   }
 
-  @ReactProp(name = "onClickCapture")
+  @ReactProp(name = ViewProps.ON_CLICK_CAPTURE)
   public void setClickCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK_CAPTURE, value);
   }

@@ -7,7 +7,9 @@
 
 package com.facebook.react.devsupport;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import okio.Buffer;
@@ -15,6 +17,7 @@ import okio.BufferedSource;
 import okio.ByteString;
 
 /** Utility class to parse the body of a response of type multipart/mixed. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class MultipartStreamReader {
   // Standard line separator for HTTP.
   private static final String CRLF = "\r\n";
@@ -60,7 +63,7 @@ class MultipartStreamReader {
     ByteString marker = ByteString.encodeUtf8(CRLF + CRLF);
     long indexOfMarker = chunk.indexOf(marker);
     if (indexOfMarker == -1) {
-      listener.onChunkComplete(null, chunk, done);
+      listener.onChunkComplete(Collections.emptyMap(), chunk, done);
     } else {
       Buffer headers = new Buffer();
       Buffer body = new Buffer();
@@ -148,6 +151,7 @@ class MultipartStreamReader {
         Buffer chunk = new Buffer();
         content.skip(chunkStart);
         content.read(chunk, length);
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         emitProgress(currentHeaders, chunk.size() - currentHeadersLength, true, listener);
         emitChunk(chunk, isCloseDelimiter, listener);
         currentHeaders = null;

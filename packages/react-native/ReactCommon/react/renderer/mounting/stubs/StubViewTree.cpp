@@ -7,8 +7,10 @@
 
 #include "StubViewTree.h"
 
+#include <folly/json.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <sstream>
 
 #ifdef STUB_VIEW_TREE_VERBOSE
 #define STUB_VIEW_LOG(code) code
@@ -17,6 +19,12 @@
 #endif
 
 namespace facebook::react {
+
+namespace {
+std::string getComponentName(const ShadowView& shadowView) {
+  return std::string{"\""} + shadowView.componentName + "\"";
+}
+} // namespace
 
 StubViewTree::StubViewTree(const ShadowView& shadowView) {
   auto view = std::make_shared<StubView>();
@@ -60,6 +68,9 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
         }
         react_native_assert(!hasTag(tag));
         registry_[tag] = stubView;
+
+        recordMutation(mutation);
+
         break;
       }
 
@@ -92,6 +103,9 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
         react_native_assert(
             (ShadowView)(*stubView) == mutation.oldChildShadowView);
         registry_.erase(tag);
+
+        recordMutation(mutation);
+
         break;
       }
 
@@ -134,6 +148,9 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
           auto childStubView = registry_[childTag];
           childStubView->update(mutation.newChildShadowView);
         }
+
+        recordMutation(mutation);
+
         break;
       }
 
@@ -202,6 +219,9 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
           parentStubView->children.erase(
               parentStubView->children.begin() + mutation.index);
         }
+
+        recordMutation(mutation);
+
         break;
       }
 
@@ -250,6 +270,8 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
             std::hash<ShadowView>{}((ShadowView)*oldStubView) ==
             std::hash<ShadowView>{}(mutation.newChildShadowView));
 
+        recordMutation(mutation);
+
         break;
       }
     }
@@ -259,6 +281,30 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
   // For iOS especially: flush logs because some might be lost on iOS if an
   // assert is hit right after this.
   google::FlushLogFiles(google::GLOG_INFO);
+}
+
+void StubViewTree::dispatchCommand(
+    const ShadowView& shadowView,
+    const std::string& commandName,
+    const folly::dynamic& args) {
+  auto stream = std::ostringstream();
+
+  stream << "Command {type: " << getComponentName(shadowView)
+         << ", nativeID: " << getNativeId(shadowView) << ", name: \""
+         << commandName;
+
+  if (!args.empty()) {
+    stream << ", args: " << folly::toJson(args);
+  }
+
+  stream << "\"}";
+  mountingLogs_.push_back(std::string(stream.str()));
+}
+
+std::vector<std::string> StubViewTree::takeMountingLogs() {
+  auto logs = mountingLogs_;
+  mountingLogs_.clear();
+  return logs;
 }
 
 std::ostream& StubViewTree::dumpTags(std::ostream& stream) const {
@@ -307,6 +353,87 @@ bool operator==(const StubViewTree& lhs, const StubViewTree& rhs) {
 
 bool operator!=(const StubViewTree& lhs, const StubViewTree& rhs) {
   return !(lhs == rhs);
+}
+
+void StubViewTree::recordMutation(const ShadowViewMutation& mutation) {
+  switch (mutation.type) {
+    case ShadowViewMutation::Create: {
+      auto stream = std::ostringstream();
+
+      stream << "Create {type: "
+             << getComponentName(mutation.newChildShadowView)
+             << ", nativeID: " << getNativeId(mutation.newChildShadowView)
+             << "}";
+
+      mountingLogs_.push_back(std::string(stream.str()));
+      break;
+    }
+    case ShadowViewMutation::Delete: {
+      auto stream = std::ostringstream();
+
+      stream << "Delete {type: "
+             << getComponentName(mutation.oldChildShadowView)
+             << ", nativeID: " << getNativeId(mutation.oldChildShadowView)
+             << "}";
+
+      mountingLogs_.push_back(std::string(stream.str()));
+      break;
+    }
+    case ShadowViewMutation::Insert: {
+      auto stream = std::ostringstream();
+
+      stream << "Insert {type: "
+             << getComponentName(mutation.newChildShadowView)
+             << ", parentNativeID: " << getNativeId(mutation.parentTag)
+             << ", index: " << mutation.index
+             << ", nativeID: " << getNativeId(mutation.newChildShadowView)
+             << "}";
+
+      mountingLogs_.push_back(std::string(stream.str()));
+      break;
+    }
+    case ShadowViewMutation::Remove: {
+      auto stream = std::ostringstream();
+
+      stream << "Remove {type: "
+             << getComponentName(mutation.oldChildShadowView)
+             << ", parentNativeID: " << getNativeId(mutation.parentTag)
+             << ", index: " << mutation.index
+             << ", nativeID: " << getNativeId(mutation.oldChildShadowView)
+             << "}";
+
+      mountingLogs_.push_back(std::string(stream.str()));
+      break;
+    }
+    case ShadowViewMutation::Update: {
+      auto stream = std::ostringstream();
+
+      stream << "Update {type: "
+             << getComponentName(mutation.newChildShadowView)
+             << ", nativeID: " << getNativeId(mutation.newChildShadowView)
+             << "}";
+
+      mountingLogs_.push_back(std::string(stream.str()));
+      break;
+    }
+  }
+}
+
+std::string StubViewTree::getNativeId(Tag tag) {
+  auto& view = getStubView(tag);
+  return getNativeId(view);
+}
+
+std::string StubViewTree::getNativeId(const ShadowView& shadowView) {
+  if (shadowView.traits.check(ShadowNodeTraits::Trait::RootNodeKind)) {
+    return "(root)";
+  }
+
+  if (shadowView.props->nativeId.empty()) {
+    return "(N/A)";
+  }
+
+  return "\"" + shadowView.props->nativeId + "\"";
 }
 
 } // namespace facebook::react

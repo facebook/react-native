@@ -108,12 +108,13 @@ public object ReactScrollViewHelper {
     // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
     // We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
     // inadvertently filter out any scroll events.
-    if (scrollView.scrollEventThrottle >= Math.max(17, now - scrollView.lastScrollDispatchTime)) {
+    if (scrollEventType == ScrollEventType.SCROLL &&
+        scrollView.scrollEventThrottle >= Math.max(17, now - scrollView.lastScrollDispatchTime)) {
       // Scroll events are throttled.
       return
     }
     val contentView = scrollView.getChildAt(0) ?: return
-    for (scrollListener in scrollListeners) {
+    for (scrollListener in scrollListeners.toList()) {
       scrollListener.get()?.onScroll(scrollView, scrollEventType, xVelocity, yVelocity)
     }
     val reactContext = scrollView.context as ReactContext
@@ -138,7 +139,9 @@ public object ReactScrollViewHelper {
               contentView.height,
               scrollView.width,
               scrollView.height))
-      scrollView.lastScrollDispatchTime = now
+      if (scrollEventType == ScrollEventType.SCROLL) {
+        scrollView.lastScrollDispatchTime = now
+      }
     }
   }
 
@@ -309,7 +312,12 @@ public object ReactScrollViewHelper {
       FLog.i(
           TAG, "updateFabricScrollState[%d] scrollX %d scrollY %d", scrollView.id, scrollX, scrollY)
     }
-    if (ViewUtil.getUIManagerType(scrollView.id) == UIManagerType.DEFAULT) {
+    if (ViewUtil.getUIManagerType(scrollView.id) == UIManagerType.LEGACY) {
+      return
+    }
+    // NOTE: if the state wrapper is null, we shouldn't even update
+    // the scroll state because there is a chance of going out of sync!
+    if (scrollView.stateWrapper == null) {
       return
     }
     val scrollState = scrollView.reactScrollViewScrollState
@@ -473,8 +481,7 @@ public object ReactScrollViewHelper {
     public val stateWrapper: StateWrapper?
   }
 
-  private class OverScrollerDurationGetter internal constructor(context: Context?) :
-      OverScroller(context) {
+  private class OverScrollerDurationGetter(context: Context?) : OverScroller(context) {
     // This is the default in AOSP, hardcoded in OverScroller.java.
     private var currentScrollAnimationDuration = 250
     val scrollAnimationDuration: Int

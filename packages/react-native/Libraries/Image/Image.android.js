@@ -133,11 +133,12 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       width: undefined,
       height: undefined,
     };
+    const defaultSource = resolveAssetSource(props.defaultSource);
     const loadingIndicatorSource = resolveAssetSource(
       props.loadingIndicatorSource,
     );
 
-    if (props.children) {
+    if (props.children != null) {
       throw new Error(
         'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
       );
@@ -178,6 +179,7 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
       headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
+      defaultSource: defaultSource ? defaultSource.uri : null,
       loadingIndicatorSrc: loadingIndicatorSource
         ? loadingIndicatorSource.uri
         : null,
@@ -319,4 +321,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Image;
+export default Image;

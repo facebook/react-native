@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTBridge;
 @class RCTBridgeProxy;
 
-typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
+typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic &&event);
 
 @interface RCTLegacyViewManagerInteropCoordinator : NSObject
 

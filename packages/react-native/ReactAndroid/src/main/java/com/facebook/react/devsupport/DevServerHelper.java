@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -59,9 +60,8 @@ import okio.Sink;
  *   <li>Genymotion emulator with default settings: 10.0.3.2
  * </ul>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DevServerHelper {
-  public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
-
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
   private static final String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
@@ -207,10 +207,13 @@ public class DevServerHelper {
       protected Void doInBackground(Void... params) {
         Map<String, String> metadata =
             AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
-
+        String deviceName = metadata.get("deviceName");
+        if (deviceName == null) {
+          FLog.w(ReactConstants.TAG, "Could not get device name from Inspector Host Metadata.");
+          return null;
+        }
         mInspectorPackagerConnection =
-            new CxxInspectorPackagerConnection(
-                getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
+            new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), deviceName, mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }
@@ -324,7 +327,7 @@ public class DevServerHelper {
       DevBundleDownloadListener callback,
       File outputFile,
       String bundleURL,
-      BundleDownloader.BundleInfo bundleInfo) {
+      @Nullable BundleDownloader.BundleInfo bundleInfo) {
     mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
   }
 
@@ -332,7 +335,7 @@ public class DevServerHelper {
       DevBundleDownloadListener callback,
       File outputFile,
       String bundleURL,
-      BundleDownloader.BundleInfo bundleInfo,
+      @Nullable BundleDownloader.BundleInfo bundleInfo,
       Request.Builder requestBuilder) {
     mBundleDownloader.downloadBundleFromURL(
         callback, outputFile, bundleURL, bundleInfo, requestBuilder);
@@ -406,6 +409,11 @@ public class DevServerHelper {
   }
 
   private static String createResourceURL(String host, String resourcePath) {
+    // This is what we get for not using a proper URI library.
+    if (resourcePath.startsWith("/")) {
+      FLog.w(ReactConstants.TAG, "Resource path should not begin with `/`, removing it.");
+      resourcePath = resourcePath.substring(1);
+    }
     return String.format(Locale.US, "http://%s/%s", host, resourcePath);
   }
 
@@ -428,45 +436,12 @@ public class DevServerHelper {
     }
   }
 
-  private String createLaunchJSDevtoolsCommandUrl() {
-    return String.format(
-        Locale.US,
-        "http://%s/launch-js-devtools",
-        mPackagerConnectionSettings.getDebugServerHost());
-  }
-
-  public void launchJSDevtools() {
-    Request request = new Request.Builder().url(createLaunchJSDevtoolsCommandUrl()).build();
-    mClient
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // ignore HTTP call response, this is just to open a debugger page and there is no
-                // reason to report failures from here
-              }
-
-              @Override
-              public void onResponse(@NonNull Call call, @NonNull Response response) {
-                // ignore HTTP call response - see above
-              }
-            });
-  }
-
   public String getSourceMapUrl(String mainModuleName) {
     return createBundleURL(mainModuleName, BundleType.MAP);
   }
 
   public String getSourceUrl(String mainModuleName) {
     return createBundleURL(mainModuleName, BundleType.BUNDLE);
-  }
-
-  public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
-    // The host we use when connecting to the JS bundle server from the emulator is not the
-    // same as the one needed to connect to the same server from the JavaScript proxy running on the
-    // host itself.
-    return createBundleURL(mainModuleName, BundleType.BUNDLE, getHostForJSProxy());
   }
 
   /**
@@ -482,7 +457,7 @@ public class DevServerHelper {
     final Request request = new Request.Builder().url(resourceURL).build();
 
     try (Response response = mClient.newCall(request).execute()) {
-      if (!response.isSuccessful()) {
+      if (!response.isSuccessful() || response.body() == null) {
         return null;
       }
 

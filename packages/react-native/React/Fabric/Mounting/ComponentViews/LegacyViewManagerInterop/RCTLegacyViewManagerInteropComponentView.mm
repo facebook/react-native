@@ -97,8 +97,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 + (NSMutableDictionary<NSString *, Class> *)_supportedLegacyViewComponents
 {
-  static NSMutableDictionary<NSString *, Class> *suppoerted = [NSMutableDictionary new];
-  return suppoerted;
+  static NSMutableDictionary<NSString *, Class> *supported = [NSMutableDictionary new];
+  return supported;
 }
 
 + (BOOL)isSupported:(NSString *)componentName
@@ -212,12 +212,11 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   if (!_adapter) {
     _adapter = [[RCTLegacyViewManagerInteropCoordinatorAdapter alloc] initWithCoordinator:[self _coordinator]
                                                                                  reactTag:self.tag];
-    _adapter.eventInterceptor = ^(std::string eventName, folly::dynamic event) {
+    _adapter.eventInterceptor = ^(std::string eventName, folly::dynamic &&event) {
       if (weakSelf) {
         __typeof(self) strongSelf = weakSelf;
-        const auto &eventEmitter =
-            static_cast<const LegacyViewManagerInteropViewEventEmitter &>(*strongSelf->_eventEmitter);
-        eventEmitter.dispatchEvent(eventName, event);
+        const auto &eventEmitter = static_cast<const ViewEventEmitter &>(*strongSelf->_eventEmitter);
+        eventEmitter.dispatchEvent(eventName, std::move(event));
       }
     };
     // Set props immediately. This is required to set the initial state of the view.

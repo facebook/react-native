@@ -13,7 +13,7 @@ import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.AppliedPlugin
-import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 internal object JdkConfiguratorUtils {
   /**
@@ -42,10 +42,10 @@ internal object JdkConfiguratorUtils {
       project.pluginManager.withPlugin("com.android.application", action)
       project.pluginManager.withPlugin("com.android.library", action)
       project.pluginManager.withPlugin("org.jetbrains.kotlin.android") {
-        project.extensions.getByType(KotlinTopLevelExtension::class.java).jvmToolchain(17)
+        project.kotlinExtension.jvmToolchain(17)
       }
       project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-        project.extensions.getByType(KotlinTopLevelExtension::class.java).jvmToolchain(17)
+        project.kotlinExtension.jvmToolchain(17)
       }
     }
   }

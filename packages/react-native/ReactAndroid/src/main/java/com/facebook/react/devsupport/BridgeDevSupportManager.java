@@ -9,30 +9,25 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
-import com.facebook.react.common.futures.SimpleSettableFuture;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
-import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -55,7 +50,14 @@ import java.util.concurrent.TimeoutException;
  * is responsible for enabling/disabling dev support in case when app is backgrounded or when all
  * the views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  */
+@LegacyArchitecture
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "BridgeDevSupportManager", LegacyArchitectureLogLevel.WARNING);
+  }
+
   private boolean mIsSamplingProfilerEnabled = false;
 
   public BridgeDevSupportManager(
@@ -111,54 +113,6 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         });
   }
 
-  private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
-      final SimpleSettableFuture<Boolean> future) {
-    return new WebsocketJavaScriptExecutor.JSExecutorConnectCallback() {
-      @Override
-      public void onSuccess() {
-        future.set(true);
-        hideDevLoadingView();
-      }
-
-      @Override
-      public void onFailure(final Throwable cause) {
-        hideDevLoadingView();
-        FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
-        future.setException(
-            new IOException(
-                getApplicationContext().getString(com.facebook.react.R.string.catalyst_debug_error),
-                cause));
-      }
-    };
-  }
-
-  private void reloadJSInProxyMode() {
-    // When using js proxy, there is no need to fetch JS bundle as proxy executor will do that
-    // anyway
-    getDevServerHelper().launchJSDevtools();
-
-    JavaJSExecutor.Factory factory =
-        new JavaJSExecutor.Factory() {
-          @Override
-          public JavaJSExecutor create() throws Exception {
-            WebsocketJavaScriptExecutor executor = new WebsocketJavaScriptExecutor();
-            SimpleSettableFuture<Boolean> future = new SimpleSettableFuture<>();
-            executor.connect(
-                getDevServerHelper().getWebsocketProxyURL(), getExecutorConnectCallback(future));
-            // TODO(t9349129) Don't use timeout
-            try {
-              future.get(90, TimeUnit.SECONDS);
-              return executor;
-            } catch (ExecutionException e) {
-              throw (Exception) e.getCause();
-            } catch (InterruptedException | TimeoutException e) {
-              throw new RuntimeException(e);
-            }
-          }
-        };
-    getReactInstanceDevHelper().onReloadWithJSDebugger(factory);
-  }
-
   @Override
   public void handleReloadJS() {
 
@@ -171,22 +125,14 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
     // dismiss redbox if exists
     hideRedboxDialog();
 
-    if (getDevSettings().isRemoteJSDebugEnabled()) {
-      PrinterHolder.getPrinter()
-          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Proxy");
-      showDevLoadingViewForRemoteJSEnabled();
-      reloadJSInProxyMode();
-    } else {
-      PrinterHolder.getPrinter()
-          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
-      String bundleURL =
-          getDevServerHelper()
-              .getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-      reloadJSFromServer(
-          bundleURL,
-          () ->
-              UiThreadUtil.runOnUiThread(
-                  () -> getReactInstanceDevHelper().onJSBundleLoadedFromServer()));
-    }
+    PrinterHolder.getPrinter()
+        .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
+    String bundleURL =
+        getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
+    reloadJSFromServer(
+        bundleURL,
+        () ->
+            UiThreadUtil.runOnUiThread(
+                () -> getReactInstanceDevHelper().onJSBundleLoadedFromServer()));
   }
 }

@@ -1,0 +1,66 @@
+{
+  "name": "test-library",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "codegenConfig": {
+    "name": "TestLibraryConfig",
+    "type": "all",
+    "android": {
+      "javaPackageName": "com.testLibrary"
+    },
+    "ios": {
+      "modulesConformingToProtocol": {
+        "RCTImageURLLoader": [
+          "RCTTestLibraryDeprecatedImageURLLoader"
+        ],
+        "RCTURLRequestHandler": [
+          "RCTTestLibraryDeprecatedURLRequestHandler"
+        ],
+        "RCTImageDataDecoder": [
+          "RCTTestLibraryDeprecatedImageDataDecoder"
+        ]
+      },
+      "modulesProvider": {
+        "TestLibraryDeprecatedImageURLLoader": "RCTTestLibraryDeprecatedImageURLLoader",
+        "TestLibraryDeprecatedURLRequestHandler": "RCTTestLibraryDeprecatedURLRequestHandler",
+        "TestLibraryDeprecatedImageDataDecoder": "RCTTestLibraryDeprecatedImageDataDecoder"
+      },
+      "componentProvider": {
+        "TestLibraryDeprecatedComponent": "RCTTestLibraryDeprecatedComponentClass"
+      },
+      "unstableModulesRequiringMainQueueSetup": [
+        "RCTTestLibraryDeprecatedImageURLLoader",
+        "RCTTestLibraryDeprecatedURLRequestHandler",
+        "RCTTestLibraryDeprecatedImageDataDecoder"
+      ],
+      "modules": {
+        "TestLibraryImageURLLoader": {
+          "conformsToProtocols": ["RCTImageURLLoader"],
+          "className": "RCTTestLibraryImageURLLoader",
+          "unstableRequiresMainQueueSetup": true
+        },
+        "TestLibraryURLRequestHandler": {
+          "conformsToProtocols": ["RCTURLRequestHandler"],
+          "className": "RCTTestLibraryURLRequestHandler",
+          "unstableRequiresMainQueueSetup": true
+        },
+        "TestLibraryImageDataDecoder": {
+          "conformsToProtocols": ["RCTImageDataDecoder"],
+          "className": "RCTTestLibraryImageDataDecoder",
+          "unstableRequiresMainQueueSetup": true
+        }
+      },
+      "components": {
+        "TestLibraryComponent": {
+          "className": "RCTTestLibraryComponent"
+        }
+      }
+    }
+  }
+}

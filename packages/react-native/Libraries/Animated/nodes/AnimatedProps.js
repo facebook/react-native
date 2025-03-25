@@ -75,7 +75,7 @@ function createAnimatedProps(
 }
 
 export default class AnimatedProps extends AnimatedNode {
-  #animatedView: any = null;
+  #animatedView: any;
   #callback: () => void;
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
@@ -89,6 +89,7 @@ export default class AnimatedProps extends AnimatedNode {
   ) {
     super(config);
     const [nodeKeys, nodes, props] = createAnimatedProps(inputProps, allowlist);
+    this.#animatedView = null;
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
     this.#props = props;
@@ -138,6 +139,22 @@ export default class AnimatedProps extends AnimatedNode {
     }
 
     return props;
+  }
+
+  __getNativeAnimatedEventTuples(): $ReadOnlyArray<[string, AnimatedEvent]> {
+    const tuples = [];
+
+    const keys = Object.keys(this.#props);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
+      const value = this.#props[key];
+
+      if (value instanceof AnimatedEvent && value.__isNative) {
+        tuples.push([key, value]);
+      }
+    }
+
+    return tuples;
   }
 
   __getAnimatedValue(): Object {

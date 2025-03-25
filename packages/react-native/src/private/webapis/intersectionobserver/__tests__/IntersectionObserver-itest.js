@@ -7,24 +7,20 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
-/* eslint-disable lint/sort-imports */
-import type IntersectionObserverType from '../IntersectionObserver';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import DOMRectReadOnly from '../../dom/geometry/DOMRectReadOnly';
+import type IntersectionObserverType from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
+
 import * as Fantom from '@react-native/fantom';
-import setUpIntersectionObserver from '../../../setup/setUpIntersectionObserver';
-import ReactNativeElement from '../../dom/nodes/ReactNativeElement';
-import IntersectionObserverEntry from '../IntersectionObserverEntry';
 import * as React from 'react';
-
-import '../../../../../Libraries/Core/InitializeCore.js';
-
-import ScrollView from '../../../../../Libraries/Components/ScrollView/ScrollView';
-import View from '../../../../../Libraries/Components/View/View';
-import ensureInstance from '../../../utilities/ensureInstance';
+import {ScrollView, View} from 'react-native';
+import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+import DOMRectReadOnly from 'react-native/src/private/webapis/geometry/DOMRectReadOnly';
+import IntersectionObserverEntry from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserverEntry';
 
 declare const IntersectionObserver: Class<IntersectionObserverType>;
 
@@ -1507,16 +1503,18 @@ describe('IntersectionObserver', () => {
 
       const node = ensureReactNativeElement(maybeNode);
 
-      observer1 = new IntersectionObserver(() => {});
-      observer2 = new IntersectionObserver(() => {});
+      Fantom.runTask(() => {
+        observer1 = new IntersectionObserver(() => {});
+        observer2 = new IntersectionObserver(() => {});
 
-      observer1.observe(node);
-      observer2.observe(node);
+        observer1.observe(node);
+        observer2.observe(node);
 
-      observer1.unobserve(node);
+        observer1.unobserve(node);
 
-      // The second call shouldn't log errors (that would make the test fail).
-      observer2.unobserve(node);
+        // The second call shouldn't log errors (that would make the test fail).
+        observer2.unobserve(node);
+      });
     });
   });
 

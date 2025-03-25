@@ -10,18 +10,18 @@
 
 // TODO: move this file to shims/ReactNative (requires React update and sync)
 
-import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../src/private/types/HostComponent';
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
-type Options = $ReadOnly<{|
+type Options = $ReadOnly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
   excludedPlatforms?: $ReadOnlyArray<'iOS' | 'android'>,
-|}>;
+}>;
 
 export type NativeComponentType<T> = HostComponent<T>;
 

@@ -10,6 +10,8 @@
 #include <algorithm>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/BoxShadowPropsConversions.h>
+#include <react/renderer/components/view/FilterPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/components/view/propsConversions.h>
@@ -274,7 +276,7 @@ BaseViewProps::BaseViewProps(
               : convertRawProp(
                     context,
                     rawProps,
-                    "shouldRasterize",
+                    "shouldRasterizeIOS",
                     sourceProps.shouldRasterize,
                     {})),
       zIndex(

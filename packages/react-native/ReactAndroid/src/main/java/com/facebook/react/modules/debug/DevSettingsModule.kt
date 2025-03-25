@@ -40,10 +40,6 @@ public class DevSettingsModule(
     devSupportManager.setHotModuleReplacementEnabled(isHotLoadingEnabled)
   }
 
-  override fun setIsDebuggingRemotely(isDebugginRemotelyEnabled: Boolean) {
-    devSupportManager.setRemoteJSDebugEnabled(isDebugginRemotelyEnabled)
-  }
-
   override fun setProfilingEnabled(isProfilingEnabled: Boolean) {
     devSupportManager.setFpsDebugEnabled(isProfilingEnabled)
   }

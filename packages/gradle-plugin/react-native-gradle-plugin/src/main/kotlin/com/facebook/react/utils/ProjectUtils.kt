@@ -17,7 +17,8 @@ import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_NEW_ARCH_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_REACT_NATIVE_ARCHITECTURES
-import java.io.File
+import com.facebook.react.utils.PropertyUtils.SCOPED_USE_THIRD_PARTY_JSC
+import com.facebook.react.utils.PropertyUtils.USE_THIRD_PARTY_JSC
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 
@@ -29,8 +30,7 @@ internal object ProjectUtils {
     return (project.hasProperty(NEW_ARCH_ENABLED) &&
         project.property(NEW_ARCH_ENABLED).toString().toBoolean()) ||
         (project.hasProperty(SCOPED_NEW_ARCH_ENABLED) &&
-            project.property(SCOPED_NEW_ARCH_ENABLED).toString().toBoolean()) ||
-        shouldEnableNewArchForReactNativeVersion(project.reactNativeDir(extension))
+            project.property(SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())
   }
 
   internal val Project.isHermesEnabled: Boolean
@@ -59,6 +59,13 @@ internal object ProjectUtils {
           HERMES_FALLBACK
         }
 
+  internal val Project.useThirdPartyJSC: Boolean
+    get() =
+        (project.hasProperty(USE_THIRD_PARTY_JSC) &&
+            project.property(USE_THIRD_PARTY_JSC).toString().toBoolean()) ||
+            (project.hasProperty(SCOPED_USE_THIRD_PARTY_JSC) &&
+                project.property(SCOPED_USE_THIRD_PARTY_JSC).toString().toBoolean())
+
   internal fun Project.needsCodegenFromPackageJson(rootProperty: DirectoryProperty): Boolean {
     val parsedPackageJson = readPackageJsonFile(this, rootProperty)
     return needsCodegenFromPackageJson(parsedPackageJson)
@@ -82,50 +89,6 @@ internal object ProjectUtils {
 
   internal fun Project.reactNativeDir(extension: ReactExtension): String =
       extension.reactNativeDir.get().asFile.absolutePath
-
-  internal fun shouldEnableNewArchForReactNativeVersion(reactNativeDir: String): Boolean {
-    val packageJsonFile = File(reactNativeDir, "package.json")
-    if (!packageJsonFile.exists()) {
-      return false
-    }
-
-    val rnPackageJson = JsonUtils.fromPackageJson(packageJsonFile)
-    if (rnPackageJson == null) {
-      return false
-    }
-
-    // This regex describe the version syntax for React Native in the shape of
-    // major.minor.patch[-<prerelease>[[-.]k]]
-    // Where
-    // major is a number
-    // minor is a number
-    // patch is a number
-    // <prerelease>[-.]k is optional, but if present is preceeded by a `-`
-    // the <prerelease> tag is a string.
-    // it can be followed by `-` or `.` and k is a number.
-    val regex = """^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$""".toRegex()
-
-    val matchResult = regex.find(rnPackageJson.version)
-
-    if (matchResult == null) {
-      return false
-    }
-
-    val prerelease = matchResult.groupValues[4].toString()
-    return prerelease.contains("prealpha")
-  }
-
-  internal fun Project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension: ReactExtension): Boolean {
-
-    val propertySetToFalse =
-        (this.hasPropertySetToFalse(NEW_ARCH_ENABLED)) ||
-            (this.hasPropertySetToFalse(SCOPED_NEW_ARCH_ENABLED))
-
-    val shouldEnableNewArch =
-        shouldEnableNewArchForReactNativeVersion(this.reactNativeDir(extension))
-
-    return shouldEnableNewArch && propertySetToFalse
-  }
 
   internal fun Project.hasPropertySetToFalse(property: String): Boolean =
       this.hasProperty(property) && this.property(property).toString().toBoolean() == false

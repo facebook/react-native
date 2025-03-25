@@ -11,7 +11,7 @@
 /* eslint-disable no-alert */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {Props as ModalProps} from 'react-native/Libraries/Modal/Modal';
+import type {ModalProps} from 'react-native/Libraries/Modal/Modal';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
@@ -80,7 +80,7 @@ function ModalPresentation() {
   const [currentOrientation, setCurrentOrientation] = useState('unknown');
 
   type OrientationChangeEvent = Parameters<
-    $NonMaybeType<React.PropsOf<Modal>['onOrientationChange']>,
+    $NonMaybeType<ModalProps['onOrientationChange']>,
   >[0];
   const onOrientationChange = (event: OrientationChangeEvent) =>
     setCurrentOrientation(event.nativeEvent.orientation);

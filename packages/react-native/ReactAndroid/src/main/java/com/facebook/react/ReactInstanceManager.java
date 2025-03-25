@@ -56,12 +56,10 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
-import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
@@ -80,6 +78,9 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
@@ -145,7 +146,13 @@ import java.util.Set;
  */
 @ThreadSafe
 @StableReactNativeAPI
+@LegacyArchitecture
 public class ReactInstanceManager {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "ReactInstanceManager", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
 
@@ -326,11 +333,6 @@ public class ReactInstanceManager {
   private ReactInstanceDevHelper createDevHelperInterface() {
     return new ReactInstanceDevHelper() {
       @Override
-      public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-        ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
-      }
-
-      @Override
       public void onJSBundleLoadedFromServer() {
         ReactInstanceManager.this.onJSBundleLoadedFromServer();
       }
@@ -502,14 +504,11 @@ public class ReactInstanceManager {
                         if (packagerIsRunning) {
                           mDevSupportManager.handleReloadJS();
                         } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
-                            && !devSettings.isRemoteJSDebugEnabled()
                             && !mUseFallbackBundle) {
                           // If there is a up-to-date bundle downloaded from server,
                           // with remote JS debugging disabled, always use that.
                           onJSBundleLoadedFromServer();
                         } else {
-                          // If dev server is down, disable the remote JS debugging.
-                          devSettings.setRemoteJSDebugEnabled(false);
                           recreateReactContextInBackgroundFromBundleLoader();
                         }
                       });
@@ -1153,16 +1152,6 @@ public class ReactInstanceManager {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.invalidate()");
     mInstanceManagerInvalidated = true;
     destroy();
-  }
-
-  @ThreadConfined(UI)
-  private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-    FLog.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
-    recreateReactContextInBackground(
-        new ProxyJavaScriptExecutor.Factory(jsExecutorFactory),
-        JSBundleLoader.createRemoteDebuggerBundleLoader(
-            mDevSupportManager.getJSBundleURLForRemoteDebugging(),
-            mDevSupportManager.getSourceUrl()));
   }
 
   @ThreadConfined(UI)

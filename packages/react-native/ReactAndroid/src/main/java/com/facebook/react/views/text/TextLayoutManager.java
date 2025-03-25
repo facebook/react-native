@@ -32,14 +32,12 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
-import com.facebook.react.views.text.internal.span.LegacyLineHeightSpan;
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
@@ -319,15 +317,9 @@ public class TextLayoutManager {
                       textAttributes.mTextShadowColor)));
         }
         if (!Float.isNaN(textAttributes.getEffectiveLineHeight())) {
-          if (ReactNativeFeatureFlags.enableAndroidLineHeightCentering()) {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-          } else {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new LegacyLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-          }
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
         }
 
         ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
@@ -754,12 +746,16 @@ public class TextLayoutManager {
         int start = text.getSpanStart(placeholder);
         int line = layout.getLineForOffset(start);
         boolean isLineTruncated = layout.getEllipsisCount(line) > 0;
-        // This truncation check works well on recent versions of Android (tested on 5.1.1 and
-        // 6.0.1) but not on Android 4.4.4. The reason is that getEllipsisCount is buggy on
-        // Android 4.4.4. Specifically, it incorrectly returns 0 if an inline view is the
-        // first thing to be truncated.
-        if (!(isLineTruncated && start >= layout.getLineStart(line) + layout.getEllipsisStart(line))
-            || start >= layout.getLineEnd(line)) {
+        boolean isAttachmentTruncated =
+            line > calculatedLineCount
+                || (isLineTruncated
+                    && start >= layout.getLineStart(line) + layout.getEllipsisStart(line));
+        int attachmentPosition = attachmentIndex * 2;
+        if (isAttachmentTruncated) {
+          attachmentsPositions[attachmentPosition] = Float.NaN;
+          attachmentsPositions[attachmentPosition + 1] = Float.NaN;
+          attachmentIndex++;
+        } else {
           float placeholderWidth = placeholder.getWidth();
           float placeholderHeight = placeholder.getHeight();
           // Calculate if the direction of the placeholder character is Right-To-Left.
@@ -812,7 +808,6 @@ public class TextLayoutManager {
           }
           // Vertically align the inline view to the baseline of the line of text.
           float placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight;
-          int attachmentPosition = attachmentIndex * 2;
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =

@@ -68,6 +68,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
@@ -172,13 +173,15 @@ public class FabricUIManager
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
   private boolean mMountNotificationScheduled = false;
-  private final List<Integer> mMountedSurfaceIds = new ArrayList<>();
+  private List<Integer> mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
 
   @ThreadConfined(UI)
   @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
+  @ThreadConfined(UI)
+  @NonNull
   private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
 
   /**
@@ -608,6 +611,7 @@ public class FabricUIManager
    *     padding used by RN Android TextInput.
    * @return if theme data is available in the output parameters.
    */
+  @SuppressWarnings("unused")
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
     SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
     Context context = surfaceMountingManager != null ? surfaceMountingManager.getContext() : null;
@@ -867,7 +871,7 @@ public class FabricUIManager
         mReactApplicationContext, componentName, surfaceId, reactTag, params);
   }
 
-  public void setBinding(FabricUIManagerBinding binding) {
+  void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
 
@@ -966,11 +970,11 @@ public class FabricUIManager
   public void receiveEvent(
       int surfaceId,
       int reactTag,
-      String eventName,
+      @NonNull String eventName,
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory,
-      boolean experimental_isSynchronous) {
+      boolean experimentalIsSynchronous) {
 
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
@@ -984,19 +988,20 @@ public class FabricUIManager
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
     if (eventEmitter == null) {
       if (mMountingManager.getViewExists(reactTag)) {
-        // The view is preallocated and created. However, it hasn't been mounted yet. We will have
+        // The view is pre-allocated and created. However, it hasn't been mounted yet. We will have
         // access to the event emitter later when the view is mounted. For now just save the event
         // in the view state and trigger it later.
         mMountingManager.enqueuePendingEvent(
             surfaceId, reactTag, eventName, canCoalesceEvent, params, eventCategory);
       } else {
         // This can happen if the view has disappeared from the screen (because of async events)
-        FLog.d(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
+        FLog.i(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
       }
       return;
     }
 
-    if (experimental_isSynchronous) {
+    if (experimentalIsSynchronous) {
+      UiThreadUtil.assertOnUiThread();
       // add() returns true only if there are no equivalent events already in the set
       boolean firstEventForFrame =
           mSynchronousEvents.add(new SynchronousEvent(surfaceId, reactTag, eventName));
@@ -1249,12 +1254,15 @@ public class FabricUIManager
 
       // Collect surface IDs for all the mount items
       for (MountItem mountItem : mountItems) {
-        if (mountItem != null && !mMountedSurfaceIds.contains(mountItem.getSurfaceId())) {
-          mMountedSurfaceIds.add(mountItem.getSurfaceId());
+        if (mountItem != null
+            && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
+          mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
         }
       }
 
-      if (!mMountNotificationScheduled && !mMountedSurfaceIds.isEmpty()) {
+      if (!mMountNotificationScheduled && !mSurfaceIdsWithPendingMountNotification.isEmpty()) {
+        mMountNotificationScheduled = true;
+
         // Notify mount when the effects are visible and prevent mount hooks to
         // delay paint.
         UiThreadUtil.getUiThreadHandler()
@@ -1264,17 +1272,19 @@ public class FabricUIManager
                   public void run() {
                     mMountNotificationScheduled = false;
 
+                    // Create a copy in case mount hooks trigger more mutations
+                    final List<Integer> surfaceIdsToReportMount =
+                        mSurfaceIdsWithPendingMountNotification;
+                    mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
+
                     final @Nullable FabricUIManagerBinding binding = mBinding;
                     if (binding == null || mDestroyed) {
-                      mMountedSurfaceIds.clear();
                       return;
                     }
 
-                    for (int surfaceId : mMountedSurfaceIds) {
+                    for (int surfaceId : surfaceIdsToReportMount) {
                       binding.reportMount(surfaceId);
                     }
-
-                    mMountedSurfaceIds.clear();
                   }
                 });
       }
@@ -1372,7 +1382,7 @@ public class FabricUIManager
         mBinding.driveCxxAnimations();
       }
 
-      if (ReactNativeFeatureFlags.useOptimisedViewPreallocationOnAndroid() && mBinding != null) {
+      if (mBinding != null) {
         mBinding.drainPreallocateViewsQueue();
       }
 
@@ -1387,7 +1397,7 @@ public class FabricUIManager
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         mIsMountingEnabled = false;
-        throw ex;
+        throw new RuntimeException("Exception thrown when executing UIFrameGuarded", ex);
       } finally {
         schedule();
       }

@@ -1,0 +1,67 @@
+{
+  "name": "test-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+  },
+  "dependencies": {
+    "test-library": "./lib/test-library"
+  },
+  "devDependencies": {
+  },
+  "codegenConfig": {
+    "name": "TestAppConfig",
+    "type": "all",
+    "android": {
+      "javaPackageName": "com.testApp"
+    },
+    "ios": {
+      "modulesConformingToProtocol": {
+        "RCTImageURLLoader": [
+          "RCTTestAppDeprecatedImageURLLoader"
+        ],
+        "RCTURLRequestHandler": [
+          "RCTTestAppDeprecatedURLRequestHandler"
+        ],
+        "RCTImageDataDecoder": [
+          "RCTTestAppDeprecatedImageDataDecoder"
+        ]
+      },
+      "modulesProvider": {
+        "TestAppDeprecatedImageURLLoader": "RCTTestAppDeprecatedImageURLLoader",
+        "TestAppDeprecatedURLRequestHandler": "RCTTestAppDeprecatedURLRequestHandler",
+        "TestAppDeprecatedImageDataDecoder": "RCTTestAppDeprecatedImageDataDecoder"
+      },
+      "componentProvider": {
+        "TestAppDeprecatedComponent": "RCTTestAppDeprecatedComponentClass"
+      },
+      "unstableModulesRequiringMainQueueSetup": [
+        "RCTTestAppDeprecatedImageURLLoader",
+        "RCTTestAppDeprecatedURLRequestHandler",
+        "RCTTestAppDeprecatedImageDataDecoder"
+      ],
+      "modules": {
+        "TestAppImageURLLoader": {
+          "conformsToProtocols": ["RCTImageURLLoader"],
+          "className": "RCTTestAppImageURLLoader",
+          "unstableRequiresMainQueueSetup": true
+        },
+        "TestAppURLRequestHandler": {
+          "conformsToProtocols": ["RCTURLRequestHandler"],
+          "className": "RCTTestAppURLRequestHandler",
+          "unstableRequiresMainQueueSetup": true
+        },
+        "TestAppImageDataDecoder": {
+          "conformsToProtocols": ["RCTImageDataDecoder"],
+          "className": "RCTTestAppImageDataDecoder",
+          "unstableRequiresMainQueueSetup": true
+        }
+      },
+      "components": {
+        "TestAppComponent": {
+          "className": "RCTTestAppComponent"
+        }
+      }
+    }
+  }
+}

@@ -17,12 +17,12 @@ internal class DispatchIntCommandMountItem(
     private val commandArgs: ReadableArray?
 ) : DispatchCommandMountItem() {
 
-  override public fun getSurfaceId(): Int = surfaceId
+  override fun getSurfaceId(): Int = surfaceId
 
-  override public fun execute(mountingManager: MountingManager) {
+  override fun execute(mountingManager: MountingManager) {
     @Suppress("DEPRECATION")
     mountingManager.receiveCommand(surfaceId, reactTag, commandId, commandArgs)
   }
 
-  override public fun toString(): String = "DispatchIntCommandMountItem [$reactTag] $commandId"
+  override fun toString(): String = "DispatchIntCommandMountItem [$reactTag] $commandId"
 }

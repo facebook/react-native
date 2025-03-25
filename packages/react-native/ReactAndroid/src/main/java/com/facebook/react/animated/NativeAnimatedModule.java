@@ -14,6 +14,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeAnimatedModuleSpec;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -26,7 +27,7 @@ import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.GuardedFrameCallback;
@@ -87,6 +88,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * This isolates us from the problems that may be caused by concurrent updates of animated graph
  * while UI thread is "executing" the animation loop.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeAnimatedModuleSpec.NAME)
 public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     implements LifecycleEventListener, UIManagerListener {
@@ -117,6 +119,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     OP_CODE_ADD_LISTENER(20), // ios only
     OP_CODE_REMOVE_LISTENERS(21); // ios only
 
+    // NULLSAFE_FIXME[Field Not Nullable]
     private static BatchExecutionOpCodes[] valueMap = null;
     private final int value;
 
@@ -229,7 +232,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
   private boolean mEnqueuedAnimationOnFrame = false;
-  private @UIManagerType int mUIManagerType = UIManagerType.DEFAULT;
+  private @UIManagerType int mUIManagerType = UIManagerType.LEGACY;
   private int mNumFabricAnimations = 0;
   private int mNumNonFabricAnimations = 0;
 
@@ -252,10 +255,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                 return;
               }
 
-              if (!ReactNativeFeatureFlags.lazyAnimationCallbacks()
-                  || nodesManager.hasActiveAnimations()) {
-                enqueueFrameCallback();
-              }
+              enqueueFrameCallback();
             } catch (Exception ex) {
               throw new RuntimeException(ex);
             }
@@ -371,7 +371,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       }
     }
 
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     mPreOperations.executeBatch(batchNumber, getNodesManager());
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     mOperations.executeBatch(batchNumber, getNodesManager());
   }
 
@@ -382,16 +384,22 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (mOperations.isEmpty() && mPreOperations.isEmpty()) {
       return;
     }
-    if (mUIManagerType == UIManagerType.FABRIC) {
+    if (mUIManagerType == UIManagerType.FABRIC
+        || ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       return;
     }
+    // The following code ONLY executes for non-fabric
+    // When ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE is true, the folowing code
+    // might be stripped out.
 
     final long frameNo = mCurrentBatchNumber++;
 
     UIBlock preOperationsUIBlock =
         new UIBlock() {
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             mPreOperations.executeBatch(frameNo, getNodesManager());
           }
         };
@@ -399,7 +407,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     UIBlock operationsUIBlock =
         new UIBlock() {
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             mOperations.executeBatch(frameNo, getNodesManager());
           }
         };
@@ -533,8 +543,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       mUIManagerType = UIManagerType.FABRIC;
     } else if (mNumFabricAnimations == 0
         && mNumNonFabricAnimations > 0
-        && mUIManagerType != UIManagerType.DEFAULT) {
-      mUIManagerType = UIManagerType.DEFAULT;
+        && mUIManagerType != UIManagerType.LEGACY) {
+      mUIManagerType = UIManagerType.LEGACY;
     }
   }
 
@@ -1119,13 +1129,16 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
               switch (command) {
                 case OP_CODE_CREATE_ANIMATED_NODE:
                   animatedNodesManager.createAnimatedNode(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getMap(i++));
                   break;
                 case OP_CODE_UPDATE_ANIMATED_NODE_CONFIG:
                   animatedNodesManager.updateAnimatedNodeConfig(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getMap(i++));
                   break;
                 case OP_CODE_GET_VALUE:
+                  // NULLSAFE_FIXME[Parameter Not Nullable]
                   animatedNodesManager.getValue(opsAndArgs.getInt(i++), null);
                   break;
                 case OP_START_LISTENING_TO_ANIMATED_NODE_VALUE:
@@ -1159,10 +1172,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++));
                   break;
                 case OP_CODE_START_ANIMATING_NODE:
-                  if (ReactNativeFeatureFlags.lazyAnimationCallbacks()) {
-                    enqueueFrameCallback();
-                  }
                   animatedNodesManager.startAnimatingNode(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++), opsAndArgs.getMap(i++), null);
                   break;
                 case OP_CODE_STOP_ANIMATION:
@@ -1200,12 +1211,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                   break;
                 case OP_CODE_ADD_ANIMATED_EVENT_TO_VIEW:
                   animatedNodesManager.addAnimatedEventToView(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getString(i++), opsAndArgs.getMap(i++));
                   break;
                 case OP_CODE_REMOVE_ANIMATED_EVENT_FROM_VIEW:
                   viewTag = opsAndArgs.getInt(i++);
                   decrementInFlightAnimationsForViewTag(viewTag);
                   animatedNodesManager.removeAnimatedEventFromView(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       viewTag, opsAndArgs.getString(i++), opsAndArgs.getInt(i++));
                   break;
                 case OP_CODE_ADD_LISTENER:

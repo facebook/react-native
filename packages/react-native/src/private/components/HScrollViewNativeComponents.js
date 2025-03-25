@@ -11,13 +11,13 @@
 
 import type {ScrollViewNativeProps} from '../../../Libraries/Components/ScrollView/ScrollViewNativeComponentType';
 import type {ViewProps} from '../../../Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../types/HostComponent';
 
 import AndroidHorizontalScrollViewNativeComponent from '../../../Libraries/Components/ScrollView/AndroidHorizontalScrollViewNativeComponent';
 import ScrollContentViewNativeComponent from '../../../Libraries/Components/ScrollView/ScrollContentViewNativeComponent';
 import ScrollViewNativeComponent from '../../../Libraries/Components/ScrollView/ScrollViewNativeComponent';
 import Platform from '../../../Libraries/Utilities/Platform';
-import AndroidHorizontalScrollContentViewNativeComponent from '../specs/components/AndroidHorizontalScrollContentViewNativeComponent';
+import AndroidHorizontalScrollContentViewNativeComponent from '../specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent';
 
 export const HScrollViewNativeComponent: HostComponent<ScrollViewNativeProps> =
   Platform.OS === 'android'

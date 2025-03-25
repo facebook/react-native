@@ -19,6 +19,11 @@ import NativeDeviceInfo, {
 } from './NativeDeviceInfo';
 import invariant from 'invariant';
 
+export type {DisplayMetrics, DisplayMetricsAndroid};
+
+/** @deprecated Use DisplayMetrics */
+export type ScaledSize = DisplayMetrics;
+
 const eventEmitter = new EventEmitter<{
   change: [DimensionsPayload],
 }>();

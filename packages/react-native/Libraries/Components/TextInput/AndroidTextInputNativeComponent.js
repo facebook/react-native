@@ -8,10 +8,8 @@
  * @format
  */
 
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../src/private/types/HostComponent';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import type {
   ColorValue,
   TextStyleProp,
@@ -69,10 +67,10 @@ export type ReturnKeyType =
 
 export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
 
-export type NativeProps = $ReadOnly<{|
+export type NativeProps = $ReadOnly<{
   // This allows us to inherit everything from ViewProps except for style (see below)
   // This must be commented for Fabric codegen to work.
-  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
+  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
 
   /**
    * Android props after this
@@ -345,13 +343,13 @@ export type NativeProps = $ReadOnly<{|
    * Callback that is called when the text input is blurred.
    * `target` is the reactTag of the element
    */
-  onBlur?: ?BubblingEventHandler<$ReadOnly<{|target: Int32|}>>,
+  onBlur?: ?BubblingEventHandler<$ReadOnly<{target: Int32}>>,
 
   /**
    * Callback that is called when the text input is focused.
    * `target` is the reactTag of the element
    */
-  onFocus?: ?BubblingEventHandler<$ReadOnly<{|target: Int32|}>>,
+  onFocus?: ?BubblingEventHandler<$ReadOnly<{target: Int32}>>,
 
   /**
    * Callback that is called when the text input's text changes.
@@ -359,7 +357,7 @@ export type NativeProps = $ReadOnly<{|
    * TODO: differentiate between onChange and onChangeText
    */
   onChange?: ?BubblingEventHandler<
-    $ReadOnly<{|target: Int32, eventCount: Int32, text: string|}>,
+    $ReadOnly<{target: Int32, eventCount: Int32, text: string}>,
   >,
 
   /**
@@ -368,7 +366,7 @@ export type NativeProps = $ReadOnly<{|
    * TODO: differentiate between onChange and onChangeText
    */
   onChangeText?: ?BubblingEventHandler<
-    $ReadOnly<{|target: Int32, eventCount: Int32, text: string|}>,
+    $ReadOnly<{target: Int32, eventCount: Int32, text: string}>,
   >,
 
   /**
@@ -379,17 +377,17 @@ export type NativeProps = $ReadOnly<{|
    * Only called for multiline text inputs.
    */
   onContentSizeChange?: ?DirectEventHandler<
-    $ReadOnly<{|
+    $ReadOnly<{
       target: Int32,
-      contentSize: $ReadOnly<{|width: Double, height: Double|}>,
-    |}>,
+      contentSize: $ReadOnly<{width: Double, height: Double}>,
+    }>,
   >,
 
   /**
    * Callback that is called when text input ends.
    */
   onEndEditing?: ?BubblingEventHandler<
-    $ReadOnly<{|target: Int32, text: string|}>,
+    $ReadOnly<{target: Int32, text: string}>,
   >,
 
   /**
@@ -398,10 +396,10 @@ export type NativeProps = $ReadOnly<{|
    * `{ nativeEvent: { selection: { start, end } } }`.
    */
   onSelectionChange?: ?DirectEventHandler<
-    $ReadOnly<{|
+    $ReadOnly<{
       target: Int32,
-      selection: $ReadOnly<{|start: Double, end: Double|}>,
-    |}>,
+      selection: $ReadOnly<{start: Double, end: Double}>,
+    }>,
   >,
 
   /**
@@ -409,7 +407,7 @@ export type NativeProps = $ReadOnly<{|
    * Invalid if `multiline={true}` is specified.
    */
   onSubmitEditing?: ?BubblingEventHandler<
-    $ReadOnly<{|target: Int32, text: string|}>,
+    $ReadOnly<{target: Int32, text: string}>,
   >,
 
   /**
@@ -419,7 +417,7 @@ export type NativeProps = $ReadOnly<{|
    * the typed-in character otherwise including `' '` for space.
    * Fires before `onChange` callbacks.
    */
-  onKeyPress?: ?BubblingEventHandler<$ReadOnly<{|target: Int32, key: string|}>>,
+  onKeyPress?: ?BubblingEventHandler<$ReadOnly<{target: Int32, key: string}>>,
 
   /**
    * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
@@ -427,32 +425,32 @@ export type NativeProps = $ReadOnly<{|
    * is not provided for performance reasons.
    */
   onScroll?: ?DirectEventHandler<
-    $ReadOnly<{|
+    $ReadOnly<{
       target: Int32,
       responderIgnoreScroll: boolean,
-      contentInset: $ReadOnly<{|
+      contentInset: $ReadOnly<{
         top: Double, // always 0 on Android
         bottom: Double, // always 0 on Android
         left: Double, // always 0 on Android
         right: Double, // always 0 on Android
-      |}>,
-      contentOffset: $ReadOnly<{|
+      }>,
+      contentOffset: $ReadOnly<{
         x: Double,
         y: Double,
-      |}>,
-      contentSize: $ReadOnly<{|
+      }>,
+      contentSize: $ReadOnly<{
         width: Double, // always 0 on Android
         height: Double, // always 0 on Android
-      |}>,
-      layoutMeasurement: $ReadOnly<{|
+      }>,
+      layoutMeasurement: $ReadOnly<{
         width: Double,
         height: Double,
-      |}>,
-      velocity: $ReadOnly<{|
+      }>,
+      velocity: $ReadOnly<{
         x: Double, // always 0 on Android
         y: Double, // always 0 on Android
-      |}>,
-    |}>,
+      }>,
+    }>,
   >,
 
   /**
@@ -485,10 +483,10 @@ export type NativeProps = $ReadOnly<{|
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
    */
-  selection?: ?$ReadOnly<{|
+  selection?: ?$ReadOnly<{
     start: Int32,
     end?: ?Int32,
-  |}>,
+  }>,
 
   /**
    * The value to show for the text input. `TextInput` is a controlled
@@ -588,7 +586,7 @@ export type NativeProps = $ReadOnly<{|
   textShadowRadius?: ?Float,
   textDecorationLine?: ?string,
   fontStyle?: ?string,
-  textShadowOffset?: ?$ReadOnly<{|width?: ?Double, height?: ?Double|}>,
+  textShadowOffset?: ?$ReadOnly<{width?: ?Double, height?: ?Double}>,
   lineHeight?: ?Float,
   textTransform?: ?string,
   color?: ?Int32,
@@ -610,7 +608,7 @@ export type NativeProps = $ReadOnly<{|
    */
   mostRecentEventCount: Int32,
   text?: ?string,
-|}>;
+}>;
 
 type NativeType = HostComponent<NativeProps>;
 

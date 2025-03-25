@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager
 
 import android.view.Choreographer
+import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.ReactContext
 
 /**
@@ -15,13 +16,15 @@ import com.facebook.react.bridge.ReactContext
  * handled by the [JSExceptionHandler] registered if the app is in dev mode.
  */
 public abstract class GuardedFrameCallback
-protected constructor(private val reactContext: ReactContext) : Choreographer.FrameCallback {
+protected constructor(private val exceptionHandler: JSExceptionHandler) :
+    Choreographer.FrameCallback {
+  protected constructor(reactContext: ReactContext) : this(reactContext.exceptionHandler)
 
-  override public fun doFrame(frameTimeNanos: Long) {
+  public override fun doFrame(frameTimeNanos: Long) {
     try {
       doFrameGuarded(frameTimeNanos)
     } catch (e: RuntimeException) {
-      reactContext.handleException(e)
+      exceptionHandler.handleException(e)
     }
   }
 

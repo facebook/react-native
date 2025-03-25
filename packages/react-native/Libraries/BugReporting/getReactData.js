@@ -184,4 +184,4 @@ function copyWithSet(
   return copyWithSetImpl(obj, path, 0, value);
 }
 
-module.exports = getData;
+export default getData;

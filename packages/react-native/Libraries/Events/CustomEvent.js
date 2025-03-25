@@ -11,12 +11,12 @@
 // Make sure global Event is defined
 import EventPolyfill from './EventPolyfill';
 
-type CustomEvent$Options = $ReadOnly<{|
+type CustomEvent$Options = $ReadOnly<{
   bubbles?: boolean,
   cancelable?: boolean,
   composed?: boolean,
   detail?: {...},
-|}>;
+}>;
 
 class CustomEvent extends EventPolyfill {
   detail: ?{...};
@@ -25,7 +25,7 @@ class CustomEvent extends EventPolyfill {
     const {bubbles, cancelable, composed} = options;
     super(typeArg, {bubbles, cancelable, composed});
 
-    this.detail = options.detail; // this would correspond to `NativeEvent` in SyntheticEvent
+    this.detail = options.detail; // this would correspond to `NativeEvent` in NativeSyntheticEvent
   }
 }
 

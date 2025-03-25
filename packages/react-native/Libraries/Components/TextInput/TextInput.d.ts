@@ -931,6 +931,12 @@ export interface TextInputProps
   inputAccessoryViewID?: string | undefined;
 
   /**
+   * An optional label that overrides the default input accessory view button label.
+   * @platform ios
+   */
+  inputAccessoryViewButtonLabel?: string | undefined;
+
+  /**
    * The value to show for the text input. TextInput is a controlled component,
    * which means the native value will be forced to match this value prop if provided.
    * For most uses this works great, but in some cases this may cause flickering - one common cause is preventing edits by keeping value the same.

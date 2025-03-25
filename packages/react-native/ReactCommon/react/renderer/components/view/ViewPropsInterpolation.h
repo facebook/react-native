@@ -10,6 +10,10 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/graphics/Transform.h>
 
+#ifdef ANDROID
+#include <folly/dynamic.h>
+#endif
+
 namespace facebook::react {
 
 /**

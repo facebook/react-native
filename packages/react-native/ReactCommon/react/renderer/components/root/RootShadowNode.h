@@ -56,6 +56,8 @@ class RootShadowNode final
       const LayoutContext& layoutContext) const;
 
   Transform getTransform() const override;
+
+  void setInstanceHandle(InstanceHandle::Shared instanceHandle) const;
 };
 
 } // namespace facebook::react

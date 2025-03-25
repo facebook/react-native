@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.DefaultJSExceptionHandler;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -74,6 +75,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class DevSupportManagerBase implements DevSupportManager {
 
   public interface CallbackWithBundleLoader {
@@ -158,12 +160,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (getReloadAppAction(context).equals(action)) {
-              if (intent.getBooleanExtra(DevServerHelper.RELOAD_APP_EXTRA_JS_PROXY, false)) {
-                mDevSettings.setRemoteJSDebugEnabled(true);
-                mDevServerHelper.launchJSDevtools();
-              } else {
-                mDevSettings.setRemoteJSDebugEnabled(false);
-              }
               handleReloadJS();
             }
           }
@@ -228,8 +224,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
     if (e instanceof JavascriptException) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      showNewError(
-          e.getMessage().toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+      showNewError(e.getMessage(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
     } else {
       showNewJavaError(message.toString(), e);
     }
@@ -253,7 +248,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   @Override
-  public void showNewJSError(String message, ReadableArray details, int errorCookie) {
+  public void showNewJSError(
+      @Nullable String message, @Nullable ReadableArray details, int errorCookie) {
     showNewError(message, StackTraceHelper.convertJsStackTrace(details), errorCookie, ErrorType.JS);
   }
 
@@ -291,8 +287,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mReactInstanceDevHelper.createRootView(appKey);
   }
 
-  public void destroyRootView(View rootView) {
-    mReactInstanceDevHelper.destroyRootView(rootView);
+  public void destroyRootView(@Nullable View rootView) {
+    if (rootView != null) {
+      mReactInstanceDevHelper.destroyRootView(rootView);
+    }
   }
 
   private void hideDevOptionsDialog() {
@@ -359,15 +357,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           }
         });
 
-    if (mDevSettings.isRemoteJSDebugEnabled()) {
-      // [Deprecated in React Native 0.73] Remote JS debugging. Handle reload
-      // via external JS executor. This capability will be removed in a future
-      // release.
-      mDevSettings.setRemoteJSDebugEnabled(false);
-      handleReloadJS();
-    }
-
-    if (mDevSettings.isDeviceDebugEnabled() && !mDevSettings.isRemoteJSDebugEnabled()) {
+    if (mDevSettings.isDeviceDebugEnabled()) {
       // On-device JS debugging (CDP). Render action to open debugger frontend.
       boolean isConnected = mIsPackagerConnected;
       String debuggerItemString =
@@ -548,7 +538,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     }
   }
 
-  private String getJSExecutorDescription() {
+  private @Nullable String getJSExecutorDescription() {
     try {
       return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
     } catch (IllegalStateException e) {
@@ -623,12 +613,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   @Override
-  public String getJSBundleURLForRemoteDebugging() {
-    return mDevServerHelper.getJSBundleURLForRemoteDebugging(
-        Assertions.assertNotNull(mJSAppBundleName));
-  }
-
-  @Override
   public String getDownloadedJSBundleFile() {
     return mJSBundleDownloadedFile.getAbsolutePath();
   }
@@ -643,18 +627,20 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     if (mIsDevSupportEnabled && mJSBundleDownloadedFile.exists()) {
       try {
         String packageName = mApplicationContext.getPackageName();
-        PackageInfo thisPackage =
-            mApplicationContext.getPackageManager().getPackageInfo(packageName, 0);
-        if (mJSBundleDownloadedFile.lastModified() > thisPackage.lastUpdateTime) {
-          // Base APK has not been updated since we downloaded JS, but if app is using exopackage
-          // it may only be a single dex that has been updated. We check for exopackage dir update
-          // time in that case.
-          File exopackageDir =
-              new File(String.format(Locale.US, EXOPACKAGE_LOCATION_FORMAT, packageName));
-          if (exopackageDir.exists()) {
-            return mJSBundleDownloadedFile.lastModified() > exopackageDir.lastModified();
+        PackageManager packageManager = mApplicationContext.getPackageManager();
+        if (packageManager != null) {
+          PackageInfo thisPackage = packageManager.getPackageInfo(packageName, 0);
+          if (mJSBundleDownloadedFile.lastModified() > thisPackage.lastUpdateTime) {
+            // Base APK has not been updated since we downloaded JS, but if app is using exopackage
+            // it may only be a single dex that has been updated. We check for exopackage dir update
+            // time in that case.
+            File exopackageDir =
+                new File(String.format(Locale.US, EXOPACKAGE_LOCATION_FORMAT, packageName));
+            if (exopackageDir.exists()) {
+              return mJSBundleDownloadedFile.lastModified() > exopackageDir.lastModified();
+            }
+            return true;
           }
-          return true;
         }
       } catch (PackageManager.NameNotFoundException e) {
         // Ignore this error and just fallback to loading JS from assets
@@ -683,12 +669,17 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     if (mCurrentReactContext != null) {
       try {
         URL sourceUrl = new URL(getSourceUrl());
-        String path = sourceUrl.getPath().substring(1); // strip initial slash in path
+        String path = sourceUrl.getPath();
+        if (path != null) {
+          path = path.substring(1); // strip initial slash in path
+        }
         String host = sourceUrl.getHost();
+        String scheme = sourceUrl.getProtocol();
         int port = sourceUrl.getPort() != -1 ? sourceUrl.getPort() : sourceUrl.getDefaultPort();
         mCurrentReactContext
             .getJSModule(HMRClient.class)
-            .setup("android", path, host, port, mDevSettings.isHotModuleReplacementEnabled());
+            .setup(
+                "android", path, host, port, mDevSettings.isHotModuleReplacementEnabled(), scheme);
       } catch (MalformedURLException e) {
         showNewJavaError(e.getMessage(), e);
       }
@@ -959,21 +950,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   @Override
-  public void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled) {
-    if (!mIsDevSupportEnabled) {
-      return;
-    }
-
-    if (mDevSettings.isRemoteJSDebugEnabled() != isRemoteJSDebugEnabled) {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
-            handleReloadJS();
-          });
-    }
-  }
-
-  @Override
   public void setFpsDebugEnabled(final boolean isFpsDebugEnabled) {
     if (!mIsDevSupportEnabled) {
       return;
@@ -1007,9 +983,16 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
       // start shake gesture detector
       if (!mIsShakeDetectorStarted) {
-        mShakeDetector.start(
-            (SensorManager) mApplicationContext.getSystemService(Context.SENSOR_SERVICE));
-        mIsShakeDetectorStarted = true;
+        SensorManager sensorManager =
+            (SensorManager) mApplicationContext.getSystemService(Context.SENSOR_SERVICE);
+        if (sensorManager != null) {
+          mShakeDetector.start(sensorManager);
+          mIsShakeDetectorStarted = true;
+        } else {
+          FLog.w(
+              ReactConstants.TAG,
+              "Couldn't register shake gesture detector, sensor service is null");
+        }
       }
 
       // register reload app broadcast receiver

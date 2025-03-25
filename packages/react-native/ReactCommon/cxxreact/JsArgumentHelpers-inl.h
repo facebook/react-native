@@ -6,6 +6,7 @@
  */
 
 #pragma once
+
 #include <folly/dynamic.h>
 
 namespace facebook {
@@ -13,19 +14,32 @@ namespace xplat {
 
 namespace detail {
 
+inline std::string toStringHelper() {
+  return "";
+}
+
+template <typename T, typename... Rest>
+inline std::string toStringHelper(const T& value, const Rest&... rest) {
+  return std::to_string(value) + toStringHelper(rest...);
+}
+
+template <typename... Rest>
+inline std::string toStringHelper(const char* value, const Rest&... rest) {
+  return std::string(value) + toStringHelper(rest...);
+}
+
 template <typename R, typename M, typename... T>
 R jsArg1(const folly::dynamic& arg, M asFoo, const T&... desc) {
   try {
     return (arg.*asFoo)();
   } catch (const folly::TypeError& ex) {
-    throw JsArgumentException(folly::to<std::string>(
-        "Error converting javascript arg ", desc..., " to C++: ", ex.what()));
+    throw JsArgumentException(
+        "Error converting JavaScript arg " + toStringHelper(desc...) +
+        " to C++: " + ex.what());
   } catch (const std::range_error& ex) {
-    throw JsArgumentException(folly::to<std::string>(
-        "Could not convert argument ",
-        desc...,
-        " to required type: ",
-        ex.what()));
+    throw JsArgumentException(
+        "Could not convert argument " + toStringHelper(desc...) +
+        " to required type: " + ex.what());
   }
 }
 
@@ -54,13 +68,10 @@ typename detail::is_dynamic<T>::type& jsArgAsDynamic(T&& args, size_t n) {
     return args[n];
   } catch (const std::out_of_range& ex) {
     // Use 1-base counting for argument description.
-    throw JsArgumentException(folly::to<std::string>(
-        "JavaScript provided ",
-        args.size(),
-        " arguments for C++ method which references at least ",
-        n + 1,
-        " arguments: ",
-        ex.what()));
+    throw JsArgumentException(
+        "JavaScript provided " + std::to_string(args.size()) +
+        " arguments for C++ method which references at least " +
+        std::to_string(n + 1) + " arguments: " + ex.what());
   }
 }
 
@@ -95,13 +106,9 @@ typename detail::is_dynamic<T>::type& jsArgAsType(
   }
 
   // Use 1-base counting for argument description.
-  throw JsArgumentException(folly::to<std::string>(
-      "Argument ",
-      n + 1,
-      " of type ",
-      ret.typeName(),
-      " is not required type ",
-      required));
+  throw JsArgumentException(
+      "Argument " + std::to_string(n + 1) + " of type " + ret.typeName() +
+      " is not required type " + required);
 }
 
 } // end namespace detail

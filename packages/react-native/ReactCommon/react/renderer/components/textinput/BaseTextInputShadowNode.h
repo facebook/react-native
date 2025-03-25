@@ -72,15 +72,19 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override {
     const auto& props = BaseShadowNode::getConcreteProps();
+    auto textConstraints = getTextConstraints(layoutConstraints);
+
     TextLayoutContext textLayoutContext{
         .pointScaleFactor = layoutContext.pointScaleFactor};
-    return textLayoutManager_
-        ->measure(
-            attributedStringBoxToMeasure(layoutContext),
-            props.getEffectiveParagraphAttributes(),
-            textLayoutContext,
-            layoutConstraints)
-        .size;
+    auto textSize = textLayoutManager_
+                        ->measure(
+                            attributedStringBoxToMeasure(layoutContext),
+                            props.paragraphAttributes,
+                            textLayoutContext,
+                            textConstraints)
+                        .size;
+
+    return layoutConstraints.clamp(textSize);
   }
 
   void layout(LayoutContext layoutContext) override {
@@ -93,13 +97,7 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     auto attributedString = getAttributedString(layoutContext);
 
     if (attributedString.isEmpty()) {
-      auto placeholderString = !props.placeholder.empty()
-          ? props.placeholder
-          : BaseTextShadowNode::getEmptyPlaceholder();
-      auto textAttributes =
-          props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
-      attributedString.appendFragment(
-          {std::move(placeholderString), textAttributes, {}});
+      attributedString = getPlaceholderAttributedString(layoutContext);
     }
 
     // Yoga expects a baseline relative to the Node's border-box edge instead of
@@ -112,11 +110,35 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
 
     AttributedStringBox attributedStringBox{attributedString};
     return textLayoutManager_->baseline(
-               attributedStringBox,
-               props.getEffectiveParagraphAttributes(),
-               size) +
+               attributedStringBox, props.paragraphAttributes, size) +
         top;
   }
+
+  /*
+   * Determines the constraints to use while measure the underlying text
+   */
+  LayoutConstraints getTextConstraints(
+      const LayoutConstraints& layoutConstraints) const {
+    if (BaseShadowNode::getConcreteProps().multiline) {
+      return layoutConstraints;
+    } else {
+      // A single line TextInput acts as a horizontal scroller of infinitely
+      // expandable text, so we want to measure the text as if it is allowed to
+      // infinitely expand horizontally, and later clamp to the constraints of
+      // the input.
+      return LayoutConstraints{
+          .minimumSize = layoutConstraints.minimumSize,
+          .maximumSize =
+              Size{
+                  .width = std::numeric_limits<Float>::infinity(),
+                  .height = layoutConstraints.maximumSize.height,
+              },
+          .layoutDirection = layoutConstraints.layoutDirection,
+      };
+    }
+  }
+
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
  private:
   /*
@@ -127,19 +149,17 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     const auto& stateData = BaseShadowNode::getStateData();
     const auto& reactTreeAttributedString = getAttributedString(layoutContext);
 
-    react_native_assert(textLayoutManager_);
     if (stateData.reactTreeAttributedString.isContentEqual(
             reactTreeAttributedString)) {
       return;
     }
 
     const auto& props = BaseShadowNode::getConcreteProps();
-    TextInputState newState(
+    BaseShadowNode::setStateData(TextInputState{
         AttributedStringBox{reactTreeAttributedString},
         reactTreeAttributedString,
         props.paragraphAttributes,
-        props.mostRecentEventCount);
-    BaseShadowNode::setStateData(std::move(newState));
+        props.mostRecentEventCount});
   }
 
   /*
@@ -148,21 +168,19 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
   AttributedString getAttributedString(
       const LayoutContext& layoutContext) const {
     const auto& props = BaseShadowNode::getConcreteProps();
-    auto textAttributes =
+    const auto textAttributes =
         props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
-    auto attributedString = AttributedString{};
 
+    AttributedString attributedString;
     attributedString.appendFragment(AttributedString::Fragment{
         .string = props.text,
         .textAttributes = textAttributes,
-        // TODO: Is this really meant to be by value?
         .parentShadowView = ShadowView(*this)});
 
     auto attachments = BaseTextShadowNode::Attachments{};
     BaseTextShadowNode::buildAttributedString(
         textAttributes, *this, attributedString, attachments);
     attributedString.setBaseTextAttributes(textAttributes);
-
     return attributedString;
   }
 
@@ -191,23 +209,33 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
         : getAttributedString(layoutContext);
 
     if (attributedString.isEmpty()) {
-      const auto& props = BaseShadowNode::getConcreteProps();
-      auto placeholder = props.placeholder;
-      // Note: `zero-width space` is insufficient in some cases (e.g. when we
-      // need to measure the "hight" of the font).
-      // TODO T67606511: We will redefine the measurement of empty strings as
-      // part of T67606511
-      auto string = !placeholder.empty()
-          ? placeholder
-          : BaseTextShadowNode::getEmptyPlaceholder();
-      auto textAttributes =
-          props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
-      attributedString.appendFragment({string, textAttributes, {}});
+      attributedString = getPlaceholderAttributedString(layoutContext);
     }
     return AttributedStringBox{attributedString};
   }
 
-  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
+  // For measurement purposes, we want to make sure that there's at least a
+  // single character in the string so that the measured height is greater
+  // than zero. Otherwise, empty TextInputs with no placeholder don't
+  // display at all.
+  // TODO T67606511: We will redefine the measurement of empty strings as part
+  // of T67606511
+  AttributedString getPlaceholderAttributedString(
+      const LayoutContext& layoutContext) const {
+    const auto& props = BaseShadowNode::getConcreteProps();
+
+    AttributedString attributedString;
+    auto placeholderString = !props.placeholder.empty()
+        ? props.placeholder
+        : BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes =
+        props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
+    attributedString.appendFragment(
+        {.string = std::move(placeholderString),
+         .textAttributes = textAttributes,
+         .parentShadowView = {}});
+    return attributedString;
+  }
 };
 
 } // namespace facebook::react

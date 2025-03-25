@@ -41,6 +41,7 @@
 flow-typed/
 packages/react-native/interface.js
 packages/react-native/flow/
+packages/react-native/src/types/
 
 [options]
 enums=true
@@ -65,6 +66,8 @@ module.name_mapper='^react-native$' -> '<PROJECT_ROOT>/packages/react-native/ind
 module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/packages/react-native/\1'
 module.name_mapper='^@react-native/dev-middleware$' -> '<PROJECT_ROOT>/packages/dev-middleware'
 module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\|xml\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
+
+react.runtime=automatic
 
 suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
@@ -95,4 +98,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.258.0
+^0.265.3

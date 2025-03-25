@@ -10,29 +10,29 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {MutationObserverId} from './MutationObserverManager';
+import type {MutationObserverId} from './internals/MutationObserverManager';
 import type MutationRecord from './MutationRecord';
 
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
-import * as MutationObserverManager from './MutationObserverManager';
+import * as MutationObserverManager from './internals/MutationObserverManager';
 
 export type MutationObserverCallback = (
   mutationRecords: $ReadOnlyArray<MutationRecord>,
   observer: MutationObserver,
 ) => mixed;
 
-type MutationObserverInit = $ReadOnly<{
-  subtree?: boolean,
+export interface MutationObserverInit {
+  +subtree?: boolean;
   // This is the only supported option so it's required to be `true`.
-  childList: true,
+  +childList: true;
 
   // Unsupported:
-  attributes?: boolean,
-  attributeFilter?: $ReadOnlyArray<string>,
-  attributeOldValue?: boolean,
-  characterData?: boolean,
-  characterDataOldValue?: boolean,
-}>;
+  +attributes?: boolean;
+  +attributeFilter?: $ReadOnlyArray<string>;
+  +attributeOldValue?: boolean;
+  +characterData?: boolean;
+  +characterDataOldValue?: boolean;
+}
 
 /**
  * This is a React Native implementation for the `MutationObserver` API

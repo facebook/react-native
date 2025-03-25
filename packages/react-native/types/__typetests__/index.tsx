@@ -110,8 +110,8 @@ import {
   UIManager,
   View,
   ViewStyle,
+  SafeAreaView,
   VirtualizedList,
-  YellowBox,
   findNodeHandle,
   requireNativeComponent,
   useColorScheme,
@@ -120,6 +120,7 @@ import {
   ToastAndroid,
   Touchable,
   LayoutAnimation,
+  processColor,
   experimental_LayoutConformance as LayoutConformance,
 } from 'react-native';
 
@@ -167,11 +168,11 @@ BackHandler.addEventListener('hardwareBackPress', () => false).remove();
 BackHandler.addEventListener('hardwareBackPress', () => undefined).remove();
 BackHandler.addEventListener('hardwareBackPress', () => null).remove();
 
-interface LocalStyles {
+type LocalStyles = {
   container: ViewStyle;
   welcome: TextStyle;
   instructions: TextStyle;
-}
+};
 
 const styles = StyleSheet.create<LocalStyles>({
   container: {
@@ -217,7 +218,7 @@ StyleSheet.setStyleAttributePreprocessor(
   (family: string) => family,
 );
 
-const welcomeFontSize = StyleSheet.flatten(styles.welcome).fontSize;
+const welcomeFontSize = StyleSheet.flatten(styles.welcome)?.fontSize;
 
 const viewStyle: StyleProp<ViewStyle> = {
   backgroundColor: '#F5FCFF',
@@ -349,7 +350,7 @@ const lists = StyleSheet.create({
 
 const container = StyleSheet.compose(page.container, lists.listContainer);
 <View style={container} />;
-const text = StyleSheet.compose(page.text, lists.listItem);
+const text = StyleSheet.compose(page.text, lists.listItem) as TextStyle;
 <Text style={text} />;
 
 // The following use of the compose method is invalid:
@@ -370,6 +371,19 @@ const combinedStyle10: StyleProp<ImageStyle> = StyleSheet.compose(
   Math.random() < 0.5 ? composeTextStyle : null,
   null,
 );
+
+type TestOpaque = symbol & {smth: string};
+
+declare function createTestOpaque(): TestOpaque;
+const testOpaque = createTestOpaque();
+// @ts-expect-error
+processColor(testOpaque);
+processColor('#000000');
+processColor(123456);
+// @ts-expect-error
+processColor(true);
+// @ts-expect-error
+processColor(Symbol('test'));
 
 const testNativeSyntheticEvent = <T extends {}>(
   e: NativeSyntheticEvent<T>,
@@ -415,8 +429,8 @@ class CustomView extends React.Component {
 class Welcome extends React.Component<
   ElementProps<View> & {color: string; bgColor?: null | undefined | string}
 > {
-  rootViewRef = React.useRef<View>(null);
-  customViewRef = React.useRef<CustomView>(null);
+  rootViewRef = React.createRef<View>();
+  customViewRef = React.createRef<CustomView>();
 
   testNativeMethods() {
     if (this.rootViewRef.current != null) {
@@ -470,12 +484,10 @@ export default Welcome;
 // TouchableTest
 function TouchableTest() {
   function basicUsage() {
-    if (Touchable.TOUCH_TARGET_DEBUG) {
-      return Touchable.renderDebugView({
-        color: 'mediumspringgreen',
-        hitSlop: {bottom: 5, top: 5},
-      });
-    }
+    return Touchable.renderDebugView({
+      color: 'mediumspringgreen',
+      hitSlop: {bottom: 5, top: 5},
+    });
   }
 
   function defaultHitSlop() {
@@ -491,6 +503,7 @@ export class TouchableHighlightTest extends React.Component {
   render() {
     return (
       <>
+        <TouchableHighlight />
         <TouchableHighlight ref={this.buttonRef} />
         <TouchableHighlight
           ref={ref => {
@@ -1124,7 +1137,8 @@ Alert.prompt(
     {
       text: 'OK',
       isPreferred: true,
-      onPress: password => console.log('OK Pressed, password: ' + password),
+      onPress: (password?: string) =>
+        console.log('OK Pressed, password: ' + password),
     },
   ],
   'secure-text',
@@ -1176,7 +1190,7 @@ const customEventEmitter = new CustomEventEmitter();
 customEventEmitter.addListener('event', () => {});
 
 class TextInputTest extends React.Component<{}, {username: string}> {
-  username: TextInput | null = null;
+  username: React.ElementRef<typeof TextInput> | null = null;
 
   handleUsernameChange = (text: string) => {
     console.log(`text: ${text}`);
@@ -1279,9 +1293,7 @@ class TextInputTest extends React.Component<{}, {username: string}> {
           onContentSizeChange={this.handleOnContentSizeChange}
         />
 
-        <TextInput contextMenuHidden={true} textAlignVertical="top" />
-
-        <TextInput textAlign="center" />
+        <TextInput contextMenuHidden={true} />
       </View>
     );
   }
@@ -1346,8 +1358,8 @@ export class ImageTest extends React.Component {
     const uri =
       'https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png';
     const headers = {Authorization: 'Bearer test'};
-    const image: ImageResolvedAssetSource = Image.resolveAssetSource({uri});
-    console.log(image.width, image.height, image.scale, image.uri);
+    const image = Image.resolveAssetSource({uri});
+    console.log(image?.width, image?.height, image?.scale, image?.uri);
 
     Image.queryCache &&
       Image.queryCache([uri]).then(({[uri]: status}) => {
@@ -1382,14 +1394,14 @@ export class ImageTest extends React.Component {
     Image.prefetch(uri); // $ExpectType Promise<boolean>
   }
 
-  handleOnLoad = (e: NativeSyntheticEvent<ImageLoadEventData>) => {
+  handleOnLoad = (e: NativeSyntheticEvent<Readonly<ImageLoadEventData>>) => {
     testNativeSyntheticEvent(e);
     console.log('height:', e.nativeEvent.source.height);
     console.log('width:', e.nativeEvent.source.width);
     console.log('uri:', e.nativeEvent.source.uri);
   };
 
-  handleOnError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+  handleOnError = (e: NativeSyntheticEvent<Readonly<ImageErrorEventData>>) => {
     testNativeSyntheticEvent(e);
     console.log('error:', e.nativeEvent.error);
   };
@@ -1541,11 +1553,11 @@ class BridgedComponentTest extends React.Component {
   nativeComponentRef: React.ElementRef<typeof NativeBridgedComponent> | null;
 
   callNativeMethod = () => {
-    UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this.nativeComponentRef),
-      'someNativeMethod',
-      [],
-    );
+    const nodeHandle = findNodeHandle(this.nativeComponentRef);
+    if (nodeHandle != null) {
+      const commandID = 1; // some command
+      UIManager.dispatchViewManagerCommand(nodeHandle, commandID, []);
+    }
   };
 
   measureNativeComponent() {
@@ -1570,6 +1582,54 @@ class BridgedComponentTest extends React.Component {
   }
 }
 
+const SafeAreaViewTest = () => {
+  const viewRef = React.createRef<React.ElementRef<typeof View>>();
+
+  return (
+    <>
+      <SafeAreaView />;
+      <SafeAreaView ref={viewRef} />;
+      <SafeAreaView
+        ref={ref => {
+          ref?.focus();
+          ref?.blur();
+          ref?.measure(
+            (x, y, width, height, pageX, pageY): number =>
+              x + y + width + height + pageX + pageY,
+          );
+          ref?.measureInWindow(
+            (x, y, width, height): number => x + y + width + height,
+          );
+          ref?.setNativeProps({focusable: false});
+        }}
+      />
+    </>
+  );
+};
+
+const SwitchRefTest = () => {
+  const switchRef = React.createRef<React.ElementRef<typeof Switch>>();
+
+  return (
+    <>
+      <Switch ref={switchRef} />
+      <Switch
+        ref={ref => {
+          ref?.focus();
+          ref?.blur();
+          ref?.measure(
+            (x, y, width, height, pageX, pageY): number =>
+              x + y + width + height + pageX + pageY,
+          );
+          ref?.measureInWindow(
+            (x, y, width, height): number => x + y + width + height,
+          );
+          ref?.setNativeProps({focusable: false});
+        }}
+      />
+    </>
+  );
+};
 const SwitchColorTest = () => (
   <Switch trackColor={{true: 'pink', false: 'red'}} />
 );
@@ -1967,9 +2027,6 @@ const PushNotificationTest = () => {
     },
   });
 };
-
-// YellowBox
-const YellowBoxTest = () => <YellowBox />;
 
 // Appearance
 const DarkMode = () => {

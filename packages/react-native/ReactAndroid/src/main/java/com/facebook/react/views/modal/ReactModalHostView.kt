@@ -21,12 +21,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStructure
 import android.view.Window
-import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
@@ -37,6 +38,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.VisibleForTesting
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
@@ -380,6 +382,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
   }
 
+  /**
+   * Updates the system appearance of the dialog to match the activity that it is being displayed
+   * on.
+   */
   private fun updateSystemAppearance() {
     val currentActivity = getCurrentActivity() ?: return
     val dialog = checkNotNull(dialog) { "dialog must exist when we call updateProperties" }
@@ -388,16 +394,40 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val activityWindow = currentActivity.window
     // Modeled after the version check in StatusBarModule.setStyle
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-      val insetsController: WindowInsetsController = checkNotNull(activityWindow.insetsController)
-      val activityAppearance: Int = insetsController.systemBarsAppearance
+      val activityWindowInsetsController =
+          WindowInsetsControllerCompat(activityWindow, activityWindow.decorView)
+      val dialogWindowInsetsController =
+          WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
 
-      val activityLightStatusBars =
-          activityAppearance and WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+      dialogWindowInsetsController.isAppearanceLightStatusBars =
+          activityWindowInsetsController.isAppearanceLightStatusBars
 
-      dialogWindow.insetsController?.setSystemBarsAppearance(
-          activityLightStatusBars, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+      activityWindow.decorView.rootWindowInsets?.let { insets ->
+        val activityRootWindowInsets = WindowInsetsCompat.toWindowInsetsCompat(insets)
+        syncSystemBarsVisibility(activityRootWindowInsets, dialogWindowInsetsController)
+      }
     } else {
       dialogWindow.decorView.systemUiVisibility = activityWindow.decorView.systemUiVisibility
+    }
+  }
+
+  /**
+   * Syncs the visibility of the system bars based on their visibility in the root window insets.
+   * This ensures consistency between the system bars visibility in the activity and the dialog.
+   */
+  private fun syncSystemBarsVisibility(
+      activityRootWindowInsets: WindowInsetsCompat,
+      dialogWindowInsetsController: WindowInsetsControllerCompat?,
+      types: List<Int> =
+          listOf(WindowInsetsCompat.Type.statusBars(), WindowInsetsCompat.Type.navigationBars()),
+  ) {
+    types.forEach { type ->
+      val isVisible = activityRootWindowInsets.isVisible(type)
+      if (isVisible) {
+        dialogWindowInsetsController?.show(type)
+      } else {
+        dialogWindowInsetsController?.hide(type)
+      }
     }
   }
 
@@ -473,25 +503,30 @@ public class ReactModalHostView(context: ThemedReactContext) :
       val realWidth: Float = width.toFloat().pxToDp()
       val realHeight: Float = height.toFloat().pxToDp()
 
-      stateWrapper?.let { sw ->
+      val sw = stateWrapper
+      if (sw != null) {
         // new architecture
         val newStateData: WritableMap = WritableNativeMap()
         newStateData.putDouble("screenWidth", realWidth.toDouble())
         newStateData.putDouble("screenHeight", realHeight.toDouble())
         sw.updateState(newStateData)
+      } else if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+        // When UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE = true, means the Legacy Architecture is
+        // fully disabled and can be minified.
+        // The goal is to compile-out UIManagerModule from the following code block:
+        run {
+          // old architecture
+          // TODO: T44725185 remove after full migration to Fabric
+          reactContext.runOnNativeModulesQueueThread(
+              object : GuardedRunnable(reactContext) {
+                override fun runGuarded() {
+                  reactContext.reactApplicationContext
+                      .getNativeModule(UIManagerModule::class.java)
+                      ?.updateNodeSize(id, viewWidth, viewHeight)
+                }
+              })
+        }
       }
-          ?: run {
-            // old architecture
-            // TODO: T44725185 remove after full migration to Fabric
-            reactContext.runOnNativeModulesQueueThread(
-                object : GuardedRunnable(reactContext) {
-                  override fun runGuarded() {
-                    reactContext.reactApplicationContext
-                        .getNativeModule(UIManagerModule::class.java)
-                        ?.updateNodeSize(id, viewWidth, viewHeight)
-                  }
-                })
-          }
     }
 
     override fun handleException(t: Throwable) {

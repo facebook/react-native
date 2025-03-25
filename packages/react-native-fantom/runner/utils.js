@@ -42,7 +42,7 @@ export function getBuckModesForPlatform(
       throw new Error(`Unsupported platform: ${os.platform()}`);
   }
 
-  return ['@//xplat/mode/react-force-cxx-platform', osPlatform];
+  return ['@//xplat/mode/react-native/force-cxx-platform', osPlatform];
 }
 
 export type AsyncCommandResult = {

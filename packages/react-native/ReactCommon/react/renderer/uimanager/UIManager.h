@@ -106,15 +106,15 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree::Unique&& shadowTree,
       const std::string& moduleName,
       const folly::dynamic& props,
-      DisplayMode displayMode) const;
+      DisplayMode displayMode) const noexcept;
 
-  void startEmptySurface(ShadowTree::Unique&& shadowTree) const;
+  void startEmptySurface(ShadowTree::Unique&& shadowTree) const noexcept;
 
   void setSurfaceProps(
       SurfaceId surfaceId,
       const std::string& moduleName,
       const folly::dynamic& props,
-      DisplayMode displayMode) const;
+      DisplayMode displayMode) const noexcept;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
@@ -127,7 +127,8 @@ class UIManager final : public ShadowTreeDelegate {
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& shadowTree,
       const RootShadowNode::Shared& oldRootShadowNode,
-      const RootShadowNode::Unshared& newRootShadowNode) const override;
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTree::CommitOptions& commitOptions) const override;
 
   std::shared_ptr<ShadowNode> createNode(
       Tag tag,
@@ -199,6 +200,9 @@ class UIManager final : public ShadowTreeDelegate {
   const ShadowTreeRegistry& getShadowTreeRegistry() const;
 
   void reportMount(SurfaceId surfaceId) const;
+
+  void updateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps);
 
  private:
   friend class UIManagerBinding;

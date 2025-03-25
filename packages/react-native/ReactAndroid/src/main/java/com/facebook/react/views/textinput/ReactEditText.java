@@ -72,7 +72,6 @@ import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
-import com.facebook.react.views.text.internal.span.LegacyLineHeightSpan;
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
@@ -81,8 +80,8 @@ import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -112,7 +111,7 @@ public class ReactEditText extends AppCompatEditText {
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
 
-  private @Nullable ArrayList<TextWatcher> mListeners;
+  private @Nullable CopyOnWriteArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   protected boolean mContainsImages;
@@ -147,7 +146,9 @@ public class ReactEditText extends AppCompatEditText {
 
   public ReactEditText(Context context) {
     super(context);
-    setFocusableInTouchMode(false);
+    if (!ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
+      setFocusableInTouchMode(false);
+    }
 
     mInputMethodManager =
         (InputMethodManager)
@@ -190,7 +191,9 @@ public class ReactEditText extends AppCompatEditText {
                 // selection on accessibility click to undo that.
                 setSelection(length);
               }
-              return requestFocusInternal();
+              return ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()
+                  ? requestFocusProgramatically()
+                  : requestFocusInternal();
             }
             return super.performAccessibilityAction(host, action, args);
           }
@@ -340,7 +343,10 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public void clearFocus() {
-    setFocusableInTouchMode(false);
+    boolean useStockFocusBehavior = ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior();
+    if (!useStockFocusBehavior) {
+      setFocusableInTouchMode(false);
+    }
     super.clearFocus();
     hideSoftKeyboard();
   }
@@ -351,7 +357,9 @@ public class ReactEditText extends AppCompatEditText {
     // is a controlled component, which means its focus is controlled by JS, with two exceptions:
     // autofocus when it's attached to the window, and responding to accessibility events. In both
     // of these cases, we call requestFocusInternal() directly.
-    return isFocused();
+    return ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()
+        ? super.requestFocus(direction, previouslyFocusedRect)
+        : isFocused();
   }
 
   private boolean requestFocusInternal() {
@@ -362,13 +370,27 @@ public class ReactEditText extends AppCompatEditText {
     if (getShowSoftInputOnFocus()) {
       showSoftKeyboard();
     }
+
+    return focused;
+  }
+
+  // For cases like autoFocus, or ref.focus() where we request focus programatically and not through
+  // interacting with the EditText directly (like clicking on it). We cannot use stock
+  // requestFocus() because it will not pop up the soft keyboard, only clicking the input will do
+  // that. This method will eventually replace requestFocusInternal()
+  private boolean requestFocusProgramatically() {
+    boolean focused = super.requestFocus(View.FOCUS_DOWN, null);
+    if (isInTouchMode() && getShowSoftInputOnFocus()) {
+      showSoftKeyboard();
+    }
+
     return focused;
   }
 
   @Override
   public void addTextChangedListener(TextWatcher watcher) {
     if (mListeners == null) {
-      mListeners = new ArrayList<>();
+      mListeners = new CopyOnWriteArrayList<>();
       super.addTextChangedListener(getTextWatcherDelegator());
     }
 
@@ -634,7 +656,11 @@ public class ReactEditText extends AppCompatEditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
-    requestFocusInternal();
+    if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
+      requestFocusProgramatically();
+    } else {
+      requestFocusInternal();
+    }
   }
 
   /* package */ void clearFocusFromJS() {
@@ -873,13 +899,7 @@ public class ReactEditText extends AppCompatEditText {
 
     float lineHeight = mTextAttributes.getEffectiveLineHeight();
     if (!Float.isNaN(lineHeight)) {
-      if (ReactNativeFeatureFlags.enableAndroidLineHeightCentering()) {
-        workingText.setSpan(
-            new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
-      } else {
-        workingText.setSpan(
-            new LegacyLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
-      }
+      workingText.setSpan(new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
     }
   }
 
@@ -941,12 +961,14 @@ public class ReactEditText extends AppCompatEditText {
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
     ReactContext reactContext = getReactContext(this);
 
-    if (mStateWrapper == null && !reactContext.isBridgeless()) {
+    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+      if (mStateWrapper == null && !reactContext.isBridgeless()) {
 
-      final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
-      UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
-      if (uiManager != null) {
-        uiManager.setViewLocalData(getId(), localData);
+        final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
+        UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+        if (uiManager != null) {
+          uiManager.setViewLocalData(getId(), localData);
+        }
       }
     }
   }
@@ -1087,7 +1109,11 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     if (mAutoFocus && !mDidAttachToWindow) {
-      requestFocusInternal();
+      if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
+        requestFocusProgramatically();
+      } else {
+        requestFocusInternal();
+      }
     }
 
     mDidAttachToWindow = true;

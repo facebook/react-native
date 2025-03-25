@@ -122,6 +122,9 @@ class ShadowNodeFamily final {
    */
   Tag getTag() const;
 
+  InstanceHandle::Shared getInstanceHandle() const;
+  void setInstanceHandle(InstanceHandle::Shared& instanceHandle) const;
+
   /**
    * Override destructor to call onUnmountedFamilyDestroyedCallback() for
    * ShadowViews that were preallocated but never mounted on the screen.
@@ -160,7 +163,7 @@ class ShadowNodeFamily final {
   /*
    * Weak reference to the React instance handle
    */
-  const InstanceHandle::Shared instanceHandle_;
+  mutable InstanceHandle::Shared instanceHandle_;
 
   /*
    * `EventEmitter` associated with all nodes of the family.
@@ -196,12 +199,6 @@ class ShadowNodeFamily final {
    * Determines if the ShadowNodeFamily was ever mounted on the screen.
    */
   mutable bool hasBeenMounted_{false};
-
-  /*
-   * Determines if Views that were never mounted on the screen should be deleted
-   * when the shadow node family is destroyed.
-   */
-  const bool isDeletionOfUnmountedViewsEnabled_;
 };
 
 } // namespace facebook::react

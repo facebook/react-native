@@ -12,6 +12,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import hotdog from '../../assets/hotdog.jpg';
 import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
 import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
@@ -20,6 +21,7 @@ import TextInlineViewsExample from './TextInlineViewsExample';
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
 const {
+  Image,
   LayoutAnimation,
   StyleSheet,
   Text,
@@ -27,7 +29,7 @@ const {
   View,
 } = require('react-native');
 
-class Entity extends React.Component<{|children: React.Node|}> {
+class Entity extends React.Component<{children: React.Node}> {
   render(): React.Node {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -84,12 +86,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{||}>;
+type AdjustingFontSizeProps = $ReadOnly<{}>;
 
-type AdjustingFontSizeState = {|
+type AdjustingFontSizeState = {
   dynamicText: string,
   shouldRender: boolean,
-|};
+};
 
 class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,
@@ -482,9 +484,40 @@ function AllowFontScalingExample(props: {}): React.Node {
   );
 }
 
+function MaxFontSizeMultiplierExample(props: {}): React.Node {
+  return (
+    <View testID={'max-font-size-multiplier'}>
+      <Text>
+        When allowFontScaling is enabled, you can use the maxFontSizeMultiplier
+        prop to set an upper limit on how much the font size will be scaled.
+      </Text>
+      <Text
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1}
+        style={{marginTop: 10}}>
+        This text will not scale up (max 1x)
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1.5}>
+        This text will scale up (max 1.5x)
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text>Inherit max (max 1x)</Text>
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text maxFontSizeMultiplier={1.5}>
+          Override inherited max (max 1.5x)
+        </Text>
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text maxFontSizeMultiplier={0}>Ignore inherited max (no max)</Text>
+      </Text>
+    </View>
+  );
+}
+
 function NumberOfLinesExample(props: {}): React.Node {
   return (
-    <>
+    <View testID="number-of-lines">
       <RNTesterText numberOfLines={1} style={styles.wrappedText}>
         Maximum of one line no matter now much I write here. If I keep writing
         it{"'"}ll just truncate after one line
@@ -501,11 +534,19 @@ function NumberOfLinesExample(props: {}): React.Node {
         RNTesterText of two lines no matter now much I write here. If I keep
         writing it{"'"}ll just truncate after two lines
       </RNTesterText>
+      <RNTesterText numberOfLines={1} style={{marginTop: 20}}>
+        The hotdog should be truncated. The hotdog should be truncated. The
+        hotdog should be truncated. The hotdog should be truncated. The hotdog
+        should be truncated. The hotdog should be truncated. The hotdog should
+        be truncated. The hotdog should be truncated. The hotdog should be
+        truncated. The hotdog should be truncated.
+        <Image source={hotdog} style={{height: 12}} />
+      </RNTesterText>
       <RNTesterText style={[{marginTop: 20}, styles.wrappedText]}>
         No maximum lines specified no matter now much I write here. If I keep
         writing it{"'"}ll just keep going and going
       </RNTesterText>
-    </>
+    </View>
   );
 }
 
@@ -1460,6 +1501,13 @@ const examples = [
     name: 'allowFontScaling',
     render(): React.Node {
       return <AllowFontScalingExample />;
+    },
+  },
+  {
+    title: 'maxFontSizeMultiplier attribute',
+    name: 'maxFontSizeMultiplier',
+    render(): React.Node {
+      return <MaxFontSizeMultiplierExample />;
     },
   },
   {

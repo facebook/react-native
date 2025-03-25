@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<080245bea6e8535f2e8a91c1559e2fcc>>
+ * @generated SignedSource<<3e4b1e03b718d5c2ea03b0a29382d849>>
  */
 
 /**
@@ -25,39 +25,27 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
-
-  @DoNotStrip public fun disableEventLoopOnBridgeless(): Boolean
+  @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
-  @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
-
-  @DoNotStrip public fun enableAndroidLineHeightCentering(): Boolean
-
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
-  @DoNotStrip public fun enableDeletionOfUnmountedViews(): Boolean
-
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
-
-  @DoNotStrip public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean
 
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
-  @DoNotStrip public fun enableFixForViewCommandRace(): Boolean
-
-  @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
-
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -65,9 +53,11 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
 
-  @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
+  @DoNotStrip public fun enableMainQueueModulesOnIOS(): Boolean
 
-  @DoNotStrip public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
+  @DoNotStrip public fun enableNativeCSSParsing(): Boolean
+
+  @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
 
@@ -77,11 +67,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
+  @DoNotStrip public fun enableViewCulling(): Boolean
+
   @DoNotStrip public fun enableViewRecycling(): Boolean
 
-  @DoNotStrip public fun excludeYogaFromRawProps(): Boolean
+  @DoNotStrip public fun enableViewRecyclingForText(): Boolean
 
-  @DoNotStrip public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean
+  @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
@@ -89,29 +81,25 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
-  @DoNotStrip public fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean
+  @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
-  @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
+  @DoNotStrip public fun removeTurboModuleManagerDelegateMutex(): Boolean
 
-  @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
+  @DoNotStrip public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
+  @DoNotStrip public fun useEditTextStockAndroidFocusBehavior(): Boolean
+
   @DoNotStrip public fun useFabricInterop(): Boolean
 
-  @DoNotStrip public fun useImmediateExecutorInAndroidBridgeless(): Boolean
-
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
-
-  @DoNotStrip public fun useOptimisedViewPreallocationOnAndroid(): Boolean
 
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
-
-  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

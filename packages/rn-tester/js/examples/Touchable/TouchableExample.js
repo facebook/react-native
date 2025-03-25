@@ -314,7 +314,7 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
 
 function TouchableNativeMethodChecker<
   T: component(ref?: React.RefSetter<any>, ...any),
->(props: {|Component: T, name: string|}): React.Node {
+>(props: {Component: T, name: string}): React.Node {
   const [status, setStatus] = useState<?boolean>(null);
   const ref = useRef<any>(null);
 
@@ -560,7 +560,7 @@ const TouchableTouchSoundDisabled = () => {
 };
 
 function TouchableOnFocus() {
-  const ref = useRef<?{focus(): void, ...}>(null);
+  const ref = useRef<?React.ElementRef<typeof TouchableHighlight>>(null);
   const [isFocused, setIsFocused] = useState<string | boolean>(false);
   const [focusStatus, setFocusStatus] = useState(
     'This touchable is not focused.',

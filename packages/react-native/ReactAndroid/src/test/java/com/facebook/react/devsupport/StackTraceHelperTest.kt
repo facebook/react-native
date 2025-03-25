@@ -13,11 +13,8 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @OptIn(UnstableReactNativeAPI::class)
-@RunWith(RobolectricTestRunner::class)
 class StackTraceHelperTest {
   @Test
   fun testParseAlternateFormatStackFrameWithMethod() {
@@ -50,7 +47,7 @@ class StackTraceHelperTest {
   fun testParseStackFrameWithInvalidFrame() {
     val frame = StackTraceHelper.convertJsStackTrace("Test.bundle:ten:twenty").get(0)
     assertThat(frame.method).isEqualTo("Test.bundle:ten:twenty")
-    assertThat(frame.fileName).isEqualTo("")
+    assertThat(frame.fileName).isEqualTo(null)
     assertThat(frame.line).isEqualTo(-1)
     assertThat(frame.column).isEqualTo(-1)
   }
@@ -59,7 +56,7 @@ class StackTraceHelperTest {
   fun testParseStackFrameWithNativeCodeFrame() {
     val frame = StackTraceHelper.convertJsStackTrace("forEach@[native code]").get(0)
     assertThat(frame.method).isEqualTo("forEach@[native code]")
-    assertThat(frame.fileName).isEqualTo("")
+    assertThat(frame.fileName).isEqualTo(null)
     assertThat(frame.line).isEqualTo(-1)
     assertThat(frame.column).isEqualTo(-1)
   }

@@ -7,10 +7,10 @@
 
 #include "Props.h"
 
-#include <folly/dynamic.h>
 #include <react/renderer/core/propsConversions.h>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include "DynamicPropsUtilities.h"
 
 namespace facebook::react {
@@ -56,5 +56,13 @@ void Props::setProp(
       return;
   }
 }
+
+#pragma mark - DebugStringConvertible
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+SharedDebugStringConvertibleList Props::getDebugProps() const {
+  return {debugStringConvertibleItem("nativeID", nativeId)};
+}
+#endif
 
 } // namespace facebook::react

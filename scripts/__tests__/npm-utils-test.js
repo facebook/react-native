@@ -70,43 +70,8 @@ describe('npm-utils', () => {
 
   describe('getNpmInfo', () => {
     beforeEach(() => {
-      process.env.CIRCLE_TAG = '';
       process.env.GITHUB_REF = '';
       process.env.GITHUB_REF_NAME = '';
-    });
-
-    it('return the expected format for prealpha', () => {
-      const isoStringSpy = jest.spyOn(Date.prototype, 'toISOString');
-      isoStringSpy.mockReturnValue('2023-10-04T15:43:55.123Z');
-      getCurrentCommitMock.mockImplementation(() => 'abcd1234');
-
-      const returnedValue = getNpmInfo('prealpha');
-      expect(returnedValue).toMatchObject({
-        version: `0.0.0-prealpha-2023100415`,
-        tag: 'prealpha',
-      });
-    });
-
-    it('return the expected format for patch-prereleases', () => {
-      const isoStringSpy = jest.spyOn(Date.prototype, 'toISOString');
-      isoStringSpy.mockReturnValue('2023-10-04T15:43:55.123Z');
-      getCurrentCommitMock.mockImplementation(() => 'abcd1234');
-      // exitIfNotOnGit takes a function as a param and it:
-      // 1. checks if we are on git => if not it exits
-      // 2. run the function passed as a param and return the output to the caller
-      // For the mock, we are assuming we are on github and we are returning `false`
-      // as the `getNpmInfo` function will pass a function that checks if the
-      // current commit is a tagged with 'latest'.
-      // In the Mock, we are assuming that we are on git (it does not exits) and the
-      // checkIfLatest function returns `false`
-      exitIfNotOnGitMock.mockImplementation(() => false);
-
-      process.env.CIRCLE_TAG = 'v0.74.1-rc.0';
-      const returnedValue = getNpmInfo('release');
-      expect(returnedValue).toMatchObject({
-        version: `0.74.1-rc.0`,
-        tag: '--no-tag',
-      });
     });
 
     it('return the expected format for patch-prereleases on GHA', () => {
