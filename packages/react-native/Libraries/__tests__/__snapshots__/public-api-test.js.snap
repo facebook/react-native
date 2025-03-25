@@ -7402,9 +7402,15 @@ declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js 1`] = `
 "declare const StyleSheet: StyleSheetExports;
-export type { NativeColorValue } from \\"./StyleSheetTypes\\";
+export type {
+  BoxShadowValue,
+  NativeColorValue,
+  FilterFunction,
+} from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
-export type TransformStyle = ____TransformStyle_Internal;
+export type OpaqueColorValue = NativeColorValue;
+export type TransformsStyle = ____TransformStyle_Internal;
+export type FontVariant = ____FontVariant_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7423,14 +7429,20 @@ declare export default typeof StyleSheet;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js.flow 1`] = `
 "export * as default from \\"./StyleSheetExports\\";
-export type { StyleProp } from \\"./StyleSheetTypes\\";
+export type {
+  StyleProp,
+  BoxShadowValue,
+  FilterFunction,
+} from \\"./StyleSheetTypes\\";
 export type StyleSheetProperties = {
   hairlineWidth: number,
   flatten<T: string>(style: T): T,
 };
 export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
-export type TransformStyle = ____TransformStyle_Internal;
+export type OpaqueColorValue = NativeColorValue;
+export type TransformsStyle = ____TransformStyle_Internal;
+export type FontVariant = ____FontVariant_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7773,7 +7785,7 @@ export type ____FontWeight_Internal =
   | \\"condensed\\"
   | \\"heavy\\"
   | \\"black\\";
-export type ____FontVariantArray_Internal = $ReadOnlyArray<
+export type ____FontVariant_Internal =
   | \\"small-caps\\"
   | \\"oldstyle-nums\\"
   | \\"lining-nums\\"
@@ -7806,8 +7818,9 @@ export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | \\"stylistic-seventeen\\"
   | \\"stylistic-eighteen\\"
   | \\"stylistic-nineteen\\"
-  | \\"stylistic-twenty\\",
->;
+  | \\"stylistic-twenty\\";
+export type ____FontVariantArray_Internal =
+  $ReadOnlyArray<____FontVariant_Internal>;
 type ____TextStyle_InternalBase = $ReadOnly<{
   color?: ____ColorValue_Internal,
   fontFamily?: string,
@@ -7950,11 +7963,11 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/priva
         | { +scale: number | AnimatedNode }
         | { +scaleX: number | AnimatedNode }
         | { +scaleY: number | AnimatedNode }
-        | { +translateX: number | AnimatedNode }
-        | { +translateY: number | AnimatedNode }
+        | { +translateX: number | string | AnimatedNode }
+        | { +translateY: number | string | AnimatedNode }
         | {
             +translate:
-              | [number | AnimatedNode, number | AnimatedNode]
+              | [number | string | AnimatedNode, number | string | AnimatedNode]
               | AnimatedNode,
           }
         | { +skewX: string | AnimatedNode }
@@ -8708,10 +8721,15 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
   | \\"windows\\"
   | \\"web\\"
   | \\"native\\";
-export type PlatformSelectSpec<T> = {
-  default?: T,
-  [PlatformOSType]: T,
+type OptionalPlatformSelectSpec<T> = {
+  [_key in PlatformOSType]?: T,
 };
+export type PlatformSelectSpec<T> =
+  | {
+      ...OptionalPlatformSelectSpec<T>,
+      default: T,
+    }
+  | OptionalPlatformSelectSpec<T>;
 type IOSPlatform = {
   OS: \\"ios\\",
   get Version(): string,

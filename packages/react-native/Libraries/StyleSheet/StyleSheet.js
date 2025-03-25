@@ -15,6 +15,7 @@ import type {
   ____ColorValue_Internal,
   ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
+  ____FontVariant_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
   ____TextStyle_Internal,
@@ -22,12 +23,17 @@ import type {
   ____TransformStyle_Internal,
   ____ViewStyle_Internal,
   ____ViewStyleProp_Internal,
+  NativeColorValue,
 } from './StyleSheetTypes';
 const StyleSheet: StyleSheetExports = (
   require('./StyleSheetExports') as $FlowFixMe
 ).default;
 
-export type {NativeColorValue} from './StyleSheetTypes';
+export type {
+  BoxShadowValue,
+  NativeColorValue,
+  FilterFunction,
+} from './StyleSheetTypes';
 
 /**
  * This type should be used as the type for anything that is a color. It is
@@ -39,9 +45,20 @@ export type {NativeColorValue} from './StyleSheetTypes';
 export type ColorValue = ____ColorValue_Internal;
 
 /**
+ * Expose the opaque type for NativeColorValue.
+ * @deprecated Use NativeColorValue instead.
+ */
+export type OpaqueColorValue = NativeColorValue;
+
+/**
  * This type is an object of the properties related to transforms.
  */
-export type TransformStyle = ____TransformStyle_Internal;
+export type TransformsStyle = ____TransformStyle_Internal;
+
+/**
+ * This type holds possible values for the `fontVariant` style property.
+ */
+export type FontVariant = ____FontVariant_Internal;
 
 /**
  * This type should be used as the type for a prop that is passed through

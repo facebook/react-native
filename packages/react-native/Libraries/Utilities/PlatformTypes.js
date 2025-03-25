@@ -16,10 +16,16 @@ export type PlatformOSType =
   | 'web'
   | 'native';
 
-export type PlatformSelectSpec<T> = {
-  default?: T,
-  [PlatformOSType]: T,
+type OptionalPlatformSelectSpec<T> = {
+  [_key in PlatformOSType]?: T,
 };
+
+export type PlatformSelectSpec<T> =
+  | {
+      ...OptionalPlatformSelectSpec<T>,
+      default: T,
+    }
+  | OptionalPlatformSelectSpec<T>;
 
 type IOSPlatform = {
   __constants: null,
