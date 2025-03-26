@@ -727,11 +727,16 @@ public class com/facebook/react/bridge/DynamicFromObject : com/facebook/react/br
 }
 
 public abstract class com/facebook/react/bridge/GuardedAsyncTask : android/os/AsyncTask {
+	public static final field Companion Lcom/facebook/react/bridge/GuardedAsyncTask$Companion;
+	public static final field THREAD_POOL_EXECUTOR Ljava/util/concurrent/Executor;
 	protected fun <init> (Lcom/facebook/react/bridge/JSExceptionHandler;)V
 	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	protected synthetic fun doInBackground ([Ljava/lang/Object;)Ljava/lang/Object;
+	public synthetic fun doInBackground ([Ljava/lang/Object;)Ljava/lang/Object;
 	protected final fun doInBackground ([Ljava/lang/Object;)Ljava/lang/Void;
 	protected abstract fun doInBackgroundGuarded ([Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/bridge/GuardedAsyncTask$Companion {
 }
 
 public abstract class com/facebook/react/bridge/GuardedRunnable : java/lang/Runnable {
