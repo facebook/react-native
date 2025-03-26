@@ -42,7 +42,7 @@ function ensurePerformanceLongTaskTiming(
   return value;
 }
 
-describe('LongTask API', () => {
+describe('LongTasks API', () => {
   it('does NOT report short tasks (under 50ms)', () => {
     const callback = jest.fn();
 
