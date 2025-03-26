@@ -171,6 +171,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         std::make_shared<EventTarget>(
             fragment.instanceHandle, fragment.surfaceId),
         eventDispatcher_);
+    if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() &&
+        fragment.eventEmitterListener) {
+      eventEmitter->addListener(fragment.eventEmitterListener);
+    }
     return std::make_shared<ShadowNodeFamily>(
         fragment, std::move(eventEmitter), eventDispatcher_, *this);
   }
