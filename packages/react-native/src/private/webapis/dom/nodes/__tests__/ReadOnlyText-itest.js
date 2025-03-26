@@ -11,11 +11,11 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import invariant from 'invariant';
 import * as React from 'react';
 import {NativeText} from 'react-native/Libraries/Text/TextNativeComponent';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';

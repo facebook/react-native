@@ -11,28 +11,15 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
+import isUnreachable from '../../../../__tests__/utilities/isUnreachable';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {View} from 'react-native';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
-
-function isUnreachable<T: interface {}>(weakRef: WeakRef<T>): boolean {
-  let unreachable = true;
-
-  Fantom.runTask(() => {
-    global.gc();
-  });
-
-  Fantom.runTask(() => {
-    unreachable = weakRef.deref() === undefined;
-  });
-
-  return unreachable;
-}
 
 describe('ReactNativeDocument', () => {
   it('is connected until the surface is destroyed', () => {
