@@ -154,6 +154,9 @@
             "AccessibilityManager": {
               "unstableRequiresMainQueueSetup": true
             },
+            "Appearance": {
+              "unstableRequiresMainQueueSetup": true
+            },
             "AppState": {
               "unstableRequiresMainQueueSetup": true
             },
