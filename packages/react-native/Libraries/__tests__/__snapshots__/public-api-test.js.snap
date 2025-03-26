@@ -668,7 +668,13 @@ export type WithAnimatedValue<+T> = T extends Builtin | Nullable
       : T extends { ... }
         ? { +[K in keyof T]: WithAnimatedValue<T[K]> }
         : T;
-type NonAnimatedProps = \\"ref\\" | \\"innerViewRef\\" | \\"scrollViewRef\\";
+type NonAnimatedProps =
+  | \\"ref\\"
+  | \\"innerViewRef\\"
+  | \\"scrollViewRef\\"
+  | \\"testID\\"
+  | \\"disabled\\"
+  | \\"accessibilityLabel\\";
 type PassThroughProps = $ReadOnly<{
   passthroughAnimatedPropExplicitValues?: React.ElementConfig<
     typeof View,
@@ -681,18 +687,10 @@ export type AnimatedProps<Props: { ... }> = {
       ? Props[K]
       : WithAnimatedValue<Props[K]>,
 };
-export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
-  ...$Exact<Props>,
-  passthroughAnimatedPropExplicitValues?: ?Props,
-}>;
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
 > = component(ref?: React.RefSetter<Instance>, ...AnimatedProps<Props>);
-export type StrictAnimatedComponentType<
-  Props: { ... },
-  +Instance = mixed,
-> = component(ref: React.RefSetter<Instance>, ...StrictAnimatedProps<Props>);
 declare export default function createAnimatedComponent<
   TInstance: React.ComponentType<any>,
 >(
@@ -707,7 +705,7 @@ declare export function unstable_createAnimatedComponentWithAllowlist<
 >(
   Component: TInstance,
   allowlist: ?AnimatedPropsAllowlist
-): StrictAnimatedComponentType<TProps, React.ElementRef<TInstance>>;
+): AnimatedComponentType<TProps, React.ElementRef<TInstance>>;
 "
 `;
 
