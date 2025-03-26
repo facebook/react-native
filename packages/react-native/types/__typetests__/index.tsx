@@ -122,6 +122,7 @@ import {
   LayoutAnimation,
   processColor,
   experimental_LayoutConformance as LayoutConformance,
+  experimental_useIsScreenReaderEnabled as useIsScreenReaderEnabled,
 } from 'react-native';
 
 declare module 'react-native' {
@@ -743,6 +744,7 @@ const AppStateExample = () => {
     appState.current,
   );
   const appStateIsAvailable = AppState.isAvailable;
+  const isScreenReaderEnabled = useIsScreenReaderEnabled();
 
   React.useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
@@ -767,6 +769,7 @@ const AppStateExample = () => {
     <View style={styles.container}>
       <Text>Current state is: {appStateVisible}</Text>
       <Text>Available: {appStateIsAvailable}</Text>
+      <Text>Is screen reader enabled: {isScreenReaderEnabled}</Text>
     </View>
   );
 };

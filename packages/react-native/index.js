@@ -307,6 +307,9 @@ module.exports = {
   get useWindowDimensions() {
     return require('./Libraries/Utilities/useWindowDimensions').default;
   },
+  get experimental_useIsScreenReaderEnabled() {
+    return require('./Libraries/Utilities/useIsScreenReaderEnabled').default;
+  },
   get UTFSequence() {
     return require('./Libraries/UTFSequence').default;
   },
