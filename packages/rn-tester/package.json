@@ -1,6 +1,6 @@
 {
   "name": "@react-native/tester",
-  "version": "0.76.7",
+  "version": "0.76.8",
   "private": true,
   "description": "React Native tester app.",
   "license": "MIT",
@@ -23,8 +23,8 @@
     "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock"
   },
   "dependencies": {
-    "@react-native/oss-library-example": "0.76.7",
-    "@react-native/popup-menu-android": "0.76.7",
+    "@react-native/oss-library-example": "0.76.8",
+    "@react-native/popup-menu-android": "0.76.8",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
