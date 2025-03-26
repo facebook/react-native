@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include "NetworkTypes.h"
+
 #include <atomic>
 #include <functional>
-#include <map>
-#include <optional>
 #include <string>
 
 namespace facebook::react::jsinspector_modern {
@@ -21,27 +21,6 @@ namespace facebook::react::jsinspector_modern {
  * The callback may be called from any thread.
  */
 using FrontendChannel = std::function<void(std::string_view messageJson)>;
-
-using Headers = std::map<std::string, std::string>;
-
-/**
- * Request info from the request caller.
- */
-struct RequestInfo {
-  std::string url;
-  std::string httpMethod;
-  std::optional<Headers> headers;
-  std::optional<std::string> httpBody;
-};
-
-/**
- * Response info from the request caller.
- */
-struct ResponseInfo {
-  std::string url;
-  uint16_t statusCode;
-  std::optional<Headers> headers;
-};
 
 /**
  * [Experimental] An interface for reporting network events to the modern
@@ -86,7 +65,7 @@ class NetworkReporter {
       const std::string& requestId,
       const RequestInfo& requestInfo,
       int encodedDataLength,
-      const std::optional<ResponseInfo>& redirectResponse);
+      const std::optional<ResponseInfo>& redirectResponse) const;
 
   /**
    * Report detailed timing info, such as DNS lookup, when a request has
@@ -98,14 +77,14 @@ class NetworkReporter {
    *
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-connectstart
    */
-  void reportConnectionTiming(const std::string& requestId);
+  void reportConnectionTiming(const std::string& requestId) const;
 
   /**
    * Report when a network request has failed.
    *
    * Corresponds to `Network.loadingFailed` in CDP.
    */
-  void reportRequestFailed(const std::string& requestId);
+  void reportRequestFailed(const std::string& requestId) const;
 
   /**
    * Report when HTTP response headers have been received, corresponding to
@@ -119,14 +98,14 @@ class NetworkReporter {
   void reportResponseStart(
       const std::string& requestId,
       const ResponseInfo& responseInfo,
-      int encodedDataLength);
+      int encodedDataLength) const;
 
   /**
    * Report when additional chunks of the response body have been received.
    *
    * Corresponds to `Network.dataReceived` in CDP.
    */
-  void reportDataReceived(const std::string& requestId);
+  void reportDataReceived(const std::string& requestId) const;
 
   /**
    * Report when a network request is complete and we are no longer receiving
@@ -137,7 +116,8 @@ class NetworkReporter {
    *
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-responseend
    */
-  void reportResponseEnd(const std::string& requestId, int encodedDataLength);
+  void reportResponseEnd(const std::string& requestId, int encodedDataLength)
+      const;
 
  private:
   FrontendChannel frontendChannel_;
@@ -148,6 +128,10 @@ class NetworkReporter {
   ~NetworkReporter() = default;
 
   std::atomic<bool> debuggingEnabled_{false};
+
+  inline bool isDebuggingEnabledNoSync() const {
+    return debuggingEnabled_.load(std::memory_order_relaxed);
+  }
 };
 
 } // namespace facebook::react::jsinspector_modern
