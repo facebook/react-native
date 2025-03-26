@@ -3945,6 +3945,7 @@ export type AccessibilityPropsIOS = $ReadOnly<{
 export type AccessibilityProps = $ReadOnly<{
   ...AccessibilityPropsAndroid,
   ...AccessibilityPropsIOS,
+  accessibilityOrder?: $ReadOnlyArray<string>,
   accessible?: ?boolean,
   accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
