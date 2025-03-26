@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {AnimatedBaseProps} from '../Animated/createAnimatedComponent';
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 import type {ImageResizeMode} from './../Image/ImageResizeMode';
 import type {
@@ -990,6 +991,11 @@ export type StyleProp<+T> =
 export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
+
+export type ____DangerouslyImpreciseAnimatedStyleProp_Internal = StyleProp<
+  Partial<AnimatedBaseProps<____DangerouslyImpreciseStyle_Internal>>,
+>;
+
 export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;

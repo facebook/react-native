@@ -687,6 +687,11 @@ export type AnimatedProps<Props: { ... }> = {
       ? Props[K]
       : WithAnimatedValue<Props[K]>,
 };
+export type AnimatedBaseProps<Props: { ... }> = {
+  [K in keyof Props]: K extends NonAnimatedProps
+    ? Props[K]
+    : WithAnimatedValue<Props[K]>,
+};
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
@@ -7865,6 +7870,9 @@ export type StyleProp<+T> =
 export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
+export type ____DangerouslyImpreciseAnimatedStyleProp_Internal = StyleProp<
+  Partial<AnimatedBaseProps<____DangerouslyImpreciseStyle_Internal>>,
+>;
 export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
@@ -7900,7 +7908,9 @@ export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/flattenStyle.js 1`] = `
-"declare function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
+"declare function flattenStyle<
+  TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
+>(
   style: ?TStyleProp
 ): ?____FlattenStyleProp_Internal<TStyleProp>;
 declare export default typeof flattenStyle;
