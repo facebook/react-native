@@ -230,3 +230,10 @@ jobs:
             const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
             const version = "${{ github.ref_name }}";
             await verifyReleaseOnNpm(version, isLatest());
+      - name: Verify that artifacts are on Maven
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {verifyArtifactsAreOnMaven} = require('./.github/workflow-scripts/verifyArtifactsAreOnMaven.js');
+            const version = "${{ github.ref_name }}";
+            await verifyArtifactsAreOnMaven(version);
