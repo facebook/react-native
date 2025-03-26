@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae8953b9c5b0efae6fe67b9b799426d7>>
+ * @generated SignedSource<<bc71743fe3c22fe68332719c3f4d107e>>
  */
 
 /**
@@ -40,6 +40,10 @@ bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
 
 bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableAccessibilityOrder() {
+  return getAccessor().enableAccessibilityOrder();
 }
 
 bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {

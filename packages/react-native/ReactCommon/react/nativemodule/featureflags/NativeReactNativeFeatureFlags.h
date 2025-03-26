@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1465adf7db643faefb579cafd9ef9dcf>>
+ * @generated SignedSource<<d417f5d838bddf6006f9c51bb8a07e77>>
  */
 
 /**
@@ -44,6 +44,8 @@ class NativeReactNativeFeatureFlags
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
+
+  bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
 

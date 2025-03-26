@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb1c3b4c3d3d20ab463e4d0131efc3d9>>
+ * @generated SignedSource<<afe86b07dbf67e14ea2787fde0a4778d>>
  * @flow strict
  */
 
@@ -51,6 +51,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   animatedShouldSignalBatch: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
+  enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
@@ -176,6 +177,10 @@ export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter(
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
+/**
+ * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
+ */
+export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter('enableAccessibilityOrder', true);
 /**
  * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
  */
