@@ -13,6 +13,8 @@
  * [Experimental] An interface for reporting network events to the modern
  * debugger server and Web Performance APIs.
  *
+ * In a production (non dev or profiling) build, CDP reporting is disabled.
+ *
  * This is a helper class wrapping
  * `facebook::react::jsinspector_modern::NetworkReporter`.
  */
