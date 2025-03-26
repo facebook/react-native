@@ -218,10 +218,11 @@ function enablePublishing(config, currentBranch, { npmTag: tag, prerelease, isNe
   // Determines whether we need to add "nightly" or "rc" to the version string.
   const { generatorOptions } = release.version;
   if (generatorOptions.preid !== prerelease) {
-    errors.push(`'release.version.generatorOptions.preid' must be set to '${prerelease || ""}'`);
     if (prerelease) {
+      errors.push(`'release.version.generatorOptions.preid' must be set to '${prerelease}'`);
       generatorOptions.preid = prerelease;
     } else {
+      errors.push(`'release.version.generatorOptions.preid' must be removed`);
       generatorOptions.preid = undefined;
     }
   }

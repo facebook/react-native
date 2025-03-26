@@ -21,12 +21,19 @@ steps:
 
   - script: |
       git switch $(Build.SourceBranchName)
-      echo "//registry.npmjs.org/:_authToken=$(NODE_AUTH_TOKEN)" > ~/.npmrc
       yarn nx release --skip-publish --verbose
-      yarn nx release publish --excludeTaskDependencies
-      rm ~/.npmrc
     env:
       GITHUB_TOKEN: $(githubAuthToken)
-      NODE_AUTH_TOKEN: $(npmAuthToken)
-    displayName: Version and publish packages
+    displayName: Version Packages and Github Release
     condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
+
+  - script: |
+      echo "//registry.npmjs.org/:_authToken=$(npmAuthToken)" > ~/.npmrc
+      yarn nx release publish --excludeTaskDependencies
+    displayName: Publish packages
+    condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
+
+  - script: |
+      rm -f ~/.npmrc
+    displayName: Remove npmrc if it exists
+    condition: always()
