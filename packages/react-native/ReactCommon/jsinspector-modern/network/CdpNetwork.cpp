@@ -55,7 +55,7 @@ folly::dynamic Request::toDynamic() const {
   return {
       .url = responseInfo.url,
       .status = responseInfo.statusCode,
-      .statusText = "",
+      .statusText = httpReasonPhrase(responseInfo.statusCode),
       .headers = headers,
       .mimeType = mimeTypeFromHeaders(headers),
       .encodedDataLength = encodedDataLength,
