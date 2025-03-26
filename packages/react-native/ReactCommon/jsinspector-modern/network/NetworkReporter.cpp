@@ -7,16 +7,23 @@
 
 #include "NetworkReporter.h"
 
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
 #include "CdpNetwork.h"
+#endif
 
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
 #include <folly/dynamic.h>
 #include <jsinspector-modern/cdp/CdpJson.h>
+#endif
 
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
 #include <chrono>
+#endif
 #include <stdexcept>
 
 namespace facebook::react::jsinspector_modern {
 
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
 namespace {
 
 /**
@@ -34,6 +41,7 @@ double getCurrentUnixTimestampSeconds() {
 }
 
 } // namespace
+#endif
 
 NetworkReporter& NetworkReporter::getInstance() {
   static NetworkReporter instance;
@@ -67,6 +75,8 @@ void NetworkReporter::reportRequestStart(
     const RequestInfo& requestInfo,
     int encodedDataLength,
     const std::optional<ResponseInfo>& redirectResponse) const {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
     return;
   }
@@ -94,32 +104,41 @@ void NetworkReporter::reportRequestStart(
 
   frontendChannel_(
       cdp::jsonNotification("Network.requestWillBeSent", params.toDynamic()));
+#endif
 }
 
 void NetworkReporter::reportConnectionTiming(
     const std::string& /*requestId*/) const {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
     return;
   }
 
   // TODO(T218236597)
   throw std::runtime_error("Not implemented");
+#endif
 }
 
 void NetworkReporter::reportRequestFailed(
     const std::string& /*requestId*/) const {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
     return;
   }
 
   // TODO(T218236855)
   throw std::runtime_error("Not implemented");
+#endif
 }
 
 void NetworkReporter::reportResponseStart(
     const std::string& requestId,
     const ResponseInfo& responseInfo,
     int encodedDataLength) const {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
     return;
   }
@@ -137,21 +156,27 @@ void NetworkReporter::reportResponseStart(
 
   frontendChannel_(
       cdp::jsonNotification("Network.responseReceived", params.toDynamic()));
+#endif
 }
 
 void NetworkReporter::reportDataReceived(
     const std::string& /*requestId*/) const {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
     return;
   }
 
   // TODO(T218236266)
   throw std::runtime_error("Not implemented");
+#endif
 }
 
 void NetworkReporter::reportResponseEnd(
     const std::string& requestId,
     int encodedDataLength) const {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
     return;
   }
@@ -164,6 +189,7 @@ void NetworkReporter::reportResponseEnd(
 
   frontendChannel_(
       cdp::jsonNotification("Network.loadingFinished", params.toDynamic()));
+#endif
 }
 
 } // namespace facebook::react::jsinspector_modern

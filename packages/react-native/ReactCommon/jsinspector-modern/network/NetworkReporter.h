@@ -25,6 +25,8 @@ using FrontendChannel = std::function<void(std::string_view messageJson)>;
 /**
  * [Experimental] An interface for reporting network events to the modern
  * debugger server and Web Performance APIs.
+ *
+ * In a production (non dev or profiling) build, CDP reporting is disabled.
  */
 class NetworkReporter {
  public:
