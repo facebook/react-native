@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc7536e8280fdc7d3f2106486439676a>>
+ * @generated SignedSource<<82d7453dbac69e219a719b55a89023a9>>
  */
 
 /**
@@ -58,6 +58,11 @@ class ReactNativeFeatureFlags {
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
+   * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
+   */
+  RN_EXPORT static bool enableAccessibilityOrder();
 
   /**
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.

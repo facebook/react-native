@@ -92,6 +92,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableAccessibilityOrder: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAccumulatedUpdatesInRawPropsAndroid: {
       defaultValue: false,
       metadata: {

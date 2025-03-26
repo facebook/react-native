@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c111ea4ea86fce421aa4addb8ad0e4e>>
+ * @generated SignedSource<<b29b4c08ecc6755e60c439cf778cc18f>>
  */
 
 /**
@@ -30,6 +30,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
+
+  override fun enableAccessibilityOrder(): Boolean = true
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 

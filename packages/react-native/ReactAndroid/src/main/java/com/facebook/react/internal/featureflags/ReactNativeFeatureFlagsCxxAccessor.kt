@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7196636e08059866a9324ab57609e492>>
+ * @generated SignedSource<<e235785126d8172d7fb2d59bbcc75356>>
  */
 
 /**
@@ -24,6 +24,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var animatedShouldSignalBatchCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
+  private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
@@ -95,6 +96,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.disableMountItemReorderingAndroid()
       disableMountItemReorderingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAccessibilityOrder(): Boolean {
+    var cached = enableAccessibilityOrderCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableAccessibilityOrder()
+      enableAccessibilityOrderCache = cached
     }
     return cached
   }

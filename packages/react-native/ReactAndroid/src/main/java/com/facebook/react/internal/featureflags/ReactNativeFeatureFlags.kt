@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f43ddaa47a45d604adda2e2296c1484>>
+ * @generated SignedSource<<cc746968b6f59e6ea299ad645772eb09>>
  */
 
 /**
@@ -53,6 +53,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
+
+  /**
+   * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
+   */
+  @JvmStatic
+  public fun enableAccessibilityOrder(): Boolean = accessor.enableAccessibilityOrder()
 
   /**
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.

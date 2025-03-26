@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a9e88c68d78cde54e51477a0f06c643>>
+ * @generated SignedSource<<b3f2cba269ad4d9492dc504c0a90872a>>
  * @flow strict
  */
 
@@ -28,6 +28,7 @@ export interface Spec extends TurboModule {
   +animatedShouldSignalBatch?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
+  +enableAccessibilityOrder?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
