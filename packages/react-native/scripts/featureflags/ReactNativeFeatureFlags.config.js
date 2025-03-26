@@ -541,13 +541,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     disableInteractionManager: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-11-06',
         description:
           'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
