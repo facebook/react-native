@@ -17,6 +17,7 @@
 
 #import <React/RCTHTTPRequestHandler.h>
 
+#import "RCTInspectorNetworkReporter.h"
 #import "RCTNetworkPlugins.h"
 
 static BOOL gEnableNetworkingRequestQueue = NO;
@@ -587,16 +588,22 @@ RCT_EXPORT_MODULE()
   RCTURLRequestResponseBlock responseBlock = ^(NSURLResponse *response) {
     NSDictionary<NSString *, NSString *> *headers;
     NSInteger status;
-    if ([response isKindOfClass:[NSHTTPURLResponse class]]) { // Might be a local file request
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
       headers = httpResponse.allHeaderFields ?: @{};
       status = httpResponse.statusCode;
     } else {
+      // Other HTTP-like request
       headers = response.MIMEType ? @{@"Content-Type" : response.MIMEType} : @{};
       status = 200;
     }
     id responseURL = response.URL ? response.URL.absoluteString : [NSNull null];
     NSArray<id> *responseJSON = @[ task.requestID, @(status), headers, responseURL ];
+
+    [RCTInspectorNetworkReporter reportResponseStart:task.requestID
+                                            response:response
+                                          statusCode:status
+                                             headers:headers];
     [weakSelf sendEventWithName:@"didReceiveNetworkResponse" body:responseJSON];
   };
 
@@ -655,6 +662,7 @@ RCT_EXPORT_MODULE()
     NSArray *responseJSON =
         @[ task.requestID, RCTNullIfNil(error.localizedDescription), error.code == kCFURLErrorTimedOut ? @YES : @NO ];
 
+    [RCTInspectorNetworkReporter reportResponseEnd:task.requestID encodedDataLength:data.length];
     [strongSelf sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
     [strongSelf->_tasksByRequestID removeObjectForKey:task.requestID];
   };
@@ -673,6 +681,9 @@ RCT_EXPORT_MODULE()
     responseSender(@[ task.requestID ]);
   }
 
+  [RCTInspectorNetworkReporter reportRequestStart:task.requestID
+                                          request:request
+                                encodedDataLength:task.response.expectedContentLength];
   [task start];
 }
 
