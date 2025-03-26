@@ -2358,7 +2358,7 @@ exports[`public API should not change unintentionally Libraries/Components/Switc
   thumbTintColor?: ?ColorValue,
   tintColor?: ?ColorValue,
 };
-export type SwitchChangeEventData = $ReadOnly<{
+type SwitchChangeEventData = $ReadOnly<{
   target: number,
   value: boolean,
 }>;
@@ -2639,13 +2639,12 @@ declare export default PartialViewConfigWithoutName;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.flow.js 1`] = `
-"export type TextInputChangeEventData = $ReadOnly<{
+"type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
 }>;
-export type TextInputChangeEvent =
-  NativeSyntheticEvent<TextInputChangeEventData>;
+type TextInputChangeEvent = NativeSyntheticEvent<TextInputChangeEventData>;
 export type TextInputEvent = NativeSyntheticEvent<
   $ReadOnly<{
     eventCount: number,
@@ -2658,7 +2657,7 @@ export type TextInputEvent = NativeSyntheticEvent<
     text: string,
   }>,
 >;
-export type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = $ReadOnly<{
   target: number,
   contentSize: $ReadOnly<{
     width: number,
@@ -2667,23 +2666,23 @@ export type TextInputContentSizeChangeEventData = $ReadOnly<{
 }>;
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
-export type TargetEvent = $ReadOnly<{
+type TargetEvent = $ReadOnly<{
   target: number,
 }>;
-export type TextInputFocusEventData = TargetEvent;
+type TextInputFocusEventData = TargetEvent;
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
-export type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
 }>;
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
-export type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -2691,14 +2690,14 @@ export type TextInputKeyPressEventData = $ReadOnly<{
 }>;
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
-export type TextInputEndEditingEventData = $ReadOnly<{
+type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
-export type TextInputSubmitEditingEventData = $ReadOnly<{
+type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
@@ -2996,7 +2995,7 @@ export type TextInputType = InternalTextInput & TextInputComponentStatics;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
-"export type TextInputChangeEventData = $ReadOnly<{
+"type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
@@ -3015,7 +3014,7 @@ export type TextInputEvent = NativeSyntheticEvent<
     text: string,
   }>,
 >;
-export type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = $ReadOnly<{
   target: number,
   contentSize: $ReadOnly<{
     width: number,
@@ -3027,23 +3026,25 @@ export type TextInputContentSizeChangeEvent =
 export type TargetEvent = $ReadOnly<{
   target: number,
 }>;
-export type TextInputFocusEventData = TargetEvent;
+type TextInputFocusEventData = TargetEvent;
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-export type TextInputScrollEventData = {
+type TextInputScrollEventData = {
   contentOffset: { x: number, y: number },
 };
+export type TextInputScrollEvent =
+  NativeSyntheticEvent<TextInputScrollEventData>;
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
-export type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
 }>;
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
-export type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -3051,14 +3052,14 @@ export type TextInputKeyPressEventData = $ReadOnly<{
 }>;
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
-export type TextInputEndEditingEventData = $ReadOnly<{
+type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
-export type TextInputSubmitEditingEventData = $ReadOnly<{
+type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
@@ -4582,12 +4583,12 @@ declare export function getUrlCacheBreaker(): string;
 
 exports[`public API should not change unintentionally Libraries/Image/Image.js.flow 1`] = `
 "export type {
-  ImageProgressEventDataIOS,
+  ImageProgressEventIOS,
   ImagePropsIOS,
   ImagePropsAndroid,
   ImageSourcePropType,
-  ImageLoadEventData,
-  ImageErrorEventData,
+  ImageLoadEvent,
+  ImageErrorEvent,
   ImagePropsBase,
   ImageProps,
   ImageBackgroundProps,
@@ -4639,14 +4640,20 @@ declare export function useWrapRefWithImageAttachedCallbacks(
 
 exports[`public API should not change unintentionally Libraries/Image/ImageProps.js 1`] = `
 "export type ImageSourcePropType = ImageSource;
-export type ImageProgressEventDataIOS = {
+type ImageProgressEventDataIOS = {
   loaded: number,
   total: number,
 };
-export type ImageErrorEventData = {
+export type ImageProgressEventIOS = NativeSyntheticEvent<
+  $ReadOnly<ImageProgressEventDataIOS>,
+>;
+type ImageErrorEventData = {
   error: string,
 };
-export type ImageLoadEventData = {
+export type ImageErrorEvent = NativeSyntheticEvent<
+  $ReadOnly<ImageErrorEventData>,
+>;
+type ImageLoadEventData = {
   source: {
     height: number,
     width: number,
@@ -4659,9 +4666,7 @@ export type ImageLoadEvent = NativeSyntheticEvent<
 export type ImagePropsIOS = $ReadOnly<{
   defaultSource?: ?ImageSource,
   onPartialLoad?: ?() => void,
-  onProgress?: ?(
-    event: NativeSyntheticEvent<$ReadOnly<ImageProgressEventDataIOS>>
-  ) => void,
+  onProgress?: ?(event: ImageProgressEventIOS) => void,
 }>;
 export type ImagePropsAndroid = $ReadOnly<{
   loadingIndicatorSource?: ?(number | $ReadOnly<ImageURISource>),
@@ -4683,9 +4688,7 @@ export type ImagePropsBase = $ReadOnly<{
   crossOrigin?: ?(\\"anonymous\\" | \\"use-credentials\\"),
   height?: number,
   width?: number,
-  onError?: ?(
-    event: NativeSyntheticEvent<$ReadOnly<ImageErrorEventData>>
-  ) => void,
+  onError?: ?(event: ImageErrorEvent) => void,
   onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onLoad?: ?(event: ImageLoadEvent) => void,
   onLoadEnd?: ?() => void,
@@ -8309,7 +8312,7 @@ export type LayoutChangeEvent = NativeSyntheticEvent<
     layout: LayoutRectangle,
   }>,
 >;
-export type TextLayoutEventData = $ReadOnly<{
+type TextLayoutEventData = $ReadOnly<{
   lines: Array<TextLayoutLine>,
 }>;
 export type TextLayoutEvent = NativeSyntheticEvent<TextLayoutEventData>;
