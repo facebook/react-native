@@ -86,3 +86,5 @@ declare var global: {
   // Undeclared properties are implicitly `any`.
   [string | symbol]: any,
 };
+
+type $PropertyType<T, K> = T[K];
