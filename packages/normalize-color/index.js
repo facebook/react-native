@@ -38,10 +38,22 @@ function normalizeColor(color) {
   }
 
   if ((match = matchers.rgb.exec(color))) {
+    // rgb(R G B / A) notation
+    if (match[5] !== undefined) {
+      return (
+        ((parse255(match[5]) << 24) | // r
+          (parse255(match[6]) << 16) | // g
+          (parse255(match[7]) << 8) | // b
+          parse1(match[8])) >>> // a
+        0
+      );
+    }
+
+    // rgb(R, G, B) notation
     return (
-      ((parse255(match[1]) << 24) | // r
-        (parse255(match[2]) << 16) | // g
-        (parse255(match[3]) << 8) | // b
+      ((parse255(match[2]) << 24) | // r
+        (parse255(match[3]) << 16) | // g
+        (parse255(match[4]) << 8) | // b
         0x000000ff) >>> // a
       0
     );
@@ -239,7 +251,13 @@ let cachedMatchers;
 function getMatchers() {
   if (cachedMatchers === undefined) {
     cachedMatchers = {
-      rgb: new RegExp('rgb' + call(NUMBER, NUMBER, NUMBER)),
+      rgb: new RegExp(
+        'rgb(' +
+          call(NUMBER, NUMBER, NUMBER) +
+          '|' +
+          callWithSlashSeparator(NUMBER, NUMBER, NUMBER, NUMBER) +
+          ')',
+      ),
       rgba: new RegExp(
         'rgba(' +
           commaSeparatedCall(NUMBER, NUMBER, NUMBER, NUMBER) +
