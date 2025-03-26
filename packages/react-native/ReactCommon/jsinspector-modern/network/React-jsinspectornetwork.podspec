@@ -46,5 +46,7 @@ Pod::Spec.new do |s|
     s.header_mappings_dir = "../.."
   end
 
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
+
   add_rn_third_party_dependencies(s)
 end
