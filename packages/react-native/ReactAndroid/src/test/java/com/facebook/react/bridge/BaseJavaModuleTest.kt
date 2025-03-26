@@ -30,8 +30,9 @@ class BaseJavaModuleTest {
 
   @Before
   fun setup() {
+    val jsInstance = mock(JSInstance::class.java)
     val moduleHolder = ModuleHolder(MethodsModule())
-    moduleWrapper = JavaModuleWrapper(null, moduleHolder)
+    moduleWrapper = JavaModuleWrapper(jsInstance, moduleHolder)
     methods = moduleWrapper.methodDescriptors
     val generatedModuleHolder = ModuleHolder(GeneratedMethodsModule())
     generatedModuleWrapper = JavaModuleWrapper(null, generatedModuleHolder)
