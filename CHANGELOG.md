@@ -846,6 +846,27 @@ github.com/robhogan))
 - **TextInput:** Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
 - **TextInput:** Fix `maxLength` not working in old arch ([4b3ef3b00c](https://github.com/facebook/react-native/commit/4b3ef3b00ce0026c0d1e1f2a5546fcec249255d8) by [@mateoguzmana](https://github.com/mateoguzmana))
 
+## v0.76.8
+
+### Fixed
+
+- **FormData:** Remove non compliant `filename*` attribute in a FormData `content-disposition` header ([9e846b4d11](https://github.com/facebook/react-native/commit/9e846b4d11a287977c05a77169d8775ab14474ca) by [@foyarash](https://github.com/foyarash))
+- **DevX:** Disconnections of DevTools when the network is under significant strain. ([08c04147ba](https://github.com/facebook/react-native/commit/08c04147ba7664ad82dcb59184293bec8c0e728f) by [@vzaidman](https://github.com/vzaidman))
+- **JS:** Fix `react-native-community/cli` not being found in pnpm setups ([9ba96ad79d6](https://github.com/facebook/react-native/commit/9ba96ad79d62a77dbf12b0012eaa4f61e4749ec0) by [@tido64](https://github.com/tido64))
+- **JS:** Fix `react-native-community/cli-platform-*` packages not being found in monorepos ([ffe7bd1471](https://github.com/facebook/react-native/commit/ffe7bd147179d976b165f869cd8ae28d5de87286) by [@tido64](https://github.com/tido64))
+
+#### Android specific
+
+- **popup-menu-android:** Fix react-native/popup-menu-android not building for 3rd party developers ([ac637ff44](https://github.com/facebook/react-native/commit/ac637ff448e7d4f9bb4c16297fbd27ed94ab9803) by [@cortinico](https://github.com/cortinico))
+- **DevTools:** Pass the bundle URL protocol when setting up HMR client on Android ([68055f2d8a](https://github.com/facebook/react-native/commit/68055f2d8a1f475a79651cdae81e6af1a32ddf6f) by [@byCedric](https://github.com/byCedric))
+- **CLI:** Fix registering of `start` and `bundle` commands with community CLI and isolated node_modules. ([b9c4095e40](https://github.com/facebook/react-native/commit/b9c4095e40faed0f3ea06f1981b9a53c54a08291) by [@robhogan](https://github.com/robhogan))
+
+#### iOS specific
+
+- **layout:** Layout direction changes are now honored on bundle reload. ([23b888ff2d](https://github.com/facebook/react-native/commit/23b888ff2d5b877a88e3432e4a4af2836f0b8dca) by [@chrsmys](https://github.com/chrsmys))
+- **TextInput:** Fixes TextInput crashes when any text is entered while running as iOS app on apple silicon mac ([e2b081e66f](https://github.com/facebook/react-native/commit/e2b081e66f277948fcb8bc546c8184c8eaff4d17) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **Runtime:** Convert to JSException only NSException from sync methods ([8eec35f134](https://github.com/facebook/react-native/commit/8eec35f134f353e99fa27935110cd33d4bd9c213) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.76.7
 
 ### Changed
