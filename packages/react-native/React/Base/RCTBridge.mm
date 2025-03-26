@@ -141,7 +141,8 @@ NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
-  if (RCTIsNewArchEnabled() && ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
+  if (RCTAreLegacyLogsEnabled() && RCTIsNewArchEnabled() &&
+      ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
     addModuleLoadedWithOldArch([moduleClass description]);
   }
   static dispatch_once_t onceToken;

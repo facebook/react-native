@@ -141,7 +141,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   // TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
   if (RCTFabricInteropLayerEnabled() && [RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
     RCTLogNewArchitectureValidation(
-        RCTNotAllowedInFabricWithoutLegacy,
+        RCTAreLegacyLogsEnabled() ? RCTNotAllowedInFabricWithoutLegacy : RCTNotAllowedInBridgeless,
         self,
         [NSString
             stringWithFormat:
