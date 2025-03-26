@@ -19,11 +19,13 @@ namespace facebook::react {
 
 class MountingTransaction;
 struct ShadowView;
+class UIManager;
 
 class FabricMountingManager final {
  public:
   FabricMountingManager(
-      jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
+      jni::global_ref<JFabricUIManager::javaobject>& javaUIManager,
+      std::weak_ptr<UIManager> uiManager);
   FabricMountingManager(const FabricMountingManager&) = delete;
 
   void onSurfaceStart(SurfaceId surfaceId);
@@ -64,6 +66,8 @@ class FabricMountingManager final {
   bool isOnMainThread();
 
   jni::global_ref<JFabricUIManager::javaobject> javaUIManager_;
+
+  std::weak_ptr<UIManager> uiManager_;
 
   std::recursive_mutex commitMutex_;
 

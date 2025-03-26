@@ -422,10 +422,6 @@ void FabricUIManagerBinding::installFabricUIManager(
 
   std::unique_lock lock(installMutex_);
 
-  auto globalJavaUiManager = make_global(javaUIManager);
-  mountingManager_ =
-      std::make_shared<FabricMountingManager>(globalJavaUiManager);
-
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
 
@@ -441,6 +437,8 @@ void FabricUIManagerBinding::installFabricUIManager(
     contextContainer->insert(
         "RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
   }
+
+  auto globalJavaUiManager = make_global(javaUIManager);
 
   EventBeat::Factory eventBeatFactory =
       [eventBeatManager, &runtimeScheduler, globalJavaUiManager](
@@ -470,6 +468,9 @@ void FabricUIManagerBinding::installFabricUIManager(
       runtimeExecutor, contextContainer, this);
   scheduler_ =
       std::make_shared<Scheduler>(toolbox, animationDriver_.get(), this);
+
+  mountingManager_ = std::make_shared<FabricMountingManager>(
+      globalJavaUiManager, scheduler_->getUIManager());
 }
 
 void FabricUIManagerBinding::uninstallFabricUIManager() {

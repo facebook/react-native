@@ -20,6 +20,7 @@
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/uimanager/UIManager.h>
 
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
@@ -32,8 +33,9 @@
 namespace facebook::react {
 
 FabricMountingManager::FabricMountingManager(
-    jni::global_ref<JFabricUIManager::javaobject>& javaUIManager)
-    : javaUIManager_(javaUIManager) {}
+    jni::global_ref<JFabricUIManager::javaobject>& javaUIManager,
+    std::weak_ptr<UIManager> uiManager)
+    : javaUIManager_(javaUIManager), uiManager_(std::move(uiManager)) {}
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
