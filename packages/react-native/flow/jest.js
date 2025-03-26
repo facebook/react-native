@@ -620,14 +620,16 @@ type SnapshotDiffType = {
   ...
 };
 
+type JestExpectNotType = JestExpectType &
+  EnzymeMatchersType &
+  DomTestingLibraryType &
+  JestJQueryMatchersType &
+  JestStyledComponentsMatchersType &
+  JestExtendedMatchersType &
+  SnapshotDiffType;
+
 interface JestExpectType {
-  not: JestExpectType &
-    EnzymeMatchersType &
-    DomTestingLibraryType &
-    JestJQueryMatchersType &
-    JestStyledComponentsMatchersType &
-    JestExtendedMatchersType &
-    SnapshotDiffType;
+  not: JestExpectNotType;
   /**
    * If you have a mock function, you can use .lastCalledWith to test what
    * arguments it was last called with.
@@ -810,6 +812,8 @@ interface JestExpectType {
   toThrowErrorMatchingInlineSnapshot(snapshot?: string): void;
 }
 
+type JestRequireActual = <T>(m: $Flow$ModuleRef<T> | string) => T;
+type JestRequireMock = (moduleName: string) => any;
 type JestObjectType = {
   /**
    *  Disables automatic mocking in the module loader.
@@ -909,12 +913,12 @@ type JestObjectType = {
    * Returns the actual module instead of a mock, bypassing all checks on
    * whether the module should receive a mock implementation or not.
    */
-  requireActual<T>(m: $Flow$ModuleRef<T> | string): T,
+  requireActual: JestRequireActual,
   /**
    * Returns a mock module instead of the actual module, bypassing all checks
    * on whether the module should be required normally or not.
    */
-  requireMock(moduleName: string): any,
+  requireMock: JestRequireMock,
   /**
    * Resets the module registry - the cache of all required modules. This is
    * useful to isolate modules where local state might conflict between tests.
@@ -1224,19 +1228,19 @@ type JestPrettyFormatPlugin = {
 
 type JestPrettyFormatPlugins = Array<JestPrettyFormatPlugin>;
 
+type JestExtendedExpectType = JestExpectType &
+  JestPromiseType &
+  EnzymeMatchersType &
+  DomTestingLibraryType &
+  JestJQueryMatchersType &
+  JestStyledComponentsMatchersType &
+  JestExtendedMatchersType &
+  SnapshotDiffType;
+
 /** The expect function is used every time you want to test a value */
 declare var expect: {
   /** The object that you want to make assertions against */
-  (
-    value: any,
-  ): JestExpectType &
-    JestPromiseType &
-    EnzymeMatchersType &
-    DomTestingLibraryType &
-    JestJQueryMatchersType &
-    JestStyledComponentsMatchersType &
-    JestExtendedMatchersType &
-    SnapshotDiffType,
+  (value: any): JestExtendedExpectType,
   /** Add additional Jasmine matchers to Jest's roster */
   extend(matchers: {[name: string]: JestMatcher, ...}): void,
   /** Add a module that formats application-specific data structures. */
