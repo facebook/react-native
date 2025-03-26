@@ -58,7 +58,19 @@ UIManager::UIManager(
           ReactNativeFeatureFlags::enableUIConsistency()
               ? nullptr
               : std::make_unique<LatestShadowTreeRevisionProvider>(
-                    shadowTreeRegistry_)) {}
+                    shadowTreeRegistry_)) {
+  eventEmitterListener_ = std::make_shared<EventEmitterListener>(
+      [eventEmitterListenerContainer = &eventEmitterListenerContainer_](
+          Tag tag,
+          const std::string& eventName,
+          const EventPayload& payload) -> bool {
+        if (eventEmitterListenerContainer) {
+          return eventEmitterListenerContainer->willDispatchEvent(
+              tag, eventName, payload);
+        }
+        return false;
+      });
+}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
@@ -703,6 +715,16 @@ void UIManager::setSynchronousViewUpdateCallback(
     SynchronousViewUpdateCallback&& callback) {
   std::unique_lock lock(synchronousViewUpdateCallbackMutex_);
   synchronousViewUpdateCallback_ = std::move(callback);
+}
+
+void UIManager::addEventEmitterListener(
+    const std::shared_ptr<EventEmitterListener>& listener) {
+  eventEmitterListenerContainer_.addListener(listener);
+}
+
+void UIManager::removeEventEmitterListener(
+    const std::shared_ptr<EventEmitterListener>& listener) {
+  eventEmitterListenerContainer_.removeListener(listener);
 }
 
 } // namespace facebook::react

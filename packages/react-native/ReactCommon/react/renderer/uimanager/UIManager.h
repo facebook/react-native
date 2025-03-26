@@ -70,6 +70,16 @@ class UIManager final : public ShadowTreeDelegate {
 
   void animationTick() const;
 
+  void addEventEmitterListener(
+      const std::shared_ptr<EventEmitterListener>& listener);
+
+  void removeEventEmitterListener(
+      const std::shared_ptr<EventEmitterListener>& listener);
+
+  std::shared_ptr<EventEmitterListener> getEventEmitterListener() const {
+    return eventEmitterListener_;
+  }
+
   /*
    * Provides access to a UIManagerBindging.
    * The `callback` methods will not be called if the internal pointer to
@@ -234,6 +244,9 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate* delegate_{};
   UIManagerAnimationDelegate* animationDelegate_{nullptr};
+
+  EventEmitterListenerContainer eventEmitterListenerContainer_{};
+  std::shared_ptr<EventEmitterListener> eventEmitterListener_;
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   ContextContainer::Shared contextContainer_;
