@@ -1,6 +1,0 @@
-framework module JSITooling {
-  umbrella header "JSITooling-umbrella.h"
-
-  export *
-  module * { export * }
-}

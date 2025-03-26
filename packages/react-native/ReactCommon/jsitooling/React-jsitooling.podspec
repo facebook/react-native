@@ -25,17 +25,14 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
+  s.source_files           = "react/runtime/*.{cpp,h}"
   s.header_dir             = "react/runtime"
-  source_files             = ["react/runtime/*.{cpp,h}"]
 
   if ENV['USE_FRAMEWORKS']
-    source_files           << "JSITooling-umbrella.h"
-    s.module_name          = "JSITooling"
+    s.module_name            = "JSITooling"
     s.header_mappings_dir  = "./"
-    s.module_map           = "JSITooling.modulemap"
   end
 
-  s.source_files           = source_files
   s.pod_target_xcconfig    = {
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "DEFINES_MODULE" => "YES",
