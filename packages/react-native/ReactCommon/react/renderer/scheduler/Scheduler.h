@@ -76,7 +76,8 @@ class Scheduler final : public UIManagerDelegate {
   // "push" MountingCoordinator model. This just tells the delegate an update
   // is available and that it should `pullTransaction`; we may want to rename
   // this to be more generic and not animation-specific.
-  void animationTick() const;
+  void animationTick(bool driveCxxAnimations, bool driveCxxNativeAnimated)
+      const;
 
 #pragma mark - UIManagerDelegate
 

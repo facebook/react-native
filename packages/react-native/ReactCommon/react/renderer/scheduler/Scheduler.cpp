@@ -240,8 +240,10 @@ SchedulerDelegate* Scheduler::getDelegate() const {
 
 #pragma mark - UIManagerAnimationDelegate
 
-void Scheduler::animationTick() const {
-  uiManager_->animationTick();
+void Scheduler::animationTick(
+    bool driveCxxAnimations,
+    bool driveCxxNativeAnimated) const {
+  uiManager_->animationTick(driveCxxAnimations, driveCxxNativeAnimated);
 }
 
 #pragma mark - UIManagerDelegate

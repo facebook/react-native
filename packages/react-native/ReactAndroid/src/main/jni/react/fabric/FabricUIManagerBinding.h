@@ -122,7 +122,7 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void setPixelDensity(float pointScaleFactor);
 
-  void driveCxxAnimations();
+  void driveCxxAnimations(bool driveCxxAnimations, bool driveCxxNativeAnimated);
 
   void drainPreallocateViewsQueue();
 

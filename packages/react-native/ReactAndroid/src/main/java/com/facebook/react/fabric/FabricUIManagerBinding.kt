@@ -73,7 +73,7 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       doLeftAndRightSwapInRTL: Boolean
   )
 
-  external fun driveCxxAnimations()
+  external fun driveCxxAnimations(driveCxxAnimations: Boolean, driveCxxNativeAnimated: Boolean)
 
   external fun drainPreallocateViewsQueue()
 

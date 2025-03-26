@@ -48,8 +48,10 @@ void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
   pointScaleFactor_ = pointScaleFactor;
 }
 
-void FabricUIManagerBinding::driveCxxAnimations() {
-  getScheduler()->animationTick();
+void FabricUIManagerBinding::driveCxxAnimations(
+    bool driveCxxAnimations,
+    bool driveCxxNativeAnimated) {
+  getScheduler()->animationTick(driveCxxAnimations, driveCxxNativeAnimated);
 }
 
 void FabricUIManagerBinding::drainPreallocateViewsQueue() {

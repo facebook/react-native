@@ -693,12 +693,26 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
   }
 }
 
-void UIManager::animationTick() const {
-  if (animationDelegate_ != nullptr &&
+void UIManager::setNativeAnimatedDelegate(
+    UIManagerNativeAnimatedDelegate* delegate) {
+  if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled()) {
+    nativeAnimatedDelegate_ = delegate;
+  }
+}
+
+void UIManager::animationTick(
+    bool driveCxxAnimations,
+    bool driveCxxNativeAnimated) const {
+  if (driveCxxAnimations && animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
     shadowTreeRegistry_.enumerate([](const ShadowTree& shadowTree, bool&) {
       shadowTree.notifyDelegatesOfUpdates();
     });
+  }
+
+  if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() &&
+      driveCxxNativeAnimated && nativeAnimatedDelegate_ != nullptr) {
+    nativeAnimatedDelegate_->runAnimationFrame();
   }
 }
 

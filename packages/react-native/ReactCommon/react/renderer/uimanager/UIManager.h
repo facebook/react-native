@@ -25,6 +25,7 @@
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
+#include <react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h>
 #include <react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.h>
 #include <react/renderer/uimanager/consistency/LazyShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
@@ -68,7 +69,10 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
-  void animationTick() const;
+  void setNativeAnimatedDelegate(UIManagerNativeAnimatedDelegate* delegate);
+
+  void animationTick(bool driveCxxAnimations, bool driveCxxNativeAnimated)
+      const;
 
   void addEventEmitterListener(
       const std::shared_ptr<EventEmitterListener>& listener);
@@ -244,9 +248,11 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate* delegate_{};
   UIManagerAnimationDelegate* animationDelegate_{nullptr};
+  UIManagerNativeAnimatedDelegate* nativeAnimatedDelegate_{nullptr};
 
   EventEmitterListenerContainer eventEmitterListenerContainer_{};
   std::shared_ptr<EventEmitterListener> eventEmitterListener_;
+
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   ContextContainer::Shared contextContainer_;
