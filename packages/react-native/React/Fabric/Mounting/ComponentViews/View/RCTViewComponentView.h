@@ -77,6 +77,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event;
 
 /*
+ * This is the label that would be coopted by another element
+ */
+- (NSString *)accessibilityLabelForCoopting;
+
+/*
  * This is a fragment of temporary workaround that we need only temporary and will get rid of soon.
  */
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN;
