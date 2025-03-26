@@ -2072,7 +2072,7 @@ SPEC CHECKSUMS:
   React-featureflags: e8b460883a5562ce85c934f248655a81d5e09f21
   React-featureflagsnativemodule: 1e45e1fbd40365126d7f3031c28b9adc3bb5a9ab
   React-graphics: 447cb78eeb5032559e52e108dfcaa617ddb4f8b2
-  React-hermes: b2c226849aead986fddb910095b8cbd6c021fd84
+  React-hermes: de7afc9a3c8f2f606b513e1117f744622b26e30f
   React-idlecallbacksnativemodule: f1ffb0492bb917e60173d96f900ba606747f2640
   React-ImageManager: 7516b2f25b0fdd0c2bacb1b9caf1c40ffa1164db
   React-jserrorhandler: 597481e95cb4fbb8fece874feece6260e1bc1811
@@ -2105,7 +2105,7 @@ SPEC CHECKSUMS:
   React-RCTText: 39b42fead378ad75d13098d2ea255babd926b362
   React-RCTVibration: 879098fe9af91e6258cdae398c47e73e5276c281
   React-rendererconsistency: a4d8b222d165650a4bff33cf50033e1adf9a87a3
-  React-renderercss: c7608edd7431dce92af0d474153e939543d96f15
+  React-renderercss: 9e2bccdc273677485ba16a59132799ab34276596
   React-rendererdebug: 1265d77c2abab3fde1f1450cf165725069452608
   React-rncore: 27f409047489a44511ad49e64fbc00b798455cbc
   React-RuntimeApple: c945d4c1529ea33db3f51156d362cbff596e1715
