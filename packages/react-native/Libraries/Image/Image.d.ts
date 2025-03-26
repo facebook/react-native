@@ -19,12 +19,18 @@ import {ImageResizeMode} from './ImageResizeMode';
 import {ImageRequireSource, ImageURISource} from './ImageSource';
 
 /**
- * @see ImagePropsIOS.onProgress
+ * @deprecated Use `ImageProgressEventIOS` instead.
  */
 export interface ImageProgressEventDataIOS {
   loaded: number;
   total: number;
 }
+
+/**
+ * @see https://reactnative.dev/docs/image#onprogress
+ */
+export type ImageProgressEventIOS =
+  NativeSyntheticEvent<ImageProgressEventDataIOS>;
 
 export interface ImagePropsIOS {
   /**
@@ -44,9 +50,7 @@ export interface ImagePropsIOS {
   /**
    * Invoked on download progress with {nativeEvent: {loaded, total}}
    */
-  onProgress?:
-    | ((event: NativeSyntheticEvent<ImageProgressEventDataIOS>) => void)
-    | undefined;
+  onProgress?: ((event: ImageProgressEventIOS) => void) | undefined;
 
   /**
    * Invoked when a partial load of the image is complete. The definition of
@@ -99,6 +103,9 @@ export type ImageSourcePropType =
   | ImageURISource[]
   | ImageRequireSource;
 
+/**
+ * @deprecated Use `ImageLoadEvent` instead.
+ */
 export interface ImageLoadEventData {
   source: {
     height: number;
@@ -107,9 +114,22 @@ export interface ImageLoadEventData {
   };
 }
 
+/**
+ * @see https://reactnative.dev/docs/image#onload
+ */
+export type ImageLoadEvent = NativeSyntheticEvent<ImageLoadEventData>;
+
+/**
+ * @deprecated Use `ImageErrorEvent` instead.
+ */
 export interface ImageErrorEventData {
   error: any;
 }
+
+/**
+ * @see https://reactnative.dev/docs/image#onerror
+ */
+export type ImageErrorEvent = NativeSyntheticEvent<ImageErrorEventData>;
 
 /**
  * @see https://reactnative.dev/docs/image#resolveassetsource
@@ -145,17 +165,13 @@ export interface ImagePropsBase
   /**
    * Invoked on load error with {nativeEvent: {error}}
    */
-  onError?:
-    | ((error: NativeSyntheticEvent<ImageErrorEventData>) => void)
-    | undefined;
+  onError?: ((error: ImageErrorEvent) => void) | undefined;
 
   /**
    * Invoked when load completes successfully
    * { source: { uri, height, width } }.
    */
-  onLoad?:
-    | ((event: NativeSyntheticEvent<ImageLoadEventData>) => void)
-    | undefined;
+  onLoad?: ((event: ImageLoadEvent) => void) | undefined;
 
   /**
    * Invoked when load either succeeds or fails

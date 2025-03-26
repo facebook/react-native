@@ -48,8 +48,8 @@ import {
   I18nManager,
   Image,
   ImageBackground,
-  ImageErrorEventData,
-  ImageLoadEventData,
+  ImageErrorEvent,
+  ImageLoadEvent,
   ImageResizeMode,
   ImageResolvedAssetSource,
   ImageStyle,
@@ -92,15 +92,15 @@ import {
   Systrace,
   Text,
   TextInput,
-  TextInputChangeEventData,
-  TextInputContentSizeChangeEventData,
-  TextInputEndEditingEventData,
-  TextInputFocusEventData,
-  TextInputKeyPressEventData,
-  TextInputScrollEventData,
-  TextInputSelectionChangeEventData,
-  TextInputSubmitEditingEventData,
-  TextLayoutEventData,
+  TextInputChangeEvent,
+  TextInputContentSizeChangeEvent,
+  TextInputEndEditingEvent,
+  TextInputFocusEvent,
+  TextInputKeyPressEvent,
+  TextInputScrollEvent,
+  TextInputSelectionChangeEvent,
+  TextInputSubmitEditingEvent,
+  TextLayoutEvent,
   TextProps,
   TextStyle,
   TouchableNativeFeedback,
@@ -1196,23 +1196,21 @@ class TextInputTest extends React.Component<{}, {username: string}> {
     console.log(`text: ${text}`);
   };
 
-  onScroll = (e: NativeSyntheticEvent<TextInputScrollEventData>) => {
+  onScroll = (e: TextInputScrollEvent) => {
     testNativeSyntheticEvent(e);
     console.log(`x: ${e.nativeEvent.contentOffset.x}`);
     console.log(`y: ${e.nativeEvent.contentOffset.y}`);
   };
 
-  handleOnBlur = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  handleOnBlur = (e: TextInputFocusEvent) => {
     testNativeSyntheticEvent(e);
   };
 
-  handleOnFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+  handleOnFocus = (e: TextInputFocusEvent) => {
     testNativeSyntheticEvent(e);
   };
 
-  handleOnSelectionChange = (
-    e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-  ) => {
+  handleOnSelectionChange = (e: TextInputSelectionChangeEvent) => {
     testNativeSyntheticEvent(e);
 
     console.log(`target: ${e.nativeEvent.target}`);
@@ -1220,12 +1218,12 @@ class TextInputTest extends React.Component<{}, {username: string}> {
     console.log(`end: ${e.nativeEvent.selection.end}`);
   };
 
-  handleOnKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
+  handleOnKeyPress = (e: TextInputKeyPressEvent) => {
     testNativeSyntheticEvent(e);
     console.log(`key: ${e.nativeEvent.key}`);
   };
 
-  handleOnChange = (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+  handleOnChange = (e: TextInputChangeEvent) => {
     testNativeSyntheticEvent(e);
 
     console.log(`eventCount: ${e.nativeEvent.eventCount}`);
@@ -1233,24 +1231,18 @@ class TextInputTest extends React.Component<{}, {username: string}> {
     console.log(`text: ${e.nativeEvent.text}`);
   };
 
-  handleOnContentSizeChange = (
-    e: NativeSyntheticEvent<TextInputContentSizeChangeEventData>,
-  ) => {
+  handleOnContentSizeChange = (e: TextInputContentSizeChangeEvent) => {
     testNativeSyntheticEvent(e);
     console.log(`contentSize.width: ${e.nativeEvent.contentSize.width}`);
     console.log(`contentSize.height: ${e.nativeEvent.contentSize.height}`);
   };
 
-  handleOnEndEditing = (
-    e: NativeSyntheticEvent<TextInputEndEditingEventData>,
-  ) => {
+  handleOnEndEditing = (e: TextInputEndEditingEvent) => {
     testNativeSyntheticEvent(e);
     console.log(`text: ${e.nativeEvent.text}`);
   };
 
-  handleOnSubmitEditing = (
-    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
-  ) => {
+  handleOnSubmitEditing = (e: TextInputSubmitEditingEvent) => {
     testNativeSyntheticEvent(e);
     console.log(`text: ${e.nativeEvent.text}`);
   };
@@ -1309,7 +1301,7 @@ class TextTest extends React.Component {
     const height = e.nativeEvent.layout.height; // $ExpectType number
   };
 
-  handleOnTextLayout = (e: NativeSyntheticEvent<TextLayoutEventData>) => {
+  handleOnTextLayout = (e: TextLayoutEvent) => {
     testNativeSyntheticEvent(e);
 
     e.nativeEvent.lines.forEach(line => {
@@ -1394,14 +1386,14 @@ export class ImageTest extends React.Component {
     Image.prefetch(uri); // $ExpectType Promise<boolean>
   }
 
-  handleOnLoad = (e: NativeSyntheticEvent<Readonly<ImageLoadEventData>>) => {
+  handleOnLoad = (e: ImageLoadEvent) => {
     testNativeSyntheticEvent(e);
     console.log('height:', e.nativeEvent.source.height);
     console.log('width:', e.nativeEvent.source.width);
     console.log('uri:', e.nativeEvent.source.uri);
   };
 
-  handleOnError = (e: NativeSyntheticEvent<Readonly<ImageErrorEventData>>) => {
+  handleOnError = (e: ImageErrorEvent) => {
     testNativeSyntheticEvent(e);
     console.log('error:', e.nativeEvent.error);
   };

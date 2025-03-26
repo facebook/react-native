@@ -23,14 +23,13 @@ import {
 } from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
-export type TextInputChangeEventData = $ReadOnly<{
+type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
 }>;
 
-export type TextInputChangeEvent =
-  NativeSyntheticEvent<TextInputChangeEventData>;
+type TextInputChangeEvent = NativeSyntheticEvent<TextInputChangeEventData>;
 
 export type TextInputEvent = NativeSyntheticEvent<
   $ReadOnly<{
@@ -45,7 +44,7 @@ export type TextInputEvent = NativeSyntheticEvent<
   }>,
 >;
 
-export type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = $ReadOnly<{
   target: number,
   contentSize: $ReadOnly<{
     width: number,
@@ -56,11 +55,11 @@ export type TextInputContentSizeChangeEventData = $ReadOnly<{
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 
-export type TargetEvent = $ReadOnly<{
+type TargetEvent = $ReadOnly<{
   target: number,
 }>;
 
-export type TextInputFocusEventData = TargetEvent;
+type TextInputFocusEventData = TargetEvent;
 
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
@@ -70,7 +69,7 @@ type Selection = $ReadOnly<{
   end: number,
 }>;
 
-export type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
 }>;
@@ -78,7 +77,7 @@ export type TextInputSelectionChangeEventData = $ReadOnly<{
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 
-export type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -88,27 +87,27 @@ export type TextInputKeyPressEventData = $ReadOnly<{
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
 
-/**
- * @see TextInputProps.onEndEditing
- */
-export type TextInputEndEditingEventData = $ReadOnly<{
+type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
 
+/**
+ * @see TextInputProps.onEndEditing
+ */
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
+
+type TextInputSubmitEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
 
 /**
  * @see TextInputProps.onSubmitEditing
  */
-export type TextInputSubmitEditingEventData = $ReadOnly<{
-  ...TargetEvent,
-  eventCount: number,
-  text: string,
-}>;
-
 export type TextInputSubmitEditingEvent =
   NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 

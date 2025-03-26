@@ -76,7 +76,7 @@ export type LayoutChangeEvent = NativeSyntheticEvent<
   }>,
 >;
 
-export type TextLayoutEventData = $ReadOnly<{
+type TextLayoutEventData = $ReadOnly<{
   lines: Array<TextLayoutLine>,
 }>;
 

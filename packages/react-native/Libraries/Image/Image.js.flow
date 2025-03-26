@@ -11,12 +11,12 @@
 import type {Image} from './ImageTypes.flow';
 
 export type {
-  ImageProgressEventDataIOS,
+  ImageProgressEventIOS,
   ImagePropsIOS,
   ImagePropsAndroid,
   ImageSourcePropType,
-  ImageLoadEventData,
-  ImageErrorEventData,
+  ImageLoadEvent,
+  ImageErrorEvent,
   ImagePropsBase,
   ImageProps,
   ImageBackgroundProps,
