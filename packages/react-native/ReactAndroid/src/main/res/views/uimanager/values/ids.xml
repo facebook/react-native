@@ -9,7 +9,7 @@
   <!-- tag is used to store the accessibleElements tag -->
   <item type="id" name="accessibility_order"/>
 
-  <!-- tag is used to store the accessibleElements tag -->
+  <!-- tag is used to store the current state of the accessibility order tree-->
   <item type="id" name="accessibility_order_dirty"/>
 
   <!-- tag is used to store the accessibleElements parent View tag -->
