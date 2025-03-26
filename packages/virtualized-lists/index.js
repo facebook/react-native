@@ -29,6 +29,7 @@ export type {
   ListRenderItemInfo,
   ListRenderItem,
   Separators,
+  VirtualizedListProps,
 } from './Lists/VirtualizedListProps';
 export type {
   VirtualizedSectionListProps,

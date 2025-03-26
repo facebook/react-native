@@ -19,5 +19,6 @@ export type {
   ListRenderItemInfo,
   ListRenderItem,
   Separators,
+  VirtualizedListProps,
 } from '@react-native/virtualized-lists';
 export default VirtualizedList;
