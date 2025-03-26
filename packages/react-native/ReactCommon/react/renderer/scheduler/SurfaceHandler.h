@@ -10,6 +10,7 @@
 #include <memory>
 #include <shared_mutex>
 
+#include <folly/dynamic.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/ReactPrimitives.h>

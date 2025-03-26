@@ -18,10 +18,6 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/ShadowNode.h>
 
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#endif
-
 /**
  * This defines a set of TestComponent classes: Props, ShadowNode,
  * ComponentDescriptor. To be used for testing purpose.
