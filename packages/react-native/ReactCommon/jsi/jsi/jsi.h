@@ -113,6 +113,25 @@ class JSI_EXPORT UUID {
   uint64_t low;
 };
 
+/// Base interface that all JSI interfaces inherit from. Users should not try to
+/// manipulate this base type directly, and should use castInterface to get the
+/// appropriate subtype.
+struct JSI_EXPORT ICast {
+  /// If the current object can be cast into the interface specified by \p
+  /// interfaceUUID, return a pointer to the object. Otherwise, return a null
+  /// pointer.
+  /// The returned interface has the same lifetime as the underlying object. It
+  /// does not need to be released when not needed.
+  virtual ICast* castInterface(const UUID& interfaceUUID) = 0;
+
+ protected:
+  /// Interfaces are not destructible, thus the destructor is intentionally
+  /// protected to prevent delete calls on the interface.
+  /// Additionally, the destructor is non-virtual to reduce the vtable
+  /// complexity from inheritance.
+  ~ICast() = default;
+};
+
 /// Base class for buffers of data or bytecode that need to be passed to the
 /// runtime. The buffer is expected to be fully immutable, so the result of
 /// size(), data(), and the contents of the pointer returned by data() must not
@@ -233,27 +252,14 @@ class JSI_EXPORT NativeState {
   virtual ~NativeState();
 };
 
-/// Represents a JS runtime.  Movable, but not copyable.  Note that
-/// this object may not be thread-aware, but cannot be used safely from
-/// multiple threads at once.  The application is responsible for
-/// ensuring that it is used safely.  This could mean using the
-/// Runtime from a single thread, using a mutex, doing all work on a
-/// serial queue, etc.  This restriction applies to the methods of
-/// this class, and any method in the API which take a Runtime& as an
-/// argument.  Destructors (all but ~Scope), operators, or other methods
-/// which do not take Runtime& as an argument are safe to call from any
-/// thread, but it is still forbidden to make write operations on a single
-/// instance of any class from more than one thread.  In addition, to
-/// make shutdown safe, destruction of objects associated with the Runtime
-/// must be destroyed before the Runtime is destroyed, or from the
-/// destructor of a managed HostObject or HostFunction.  Informally, this
-/// means that the main source of unsafe behavior is to hold a jsi object
-/// in a non-Runtime-managed object, and not clean it up before the Runtime
-/// is shut down.  If your lifecycle is such that avoiding this is hard,
-/// you will probably need to do use your own locks.
-class JSI_EXPORT Runtime {
+class JSI_EXPORT IRuntime : public ICast {
  public:
-  virtual ~Runtime();
+  static constexpr UUID uuid{
+      0x6e30ad96,
+      0xdfab,
+      0x11ef,
+      0xbef7,
+      0x325096b39f47};
 
   /// Evaluates the given JavaScript \c buffer.  \c sourceURL is used
   /// to annotate the stack trace if there is an exception.  The
@@ -347,7 +353,37 @@ class JSI_EXPORT Runtime {
   /// \return an interface to extract metrics from this \c Runtime.  The default
   /// implementation of this function returns an \c Instrumentation instance
   /// which returns no metrics.
-  virtual Instrumentation& instrumentation();
+  virtual Instrumentation& instrumentation() = 0;
+
+ protected:
+  ~IRuntime() = default;
+};
+
+/// Represents a JS runtime.  Movable, but not copyable.  Note that
+/// this object may not be thread-aware, but cannot be used safely from
+/// multiple threads at once.  The application is responsible for
+/// ensuring that it is used safely.  This could mean using the
+/// Runtime from a single thread, using a mutex, doing all work on a
+/// serial queue, etc.  This restriction applies to the methods of
+/// this class, and any method in the API which take a Runtime& as an
+/// argument.  Destructors (all but ~Scope), operators, or other methods
+/// which do not take Runtime& as an argument are safe to call from any
+/// thread, but it is still forbidden to make write operations on a single
+/// instance of any class from more than one thread.  In addition, to
+/// make shutdown safe, destruction of objects associated with the Runtime
+/// must be destroyed before the Runtime is destroyed, or from the
+/// destructor of a managed HostObject or HostFunction.  Informally, this
+/// means that the main source of unsafe behavior is to hold a jsi object
+/// in a non-Runtime-managed object, and not clean it up before the Runtime
+/// is shut down.  If your lifecycle is such that avoiding this is hard,
+/// you will probably need to do use your own locks.
+class JSI_EXPORT Runtime : public IRuntime {
+ public:
+  virtual ~Runtime();
+
+  ICast* castInterface(const UUID& interfaceUUID) override;
+
+  Instrumentation& instrumentation() override;
 
  protected:
   friend class Pointer;
@@ -1739,6 +1775,24 @@ class JSI_EXPORT JSError : public JSIException {
   std::string message_;
   std::string stack_;
 };
+
+template <typename U, typename T>
+U* castInterface(T* ptr) {
+  if (ptr) {
+    return static_cast<U*>(ptr->castInterface(U::uuid));
+  }
+  return nullptr;
+};
+
+template <typename U, typename T>
+std::shared_ptr<U> dynamicInterfaceCast(std::shared_ptr<T>& ptr) {
+  auto p = ptr->castInterface(U::uuid);
+  U* res = static_cast<U*>(p);
+  if (res) {
+    return std::shared_ptr<U>(ptr, res);
+  }
+  return nullptr;
+}
 
 } // namespace jsi
 } // namespace facebook
