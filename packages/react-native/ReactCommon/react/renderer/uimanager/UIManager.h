@@ -70,6 +70,16 @@ class UIManager final : public ShadowTreeDelegate {
 
   void animationTick() const;
 
+  void addEventEmitterListener(
+      const std::shared_ptr<EventEmitterListener>& listener);
+
+  void removeEventEmitterListener(
+      const std::shared_ptr<EventEmitterListener>& listener);
+
+  std::shared_ptr<EventEmitterListener> getEventEmitterListener() const {
+    return eventEmitterListener_;
+  }
+
   /*
    * Provides access to a UIManagerBindging.
    * The `callback` methods will not be called if the internal pointer to
@@ -204,6 +214,14 @@ class UIManager final : public ShadowTreeDelegate {
   void updateShadowTree(
       const std::unordered_map<Tag, folly::dynamic>& tagToProps);
 
+  using SynchronousViewUpdateCallback =
+      std::function<void(Tag, const folly::dynamic&)>;
+
+  void synchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic& props);
+
+  void setSynchronousViewUpdateCallback(
+      SynchronousViewUpdateCallback&& callback);
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -226,6 +244,9 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate* delegate_{};
   UIManagerAnimationDelegate* animationDelegate_{nullptr};
+
+  EventEmitterListenerContainer eventEmitterListenerContainer_{};
+  std::shared_ptr<EventEmitterListener> eventEmitterListener_;
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   ContextContainer::Shared contextContainer_;
@@ -242,6 +263,9 @@ class UIManager final : public ShadowTreeDelegate {
       lazyShadowTreeRevisionConsistencyManager_;
   std::unique_ptr<LatestShadowTreeRevisionProvider>
       latestShadowTreeRevisionProvider_;
+
+  mutable std::shared_mutex synchronousViewUpdateCallbackMutex_;
+  SynchronousViewUpdateCallback synchronousViewUpdateCallback_{nullptr};
 };
 
 } // namespace facebook::react
