@@ -30,7 +30,7 @@ public enum class BorderRadiusProp {
 }
 
 /** Represents all logical properties and shorthands for border radius. */
-internal data class BorderRadiusStyle(
+internal class BorderRadiusStyle(
     var uniform: LengthPercentage? = null,
     var topLeft: LengthPercentage? = null,
     var topRight: LengthPercentage? = null,
