@@ -94,16 +94,6 @@ void EventEmitter::dispatchEvent(
     return;
   }
 
-  // Allows the event listener to interrupt default event dispatch
-  if (payload != nullptr) {
-    if (eventListeners_.willDispatchEvent(
-            eventTarget_ != nullptr ? eventTarget_->getTag() : 0,
-            type,
-            *payload)) {
-      return;
-    }
-  }
-
   eventDispatcher->dispatchEvent(RawEvent(
       normalizeEventType(std::move(type)),
       std::move(payload),
@@ -127,16 +117,6 @@ void EventEmitter::dispatchUniqueEvent(
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
-  }
-
-  // Allows the event listener to interrupt default event dispatch
-  if (payload != nullptr) {
-    if (eventListeners_.willDispatchEvent(
-            eventTarget_ != nullptr ? eventTarget_->getTag() : 0,
-            type,
-            *payload)) {
-      return;
-    }
   }
 
   eventDispatcher->dispatchUniqueEvent(RawEvent(
@@ -171,19 +151,6 @@ void EventEmitter::setEnabled(bool enabled) const {
 
 const SharedEventTarget& EventEmitter::getEventTarget() const {
   return eventTarget_;
-}
-
-void EventEmitter::addListener(
-    std::shared_ptr<const EventEmitterListener> listener) const {
-  eventListeners_.addListener(std::move(listener));
-}
-
-/*
- * Removes provided event listener to the event dispatcher.
- */
-void EventEmitter::removeListener(
-    const std::shared_ptr<const EventEmitterListener>& listener) const {
-  eventListeners_.removeListener(listener);
 }
 
 } // namespace facebook::react
