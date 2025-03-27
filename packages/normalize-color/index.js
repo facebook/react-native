@@ -48,7 +48,7 @@ function normalizeColor(color) {
         0
       );
     }
-    // // rgb(R, G, B, A) / rgba(R, G, B, A) notation
+    // rgb(R, G, B, A) / rgba(R, G, B, A) notation
     else if (match[5] !== undefined) {
       return (
         ((parse255(match[5]) << 24) | // r
