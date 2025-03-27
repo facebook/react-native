@@ -81,7 +81,7 @@ export type AnimatedBaseProps<Props: {...}> = {
 
 export type AnimatedComponentType<Props: {...}, +Instance = mixed> = component(
   ref?: React.RefSetter<Instance>,
-  ...AnimatedProps<Props>
+  ...AnimatedProps<$Omit<Props, 'ref'>>
 );
 
 export default function createAnimatedComponent<

@@ -103,6 +103,10 @@ type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
    * This may improve scroll performance for large lists.
    */
   removeClippedSubviews?: boolean,
+  /**
+   * Explicitly typed ref to the section list, exposing methods specific to it.
+   */
+  ref?: React.RefSetter<SectionList<ItemT, SectionT>>,
 };
 
 export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
