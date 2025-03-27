@@ -66,12 +66,10 @@ type PassThroughProps = $ReadOnly<{
 }>;
 
 export type AnimatedProps<Props: {...}> = {
-  [K in keyof (Props & PassThroughProps)]: K extends $Keys<PassThroughProps>
-    ? PassThroughProps[K]
-    : K extends NonAnimatedProps
-      ? Props[K]
-      : WithAnimatedValue<Props[K]>,
-};
+  [K in keyof Props]: K extends NonAnimatedProps
+    ? Props[K]
+    : WithAnimatedValue<Props[K]>,
+} & PassThroughProps;
 
 export type AnimatedBaseProps<Props: {...}> = {
   [K in keyof Props]: K extends NonAnimatedProps
