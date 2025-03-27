@@ -1133,9 +1133,9 @@ public abstract class com/facebook/react/bridge/ReactContextBaseJavaModule : com
 	protected final fun getCurrentActivity ()Landroid/app/Activity;
 }
 
-public class com/facebook/react/bridge/ReactCxxErrorHandler {
-	public fun <init> ()V
-	public static fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
+public final class com/facebook/react/bridge/ReactCxxErrorHandler {
+	public static final field INSTANCE Lcom/facebook/react/bridge/ReactCxxErrorHandler;
+	public static final fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
 }
 
 public final class com/facebook/react/bridge/ReactIgnorableMountingException : java/lang/RuntimeException {
