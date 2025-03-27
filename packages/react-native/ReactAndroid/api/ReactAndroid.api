@@ -7009,17 +7009,6 @@ public abstract interface class com/facebook/react/views/textinput/ContentSizeWa
 	public abstract fun onLayout ()V
 }
 
-public final class com/facebook/react/views/textinput/ReactContentSizeChangedEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/textinput/ReactContentSizeChangedEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (IFF)V
-	public fun <init> (IIFF)V
-	public fun getEventName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/textinput/ReactContentSizeChangedEvent$Companion {
-}
-
 public class com/facebook/react/views/textinput/ReactEditText : androidx/appcompat/widget/AppCompatEditText {
 	public static final field DEBUG_MODE Z
 	protected field mContainsImages Z
@@ -7043,7 +7032,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isLayoutRequested ()Z
 	public fun maybeSetSelection (III)V
-	public fun maybeSetText (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun maybeSetTextFromJS (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun maybeSetTextFromState (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun maybeUpdateTypeface ()V
@@ -7097,17 +7085,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun shouldSubmitOnReturn ()Z
 	protected fun showSoftKeyboard ()Z
 	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
-}
-
-public final class com/facebook/react/views/textinput/ReactTextChangedEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/textinput/ReactTextChangedEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (IILjava/lang/String;I)V
-	public fun <init> (ILjava/lang/String;I)V
-	public fun getEventName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/textinput/ReactTextChangedEvent$Companion {
 }
 
 public final class com/facebook/react/views/textinput/ReactTextInputLocalData {

@@ -13,7 +13,7 @@ import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
 /** Event emitted by EditText native view when content size changes. */
-public class ReactContentSizeChangedEvent(
+internal class ReactContentSizeChangedEvent(
     surfaceId: Int,
     viewId: Int,
     private val contentWidth: Float,
@@ -23,7 +23,7 @@ public class ReactContentSizeChangedEvent(
       "Use the constructor with surfaceId instead",
       ReplaceWith(
           "ReactContentSizeChangedEvent(surfaceId, viewId, contentSizeWidth, contentSizeHeight)"))
-  public constructor(
+  constructor(
       viewId: Int,
       contentSizeWidth: Float,
       contentSizeHeight: Float
@@ -44,7 +44,7 @@ public class ReactContentSizeChangedEvent(
     }
   }
 
-  public companion object {
-    public const val EVENT_NAME: String = "topContentSizeChange"
+  companion object {
+    const val EVENT_NAME: String = "topContentSizeChange"
   }
 }
