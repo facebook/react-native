@@ -3871,7 +3871,6 @@ public final class com/facebook/react/uimanager/LengthPercentage {
 	public final fun getType ()Lcom/facebook/react/uimanager/LengthPercentageType;
 	public fun hashCode ()I
 	public final fun resolve (F)F
-	public final fun resolve (FF)Lcom/facebook/react/uimanager/style/CornerRadii;
 	public static final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;)Lcom/facebook/react/uimanager/LengthPercentage;
 	public fun toString ()Ljava/lang/String;
 }
@@ -5536,6 +5535,7 @@ public final class com/facebook/react/uimanager/style/CornerRadii {
 	public fun <init> ()V
 	public fun <init> (FF)V
 	public synthetic fun <init> (FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcom/facebook/react/uimanager/LengthPercentage;FF)V
 	public final fun component1 ()F
 	public final fun component2 ()F
 	public final fun copy (FF)Lcom/facebook/react/uimanager/style/CornerRadii;

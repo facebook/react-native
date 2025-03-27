@@ -113,16 +113,21 @@ internal data class BorderRadiusStyle(
       LayoutDirection.LTR ->
           ensureNoOverlap(
               topLeft =
-                  (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height)
-                      ?: zeroRadii,
+                  (startStart ?: topStart ?: topLeft ?: uniform)?.let {
+                    CornerRadii(it, width, height)
+                  } ?: zeroRadii,
               topRight =
-                  (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height) ?: zeroRadii,
+                  (endStart ?: topEnd ?: topRight ?: uniform)?.let {
+                    CornerRadii(it, width, height)
+                  } ?: zeroRadii,
               bottomLeft =
-                  (startEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height)
-                      ?: zeroRadii,
+                  (startEnd ?: bottomStart ?: bottomLeft ?: uniform)?.let {
+                    CornerRadii(it, width, height)
+                  } ?: zeroRadii,
               bottomRight =
-                  (endEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height)
-                      ?: zeroRadii,
+                  (endEnd ?: bottomEnd ?: bottomRight ?: uniform)?.let {
+                    CornerRadii(it, width, height)
+                  } ?: zeroRadii,
               width = width,
               height = height,
           )
@@ -130,33 +135,42 @@ internal data class BorderRadiusStyle(
           if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
             ensureNoOverlap(
                 topLeft =
-                    (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height)
-                        ?: zeroRadii,
+                    (endStart ?: topEnd ?: topRight ?: uniform)?.let {
+                      CornerRadii(it, width, height)
+                    } ?: zeroRadii,
                 topRight =
-                    (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height)
-                        ?: zeroRadii,
+                    (startStart ?: topStart ?: topLeft ?: uniform)?.let {
+                      CornerRadii(it, width, height)
+                    } ?: zeroRadii,
                 bottomLeft =
-                    (endEnd ?: bottomStart ?: bottomRight ?: uniform)?.resolve(width, height)
-                        ?: zeroRadii,
+                    (endEnd ?: bottomStart ?: bottomRight ?: uniform)?.let {
+                      CornerRadii(it, width, height)
+                    } ?: zeroRadii,
                 bottomRight =
-                    (startEnd ?: bottomEnd ?: bottomLeft ?: uniform)?.resolve(width, height)
-                        ?: zeroRadii,
+                    (startEnd ?: bottomEnd ?: bottomLeft ?: uniform)?.let {
+                      CornerRadii(it, width, height)
+                    } ?: zeroRadii,
                 width = width,
                 height = height,
             )
           } else {
             ensureNoOverlap(
                 topLeft =
-                    (endStart ?: topEnd ?: topLeft ?: uniform)?.resolve(width, height) ?: zeroRadii,
+                    (endStart ?: topEnd ?: topLeft ?: uniform)?.let {
+                      CornerRadii(it, width, height)
+                    } ?: zeroRadii,
                 topRight =
-                    (startStart ?: topStart ?: topRight ?: uniform)?.resolve(width, height)
-                        ?: zeroRadii,
+                    (startStart ?: topStart ?: topRight ?: uniform)?.let {
+                      CornerRadii(it, width, height)
+                    } ?: zeroRadii,
                 bottomLeft =
-                    (endEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height)
-                        ?: zeroRadii,
+                    (endEnd ?: bottomStart ?: bottomLeft ?: uniform)?.let {
+                      CornerRadii(it, width, height)
+                    } ?: zeroRadii,
                 bottomRight =
-                    (startEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height)
-                        ?: zeroRadii,
+                    (startEnd ?: bottomEnd ?: bottomRight ?: uniform)?.let {
+                      CornerRadii(it, width, height)
+                    } ?: zeroRadii,
                 width = width,
                 height = height,
             )
