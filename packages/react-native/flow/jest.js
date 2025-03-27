@@ -15,7 +15,7 @@
 // MODIFIED: Added ESLint suppression comment - no-unused-vars doesn't understand declaration files
 /* eslint-disable no-unused-vars */
 
-type JestMockFn<TArguments: $ReadOnlyArray<any>, TReturn> = {
+type JestMockFn<TArguments: $ReadOnlyArray<mixed>, TReturn> = {
   (...args: TArguments): TReturn,
   /**
    * An object for introspecting mock calls
