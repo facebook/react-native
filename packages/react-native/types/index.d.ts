@@ -94,6 +94,7 @@ export * from '../Libraries/Components/StatusBar/StatusBar';
 export * from '../Libraries/Components/Switch/Switch';
 export * from '../Libraries/Components/TextInput/InputAccessoryView';
 export * from '../Libraries/Components/TextInput/TextInput';
+export {default as TextInputState} from '../Libraries/Components/TextInput/TextInputState';
 export * from '../Libraries/Components/ToastAndroid/ToastAndroid';
 export * from '../Libraries/Components/Touchable/Touchable';
 export * from '../Libraries/Components/Touchable/TouchableHighlight';

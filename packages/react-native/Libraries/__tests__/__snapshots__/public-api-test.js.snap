@@ -9631,6 +9631,7 @@ export type {
 } from \\"./Libraries/StyleSheet/StyleSheetTypes\\";
 export { default as StyleSheet } from \\"./Libraries/StyleSheet/StyleSheet\\";
 export * as Systrace from \\"./Libraries/Performance/Systrace\\";
+export { default as TextInputState } from \\"./Libraries/Components/TextInput/TextInputState\\";
 export { default as ToastAndroid } from \\"./Libraries/Components/ToastAndroid/ToastAndroid\\";
 export * as TurboModuleRegistry from \\"./Libraries/TurboModule/TurboModuleRegistry\\";
 export { default as UIManager } from \\"./Libraries/ReactNative/UIManager\\";

@@ -288,6 +288,9 @@ module.exports = {
   get Systrace() {
     return require('./Libraries/Performance/Systrace');
   },
+  get TextInputState() {
+    return require('./Libraries/Components/TextInput/TextInputState').default;
+  },
   get ToastAndroid() {
     return require('./Libraries/Components/ToastAndroid/ToastAndroid').default;
   },
