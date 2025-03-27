@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1465adf7db643faefb579cafd9ef9dcf>>
+ * @generated SignedSource<<df269d67a0573f58f9b86e58ee84d688>>
  */
 
 /**
@@ -19,9 +19,7 @@
 
 #pragma once
 
-#if __has_include("rncoreJSI.h") // Cmake headers on Android
-#include "rncoreJSI.h"
-#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#if __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
 #include "FBReactNativeSpecJSI.h"
 #else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
