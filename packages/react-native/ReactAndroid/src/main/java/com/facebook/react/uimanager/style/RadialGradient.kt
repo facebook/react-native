@@ -233,10 +233,13 @@ internal class RadialGradient(
       }
     }
 
+    // max is used to handle 0 radius user input. Radius has to be a positive float
+    val radius = max(radiusX, 0.00001f)
+
     val shader = AndroidRadialGradient(
       centerX,
       centerY,
-      radiusX,
+      radius,
       colors,
       positions,
       Shader.TileMode.CLAMP
