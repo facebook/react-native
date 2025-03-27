@@ -20,6 +20,19 @@ class RuntimeSamplingProfileTraceEventSerializer {
  public:
   RuntimeSamplingProfileTraceEventSerializer() = delete;
 
+  /**
+   * \param performanceTracer A reference to PerformanceTracer instance.
+   * \param profile What we will be serializing.
+   * \param tracingStartTime A timestamp of when tracing of an
+   * Instance started, will be used as a starting reference point of JavaScript
+   * samples recording.
+   * \param notificationCallback A callback, which is called
+   * when a chunk of trace events is ready to be sent.
+   * \param traceEventChunkSize The maximum number of ProfileChunk trace events
+   * that can be sent in a single CDP Tracing.dataCollected message.
+   * \param profileChunkSize The maximum number of ProfileChunk trace events
+   * that can be sent in a single ProfileChunk trace event.
+   */
   static void serializeAndNotify(
       PerformanceTracer& performanceTracer,
       const RuntimeSamplingProfile& profile,
@@ -27,7 +40,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
       const std::function<void(const folly::dynamic& traceEventsChunk)>&
           notificationCallback,
       uint16_t traceEventChunkSize,
-      uint16_t profileChunkSize = 100);
+      uint16_t profileChunkSize = 10);
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
