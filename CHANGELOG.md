@@ -2,6 +2,110 @@
 
 ## v0.79.0-rc.3
 
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.79.0-rc.3 ([abad2f48da](https://github.com/facebook/react-native/commit/abad2f48da9d20385388cbb462c2906c36074c50) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.79.0-rc.2 ([60c2fe0ef7](https://github.com/facebook/react-native/commit/60c2fe0ef7ed0e90cfc9fabb80e787b70db9a6ac) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
+## v0.79.0-rc.3
+
 ### Changed
 
 #### Android specific
