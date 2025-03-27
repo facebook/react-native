@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb1c3b4c3d3d20ab463e4d0131efc3d9>>
+ * @generated SignedSource<<cfb93f77067ecb7b6729bfe388949737>>
  * @flow strict
  */
 
@@ -119,7 +119,7 @@ export const avoidStateUpdateInAnimatedPropsMemo: Getter<boolean> = createJavaSc
 /**
  * Disables InteractionManager and replaces its scheduler with `setImmediate`.
  */
-export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGetter('disableInteractionManager', false);
+export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGetter('disableInteractionManager', true);
 
 /**
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
