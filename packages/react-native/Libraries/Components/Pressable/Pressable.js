@@ -28,6 +28,8 @@ import {useMemo, useRef, useState} from 'react';
 
 type ViewStyleProp = React.ElementConfig<typeof View>['style'];
 
+export type {PressableAndroidRippleConfig};
+
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -43,7 +45,7 @@ type PressableBaseProps = $ReadOnly<{
    * Either children or a render prop that receives a boolean reflecting whether
    * the component is currently pressed.
    */
-  children: React.Node | ((state: PressableStateCallbackType) => React.Node),
+  children?: React.Node | ((state: PressableStateCallbackType) => React.Node),
 
   /**
    * Duration to wait after hover in before calling `onHoverIn`.

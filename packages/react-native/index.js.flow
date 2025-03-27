@@ -72,6 +72,7 @@ export type {
 export {default as Modal} from './Libraries/Modal/Modal';
 
 export type {
+  PressableAndroidRippleConfig,
   PressableProps,
   PressableStateCallbackType,
 } from './Libraries/Components/Pressable/Pressable';
@@ -155,6 +156,7 @@ export {default as TouchableOpacity} from './Libraries/Components/Touchable/Touc
 export type {TouchableWithoutFeedbackProps} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 export {default as TouchableWithoutFeedback} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 
+export type {AccessibilityProps} from './Libraries/Components/View/ViewAccessibility';
 export type {
   GestureResponderHandlers,
   TVViewPropsIOS,
@@ -295,7 +297,13 @@ export {default as LogBox} from './Libraries/LogBox/LogBox';
 export {default as NativeAppEventEmitter} from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 
 export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
+
+export type {
+  EventSubscription,
+  EmitterSubscription,
+} from './Libraries/EventEmitter/NativeEventEmitter';
 export {default as NativeEventEmitter} from './Libraries/EventEmitter/NativeEventEmitter';
+
 export {default as NativeModules} from './Libraries/BatchedBridge/NativeModules';
 export {default as Networking} from './Libraries/Network/RCTNetworking';
 
@@ -351,8 +359,13 @@ export {default as Share} from './Libraries/Share/Share';
 export type {
   ColorValue,
   ImageStyle,
+  FilterFunction,
+  FontVariant,
+  NativeColorValue,
+  OpaqueColorValue,
   StyleProp,
   TextStyle,
+  TransformsStyle,
   ViewStyle,
 } from './Libraries/StyleSheet/StyleSheet';
 export type {
@@ -363,6 +376,7 @@ export type {
   EdgeInsetsValue,
   PointValue,
 } from './Libraries/StyleSheet/StyleSheetTypes';
+export type {Insets} from './Libraries/StyleSheet/Rect';
 export {default as StyleSheet} from './Libraries/StyleSheet/StyleSheet';
 
 export * as Systrace from './Libraries/Performance/Systrace';
@@ -388,6 +402,7 @@ export type {
   MouseEvent,
   NativeMouseEvent,
   NativePointerEvent,
+  NativeScrollEvent,
   NativeSyntheticEvent,
   NativeTouchEvent,
   NativeUIEvent,
@@ -397,6 +412,7 @@ export type {
   TextLayoutEvent,
 } from './Libraries/Types/CoreEventTypes';
 
+export type {TurboModule} from './Libraries/TurboModule/RCTExport';
 export type * from './Libraries/Types/CodegenTypesNamespace';
 
 export type {
