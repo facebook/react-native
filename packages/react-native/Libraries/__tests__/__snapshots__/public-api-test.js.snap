@@ -1739,7 +1739,7 @@ export type PressableStateCallbackType = $ReadOnly<{
 }>;
 type PressableBaseProps = $ReadOnly<{
   cancelable?: ?boolean,
-  children: React.Node | ((state: PressableStateCallbackType) => React.Node),
+  children?: React.Node | ((state: PressableStateCallbackType) => React.Node),
   delayHoverIn?: ?number,
   delayHoverOut?: ?number,
   delayLongPress?: ?number,
@@ -4424,6 +4424,7 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
   removeListeners(count: number): void;
 }
 export type { EventSubscription };
+export type NativeEventSubscription = EventSubscription;
 type UnsafeObject = Object;
 declare export default class NativeEventEmitter<
   TEventToArgsMap: $ReadOnly<
@@ -7077,9 +7078,7 @@ declare export default typeof UIManagerJS;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent.js 1`] = `
-"declare export default class ReactFabricHostComponent
-  implements LegacyHostInstanceMethods
-{
+"declare export default class ReactFabricHostComponent implements NativeMethods {
   constructor(
     tag: number,
     viewConfig: ViewConfig,
@@ -9305,7 +9304,8 @@ declare export default typeof rejectionTrackingOptions;
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/core/ErrorUtils.js 1`] = `
-"declare export default ErrorUtilsT;
+"export type ErrorUtils = ErrorUtilsT;
+declare export default ErrorUtilsT;
 "
 `;
 
@@ -9575,6 +9575,7 @@ export { default as LogBox } from \\"./Libraries/LogBox/LogBox\\";
 export { default as NativeAppEventEmitter } from \\"./Libraries/EventEmitter/RCTNativeAppEventEmitter\\";
 export { default as NativeDialogManagerAndroid } from \\"./Libraries/NativeModules/specs/NativeDialogManagerAndroid\\";
 export { default as NativeEventEmitter } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
+export type { NativeEventSubscription } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
 export { default as NativeModules } from \\"./Libraries/BatchedBridge/NativeModules\\";
 export { default as Networking } from \\"./Libraries/Network/RCTNetworking\\";
 export type {
@@ -9660,11 +9661,14 @@ export type {
 export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
 export type {
   HostInstance,
+  NativeMethods,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
 } from \\"./src/private/types/HostInstance\\";
 export type { HostComponent } from \\"./src/private/types/HostComponent\\";
+export type { ColorSchemeName } from \\"./src/private/specs_DEPRECATED/modules/NativeAppearance\\";
+export type { ErrorUtils } from \\"./Libraries/vendor/core/ErrorUtils\\";
 "
 `;
 
@@ -9717,7 +9721,7 @@ export type MeasureLayoutOnSuccessCallback = (
   width: number,
   height: number
 ) => void;
-export interface LegacyHostInstanceMethods {
+export interface NativeMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
@@ -9729,7 +9733,7 @@ export interface LegacyHostInstanceMethods {
   ): void;
   setNativeProps(nativeProps: { ... }): void;
 }
-export type HostInstance = LegacyHostInstanceMethods;
+export type HostInstance = NativeMethods;
 "
 `;
 
@@ -9758,7 +9762,7 @@ declare export function createReactNativeDocument(
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeElement.js 1`] = `
 "declare class ReactNativeElement
   extends ReadOnlyElement
-  implements LegacyHostInstanceMethods
+  implements NativeMethods
 {
   constructor(
     tag: number,

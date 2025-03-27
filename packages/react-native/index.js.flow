@@ -296,6 +296,7 @@ export {default as NativeAppEventEmitter} from './Libraries/EventEmitter/RCTNati
 
 export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 export {default as NativeEventEmitter} from './Libraries/EventEmitter/NativeEventEmitter';
+export type {NativeEventSubscription} from './Libraries/EventEmitter/NativeEventEmitter';
 export {default as NativeModules} from './Libraries/BatchedBridge/NativeModules';
 export {default as Networking} from './Libraries/Network/RCTNetworking';
 
@@ -401,10 +402,13 @@ export type * from './Libraries/Types/CodegenTypesNamespace';
 
 export type {
   HostInstance,
+  NativeMethods,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
 } from './src/private/types/HostInstance';
 export type {HostComponent} from './src/private/types/HostComponent';
+export type {ColorSchemeName} from './src/private/specs_DEPRECATED/modules/NativeAppearance';
+export type {ErrorUtils} from './Libraries/vendor/core/ErrorUtils';
 
 // #endregion
