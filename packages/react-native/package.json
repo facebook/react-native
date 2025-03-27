@@ -32,7 +32,6 @@
     "outputName": "js-test-results.xml"
   },
   "files": [
-    "android",
     "build.gradle.kts",
     "cli.js",
     "flow",
