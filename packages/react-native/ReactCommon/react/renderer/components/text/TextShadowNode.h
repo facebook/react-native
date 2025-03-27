@@ -6,9 +6,6 @@
  */
 
 #pragma once
-
-#include <limits>
-
 #include <react/renderer/components/text/BaseTextShadowNode.h>
 #include <react/renderer/components/text/TextProps.h>
 #include <react/renderer/components/view/ViewEventEmitter.h>
@@ -27,31 +24,7 @@ class TextShadowNode : public ConcreteShadowNode<
                            TextEventEmitter>,
                        public BaseTextShadowNode {
  public:
-  static ShadowNodeTraits BaseTraits() {
-    auto traits = ConcreteShadowNode::BaseTraits();
-#ifdef ANDROID
-    traits.set(ShadowNodeTraits::Trait::FormsView);
-#endif
-    return traits;
-  }
-
   using ConcreteShadowNode::ConcreteShadowNode;
-
-#ifdef ANDROID
-  using BaseShadowNode = ConcreteShadowNode<
-      TextComponentName,
-      ShadowNode,
-      TextProps,
-      TextEventEmitter>;
-
-  TextShadowNode(
-      const ShadowNodeFragment& fragment,
-      const ShadowNodeFamily::Shared& family,
-      ShadowNodeTraits traits)
-      : BaseShadowNode(fragment, family, traits), BaseTextShadowNode() {
-    orderIndex_ = std::numeric_limits<decltype(orderIndex_)>::max();
-  }
-#endif
 };
 
 } // namespace facebook::react
