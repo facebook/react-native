@@ -8,6 +8,8 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <map>
+#include <mutex>
 #include <stdexcept>
 
 #include <jsi/instrumentation.h>
@@ -17,6 +19,19 @@ namespace facebook {
 namespace jsi {
 
 namespace {
+
+/// A global map used to store custom runtime data for VMs that do not provide
+/// their own default implementation of setRuntimeData and getRuntimeData.
+struct RuntimeDataGlobal {
+  /// Mutex protecting the Runtime data map
+  std::mutex mutex{};
+  std::map<UUID, std::shared_ptr<void>> dataMap_;
+};
+
+RuntimeDataGlobal& getRuntimeDataGlobal() {
+  static RuntimeDataGlobal runtimeData{};
+  return runtimeData;
+}
 
 // This is used for generating short exception strings.
 std::string kindToString(const Value& v, Runtime* rt = nullptr) {
@@ -351,6 +366,24 @@ Object Runtime::createObjectWithPrototype(const Value& prototype) {
                       .getPropertyAsObject(*this, "Object")
                       .getPropertyAsFunction(*this, "create");
   return createFn.call(*this, prototype).asObject(*this);
+}
+
+void Runtime::setRuntimeData(
+    const UUID& uuid,
+    const std::shared_ptr<void>& data) {
+  auto& runtimeData = getRuntimeDataGlobal();
+  std::lock_guard<std::mutex> lock(runtimeData.mutex);
+  runtimeData.dataMap_.emplace(uuid, data);
+}
+
+std::shared_ptr<void> Runtime::getRuntimeData(const UUID& uuid) {
+  auto& runtimeData = getRuntimeDataGlobal();
+  std::lock_guard<std::mutex> lock(runtimeData.mutex);
+  const auto it = runtimeData.dataMap_.find(uuid);
+  if (it == runtimeData.dataMap_.end()) {
+    return nullptr;
+  }
+  return it->second;
 }
 
 Pointer& Pointer::operator=(Pointer&& other) noexcept {
