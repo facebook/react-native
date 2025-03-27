@@ -52,7 +52,7 @@ AccessibilityProps::AccessibilityProps(
               : convertRawProp(
                     context,
                     rawProps,
-                    "accessibilityOrder",
+                    "experimental_accessibilityOrder",
                     sourceProps.accessibilityOrder,
                     {})),
       accessibilityLabelledBy(

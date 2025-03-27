@@ -157,7 +157,7 @@ public object ViewProps {
   public const val ACCESSIBILITY_ACTIONS: String = "accessibilityActions"
   public const val ACCESSIBILITY_VALUE: String = "accessibilityValue"
   public const val ACCESSIBILITY_LABELLED_BY: String = "accessibilityLabelledBy"
-  public const val ACCESSIBILITY_ORDER: String = "accessibilityOrder"
+  public const val ACCESSIBILITY_ORDER: String = "experimental_accessibilityOrder"
   public const val IMPORTANT_FOR_ACCESSIBILITY: String = "importantForAccessibility"
   public const val ROLE: String = "role"
   // DEPRECATED
