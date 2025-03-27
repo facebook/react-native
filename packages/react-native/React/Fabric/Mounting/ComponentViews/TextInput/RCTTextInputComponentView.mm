@@ -61,6 +61,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
    */
   BOOL _comingFromJS;
   BOOL _didMoveToWindow;
+  BOOL _contentSizeCategoryDidChange;
 
   /*
    * Newly initialized default typing attributes contain a no-op NSParagraphStyle and NSShadow. These cause inequality
@@ -85,6 +86,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
+    _contentSizeCategoryDidChange = NO;
     _originalTypingAttributes = [_backedTextInputView.typingAttributes copy];
 
     [self addSubview:_backedTextInputView];
@@ -332,6 +334,22 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   if (!CGSizeEqualToSize(previousContentSize, _backedTextInputView.contentSize) && _eventEmitter) {
     static_cast<const TextInputEventEmitter &>(*_eventEmitter).onContentSizeChange([self _textInputMetrics]);
+  }
+}
+
+// TODO: replace with registerForTraitChanges once iOS 17.0 is the lowest supported version
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (UITraitCollection.currentTraitCollection.preferredContentSizeCategory != previousTraitCollection.preferredContentSizeCategory) {
+    const auto &newTextInputProps = static_cast<const TextInputProps &>(*_props);
+    _backedTextInputView.defaultTextAttributes =
+        RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+    
+    _contentSizeCategoryDidChange = YES;
+    [self _updateState];
+    _contentSizeCategoryDidChange = NO;
   }
 }
 
@@ -688,6 +706,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
   _mostRecentEventCount += _comingFromJS ? 0 : 1;
   data.mostRecentEventCount = _mostRecentEventCount;
+  data.hasNewFontSizeMultiplier = _contentSizeCategoryDidChange;
   _state->updateState(std::move(data));
 }
 

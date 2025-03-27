@@ -35,6 +35,10 @@ TextInputState::TextInputState(
                                    "mostRecentEventCount",
                                    previousState.mostRecentEventCount)
                                .getInt()),
+      hasNewFontSizeMultiplier(data.getDefault(
+                                   "hasNewFontSizeMultiplier",
+                                   false)
+                               .getBool()),
       cachedAttributedStringId(data.getDefault(
                                        "opaqueCacheId",
                                        previousState.cachedAttributedStringId)

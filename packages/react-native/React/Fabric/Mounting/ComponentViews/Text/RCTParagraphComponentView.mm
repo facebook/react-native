@@ -19,6 +19,8 @@
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
+#import <React/RCTUtils.h>
+
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
 
@@ -81,6 +83,18 @@ using namespace facebook::react;
   }
 
   return RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
+}
+
+// TODO: replace with registerForTraitChanges once iOS 17.0 is the lowest supported version
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (UITraitCollection.currentTraitCollection.preferredContentSizeCategory != previousTraitCollection.preferredContentSizeCategory) {
+    auto stateData = _state->getData();
+    stateData.hasNewFontSizeMultiplier = true;
+    _state->updateState(std::move(stateData));
+  }
 }
 
 #pragma mark - RCTComponentViewProtocol

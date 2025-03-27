@@ -145,6 +145,8 @@ public class ReactTextViewManager
   @Override
   public Object updateState(
       ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+    view.mStateWrapper = stateWrapper;
+
     try (SystraceSection s = new SystraceSection("ReactTextViewManager.updateState")) {
       MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
       if (stateMapBuffer != null) {

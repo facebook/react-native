@@ -60,6 +60,8 @@ class TextInputState final {
   ParagraphAttributes paragraphAttributes;
 
   int64_t mostRecentEventCount{0};
+  
+  bool hasNewFontSizeMultiplier{false};
 
 #ifdef ANDROID
   /**
