@@ -2382,11 +2382,6 @@ public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/facebook/react/fabric/FabricSoLoader {
-	public static final field INSTANCE Lcom/facebook/react/fabric/FabricSoLoader;
-	public static final fun staticInit ()V
-}
-
 public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager, com/facebook/react/fabric/interop/UIBlockViewResolver, com/facebook/react/uimanager/events/SynchronousEventReceiver {
 	public static final field IS_DEVELOPMENT_ENVIRONMENT Z
 	public static final field TAG Ljava/lang/String;
