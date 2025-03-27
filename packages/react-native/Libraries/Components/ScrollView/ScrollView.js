@@ -300,7 +300,7 @@ export type ScrollViewPropsIOS = $ReadOnly<{
   /**
    * This property specifies how the safe area insets are used to modify the
    * content area of the scroll view. The default value of this property is
-   * "never". Available on iOS 11 and later.
+   * "never".
    * @platform ios
    */
   contentInsetAdjustmentBehavior?: ?(

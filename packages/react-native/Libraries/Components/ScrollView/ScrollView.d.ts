@@ -405,7 +405,7 @@ export interface ScrollViewPropsIOS {
 
   /**
    * This property specifies how the safe area insets are used to modify the content area of the scroll view.
-   * The default value of this property must be 'automatic'. But the default value is 'never' until RN@0.51.
+   * The default value of this property is "never".
    */
   contentInsetAdjustmentBehavior?:
     | 'automatic'
