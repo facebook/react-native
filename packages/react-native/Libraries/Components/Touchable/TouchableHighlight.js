@@ -55,7 +55,7 @@ type TouchableHighlightBaseProps = $ReadOnly<{
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
 
-  hostRef: React.RefSetter<React.ElementRef<typeof View>>,
+  hostRef?: React.RefSetter<React.ElementRef<typeof View>>,
 }>;
 
 export type TouchableHighlightProps = $ReadOnly<{
