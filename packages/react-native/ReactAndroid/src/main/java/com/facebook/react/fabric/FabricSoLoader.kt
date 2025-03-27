@@ -12,11 +12,11 @@ import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 
-public object FabricSoLoader {
+internal object FabricSoLoader {
   @Volatile private var didInit = false
 
   @JvmStatic
-  public fun staticInit() {
+  fun staticInit() {
     if (didInit) {
       return
     }
