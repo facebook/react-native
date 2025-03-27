@@ -890,6 +890,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   style?: ?AnimatedStyleAllowlist,
   [string]: true,
 }>;
+type TargetViewInstance = React.ElementRef<React.ElementType>;
 declare export default class AnimatedProps extends AnimatedNode {
   constructor(
     inputProps: { [string]: mixed },
@@ -898,7 +899,7 @@ declare export default class AnimatedProps extends AnimatedNode {
     config?: ?AnimatedNodeConfig
   ): void;
   update(): void;
-  setNativeView(animatedView: any): void;
+  setNativeView(targetInstance: TargetViewInstance): void;
 }
 "
 `;
