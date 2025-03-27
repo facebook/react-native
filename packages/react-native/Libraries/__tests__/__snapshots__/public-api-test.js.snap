@@ -897,7 +897,7 @@ declare export default class AnimatedProps extends AnimatedNode {
     config?: ?AnimatedNodeConfig
   ): void;
   update(): void;
-  setNativeView(targetInstance: TargetViewInstance): void;
+  setNativeView(instance: TargetViewInstance): void;
 }
 "
 `;

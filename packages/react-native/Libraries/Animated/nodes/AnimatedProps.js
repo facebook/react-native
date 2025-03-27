@@ -25,6 +25,10 @@ export type AnimatedPropsAllowlist = $ReadOnly<{
   [string]: true,
 }>;
 
+type TargetView = {
+  +instance: TargetViewInstance,
+  connectedViewTag: ?number,
+};
 type TargetViewInstance = React.ElementRef<React.ElementType>;
 
 function createAnimatedProps(
@@ -81,7 +85,7 @@ export default class AnimatedProps extends AnimatedNode {
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
   #props: {[string]: mixed};
-  #targetInstance: ?TargetViewInstance = null;
+  #target: ?TargetView = null;
 
   constructor(
     inputProps: {[string]: mixed},
@@ -182,10 +186,10 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __detach(): void {
-    if (this.__isNative && this.#targetInstance != null) {
-      this.#disconnectAnimatedView(this.#targetInstance);
+    if (this.__isNative && this.#target != null) {
+      this.#disconnectAnimatedView(this.#target);
     }
-    this.#targetInstance = null;
+    this.#target = null;
 
     const nodes = this.#nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
@@ -215,52 +219,50 @@ export default class AnimatedProps extends AnimatedNode {
       // where it will be needed to traverse the graph of attached values.
       super.__setPlatformConfig(platformConfig);
 
-      if (this.#targetInstance != null) {
-        this.#connectAnimatedView(this.#targetInstance);
+      if (this.#target != null) {
+        this.#connectAnimatedView(this.#target);
       }
     }
   }
 
-  setNativeView(targetInstance: TargetViewInstance): void {
-    if (this.#targetInstance === targetInstance) {
+  setNativeView(instance: TargetViewInstance): void {
+    if (this.#target?.instance === instance) {
       return;
     }
-    this.#targetInstance = targetInstance;
+    this.#target = {instance, connectedViewTag: null};
     if (this.__isNative) {
-      this.#connectAnimatedView(this.#targetInstance);
+      this.#connectAnimatedView(this.#target);
     }
   }
 
-  #connectAnimatedView(targetInstance: TargetViewInstance): void {
+  #connectAnimatedView(target: TargetView): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    let nativeViewTag: ?number = findNodeHandle(targetInstance);
-    if (nativeViewTag == null) {
+    let viewTag: ?number = findNodeHandle(target.instance);
+    if (viewTag == null) {
       if (process.env.NODE_ENV === 'test') {
-        nativeViewTag = -1;
+        viewTag = -1;
       } else {
         throw new Error('Unable to locate attached view in the native tree');
       }
     }
     NativeAnimatedHelper.API.connectAnimatedNodeToView(
       this.__getNativeTag(),
-      nativeViewTag,
+      viewTag,
     );
+    target.connectedViewTag = viewTag;
   }
 
-  #disconnectAnimatedView(targetInstance: TargetViewInstance): void {
+  #disconnectAnimatedView(target: TargetView): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    let nativeViewTag: ?number = findNodeHandle(targetInstance);
-    if (nativeViewTag == null) {
-      if (process.env.NODE_ENV === 'test') {
-        nativeViewTag = -1;
-      } else {
-        throw new Error('Unable to locate attached view in the native tree');
-      }
+    const viewTag = target.connectedViewTag;
+    if (viewTag == null) {
+      return;
     }
     NativeAnimatedHelper.API.disconnectAnimatedNodeFromView(
       this.__getNativeTag(),
-      nativeViewTag,
+      viewTag,
     );
+    target.connectedViewTag = null;
   }
 
   __restoreDefaultValues(): void {
