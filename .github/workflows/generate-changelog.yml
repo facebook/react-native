@@ -1,7 +1,6 @@
 name: Generate Changelog
 
 on:
-  pull_request:
   workflow_call:
 
 jobs:
@@ -25,5 +24,5 @@ jobs:
         with:
           script: |
             const {generateChangelog} = require('./.github/workflow-scripts/generateChangelog');
-            const version = 'v0.79.0-rc.3' //"${{ github.ref_name }}";
+            const version = '${{ github.ref_name }}';
             await generateChangelog(version, '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}');

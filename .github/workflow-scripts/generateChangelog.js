@@ -31,7 +31,9 @@ async function _computePreviousVersionFrom(version) {
   } else {
     if (Number(patch) === 0) {
       // No need to generate the changelog for 0.X.0 as we already generated it from RCs
-      log(`Skipping changelog generation for ${version} as we already have it from the RCs`);
+      log(
+        `Skipping changelog generation for ${version} as we already have it from the RCs`,
+      );
       return null;
     }
     return `0.${minor}.${Number(patch) - 1}`;
@@ -43,8 +45,7 @@ function _generateChangelog(previousVersion, version, token) {
   run('git checkout main');
   run('git fetch');
   run('git pull origin main');
-  const generateChangelogComand =
-    `npx @rnx-kit/rn-changelog-generator --base v${previousVersion} --compare v${version} --repo . --changelog ./CHANGELOG.md --token ${token}`;
+  const generateChangelogComand = `npx @rnx-kit/rn-changelog-generator --base v${previousVersion} --compare v${version} --repo . --changelog ./CHANGELOG.md --token ${token}`;
   run(generateChangelogComand);
 }
 
@@ -67,12 +68,12 @@ Add Changelog for ${version}
 [Internal] - Add Changelog for ${version}
 
 ## Test Plan:
-N/A`
+N/A`;
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Accept': 'Accept: application/vnd.github+json',
+      Accept: 'Accept: application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
       Authorization: `Bearer ${token}`,
     },
@@ -85,7 +86,9 @@ N/A`
   });
 
   if (response.status !== 201) {
-    throw new Error(`Failed to create PR: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Failed to create PR: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data = await response.json();
@@ -114,4 +117,4 @@ module.exports = {
   _generateChangelog,
   _pushCommit,
   _createPR,
-}
+};

@@ -7,11 +7,13 @@
  * @format
  */
 
-const { generateChangelog,
+const {
+  generateChangelog,
   _computePreviousVersionFrom,
   _generateChangelog,
   _pushCommit,
-  _createPR } = require('../generateChangelog');
+  _createPR,
+} = require('../generateChangelog');
 
 const silence = () => {};
 const mockGetNpmPackageInfo = jest.fn();
@@ -40,27 +42,29 @@ describe('Generate Changelog', () => {
       const receivedVersion = await _computePreviousVersionFrom(currentVersion);
 
       expect(receivedVersion).toEqual(expectedVersion);
-    })
+    });
 
-    it('returns previous rc version when rc is > 1', async  () => {
+    it('returns previous rc version when rc is > 1', async () => {
       const currentVersion = '0.78.0-rc.5';
       const expectedVersion = '0.78.0-rc.4';
 
       const receivedVersion = await _computePreviousVersionFrom(currentVersion);
 
       expect(receivedVersion).toEqual(expectedVersion);
-    })
+    });
 
     it('returns previous patch version when rc is 0', async () => {
       const currentVersion = '0.78.0-rc.0';
       const expectedVersion = '0.77.1';
 
-      mockGetNpmPackageInfo.mockReturnValueOnce(Promise.resolve({version: '0.77.1'}));
+      mockGetNpmPackageInfo.mockReturnValueOnce(
+        Promise.resolve({version: '0.77.1'}),
+      );
 
       const receivedVersion = await _computePreviousVersionFrom(currentVersion);
 
       expect(receivedVersion).toEqual(expectedVersion);
-    })
+    });
 
     it('returns patch 0 when patch is 1', async () => {
       const currentVersion = '0.78.1';
@@ -88,10 +92,12 @@ describe('Generate Changelog', () => {
       expect(receivedVersion).toBeNull();
     });
 
-    it('throws an error when the version can\'t be parsed', async () => {
+    it("throws an error when the version can't be parsed", async () => {
       const currentVersion = '0.78.0-rc0';
 
-      await expect(_computePreviousVersionFrom(currentVersion)).rejects.toThrow();
+      await expect(
+        _computePreviousVersionFrom(currentVersion),
+      ).rejects.toThrow();
     });
   });
 
@@ -121,7 +127,10 @@ describe('Generate Changelog', () => {
       expect(mockRun).toHaveBeenNthCalledWith(1, 'git checkout main');
       expect(mockRun).toHaveBeenNthCalledWith(2, 'git fetch');
       expect(mockRun).toHaveBeenNthCalledWith(3, 'git pull origin main');
-      expect(mockRun).toHaveBeenNthCalledWith(4, `npx ${expectedCommandArgs.join(' ')}`);
+      expect(mockRun).toHaveBeenNthCalledWith(
+        4,
+        `npx ${expectedCommandArgs.join(' ')}`,
+      );
     });
   });
 
@@ -132,10 +141,19 @@ describe('Generate Changelog', () => {
       _pushCommit(currentVersion);
 
       expect(mockRun).toHaveBeenCalledTimes(4);
-      expect(mockRun).toHaveBeenNthCalledWith(1, `git checkout -b changelog/v${currentVersion}`);
+      expect(mockRun).toHaveBeenNthCalledWith(
+        1,
+        `git checkout -b changelog/v${currentVersion}`,
+      );
       expect(mockRun).toHaveBeenNthCalledWith(2, 'git add CHANGELOG.md');
-      expect(mockRun).toHaveBeenNthCalledWith(3, `git commit -m "[RN][Changelog] Add changelog for v${currentVersion}"`);
-      expect(mockRun).toHaveBeenNthCalledWith(4, `git push origin changelog/v${currentVersion}`);
+      expect(mockRun).toHaveBeenNthCalledWith(
+        3,
+        `git commit -m "[RN][Changelog] Add changelog for v${currentVersion}"`,
+      );
+      expect(mockRun).toHaveBeenNthCalledWith(
+        4,
+        `git push origin changelog/v${currentVersion}`,
+      );
     });
   });
 
@@ -147,10 +165,10 @@ describe('Generate Changelog', () => {
       mockFetch.mockReturnValueOnce(Promise.resolve({status: 401}));
 
       const headers = {
-        'Accept': 'Accept: application/vnd.github+json',
+        Accept: 'Accept: application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
         Authorization: `Bearer ${token}`,
-      }
+      };
 
       const content = `
 ## Summary
@@ -160,7 +178,7 @@ Add Changelog for ${currentVersion}
 [Internal] - Add Changelog for ${currentVersion}
 
 ## Test Plan:
-N/A`
+N/A`;
 
       const body = {
         title: `[RN][Changelog] Add changelog for v${currentVersion}`,
@@ -178,25 +196,26 @@ N/A`
           method: 'POST',
           headers: headers,
           body: JSON.stringify(body),
-        }
+        },
       );
     });
     it('Returns the pr url', async () => {
       const currentVersion = '0.79.0-rc5';
       const token = 'token';
-      const expectedPrURL = 'https://github.com/facebook/react-native/pulls/1234';
+      const expectedPrURL =
+        'https://github.com/facebook/react-native/pulls/1234';
 
       const returnedObject = {
         status: 201,
         json: () => Promise.resolve({html_url: expectedPrURL}),
-      }
+      };
       mockFetch.mockReturnValueOnce(Promise.resolve(returnedObject));
 
       const headers = {
-        'Accept': 'Accept: application/vnd.github+json',
+        Accept: 'Accept: application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
         Authorization: `Bearer ${token}`,
-      }
+      };
 
       const content = `
 ## Summary
@@ -206,7 +225,7 @@ Add Changelog for ${currentVersion}
 [Internal] - Add Changelog for ${currentVersion}
 
 ## Test Plan:
-N/A`
+N/A`;
 
       const body = {
         title: `[RN][Changelog] Add changelog for v${currentVersion}`,
@@ -215,7 +234,7 @@ N/A`
         body: content,
       };
 
-      const receivedPrURL = await _createPR(currentVersion, token)
+      const receivedPrURL = await _createPR(currentVersion, token);
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(mockFetch).toHaveBeenCalledWith(
@@ -224,7 +243,7 @@ N/A`
           method: 'POST',
           headers: headers,
           body: JSON.stringify(body),
-        }
+        },
       );
       expect(receivedPrURL).toEqual(expectedPrURL);
     });
