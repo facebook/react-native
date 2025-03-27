@@ -693,7 +693,7 @@ public class com/facebook/react/bridge/CxxModuleWrapperBase : com/facebook/react
 	public fun getName ()Ljava/lang/String;
 	public fun initialize ()V
 	public fun invalidate ()V
-	protected fun resetModule (Lcom/facebook/jni/HybridData;)V
+	protected final fun resetModule (Lcom/facebook/jni/HybridData;)V
 }
 
 public final class com/facebook/react/bridge/DefaultJSExceptionHandler : com/facebook/react/bridge/JSExceptionHandler {
