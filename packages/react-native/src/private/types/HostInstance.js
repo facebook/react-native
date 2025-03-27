@@ -48,3 +48,6 @@ export interface LegacyHostInstanceMethods {
 }
 
 export type HostInstance = LegacyHostInstanceMethods;
+
+/** @deprecated Use HostInstance instead */
+export type NativeMethods = LegacyHostInstanceMethods;

@@ -103,7 +103,7 @@ type KeyboardEventDefinitions = {
  *```
  */
 
-class Keyboard {
+class KeyboardImpl {
   _currentlyShowing: ?KeyboardEvent;
 
   _emitter: NativeEventEmitter<KeyboardEventDefinitions> =
@@ -202,4 +202,6 @@ class Keyboard {
   }
 }
 
-export default (new Keyboard(): Keyboard);
+const Keyboard: KeyboardImpl = new KeyboardImpl();
+
+export default Keyboard;
