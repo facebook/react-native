@@ -326,11 +326,6 @@ export type AccessibilityProps = $ReadOnly<{
   ...AccessibilityPropsAndroid,
   ...AccessibilityPropsIOS,
   /**
-   * Array which specifies the order in which the children of a view will be focused by the accessibility service.
-   */
-  accessibilityOrder?: $ReadOnlyArray<string>,
-
-  /**
    * When `true`, indicates that the view is an accessibility element.
    * By default, all the touchable elements are accessible.
    *
