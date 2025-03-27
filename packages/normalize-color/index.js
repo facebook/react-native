@@ -37,9 +37,19 @@ function normalizeColor(color) {
     return colorFromKeyword;
   }
 
-  if ((match = matchers.rgb.exec(color))) {
-    // rgb(R G B / A) notation
-    if (match[5] !== undefined) {
+  if ((match = matchers.rgba.exec(color) || matchers.rgb.exec(color))) {
+    // rgb(R G B / A) / rgba(R G B / A) notation
+    if (match[9] !== undefined) {
+      return (
+        ((parse255(match[9]) << 24) | // r
+          (parse255(match[10]) << 16) | // g
+          (parse255(match[11]) << 8) | // b
+          parse1(match[12])) >>> // a
+        0
+      );
+    }
+    // // rgb(R, G, B, A) / rgba(R, G, B, A) notation
+    else if (match[5] !== undefined) {
       return (
         ((parse255(match[5]) << 24) | // r
           (parse255(match[6]) << 16) | // g
@@ -48,35 +58,12 @@ function normalizeColor(color) {
         0
       );
     }
-
-    // rgb(R, G, B) notation
+    // rgb(R, G, B) / rgba(R, G, B) notation
     return (
       ((parse255(match[2]) << 24) | // r
         (parse255(match[3]) << 16) | // g
         (parse255(match[4]) << 8) | // b
         0x000000ff) >>> // a
-      0
-    );
-  }
-
-  if ((match = matchers.rgba.exec(color))) {
-    // rgba(R G B / A) notation
-    if (match[6] !== undefined) {
-      return (
-        ((parse255(match[6]) << 24) | // r
-          (parse255(match[7]) << 16) | // g
-          (parse255(match[8]) << 8) | // b
-          parse1(match[9])) >>> // a
-        0
-      );
-    }
-
-    // rgba(R, G, B, A) notation
-    return (
-      ((parse255(match[2]) << 24) | // r
-        (parse255(match[3]) << 16) | // g
-        (parse255(match[4]) << 8) | // b
-        parse1(match[5])) >>> // a
       0
     );
   }
@@ -250,21 +237,16 @@ let cachedMatchers;
 
 function getMatchers() {
   if (cachedMatchers === undefined) {
+    const rgbRegexPattern =
+      call(NUMBER, NUMBER, NUMBER) +
+      '|' +
+      commaSeparatedCall(NUMBER, NUMBER, NUMBER, NUMBER) +
+      '|' +
+      callWithSlashSeparator(NUMBER, NUMBER, NUMBER, NUMBER);
+
     cachedMatchers = {
-      rgb: new RegExp(
-        'rgb(' +
-          call(NUMBER, NUMBER, NUMBER) +
-          '|' +
-          callWithSlashSeparator(NUMBER, NUMBER, NUMBER, NUMBER) +
-          ')',
-      ),
-      rgba: new RegExp(
-        'rgba(' +
-          commaSeparatedCall(NUMBER, NUMBER, NUMBER, NUMBER) +
-          '|' +
-          callWithSlashSeparator(NUMBER, NUMBER, NUMBER, NUMBER) +
-          ')',
-      ),
+      rgb: new RegExp('rgb(' + rgbRegexPattern + ')'),
+      rgba: new RegExp('rgba(' + rgbRegexPattern + ')'),
       hsl: new RegExp('hsl' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
       hsla: new RegExp(
         'hsla(' +
