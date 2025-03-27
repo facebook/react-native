@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "customConditions": ["@react-native/from-source-types"]
+  },
+  "include": ["./src/**/*.d.ts", "../types/__typetests__/**/*"]
+}

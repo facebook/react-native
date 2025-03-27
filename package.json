@@ -31,6 +31,7 @@
     "test-ios": "./scripts/objc-test.sh test",
     "test-typescript-offline": "dtslint --localTs node_modules/typescript/lib  packages/react-native/types",
     "test-typescript": "dtslint packages/react-native/types",
+    "test-generated-typescript": "tsc -p packages/react-native/types_generated/tsconfig.test.json",
     "test": "jest",
     "fantom": "JS_DIR='..' yarn jest --config packages/react-native-fantom/config/jest.config.js",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
