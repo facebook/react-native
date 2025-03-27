@@ -823,14 +823,6 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["accessibilityLabelledBy"] = accessibilityLabelledByValues;
   }
 
-  if (accessibilityOrder != oldProps->accessibilityOrder) {
-    auto accessibilityChildrenIds = folly::dynamic::array();
-    for (const auto& accessibilityChildId : accessibilityOrder) {
-      accessibilityChildrenIds.push_back(accessibilityChildId);
-    }
-    result["accessibilityElements"] = accessibilityChildrenIds;
-  }
-
   if (accessibilityLiveRegion != oldProps->accessibilityLiveRegion) {
     switch (accessibilityLiveRegion) {
       case AccessibilityLiveRegion::Assertive:
