@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require_relative "../scripts/react_native_pods"
+
 fast_float_config = get_fast_float_config()
 fast_float_git_url = fast_float_config[:git]
 
