@@ -1129,4 +1129,19 @@ describe('processBackgroundImage', () => {
       {color: processColor('blue'), position: '100%'},
     ]);
   });
+
+  it('should not process invalid gradient syntax', () => {
+    const input =
+      'aoeusntial-gradient(red 0%, yellow 30%, green 60%, blue 100%)';
+    const result = processBackgroundImage(input);
+    expect(result).toEqual([]);
+  });
+
+  it('should not process negative radius in radial gradient syntax', () => {
+    const input = 'radial-gradient(circle -100px, red, blue)';
+    const input1 = 'radial-gradient(ellipse 100px -40px, red, blue)';
+    const result = processBackgroundImage(input);
+    const result1 = processBackgroundImage(input1);
+    expect(result).toEqual([]);
+  });
 });

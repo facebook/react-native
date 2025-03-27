@@ -11,7 +11,12 @@
 'use strict';
 
 import type {ProcessedColorValue} from './processColor';
-import type {BackgroundImageValue} from './StyleSheetTypes';
+import type {
+  BackgroundImageValue,
+  RadialGradientPosition,
+  RadialGradientSize,
+  RadialGradientShape,
+} from './StyleSheetTypes';
 const processColor = require('./processColor').default;
 
 // Linear Gradient
@@ -45,35 +50,7 @@ const DEFAULT_RADIAL_POSITION: RadialGradientPosition = {
   top: '50%',
   left: '50%',
 };
-type RadialExtent =
-  | 'closest-corner'
-  | 'closest-side'
-  | 'farthest-corner'
-  | 'farthest-side';
-type RadialGradientSize =
-  | RadialExtent
-  | {
-      x: string | number,
-      y: string | number,
-    };
-type RadialGradientShape = 'circle' | 'ellipse';
-type RadialGradientPosition =
-  | {
-      top: number | string,
-      left: number | string,
-    }
-  | {
-      top: number | string,
-      right: number | string,
-    }
-  | {
-      bottom: number | string,
-      right: number | string,
-    }
-  | {
-      bottom: number | string,
-      left: number | string,
-    };
+
 type RadialGradientBackgroundImage = {
   type: 'radialGradient',
   shape: RadialGradientShape,
@@ -273,24 +250,25 @@ function parseBackgroundImageCSSString(
   cssString: string,
 ): $ReadOnlyArray<ParsedBackgroundImageValue> {
   const gradients = [];
-  let match;
-  // matches one or more linear-gradient or radial-gradient functions in CSS
-  const gradientRegex =
-    /(linear|radial)-gradient\s*\(((?:\([^)]*\)|[^()])*)\)/gi;
+  const bgImageStrings = splitGradients(cssString);
 
-  while ((match = gradientRegex.exec(cssString))) {
-    const [, type, gradientContent] = match;
-    const isRadial = type.toLowerCase() === 'radial';
+  for (const bgImageString of bgImageStrings) {
+    const bgImage = bgImageString.toLowerCase();
+    const gradientRegex = /^(linear|radial)-gradient\(((?:\([^)]*\)|[^()])*)\)/;
 
-    const gradient = isRadial
-      ? parseRadialGradientCSSString(gradientContent)
-      : parseLinearGradientCSSString(gradientContent);
+    const match = gradientRegex.exec(bgImage);
+    if (match) {
+      const [, type, gradientContent] = match;
+      const isRadial = type.toLowerCase() === 'radial';
+      const gradient = isRadial
+        ? parseRadialGradientCSSString(gradientContent)
+        : parseLinearGradientCSSString(gradientContent);
 
-    if (gradient != null) {
-      gradients.push(gradient);
+      if (gradient != null) {
+        gradients.push(gradient);
+      }
     }
   }
-
   return gradients;
 }
 
@@ -312,6 +290,7 @@ function parseRadialGradientCSSString(
   let hasExplicitShape = false;
   const firstPartTokens = firstPartStr.split(/\s+/);
 
+  // firstPartTokens is the shape, size, and position
   while (firstPartTokens.length > 0) {
     let token = firstPartTokens.shift();
     if (token == null) {
@@ -333,7 +312,7 @@ function parseRadialGradientCSSString(
       hasShapeSizeOrPositionString = true;
     } else if (tokenTrimmed.endsWith('px') || tokenTrimmed.endsWith('%')) {
       let sizeX = getPositionFromCSSValue(tokenTrimmed);
-      if (sizeX == null) {
+      if (sizeX == null || sizeX < 0) {
         // If a size is invalid, return null and do not apply any gradient. Same as web.
         return null;
       }
@@ -347,7 +326,7 @@ function parseRadialGradientCSSString(
       tokenTrimmed = token.toLowerCase().trim();
       if (tokenTrimmed.endsWith('px') || tokenTrimmed.endsWith('%')) {
         const sizeY = getPositionFromCSSValue(tokenTrimmed);
-        if (sizeY == null) {
+        if (sizeY == null || sizeY < 0) {
           // If a size is invalid, return null and do not apply any gradient. Same as web.
           return null;
         }
@@ -800,4 +779,32 @@ function getPositionFromCSSValue(position: string) {
   if (position.endsWith('%')) {
     return position;
   }
+}
+
+function splitGradients(input) {
+  const result = [];
+  let current = '';
+  let depth = 0;
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+
+    if (char === '(') {
+      depth++;
+    } else if (char === ')') {
+      depth--;
+    } else if (char === ',' && depth === 0) {
+      result.push(current.trim());
+      current = '';
+      continue;
+    }
+
+    current += char;
+  }
+
+  if (current.trim() !== '') {
+    result.push(current.trim());
+  }
+
+  return result;
 }

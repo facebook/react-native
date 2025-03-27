@@ -740,7 +740,7 @@ type RadialExtent =
   | 'closest-side'
   | 'farthest-corner'
   | 'farthest-side';
-type RadialGradientPosition =
+export type RadialGradientPosition =
   | {
       top: number | string,
       left: number | string,
@@ -757,15 +757,19 @@ type RadialGradientPosition =
       bottom: number | string,
       right: number | string,
     };
+
+export type RadialGradientShape = 'circle' | 'ellipse';
+export type RadialGradientSize =
+  | RadialExtent
+  | {
+      x: string | number,
+      y: string | number,
+    };
+
 type RadialGradientValue = {
   type: 'radialGradient',
-  shape: 'circle' | 'ellipse',
-  size:
-    | RadialExtent
-    | {
-        x: number | string,
-        y: number | string,
-      },
+  shape: RadialGradientShape,
+  size: RadialGradientSize,
   position: RadialGradientPosition,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
