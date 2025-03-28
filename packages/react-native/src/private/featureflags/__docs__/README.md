@@ -1,5 +1,7 @@
 # Feature Flags
 
+* [Main doc](../../../../../../__docs__/README.md)
+
 Feature flags are values that determine the behavior of specific parts of React
 Native. This directory contains the configuration for those values, and scripts
 to generate files for different languages to access and customize them.
@@ -9,7 +11,9 @@ There are 2 types of feature flags:
 everywhere.
 * JS-only: they can only be accessed and customized from JavaScript.
 
-## Definition
+## Usage
+
+### Defining feature flags
 
 The source of truth for the definition of the flags is the file
 `ReactNativeFeatureFlags.config.js` in this directory.
@@ -40,7 +44,7 @@ repository:
 yarn featureflags --update
 ```
 
-## Access
+### Accessing feature flags
 
 You can access the common feature flags from anywhere in your application using
 the `ReactNativeFeatureFlags` interface (available in C++/Objective-C++,
@@ -52,7 +56,7 @@ Feature flags are cached at every layer, which prevents having to go through JNI
 when accessing the values from Kotlin and through JSI when accessing the values
 from JavaScript.
 
-### C++ / Objective-C
+#### C++ / Objective-C
 
 ```c++
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -62,7 +66,7 @@ if (ReactNativeFeatureFlags::enableNativeBehavior()) {
 }
 ```
 
-### Kotlin
+#### Kotlin
 
 ```kotlin
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -74,7 +78,7 @@ fun someMethod() {
 }
 ```
 
-### JavaScript
+#### JavaScript
 
 ```javascript
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
@@ -88,7 +92,7 @@ if (ReactNativeFeatureFlags.enableJSBehavior()) {
 }
 ```
 
-## Customization
+### Setting feature flag overrides
 
 Feature flags provide the default values defined in the configuration unless
 overrides are applied at the application level. Overrides for common feature
@@ -99,7 +103,7 @@ Overrides must be applied before any of the available feature flags has been
 accessed. This prevents having inconsistent behavior during the lifecycle of the
 application.
 
-### C++/Objective-C
+#### C++/Objective-C
 
 ```c++
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -117,7 +121,7 @@ class CustomReactNativeFeatureFlags : public ReactNativeFeatureFlagsDefaults {
 ReactNativeFeatureFlags::override(std::make_unique<CustomReactNativeFeatureFlags>());
 ```
 
-### Kotlin
+#### Kotlin
 
 ```kotlin
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -130,7 +134,7 @@ fun overrideFeatureFlags() {
 }
 ```
 
-### JavaScript
+#### JavaScript
 
 ```javascript
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
@@ -140,7 +144,7 @@ ReactNativeFeatureFlags.override({
 });
 ```
 
-## Architecture
+## Design
 
 The architecture of this feature flags system can be described as follows:
 * A shared C++ core, where we provide access to the flags and allow
@@ -150,7 +154,21 @@ the C++ core (via JNI).
 * A JavaScript interface that allows accessing the common values (via a native
 module) and accessing and customizing the JS-only values.
 
-![Diagram of the architecture of feature flags in React Native](./__docs__/react-native-feature-flags-architecture.excalidraw-embedded.png)
+![Diagram of the architecture of feature flags in React Native](./architecture.excalidraw.svg)
 
-_This image has an embedded [Excalidraw](https://www.excalidraw.com) diagram,
-so you can upload it there if you need to make further modifications._
+## Relationship with other systems
+
+### Part of this
+
+- [C++ TurboModule](../../../../ReactCommon/react/nativemodule/featureflags/__docs__/README.md)
+- [C++ implementation](../../../../ReactCommon/react/featureflags/__docs__/README.md)
+- [Android implementation](../../../../ReactAndroid/src/main/java/com/facebook/react/internal/featureflags/__docs__/README.md)
+- [Configuration and codegen](../../../../scripts/featureflags/__docs__/README.md)
+
+### Used by this
+
+- The only dependency is the C++ TurboModule infrastructure (including codegen), as the JavaScript API uses it to access the feature flag values from native.
+
+### Uses this
+
+This system is used extensively throughout the codebase and it evolves over time as feature flags are added or cleaned up.
