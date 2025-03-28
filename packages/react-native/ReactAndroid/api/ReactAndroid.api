@@ -1776,11 +1776,6 @@ public abstract interface class com/facebook/react/common/ShakeDetector$ShakeLis
 	public abstract fun onShake ()V
 }
 
-public final class com/facebook/react/common/SingleThreadAsserter {
-	public fun <init> ()V
-	public final fun assertNow ()V
-}
-
 public abstract interface class com/facebook/react/common/SurfaceDelegate {
 	public abstract fun createContentView (Ljava/lang/String;)V
 	public abstract fun destroyContentView ()V
