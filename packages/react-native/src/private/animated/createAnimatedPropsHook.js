@@ -137,6 +137,7 @@ export default function createAnimatedPropsHook(
       (instance: TInstance) => {
         // NOTE: This may be called more often than necessary (e.g. when `props`
         // changes), but `setNativeView` already optimizes for that.
+        // $FlowFixMe[incompatible-call]
         node.setNativeView(instance);
 
         // NOTE: When using the JS animation driver, this callback is called on
