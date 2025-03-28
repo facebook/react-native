@@ -14,6 +14,11 @@ export class URLSearchParams {
   _searchParams: Map<string, string[]> = new Map();
 
   constructor(params?: Record<string, string> | string | [string, string][]) {
+
+    if(params === null){
+      return;
+    }
+
     // URLSearchParams("key1=value1&key2=value2");
     if (typeof params === 'string') {
       params
@@ -23,7 +28,7 @@ export class URLSearchParams {
           if (!pair) {
             return;
           }
-          const [key, value] = pair.split('=').map(decodeURIComponent);
+          const [key, value] = pair.split('=').map(part => decodeURIComponent(part.replace(/\+/g, ' ')));
           this.append(key, value);
         });
     }
@@ -67,11 +72,11 @@ export class URLSearchParams {
     this._searchParams.set(name, [value]);
   }
 
-  keys(name: string): Iterator<string> {
+  keys(): Iterator<string> {
     return this._searchParams.keys();
   }
 
-  values(name: string): Iterator<string> {
+  values(): Iterator<string> {
     function* generateValues(params: Map<string, string[]>): Iterator<string> {
       for (const valueArray of params.values()) {
         for (const value of valueArray) {
@@ -82,7 +87,7 @@ export class URLSearchParams {
     return generateValues(this._searchParams);
   }
 
-  entries(name: string): Iterator<[string, string]> {
+  entries(): Iterator<[string, string]> {
     function* generateEntries(
       params: Map<string, string[]>,
     ): Iterator<[string, string]> {
@@ -126,14 +131,16 @@ export class URLSearchParams {
   }
 
   toString(): string {
-    return Array.from(this._searchParams.entries())
-      .map(([key, values]) =>
-        values
-          .map(
-            value => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-          )
-          .join('&'),
-      )
-      .join('&');
-  }
+  return Array.from(this._searchParams.entries())
+    .map(([key, values]) =>
+      values
+        .map(
+          value =>
+            `${encodeURIComponent(key).replace(/%20/g, '+')}=${encodeURIComponent(value)
+              .replace(/%20/g, '+')}` // Convert only spaces to '+'
+        )
+        .join('&'),
+    )
+    .join('&');
+}
 }

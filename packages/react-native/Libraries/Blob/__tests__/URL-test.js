@@ -61,10 +61,15 @@ describe('URL', function () {
     expect(searchParams.get('key')).toBe('value');
 
     const paramsFromString = new URLSearchParams(
-      '?param1=value1&param2=value2',
+      '?param1=value1+value2&param2=value%20with%20space',
     );
-    expect(paramsFromString.get('param1')).toBe('value1');
-    expect(paramsFromString.get('param2')).toBe('value2');
+
+    
+    expect(paramsFromString.get('param1')).toBe('value1 value2');
+    expect(paramsFromString.get('param2')).toBe('value with space');
+    expect(paramsFromString.toString()).toBe('param1=value1+value2&param2=value+with+space');
+
+    
 
     const paramsFromObject = new URLSearchParams({
       user: 'john',
