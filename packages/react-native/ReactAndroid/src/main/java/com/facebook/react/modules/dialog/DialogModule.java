@@ -130,6 +130,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     }
 
     @Override
+    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
     public void onDismiss(DialogInterface dialog) {
       if (!mCallbackConsumed) {
         if (getReactApplicationContext().hasActiveReactInstance()) {
@@ -198,8 +199,11 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     }
     if (options.hasKey(KEY_ITEMS)) {
       ReadableArray items = options.getArray(KEY_ITEMS);
+      // NULLSAFE_FIXME[Nullable Dereference]
       CharSequence[] itemsArray = new CharSequence[items.size()];
+      // NULLSAFE_FIXME[Nullable Dereference]
       for (int i = 0; i < items.size(); i++) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         itemsArray[i] = items.getString(i);
       }
       args.putCharSequenceArray(AlertFragment.ARG_ITEMS, itemsArray);
