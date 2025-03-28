@@ -8,10 +8,10 @@
 package com.facebook.react.internal.turbomodule.core;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
@@ -35,13 +35,14 @@ import java.util.Map;
  * has a C++ counterpart This class installs the JSI bindings. It also implements the method to get
  * a Java module, that the C++ counterpart calls.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TurboModuleManager implements TurboModuleRegistry {
   private static final String TAG = "TurboModuleManager";
 
   private final List<String> mEagerInitModuleNames;
   private final ModuleProvider mTurboModuleProvider;
   private final ModuleProvider mLegacyModuleProvider;
-  private final TurboModuleManagerDelegate mDelegate;
+  private final @Nullable TurboModuleManagerDelegate mDelegate;
 
   static {
     NativeModuleSoLoader.maybeLoadSoLibrary();
@@ -66,14 +67,12 @@ public class TurboModuleManager implements TurboModuleRegistry {
       @Nullable final TurboModuleManagerDelegate delegate,
       CallInvokerHolder jsCallInvokerHolder,
       NativeMethodCallInvokerHolder nativeMethodCallInvokerHolder) {
-    // NULLSAFE_FIXME[Field Not Nullable]
     mDelegate = delegate;
     mHybridData =
         initHybrid(
             runtimeExecutor,
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (NativeMethodCallInvokerHolderImpl) nativeMethodCallInvokerHolder,
-            // NULLSAFE_FIXME[Parameter Not Nullable]
             delegate);
     installJSIBindings(shouldEnableLegacyModuleInterop());
 
@@ -116,7 +115,6 @@ public class TurboModuleManager implements TurboModuleRegistry {
   }
 
   @Override
-  @NonNull
   public List<String> getEagerInitModuleNames() {
     return mEagerInitModuleNames;
   }
@@ -241,16 +239,17 @@ public class TurboModuleManager implements TurboModuleRegistry {
       moduleHolder = mModuleHolders.get(moduleName);
     }
 
-    // NULLSAFE_FIXME[Nullable Dereference]
+    if (moduleHolder == null) {
+      FLog.e(TAG, "getModule(): Tried to get module \"%s\", but moduleHolder was null", moduleName);
+      return null;
+    }
+
     TurboModulePerfLogger.moduleCreateStart(moduleName, moduleHolder.getModuleId());
-    // NULLSAFE_FIXME[Parameter Not Nullable]
     NativeModule module = getOrCreateModule(moduleName, moduleHolder, true);
 
     if (module != null) {
-      // NULLSAFE_FIXME[Nullable Dereference]
       TurboModulePerfLogger.moduleCreateEnd(moduleName, moduleHolder.getModuleId());
     } else {
-      // NULLSAFE_FIXME[Nullable Dereference]
       TurboModulePerfLogger.moduleCreateFail(moduleName, moduleHolder.getModuleId());
     }
 
@@ -265,7 +264,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
    */
   @Nullable
   private NativeModule getOrCreateModule(
-      String moduleName, @NonNull ModuleHolder moduleHolder, boolean shouldPerfLog) {
+      String moduleName, ModuleHolder moduleHolder, boolean shouldPerfLog) {
     boolean shouldCreateModule = false;
 
     synchronized (moduleHolder) {
@@ -389,7 +388,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
       RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
       NativeMethodCallInvokerHolderImpl nativeMethodCallInvoker,
-      TurboModuleManagerDelegate tmmDelegate);
+      @Nullable TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings(boolean shouldCreateLegacyModules);
 
@@ -431,8 +430,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
   }
 
   private static class ModuleHolder {
-    // NULLSAFE_FIXME[Field Not Nullable]
-    private volatile NativeModule mModule = null;
+    private volatile @Nullable NativeModule mModule = null;
     private volatile boolean mIsTryingToCreate = false;
     private volatile boolean mIsDoneCreatingModule = false;
     private static volatile int sHolderCount = 0;
@@ -447,7 +445,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
       return mModuleId;
     }
 
-    void setModule(@NonNull NativeModule module) {
+    void setModule(NativeModule module) {
       mModule = module;
     }
 
