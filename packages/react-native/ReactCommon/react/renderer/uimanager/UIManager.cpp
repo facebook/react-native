@@ -690,4 +690,12 @@ void UIManager::animationTick() const {
   }
 }
 
+void UIManager::synchronouslyUpdateViewOnUIThread(
+    Tag tag,
+    const folly::dynamic& props) {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerSynchronouslyUpdateViewOnUIThread(tag, props);
+  }
+}
+
 } // namespace facebook::react

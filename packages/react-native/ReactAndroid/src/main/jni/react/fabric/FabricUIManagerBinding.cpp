@@ -620,6 +620,10 @@ void FabricUIManagerBinding::schedulerDidSetIsJSResponder(
       shadowView, isJSResponder, blockNativeResponder);
 }
 
+void FabricUIManagerBinding::schedulerSynchronouslyUpdateViewOnUIThread(
+    Tag tag,
+    const folly::dynamic& props) {}
+
 void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {
