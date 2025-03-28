@@ -312,7 +312,11 @@ function parseRadialGradientCSSString(
       hasShapeSizeOrPositionString = true;
     } else if (tokenTrimmed.endsWith('px') || tokenTrimmed.endsWith('%')) {
       let sizeX = getPositionFromCSSValue(tokenTrimmed);
-      if (sizeX == null || sizeX < 0) {
+      if (sizeX == null) {
+        // If a size is invalid, return null and do not apply any gradient. Same as web.
+        return null;
+      }
+      if (typeof sizeX === 'number' && sizeX < 0) {
         // If a size is invalid, return null and do not apply any gradient. Same as web.
         return null;
       }
@@ -326,7 +330,11 @@ function parseRadialGradientCSSString(
       tokenTrimmed = token.toLowerCase().trim();
       if (tokenTrimmed.endsWith('px') || tokenTrimmed.endsWith('%')) {
         const sizeY = getPositionFromCSSValue(tokenTrimmed);
-        if (sizeY == null || sizeY < 0) {
+        if (sizeY == null) {
+          // If a size is invalid, return null and do not apply any gradient. Same as web.
+          return null;
+        }
+        if (typeof sizeY === 'number' && sizeY < 0) {
           // If a size is invalid, return null and do not apply any gradient. Same as web.
           return null;
         }
@@ -781,7 +789,7 @@ function getPositionFromCSSValue(position: string) {
   }
 }
 
-function splitGradients(input) {
+function splitGradients(input: string) {
   const result = [];
   let current = '';
   let depth = 0;
