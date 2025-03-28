@@ -123,6 +123,7 @@ public class MountItemDispatcher {
     while (!mountItems.isEmpty()) {
       MountItem item = mountItems.poll();
       try {
+        // NULLSAFE_FIXME[Nullable Dereference]
         item.execute(mMountingManager);
       } catch (RetryableMountingLayerException e) {
         if (item instanceof DispatchCommandMountItem) {
@@ -137,6 +138,7 @@ public class MountItemDispatcher {
           }
         } else {
           printMountItem(
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               item, "dispatchExternalMountItems: mounting failed with " + e.getMessage());
         }
       }
@@ -344,6 +346,7 @@ public class MountItemDispatcher {
       }
       SurfaceMountingManager surfaceMountingManager =
           mMountingManager.getSurfaceManager(item.getSurfaceId());
+      // NULLSAFE_FIXME[Nullable Dereference]
       surfaceMountingManager.scheduleMountItemOnViewAttach(item);
     } else {
       item.execute(mMountingManager);
