@@ -72,6 +72,7 @@ public final class BlobProvider extends ContentProvider {
     if (context instanceof ReactApplication) {
       ReactNativeHost host = ((ReactApplication) context).getReactNativeHost();
       ReactContext reactContext = host.getReactInstanceManager().getCurrentReactContext();
+      // NULLSAFE_FIXME[Nullable Dereference]
       blobModule = reactContext.getNativeModule(BlobModule.class);
     }
 
@@ -86,6 +87,7 @@ public final class BlobProvider extends ContentProvider {
 
     ParcelFileDescriptor[] pipe;
     try {
+      // NULLSAFE_FIXME[Not Vetted Third-Party]
       pipe = ParcelFileDescriptor.createPipe();
     } catch (IOException exception) {
       return null;
