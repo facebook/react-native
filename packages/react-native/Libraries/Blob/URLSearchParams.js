@@ -14,8 +14,7 @@ export class URLSearchParams {
   _searchParams: Map<string, string[]> = new Map();
 
   constructor(params?: Record<string, string> | string | [string, string][]) {
-
-    if(params === null){
+    if (params === null) {
       return;
     }
 
@@ -28,7 +27,9 @@ export class URLSearchParams {
           if (!pair) {
             return;
           }
-          const [key, value] = pair.split('=').map(part => decodeURIComponent(part.replace(/\+/g, ' ')));
+          const [key, value] = pair
+            .split('=')
+            .map(part => decodeURIComponent(part.replace(/\+/g, ' ')));
           this.append(key, value);
         });
     }
@@ -131,16 +132,17 @@ export class URLSearchParams {
   }
 
   toString(): string {
-  return Array.from(this._searchParams.entries())
-    .map(([key, values]) =>
-      values
-        .map(
-          value =>
-            `${encodeURIComponent(key).replace(/%20/g, '+')}=${encodeURIComponent(value)
-              .replace(/%20/g, '+')}` // Convert only spaces to '+'
-        )
-        .join('&'),
-    )
-    .join('&');
-}
+    return Array.from(this._searchParams.entries())
+      .map(([key, values]) =>
+        values
+          .map(
+            value =>
+              `${encodeURIComponent(key).replace(/%20/g, '+')}=${encodeURIComponent(
+                value,
+              ).replace(/%20/g, '+')}`, // Convert only spaces to '+'
+          )
+          .join('&'),
+      )
+      .join('&');
+  }
 }
