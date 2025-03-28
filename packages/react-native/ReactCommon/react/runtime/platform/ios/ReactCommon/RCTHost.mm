@@ -122,8 +122,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
   std::vector<__weak RCTFabricSurface *> _attachedSurfaces;
 
-  RCTModuleRegistry *_moduleRegistry;
-
   std::unique_ptr<RCTHostHostTargetDelegate> _inspectorHostDelegate;
   std::shared_ptr<jsinspector_modern::HostTarget> _inspectorTarget;
   std::optional<int> _inspectorPageId;
@@ -164,7 +162,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     _hostDelegate = hostDelegate;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
     _bundleManager = [RCTBundleManager new];
-    _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
     _launchOptions = [launchOptions copy];
 
@@ -244,7 +241,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                    jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                     moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
                                       launchOptions:_launchOptions];
   [_hostDelegate hostDidStart:self];
@@ -273,7 +269,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (RCTModuleRegistry *)moduleRegistry
 {
-  return _moduleRegistry;
+  return [_instance moduleRegistry];
 }
 
 - (RCTSurfacePresenter *)surfacePresenter
@@ -447,7 +443,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                    jsRuntimeFactory:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                     moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
                                       launchOptions:_launchOptions];
   [_hostDelegate hostDidStart:self];
