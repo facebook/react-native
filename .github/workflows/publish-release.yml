@@ -238,7 +238,12 @@ jobs:
             const version = "${{ github.ref_name }}";
             await verifyArtifactsAreOnMaven(version);
 
-  create_changelog:
+  generate_changelog:
     needs: build_npm_package
     uses: ./.github/workflows/generate-changelog.yml
+    secrets: inherit
+
+  bump-podfile-lock:
+    needs: build_npm_package
+    uses: ./.github/workflows/bump-podfile-lock.yml
     secrets: inherit
