@@ -182,6 +182,7 @@ export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
 export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
+export type { AnimatedComponentType as AnimatedComponent } from \\"./createAnimatedComponent\\";
 declare export const add: $FlowFixMe;
 declare export const attachNativeEvent: $FlowFixMe;
 declare export const createAnimatedComponent: $FlowFixMe;
@@ -1995,10 +1996,7 @@ type StickyHeaderComponentType = component(
   >,
   ...ScrollViewStickyHeaderProps
 );
-export type ScrollViewProps = $ReadOnly<{
-  ...ViewProps,
-  ...ScrollViewPropsIOS,
-  ...ScrollViewPropsAndroid,
+type ScrollViewBaseProps = $ReadOnly<{
   contentContainerStyle?: ?ViewStyleProp,
   contentOffset?: ?PointProp,
   disableIntervalMomentum?: ?boolean,
@@ -2039,6 +2037,12 @@ export type ScrollViewProps = $ReadOnly<{
   children?: React.Node,
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
+}>;
+export type ScrollViewProps = $ReadOnly<{
+  ...ViewProps,
+  ...ScrollViewPropsIOS,
+  ...ScrollViewPropsAndroid,
+  ...ScrollViewBaseProps,
 }>;
 type State = {
   layoutHeight: ?number,
@@ -5385,8 +5389,10 @@ export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
 };
-declare export default class SectionList<ItemT, SectionT = DefaultSectionT>
-  extends React.PureComponent<SectionListProps<ItemT, SectionT>>
+declare export default class SectionList<
+  ItemT = any,
+  SectionT = DefaultSectionT,
+> extends React.PureComponent<SectionListProps<ItemT, SectionT>>
 {
   props: SectionListProps<ItemT, SectionT>;
   scrollToLocation(params: ScrollToLocationParamsType): void;
@@ -9684,7 +9690,6 @@ export type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-  NativeMethods,
 } from \\"./src/private/types/HostInstance\\";
 export type { HostComponent } from \\"./src/private/types/HostComponent\\";
 export type { ColorSchemeName } from \\"./src/private/specs_DEPRECATED/modules/NativeAppearance\\";
@@ -9741,7 +9746,7 @@ export type MeasureLayoutOnSuccessCallback = (
   width: number,
   height: number
 ) => void;
-export interface NativeMethods {
+export interface LegacyHostInstanceMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
@@ -9753,7 +9758,7 @@ export interface NativeMethods {
   ): void;
   setNativeProps(nativeProps: { ... }): void;
 }
-export type HostInstance = NativeMethods;
+export type HostInstance = LegacyHostInstanceMethods;
 export type NativeMethods = LegacyHostInstanceMethods;
 "
 `;
