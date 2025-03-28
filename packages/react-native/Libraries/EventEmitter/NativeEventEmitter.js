@@ -25,6 +25,8 @@ interface NativeModule {
 }
 
 export type {EventSubscription};
+/** @deprecated Use `EventSubscription` instead. */
+export type NativeEventSubscription = EventSubscription;
 
 // $FlowFixMe[unclear-type] unclear type of events
 type UnsafeObject = Object;

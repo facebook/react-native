@@ -41,7 +41,7 @@ export type {
   HostInstance as PublicInstance,
 
   // These types are only necessary for Paper
-  LegacyHostInstanceMethods as LegacyPublicInstance,
+  NativeMethods as LegacyPublicInstance,
   MeasureOnSuccessCallback,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
