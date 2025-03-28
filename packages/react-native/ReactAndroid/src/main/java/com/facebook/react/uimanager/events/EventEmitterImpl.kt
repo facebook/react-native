@@ -83,7 +83,7 @@ internal class EventEmitterImpl(
         logSoftException(
             TAG,
             ReactNoCrashSoftException(
-                "Cannot get RCTEventEmitter from Context, no active Catalyst instance!"))
+                "Cannot get RCTEventEmitter without active Catalyst instance!"))
       }
     }
     return legacyEventEmitter
@@ -100,15 +100,15 @@ internal class EventEmitterImpl(
   ) {
     @UIManagerType val uiManagerType = getUIManagerType(targetTag, surfaceId)
     if (uiManagerType == UIManagerType.FABRIC) {
-      checkNotNull(fabricEventEmitter)
-          .receiveEvent(
-              surfaceId,
-              targetTag,
-              eventName,
-              canCoalesceEvent,
-              customCoalesceKey,
-              params,
-              category)
+      val fabricEventEmitter = fabricEventEmitter
+      if (fabricEventEmitter == null) {
+        logSoftException(
+            TAG,
+            ReactNoCrashSoftException("No fabricEventEmitter registered, cannot dispatch event"))
+      } else {
+        fabricEventEmitter.receiveEvent(
+            surfaceId, targetTag, eventName, canCoalesceEvent, customCoalesceKey, params, category)
+      }
     } else if (uiManagerType == UIManagerType.LEGACY) {
       ensureLegacyEventEmitter()?.receiveEvent(targetTag, eventName, params)
     }
