@@ -237,3 +237,8 @@ jobs:
             const {verifyArtifactsAreOnMaven} = require('./.github/workflow-scripts/verifyArtifactsAreOnMaven.js');
             const version = "${{ github.ref_name }}";
             await verifyArtifactsAreOnMaven(version);
+
+  create_changelog:
+    needs: build_npm_package
+    uses: ./.github/workflows/generate-changelog.yml
+    secrets: inherit
