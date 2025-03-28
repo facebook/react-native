@@ -13,6 +13,7 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.soloader.SoLoader;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public abstract class TurboModuleManagerDelegate {
   private final HybridData mHybridData;
 
   static {
-    NativeModuleSoLoader.maybeLoadSoLibrary();
+    SoLoader.loadLibrary("turbomodulejsijni");
   }
 
   protected abstract HybridData initHybrid();
