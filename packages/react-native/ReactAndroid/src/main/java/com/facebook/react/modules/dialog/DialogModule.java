@@ -12,12 +12,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeDialogManagerAndroidSpec;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -29,6 +30,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeDialogManagerAndroidSpec.NAME)
 public class DialogModule extends NativeDialogManagerAndroidSpec implements LifecycleEventListener {
 
@@ -59,12 +61,13 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     super(reactContext);
   }
 
+  @Nullsafe(Nullsafe.Mode.LOCAL)
   private class FragmentManagerHelper {
-    private final @NonNull FragmentManager mFragmentManager;
+    private final FragmentManager mFragmentManager;
 
     private @Nullable Object mFragmentToShow;
 
-    public FragmentManagerHelper(@NonNull FragmentManager fragmentManager) {
+    public FragmentManagerHelper(FragmentManager fragmentManager) {
       mFragmentManager = fragmentManager;
     }
 
@@ -110,6 +113,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     }
   }
 
+  @Nullsafe(Nullsafe.Mode.LOCAL)
   /* package */ class AlertFragmentListener implements OnClickListener, OnDismissListener {
 
     private final Callback mCallback;
@@ -130,8 +134,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     }
 
     @Override
-    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
-    public void onDismiss(DialogInterface dialog) {
+    public void onDismiss(@Nullable DialogInterface dialog) {
       if (!mCallbackConsumed) {
         if (getReactApplicationContext().hasActiveReactInstance()) {
           mCallback.invoke(ACTION_DISMISSED);
@@ -199,11 +202,9 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     }
     if (options.hasKey(KEY_ITEMS)) {
       ReadableArray items = options.getArray(KEY_ITEMS);
-      // NULLSAFE_FIXME[Nullable Dereference]
+      Assertions.assertNotNull(items);
       CharSequence[] itemsArray = new CharSequence[items.size()];
-      // NULLSAFE_FIXME[Nullable Dereference]
       for (int i = 0; i < items.size(); i++) {
-        // NULLSAFE_FIXME[Nullable Dereference]
         itemsArray[i] = items.getString(i);
       }
       args.putCharSequenceArray(AlertFragment.ARG_ITEMS, itemsArray);
