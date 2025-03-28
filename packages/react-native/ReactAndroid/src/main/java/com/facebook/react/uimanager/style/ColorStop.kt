@@ -12,13 +12,13 @@ import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import kotlin.math.ln
 
-public data class ColorStop(var color: Int? = null, val position: LengthPercentage? = null)
+internal class ColorStop(var color: Int? = null, val position: LengthPercentage? = null)
 
-public data class ProcessedColorStop(var color: Int? = null, val position: Float? = null)
+internal class ProcessedColorStop(var color: Int? = null, val position: Float? = null)
 
-public object ColorStopUtils {
+internal object ColorStopUtils {
   public fun getFixedColorStops(
-    colorStops: ArrayList<ColorStop>,
+    colorStops: List<ColorStop>,
     gradientLineLength: Float
   ): List<ProcessedColorStop> {
     val fixedColorStops = Array<ProcessedColorStop>(colorStops.size) { ProcessedColorStop() }

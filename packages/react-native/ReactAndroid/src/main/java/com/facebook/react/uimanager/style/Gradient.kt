@@ -9,6 +9,6 @@ package com.facebook.react.uimanager.style
 
 import android.graphics.Shader
 
-public interface Gradient {
+internal interface Gradient {
   public fun getShader(width: Float, height: Float): Shader?
 }

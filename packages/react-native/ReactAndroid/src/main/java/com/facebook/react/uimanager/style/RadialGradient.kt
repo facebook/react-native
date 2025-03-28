@@ -45,21 +45,15 @@ internal class RadialGradient(
     }
   }
 
-  private enum class SizeKeyword {
-    CLOSEST_SIDE,
-    FARTHEST_SIDE,
-    CLOSEST_CORNER,
-    FARTHEST_CORNER;
+  private enum class SizeKeyword(val value: String) {
+    CLOSEST_SIDE("closest-side"),
+    FARTHEST_SIDE("farthest-side"),
+    CLOSEST_CORNER("closest-corner"),
+    FARTHEST_CORNER("farthest-corner");
 
     companion object {
-      fun fromString(value: String?): SizeKeyword {
-        return when (value?.lowercase()) {
-          "closest-side" -> CLOSEST_SIDE
-          "farthest-side" -> FARTHEST_SIDE
-          "closest-corner" -> CLOSEST_CORNER
-          else -> FARTHEST_CORNER
-        }
-      }
+      fun fromString(value: String?): SizeKeyword =
+        enumValues<SizeKeyword>().find { it.value == value?.lowercase() } ?: FARTHEST_CORNER
     }
   }
 
@@ -85,10 +79,9 @@ internal class RadialGradient(
     val bottom: LengthPercentage? = null
   )
 
-  private val shape: Shape = run {
-    val shapeString = gradientMap.getString("shape") ?: throw IllegalArgumentException("Radial gradient must have shape")
-    Shape.fromString(shapeString)
-  }
+  private val shape: Shape = gradientMap.getString("shape")?.let { Shape.fromString(it) }
+    ?: throw IllegalArgumentException("Radial gradient must have shape")
+
   private val isCircle: Boolean = shape == Shape.CIRCLE
 
   private val position: Position = run {
