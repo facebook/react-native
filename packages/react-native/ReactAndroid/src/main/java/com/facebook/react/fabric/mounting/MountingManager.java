@@ -136,8 +136,10 @@ public class MountingManager {
       // Maximum number of stopped surfaces to keep track of
       while (mStoppedSurfaceIds.size() >= MAX_STOPPED_SURFACE_IDS_LENGTH) {
         Integer staleStoppedId = mStoppedSurfaceIds.get(0);
+        // NULLSAFE_FIXME[Nullable Dereference]
         mSurfaceIdToManager.remove(staleStoppedId.intValue());
         mStoppedSurfaceIds.remove(staleStoppedId);
+        // NULLSAFE_FIXME[Nullable Dereference]
         FLog.d(TAG, "Removing stale SurfaceMountingManager: [%d]", staleStoppedId.intValue());
       }
       mStoppedSurfaceIds.add(surfaceId);
