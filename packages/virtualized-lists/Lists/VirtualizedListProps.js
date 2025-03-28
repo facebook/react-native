@@ -13,6 +13,7 @@ import type {
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
+import type {ScrollViewProps} from 'react-native';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
@@ -20,7 +21,6 @@ import type {
 } from 'react-native/Libraries/Types/CoreEventTypes';
 
 import * as React from 'react';
-import {typeof ScrollView} from 'react-native';
 
 export type Item = any;
 
@@ -258,7 +258,7 @@ type OptionalProps = {
   /**
    * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
    */
-  renderScrollComponent?: (props: Object) => React.MixedElement,
+  renderScrollComponent?: (props: ScrollViewProps) => React.MixedElement,
   /**
    * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
@@ -284,7 +284,7 @@ type OptionalProps = {
 };
 
 export type VirtualizedListProps = {
-  ...React.ElementConfig<ScrollView>,
+  ...ScrollViewProps,
   ...RequiredProps,
   ...OptionalProps,
 };

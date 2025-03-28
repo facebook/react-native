@@ -26,17 +26,16 @@ import type {
 } from './StyleSheetTypes';
 
 export type {
-  StyleProp,
   BoxShadowValue,
   FilterFunction,
+  NativeColorValue,
+  StyleProp,
 } from './StyleSheetTypes';
 
 export type StyleSheetProperties = {
   hairlineWidth: number,
   flatten<T: string>(style: T): T,
 };
-
-export type {NativeColorValue} from './StyleSheetTypes';
 
 /**
  * This type should be used as the type for anything that is a color. It is
@@ -49,6 +48,7 @@ export type ColorValue = ____ColorValue_Internal;
 
 /**
  * Expose the opaque type for NativeColorValue.
+ * @deprecated Use NativeColorValue instead.
  */
 export type OpaqueColorValue = NativeColorValue;
 

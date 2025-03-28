@@ -24,7 +24,10 @@ interface NativeModule {
   removeListeners(count: number): void;
 }
 
-export type {EventSubscription};
+/** @deprecated Use `EventSubscription` instead. */
+type EmitterSubscription = EventSubscription;
+
+export type {EventSubscription, EmitterSubscription};
 /** @deprecated Use `EventSubscription` instead. */
 export type NativeEventSubscription = EventSubscription;
 
