@@ -33,6 +33,7 @@ function URLComponent(props: Props) {
       <RNTesterText testID="URL-pathname">{`pathname: ${parsedUrl.pathname}`}</RNTesterText>
       <RNTesterText testID="URL-port">{`port: ${parsedUrl.port}`}</RNTesterText>
       <RNTesterText testID="URL-search">{`search: ${parsedUrl.search}`}</RNTesterText>
+      <RNTesterText testID="URL-search-params">{`searchParams: ${parsedUrl.searchParams.toString()}`}</RNTesterText>
     </View>
   );
 }
