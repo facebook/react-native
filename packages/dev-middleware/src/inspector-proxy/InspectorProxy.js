@@ -520,7 +520,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
         }
 
         if (device == null) {
-          throw new Error('Unknown device with ID ' + deviceId);
+          throw new Error(
+            'Debugger connection attempted for a non registered device',
+          );
         }
 
         this.#logger?.info(
@@ -616,9 +618,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
       } catch (error) {
         this.#logger?.error(
-          "Connection failed to be established with DevTools for app='%s' on device='%s' with error:",
+          "Connection failed to be established with DevTools for app='%s' on device='%s' and device id='%s' with error:",
           device?.getApp() || 'unknown',
           device?.getName() || 'unknown',
+          deviceId,
           error,
         );
         socket.close(INTERNAL_ERROR_CODE, error?.toString() ?? 'Unknown error');
