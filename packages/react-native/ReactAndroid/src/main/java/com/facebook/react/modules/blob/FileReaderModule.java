@@ -8,12 +8,15 @@
 package com.facebook.react.modules.blob;
 
 import android.util.Base64;
+import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeFileReaderModuleSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeFileReaderModuleSpec.NAME)
 public class FileReaderModule extends NativeFileReaderModuleSpec {
 
@@ -23,15 +26,13 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
     super(reactContext);
   }
 
-  private BlobModule getBlobModule(String reason) {
+  private @Nullable BlobModule getBlobModule(String reason) {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
-      // NULLSAFE_FIXME[Return Not Nullable]
       return reactApplicationContext.getNativeModule(BlobModule.class);
     }
 
-    // NULLSAFE_FIXME[Return Not Nullable]
     return null;
   }
 
@@ -48,9 +49,13 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
       return;
     }
 
-    byte[] bytes =
-        // NULLSAFE_FIXME[Parameter Not Nullable]
-        blobModule.resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+    String blobId = blob.getString("blobId");
+    if (blobId == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob does not contain a blobId");
+      return;
+    }
+
+    byte[] bytes = blobModule.resolve(blobId, blob.getInt("offset"), blob.getInt("size"));
 
     if (bytes == null) {
       promise.reject(ERROR_INVALID_BLOB, "The specified blob is invalid");
@@ -77,9 +82,13 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
       return;
     }
 
-    byte[] bytes =
-        // NULLSAFE_FIXME[Parameter Not Nullable]
-        blobModule.resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+    String blobId = blob.getString("blobId");
+    if (blobId == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob does not contain a blobId");
+      return;
+    }
+
+    byte[] bytes = blobModule.resolve(blobId, blob.getInt("offset"), blob.getInt("size"));
 
     if (bytes == null) {
       promise.reject(ERROR_INVALID_BLOB, "The specified blob is invalid");
@@ -90,8 +99,9 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
       StringBuilder sb = new StringBuilder();
       sb.append("data:");
 
-      // NULLSAFE_FIXME[Nullable Dereference]
-      if (blob.hasKey("type") && !blob.getString("type").isEmpty()) {
+      if (blob.hasKey("type")
+          && blob.getString("type") != null
+          && !blob.getString("type").isEmpty()) {
         sb.append(blob.getString("type"));
       } else {
         sb.append("application/octet-stream");
