@@ -686,6 +686,7 @@ type TextInputBaseProps = $ReadOnly<{
     | 'url'
     | 'username'
     | 'username-new'
+    | 'webauthn'
     | 'off'
   ),
 
