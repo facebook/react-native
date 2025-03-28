@@ -726,7 +726,7 @@ export type DropShadowValue = {
 };
 
 type LinearGradientValue = {
-  type: 'linearGradient',
+  type: 'linear-gradient',
   // Angle or direction enums
   direction?: string,
   colorStops: $ReadOnlyArray<{
@@ -767,7 +767,7 @@ export type RadialGradientSize =
     };
 
 type RadialGradientValue = {
-  type: 'radialGradient',
+  type: 'radial-gradient',
   shape: RadialGradientShape,
   size: RadialGradientSize,
   position: RadialGradientPosition,

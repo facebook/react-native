@@ -34,7 +34,7 @@ type LinearGradientDirection =
   | {type: 'keyword', value: string};
 
 type LinearGradientBackgroundImage = {
-  type: 'linearGradient',
+  type: 'linear-gradient',
   direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ColorStopColor,
@@ -52,7 +52,7 @@ const DEFAULT_RADIAL_POSITION: RadialGradientPosition = {
 };
 
 type RadialGradientBackgroundImage = {
-  type: 'radialGradient',
+  type: 'radial-gradient',
   shape: RadialGradientShape,
   size: RadialGradientSize,
   position: RadialGradientPosition,
@@ -89,7 +89,7 @@ export default function processBackgroundImage(
         return [];
       }
 
-      if (bgImage.type === 'linearGradient') {
+      if (bgImage.type === 'linear-gradient') {
         let direction: LinearGradientDirection =
           LINEAR_GRADIENT_DEFAULT_DIRECTION;
         const bgDirection =
@@ -122,11 +122,11 @@ export default function processBackgroundImage(
         }
 
         result = result.concat({
-          type: 'linearGradient',
+          type: 'linear-gradient',
           direction,
           colorStops: processedColorStops,
         });
-      } else if (bgImage.type === 'radialGradient') {
+      } else if (bgImage.type === 'radial-gradient') {
         let shape: RadialGradientShape = DEFAULT_RADIAL_SHAPE;
         let size: RadialGradientSize = DEFAULT_RADIAL_SIZE;
         let position: RadialGradientPosition = {...DEFAULT_RADIAL_POSITION};
@@ -169,7 +169,7 @@ export default function processBackgroundImage(
         }
 
         result = result.concat({
-          type: 'radialGradient',
+          type: 'radial-gradient',
           shape,
           size,
           position,
@@ -556,7 +556,7 @@ function parseRadialGradientCSSString(
   }
 
   return {
-    type: 'radialGradient',
+    type: 'radial-gradient',
     shape,
     size,
     position,
@@ -601,7 +601,7 @@ function parseLinearGradientCSSString(
   }
 
   return {
-    type: 'linearGradient',
+    type: 'linear-gradient',
     direction,
     colorStops,
   };

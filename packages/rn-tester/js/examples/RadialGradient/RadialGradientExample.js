@@ -116,7 +116,7 @@ exports.examples = [
           style={{
             experimental_backgroundImage: [
               {
-                type: 'radialGradient',
+                type: 'radial-gradient',
                 shape: 'circle',
                 position: {top: 0, right: 0},
                 size: 'farthest-corner',
@@ -191,7 +191,7 @@ exports.examples = [
           style={{
             experimental_backgroundImage: [
               {
-                type: 'radialGradient',
+                type: 'radial-gradient',
                 shape: 'circle',
                 position: {top: '50%', left: '50%'},
                 size: 'farthest-corner',

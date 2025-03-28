@@ -7623,7 +7623,7 @@ export type DropShadowValue = {
   color?: ____ColorValue_Internal,
 };
 type LinearGradientValue = {
-  type: \\"linearGradient\\",
+  type: \\"linear-gradient\\",
   direction?: string,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
@@ -7660,7 +7660,7 @@ export type RadialGradientSize =
       y: string | number,
     };
 type RadialGradientValue = {
-  type: \\"radialGradient\\",
+  type: \\"radial-gradient\\",
   shape: RadialGradientShape,
   size: RadialGradientSize,
   position: RadialGradientPosition,
@@ -8010,7 +8010,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
   | { type: \\"angle\\", value: number }
   | { type: \\"keyword\\", value: string };
 type LinearGradientBackgroundImage = {
-  type: \\"linearGradient\\",
+  type: \\"linear-gradient\\",
   direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ColorStopColor,
@@ -8018,7 +8018,7 @@ type LinearGradientBackgroundImage = {
   }>,
 };
 type RadialGradientBackgroundImage = {
-  type: \\"radialGradient\\",
+  type: \\"radial-gradient\\",
   shape: RadialGradientShape,
   size: RadialGradientSize,
   position: RadialGradientPosition,

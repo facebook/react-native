@@ -27,7 +27,7 @@ describe('processBackgroundImage', () => {
     const result = processBackgroundImage(input);
     expect(result).toEqual([
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: {type: 'angle', value: 90},
         colorStops: [
           {color: processColor('red'), position: null},
@@ -42,7 +42,7 @@ describe('processBackgroundImage', () => {
     const result = processBackgroundImage(input);
     expect(result).toEqual([
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: {type: 'keyword', value: 'to bottom right'},
         colorStops: [
           {color: processColor('red'), position: null},
@@ -71,7 +71,7 @@ describe('processBackgroundImage', () => {
     const result = processBackgroundImage(input);
     expect(result).toEqual([
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: {type: 'keyword', value: 'to bottom right'},
         colorStops: [
           {color: processColor('red'), position: null},
@@ -87,7 +87,7 @@ describe('processBackgroundImage', () => {
     const result = processBackgroundImage(input);
     expect(result).toEqual([
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: {type: 'keyword', value: 'to bottom right'},
         colorStops: [
           {color: processColor('red'), position: '30%'},
@@ -100,7 +100,7 @@ describe('processBackgroundImage', () => {
   it('should process a linear gradient with angle', () => {
     const input = 'linear-gradient(45deg, red, blue)';
     const result = processBackgroundImage(input);
-    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 45});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
@@ -111,7 +111,7 @@ describe('processBackgroundImage', () => {
   it('should process a linear gradient with case-insensitive angle', () => {
     const input = 'linear-gradient(45Deg, red, blue)';
     const result = processBackgroundImage(input);
-    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 45});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
@@ -122,13 +122,13 @@ describe('processBackgroundImage', () => {
   it('should process a linear gradient object style with case-insensitive direction keyword', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: 'To Bottom',
         colorStops: [{color: 'red'}, {color: 'blue'}],
       },
     ];
     const result = processBackgroundImage(input);
-    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 180});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
@@ -139,13 +139,13 @@ describe('processBackgroundImage', () => {
   it('should process a linear gradient object style with case-insensitive angle', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: '45DEG',
         colorStops: [{color: 'red'}, {color: 'blue'}],
       },
     ];
     const result = processBackgroundImage(input);
-    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 45});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
@@ -156,7 +156,7 @@ describe('processBackgroundImage', () => {
   it('linear gradient case-insensitive string', () => {
     const input = 'LiNeAr-GradieNt(To Bottom, Red, Blue)';
     const result = processBackgroundImage(input);
-    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({
       type: 'angle',
       value: 180,
@@ -201,7 +201,7 @@ describe('processBackgroundImage', () => {
       linear-gradient(to bottom, green, yellow)`;
     const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
-    expect(result[0].type).toEqual('linearGradient');
+    expect(result[0].type).toEqual('linear-gradient');
     expect(result[0].direction).toEqual({
       type: 'angle',
       value: 0,
@@ -210,7 +210,7 @@ describe('processBackgroundImage', () => {
       {color: processColor('red'), position: null},
       {color: processColor('blue'), position: null},
     ]);
-    expect(result[1].type).toEqual('linearGradient');
+    expect(result[1].type).toEqual('linear-gradient');
     expect(result[1].direction).toEqual({
       type: 'angle',
       value: 180,
@@ -228,7 +228,7 @@ describe('processBackgroundImage', () => {
       linear-gradient(to bottom, green, yellow)`;
     const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
-    expect(result[0].type).toEqual('linearGradient');
+    expect(result[0].type).toEqual('linear-gradient');
     expect(result[0].direction).toEqual({
       type: 'angle',
       value: 270,
@@ -237,7 +237,7 @@ describe('processBackgroundImage', () => {
       {color: processColor('red'), position: null},
       {color: processColor('blue'), position: null},
     ]);
-    expect(result[1].type).toEqual('linearGradient');
+    expect(result[1].type).toEqual('linear-gradient');
     expect(result[1].direction).toEqual({
       type: 'angle',
       value: 180,
@@ -351,7 +351,7 @@ describe('processBackgroundImage', () => {
   it('should process an array of style objects', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: 'to bottom right',
         colorStops: [
           {color: 'red', positions: ['0%']},
@@ -362,7 +362,7 @@ describe('processBackgroundImage', () => {
     const result = processBackgroundImage(input);
     expect(result).toEqual([
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: {type: 'keyword', value: 'to bottom right'},
         colorStops: [
           {color: processColor('red'), position: '0%'},
@@ -375,7 +375,7 @@ describe('processBackgroundImage', () => {
   it('should process an style object with default direction', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [{color: 'red'}, {color: 'blue'}],
       },
     ];
@@ -389,7 +389,7 @@ describe('processBackgroundImage', () => {
   it('should process style object with direction enum', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: 'to right',
         colorStops: [{color: 'red'}, {color: 'blue'}],
       },
@@ -404,7 +404,7 @@ describe('processBackgroundImage', () => {
   it('should process style object with direction angle', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: '45deg',
         colorStops: [{color: 'red'}, {color: 'blue'}],
       },
@@ -419,7 +419,7 @@ describe('processBackgroundImage', () => {
   it('should fix up stop positions #1', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [
           {color: 'red', positions: ['40%']},
           {color: 'blue'},
@@ -457,7 +457,7 @@ describe('processBackgroundImage', () => {
   it('should process multiple stop positions', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [
           {color: 'red', positions: ['40%', '80%']},
           {color: 'blue'},
@@ -494,7 +494,7 @@ describe('processBackgroundImage', () => {
   it('should fix up stop positions #2', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [
           {color: 'red'},
           {color: 'blue', positions: ['20%']},
@@ -527,7 +527,7 @@ describe('processBackgroundImage', () => {
   it('should fix up stop positions #3', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [
           {color: 'red', positions: ['-50%']},
           {color: 'blue'},
@@ -560,7 +560,7 @@ describe('processBackgroundImage', () => {
   it('should fix up stop positions #4', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [
           {color: 'red'},
           {color: 'blue', positions: ['-50%']},
@@ -625,7 +625,7 @@ describe('processBackgroundImage', () => {
   it('should return empty array for invalid multiple stop positions', () => {
     const result = processBackgroundImage([
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [
           {color: 'red', positions: ['40%  20']},
           {color: 'blue', positions: ['90%  120%']},
@@ -645,7 +645,7 @@ describe('processBackgroundImage', () => {
       it('should process iOS PlatformColor colors', () => {
         const result = processBackgroundImage([
           {
-            type: 'linearGradient',
+            type: 'linear-gradient',
             colorStops: [
               {color: PlatformColorIOS('systemRedColor'), positions: ['0%']},
               {color: 'red', positions: ['100%']},
@@ -659,7 +659,7 @@ describe('processBackgroundImage', () => {
       it('should process iOS Dynamic colors', () => {
         const result = processBackgroundImage([
           {
-            type: 'linearGradient',
+            type: 'linear-gradient',
             colorStops: [
               {
                 color: DynamicColorIOS({light: 'black', dark: 'white'}),
@@ -681,7 +681,7 @@ describe('processBackgroundImage', () => {
       it('should process Android PlatformColor colors', () => {
         const result = processBackgroundImage([
           {
-            type: 'linearGradient',
+            type: 'linear-gradient',
             colorStops: [
               {
                 color: PlatformColorAndroid('?attr/colorPrimary'),
@@ -701,13 +701,13 @@ describe('processBackgroundImage', () => {
   it('should process color transition hint in object style', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: 'To Bottom',
         colorStops: [{color: 'red'}, {positions: ['20%']}, {color: 'blue'}],
       },
     ];
     const result = processBackgroundImage(input);
-    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 180});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
@@ -719,7 +719,7 @@ describe('processBackgroundImage', () => {
   it('should process color transition hint', () => {
     const input = 'linear-gradient(red, 40%, blue)';
     const result = processBackgroundImage(input);
-    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 180});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
@@ -739,7 +739,7 @@ describe('processBackgroundImage', () => {
     // Invalid object syntax
     result = processBackgroundImage([
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [{color: 'red'}, {positions: ['40']}, {color: 'blue'}],
       },
     ]);
@@ -763,7 +763,7 @@ describe('processBackgroundImage', () => {
   it('should process object syntax with multiple hints', () => {
     const input = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         direction: 'to right',
         colorStops: [
           {color: 'red'},
@@ -876,7 +876,7 @@ describe('processBackgroundImage', () => {
 
     const input1 = [
       {
-        type: 'linearGradient',
+        type: 'linear-gradient',
         colorStops: [
           {color: 'red', positions: ['10%', 20]},
           {color: 'blue', positions: ['30%', 40]},
@@ -895,7 +895,7 @@ describe('processBackgroundImage', () => {
   it('should process radial gradient object syntax', () => {
     const input = [
       {
-        type: 'radialGradient',
+        type: 'radial-gradient',
         shape: 'circle',
         colorStops: [
           {color: 'red', positions: ['10%', 20]},
@@ -905,7 +905,7 @@ describe('processBackgroundImage', () => {
         size: 'closest-side',
       },
       {
-        type: 'radialGradient',
+        type: 'radial-gradient',
         shape: 'circle',
         colorStops: [
           {color: 'red', positions: ['10%', 20]},
@@ -928,7 +928,7 @@ describe('processBackgroundImage', () => {
     expect(result[0].position).toEqual({top: '50%', left: '50%'});
     expect(result[0].size).toEqual('closest-side');
     expect(result[0].shape).toEqual('circle');
-    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].type).toEqual('radial-gradient');
 
     expect(result[1].size).toEqual({
       x: 100,
@@ -946,7 +946,7 @@ describe('processBackgroundImage', () => {
     expect(result[0].position).toEqual({top: '50%', left: '50%'});
     expect(result[0].size).toEqual('farthest-corner');
     expect(result[0].shape).toEqual('ellipse');
-    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].type).toEqual('radial-gradient');
   });
 
   it('should process radial gradient with shape circle', () => {
@@ -959,7 +959,7 @@ describe('processBackgroundImage', () => {
     expect(result[0].position).toEqual({top: '50%', left: '50%'});
     expect(result[0].size).toEqual('farthest-corner');
     expect(result[0].shape).toEqual('circle');
-    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].type).toEqual('radial-gradient');
   });
 
   it('should infer radial gradient circle shape from single length', () => {
@@ -986,7 +986,7 @@ describe('processBackgroundImage', () => {
     expect(result[0].position).toEqual({top: '50%', left: '50%'});
     expect(result[0].size).toEqual({x: 100, y: 100});
     expect(result[0].shape).toEqual('circle');
-    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].type).toEqual('radial-gradient');
   });
 
   // 1. position syntax: [ left | center | right | top | bottom | <length-percentage> ]
@@ -1038,7 +1038,7 @@ describe('processBackgroundImage', () => {
       {color: processColor('green'), position: '100%'},
     ]);
     expect(result[0].shape).toEqual('circle');
-    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].type).toEqual('radial-gradient');
   });
 
   it('should process multiple gradients with both radial and linear', () => {
@@ -1048,14 +1048,14 @@ describe('processBackgroundImage', () => {
     `;
     const result = processBackgroundImage(input);
     expect(result).toHaveLength(2);
-    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].type).toEqual('radial-gradient');
     expect(result[0].shape).toEqual('circle');
     expect(result[0].position).toEqual({top: '0%', left: '0%'});
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
       {color: processColor('blue'), position: null},
     ]);
-    expect(result[1].type).toEqual('linearGradient');
+    expect(result[1].type).toEqual('linear-gradient');
     expect(result[1].direction).toEqual({
       type: 'angle',
       value: 180,
@@ -1076,7 +1076,7 @@ describe('processBackgroundImage', () => {
     expect(result[0].position).toEqual({top: '50%', left: '50%'});
     expect(result[0].size).toEqual('closest-side');
     expect(result[0].shape).toEqual('circle');
-    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].type).toEqual('radial-gradient');
   });
 
   it('should handle whitespace variations in radial gradients', () => {
@@ -1090,7 +1090,7 @@ describe('processBackgroundImage', () => {
     expect(result[0].position).toEqual({left: '25%', top: '75%'});
     expect(result[0].size).toEqual('farthest-corner');
     expect(result[0].shape).toEqual('circle');
-    expect(result[0].type).toEqual('radialGradient');
+    expect(result[0].type).toEqual('radial-gradient');
   });
 
   it('should handle position keywords in different orders', () => {
