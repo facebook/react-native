@@ -18,8 +18,8 @@ export class URLSearchParams {
       return;
     }
 
-    // URLSearchParams("key1=value1&key2=value2");
     if (typeof params === 'string') {
+      // URLSearchParams("key1=value1&key2=value2");
       params
         .replace(/^\?/, '')
         .split('&')
@@ -32,14 +32,11 @@ export class URLSearchParams {
             .map(part => decodeURIComponent(part.replace(/\+/g, ' ')));
           this.append(key, value);
         });
-    }
-
-    //URLSearchParams([["key1", "value1"], ["key2", "value2"]]);
-    else if (Array.isArray(params)) {
+    } else if (Array.isArray(params)) {
+      //URLSearchParams([["key1", "value1"], ["key2", "value2"]]);
       params.forEach(([key, value]) => this.append(key, value));
-    }
-    //URLSearchParams({ key1: "value1", key2: "value2" });
-    else if (typeof params === 'object') {
+    } else if (typeof params === 'object') {
+      //URLSearchParams({ key1: "value1", key2: "value2" });
       Object.entries(params).forEach(([key, value]) => this.append(key, value));
     }
   }
