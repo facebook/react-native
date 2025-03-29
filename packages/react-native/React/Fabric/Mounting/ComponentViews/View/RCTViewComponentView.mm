@@ -17,6 +17,7 @@
 #import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
 #import <React/RCTLinearGradient.h>
+#import <React/RCTRadialGradient.h>
 #import <React/RCTLocalizedString.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
@@ -1003,6 +1004,15 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         const auto &linearGradient = std::get<LinearGradient>(backgroundImage);
         CALayer *backgroundImageLayer = [RCTLinearGradient gradientLayerWithSize:self.layer.bounds.size
                                                                         gradient:linearGradient];
+        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
+        backgroundImageLayer.masksToBounds = YES;
+        backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
+        [self.layer addSublayer:backgroundImageLayer];
+        [_backgroundImageLayers addObject:backgroundImageLayer];
+      } else if (std::holds_alternative<RadialGradient>(backgroundImage)) {
+        const auto &radialGradient = std::get<RadialGradient>(backgroundImage);
+        CALayer *backgroundImageLayer = [RCTRadialGradient gradientLayerWithSize:self.layer.bounds.size
+                                                                             gradient:radialGradient];
         [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
         backgroundImageLayer.masksToBounds = YES;
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
