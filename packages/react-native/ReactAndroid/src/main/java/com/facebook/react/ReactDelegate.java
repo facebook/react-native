@@ -145,7 +145,6 @@ public class ReactDelegate {
   }
 
   public void onHostDestroy() {
-    unloadApp();
     if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mReactHost.onHostDestroy(mActivity);
     } else {
@@ -153,6 +152,7 @@ public class ReactDelegate {
         getReactNativeHost().getReactInstanceManager().onHostDestroy(mActivity);
       }
     }
+    unloadApp();
   }
 
   public boolean onBackPressed() {
