@@ -37,6 +37,7 @@ const callbacks: Array<?Function> = [];
 const types: Array<?JSTimerType> = [];
 const timerIDs: Array<?number> = [];
 const freeIdxs: Array<number> = [];
+const timerIDToIdx: Map<?number, number> = new Map();
 let reactNativeMicrotasks: Array<number> = [];
 let requestIdleCallbacks: Array<number> = [];
 const requestIdleCallbackTimeouts: {[number]: number, ...} = {};
@@ -61,6 +62,7 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
   timerIDs[freeIndex] = id;
   callbacks[freeIndex] = func;
   types[freeIndex] = type;
+  timerIDToIdx.set(id, freeIndex);
   return id;
 }
 
@@ -77,13 +79,13 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     );
   }
 
-  // timerIndex of -1 means that no timer with that ID exists. There are
+  // timerIndex of undefined means that no timer with that ID exists. There are
   // two situations when this happens, when a garbage timer ID was given
   // and when a previously existing timer was deleted before this callback
   // fired. In both cases we want to ignore the timer id, but in the former
   // case we warn as well.
-  const timerIndex = timerIDs.indexOf(timerID);
-  if (timerIndex === -1) {
+  const timerIndex = timerIDToIdx.get(timerID);
+  if (timerIndex === undefined) {
     return;
   }
 
@@ -169,6 +171,8 @@ function _callReactNativeMicrotasksPass() {
 }
 
 function _clearIndex(i: number) {
+  const timerID = timerIDs[i];
+  timerIDToIdx.delete(timerID);
   timerIDs[i] = null;
   callbacks[i] = null;
   types[i] = null;
@@ -182,9 +186,9 @@ function _freeCallback(timerID: number) {
     return;
   }
 
-  const index = timerIDs.indexOf(timerID);
+  const index = timerIDToIdx.get(timerID);
   // See corresponding comment in `callTimers` for reasoning behind this
-  if (index !== -1) {
+  if (index !== undefined) {
     const type = types[index];
     _clearIndex(index);
     if (
