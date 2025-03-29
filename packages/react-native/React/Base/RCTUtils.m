@@ -51,6 +51,18 @@ void RCTSetNewArchEnabled(BOOL enabled)
   // whether the New Arch is enabled or not.
 }
 
+static BOOL _legacyWarningEnabled = true;
+BOOL RCTAreLegacyLogsEnabled(void)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSNumber *rctNewArchEnabled =
+        (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"];
+    _legacyWarningEnabled = rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  });
+  return _legacyWarningEnabled;
+}
+
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
 {
   if (!jsonObject) {

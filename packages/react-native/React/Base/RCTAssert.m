@@ -310,6 +310,9 @@ newArchitectureValidationInternal(RCTLogLevel level, RCTNotAllowedValidation typ
       case RCTLogLevelFatal:
         RCTAssert(0, @"%@", msg);
         break;
+      case RCTLogLevelWarning:
+        RCTLogWarn(@"%@", msg);
+        break;
       default:
         RCTAssert(0, @"New architecture validation is only for info, error, and fatal levels.");
     }
@@ -334,7 +337,7 @@ void RCTErrorNewArchitectureValidation(RCTNotAllowedValidation type, id context,
 
 void RCTLogNewArchitectureValidation(RCTNotAllowedValidation type, id context, NSString *extra)
 {
-  newArchitectureValidationInternal(RCTLogLevelInfo, type, context, extra);
+  newArchitectureValidationInternal(RCTLogLevelWarning, type, context, extra);
 }
 
 void RCTNewArchitectureValidationPlaceholder(RCTNotAllowedValidation type, id context, NSString *extra)
