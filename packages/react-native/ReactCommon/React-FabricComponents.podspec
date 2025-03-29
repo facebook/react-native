@@ -66,6 +66,7 @@ Pod::Spec.new do |s|
   s.dependency "React-utils"
   s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"
+  s.dependency "React-RCTFBReactNativeSpec"
   s.dependency "Yoga"
 
   add_dependency(s, "React-rendererdebug")
@@ -147,21 +148,4 @@ Pod::Spec.new do |s|
                               "react/renderer/textlayoutmanager/platform/cxx"
     ss.header_dir           = "react/renderer/textlayoutmanager"
   end
-
-  s.script_phases = [
-    {
-      :name => '[RN]Check rncore',
-      :execution_position => :before_compile,
-      :always_out_of_date => '1',
-      :script => <<-EOS
-echo "Checking whether Codegen has run..."
-rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"
-
-if [[ ! -d "$rncorePath" ]]; then
-  echo 'error: Codegen did not run properly in your project. Please reinstall cocoapods with `bundle exec pod install`.'
-  exit 1
-fi
-      EOS
-    }
-  ]
 end
