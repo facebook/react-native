@@ -17,7 +17,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  */
 @DoNotStrip
 @LegacyArchitecture
-public class InvalidIteratorException @DoNotStrip public constructor(msg: String) :
+internal class InvalidIteratorException @DoNotStrip constructor(msg: String) :
     RuntimeException(msg) {
   private companion object {
     init {
