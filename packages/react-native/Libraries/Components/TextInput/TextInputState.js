@@ -8,10 +8,6 @@
  * @flow strict-local
  */
 
-// This class is responsible for coordinating the "focused" state for
-// TextInputs. All calls relating to the keyboard should be funneled
-// through here.
-
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 
 import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
@@ -180,11 +176,14 @@ function isTextInput(textField: HostInstance): boolean {
   return inputs.has(textField);
 }
 
+/**
+ * Responsible for coordinating the "focused" state for text inputs. All calls
+ * relating to the keyboard should be funneled through here.
+ */
 const TextInputState = {
   currentlyFocusedInput,
   focusInput,
   blurInput,
-
   currentlyFocusedField,
   focusField,
   blurField,
