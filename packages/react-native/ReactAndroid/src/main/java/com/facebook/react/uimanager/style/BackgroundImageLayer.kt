@@ -18,8 +18,8 @@ public class BackgroundImageLayer(gradientMap: ReadableMap?, context: Context) {
       val typeString = gradientMap.getString("type")
       try {
         when (typeString) {
-          "linear-gradient" -> LinearGradient(gradientMap, context)
-          "radial-gradient" -> RadialGradient(gradientMap, context)
+          "linear-gradient" -> LinearGradient.parse(gradientMap, context)
+          "radial-gradient" -> RadialGradient.parse(gradientMap, context)
           else -> null
         }
       } catch (e: IllegalArgumentException) {

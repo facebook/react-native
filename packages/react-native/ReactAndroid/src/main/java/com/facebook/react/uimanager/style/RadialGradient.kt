@@ -14,7 +14,6 @@ import android.graphics.RadialGradient as AndroidRadialGradient
 import android.graphics.Matrix
 import android.graphics.Shader
 import com.facebook.react.bridge.ColorPropConverter
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.uimanager.FloatUtil
@@ -27,163 +26,138 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 internal class RadialGradient(
-  gradientMap: ReadableMap,
-  private val context: Context
+  val shape: Shape,
+  val size: GradientSize,
+  val position: Position,
+  val colorStops: List<ColorStop>
 ) : Gradient {
-  private enum class Shape {
+  companion object {
+    fun parse(gradientMap: ReadableMap, context: Context): Gradient? {
+      val shape = gradientMap.takeIf { it.hasKey("shape") }?.let { map ->
+        map.getString("shape")?.let { shapeString ->
+          Shape.fromString(shapeString)
+        }
+      }
+      val size: GradientSize? = gradientMap.takeIf { it.hasKey("size") }?.let { map ->
+        when (map.getType("size")) {
+          ReadableType.String ->  GradientSize.KeywordType.fromString(map.getString("size"))?.let {
+            keywordType -> GradientSize.Keyword(keywordType)
+          }
+          ReadableType.Map -> map.getMap("size")?.takeIf {
+            it.hasKey("x") && it.hasKey("y")
+          }?.let { sizeMap ->
+            val x = LengthPercentage.setFromDynamic(sizeMap.getDynamic("x"))
+            val y = LengthPercentage.setFromDynamic(sizeMap.getDynamic("y"))
+            if (x != null && y != null) {
+              GradientSize.Dimensions(x, y)
+            } else null
+          }
+          else -> null
+        }
+      }
+
+      val position = gradientMap.takeIf { it.hasKey("position") }?.let { map ->
+        val positionMap = map.getMap("position") ?: return null
+
+        var top: LengthPercentage? = null
+        var left: LengthPercentage? = null
+        var right: LengthPercentage? = null
+        var bottom: LengthPercentage? = null
+
+        if (positionMap.hasKey("top")) {
+          val rawTop = positionMap.getDynamic("top")
+          top = LengthPercentage.setFromDynamic(rawTop)
+        } else if (positionMap.hasKey("bottom")) {
+          val rawBottom = positionMap.getDynamic("bottom")
+          bottom = LengthPercentage.setFromDynamic(rawBottom)
+        } else {
+          return null
+        }
+
+        if (positionMap.hasKey("left")) {
+          val rawLeft = positionMap.getDynamic("left")
+          left = LengthPercentage.setFromDynamic(rawLeft)
+        } else if (positionMap.hasKey("right")) {
+          val rawRight = positionMap.getDynamic("right")
+          right = LengthPercentage.setFromDynamic(rawRight)
+        } else {
+          return null
+        }
+
+        Position(top, left, right, bottom)
+      }
+
+      val colorStops = gradientMap.takeIf { it.hasKey("colorStops") }?.let { map ->
+        val colorStopsArray = map.getArray("colorStops") ?: return null
+
+        val stops = ArrayList<ColorStop>(colorStopsArray.size())
+        for (i in 0 until colorStopsArray.size()) {
+          val colorStop = colorStopsArray.getMap(i) ?: continue
+          val color: Int? =
+            when {
+              !colorStop.hasKey("color") || colorStop.isNull("color") -> {
+                null
+              }
+              colorStop.getType("color") == ReadableType.Map -> {
+                ColorPropConverter.getColor(colorStop.getMap("color"), context)
+              }
+              else -> colorStop.getInt("color")
+            }
+          val colorStopPosition = LengthPercentage.setFromDynamic(colorStop.getDynamic("position"))
+          stops.add(ColorStop(color, colorStopPosition))
+        }
+        stops
+      }
+
+      if (shape != null && size != null && position != null && colorStops != null) {
+        return RadialGradient(shape, size, position, colorStops)
+      }
+
+      return null
+    }
+  }
+
+  internal enum class Shape {
     CIRCLE,
     ELLIPSE;
-    
+
     companion object {
-      fun fromString(value: String): Shape {
-        return when (value.lowercase()) {
+      fun fromString(value: String): Shape? {
+        return when (value) {
           "circle" -> CIRCLE
           "ellipse" -> ELLIPSE
-          else -> ELLIPSE
+          else -> null
         }
       }
     }
   }
 
-  private enum class SizeKeyword(val value: String) {
-    CLOSEST_SIDE("closest-side"),
-    FARTHEST_SIDE("farthest-side"),
-    CLOSEST_CORNER("closest-corner"),
-    FARTHEST_CORNER("farthest-corner");
+  sealed class GradientSize {
+    class Keyword(val keyword: KeywordType): GradientSize()
+    class Dimensions(val x: LengthPercentage, val y: LengthPercentage): GradientSize()
 
-    companion object {
-      fun fromString(value: String?): SizeKeyword =
-        enumValues<SizeKeyword>().find { it.value == value?.lowercase() } ?: FARTHEST_CORNER
+    enum class KeywordType(val value: String) {
+      CLOSEST_SIDE("closest-side"),
+      FARTHEST_SIDE("farthest-side"),
+      CLOSEST_CORNER("closest-corner"),
+      FARTHEST_CORNER("farthest-corner");
+      companion object {
+        fun fromString(value: String?) =
+          enumValues<KeywordType>().find { it.value == value }
+      }
     }
   }
 
-  private data class GradientSize(
-    val sizeType: SizeType,
-    val value: Any
-  ) {
-    enum class SizeType {
-      KEYWORD,
-      DIMENSIONS
-    }
-
-    data class Dimensions(
-      val x: LengthPercentage,
-      val y: LengthPercentage
-    )
-  }
-
-  private class Position(
+  internal class Position(
     val top: LengthPercentage? = null,
     val left: LengthPercentage? = null,
     val right: LengthPercentage? = null,
     val bottom: LengthPercentage? = null
   )
 
-  private val shape: Shape = gradientMap.getString("shape")?.let { Shape.fromString(it) }
-    ?: throw IllegalArgumentException("Radial gradient must have shape")
-
-  private val isCircle: Boolean = shape == Shape.CIRCLE
-
-  private val position: Position = run {
-    val positionMap = gradientMap.getMap("position")
-    val defaultPosition = Position(
-      top = LengthPercentage(50f, LengthPercentageType.PERCENT),
-      left = LengthPercentage(50f, LengthPercentageType.PERCENT)
-    )
-
-    if (positionMap == null) {
-      return@run defaultPosition
-    }
-
-    var top: LengthPercentage? = null
-    var left: LengthPercentage? = null
-    var right: LengthPercentage? = null
-    var bottom: LengthPercentage? = null
-
-    if (positionMap.hasKey("top")) {
-      val rawTop = positionMap.getDynamic("top")
-      top = LengthPercentage.setFromDynamic(rawTop)
-    } else if (positionMap.hasKey("bottom")) {
-      val rawBottom = positionMap.getDynamic("bottom")
-      bottom = LengthPercentage.setFromDynamic(rawBottom)
-    } else {
-      return@run defaultPosition
-    }
-
-    if (positionMap.hasKey("left")) {
-      val rawLeft = positionMap.getDynamic("left")
-      left = LengthPercentage.setFromDynamic(rawLeft)
-    } else if (positionMap.hasKey("right")) {
-      val rawRight = positionMap.getDynamic("right")
-      right = LengthPercentage.setFromDynamic(rawRight)
-    } else {
-      return@run defaultPosition
-    }
-
-    Position(top, left, right, bottom)
-  }
-
-  private val size: GradientSize = run {
-    if (gradientMap.hasKey("size")) {
-      if (gradientMap.getType("size") == ReadableType.String) {
-        val sizeKeyword = gradientMap.getString("size");
-        return@run GradientSize(
-          GradientSize.SizeType.KEYWORD,
-          SizeKeyword.fromString(sizeKeyword)
-        )
-      } else if (gradientMap.getType("size") ==  ReadableType.Map) {
-        val sizeMap = gradientMap.getMap("size")
-        if (sizeMap != null) {
-          if (sizeMap.hasKey("x") && sizeMap.hasKey("y")) {
-            val x = LengthPercentage.setFromDynamic(sizeMap.getDynamic("x"))
-            val y = LengthPercentage.setFromDynamic(sizeMap.getDynamic("y"))
-            if (x != null && y != null) {
-              return@run GradientSize(
-                GradientSize.SizeType.DIMENSIONS,
-                GradientSize.Dimensions(x, y)
-              )
-            }
-          }
-        }
-      }
-    }
-
-    GradientSize(
-      GradientSize.SizeType.KEYWORD,
-      SizeKeyword.FARTHEST_CORNER
-    )
-  }
-
-  private val colorStops: ArrayList<ColorStop> = run {
-    val colorStopsArray =
-      gradientMap.getArray("colorStops")
-        ?: throw IllegalArgumentException("Invalid colorStops array")
-    val stops = ArrayList<ColorStop>(colorStopsArray.size())
-    for (i in 0 until colorStopsArray.size()) {
-      val colorStop = colorStopsArray.getMap(i) ?: continue
-      val color: Int? =
-        when {
-          !colorStop.hasKey("color") || colorStop.isNull("color") -> {
-            null
-          }
-
-          colorStop.getType("color") == ReadableType.Map -> {
-            ColorPropConverter.getColor(colorStop.getMap("color"), context)
-          }
-
-          else -> colorStop.getInt("color")
-        }
-
-      val position = LengthPercentage.setFromDynamic(colorStop.getDynamic("position"))
-      stops.add(ColorStop(color, position))
-    }
-    stops
-  }
-
   override fun getShader(width: Float, height: Float): Shader {
     var centerX: Float = width / 2f
     var centerY: Float = height / 2f
-    
     if (position.top != null) {
       centerY =
         if (position.top.type == LengthPercentageType.PERCENT)
@@ -238,6 +212,8 @@ internal class RadialGradient(
       Shader.TileMode.CLAMP
     )
 
+    val isCircle = shape == Shape.CIRCLE
+
     // If not a circle and radiusX != radiusY, apply transformation to make it elliptical
     if (!isCircle && !FloatUtil.floatsEqual(radiusX, radiusY)) {
       val matrix = Matrix()
@@ -253,7 +229,7 @@ internal class RadialGradient(
     centerY: Float,
     width: Float,
     height: Float,
-    sizeKeyword: SizeKeyword
+    sizeKeyword: GradientSize.KeywordType
   ): Pair<Float, Float> {
     val radiusXFromLeftSide = centerX
     val radiusYFromTopSide = centerY
@@ -262,16 +238,16 @@ internal class RadialGradient(
     val radiusX: Float
     val radiusY: Float
 
-    if (sizeKeyword == SizeKeyword.CLOSEST_SIDE) {
+    if (sizeKeyword == GradientSize.KeywordType.CLOSEST_SIDE) {
       radiusX = min(radiusXFromLeftSide, radiusXFromRightSide)
       radiusY = min(radiusYFromTopSide, radiusYFromBottomSide)
     } else { // FARTHEST_SIDE
       radiusX = max(radiusXFromLeftSide, radiusXFromRightSide)
       radiusY = max(radiusYFromTopSide, radiusYFromBottomSide)
     }
-
+    val isCircle = shape == Shape.CIRCLE
     if (isCircle) {
-      val radius = if (sizeKeyword == SizeKeyword.CLOSEST_SIDE) {
+      val radius = if (sizeKeyword == GradientSize.KeywordType.CLOSEST_SIDE) {
         min(radiusX, radiusY)
       } else {
         max(radiusX, radiusY)
@@ -305,7 +281,7 @@ internal class RadialGradient(
     centerY: Float,
     width: Float,
     height: Float,
-    sizeKeyword: SizeKeyword
+    sizeKeyword: GradientSize.KeywordType
   ): Pair<Float, Float> {
     val corners = arrayOf(
       Pair(0f, 0f),           // top-left
@@ -319,7 +295,7 @@ internal class RadialGradient(
       (centerX - corners[cornerIndex].first).pow(2) +
         (centerY - corners[cornerIndex].second).pow(2)
     )
-    val isClosestCorner = sizeKeyword == SizeKeyword.CLOSEST_CORNER
+    val isClosestCorner = sizeKeyword == GradientSize.KeywordType.CLOSEST_CORNER
 
     for (i in 1 until corners.size) {
       val newDistance = sqrt(
@@ -339,13 +315,14 @@ internal class RadialGradient(
       }
     }
 
+    val isCircle = shape == Shape.CIRCLE
     if (isCircle) {
       return Pair(distance, distance)
     }
 
     // https://www.w3.org/TR/css-images-3/#typedef-radial-size
     // Aspect ratio of corner size ellipse is same as the respective side size ellipse
-    val sideKeyword = if (isClosestCorner) SizeKeyword.CLOSEST_SIDE else SizeKeyword.FARTHEST_SIDE
+    val sideKeyword = if (isClosestCorner) GradientSize.KeywordType.CLOSEST_SIDE else GradientSize.KeywordType.FARTHEST_SIDE
     val sideRadius = radiusToSide(centerX, centerY, width, height, sideKeyword)
 
     // Calculate ellipse radii based on the aspect ratio of the side ellipse
@@ -362,35 +339,36 @@ internal class RadialGradient(
     width: Float,
     height: Float
   ): Pair<Float, Float> {
-    if (size.sizeType == GradientSize.SizeType.KEYWORD) {
-      return when (val keyword = size.value as SizeKeyword) {
-          SizeKeyword.CLOSEST_SIDE, SizeKeyword.FARTHEST_SIDE -> {
-            radiusToSide(centerX, centerY, width, height, keyword)
-          }
-
-          SizeKeyword.CLOSEST_CORNER, SizeKeyword.FARTHEST_CORNER -> {
-            radiusToCorner(centerX, centerY, width, height, keyword)
-          }
+    if (size is GradientSize.Keyword) {
+      return when (val keyword = size.keyword) {
+        GradientSize.KeywordType.CLOSEST_SIDE, GradientSize.KeywordType.FARTHEST_SIDE -> {
+          radiusToSide(centerX, centerY, width, height, keyword)
+        }
+        GradientSize.KeywordType.CLOSEST_CORNER, GradientSize.KeywordType.FARTHEST_CORNER -> {
+          radiusToCorner(centerX, centerY, width, height, keyword)
+        }
       }
-    } else {
-      val dimensions = size.value as GradientSize.Dimensions
+    } else if (size is GradientSize.Dimensions) {
       val radiusX =
-        if (dimensions.x.type == LengthPercentageType.PERCENT)
-          dimensions.x.resolve(width)
+        if (size.x.type == LengthPercentageType.PERCENT)
+          size.x.resolve(width)
         else
-          dimensions.x.resolve(width).dpToPx()
+          size.x.resolve(width).dpToPx()
       val radiusY =
-        if (dimensions.y.type == LengthPercentageType.PERCENT)
-          dimensions.y.resolve(height)
+        if (size.y.type == LengthPercentageType.PERCENT)
+          size.y.resolve(height)
         else
-          dimensions.y.resolve(height).dpToPx()
+          size.y.resolve(height).dpToPx()
 
+      val isCircle = shape == Shape.CIRCLE
       return if (isCircle) {
         val radius = max(radiusX, radiusY)
         Pair(radius, radius)
       } else {
         Pair(radiusX, radiusY)
       }
+    } else {
+      return radiusToCorner(centerX, centerY, width, height, GradientSize.KeywordType.FARTHEST_CORNER)
     }
   }
 }
