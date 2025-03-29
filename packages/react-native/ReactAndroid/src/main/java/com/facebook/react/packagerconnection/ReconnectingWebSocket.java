@@ -138,6 +138,7 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public synchronized void onFailure(WebSocket webSocket, Throwable t, Response response) {
     if (mWebSocket != null) {
       abort("Websocket exception", t);
