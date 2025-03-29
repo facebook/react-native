@@ -95,6 +95,9 @@ class Scheduler final : public UIManagerDelegate {
       const ShadowNode::Shared& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) override;
+  void uiManagerSynchronouslyUpdateViewOnUIThread(
+      Tag tag,
+      const folly::dynamic& props) override;
 
 #pragma mark - ContextContainer
   ContextContainer::Shared getContextContainer() const;
