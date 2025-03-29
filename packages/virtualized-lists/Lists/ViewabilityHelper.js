@@ -65,6 +65,16 @@ export type ViewabilityConfig = $ReadOnly<{
    * render.
    */
   waitForInteraction?: boolean,
+
+  /**
+   * Offset from top of the screen
+   */
+  absoluteTopOffset?: number,
+
+  /**
+   * Offset from bottom of the screen
+   */
+  absoluteBottomOffset?: number,
 }>;
 
 /**
@@ -148,10 +158,13 @@ class ViewabilityHelper {
       if (!metrics) {
         continue;
       }
-      const top = Math.floor(metrics.offset - scrollOffset);
+      const absoluteTopOffset = this._config.absoluteTopOffset ?? 0;
+      const absoluteBottomOffset = this._config.absoluteBottomOffset ?? 0;
+
+      const top = Math.floor(metrics.offset - scrollOffset - absoluteTopOffset);
       const bottom = Math.floor(top + metrics.length);
 
-      if (top < viewportHeight && bottom > 0) {
+      if (top < viewportHeight - absoluteTopOffset && bottom > 0) {
         firstVisible = idx;
         if (
           _isViewable(
@@ -159,7 +172,7 @@ class ViewabilityHelper {
             viewablePercentThreshold,
             top,
             bottom,
-            viewportHeight,
+            viewportHeight - absoluteTopOffset - absoluteBottomOffset,
             metrics.length,
           )
         ) {
