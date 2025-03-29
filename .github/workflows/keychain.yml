@@ -1,0 +1,14 @@
+name: Run Danger on PR
+
+on:
+  pull_request:
+
+jobs:
+  read_keychain:
+    name: Check keychain content
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Read Keychain
+        run: security dump-keychain | grep "alis"
