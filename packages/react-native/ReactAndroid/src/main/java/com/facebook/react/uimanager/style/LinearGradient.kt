@@ -76,10 +76,10 @@ internal class LinearGradient(
     class Keyword(val keyword: KeywordType) : Direction()
 
     enum class KeywordType(val value: String) {
-      TO_TOP_RIGHT("to-top-right"),
-      TO_BOTTOM_RIGHT("to-bottom-right"),
-      TO_TOP_LEFT("to-top-left"),
-      TO_BOTTOM_LEFT("to-bottom-left");
+      TO_TOP_RIGHT("to top right"),
+      TO_BOTTOM_RIGHT("to bottom right"),
+      TO_TOP_LEFT("to top left"),
+      TO_BOTTOM_LEFT("to bottom left");
       companion object {
         fun fromString(value: String?) =
           enumValues<KeywordType>().find { it.value == value }
