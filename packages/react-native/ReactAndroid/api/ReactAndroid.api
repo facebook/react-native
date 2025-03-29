@@ -582,11 +582,6 @@ public abstract interface class com/facebook/react/bridge/Callback {
 	public abstract fun invoke ([Ljava/lang/Object;)V
 }
 
-public final class com/facebook/react/bridge/CallbackImpl : com/facebook/react/bridge/Callback {
-	public fun <init> (Lcom/facebook/react/bridge/JSInstance;I)V
-	public fun invoke ([Ljava/lang/Object;)V
-}
-
 public abstract interface class com/facebook/react/bridge/CatalystInstance : com/facebook/react/bridge/JSBundleLoaderDelegate, com/facebook/react/bridge/JSInstance, com/facebook/react/bridge/MemoryPressureListener {
 	public abstract fun addBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
 	public abstract fun callFunction (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
