@@ -373,11 +373,7 @@ type StickyHeaderComponentType = component(
   ...ScrollViewStickyHeaderProps
 );
 
-export type ScrollViewProps = $ReadOnly<{
-  ...ViewProps,
-  ...ScrollViewPropsIOS,
-  ...ScrollViewPropsAndroid,
-
+type ScrollViewBaseProps = $ReadOnly<{
   /**
    * These styles will be applied to the scroll view content container which
    * wraps all of the child views. Example:
@@ -640,7 +636,7 @@ export type ScrollViewProps = $ReadOnly<{
    */
   /* $FlowFixMe[unclear-type] - how to handle generic type without existential
    * operator? */
-  refreshControl?: ?React.Node,
+  refreshControl?: ?React.MixedElement,
   children?: React.Node,
   /**
    * A ref to the inner View element of the ScrollView. This should be used
@@ -653,6 +649,13 @@ export type ScrollViewProps = $ReadOnly<{
    * measure, measureLayout, etc.
    */
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
+}>;
+
+export type ScrollViewProps = $ReadOnly<{
+  ...ViewProps,
+  ...ScrollViewPropsIOS,
+  ...ScrollViewPropsAndroid,
+  ...ScrollViewBaseProps,
 }>;
 
 type State = {

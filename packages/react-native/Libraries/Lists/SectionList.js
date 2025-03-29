@@ -170,7 +170,7 @@ export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
  *
  */
 export default class SectionList<
-  ItemT,
+  ItemT = any,
   SectionT = DefaultSectionT,
 > extends React.PureComponent<SectionListProps<ItemT, SectionT>> {
   props: SectionListProps<ItemT, SectionT>;
