@@ -12,8 +12,15 @@ import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import kotlin.math.ln
 
+// ColorStop type is passed by user, so color and position both could be null.
+// e.g.
+// color is null in transition hint syntax: (red, 20%, green)
+// position can be null too (red 20%, green, purple)
 internal class ColorStop(var color: Int? = null, val position: LengthPercentage? = null)
 
+// ProcessedColorStop type describes type after processing.
+// Here both types are nullable to keep it convenient for the color stop fix up algorithm.
+// Final Color stop will have both non-null, we check for non null after calling getFixedColorStop.
 internal class ProcessedColorStop(var color: Int? = null, val position: Float? = null)
 
 internal object ColorStopUtils {
