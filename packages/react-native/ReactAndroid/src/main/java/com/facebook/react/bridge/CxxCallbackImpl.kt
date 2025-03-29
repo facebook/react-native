@@ -9,12 +9,9 @@ package com.facebook.react.bridge
 
 import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Callback impl that calls directly into the cxx bridge. Created from C++. */
 @DoNotStrip
-@LegacyArchitecture
 public class CxxCallbackImpl @DoNotStrip private constructor() : HybridClassBase(), Callback {
 
   override fun invoke(vararg args: Any?) {
@@ -22,10 +19,4 @@ public class CxxCallbackImpl @DoNotStrip private constructor() : HybridClassBase
   }
 
   private external fun nativeInvoke(arguments: NativeArray)
-
-  private companion object {
-    init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("CxxCallbackImpl")
-    }
-  }
 }
