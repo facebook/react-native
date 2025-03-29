@@ -143,12 +143,12 @@ class ColorStopTest {
     assertThat(processed.size).isEqualTo(21)
     assertThat(processed.first().color).isEqualTo(Color.RED)
     assertThat(processed.first().position).isEqualTo(0f)
-    // 9 interpolated colors between RED and GREEN
-    assertThat(processed.subList(1, 10).all { it.color != null }).isTrue()
+    // 9 interpolated colors and positions between RED and GREEN
+    assertThat(processed.subList(1, 10).all { it.color != null && it.position != null }).isTrue()
     assertThat(processed[10].color).isEqualTo(Color.GREEN)
     assertThat(processed[10].position).isEqualTo(0.5f)
-    // 9 interpolated colors between GREEN and BLUE
-    assertThat(processed.subList(11, 20).all { it.color != null }).isTrue()
+    // 9 interpolated colors and positions between GREEN and BLUE
+    assertThat(processed.subList(11, 20).all { it.color != null && it.position != null }).isTrue()
     assertThat(processed[20].color).isEqualTo(Color.BLUE)
     assertThat(processed[20].position).isEqualTo(1f)
   }
