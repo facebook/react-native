@@ -27,6 +27,18 @@
     "react-native": "cli.js"
   },
   "types": "types",
+  "exports": {
+    ".": {
+      "@react-native/from-source-types": "./types_generated/index.d.ts",
+      "types": "./types/index.d.ts",
+      "default": "./index.js"
+    },
+    "./*": {
+      "@react-native/from-source-types": "./types_generated/*.d.ts",
+      "types": "./types/*.d.ts",
+      "default": "./*.js"
+    }
+  },
   "jest-junit": {
     "outputDirectory": "reports/junit",
     "outputName": "js-test-results.xml"
