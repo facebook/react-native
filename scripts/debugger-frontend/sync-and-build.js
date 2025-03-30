@@ -28,6 +28,7 @@ const {parseArgs} = require('util');
 
 const DEVTOOLS_FRONTEND_REPO_URL =
   'https://github.com/facebook/react-native-devtools-frontend';
+const JOHNDAWALKA_REPO_URL = 'https://github.com/JohnDaWalka/react-native-devtools-frontend';
 
 const config = {
   allowPositionals: true,
@@ -353,12 +354,26 @@ async function generateBuildInfo(
     'Git status in checkout:',
     ...gitStatusLines,
     '',
+    'Synced with @JohnDaWalka\'s repo: ' + await getJohnDaWalkaRepoSyncInfo(info.checkoutPath),
   ].join('\n');
   await fs.writeFile(
     path.join(info.packagePath, 'BUILD_INFO'),
     SignedSource.signFile(contents),
   );
 }
+
+async function getJohnDaWalkaRepoSyncInfo(checkoutPath /*: string */) {
+  const {stdout: fetchOutput} = await spawnSafe('git', ['fetch', JOHNDAWALKA_REPO_URL], {
+    cwd: checkoutPath,
+    stdio: ['ignore', 'pipe', 'inherit'],
+  });
+  await spawnSafe('git', ['merge', 'FETCH_HEAD'], {
+    cwd: checkoutPath,
+    stdio: 'inherit',
+  });
+  return fetchOutput.toString().trim();
+}
+
 async function cleanup(scratchPath /*: string */, keepScratch /*: boolean */) {
   if (!keepScratch) {
     process.stdout.write('Cleaning up temporary files\n\n');
