@@ -152,7 +152,7 @@ class ShareModuleTest {
       errorMessage = message ?: throwable?.message ?: ERROR_DEFAULT_MESSAGE
     }
 
-    @Deprecated("Method deprecated")
+    @Deprecated("Method deprecated", ReplaceWith("reject(code, message)"))
     override fun reject(message: String) {
       reject(null, message, null, null)
     }

@@ -907,7 +907,9 @@ class NativeAnimatedNodeTraversalTest {
       }
 
       @Override
-      @Deprecated("Deprecated in Java")
+      @Deprecated(
+          "Deprecated in Java",
+          ReplaceWith("rctEventEmitter.receiveEvent(tag, \"topScroll\", JavaOnlyMap.of(\"contentOffset\", JavaOnlyMap.of(\"y\", value)))"))
       override fun dispatch(rctEventEmitter: RCTEventEmitter) {
         rctEventEmitter.receiveEvent(
             tag, "topScroll", JavaOnlyMap.of("contentOffset", JavaOnlyMap.of("y", value)))
