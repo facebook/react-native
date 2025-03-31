@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7196636e08059866a9324ab57609e492>>
+ * @generated SignedSource<<23e555f1c49609681b879815e5f53da7>>
  */
 
 /**
@@ -31,7 +31,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
-  private var enableImagePrefetchingAndroidCache: Boolean? = null
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
@@ -158,15 +157,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableIOSViewClipToPaddingBox()
       enableIOSViewClipToPaddingBoxCache = cached
-    }
-    return cached
-  }
-
-  override fun enableImagePrefetchingAndroid(): Boolean {
-    var cached = enableImagePrefetchingAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableImagePrefetchingAndroid()
-      enableImagePrefetchingAndroidCache = cached
     }
     return cached
   }

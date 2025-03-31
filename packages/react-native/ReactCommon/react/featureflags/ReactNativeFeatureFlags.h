@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc7536e8280fdc7d3f2106486439676a>>
+ * @generated SignedSource<<669a4826ae528a7c410058dfd47a4b78>>
  */
 
 /**
@@ -93,11 +93,6 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
-
-  /**
-   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
-   */
-  RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
    * Trigger JS runtime GC on memory pressure event on iOS
