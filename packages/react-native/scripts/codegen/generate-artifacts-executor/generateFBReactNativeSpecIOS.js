@@ -27,7 +27,7 @@ function generateFBReactNativeSpecIOS(projectRoot /*: string */) /*: void*/ {
   ).filter(library => library.config.name === 'FBReactNativeSpec')[0];
   if (!fbReactNativeSpecLib) {
     throw new Error(
-      "[Codegen] Can't find FBReactNativeSpec library. Failed to generate rncore artifacts",
+      "[Codegen] Can't find FBReactNativeSpec library. Failed to generate artifacts",
     );
   }
   const fbReactNativeSchemaInfo = generateSchemaInfo(fbReactNativeSpecLib, ios);
