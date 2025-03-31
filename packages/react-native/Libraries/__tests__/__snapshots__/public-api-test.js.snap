@@ -1507,7 +1507,7 @@ declare export default typeof ActivityIndicatorViewNativeComponent;
 exports[`public API should not change unintentionally Libraries/Components/Button.js 1`] = `
 "export type ButtonProps = $ReadOnly<{
   title: string,
-  onPress: (event?: GestureResponderEvent) => mixed,
+  onPress?: (event?: GestureResponderEvent) => mixed,
   touchSoundDisabled?: ?boolean,
   color?: ?ColorValue,
   hasTVPreferredFocus?: ?boolean,
@@ -1670,7 +1670,7 @@ type KeyboardEventDefinitions = {
   keyboardWillChangeFrame: [KeyboardEvent],
   keyboardDidChangeFrame: [KeyboardEvent],
 };
-declare class Keyboard {
+declare class KeyboardImpl {
   constructor(): void;
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
@@ -1683,7 +1683,8 @@ declare class Keyboard {
   metrics(): ?KeyboardMetrics;
   scheduleLayoutAnimation(event: KeyboardEvent): void;
 }
-declare export default Keyboard;
+declare const Keyboard: KeyboardImpl;
+declare export default typeof Keyboard;
 "
 `;
 
@@ -1739,6 +1740,7 @@ declare export default typeof LayoutConformanceNativeComponent;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
 "type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
+export type { PressableAndroidRippleConfig };
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -2038,7 +2040,7 @@ export type ScrollViewProps = $ReadOnly<{
   snapToStart?: ?boolean,
   snapToEnd?: ?boolean,
   removeClippedSubviews?: ?boolean,
-  refreshControl?: ?React.Node,
+  refreshControl?: ?React.MixedElement,
   children?: React.Node,
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
@@ -3566,7 +3568,7 @@ type TouchableHighlightBaseProps = $ReadOnly<{
   onShowUnderlay?: ?() => void,
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
-  hostRef: React.RefSetter<React.ElementRef<typeof View>>,
+  hostRef?: React.RefSetter<React.ElementRef<typeof View>>,
 }>;
 export type TouchableHighlightProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
@@ -4428,7 +4430,8 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
   addListener(eventType: string): void;
   removeListeners(count: number): void;
 }
-export type { EventSubscription };
+type EmitterSubscription = EventSubscription;
+export type { EventSubscription, EmitterSubscription };
 export type NativeEventSubscription = EventSubscription;
 type UnsafeObject = Object;
 declare export default class NativeEventEmitter<
@@ -7389,6 +7392,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/Rect.
   right?: ?number,
   top?: ?number,
 }>;
+export type Insets = Rect;
 export type RectOrSize = Rect | number;
 declare export function createSquare(size: number): Rect;
 declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
@@ -7425,15 +7429,15 @@ declare export default typeof StyleSheet;
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js.flow 1`] = `
 "export * as default from \\"./StyleSheetExports\\";
 export type {
-  StyleProp,
   BoxShadowValue,
   FilterFunction,
+  NativeColorValue,
+  StyleProp,
 } from \\"./StyleSheetTypes\\";
 export type StyleSheetProperties = {
   hairlineWidth: number,
   flatten<T: string>(style: T): T,
 };
-export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
 export type OpaqueColorValue = NativeColorValue;
 export type TransformsStyle = ____TransformStyle_Internal;
@@ -8831,6 +8835,7 @@ type MacOSPlatform = {
 };
 type WebPlatform = {
   OS: \\"web\\",
+  get Version(): void,
   get constants(): {
     reactNativeVersion: {
       major: number,
@@ -9401,6 +9406,7 @@ export type {
 } from \\"./Libraries/Modal/Modal\\";
 export { default as Modal } from \\"./Libraries/Modal/Modal\\";
 export type {
+  PressableAndroidRippleConfig,
   PressableProps,
   PressableStateCallbackType,
 } from \\"./Libraries/Components/Pressable/Pressable\\";
@@ -9469,6 +9475,7 @@ export type { TouchableOpacityProps } from \\"./Libraries/Components/Touchable/T
 export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/TouchableOpacity\\";
 export type { TouchableWithoutFeedbackProps } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
+export type { AccessibilityProps } from \\"./Libraries/Components/View/ViewAccessibility\\";
 export type {
   GestureResponderHandlers,
   TVViewPropsIOS,
@@ -9579,8 +9586,12 @@ export type {
 export { default as LogBox } from \\"./Libraries/LogBox/LogBox\\";
 export { default as NativeAppEventEmitter } from \\"./Libraries/EventEmitter/RCTNativeAppEventEmitter\\";
 export { default as NativeDialogManagerAndroid } from \\"./Libraries/NativeModules/specs/NativeDialogManagerAndroid\\";
+export type {
+  EventSubscription,
+  EmitterSubscription,
+  NativeEventSubscription,
+} from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
 export { default as NativeEventEmitter } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
-export type { NativeEventSubscription } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
 export { default as NativeModules } from \\"./Libraries/BatchedBridge/NativeModules\\";
 export { default as Networking } from \\"./Libraries/Network/RCTNetworking\\";
 export type {
@@ -9623,8 +9634,13 @@ export { default as Share } from \\"./Libraries/Share/Share\\";
 export type {
   ColorValue,
   ImageStyle,
+  FilterFunction,
+  FontVariant,
+  NativeColorValue,
+  OpaqueColorValue,
   StyleProp,
   TextStyle,
+  TransformsStyle,
   ViewStyle,
 } from \\"./Libraries/StyleSheet/StyleSheet\\";
 export type {
@@ -9635,6 +9651,7 @@ export type {
   EdgeInsetsValue,
   PointValue,
 } from \\"./Libraries/StyleSheet/StyleSheetTypes\\";
+export type { Insets } from \\"./Libraries/StyleSheet/Rect\\";
 export { default as StyleSheet } from \\"./Libraries/StyleSheet/StyleSheet\\";
 export * as Systrace from \\"./Libraries/Performance/Systrace\\";
 export { default as ToastAndroid } from \\"./Libraries/Components/ToastAndroid/ToastAndroid\\";
@@ -9655,6 +9672,7 @@ export type {
   MouseEvent,
   NativeMouseEvent,
   NativePointerEvent,
+  NativeScrollEvent,
   NativeSyntheticEvent,
   NativeTouchEvent,
   NativeUIEvent,
@@ -9663,13 +9681,14 @@ export type {
   TargetedEvent,
   TextLayoutEvent,
 } from \\"./Libraries/Types/CoreEventTypes\\";
+export type { TurboModule } from \\"./Libraries/TurboModule/RCTExport\\";
 export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
 export type {
   HostInstance,
-  NativeMethods,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
+  NativeMethods,
 } from \\"./src/private/types/HostInstance\\";
 export type { HostComponent } from \\"./src/private/types/HostComponent\\";
 export type { ColorSchemeName } from \\"./src/private/specs_DEPRECATED/modules/NativeAppearance\\";
@@ -9699,7 +9718,7 @@ exports[`public API should not change unintentionally src/private/setup/setUpPer
 
 exports[`public API should not change unintentionally src/private/types/HostComponent.js 1`] = `
 "export type HostComponent<Config: { ... }> = component(
-  ref: React.RefSetter<HostInstance>,
+  ref?: React.RefSetter<HostInstance>,
   ...Config
 );
 "
