@@ -21,7 +21,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  */
 @DoNotStrip
 @LegacyArchitecture
-public open class CxxModuleWrapperBase
+internal open class CxxModuleWrapperBase
 protected constructor(
     // For creating a wrapper from C++, or from a derived class.
     @Suppress("NoHungarianNotation") @DoNotStrip private var mHybridData: HybridData

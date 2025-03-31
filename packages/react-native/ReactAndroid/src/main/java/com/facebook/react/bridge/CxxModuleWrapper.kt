@@ -15,7 +15,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 /** This does nothing interesting, except avoid breaking existing code. */
 @DoNotStrip
 @LegacyArchitecture
-public open class CxxModuleWrapper protected constructor(hybridData: HybridData) :
+internal open class CxxModuleWrapper protected constructor(hybridData: HybridData) :
     CxxModuleWrapperBase(hybridData) {
   private companion object {
     init {
