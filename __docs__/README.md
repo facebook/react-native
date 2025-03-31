@@ -22,6 +22,8 @@ TODO: Explain the different components of React Native at a high level.
 
 ### Part of this
 
+- Android platform
+    - [New architecture event lifecycle](../packages/react-native/ReactAndroid/src/main/java/com/facebook/react/fabric/events/__docs__/README.md)
 - [Feature Flags](../packages/react-native/src/private/featureflags/__docs__/README.md)
 - Web APIs
     - [MutationObserver API](../packages/react-native/src/private/webapis/mutationobserver/__docs__/README.md)
