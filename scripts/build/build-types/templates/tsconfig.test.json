@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ES2015",
+    "moduleResolution": "bundler",
+    "customConditions": ["react-native-strict-api"]
+  },
+  "include": ["./src/**/*.d.ts", "../types/__typetests__/**/*"]
+}

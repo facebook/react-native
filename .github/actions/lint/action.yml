@@ -38,6 +38,12 @@ runs:
     - name: Run typescript check
       shell: bash
       run: yarn test-typescript
+    - name: Build types
+      shell: bash
+      run: yarn build-types
+    - name: Run typescript check of generated types
+      shell: bash
+      run: yarn test-generated-typescript
     - name: Check license
       shell: bash
       run: ./.github/workflow-scripts/check_license.sh
