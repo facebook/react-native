@@ -29,8 +29,16 @@
   "main": "./index.js",
   "types": "types",
   "exports": {
-    ".": "./index.js",
-    "./*": "./*.js",
+    ".": {
+      "react-native-strict-api": "./types_generated/index.d.ts",
+      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/index.d.ts",
+      "default": "./index.js"
+    },
+    "./*": {
+      "react-native-strict-api": null,
+      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/*.d.ts",
+      "default": "./*.js"
+    },
     "./*.js": "./*.js",
     "./Libraries/*.d.ts": "./Libraries/*.d.ts",
     "./types/*.d.ts": "./types/*.d.ts",
@@ -103,7 +111,8 @@
     "settings.gradle.kts",
     "src",
     "third-party-podspecs",
-    "types"
+    "types",
+    "types_generated"
   ],
   "scripts": {
     "prepack": "node ./scripts/prepack.js",

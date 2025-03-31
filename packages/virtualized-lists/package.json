@@ -19,6 +19,13 @@
   "engines": {
     "node": ">=18"
   },
+  "exports": {
+    ".": {
+      "types": "./types_generated/index.d.ts",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "dependencies": {
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
