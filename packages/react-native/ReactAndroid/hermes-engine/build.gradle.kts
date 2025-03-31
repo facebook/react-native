@@ -77,7 +77,7 @@ val hermesBuildOutputFileTree =
     fileTree(hermesBuildDir.toString())
         .include("**/*.cmake", "**/*.marks", "**/compiler_depends.ts", "**/Makefile", "**/link.txt")
 
-var hermesVersion = "main"
+var hermesVersion = "static_h"
 val hermesVersionFile = File(reactNativeRootDir, "sdks/.hermesversion")
 
 if (hermesVersionFile.exists()) {
@@ -93,7 +93,7 @@ val jsiDir = File(reactNativeRootDir, "ReactCommon/jsi")
 val downloadHermesDest = File(downloadsDir, "hermes.tar.gz")
 val downloadHermes by
     tasks.registering(Download::class) {
-      src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
+      src("https://github.com/software-mansion-labs/hermes/tarball/${hermesVersion}")
       onlyIfModified(true)
       overwrite(true)
       quiet(true)
@@ -109,7 +109,7 @@ val unzipHermes by
         eachFile {
           // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
           // folder at the top level.
-          if (this.path.startsWith("facebook-hermes-")) {
+          if (this.path.startsWith("software-mansion-labs-") || this.path.startsWith("facebook-hermes-")) {
             this.path = this.path.substringAfter("/")
           }
         }
