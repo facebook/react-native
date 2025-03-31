@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<309ae9cf008963de368916b3d28c5491>>
+ * @generated SignedSource<<0c111ea4ea86fce421aa4addb8ad0e4e>>
  */
 
 /**
@@ -95,7 +95,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
 
-  override fun useFabricInterop(): Boolean = true
+  override fun useFabricInterop(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
