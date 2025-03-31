@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridge
 
+import android.app.Activity
+
 /**
  * Listener for receiving activity lifecycle events.
  *

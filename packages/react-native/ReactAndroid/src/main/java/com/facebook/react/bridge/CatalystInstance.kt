@@ -93,14 +93,14 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
   @VisibleForTesting public fun setGlobalVariable(propName: String, jsonValue: String)
 
   /**
-   * Do not use this anymore. Use [getRuntimeExecutor] instead. Get the C pointer (as a long) to the
+   * Do not use this anymore. Use [runtimeExecutor] instead. Get the C pointer (as a long) to the
    * JavaScriptCore context associated with this instance.
    *
    * <p>Use the following pattern to ensure that the JS context is not cleared while you are using
    * it: JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
-  @get:Deprecated("Use getRuntimeExecutor() instead.")
+  @get:Deprecated("Use runtimeExecutor instead.")
   public val javaScriptContextHolder: JavaScriptContextHolder
 
   public val runtimeExecutor: RuntimeExecutor?

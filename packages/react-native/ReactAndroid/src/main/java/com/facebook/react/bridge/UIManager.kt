@@ -13,6 +13,7 @@ import androidx.annotation.UiThread
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.events.EventDispatcher
+import com.facebook.react.uimanager.IllegalViewOperationException
 
 @OptIn(UnstableReactNativeAPI::class)
 public interface UIManager : PerformanceCounter {

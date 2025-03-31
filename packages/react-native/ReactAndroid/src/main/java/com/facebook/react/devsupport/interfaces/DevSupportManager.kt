@@ -14,6 +14,8 @@ import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.SurfaceDelegate
+import com.facebook.react.devsupport.BridgeDevSupportManager
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import java.io.File
 

@@ -7,6 +7,8 @@
 
 package com.facebook.react.jstasks
 
+import com.facebook.react.modules.core.HeadlessJsTaskSupportModule
+
 /** Listener interface for task lifecycle events. */
 public interface HeadlessJsTaskEventListener {
 
