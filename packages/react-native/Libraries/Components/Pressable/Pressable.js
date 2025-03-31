@@ -28,8 +28,6 @@ import {useMemo, useRef, useState} from 'react';
 
 type ViewStyleProp = React.ElementConfig<typeof View>['style'];
 
-export type {PressableAndroidRippleConfig};
-
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;

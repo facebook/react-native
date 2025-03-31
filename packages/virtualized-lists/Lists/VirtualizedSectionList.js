@@ -9,7 +9,6 @@
  */
 
 import type {ViewToken} from './ViewabilityHelper';
-import type {VirtualizedListProps} from './VirtualizedListProps';
 
 import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
@@ -97,6 +96,8 @@ type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   stickySectionHeadersEnabled?: boolean,
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
 };
+
+type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
 export type VirtualizedSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...RequiredProps<ItemT, SectionT>,

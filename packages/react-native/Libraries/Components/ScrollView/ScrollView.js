@@ -640,7 +640,7 @@ export type ScrollViewProps = $ReadOnly<{
    */
   /* $FlowFixMe[unclear-type] - how to handle generic type without existential
    * operator? */
-  refreshControl?: ?React.MixedElement,
+  refreshControl?: ?React.Node,
   children?: React.Node,
   /**
    * A ref to the inner View element of the ScrollView. This should be used

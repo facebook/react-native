@@ -38,7 +38,7 @@ export type ButtonProps = $ReadOnly<{
     Handler to be called when the user taps the button. The first function
     argument is an event in form of [GestureResponderEvent](pressevent).
    */
-  onPress?: (event?: GestureResponderEvent) => mixed,
+  onPress: (event?: GestureResponderEvent) => mixed,
 
   /**
     If `true`, doesn't play system sound on touch.
