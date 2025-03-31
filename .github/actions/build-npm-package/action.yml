@@ -121,6 +121,9 @@ runs:
     - name: Build packages
       shell: bash
       run: yarn build
+    - name: Build types
+      shell: bash
+      run: yarn build-types
     # Continue with publish steps
     - name: Set npm credentials
       if: ${{ inputs.release-type == 'release' ||
