@@ -58,6 +58,13 @@ class UIManagerDelegate {
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 
+  /*
+   * Synchronous view update.
+   */
+  virtual void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
+      Tag tag,
+      const folly::dynamic& props) = 0;
+
   virtual ~UIManagerDelegate() noexcept = default;
 };
 

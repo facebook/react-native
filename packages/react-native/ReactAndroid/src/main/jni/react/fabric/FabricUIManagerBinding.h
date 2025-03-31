@@ -120,6 +120,10 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
+  void schedulerShouldSynchronouslyUpdateViewOnUIThread(
+      Tag tag,
+      const folly::dynamic& props) override;
+
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();

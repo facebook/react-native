@@ -70,6 +70,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   void animationTick() const;
 
+  void synchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic& props);
+
   /*
    * Provides access to a UIManagerBindging.
    * The `callback` methods will not be called if the internal pointer to
