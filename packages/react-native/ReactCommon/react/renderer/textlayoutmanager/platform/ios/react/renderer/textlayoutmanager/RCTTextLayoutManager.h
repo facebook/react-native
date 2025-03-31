@@ -10,6 +10,7 @@
 #import <react/renderer/attributedstring/AttributedString.h>
 #import <react/renderer/attributedstring/ParagraphAttributes.h>
 #import <react/renderer/core/LayoutConstraints.h>
+#import <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #import <react/renderer/textlayoutmanager/TextMeasureCache.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -28,11 +29,13 @@ using RCTTextLayoutFragmentEnumerationBlock =
 
 - (facebook::react::TextMeasurement)measureAttributedString:(facebook::react::AttributedString)attributedString
                                         paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                                          layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
+                                          layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                                              layoutContext:(facebook::react::TextLayoutContext)layoutContext;
 
 - (facebook::react::TextMeasurement)measureNSAttributedString:(NSAttributedString *)attributedString
                                           paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                                            layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
+                                            layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                                                layoutContext:(facebook::react::TextLayoutContext)layoutContext;
 
 - (void)drawAttributedString:(facebook::react::AttributedString)attributedString
          paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
