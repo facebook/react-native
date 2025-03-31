@@ -62,9 +62,14 @@ using namespace facebook::react;
 
     [_surfacePresenter registerSurface:self];
 
-    [self setMinimumSize:CGSizeZero maximumSize:RCTViewportSize()];
-
-    [self _updateLayoutContext];
+    /**
+     * Viewport size, and screen scale are only available on the main thread.
+     * Therefore, we just set the constraints on the main thread.
+     */
+    RCTExecuteOnMainQueue(^{
+      [self setMinimumSize:CGSizeZero maximumSize:RCTViewportSize()];
+      [self _updateLayoutContextWithScreenScale:RCTScreenScale()];
+    });
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleContentSizeCategoryDidChangeNotification:)
@@ -143,7 +148,7 @@ using namespace facebook::react;
 
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:(RCTSurface *)self];
-    [self _updateLayoutContext];
+    [self _updateLayoutContextWithScreenScale:RCTScreenScale()];
     _touchHandler = [RCTSurfaceTouchHandler new];
     [_touchHandler attachToView:_view];
   }
@@ -170,14 +175,14 @@ using namespace facebook::react;
   }
 }
 
-- (void)_updateLayoutContext
+- (void)_updateLayoutContextWithScreenScale:(CGFloat)screenScale
 {
   auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
   layoutConstraints.layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]);
 
   auto layoutContext = _surfaceHandler->getLayoutContext();
 
-  layoutContext.pointScaleFactor = RCTScreenScale();
+  layoutContext.pointScaleFactor = screenScale;
   layoutContext.swapLeftAndRightInRTL =
       [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL];
   layoutContext.fontSizeMultiplier = RCTFontSizeMultiplier();
@@ -271,7 +276,7 @@ using namespace facebook::react;
 
 - (void)handleContentSizeCategoryDidChangeNotification:(NSNotification *)notification
 {
-  [self _updateLayoutContext];
+  [self _updateLayoutContextWithScreenScale:RCTScreenScale()];
 }
 
 #pragma mark - Private
