@@ -128,8 +128,8 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   | { [key: string]: Mapping, ... }
   | AnimatedValue
   | AnimatedValueXY;
-export type EventConfig = {
-  listener?: ?Function,
+export type EventConfig<T> = {
+  listener?: ?(NativeSyntheticEvent<T>) => mixed,
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
 };
@@ -140,7 +140,10 @@ declare export function attachNativeEvent(
   platformConfig: ?PlatformConfig
 ): { detach: () => void };
 declare export class AnimatedEvent {
-  constructor(argMapping: $ReadOnlyArray<?Mapping>, config: EventConfig): void;
+  constructor(
+    argMapping: $ReadOnlyArray<?Mapping>,
+    config: EventConfig<any>
+  ): void;
 }
 "
 `;
@@ -278,9 +281,9 @@ declare function unforkEvent(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): void;
-declare const event: (
+declare const event: <T>(
   argMapping: $ReadOnlyArray<?Mapping>,
-  config: EventConfig
+  config: EventConfig<T>
 ) => any;
 type AnimatedNumeric =
   | AnimatedAddition
@@ -9655,6 +9658,7 @@ export type {
   MouseEvent,
   NativeMouseEvent,
   NativePointerEvent,
+  NativeScrollEvent,
   NativeSyntheticEvent,
   NativeTouchEvent,
   NativeUIEvent,

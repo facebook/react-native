@@ -389,6 +389,7 @@ export type {
   MouseEvent,
   NativeMouseEvent,
   NativePointerEvent,
+  NativeScrollEvent,
   NativeSyntheticEvent,
   NativeTouchEvent,
   NativeUIEvent,
