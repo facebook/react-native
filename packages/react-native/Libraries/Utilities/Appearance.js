@@ -16,6 +16,8 @@ import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import invariant from 'invariant';
 
+export type {AppearancePreferences};
+
 type Appearance = {
   colorScheme: ?ColorSchemeName,
 };
