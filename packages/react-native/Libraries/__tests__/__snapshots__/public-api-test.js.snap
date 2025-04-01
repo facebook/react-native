@@ -2041,7 +2041,7 @@ export type ScrollViewProps = $ReadOnly<{
   snapToStart?: ?boolean,
   snapToEnd?: ?boolean,
   removeClippedSubviews?: ?boolean,
-  refreshControl?: ?React.Node,
+  refreshControl?: ?React.MixedElement,
   children?: React.Node,
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
