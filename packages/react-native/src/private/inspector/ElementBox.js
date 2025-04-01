@@ -13,7 +13,7 @@
 import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
 import type {InspectedElementFrame} from './Inspector';
 
-import React from 'react';
+import * as React from 'react';
 
 const View = require('../../../Libraries/Components/View/View').default;
 const flattenStyle =

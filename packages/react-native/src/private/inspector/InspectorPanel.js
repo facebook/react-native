@@ -13,7 +13,7 @@
 import type {ElementsHierarchy, InspectedElement} from './Inspector';
 
 import SafeAreaView from '../../../Libraries/Components/SafeAreaView/SafeAreaView';
-import React from 'react';
+import * as React from 'react';
 
 const ScrollView =
   require('../../../Libraries/Components/ScrollView/ScrollView').default;

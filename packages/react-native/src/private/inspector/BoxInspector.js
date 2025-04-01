@@ -16,7 +16,7 @@ import type {
 } from '../../../Libraries/StyleSheet/StyleSheet';
 import type {InspectedElementFrame} from './Inspector';
 
-import React from 'react';
+import * as React from 'react';
 
 const View = require('../../../Libraries/Components/View/View').default;
 const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
