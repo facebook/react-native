@@ -15,7 +15,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
-import React, {Fragment} from 'react';
+import * as React from 'react';
 
 const links = [
   {
@@ -84,7 +84,7 @@ const LinkList = (): React.Node => {
   return (
     <View style={styles.container}>
       {links.map(({id, title, link, description}) => (
-        <Fragment key={id}>
+        <React.Fragment key={id}>
           <View
             style={[
               styles.separator,
@@ -108,7 +108,7 @@ const LinkList = (): React.Node => {
               {description}
             </Text>
           </TouchableOpacity>
-        </Fragment>
+        </React.Fragment>
       ))}
     </View>
   );

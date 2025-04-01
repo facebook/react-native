@@ -19,7 +19,7 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import VirtualizedLists from '@react-native/virtualized-lists';
-import React from 'react';
+import * as React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
 const View = require('../Components/View/View').default;
