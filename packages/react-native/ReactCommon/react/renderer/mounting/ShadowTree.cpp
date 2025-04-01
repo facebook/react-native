@@ -167,10 +167,9 @@ ShadowTree::ShadowTree(
     const ShadowTreeDelegate& delegate,
     const ContextContainer& contextContainer)
     : surfaceId_(surfaceId), delegate_(delegate) {
-  static auto globalRootComponentDescriptor =
-      std::make_unique<const RootComponentDescriptor>(
-          ComponentDescriptorParameters{
-              EventDispatcher::Shared{}, nullptr, nullptr});
+  static RootComponentDescriptor globalRootComponentDescriptor(
+      ComponentDescriptorParameters{
+          EventDispatcher::Shared{}, nullptr, nullptr});
 
   const auto props = std::make_shared<const RootProps>(
       PropsParserContext{surfaceId, contextContainer},
@@ -178,11 +177,11 @@ ShadowTree::ShadowTree(
       layoutConstraints,
       layoutContext);
 
-  auto family = globalRootComponentDescriptor->createFamily(
+  auto family = globalRootComponentDescriptor.createFamily(
       {surfaceId, surfaceId, nullptr});
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
-      globalRootComponentDescriptor->createShadowNode(
+      globalRootComponentDescriptor.createShadowNode(
           ShadowNodeFragment{
               /* .props = */ props,
           },
