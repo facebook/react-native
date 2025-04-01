@@ -185,6 +185,7 @@ export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
 export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
+export type { WithAnimatedValue } from \\"./createAnimatedComponent\\";
 declare export const add: $FlowFixMe;
 declare export const attachNativeEvent: $FlowFixMe;
 declare export const createAnimatedComponent: $FlowFixMe;
@@ -8515,7 +8516,8 @@ declare export default typeof UTFSequence;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Appearance.js 1`] = `
-"declare export function getColorScheme(): ?ColorSchemeName;
+"export type { AppearancePreferences };
+declare export function getColorScheme(): ?ColorSchemeName;
 declare export function setColorScheme(colorScheme: ?ColorSchemeName): void;
 declare export function addChangeListener(
   listener: ({ colorScheme: ?ColorSchemeName }) => void
@@ -9472,6 +9474,10 @@ export type { TouchableOpacityProps } from \\"./Libraries/Components/Touchable/T
 export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/TouchableOpacity\\";
 export type { TouchableWithoutFeedbackProps } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
+export type {
+  AccessibilityRole,
+  AccessibilityState,
+} from \\"./Libraries/Components/View/ViewAccessibility\\";
 export type {
   GestureResponderHandlers,
   TVViewPropsIOS,

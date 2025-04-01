@@ -156,6 +156,10 @@ export type {TouchableWithoutFeedbackProps} from './Libraries/Components/Touchab
 export {default as TouchableWithoutFeedback} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 
 export type {
+  AccessibilityRole,
+  AccessibilityState,
+} from './Libraries/Components/View/ViewAccessibility';
+export type {
   GestureResponderHandlers,
   TVViewPropsIOS,
   ViewProps,
