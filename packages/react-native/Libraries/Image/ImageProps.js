@@ -24,8 +24,9 @@ import type {
 import typeof Image from './Image';
 import type {ImageResizeMode} from './ImageResizeMode';
 import type {ImageSource, ImageURISource} from './ImageSource';
-import type React from 'react';
 import type {ElementRef, RefSetter} from 'react';
+
+import * as React from 'react';
 
 export type ImageSourcePropType = ImageSource;
 
