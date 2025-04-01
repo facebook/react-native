@@ -59,17 +59,21 @@ export function renderElement({
 }
 
 export function findHostInstance_DEPRECATED<TElementType: ElementType>(
+  // $FlowFixMe[incompatible-call]
   componentOrHandle: ?(ElementRef<TElementType> | number),
 ): ?HostInstance {
   return require('../Renderer/shims/ReactNative').default.findHostInstance_DEPRECATED(
+    // $FlowFixMe[incompatible-call]
     componentOrHandle,
   );
 }
 
 export function findNodeHandle<TElementType: ElementType>(
+  // $FlowFixMe[incompatible-call]
   componentOrHandle: ?(ElementRef<TElementType> | number),
 ): ?number {
   return require('../Renderer/shims/ReactNative').default.findNodeHandle(
+    // $FlowFixMe[incompatible-call]
     componentOrHandle,
   );
 }

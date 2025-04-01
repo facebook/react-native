@@ -50,7 +50,7 @@ const emitter = new NativeEventEmitter<$FlowFixMe>(
 const RCTNetworking = {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
     context?: mixed,
   ): EventSubscription {
     // $FlowFixMe[incompatible-call]

@@ -243,6 +243,25 @@ export function runWorkLoop(): void {
 }
 
 /**
+ * Indicates if the current function is being executed within the Event Loop
+ * (as a task or microtask).
+ *
+ * @example
+ * ```
+ * Fantom.isInWorkLoop(); // false
+ *
+ * Fantom.runTask(() => {
+ *   Fantom.isInWorkLoop(); // true
+ * });
+ *
+ * Fantom.isInWorkLoop(); // false
+ * ```
+ */
+export function isInWorkLoop(): boolean {
+  return flushingQueue;
+}
+
+/**
  * Create a Root that can render a React component tree.
  *
  * Accepts an optional RootConfig with the following optional options:

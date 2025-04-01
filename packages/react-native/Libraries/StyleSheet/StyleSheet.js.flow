@@ -14,6 +14,7 @@ import type {
   ____ColorValue_Internal,
   ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
+  ____FontVariant_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
   ____TextStyle_Internal,
@@ -21,9 +22,14 @@ import type {
   ____TransformStyle_Internal,
   ____ViewStyle_Internal,
   ____ViewStyleProp_Internal,
+  NativeColorValue,
 } from './StyleSheetTypes';
 
-export type {StyleProp} from './StyleSheetTypes';
+export type {
+  StyleProp,
+  BoxShadowValue,
+  FilterFunction,
+} from './StyleSheetTypes';
 
 export type StyleSheetProperties = {
   hairlineWidth: number,
@@ -42,9 +48,19 @@ export type {NativeColorValue} from './StyleSheetTypes';
 export type ColorValue = ____ColorValue_Internal;
 
 /**
+ * Expose the opaque type for NativeColorValue.
+ */
+export type OpaqueColorValue = NativeColorValue;
+
+/**
  * This type is an object of the properties related to transforms.
  */
-export type TransformStyle = ____TransformStyle_Internal;
+export type TransformsStyle = ____TransformStyle_Internal;
+
+/**
+ * This type holds possible values for the `fontVariant` style property.
+ */
+export type FontVariant = ____FontVariant_Internal;
 
 /**
  * This type should be used as the type for a prop that is passed through
@@ -104,7 +120,7 @@ export type DangerouslyImpreciseStyleProp =
  */
 export type TypeForStyleKey<
   +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
-> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+> = ____DangerouslyImpreciseStyle_Internal[key];
 
 /**
  * This type is an object of the different possible style

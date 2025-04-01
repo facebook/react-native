@@ -91,6 +91,7 @@ export type ReportableEvent =
     }
   | {
       type: 'no_debug_pages_for_device',
+      ...DebuggerSessionIDs,
     }
   | {
       type: 'proxy_error',

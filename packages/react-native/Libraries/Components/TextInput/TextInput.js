@@ -60,7 +60,7 @@ if (Platform.OS === 'android') {
 /**
  * @see TextInputProps.onChange
  */
-export type TextInputChangeEventData = $ReadOnly<{
+type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
@@ -82,10 +82,7 @@ export type TextInputEvent = NativeSyntheticEvent<
   }>,
 >;
 
-/**
- * @see TextInputProps.onContentSizeChange
- */
-export type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = $ReadOnly<{
   target: number,
   contentSize: $ReadOnly<{
     width: number,
@@ -93,6 +90,9 @@ export type TextInputContentSizeChangeEventData = $ReadOnly<{
   }>,
 }>;
 
+/**
+ * @see TextInputProps.onContentSizeChange
+ */
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 
@@ -100,71 +100,78 @@ export type TargetEvent = $ReadOnly<{
   target: number,
 }>;
 
+type TextInputFocusEventData = TargetEvent;
+
+/**
+ * @see TextInputProps.onBlur
+ */
+export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+
 /**
  * @see TextInputProps.onFocus
  */
-export type TextInputFocusEventData = TargetEvent;
-
-export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+
+type TextInputScrollEventData = {
+  contentOffset: {x: number, y: number},
+};
 
 /**
  * @see TextInputProps.onScroll
  */
-export type TextInputScrollEventData = {
-  contentOffset: {x: number, y: number},
-};
+export type TextInputScrollEvent =
+  NativeSyntheticEvent<TextInputScrollEventData>;
 
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
 
-/**
- * @see TextInputProps.onSelectionChange
- */
-export type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
 }>;
 
+/**
+ * @see TextInputProps.onSelectionChange
+ */
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 
-/**
- * @see TextInputProps.onKeyPress
- */
-export type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
   eventCount?: ?number,
 }>;
 
+/**
+ * @see TextInputProps.onKeyPress
+ */
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
+
+type TextInputEndEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
 
 /**
  * @see TextInputProps.onEndEditing
  */
-export type TextInputEndEditingEventData = $ReadOnly<{
+export type TextInputEndEditingEvent =
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
+
+type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
-
-export type TextInputEndEditingEvent =
-  NativeSyntheticEvent<TextInputEndEditingEventData>;
 
 /**
  * @see TextInputProps.onSubmitEditing
  */
-export type TextInputSubmitEditingEventData = $ReadOnly<{
-  ...TargetEvent,
-  eventCount: number,
-  text: string,
-}>;
-
 export type TextInputSubmitEditingEvent =
   NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 

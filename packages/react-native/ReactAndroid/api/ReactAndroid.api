@@ -582,11 +582,6 @@ public abstract interface class com/facebook/react/bridge/Callback {
 	public abstract fun invoke ([Ljava/lang/Object;)V
 }
 
-public final class com/facebook/react/bridge/CallbackImpl : com/facebook/react/bridge/Callback {
-	public fun <init> (Lcom/facebook/react/bridge/JSInstance;I)V
-	public fun invoke ([Ljava/lang/Object;)V
-}
-
 public abstract interface class com/facebook/react/bridge/CatalystInstance : com/facebook/react/bridge/JSBundleLoaderDelegate, com/facebook/react/bridge/JSInstance, com/facebook/react/bridge/MemoryPressureListener {
 	public abstract fun addBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
 	public abstract fun callFunction (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
@@ -693,7 +688,7 @@ public class com/facebook/react/bridge/CxxModuleWrapperBase : com/facebook/react
 	public fun getName ()Ljava/lang/String;
 	public fun initialize ()V
 	public fun invalidate ()V
-	protected fun resetModule (Lcom/facebook/jni/HybridData;)V
+	protected final fun resetModule (Lcom/facebook/jni/HybridData;)V
 }
 
 public final class com/facebook/react/bridge/DefaultJSExceptionHandler : com/facebook/react/bridge/JSExceptionHandler {
@@ -727,11 +722,16 @@ public class com/facebook/react/bridge/DynamicFromObject : com/facebook/react/br
 }
 
 public abstract class com/facebook/react/bridge/GuardedAsyncTask : android/os/AsyncTask {
+	public static final field Companion Lcom/facebook/react/bridge/GuardedAsyncTask$Companion;
+	public static final field THREAD_POOL_EXECUTOR Ljava/util/concurrent/Executor;
 	protected fun <init> (Lcom/facebook/react/bridge/JSExceptionHandler;)V
 	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	protected synthetic fun doInBackground ([Ljava/lang/Object;)Ljava/lang/Object;
+	public synthetic fun doInBackground ([Ljava/lang/Object;)Ljava/lang/Object;
 	protected final fun doInBackground ([Ljava/lang/Object;)Ljava/lang/Void;
 	protected abstract fun doInBackgroundGuarded ([Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/bridge/GuardedAsyncTask$Companion {
 }
 
 public abstract class com/facebook/react/bridge/GuardedRunnable : java/lang/Runnable {
@@ -761,10 +761,6 @@ public class com/facebook/react/bridge/Inspector$Page {
 public abstract interface class com/facebook/react/bridge/Inspector$RemoteConnection {
 	public abstract fun onDisconnect ()V
 	public abstract fun onMessage (Ljava/lang/String;)V
-}
-
-public final class com/facebook/react/bridge/InvalidIteratorException : java/lang/RuntimeException {
-	public fun <init> (Ljava/lang/String;)V
 }
 
 public class com/facebook/react/bridge/JSApplicationCausedNativeException : java/lang/RuntimeException {
@@ -1128,9 +1124,9 @@ public abstract class com/facebook/react/bridge/ReactContextBaseJavaModule : com
 	protected final fun getCurrentActivity ()Landroid/app/Activity;
 }
 
-public class com/facebook/react/bridge/ReactCxxErrorHandler {
-	public fun <init> ()V
-	public static fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
+public final class com/facebook/react/bridge/ReactCxxErrorHandler {
+	public static final field INSTANCE Lcom/facebook/react/bridge/ReactCxxErrorHandler;
+	public static final fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
 }
 
 public final class com/facebook/react/bridge/ReactIgnorableMountingException : java/lang/RuntimeException {
@@ -1771,11 +1767,6 @@ public abstract interface class com/facebook/react/common/ShakeDetector$ShakeLis
 	public abstract fun onShake ()V
 }
 
-public final class com/facebook/react/common/SingleThreadAsserter {
-	public fun <init> ()V
-	public final fun assertNow ()V
-}
-
 public abstract interface class com/facebook/react/common/SurfaceDelegate {
 	public abstract fun createContentView (Ljava/lang/String;)V
 	public abstract fun destroyContentView ()V
@@ -2375,11 +2366,6 @@ public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint
 	public fun getUpdateUIMainThreadEnd ()J
 	public fun getUpdateUIMainThreadStart ()J
 	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/fabric/FabricSoLoader {
-	public static final field INSTANCE Lcom/facebook/react/fabric/FabricSoLoader;
-	public static final fun staticInit ()V
 }
 
 public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManager, com/facebook/react/fabric/interop/UIBlockViewResolver, com/facebook/react/uimanager/events/SynchronousEventReceiver {
@@ -3866,7 +3852,6 @@ public final class com/facebook/react/uimanager/LengthPercentage {
 	public final fun getType ()Lcom/facebook/react/uimanager/LengthPercentageType;
 	public fun hashCode ()I
 	public final fun resolve (F)F
-	public final fun resolve (FF)Lcom/facebook/react/uimanager/style/CornerRadii;
 	public static final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;)Lcom/facebook/react/uimanager/LengthPercentage;
 	public fun toString ()Ljava/lang/String;
 }
@@ -5249,11 +5234,8 @@ public abstract interface class com/facebook/react/uimanager/events/EventDispatc
 	public abstract fun dispatchAllEvents ()V
 	public abstract fun dispatchEvent (Lcom/facebook/react/uimanager/events/Event;)V
 	public abstract fun onCatalystInstanceDestroyed ()V
-	public abstract fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTEventEmitter;)V
-	public abstract fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
 	public abstract fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
 	public abstract fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public abstract fun unregisterEventEmitter (I)V
 }
 
 public class com/facebook/react/uimanager/events/EventDispatcherImpl : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/uimanager/events/EventDispatcher {
@@ -5266,11 +5248,8 @@ public class com/facebook/react/uimanager/events/EventDispatcherImpl : com/faceb
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTEventEmitter;)V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
 	public fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
 	public fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun unregisterEventEmitter (I)V
 }
 
 public abstract interface class com/facebook/react/uimanager/events/EventDispatcherListener {
@@ -5279,23 +5258,6 @@ public abstract interface class com/facebook/react/uimanager/events/EventDispatc
 
 public abstract interface class com/facebook/react/uimanager/events/EventDispatcherProvider {
 	public abstract fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-}
-
-public class com/facebook/react/uimanager/events/FabricEventDispatcher : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/uimanager/events/EventDispatcher {
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun addBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun addListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun dispatchAllEvents ()V
-	public fun dispatchEvent (Lcom/facebook/react/uimanager/events/Event;)V
-	public fun onCatalystInstanceDestroyed ()V
-	public fun onHostDestroy ()V
-	public fun onHostPause ()V
-	public fun onHostResume ()V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTEventEmitter;)V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
-	public fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun unregisterEventEmitter (I)V
 }
 
 public final class com/facebook/react/uimanager/events/NativeGestureUtil {
@@ -5554,6 +5516,7 @@ public final class com/facebook/react/uimanager/style/CornerRadii {
 	public fun <init> ()V
 	public fun <init> (FF)V
 	public synthetic fun <init> (FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lcom/facebook/react/uimanager/LengthPercentage;FF)V
 	public final fun component1 ()F
 	public final fun component2 ()F
 	public final fun copy (FF)Lcom/facebook/react/uimanager/style/CornerRadii;
@@ -6713,11 +6676,11 @@ public final class com/facebook/react/views/text/ReactRawTextManager : com/faceb
 	public fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/views/text/ReactRawTextShadowNode : com/facebook/react/uimanager/ReactShadowNodeImpl {
+public final class com/facebook/react/views/text/ReactRawTextShadowNode : com/facebook/react/uimanager/ReactShadowNodeImpl {
 	public fun <init> ()V
-	public fun getText ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
 	public fun isVirtual ()Z
-	public fun setText (Ljava/lang/String;)V
+	public final fun setText (Ljava/lang/String;)V
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -7032,17 +6995,6 @@ public abstract interface class com/facebook/react/views/textinput/ContentSizeWa
 	public abstract fun onLayout ()V
 }
 
-public final class com/facebook/react/views/textinput/ReactContentSizeChangedEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/textinput/ReactContentSizeChangedEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (IFF)V
-	public fun <init> (IIFF)V
-	public fun getEventName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/textinput/ReactContentSizeChangedEvent$Companion {
-}
-
 public class com/facebook/react/views/textinput/ReactEditText : androidx/appcompat/widget/AppCompatEditText {
 	public static final field DEBUG_MODE Z
 	protected field mContainsImages Z
@@ -7066,7 +7018,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isLayoutRequested ()Z
 	public fun maybeSetSelection (III)V
-	public fun maybeSetText (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun maybeSetTextFromJS (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun maybeSetTextFromState (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun maybeUpdateTypeface ()V
@@ -7120,17 +7071,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun shouldSubmitOnReturn ()Z
 	protected fun showSoftKeyboard ()Z
 	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
-}
-
-public final class com/facebook/react/views/textinput/ReactTextChangedEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/textinput/ReactTextChangedEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (IILjava/lang/String;I)V
-	public fun <init> (ILjava/lang/String;I)V
-	public fun getEventName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/textinput/ReactTextChangedEvent$Companion {
 }
 
 public final class com/facebook/react/views/textinput/ReactTextInputLocalData {

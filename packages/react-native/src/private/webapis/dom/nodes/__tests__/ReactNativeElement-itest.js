@@ -11,6 +11,7 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {ScrollView, View} from 'react-native';
@@ -18,7 +19,6 @@ import {
   NativeText,
   NativeVirtualText,
 } from 'react-native/Libraries/Text/TextNativeComponent';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyElement from 'react-native/src/private/webapis/dom/nodes/ReadOnlyElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';

@@ -12,11 +12,8 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
-/**
- * Event emitted by EditText native view when text changes. VisibleForTesting from
- * [TextInputEventsTestCase].
- */
-public class ReactTextChangedEvent(
+/** Event emitted by EditText native view when text changes. */
+internal class ReactTextChangedEvent(
     surfaceId: Int,
     viewId: Int,
     private val text: String,
@@ -25,7 +22,7 @@ public class ReactTextChangedEvent(
   @Deprecated(
       "Use the constructor with surfaceId instead",
       ReplaceWith("ReactTextChangedEvent(surfaceId, viewId, text, eventCount)"))
-  public constructor(
+  constructor(
       viewId: Int,
       text: String,
       eventCount: Int
@@ -41,7 +38,7 @@ public class ReactTextChangedEvent(
     }
   }
 
-  public companion object {
-    public const val EVENT_NAME: String = "topChange"
+  companion object {
+    const val EVENT_NAME: String = "topChange"
   }
 }

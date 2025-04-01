@@ -18,7 +18,7 @@ import java.util.List;
 @DoNotStrip
 public class Inspector {
   static {
-    ReactBridge.staticInit();
+    BridgeSoLoader.staticInit();
   }
 
   private final HybridData mHybridData;

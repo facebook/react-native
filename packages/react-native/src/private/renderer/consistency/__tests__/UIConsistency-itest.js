@@ -14,14 +14,13 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useLayoutEffect} from 'react';
 import {ScrollView, Text} from 'react-native';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
-import 'react-native/Libraries/Core/InitializeCore';
 describe('UIConsistency', () => {
   it('should provide consistent data from the tree within the same synchronous function', () => {
     const root = Fantom.createRoot();

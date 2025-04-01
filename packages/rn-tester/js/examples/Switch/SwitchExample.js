@@ -321,6 +321,8 @@ exports.examples = [
 ];
 
 if (Platform.OS === 'ios') {
+  /* $FlowFixMe[incompatible-call] error found during natural inference roll-
+   * out. See https://fburl.com/workplace/tc9m3tcf */
   exports.examples.push({
     title: '[iOS Only] Custom background colors can be set',
     render(): React.MixedElement {

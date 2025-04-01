@@ -16,8 +16,8 @@ import type {Root} from '@react-native/fantom';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Modal, ScrollView, Text, TextInput, View} from 'react-native';
+import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -37,6 +37,38 @@ function getActualViewportDimensions(root: Root): {
 }
 
 describe('Fantom', () => {
+  describe('scheduleTask', () => {
+    it('does not run task immediately', () => {
+      let didRun = false;
+
+      Fantom.scheduleTask(() => {
+        didRun = true;
+      });
+
+      expect(didRun).toBe(false);
+
+      Fantom.runWorkLoop();
+
+      expect(didRun).toBe(true);
+    });
+
+    it('can be scheduled from within another task', () => {
+      let didInnerTaskRun = false;
+
+      Fantom.scheduleTask(() => {
+        Fantom.scheduleTask(() => {
+          didInnerTaskRun = true;
+        });
+      });
+
+      expect(didInnerTaskRun).toBe(false);
+
+      Fantom.runWorkLoop();
+
+      expect(didInnerTaskRun).toBe(true);
+    });
+  });
+
   describe('runTask', () => {
     it('should run a task synchronously', () => {
       const task = jest.fn();
@@ -419,90 +451,90 @@ describe('Fantom', () => {
 
       expect(focusEvent).toHaveBeenCalledTimes(1);
     });
-  });
 
-  it('sends event with payload', () => {
-    const root = Fantom.createRoot();
-    let maybeNode;
-    const onChange = jest.fn();
+    it('sends event with payload', () => {
+      const root = Fantom.createRoot();
+      let maybeNode;
+      const onChange = jest.fn();
 
-    Fantom.runTask(() => {
-      root.render(
-        <TextInput
-          onChange={event => {
-            onChange(event.nativeEvent);
-          }}
-          ref={node => {
-            maybeNode = node;
-          }}
-        />,
-      );
-    });
-
-    const element = ensureInstance(maybeNode, ReactNativeElement);
-
-    Fantom.runOnUIThread(() => {
-      Fantom.enqueueNativeEvent(element, 'change', {
-        text: 'Hello World',
+      Fantom.runTask(() => {
+        root.render(
+          <TextInput
+            onChange={event => {
+              onChange(event.nativeEvent);
+            }}
+            ref={node => {
+              maybeNode = node;
+            }}
+          />,
+        );
       });
-    });
 
-    Fantom.runWorkLoop();
+      const element = ensureInstance(maybeNode, ReactNativeElement);
 
-    expect(onChange).toHaveBeenCalledTimes(1);
-    const [entry] = onChange.mock.lastCall;
-    expect(entry.text).toEqual('Hello World');
-  });
-
-  it('it batches events with isUnique option', () => {
-    const root = Fantom.createRoot();
-    let maybeNode;
-    const onScroll = jest.fn();
-
-    Fantom.runTask(() => {
-      root.render(
-        <ScrollView
-          onScroll={event => {
-            onScroll(event.nativeEvent);
-          }}
-          ref={node => {
-            maybeNode = node;
-          }}
-        />,
-      );
-    });
-
-    const element = ensureInstance(maybeNode, ReactNativeElement);
-
-    Fantom.runOnUIThread(() => {
-      Fantom.enqueueNativeEvent(element, 'scroll', {
-        contentOffset: {
-          x: 0,
-          y: 1,
-        },
+      Fantom.runOnUIThread(() => {
+        Fantom.enqueueNativeEvent(element, 'change', {
+          text: 'Hello World',
+        });
       });
-      Fantom.enqueueNativeEvent(
-        element,
-        'scroll',
-        {
+
+      Fantom.runWorkLoop();
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const [entry] = onChange.mock.lastCall;
+      expect(entry.text).toEqual('Hello World');
+    });
+
+    it('it batches events with isUnique option', () => {
+      const root = Fantom.createRoot();
+      let maybeNode;
+      const onScroll = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            onScroll={event => {
+              onScroll(event.nativeEvent);
+            }}
+            ref={node => {
+              maybeNode = node;
+            }}
+          />,
+        );
+      });
+
+      const element = ensureInstance(maybeNode, ReactNativeElement);
+
+      Fantom.runOnUIThread(() => {
+        Fantom.enqueueNativeEvent(element, 'scroll', {
           contentOffset: {
             x: 0,
-            y: 2,
+            y: 1,
           },
-        },
-        {
-          isUnique: true,
-        },
-      );
-    });
+        });
+        Fantom.enqueueNativeEvent(
+          element,
+          'scroll',
+          {
+            contentOffset: {
+              x: 0,
+              y: 2,
+            },
+          },
+          {
+            isUnique: true,
+          },
+        );
+      });
 
-    Fantom.runWorkLoop();
+      Fantom.runWorkLoop();
 
-    expect(onScroll).toHaveBeenCalledTimes(1);
-    const [entry] = onScroll.mock.lastCall;
-    expect(entry.contentOffset).toEqual({
-      x: 0,
-      y: 2,
+      expect(onScroll).toHaveBeenCalledTimes(1);
+      const [entry] = onScroll.mock.lastCall;
+      expect(entry.contentOffset).toEqual({
+        x: 0,
+        y: 2,
+      });
     });
   });
 
@@ -534,7 +566,7 @@ describe('Fantom', () => {
     });
   });
 
-  describe('scrollTo', () => {
+  describe('enqueueScrollEvent', () => {
     it('throws error if called on node that is not scroll view', () => {
       const root = Fantom.createRoot();
       let maybeNode;
@@ -656,11 +688,9 @@ describe('Fantom', () => {
       const element = ensureInstance(maybeNode, ReactNativeElement);
 
       expect(() => {
-        Fantom.runOnUIThread(() => {
-          Fantom.enqueueScrollEvent(element, {
-            x: 0,
-            y: 1,
-          });
+        Fantom.scrollTo(element, {
+          x: 0,
+          y: 1,
         });
       }).toThrow(
         'Exception in HostFunction: enqueueScrollEvent() can only be called on <ScrollView />',
@@ -760,6 +790,7 @@ describe('Fantom', () => {
       expect(onLayout).toHaveBeenCalledTimes(1);
     });
   });
+
   describe('enqueueModalSizeUpdate', () => {
     it('throws error if called on node that is not <Modal />', () => {
       const root = Fantom.createRoot();
@@ -827,37 +858,5 @@ describe('Fantom', () => {
       expect(boundingClientRect.height).toBe(25);
       expect(boundingClientRect.width).toBe(50);
     });
-  });
-});
-
-describe('scheduleTask', () => {
-  it('does not run task immediately', () => {
-    let didRun = false;
-
-    Fantom.scheduleTask(() => {
-      didRun = true;
-    });
-
-    expect(didRun).toBe(false);
-
-    Fantom.runWorkLoop();
-
-    expect(didRun).toBe(true);
-  });
-
-  it('can be scheduled from within another task', () => {
-    let didInnerTaskRun = false;
-
-    Fantom.scheduleTask(() => {
-      Fantom.scheduleTask(() => {
-        didInnerTaskRun = true;
-      });
-    });
-
-    expect(didInnerTaskRun).toBe(false);
-
-    Fantom.runWorkLoop();
-
-    expect(didInnerTaskRun).toBe(true);
   });
 });

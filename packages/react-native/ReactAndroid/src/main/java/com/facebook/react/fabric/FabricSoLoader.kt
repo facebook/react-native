@@ -12,16 +12,15 @@ import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 
-public object FabricSoLoader {
+internal object FabricSoLoader {
   @Volatile private var didInit = false
 
   @JvmStatic
-  public fun staticInit() {
+  fun staticInit() {
     if (didInit) {
       return
     }
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricSoLoader.staticInit::load:fabricjni")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricSoLoader")
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_START)
     SoLoader.loadLibrary("fabricjni")
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_END)

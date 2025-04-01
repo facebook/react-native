@@ -70,6 +70,6 @@ public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
   static {
     LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "ReactInstanceManagerInspectorTarget", LegacyArchitectureLogLevel.WARNING);
-    ReactBridge.staticInit();
+    BridgeSoLoader.staticInit();
   }
 }

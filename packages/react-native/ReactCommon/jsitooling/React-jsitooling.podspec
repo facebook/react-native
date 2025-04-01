@@ -33,7 +33,10 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "./"
   end
 
-  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
+  s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+    "DEFINES_MODULE" => "YES",
+  }
 
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version

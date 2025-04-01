@@ -93,7 +93,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * <p>The wrapper stops the EditText from triggering *TextChanged events, in the case where JS has
  * called this explicitly. This is the default behavior on other platforms as well.
- * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
 public class ReactEditText extends AppCompatEditText {
 
@@ -654,7 +653,6 @@ public class ReactEditText extends AppCompatEditText {
     }
   }
 
-  // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
     if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
       requestFocusProgramatically();
@@ -667,7 +665,6 @@ public class ReactEditText extends AppCompatEditText {
     clearFocus();
   }
 
-  // VisibleForTesting from {@link TextInputEventsTestCase}.
   public int incrementAndGetEventCounter() {
     return ++mNativeEventCount;
   }
@@ -688,8 +685,7 @@ public class ReactEditText extends AppCompatEditText {
     return eventCounter >= mNativeEventCount;
   }
 
-  // VisibleForTesting from {@link TextInputEventsTestCase}.
-  public void maybeSetText(ReactTextUpdate reactTextUpdate) {
+  private void maybeSetText(ReactTextUpdate reactTextUpdate) {
     if (isSecureText() && TextUtils.equals(getText(), reactTextUpdate.getText())) {
       return;
     }

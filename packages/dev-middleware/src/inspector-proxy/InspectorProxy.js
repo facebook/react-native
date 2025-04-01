@@ -166,15 +166,20 @@ export default class InspectorProxy implements InspectorProxyQueries {
         this.#logger?.warn(
           `Waiting for a DevTools connection to app='%s' on device='%s'.
     Try again when it's established. If no connection occurs, try to:
-    - Restart the app
-    - Ensure a stable connection to the device
-    - Ensure that the app is built in a mode that supports debugging`,
+    - Restart the app. For Android, force stopping the app first might be required.
+    - Ensure a stable connection to the device.
+    - Ensure that the app is built in a mode that supports debugging.
+    - Take the app out of running in the background.`,
           device.getApp(),
           device.getName(),
         );
 
         this.#eventReporter?.logEvent({
           type: 'no_debug_pages_for_device',
+          appId: device.getApp(),
+          deviceName: device.getName(),
+          deviceId: deviceId,
+          pageId: null,
         });
       }
 
@@ -515,7 +520,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
         }
 
         if (device == null) {
-          throw new Error('Unknown device with ID ' + deviceId);
+          throw new Error(
+            'Debugger connection attempted for a non registered device',
+          );
         }
 
         this.#logger?.info(
@@ -611,9 +618,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
       } catch (error) {
         this.#logger?.error(
-          "Connection failed to be established with DevTools for app='%s' on device='%s' with error:",
+          "Connection failed to be established with DevTools for app='%s' on device='%s' and device id='%s' with error:",
           device?.getApp() || 'unknown',
           device?.getName() || 'unknown',
+          deviceId,
           error,
         );
         socket.close(INTERNAL_ERROR_CODE, error?.toString() ?? 'Unknown error');

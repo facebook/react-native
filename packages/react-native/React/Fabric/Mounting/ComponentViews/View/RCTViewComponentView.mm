@@ -18,7 +18,6 @@
 #import <React/RCTConversions.h>
 #import <React/RCTLinearGradient.h>
 #import <React/RCTLocalizedString.h>
-#import <React/RCTViewFinder.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
@@ -604,23 +603,6 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _reactSubviews = [NSMutableArray new];
 }
 
-- (NSArray<NSObject *> *)accessibilityElements
-{
-  if ([_accessibleElementsNativeIds count] <= 0) {
-    return super.accessibilityElements;
-  }
-
-  NSMutableArray<UIView *> *elements = [NSMutableArray new];
-  for (NSString *childId : _accessibleElementsNativeIds) {
-    UIView *viewWithMatchingNativeId = [RCTViewFinder findView:self withNativeId:childId];
-    if (viewWithMatchingNativeId) {
-      [elements addObject:viewWithMatchingNativeId];
-    }
-  }
-
-  return elements;
-}
-
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
 {
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = props;
@@ -1136,6 +1118,41 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   return self;
 }
 
+- (NSArray<NSObject *> *)accessibilityElements
+{
+  if ([_accessibleElementsNativeIds count] <= 0) {
+    return super.accessibilityElements;
+  }
+
+  NSMutableDictionary<NSString *, UIView *> *nativeIdToView = [NSMutableDictionary new];
+  NSSet<NSString *> *nativeIdSet = [[NSSet alloc] initWithArray:_accessibleElementsNativeIds];
+
+  [RCTViewComponentView collectAccessibilityElements:self intoDictionary:nativeIdToView nativeIds:nativeIdSet];
+
+  NSMutableArray<UIView *> *elements = [NSMutableArray new];
+  for (NSString *childId : _accessibleElementsNativeIds) {
+    UIView *viewWithMatchingNativeId = [nativeIdToView objectForKey:childId];
+    if (viewWithMatchingNativeId) {
+      [elements addObject:viewWithMatchingNativeId];
+    }
+  }
+
+  return elements;
+}
+
++ (void)collectAccessibilityElements:(UIView *)view
+                      intoDictionary:(NSMutableDictionary<NSString *, UIView *> *)dict
+                           nativeIds:(NSSet<NSString *> *)nativeIds
+{
+  for (UIView *subview in view.subviews) {
+    if ([subview isKindOfClass:[RCTViewComponentView class]] &&
+        [nativeIds containsObject:((RCTViewComponentView *)subview).nativeId]) {
+      [dict setObject:subview forKey:((RCTViewComponentView *)subview).nativeId];
+    }
+    [RCTViewComponentView collectAccessibilityElements:subview intoDictionary:dict nativeIds:nativeIds];
+  }
+}
+
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   // Result string is initialized lazily to prevent useless but costly allocations.
@@ -1166,6 +1183,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 
   return RCTRecursiveAccessibilityLabel(self.currentContainerView);
+}
+
+- (NSString *)accessibilityLabelForCoopting
+{
+  return super.accessibilityLabel;
 }
 
 - (BOOL)isAccessibilityElement

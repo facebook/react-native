@@ -540,6 +540,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   @UnstableReactNativeAPI
   protected boolean experimental_isPrefetchingEnabled() {
-    return ReactNativeFeatureFlags.enableImagePrefetchingAndroid();
+    return false;
   }
 }

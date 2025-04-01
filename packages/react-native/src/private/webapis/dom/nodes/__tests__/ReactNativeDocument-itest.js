@@ -11,11 +11,12 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
+import isUnreachable from '../../../../__tests__/utilities/isUnreachable';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {View} from 'react-native';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
@@ -231,21 +232,17 @@ describe('ReactNativeDocument', () => {
     });
 
     const weakDocument = nullthrows(maybeWeakDocument);
-    expect(weakDocument.deref()).toBeInstanceOf(ReactNativeDocument);
-
     const weakNode = nullthrows(maybeWeakNode);
-    expect(weakNode.deref()).toBeInstanceOf(ReactNativeElement);
+
+    expect(isUnreachable(weakDocument)).toBe(false);
+    expect(isUnreachable(weakNode)).toBe(false);
 
     Fantom.runTask(() => {
       root.destroy();
     });
 
-    Fantom.runTask(() => {
-      global.gc();
-    });
-
     expect(lastNode).toBe(null);
-    expect(weakNode.deref()).toBe(undefined);
-    expect(weakDocument.deref()).toBe(undefined);
+    expect(isUnreachable(weakDocument)).toBe(true);
+    expect(isUnreachable(weakNode)).toBe(true);
   });
 });

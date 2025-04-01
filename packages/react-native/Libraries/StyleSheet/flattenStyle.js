@@ -10,10 +10,14 @@
 
 'use strict';
 
-import type {DangerouslyImpreciseStyleProp} from './StyleSheet';
-import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
+import type {
+  ____DangerouslyImpreciseAnimatedStyleProp_Internal,
+  ____FlattenStyleProp_Internal,
+} from './StyleSheetTypes';
 
-function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
+function flattenStyle<
+  TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
+>(
   style: ?TStyleProp,
   // $FlowFixMe[underconstrained-implicit-instantiation]
 ): ?____FlattenStyleProp_Internal<TStyleProp> {

@@ -17,7 +17,6 @@ import static com.facebook.react.uimanager.UIManagerHelper.PADDING_BOTTOM_INDEX;
 import static com.facebook.react.uimanager.UIManagerHelper.PADDING_END_INDEX;
 import static com.facebook.react.uimanager.UIManagerHelper.PADDING_START_INDEX;
 import static com.facebook.react.uimanager.UIManagerHelper.PADDING_TOP_INDEX;
-import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -163,7 +162,7 @@ public class FabricUIManager
   @Nullable private FabricUIManagerBinding mBinding;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final MountingManager mMountingManager;
-  @NonNull private final EventDispatcher mEventDispatcher;
+  @NonNull private final FabricEventDispatcher mEventDispatcher;
   @NonNull private final MountItemDispatcher mMountItemDispatcher;
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
 
@@ -227,7 +226,7 @@ public class FabricUIManager
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
     mMountItemDispatcher =
         new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
-    mEventDispatcher = new FabricEventDispatcher(reactContext);
+    mEventDispatcher = new FabricEventDispatcher(reactContext, new FabricEventEmitter(this));
     mBatchEventDispatchedListener = batchEventDispatchedListener;
     mReactApplicationContext.addLifecycleEventListener(this);
 
@@ -364,7 +363,6 @@ public class FabricUIManager
 
   @Override
   public void initialize() {
-    mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mBatchEventDispatchedListener);
     if (ReactNativeFeatureFlags.enableFabricLogs()) {
       mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
@@ -399,7 +397,7 @@ public class FabricUIManager
     mDestroyed = true;
 
     mEventDispatcher.removeBatchEventDispatchedListener(mBatchEventDispatchedListener);
-    mEventDispatcher.unregisterEventEmitter(FABRIC);
+    mEventDispatcher.invalidate();
 
     mReactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
     mViewManagerRegistry.invalidate();
@@ -414,14 +412,6 @@ public class FabricUIManager
     mBinding = null;
 
     ViewManagerPropertyUpdater.clear();
-
-    // When StaticViewConfigs is enabled, FabriUIManager is
-    // responsible for initializing and deallocating EventDispatcher. StaticViewConfigs is enabled
-    // only in Bridgeless for now.
-    // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
-    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
-      mEventDispatcher.onCatalystInstanceDestroyed();
-    }
   }
 
   @Override

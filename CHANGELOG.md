@@ -447,6 +447,30 @@ ChuiHW))
 - **Style:** Fixed `centerContent` losing taps and causing jitter ([fe7e97a2fd](https://github.com/facebook/react-native/commit/fe7e97a2fd272db0d9d9aa7d0561337a7c8e2c30) by [@gaearon](https://github.com/gaearon))
 - **Xcode:** Properly escape paths in Xcode build script used when bundling an app. ([2fee13094b](https://github.com/facebook/react-native/commit/2fee13094b3d384c071978776fd8b7cff0b6530f) by [@kraenhansen](https://github.com/kraenhansen))
 
+## v0.77.2
+
+### Added
+
+#### iOS specific
+
+- **Codegen:** Add the `source` parameter to generate-codegen-artifacts to avoid generating files not needed by libraries. ([98b8f17811](https://github.com/facebook/react-native/commit/98b8f178110472e5fed97de80766c03b0b5e988c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **DevTools:** Fix disconnections of DevTools when the network is under significant strain. ([b0974135bf](https://github.com/facebook/react-native/commit/b0974135bf1c0946d4a85bdc1fd423ff7dc612c5) by [@vzaidman](https://github.com/vzaidman))
+- **CLI:** Fix registering of `start` and `bundle` commands with community CLI and isolated node_modules. ([1f002f9999](https://github.com/facebook/react-native/commit/1f002f9999fb2a225f8e2cb3844badc97313b45f) by [@robhogan](https://github.com/robhogan))
+- **Metro:** Bump minimum Metro to 0.81.3, fix "_interopRequireDefault is not a function" with enablePackageExports ([b335436113](https://github.com/facebook/react-native/commit/b335436113aa11cc4f17eb696368e05708374c33) by [@robhogan](https://github.com/robhogan))
+
+#### Android specific
+
+- **Fabric:** Avoid NPE when touch event is triggered before SurfaceManager is initiated ([b8095f4692](https://github.com/facebook/react-native/commit/b8095f4692610c7f4631b851dc7d8dc9b149a277) by [@CHOIMINSEOK](https://github.com/CHOIMINSEOK))
+- **Image:** Fix defaultSource runtime error ([1c51b77868](https://github.com/facebook/react-native/commit/1c51b7786860fe364a115f7a4ed29228157f0f5c) by [@fbp93](https://github.com/fbp93))
+
+#### iOS specific
+
+- **Interop Layer:** Properly pass `nil` for nullable parameters instead of `NSNull` for legacy modules ([619d5dfbb2](https://github.com/facebook/react-native/commit/619d5dfbb280892fcc2a9f78d630eb88fb32960f) by [@cipolleschi](https://github.com/cipolleschi))
+- **TextInput:** Fix crashes when any text is entered while running as iOS app on apple silicon mac ([8d7aca30e7](https://github.com/facebook/react-native/commit/8d7aca30e7fb50c9c069931a7ed67d8d4a745a2a) by [@zhongwuzw](https://github.com/zhongwuzw))
+
 ## v0.77.1
 
 ### Fixed
@@ -821,6 +845,27 @@ github.com/robhogan))
 - **TextInput:** Fixed problem with third party libraries overwriting `inputAccessoryView` ([d34032b6c0](https://github.com/facebook/react-native/commit/d34032b6c0bb3564a7b77ef270cc3289d99365f2) by [@kirillzyusko](https://github.com/kirillzyusko))
 - **TextInput:** Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
 - **TextInput:** Fix `maxLength` not working in old arch ([4b3ef3b00c](https://github.com/facebook/react-native/commit/4b3ef3b00ce0026c0d1e1f2a5546fcec249255d8) by [@mateoguzmana](https://github.com/mateoguzmana))
+
+## v0.76.8
+
+### Fixed
+
+- **FormData:** Remove non compliant `filename*` attribute in a FormData `content-disposition` header ([9e846b4d11](https://github.com/facebook/react-native/commit/9e846b4d11a287977c05a77169d8775ab14474ca) by [@foyarash](https://github.com/foyarash))
+- **DevX:** Disconnections of DevTools when the network is under significant strain. ([08c04147ba](https://github.com/facebook/react-native/commit/08c04147ba7664ad82dcb59184293bec8c0e728f) by [@vzaidman](https://github.com/vzaidman))
+- **JS:** Fix `react-native-community/cli` not being found in pnpm setups ([9ba96ad79d6](https://github.com/facebook/react-native/commit/9ba96ad79d62a77dbf12b0012eaa4f61e4749ec0) by [@tido64](https://github.com/tido64))
+- **JS:** Fix `react-native-community/cli-platform-*` packages not being found in monorepos ([ffe7bd1471](https://github.com/facebook/react-native/commit/ffe7bd147179d976b165f869cd8ae28d5de87286) by [@tido64](https://github.com/tido64))
+
+#### Android specific
+
+- **popup-menu-android:** Fix react-native/popup-menu-android not building for 3rd party developers ([ac637ff44](https://github.com/facebook/react-native/commit/ac637ff448e7d4f9bb4c16297fbd27ed94ab9803) by [@cortinico](https://github.com/cortinico))
+- **DevTools:** Pass the bundle URL protocol when setting up HMR client on Android ([68055f2d8a](https://github.com/facebook/react-native/commit/68055f2d8a1f475a79651cdae81e6af1a32ddf6f) by [@byCedric](https://github.com/byCedric))
+- **CLI:** Fix registering of `start` and `bundle` commands with community CLI and isolated node_modules. ([b9c4095e40](https://github.com/facebook/react-native/commit/b9c4095e40faed0f3ea06f1981b9a53c54a08291) by [@robhogan](https://github.com/robhogan))
+
+#### iOS specific
+
+- **layout:** Layout direction changes are now honored on bundle reload. ([23b888ff2d](https://github.com/facebook/react-native/commit/23b888ff2d5b877a88e3432e4a4af2836f0b8dca) by [@chrsmys](https://github.com/chrsmys))
+- **TextInput:** Fixes TextInput crashes when any text is entered while running as iOS app on apple silicon mac ([e2b081e66f](https://github.com/facebook/react-native/commit/e2b081e66f277948fcb8bc546c8184c8eaff4d17) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **Runtime:** Convert to JSException only NSException from sync methods ([8eec35f134](https://github.com/facebook/react-native/commit/8eec35f134f353e99fa27935110cd33d4bd9c213) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.76.7
 

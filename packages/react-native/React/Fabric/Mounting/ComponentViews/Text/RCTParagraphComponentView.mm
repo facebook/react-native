@@ -161,6 +161,11 @@ using namespace facebook::react;
   return self.attributedText.string;
 }
 
+- (NSString *)accessibilityLabelForCoopting
+{
+  return self.accessibilityLabel;
+}
+
 - (BOOL)isAccessibilityElement
 {
   // All accessibility functionality of the component is implemented in `accessibilityElements` method below.
@@ -197,7 +202,45 @@ using namespace facebook::react;
     }
   }
 
-  return _accessibilityProvider.accessibilityElements;
+  NSArray<UIAccessibilityElement *> *elements = _accessibilityProvider.accessibilityElements;
+  if ([elements count] > 0) {
+    elements[0].isAccessibilityElement = ![self isAccessibilityCoopted];
+  }
+  return elements;
+}
+
+- (BOOL)isAccessibilityCoopted
+{
+  UIView *ancestor = self.superview;
+  NSMutableSet<UIView *> *cooptingCandidates = [NSMutableSet new];
+  while (ancestor) {
+    if ([ancestor isKindOfClass:[RCTViewComponentView class]]) {
+      NSArray *elements = ancestor.accessibilityElements;
+      if ([elements count] > 0 && [cooptingCandidates count] > 0) {
+        for (UIView *element in elements) {
+          if ([cooptingCandidates containsObject:element]) {
+            return YES;
+          }
+        }
+      }
+
+      if ([((RCTViewComponentView *)ancestor) accessibilityLabelForCoopting]) {
+        // We found a label above us. That would be coopted before we would be
+        return NO;
+      } else if (ancestor.isAccessibilityElement) {
+        // We found an accessible view without a label for coopting before anything
+        // else, if it is in some accessibilityElements somewhere then it will coopt
+        [cooptingCandidates addObject:ancestor];
+      }
+    } else if (![ancestor isKindOfClass:[RCTViewComponentView class]] && ancestor.accessibilityLabel) {
+      // Same as above, for UIView case. Cannot call this on RCTViewComponentView
+      // as it is recursive and quite expensive.
+      return NO;
+    }
+    ancestor = ancestor.superview;
+  }
+
+  return NO;
 }
 
 - (UIAccessibilityTraits)accessibilityTraits

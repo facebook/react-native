@@ -33,14 +33,14 @@ private object ReactAxOrderHelper {
       }
     }
 
-    val axOrderViews = processAxOrderTree(host, axOrderIdsList, axOrderSet)
+    val axOrderViews = processAxOrderTree(host, axOrderIdsList, axOrderSet).filterNotNull()
 
     // Set up traversal order between views
     for (i in 0 until axOrderViews.size - 1) {
       val currentView = axOrderViews[i]
       val flowToView = axOrderViews[i + 1]
 
-      currentView?.setTag(R.id.accessibility_order_flow_to, flowToView)
+      currentView.setTag(R.id.accessibility_order_flow_to, flowToView)
     }
   }
 

@@ -85,6 +85,9 @@ it('handles rgb properly', () => {
   expect(normalizeColor('rgb(256, 256, 256)')).toBe(0xffffffff);
   expect(normalizeColor('rgb(0  0  0)')).toBe(0x000000ff);
   expect(normalizeColor('rgb(0 0 255)')).toBe(0x0000ffff);
+  expect(normalizeColor('rgb(0 0 0 / 0.5)')).toBe(0x00000080);
+  expect(normalizeColor('rgb(0 0 0 / 1)')).toBe(0x000000ff);
+  expect(normalizeColor('rgb(0, 0, 0, 0.5)')).toBe(0x00000080);
 });
 
 it('handles rgba properly', () => {
@@ -98,6 +101,7 @@ it('handles rgba properly', () => {
   expect(normalizeColor('rgba(0  0  0 / 0.0)')).toBe(0x00000000);
   expect(normalizeColor('rgba(0 0 0 / 1)')).toBe(0x000000ff);
   expect(normalizeColor('rgba(100 15 69 / 0.5)')).toBe(0x640f4580);
+  expect(normalizeColor('rgba(0, 0, 0)')).toBe(0x000000ff);
 });
 
 it('handles hsl properly', () => {

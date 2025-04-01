@@ -11,10 +11,7 @@ import android.text.Layout
 import android.text.Spannable
 import com.facebook.react.common.ReactConstants
 
-/**
- * Class that contains the data needed for a text update. Used by both <Text/> and <TextInput/>
- * VisibleForTesting from [TextInputEventsTestCase].
- */
+/** Class that contains the data needed for a text update. Used by both <Text/> and <TextInput/>. */
 public class ReactTextUpdate(
     public val text: Spannable,
     public val jsEventCounter: Int,

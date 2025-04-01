@@ -134,19 +134,16 @@ export interface ScrollViewScrollToOptions {
 
 // Public methods for ScrollView
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: $PropertyType<ScrollView, 'getScrollResponder'>;
-  +getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>;
-  +getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>;
-  +getInnerViewRef: $PropertyType<ScrollView, 'getInnerViewRef'>;
-  +getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>;
-  +scrollTo: $PropertyType<ScrollView, 'scrollTo'>;
-  +scrollToEnd: $PropertyType<ScrollView, 'scrollToEnd'>;
-  +flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>;
-  +scrollResponderZoomTo: $PropertyType<ScrollView, 'scrollResponderZoomTo'>;
-  +scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
-    ScrollView,
-    'scrollResponderScrollNativeHandleToKeyboard',
-  >;
+  +getScrollResponder: ScrollView['getScrollResponder'];
+  +getScrollableNode: ScrollView['getScrollableNode'];
+  +getInnerViewNode: ScrollView['getInnerViewNode'];
+  +getInnerViewRef: ScrollView['getInnerViewRef'];
+  +getNativeScrollRef: ScrollView['getNativeScrollRef'];
+  +scrollTo: ScrollView['scrollTo'];
+  +scrollToEnd: ScrollView['scrollToEnd'];
+  +flashScrollIndicators: ScrollView['flashScrollIndicators'];
+  +scrollResponderZoomTo: ScrollView['scrollResponderZoomTo'];
+  +scrollResponderScrollNativeHandleToKeyboard: ScrollView['scrollResponderScrollNativeHandleToKeyboard'];
 }
 
 export type DecelerationRateType = 'fast' | 'normal' | number;
@@ -303,7 +300,7 @@ export type ScrollViewPropsIOS = $ReadOnly<{
   /**
    * This property specifies how the safe area insets are used to modify the
    * content area of the scroll view. The default value of this property is
-   * "never". Available on iOS 11 and later.
+   * "never".
    * @platform ios
    */
   contentInsetAdjustmentBehavior?: ?(

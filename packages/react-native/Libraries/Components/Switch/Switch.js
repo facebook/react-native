@@ -46,7 +46,7 @@ export type SwitchPropsIOS = {
   tintColor?: ?ColorValue,
 };
 
-export type SwitchChangeEventData = $ReadOnly<{
+type SwitchChangeEventData = $ReadOnly<{
   target: number,
   value: boolean,
 }>;

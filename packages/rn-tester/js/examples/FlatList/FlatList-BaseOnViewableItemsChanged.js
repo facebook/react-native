@@ -17,7 +17,7 @@ import * as React from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 
 type FlatListProps = React.ElementProps<typeof FlatList>;
-type ViewabilityConfig = $PropertyType<FlatListProps, 'viewabilityConfig'>;
+type ViewabilityConfig = FlatListProps['viewabilityConfig'];
 
 const BASE_VIEWABILITY_CONFIG = {
   minimumViewTime: 1000,

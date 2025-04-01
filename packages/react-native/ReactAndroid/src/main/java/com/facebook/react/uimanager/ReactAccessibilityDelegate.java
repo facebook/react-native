@@ -142,7 +142,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       boolean isAxOrderDirty = (boolean) host.getTag(R.id.accessibility_order_dirty);
       if (isAxOrderDirty) {
         ReactAxOrderHelper.setCustomAccessibilityFocusOrder(host);
-        host.setTag(R.id.accessibility_order_dirty);
+        host.setTag(R.id.accessibility_order_dirty, false);
       }
     }
 

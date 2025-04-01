@@ -86,6 +86,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RCTAnimation", :framework_name => 'RCTAnimation')
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
+  add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   add_dependency(s, "React-renderercss")
 

@@ -70,6 +70,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    cxxNativeAnimatedEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-03-14',
+        description:
+          'Use a C++ implementation of Native Animated instead of the platform implementation.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {
@@ -147,17 +158,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-08-30',
         description: 'iOS Views will clip to their padding box vs border box',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableImagePrefetchingAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-11-19',
-        description:
-          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -540,13 +540,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     disableInteractionManager: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-11-06',
         description:
           'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -582,13 +581,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     scheduleAnimatedCleanupInMicrotask: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-01-22',
         description:
-          'Changes the cleanup of`AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).',
+          'Changes the cleanup of `AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },

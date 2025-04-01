@@ -53,14 +53,19 @@ RCT_EXPORT_MODULE()
     _fileQueue.maxConcurrentOperationCount = 4;
   }
 
-  __weak __block NSBlockOperation *weakOp;
-  __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+  NSBlockOperation *op = [NSBlockOperation new];
+  __weak NSBlockOperation *weakOp = op;
+  [op addExecutionBlock:^{
+    NSBlockOperation *strongOp = weakOp; // Strong reference to avoid deallocation during execution
+    if (strongOp == nil || [strongOp isCancelled]) {
+      return;
+    }
     // Get content length
     NSError *error = nil;
     NSFileManager *fileManager = [NSFileManager new];
     NSDictionary<NSString *, id> *fileAttributes = [fileManager attributesOfItemAtPath:request.URL.path error:&error];
     if (!fileAttributes) {
-      [delegate URLRequest:weakOp didCompleteWithError:error];
+      [delegate URLRequest:strongOp didCompleteWithError:error];
       return;
     }
 
@@ -77,17 +82,16 @@ RCT_EXPORT_MODULE()
                                            expectedContentLength:[fileAttributes[NSFileSize] ?: @-1 integerValue]
                                                 textEncodingName:nil];
 
-    [delegate URLRequest:weakOp didReceiveResponse:response];
+    [delegate URLRequest:strongOp didReceiveResponse:response];
 
     // Load data
     NSData *data = [NSData dataWithContentsOfURL:request.URL options:NSDataReadingMappedIfSafe error:&error];
     if (data) {
-      [delegate URLRequest:weakOp didReceiveData:data];
+      [delegate URLRequest:strongOp didReceiveData:data];
     }
-    [delegate URLRequest:weakOp didCompleteWithError:error];
+    [delegate URLRequest:strongOp didCompleteWithError:error];
   }];
 
-  weakOp = op;
   [_fileQueue addOperation:op];
   return op;
 }

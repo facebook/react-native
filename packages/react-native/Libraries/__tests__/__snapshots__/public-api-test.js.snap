@@ -128,8 +128,8 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   | { [key: string]: Mapping, ... }
   | AnimatedValue
   | AnimatedValueXY;
-export type EventConfig = {
-  listener?: ?Function,
+export type EventConfig<T> = {
+  listener?: ?(NativeSyntheticEvent<T>) => mixed,
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
 };
@@ -140,7 +140,10 @@ declare export function attachNativeEvent(
   platformConfig: ?PlatformConfig
 ): { detach: () => void };
 declare export class AnimatedEvent {
-  constructor(argMapping: $ReadOnlyArray<?Mapping>, config: EventConfig): void;
+  constructor(
+    argMapping: $ReadOnlyArray<?Mapping>,
+    config: EventConfig<any>
+  ): void;
 }
 "
 `;
@@ -278,9 +281,9 @@ declare function unforkEvent(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): void;
-declare const event: (
+declare const event: <T>(
   argMapping: $ReadOnlyArray<?Mapping>,
-  config: EventConfig
+  config: EventConfig<T>
 ) => any;
 type AnimatedNumeric =
   | AnimatedAddition
@@ -622,7 +625,7 @@ declare export default typeof AnimatedScrollView;
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedSectionList.js 1`] = `
 "declare export default AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,
-  SectionList<SectionBase<any>>,
+  SectionList<any, SectionBase<any>>,
 >;
 "
 `;
@@ -668,31 +671,32 @@ export type WithAnimatedValue<+T> = T extends Builtin | Nullable
       : T extends { ... }
         ? { +[K in keyof T]: WithAnimatedValue<T[K]> }
         : T;
-type NonAnimatedProps = \\"ref\\" | \\"innerViewRef\\" | \\"scrollViewRef\\";
+type NonAnimatedProps =
+  | \\"ref\\"
+  | \\"innerViewRef\\"
+  | \\"scrollViewRef\\"
+  | \\"testID\\"
+  | \\"disabled\\"
+  | \\"accessibilityLabel\\";
 type PassThroughProps = $ReadOnly<{
   passthroughAnimatedPropExplicitValues?: React.ElementConfig<
     typeof View,
   > | null,
 }>;
 export type AnimatedProps<Props: { ... }> = {
-  [K in keyof (Props & PassThroughProps)]: K extends $Keys<PassThroughProps>
-    ? PassThroughProps[K]
-    : K extends NonAnimatedProps
-      ? Props[K]
-      : WithAnimatedValue<Props[K]>,
+  [K in keyof Props]: K extends NonAnimatedProps
+    ? Props[K]
+    : WithAnimatedValue<Props[K]>,
+} & PassThroughProps;
+export type AnimatedBaseProps<Props: { ... }> = {
+  [K in keyof Props]: K extends NonAnimatedProps
+    ? Props[K]
+    : WithAnimatedValue<Props[K]>,
 };
-export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
-  ...$Exact<Props>,
-  passthroughAnimatedPropExplicitValues?: ?Props,
-}>;
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
 > = component(ref?: React.RefSetter<Instance>, ...AnimatedProps<Props>);
-export type StrictAnimatedComponentType<
-  Props: { ... },
-  +Instance = mixed,
-> = component(ref: React.RefSetter<Instance>, ...StrictAnimatedProps<Props>);
 declare export default function createAnimatedComponent<
   TInstance: React.ComponentType<any>,
 >(
@@ -707,7 +711,7 @@ declare export function unstable_createAnimatedComponentWithAllowlist<
 >(
   Component: TInstance,
   allowlist: ?AnimatedPropsAllowlist
-): StrictAnimatedComponentType<TProps, React.ElementRef<TInstance>>;
+): AnimatedComponentType<TProps, React.ElementRef<TInstance>>;
 "
 `;
 
@@ -887,6 +891,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   style?: ?AnimatedStyleAllowlist,
   [string]: true,
 }>;
+type TargetViewInstance = React.ElementRef<React.ElementType>;
 declare export default class AnimatedProps extends AnimatedNode {
   constructor(
     inputProps: { [string]: mixed },
@@ -895,7 +900,7 @@ declare export default class AnimatedProps extends AnimatedNode {
     config?: ?AnimatedNodeConfig
   ): void;
   update(): void;
-  setNativeView(animatedView: any): void;
+  setNativeView(instance: TargetViewInstance): void;
 }
 "
 `;
@@ -1076,7 +1081,7 @@ declare class AppStateImpl {
   constructor(): void;
   addEventListener<K: AppStateEvent>(
     type: K,
-    handler: (...$ElementType<AppStateEventDefinitions, K>) => void
+    handler: (...AppStateEventDefinitions[K]) => void
   ): EventSubscription;
 }
 declare const AppState: AppStateImpl;
@@ -1343,16 +1348,21 @@ declare export class URL {
 
 exports[`public API should not change unintentionally Libraries/Blob/URLSearchParams.js.flow 1`] = `
 "declare export class URLSearchParams {
-  constructor(params?: Record<string, string>): void;
+  constructor(
+    params?: Record<string, string> | string | Array<[string, string]>
+  ): void;
   append(key: string, value: string): void;
-  delete(name: string): empty;
-  get(name: string): empty;
-  getAll(name: string): empty;
-  has(name: string): empty;
-  set(name: string, value: string): empty;
-  sort(): empty;
+  delete(name: string): void;
+  get(name: string): string;
+  getAll(name: string): Array<string>;
+  has(name: string): boolean;
+  set(name: string, value: string): void;
+  sort(): void;
   @@iterator(): Iterator<[string, string]>;
   toString(): string;
+  keys(): Iterator<string>;
+  values(): Iterator<string>;
+  entries(): Iterator<[string, string]>;
 }
 "
 `;
@@ -1432,7 +1442,7 @@ declare const AccessibilityInfo: {
   isAccessibilityServiceEnabled(): Promise<boolean>,
   addEventListener<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
-    handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void
+    handler: (...AccessibilityEventDefinitions[K]) => void
   ): EventSubscription,
   setAccessibilityFocus(reactTag: number): void,
   sendAccessibilityEvent(
@@ -1667,7 +1677,7 @@ declare class Keyboard {
   constructor(): void;
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
+    listener: (...KeyboardEventDefinitions[K]) => mixed,
     context?: mixed
   ): EventSubscription;
   removeAllListeners<K: $Keys<KeyboardEventDefinitions>>(eventType: ?K): void;
@@ -1731,13 +1741,13 @@ declare export default typeof LayoutConformanceNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
-"type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, \\"style\\">;
+"type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
 type PressableBaseProps = $ReadOnly<{
   cancelable?: ?boolean,
-  children: React.Node | ((state: PressableStateCallbackType) => React.Node),
+  children?: React.Node | ((state: PressableStateCallbackType) => React.Node),
   delayHoverIn?: ?number,
   delayHoverOut?: ?number,
   delayLongPress?: ?number,
@@ -1930,19 +1940,16 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   animated?: boolean;
 }
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: $PropertyType<ScrollView, \\"getScrollResponder\\">;
-  +getScrollableNode: $PropertyType<ScrollView, \\"getScrollableNode\\">;
-  +getInnerViewNode: $PropertyType<ScrollView, \\"getInnerViewNode\\">;
-  +getInnerViewRef: $PropertyType<ScrollView, \\"getInnerViewRef\\">;
-  +getNativeScrollRef: $PropertyType<ScrollView, \\"getNativeScrollRef\\">;
-  +scrollTo: $PropertyType<ScrollView, \\"scrollTo\\">;
-  +scrollToEnd: $PropertyType<ScrollView, \\"scrollToEnd\\">;
-  +flashScrollIndicators: $PropertyType<ScrollView, \\"flashScrollIndicators\\">;
-  +scrollResponderZoomTo: $PropertyType<ScrollView, \\"scrollResponderZoomTo\\">;
-  +scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
-    ScrollView,
-    \\"scrollResponderScrollNativeHandleToKeyboard\\",
-  >;
+  +getScrollResponder: ScrollView[\\"getScrollResponder\\"];
+  +getScrollableNode: ScrollView[\\"getScrollableNode\\"];
+  +getInnerViewNode: ScrollView[\\"getInnerViewNode\\"];
+  +getInnerViewRef: ScrollView[\\"getInnerViewRef\\"];
+  +getNativeScrollRef: ScrollView[\\"getNativeScrollRef\\"];
+  +scrollTo: ScrollView[\\"scrollTo\\"];
+  +scrollToEnd: ScrollView[\\"scrollToEnd\\"];
+  +flashScrollIndicators: ScrollView[\\"flashScrollIndicators\\"];
+  +scrollResponderZoomTo: ScrollView[\\"scrollResponderZoomTo\\"];
+  +scrollResponderScrollNativeHandleToKeyboard: ScrollView[\\"scrollResponderScrollNativeHandleToKeyboard\\"];
 }
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
@@ -2363,7 +2370,7 @@ exports[`public API should not change unintentionally Libraries/Components/Switc
   thumbTintColor?: ?ColorValue,
   tintColor?: ?ColorValue,
 };
-export type SwitchChangeEventData = $ReadOnly<{
+type SwitchChangeEventData = $ReadOnly<{
   target: number,
   value: boolean,
 }>;
@@ -2644,13 +2651,12 @@ declare export default PartialViewConfigWithoutName;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.flow.js 1`] = `
-"export type TextInputChangeEventData = $ReadOnly<{
+"type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
 }>;
-export type TextInputChangeEvent =
-  NativeSyntheticEvent<TextInputChangeEventData>;
+type TextInputChangeEvent = NativeSyntheticEvent<TextInputChangeEventData>;
 export type TextInputEvent = NativeSyntheticEvent<
   $ReadOnly<{
     eventCount: number,
@@ -2663,7 +2669,7 @@ export type TextInputEvent = NativeSyntheticEvent<
     text: string,
   }>,
 >;
-export type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = $ReadOnly<{
   target: number,
   contentSize: $ReadOnly<{
     width: number,
@@ -2672,23 +2678,23 @@ export type TextInputContentSizeChangeEventData = $ReadOnly<{
 }>;
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
-export type TargetEvent = $ReadOnly<{
+type TargetEvent = $ReadOnly<{
   target: number,
 }>;
-export type TextInputFocusEventData = TargetEvent;
+type TextInputFocusEventData = TargetEvent;
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
-export type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
 }>;
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
-export type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -2696,14 +2702,14 @@ export type TextInputKeyPressEventData = $ReadOnly<{
 }>;
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
-export type TextInputEndEditingEventData = $ReadOnly<{
+type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
-export type TextInputSubmitEditingEventData = $ReadOnly<{
+type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
@@ -3001,7 +3007,7 @@ export type TextInputType = InternalTextInput & TextInputComponentStatics;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
-"export type TextInputChangeEventData = $ReadOnly<{
+"type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
@@ -3020,7 +3026,7 @@ export type TextInputEvent = NativeSyntheticEvent<
     text: string,
   }>,
 >;
-export type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = $ReadOnly<{
   target: number,
   contentSize: $ReadOnly<{
     width: number,
@@ -3032,23 +3038,25 @@ export type TextInputContentSizeChangeEvent =
 export type TargetEvent = $ReadOnly<{
   target: number,
 }>;
-export type TextInputFocusEventData = TargetEvent;
+type TextInputFocusEventData = TargetEvent;
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-export type TextInputScrollEventData = {
+type TextInputScrollEventData = {
   contentOffset: { x: number, y: number },
 };
+export type TextInputScrollEvent =
+  NativeSyntheticEvent<TextInputScrollEventData>;
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
-export type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
 }>;
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
-export type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -3056,14 +3064,14 @@ export type TextInputKeyPressEventData = $ReadOnly<{
 }>;
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
-export type TextInputEndEditingEventData = $ReadOnly<{
+type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
-export type TextInputSubmitEditingEventData = $ReadOnly<{
+type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
@@ -3563,7 +3571,7 @@ type TouchableHighlightBaseProps = $ReadOnly<{
   testOnly_pressed?: ?boolean,
   hostRef: React.RefSetter<React.ElementRef<typeof View>>,
 }>;
-type TouchableHighlightProps = $ReadOnly<{
+export type TouchableHighlightProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
   ...AndroidProps,
   ...IOSProps,
@@ -4073,6 +4081,14 @@ export type ViewPropsAndroid = $ReadOnly<{
   tabIndex?: 0 | -1,
   onClick?: ?(event: GestureResponderEvent) => mixed,
 }>;
+export type TVViewPropsIOS = $ReadOnly<{
+  isTVSelectable?: boolean,
+  hasTVPreferredFocus?: boolean,
+  tvParallaxShiftDistanceX?: number,
+  tvParallaxShiftDistanceY?: number,
+  tvParallaxTiltAngle?: number,
+  tvParallaxMagnification?: number,
+}>;
 export type ViewPropsIOS = $ReadOnly<{
   shouldRasterizeIOS?: ?boolean,
 }>;
@@ -4416,6 +4432,7 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
   removeListeners(count: number): void;
 }
 export type { EventSubscription };
+export type NativeEventSubscription = EventSubscription;
 type UnsafeObject = Object;
 declare export default class NativeEventEmitter<
   TEventToArgsMap: $ReadOnly<
@@ -4426,12 +4443,12 @@ declare export default class NativeEventEmitter<
   constructor(nativeModule: ?NativeModule): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context?: mixed
   ): EventSubscription;
   emit<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    ...args: $ElementType<TEventToArgsMap, TEvent>
+    ...args: TEventToArgsMap[TEvent]
   ): void;
   removeAllListeners<TEvent: $Keys<TEventToArgsMap>>(eventType?: ?TEvent): void;
   listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number;
@@ -4587,12 +4604,12 @@ declare export function getUrlCacheBreaker(): string;
 
 exports[`public API should not change unintentionally Libraries/Image/Image.js.flow 1`] = `
 "export type {
-  ImageProgressEventDataIOS,
+  ImageProgressEventIOS,
   ImagePropsIOS,
   ImagePropsAndroid,
   ImageSourcePropType,
-  ImageLoadEventData,
-  ImageErrorEventData,
+  ImageLoadEvent,
+  ImageErrorEvent,
   ImagePropsBase,
   ImageProps,
   ImageBackgroundProps,
@@ -4610,7 +4627,8 @@ declare export default typeof Context;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageBackground.js 1`] = `
-"declare class ImageBackground extends React.Component<ImageBackgroundProps> {
+"export type { ImageBackgroundProps } from \\"./ImageProps\\";
+declare class ImageBackground extends React.Component<ImageBackgroundProps> {
   setNativeProps(props: { ... }): void;
   render(): React.Node;
 }
@@ -4644,14 +4662,20 @@ declare export function useWrapRefWithImageAttachedCallbacks(
 
 exports[`public API should not change unintentionally Libraries/Image/ImageProps.js 1`] = `
 "export type ImageSourcePropType = ImageSource;
-export type ImageProgressEventDataIOS = {
+type ImageProgressEventDataIOS = {
   loaded: number,
   total: number,
 };
-export type ImageErrorEventData = {
+export type ImageProgressEventIOS = NativeSyntheticEvent<
+  $ReadOnly<ImageProgressEventDataIOS>,
+>;
+type ImageErrorEventData = {
   error: string,
 };
-export type ImageLoadEventData = {
+export type ImageErrorEvent = NativeSyntheticEvent<
+  $ReadOnly<ImageErrorEventData>,
+>;
+type ImageLoadEventData = {
   source: {
     height: number,
     width: number,
@@ -4664,9 +4688,7 @@ export type ImageLoadEvent = NativeSyntheticEvent<
 export type ImagePropsIOS = $ReadOnly<{
   defaultSource?: ?ImageSource,
   onPartialLoad?: ?() => void,
-  onProgress?: ?(
-    event: NativeSyntheticEvent<$ReadOnly<ImageProgressEventDataIOS>>
-  ) => void,
+  onProgress?: ?(event: ImageProgressEventIOS) => void,
 }>;
 export type ImagePropsAndroid = $ReadOnly<{
   loadingIndicatorSource?: ?(number | $ReadOnly<ImageURISource>),
@@ -4688,9 +4710,7 @@ export type ImagePropsBase = $ReadOnly<{
   crossOrigin?: ?(\\"anonymous\\" | \\"use-credentials\\"),
   height?: number,
   width?: number,
-  onError?: ?(
-    event: NativeSyntheticEvent<$ReadOnly<ImageErrorEventData>>
-  ) => void,
+  onError?: ?(event: ImageErrorEvent) => void,
   onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onLoad?: ?(event: ImageLoadEvent) => void,
   onLoadEnd?: ?() => void,
@@ -5208,7 +5228,7 @@ declare class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor(): void;
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed
+    listener: (...LinkingEventDefinitions[K]) => mixed
   ): EventSubscription;
   openURL(url: string): Promise<void>;
   canOpenURL(url: string): Promise<boolean>;
@@ -5282,17 +5302,14 @@ type FlatListBaseProps<ItemT> = {
 };
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 export type FlatListProps<ItemT> = {
-  ...$Diff<
+  ...Omit<
     VirtualizedListProps,
-    {
-      data: $PropertyType<VirtualizedListProps, \\"data\\">,
-      getItem: $PropertyType<VirtualizedListProps, \\"getItem\\">,
-      getItemCount: $PropertyType<VirtualizedListProps, \\"getItemCount\\">,
-      getItemLayout: $PropertyType<VirtualizedListProps, \\"getItemLayout\\">,
-      renderItem: $PropertyType<VirtualizedListProps, \\"renderItem\\">,
-      keyExtractor: $PropertyType<VirtualizedListProps, \\"keyExtractor\\">,
-      ...
-    },
+    | \\"data\\"
+    | \\"getItem\\"
+    | \\"getItemCount\\"
+    | \\"getItemLayout\\"
+    | \\"renderItem\\"
+    | \\"keyExtractor\\",
   >,
   ...FlatListBaseProps<ItemT>,
   ...
@@ -5334,58 +5351,49 @@ declare export default typeof FlatList;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionList.js 1`] = `
 "declare const VirtualizedSectionList: $FlowFixMe;
-type Item = any;
-export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
-type RequiredProps<SectionT: SectionBase<any>> = {
-  sections: $ReadOnlyArray<SectionT>,
+type DefaultSectionT = {
+  [key: string]: any,
 };
-type OptionalProps<SectionT: SectionBase<any>> = {
-  renderItem?: (info: {
-    item: Item,
-    index: number,
-    section: SectionT,
-    separators: {
-      highlight: () => void,
-      unhighlight: () => void,
-      updateProps: (select: \\"leading\\" | \\"trailing\\", newProps: Object) => void,
-      ...
-    },
-    ...
-  }) => null | React.Node,
+export type SectionBase<
+  SectionItemT,
+  SectionT = DefaultSectionT,
+> = _SectionBase<SectionItemT, SectionT>;
+export type {
+  SectionData as SectionListData,
+  ScrollToLocationParamsType as SectionListScrollParams,
+};
+type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+};
+export type SectionListRenderItemInfo<ItemT, SectionT = DefaultSectionT> = {
+  ...ListRenderItemInfo<ItemT>,
+  section: SectionData<ItemT, SectionT>,
+  ...
+};
+export type SectionListRenderItem<ItemT, SectionT = DefaultSectionT> = (
+  info: SectionListRenderItemInfo<ItemT, SectionT>
+) => React.Node | null;
+type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
+  renderItem?: SectionListRenderItem<ItemT, SectionT>,
   extraData?: any,
   initialNumToRender?: ?number,
   inverted?: ?boolean,
-  keyExtractor?: ?(item: Item, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   onEndReached?: ?(info: { distanceFromEnd: number, ... }) => void,
   removeClippedSubviews?: boolean,
 };
-export type Props<SectionT> = {
-  ...$Diff<
-    VirtualizedSectionListProps<SectionT>,
-    {
-      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, \\"getItem\\">,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"getItemCount\\",
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"renderItem\\",
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"keyExtractor\\",
-      >,
-      ...
-    },
+export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
+  ...Omit<
+    VirtualizedSectionListProps<ItemT, SectionT>,
+    \\"getItem\\" | \\"getItemCount\\" | \\"renderItem\\" | \\"keyExtractor\\",
   >,
-  ...RequiredProps<SectionT>,
-  ...OptionalProps<SectionT>,
+  ...RequiredProps<ItemT, SectionT>,
+  ...OptionalProps<ItemT, SectionT>,
 };
-declare export default class SectionList<SectionT: SectionBase<any>>
-  extends React.PureComponent<Props<SectionT>, void>
+declare export default class SectionList<ItemT, SectionT = DefaultSectionT>
+  extends React.PureComponent<SectionListProps<ItemT, SectionT>>
 {
-  props: Props<SectionT>;
+  props: SectionListProps<ItemT, SectionT>;
   scrollToLocation(params: ScrollToLocationParamsType): void;
   recordInteraction(): void;
   flashScrollIndicators(): void;
@@ -5398,16 +5406,21 @@ declare export default class SectionList<SectionT: SectionBase<any>>
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionListModern.js 1`] = `
-"type Item = any;
-export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
-type RequiredProps<SectionT: SectionBase<any>> = {
-  sections: $ReadOnlyArray<SectionT>,
+"type DefaultSectionT = {
+  [key: string]: any,
 };
-type OptionalProps<SectionT: SectionBase<any>> = {
+export type SectionBase<
+  SectionItemT,
+  SectionT = DefaultSectionT,
+> = _SectionBase<SectionItemT, SectionT>;
+type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+};
+type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   renderItem?: (info: {
-    item: Item,
+    item: ItemT,
     index: number,
-    section: SectionT,
+    section: SectionData<ItemT, SectionT>,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -5419,36 +5432,21 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   extraData?: any,
   initialNumToRender?: ?number,
   inverted?: ?boolean,
-  keyExtractor?: ?(item: Item, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   onEndReached?: ?(info: { distanceFromEnd: number, ... }) => void,
   removeClippedSubviews?: boolean,
 };
-export type Props<SectionT: SectionBase<any>> = $ReadOnly<{
-  ...$Diff<
-    VirtualizedSectionListProps<SectionT>,
-    {
-      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, \\"getItem\\">,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"getItemCount\\",
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"renderItem\\",
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        \\"keyExtractor\\",
-      >,
-      ...
-    },
+export type Props<ItemT, SectionT = DefaultSectionT> = $ReadOnly<{
+  ...Omit<
+    VirtualizedSectionListProps<ItemT, SectionT>,
+    \\"getItem\\" | \\"getItemCount\\" | \\"renderItem\\" | \\"keyExtractor\\",
   >,
-  ...RequiredProps<SectionT>,
-  ...OptionalProps<SectionT>,
+  ...RequiredProps<ItemT, SectionT>,
+  ...OptionalProps<ItemT, SectionT>,
 }>;
 declare const SectionList: component(
   ref?: React.RefSetter<any>,
-  ...Props<SectionBase<any>>
+  ...Props<any, DefaultSectionT>
 );
 declare export default typeof SectionList;
 "
@@ -5479,6 +5477,7 @@ export type {
   ListRenderItemInfo,
   ListRenderItem,
   Separators,
+  VirtualizedListProps,
 } from \\"@react-native/virtualized-lists\\";
 declare export default typeof VirtualizedList;
 "
@@ -5498,6 +5497,7 @@ declare const VirtualizedSectionList: VirtualizedSectionListType;
 export type {
   SectionBase,
   ScrollToLocationParamsType,
+  VirtualizedSectionListProps,
 } from \\"@react-native/virtualized-lists\\";
 declare export default typeof VirtualizedSectionList;
 "
@@ -6225,7 +6225,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 "declare const RCTNetworking: interface {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
     context?: mixed
   ): EventSubscription,
   sendRequest(
@@ -7086,9 +7086,7 @@ declare export default typeof UIManagerJS;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent.js 1`] = `
-"declare export default class ReactFabricHostComponent
-  implements LegacyHostInstanceMethods
-{
+"declare export default class ReactFabricHostComponent implements NativeMethods {
   constructor(
     tag: number,
     viewConfig: ViewConfig,
@@ -7402,9 +7400,15 @@ declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js 1`] = `
 "declare const StyleSheet: StyleSheetExports;
-export type { NativeColorValue } from \\"./StyleSheetTypes\\";
+export type {
+  BoxShadowValue,
+  NativeColorValue,
+  FilterFunction,
+} from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
-export type TransformStyle = ____TransformStyle_Internal;
+export type OpaqueColorValue = NativeColorValue;
+export type TransformsStyle = ____TransformStyle_Internal;
+export type FontVariant = ____FontVariant_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7412,7 +7416,7 @@ export type DangerouslyImpreciseStyleProp =
   ____DangerouslyImpreciseStyleProp_Internal;
 export type TypeForStyleKey<
   +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
-> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+> = ____DangerouslyImpreciseStyle_Internal[key];
 export type ViewStyle = ____ViewStyle_Internal;
 export type TextStyle = ____TextStyle_Internal;
 export type ImageStyle = ____ImageStyle_Internal;
@@ -7423,14 +7427,20 @@ declare export default typeof StyleSheet;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js.flow 1`] = `
 "export * as default from \\"./StyleSheetExports\\";
-export type { StyleProp } from \\"./StyleSheetTypes\\";
+export type {
+  StyleProp,
+  BoxShadowValue,
+  FilterFunction,
+} from \\"./StyleSheetTypes\\";
 export type StyleSheetProperties = {
   hairlineWidth: number,
   flatten<T: string>(style: T): T,
 };
 export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
-export type TransformStyle = ____TransformStyle_Internal;
+export type OpaqueColorValue = NativeColorValue;
+export type TransformsStyle = ____TransformStyle_Internal;
+export type FontVariant = ____FontVariant_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7438,7 +7448,7 @@ export type DangerouslyImpreciseStyleProp =
   ____DangerouslyImpreciseStyleProp_Internal;
 export type TypeForStyleKey<
   +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
-> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+> = ____DangerouslyImpreciseStyle_Internal[key];
 export type ViewStyle = ____ViewStyle_Internal;
 export type TextStyle = ____TextStyle_Internal;
 export type ImageStyle = ____ImageStyle_Internal;
@@ -7773,7 +7783,7 @@ export type ____FontWeight_Internal =
   | \\"condensed\\"
   | \\"heavy\\"
   | \\"black\\";
-export type ____FontVariantArray_Internal = $ReadOnlyArray<
+export type ____FontVariant_Internal =
   | \\"small-caps\\"
   | \\"oldstyle-nums\\"
   | \\"lining-nums\\"
@@ -7806,8 +7816,9 @@ export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | \\"stylistic-seventeen\\"
   | \\"stylistic-eighteen\\"
   | \\"stylistic-nineteen\\"
-  | \\"stylistic-twenty\\",
->;
+  | \\"stylistic-twenty\\";
+export type ____FontVariantArray_Internal =
+  $ReadOnlyArray<____FontVariant_Internal>;
 type ____TextStyle_InternalBase = $ReadOnly<{
   color?: ____ColorValue_Internal,
   fontFamily?: string,
@@ -7879,6 +7890,9 @@ export type StyleProp<+T> =
 export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
+export type ____DangerouslyImpreciseAnimatedStyleProp_Internal = StyleProp<
+  Partial<AnimatedBaseProps<____DangerouslyImpreciseStyle_Internal>>,
+>;
 export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
@@ -7914,7 +7928,9 @@ export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/flattenStyle.js 1`] = `
-"declare function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
+"declare function flattenStyle<
+  TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
+>(
   style: ?TStyleProp
 ): ?____FlattenStyleProp_Internal<TStyleProp>;
 declare export default typeof flattenStyle;
@@ -7950,11 +7966,11 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/priva
         | { +scale: number | AnimatedNode }
         | { +scaleX: number | AnimatedNode }
         | { +scaleY: number | AnimatedNode }
-        | { +translateX: number | AnimatedNode }
-        | { +translateY: number | AnimatedNode }
+        | { +translateX: number | string | AnimatedNode }
+        | { +translateY: number | string | AnimatedNode }
         | {
             +translate:
-              | [number | AnimatedNode, number | AnimatedNode]
+              | [number | string | AnimatedNode, number | string | AnimatedNode]
               | AnimatedNode,
           }
         | { +skewX: string | AnimatedNode }
@@ -8323,7 +8339,7 @@ export type LayoutChangeEvent = NativeSyntheticEvent<
     layout: LayoutRectangle,
   }>,
 >;
-export type TextLayoutEventData = $ReadOnly<{
+type TextLayoutEventData = $ReadOnly<{
   lines: Array<TextLayoutLine>,
 }>;
 export type TextLayoutEvent = NativeSyntheticEvent<TextLayoutEventData>;
@@ -8540,12 +8556,13 @@ declare export default typeof DevSettings;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DeviceInfo.js 1`] = `
-"declare export default typeof NativeDeviceInfo;
+"export type { DeviceInfoConstants } from \\"./NativeDeviceInfo\\";
+declare export default typeof NativeDeviceInfo;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Dimensions.js 1`] = `
-"export type { DisplayMetrics, DisplayMetricsAndroid };
+"export type { DimensionsPayload, DisplayMetrics, DisplayMetricsAndroid };
 export type ScaledSize = DisplayMetrics;
 declare class Dimensions {
   static get(dim: string): DisplayMetrics | DisplayMetricsAndroid;
@@ -8708,10 +8725,15 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
   | \\"windows\\"
   | \\"web\\"
   | \\"native\\";
-export type PlatformSelectSpec<T> = {
-  default?: T,
-  [PlatformOSType]: T,
+type OptionalPlatformSelectSpec<T> = {
+  [_key in PlatformOSType]?: T,
 };
+export type PlatformSelectSpec<T> =
+  | {
+      ...OptionalPlatformSelectSpec<T>,
+      default: T,
+    }
+  | OptionalPlatformSelectSpec<T>;
 type IOSPlatform = {
   OS: \\"ios\\",
   get Version(): string,
@@ -8859,7 +8881,7 @@ declare export default typeof RCTLog;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/ReactNativeTestTools.js 1`] = `
-"export type ReactTestInstance = $PropertyType<ReactTestRendererType, \\"root\\">;
+"export type ReactTestInstance = ReactTestRendererType[\\"root\\"];
 export type Predicate = (node: ReactTestInstance) => boolean;
 export type ReactTestRendererJSON = ReturnType<ReactTestRenderer.create.toJSON>;
 declare function byClickable(): Predicate;
@@ -9290,7 +9312,8 @@ declare export default typeof rejectionTrackingOptions;
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/core/ErrorUtils.js 1`] = `
-"declare export default ErrorUtilsT;
+"export type ErrorUtils = ErrorUtilsT;
+declare export default ErrorUtilsT;
 "
 `;
 
@@ -9337,87 +9360,284 @@ declare export default class EventEmitter<
 `;
 
 exports[`public API should not change unintentionally index.js.flow 1`] = `
-"export { default as ActivityIndicator } from \\"./Libraries/Components/ActivityIndicator/ActivityIndicator\\";
+"export type { ActivityIndicatorProps } from \\"./Libraries/Components/ActivityIndicator/ActivityIndicator\\";
+export { default as ActivityIndicator } from \\"./Libraries/Components/ActivityIndicator/ActivityIndicator\\";
+export type { ButtonProps } from \\"./Libraries/Components/Button\\";
 export { default as Button } from \\"./Libraries/Components/Button\\";
+export type {
+  DrawerLayoutAndroidProps,
+  DrawerSlideEvent,
+} from \\"./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid\\";
 export { default as DrawerLayoutAndroid } from \\"./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid\\";
+export type { FlatListProps } from \\"./Libraries/Lists/FlatList\\";
 export { default as FlatList } from \\"./Libraries/Lists/FlatList\\";
+export type {
+  ImageBackgroundProps,
+  ImageErrorEvent,
+  ImageLoadEvent,
+  ImageProgressEventIOS,
+  ImageProps,
+  ImagePropsAndroid,
+  ImagePropsBase,
+  ImagePropsIOS,
+  ImageResolvedAssetSource,
+  ImageSize,
+  ImageSourcePropType,
+} from \\"./Libraries/Image/Image\\";
+export type {
+  ImageSource,
+  ImageURISource,
+} from \\"./Libraries/Image/ImageSource\\";
 export { default as Image } from \\"./Libraries/Image/Image\\";
 export { default as ImageBackground } from \\"./Libraries/Image/ImageBackground\\";
+export type { InputAccessoryViewProps } from \\"./Libraries/Components/TextInput/InputAccessoryView\\";
 export { default as InputAccessoryView } from \\"./Libraries/Components/TextInput/InputAccessoryView\\";
+export type { KeyboardAvoidingViewProps } from \\"./Libraries/Components/Keyboard/KeyboardAvoidingView\\";
 export { default as KeyboardAvoidingView } from \\"./Libraries/Components/Keyboard/KeyboardAvoidingView\\";
+export type { LayoutConformanceProps } from \\"./Libraries/Components/LayoutConformance/LayoutConformance\\";
 export { default as experimental_LayoutConformance } from \\"./Libraries/Components/LayoutConformance/LayoutConformance\\";
+export type {
+  ModalBaseProps,
+  ModalProps,
+  ModalPropsAndroid,
+  ModalPropsIOS,
+} from \\"./Libraries/Modal/Modal\\";
 export { default as Modal } from \\"./Libraries/Modal/Modal\\";
+export type {
+  PressableProps,
+  PressableStateCallbackType,
+} from \\"./Libraries/Components/Pressable/Pressable\\";
 export { default as Pressable } from \\"./Libraries/Components/Pressable/Pressable\\";
+export type { ProgressBarAndroidProps } from \\"./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid\\";
 export { default as ProgressBarAndroid } from \\"./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid\\";
+export type {
+  RefreshControlProps,
+  RefreshControlPropsAndroid,
+  RefreshControlPropsIOS,
+} from \\"./Libraries/Components/RefreshControl/RefreshControl\\";
 export { default as RefreshControl } from \\"./Libraries/Components/RefreshControl/RefreshControl\\";
 export { default as SafeAreaView } from \\"./Libraries/Components/SafeAreaView/SafeAreaView\\";
+export type {
+  ScrollViewProps,
+  ScrollViewPropsAndroid,
+  ScrollViewPropsIOS,
+} from \\"./Libraries/Components/ScrollView/ScrollView\\";
 export { default as ScrollView } from \\"./Libraries/Components/ScrollView/ScrollView\\";
+export type {
+  SectionListProps,
+  SectionListRenderItem,
+  SectionListRenderItemInfo,
+} from \\"./Libraries/Lists/SectionList\\";
 export { default as SectionList } from \\"./Libraries/Lists/SectionList\\";
+export type {
+  StatusBarAnimation,
+  StatusBarProps,
+  StatusBarStyle,
+} from \\"./Libraries/Components/StatusBar/StatusBar\\";
 export { default as StatusBar } from \\"./Libraries/Components/StatusBar/StatusBar\\";
+export type {
+  SwitchChangeEvent,
+  SwitchProps,
+} from \\"./Libraries/Components/Switch/Switch\\";
 export { default as Switch } from \\"./Libraries/Components/Switch/Switch\\";
+export type { TextProps } from \\"./Libraries/Text/Text\\";
 export { default as Text } from \\"./Libraries/Text/Text\\";
+export type {
+  AutoCapitalize,
+  EnterKeyHintTypeOptions,
+  KeyboardTypeOptions,
+  InputModeOptions,
+  TextContentType,
+  TextInputAndroidProps,
+  TextInputIOSProps,
+  TextInputProps,
+  TextInputChangeEvent,
+  TextInputContentSizeChangeEvent,
+  TextInputEndEditingEvent,
+  TextInputFocusEvent,
+  TextInputKeyPressEvent,
+  TextInputScrollEvent,
+  TextInputSelectionChangeEvent,
+  TextInputSubmitEditingEvent,
+  ReturnKeyTypeOptions,
+  SubmitBehavior,
+} from \\"./Libraries/Components/TextInput/TextInput\\";
 export { default as TextInput } from \\"./Libraries/Components/TextInput/TextInput\\";
 export { default as Touchable } from \\"./Libraries/Components/Touchable/Touchable\\";
+export type { TouchableHighlightProps } from \\"./Libraries/Components/Touchable/TouchableHighlight\\";
 export { default as TouchableHighlight } from \\"./Libraries/Components/Touchable/TouchableHighlight\\";
+export type { TouchableNativeFeedbackProps } from \\"./Libraries/Components/Touchable/TouchableNativeFeedback\\";
 export { default as TouchableNativeFeedback } from \\"./Libraries/Components/Touchable/TouchableNativeFeedback\\";
+export type { TouchableOpacityProps } from \\"./Libraries/Components/Touchable/TouchableOpacity\\";
 export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/TouchableOpacity\\";
+export type { TouchableWithoutFeedbackProps } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
-export { default as View } from \\"./Libraries/Components/View/View\\";
-export { default as VirtualizedList } from \\"./Libraries/Lists/VirtualizedList\\";
-export { default as VirtualizedSectionList } from \\"./Libraries/Lists/VirtualizedSectionList\\";
-export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
-export type { ViewProps } from \\"./Libraries/Components/View/ViewPropTypes\\";
-export type { ImageSource } from \\"react-native/Libraries/Image/ImageSource\\";
-export type { ColorValue } from \\"react-native/Libraries/StyleSheet/StyleSheet\\";
 export type {
-  DimensionValue,
-  EdgeInsetsValue,
-  PointValue,
-} from \\"react-native/Libraries/StyleSheet/StyleSheetTypes\\";
+  GestureResponderHandlers,
+  TVViewPropsIOS,
+  ViewProps,
+  ViewPropsAndroid,
+  ViewPropsIOS,
+} from \\"./Libraries/Components/View/ViewPropTypes\\";
+export { default as View } from \\"./Libraries/Components/View/View\\";
+export type {
+  ListRenderItemInfo,
+  ListRenderItem,
+  Separators,
+  VirtualizedListProps,
+} from \\"./Libraries/Lists/VirtualizedList\\";
+export { default as VirtualizedList } from \\"./Libraries/Lists/VirtualizedList\\";
+export type {
+  ScrollToLocationParamsType,
+  SectionBase,
+  VirtualizedSectionListProps,
+} from \\"./Libraries/Lists/VirtualizedSectionList\\";
+export { default as VirtualizedSectionList } from \\"./Libraries/Lists/VirtualizedSectionList\\";
 export { default as AccessibilityInfo } from \\"./Libraries/Components/AccessibilityInfo/AccessibilityInfo\\";
+export type {
+  ActionSheetIOSOptions,
+  ShareActionSheetIOSOptions,
+  ShareActionSheetError,
+} from \\"./Libraries/ActionSheetIOS/ActionSheetIOS\\";
 export { default as ActionSheetIOS } from \\"./Libraries/ActionSheetIOS/ActionSheetIOS\\";
+export type {
+  AlertType,
+  AlertButtonStyle,
+  AlertButton,
+  AlertOptions,
+} from \\"./Libraries/Alert/Alert\\";
 export { default as Alert } from \\"./Libraries/Alert/Alert\\";
 export { default as Animated } from \\"./Libraries/Animated/Animated\\";
 export * as Appearance from \\"./Libraries/Utilities/Appearance\\";
+export type {
+  TaskProvider,
+  ComponentProvider,
+  ComponentProviderInstrumentationHook,
+  AppConfig,
+  Runnable,
+  Runnables,
+  Registry,
+  WrapperComponentProvider,
+  RootViewStyleProvider,
+} from \\"./Libraries/ReactNative/AppRegistry\\";
 export { AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
+export type {
+  AppStateStatus,
+  AppStateEvent,
+} from \\"./Libraries/AppState/AppState\\";
 export { default as AppState } from \\"./Libraries/AppState/AppState\\";
+export type { BackPressEventName } from \\"./Libraries/Utilities/BackHandler\\";
 export { default as BackHandler } from \\"./Libraries/Utilities/BackHandler\\";
 export { default as Clipboard } from \\"./Libraries/Components/Clipboard/Clipboard\\";
 export { default as codegenNativeComponent } from \\"./Libraries/Utilities/codegenNativeComponent\\";
 export { default as codegenNativeCommands } from \\"./Libraries/Utilities/codegenNativeCommands\\";
 export { default as DeviceEventEmitter } from \\"./Libraries/EventEmitter/RCTDeviceEventEmitter\\";
+export type { DeviceInfoConstants } from \\"./Libraries/Utilities/DeviceInfo\\";
 export { default as DeviceInfo } from \\"./Libraries/Utilities/DeviceInfo\\";
 export { default as DevMenu } from \\"./src/private/devmenu/DevMenu\\";
 export { default as DevSettings } from \\"./Libraries/Utilities/DevSettings\\";
+export type {
+  DimensionsPayload,
+  DisplayMetrics,
+  DisplayMetricsAndroid,
+  ScaledSize,
+} from \\"./Libraries/Utilities/Dimensions\\";
 export { default as Dimensions } from \\"./Libraries/Utilities/Dimensions\\";
+export type { DynamicColorIOSTuple } from \\"./Libraries/StyleSheet/PlatformColorValueTypesIOS\\";
 export { DynamicColorIOS } from \\"./Libraries/StyleSheet/PlatformColorValueTypesIOS\\";
+export type { EasingFunction } from \\"./Libraries/Animated/Easing\\";
 export { default as Easing } from \\"./Libraries/Animated/Easing\\";
 export { findNodeHandle } from \\"./Libraries/ReactNative/RendererProxy\\";
-export type { HostInstance } from \\"./src/private/types/HostInstance\\";
-export type { HostComponent } from \\"./src/private/types/HostComponent\\";
 export { default as I18nManager } from \\"./Libraries/ReactNative/I18nManager\\";
+export type {
+  Handle,
+  PromiseTask,
+  SimpleTask,
+} from \\"./Libraries/Interaction/InteractionManager\\";
 export { default as InteractionManager } from \\"./Libraries/Interaction/InteractionManager\\";
+export type {
+  AndroidKeyboardEvent,
+  IOSKeyboardEvent,
+  KeyboardEvent,
+  KeyboardEventEasing,
+  KeyboardEventName,
+  KeyboardMetrics,
+} from \\"./Libraries/Components/Keyboard/Keyboard\\";
 export { default as Keyboard } from \\"./Libraries/Components/Keyboard/Keyboard\\";
+export type {
+  LayoutAnimationAnim,
+  LayoutAnimationConfig,
+  LayoutAnimationProperties,
+  LayoutAnimationProperty,
+  LayoutAnimationType,
+  LayoutAnimationTypes,
+} from \\"./Libraries/LayoutAnimation/LayoutAnimation\\";
 export { default as LayoutAnimation } from \\"./Libraries/LayoutAnimation/LayoutAnimation\\";
 export { default as Linking } from \\"./Libraries/Linking/Linking\\";
+export type {
+  ExtendedExceptionData,
+  IgnorePattern,
+  LogData,
+} from \\"./Libraries/LogBox/LogBox\\";
 export { default as LogBox } from \\"./Libraries/LogBox/LogBox\\";
 export { default as NativeAppEventEmitter } from \\"./Libraries/EventEmitter/RCTNativeAppEventEmitter\\";
 export { default as NativeDialogManagerAndroid } from \\"./Libraries/NativeModules/specs/NativeDialogManagerAndroid\\";
 export { default as NativeEventEmitter } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
+export type { NativeEventSubscription } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
 export { default as NativeModules } from \\"./Libraries/BatchedBridge/NativeModules\\";
 export { default as Networking } from \\"./Libraries/Network/RCTNetworking\\";
+export type {
+  PanResponderCallbacks,
+  PanResponderGestureState,
+  PanResponderInstance,
+} from \\"./Libraries/Interaction/PanResponder\\";
 export { default as PanResponder } from \\"./Libraries/Interaction/PanResponder\\";
+export type {
+  Permission,
+  PermissionStatus,
+  Rationale,
+} from \\"./Libraries/PermissionsAndroid/PermissionsAndroid\\";
 export { default as PermissionsAndroid } from \\"./Libraries/PermissionsAndroid/PermissionsAndroid\\";
 export { default as PixelRatio } from \\"./Libraries/Utilities/PixelRatio\\";
+export type {
+  PlatformOSType,
+  PlatformSelectSpec,
+} from \\"./Libraries/Utilities/PlatformTypes\\";
 export { default as Platform } from \\"./Libraries/Utilities/Platform\\";
 export { PlatformColor } from \\"./Libraries/StyleSheet/PlatformColorValueTypes\\";
+export type {
+  PushNotificationEventName,
+  PushNotificationPermissions,
+} from \\"./Libraries/PushNotificationIOS/PushNotificationIOS\\";
 export { default as PushNotificationIOS } from \\"./Libraries/PushNotificationIOS/PushNotificationIOS\\";
+export type { ProcessedColorValue } from \\"./Libraries/StyleSheet/processColor\\";
 export { default as processColor } from \\"./Libraries/StyleSheet/processColor\\";
 export { default as registerCallableModule } from \\"./Libraries/Core/registerCallableModule\\";
 export { default as requireNativeComponent } from \\"./Libraries/ReactNative/requireNativeComponent\\";
+export type { RootTag } from \\"./Libraries/ReactNative/RootTag\\";
 export { RootTagContext } from \\"./Libraries/ReactNative/RootTag\\";
 export { default as Settings } from \\"./Libraries/Settings/Settings\\";
+export type {
+  ShareAction,
+  ShareContent,
+  ShareOptions,
+} from \\"./Libraries/Share/Share\\";
 export { default as Share } from \\"./Libraries/Share/Share\\";
+export type {
+  ColorValue,
+  ImageStyle,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from \\"./Libraries/StyleSheet/StyleSheet\\";
+export type {
+  BoxShadowValue,
+  CursorValue,
+  DimensionValue,
+  DropShadowValue,
+  EdgeInsetsValue,
+  PointValue,
+} from \\"./Libraries/StyleSheet/StyleSheetTypes\\";
 export { default as StyleSheet } from \\"./Libraries/StyleSheet/StyleSheet\\";
 export * as Systrace from \\"./Libraries/Performance/Systrace\\";
 export { default as ToastAndroid } from \\"./Libraries/Components/ToastAndroid/ToastAndroid\\";
@@ -9429,6 +9649,35 @@ export { default as useColorScheme } from \\"./Libraries/Utilities/useColorSchem
 export { default as useWindowDimensions } from \\"./Libraries/Utilities/useWindowDimensions\\";
 export { default as UTFSequence } from \\"./Libraries/UTFSequence\\";
 export { default as Vibration } from \\"./Libraries/Vibration/Vibration\\";
+export type {
+  BlurEvent,
+  FocusEvent,
+  GestureResponderEvent,
+  LayoutChangeEvent,
+  LayoutRectangle,
+  MouseEvent,
+  NativeMouseEvent,
+  NativePointerEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  NativeTouchEvent,
+  NativeUIEvent,
+  ResponderSyntheticEvent,
+  ScrollEvent,
+  TargetedEvent,
+  TextLayoutEvent,
+} from \\"./Libraries/Types/CoreEventTypes\\";
+export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
+export type {
+  HostInstance,
+  NativeMethods,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from \\"./src/private/types/HostInstance\\";
+export type { HostComponent } from \\"./src/private/types/HostComponent\\";
+export type { ColorSchemeName } from \\"./src/private/specs_DEPRECATED/modules/NativeAppearance\\";
+export type { ErrorUtils } from \\"./Libraries/vendor/core/ErrorUtils\\";
 "
 `;
 
@@ -9481,7 +9730,7 @@ export type MeasureLayoutOnSuccessCallback = (
   width: number,
   height: number
 ) => void;
-export interface LegacyHostInstanceMethods {
+export interface NativeMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
@@ -9493,7 +9742,7 @@ export interface LegacyHostInstanceMethods {
   ): void;
   setNativeProps(nativeProps: { ... }): void;
 }
-export type HostInstance = LegacyHostInstanceMethods;
+export type HostInstance = NativeMethods;
 "
 `;
 
@@ -9522,7 +9771,7 @@ declare export function createReactNativeDocument(
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeElement.js 1`] = `
 "declare class ReactNativeElement
   extends ReadOnlyElement
-  implements LegacyHostInstanceMethods
+  implements NativeMethods
 {
   constructor(
     tag: number,

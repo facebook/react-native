@@ -37,11 +37,11 @@ export type ____TransformStyle_Internal = $ReadOnly<{
         | {+scale: number | AnimatedNode}
         | {+scaleX: number | AnimatedNode}
         | {+scaleY: number | AnimatedNode}
-        | {+translateX: number | AnimatedNode}
-        | {+translateY: number | AnimatedNode}
+        | {+translateX: number | string | AnimatedNode}
+        | {+translateY: number | string | AnimatedNode}
         | {
             +translate:
-              | [number | AnimatedNode, number | AnimatedNode]
+              | [number | string | AnimatedNode, number | string | AnimatedNode]
               | AnimatedNode,
           }
         | {+skewX: string | AnimatedNode}

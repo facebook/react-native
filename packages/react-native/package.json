@@ -32,7 +32,6 @@
     "outputName": "js-test-results.xml"
   },
   "files": [
-    "android",
     "build.gradle.kts",
     "cli.js",
     "flow",
@@ -152,6 +151,9 @@
         "ios": {
           "modules": {
             "AccessibilityManager": {
+              "unstableRequiresMainQueueSetup": true
+            },
+            "Appearance": {
               "unstableRequiresMainQueueSetup": true
             },
             "AppState": {
