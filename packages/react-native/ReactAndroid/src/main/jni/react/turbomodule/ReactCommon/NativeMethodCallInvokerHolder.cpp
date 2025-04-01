@@ -11,13 +11,6 @@ namespace facebook::react {
 
 NativeMethodCallInvokerHolder::NativeMethodCallInvokerHolder(
     std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker)
-    : _nativeMethodCallInvoker(nativeMethodCallInvoker) {}
-
-std::shared_ptr<NativeMethodCallInvoker>
-NativeMethodCallInvokerHolder::getNativeMethodCallInvoker() {
-  return _nativeMethodCallInvoker;
-}
-
-void NativeMethodCallInvokerHolder::registerNatives() {}
+    : nativeMethodCallInvoker_(std::move(nativeMethodCallInvoker)) {}
 
 } // namespace facebook::react
