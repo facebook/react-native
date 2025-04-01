@@ -11,6 +11,7 @@ import android.app.Activity
 import android.util.Pair
 import android.view.View
 import com.facebook.react.bridge.DefaultJSExceptionHandler
+import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.SurfaceDelegate
@@ -34,7 +35,7 @@ import java.io.File
  */
 public open class ReleaseDevSupportManager : DevSupportManager {
 
-  private val defaultJSExceptionHandler: DefaultJSExceptionHandler = DefaultJSExceptionHandler()
+  private val defaultJSExceptionHandler: JSExceptionHandler = DefaultJSExceptionHandler()
 
   public override fun showNewJavaError(message: String?, e: Throwable?): Unit = Unit
 
