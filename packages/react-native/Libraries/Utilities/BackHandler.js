@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -11,21 +12,6 @@
 // from 'react-native' with platform-specific extensions. It can be deleted
 // once we remove the "./*" mapping from package.json "exports".
 
-'use strict';
+import BackHandler from './BackHandler';
 
-import Platform from '../../Utilities/Platform';
-
-export type {
-  DrawerLayoutAndroidProps,
-  DrawerSlideEvent,
-} from './DrawerLayoutAndroidTypes';
-
-let DrawerLayoutAndroid;
-
-if (Platform.OS === 'android') {
-  DrawerLayoutAndroid = require('./DrawerLayoutAndroid.android').default;
-} else {
-  DrawerLayoutAndroid = require('./DrawerLayoutAndroidFallback').default;
-}
-
-export default DrawerLayoutAndroid;
+export default BackHandler;

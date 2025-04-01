@@ -14,7 +14,6 @@ import type {
   MeasureOnSuccessCallback,
 } from '../../../src/private/types/HostInstance';
 import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
-import typeof DrawerLayoutAndroidCommon from './DrawerLayoutAndroid.js';
 import type {
   DrawerLayoutAndroidMethods,
   DrawerLayoutAndroidProps,
@@ -305,4 +304,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DrawerLayoutAndroid as $FlowFixMe as DrawerLayoutAndroidCommon;
+export default DrawerLayoutAndroid as $FlowFixMe;

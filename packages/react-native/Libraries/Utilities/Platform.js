@@ -5,27 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict
  */
 
 // NOTE: This file supports backwards compatibility of subpath (deep) imports
 // from 'react-native' with platform-specific extensions. It can be deleted
 // once we remove the "./*" mapping from package.json "exports".
 
-'use strict';
+import Platform from './Platform';
 
-import Platform from '../../Utilities/Platform';
-
-export type {
-  DrawerLayoutAndroidProps,
-  DrawerSlideEvent,
-} from './DrawerLayoutAndroidTypes';
-
-let DrawerLayoutAndroid;
-
-if (Platform.OS === 'android') {
-  DrawerLayoutAndroid = require('./DrawerLayoutAndroid.android').default;
-} else {
-  DrawerLayoutAndroid = require('./DrawerLayoutAndroidFallback').default;
-}
-
-export default DrawerLayoutAndroid;
+export default Platform;
