@@ -14,6 +14,7 @@ import android.view.View
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.views.text.ReactTextView
+import com.facebook.react.views.text.TextLayoutManager
 import com.facebook.react.views.view.ViewGroupClickEvent
 
 /**
