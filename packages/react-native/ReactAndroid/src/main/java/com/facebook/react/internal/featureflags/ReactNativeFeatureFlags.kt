@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f43ddaa47a45d604adda2e2296c1484>>
+ * @generated SignedSource<<6d0b9092d395eb18a892946d4b3a5a6b>>
  */
 
 /**
@@ -95,12 +95,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
-
-  /**
-   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
-   */
-  @JvmStatic
-  public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
 
   /**
    * Trigger JS runtime GC on memory pressure event on iOS

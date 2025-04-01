@@ -163,17 +163,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableImagePrefetchingAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-11-19',
-        description:
-          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableJSRuntimeGCOnMemoryPressureOnIOS: {
       defaultValue: false,
       metadata: {
