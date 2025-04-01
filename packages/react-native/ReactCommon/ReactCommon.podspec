@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_frameworks! compatibility
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
                                "USE_HEADERMAP" => "YES",
                                "DEFINES_MODULE" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -46,14 +46,15 @@ Pod::Spec.new do |s|
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.
   s.subspec "turbomodule" do |ss|
-    ss.dependency "React-callinvoker", version
-    ss.dependency "React-perflogger", version
-    ss.dependency "React-cxxreact", version
-    ss.dependency "React-jsi", version
-    ss.dependency "RCT-Folly", folly_version
-    ss.dependency "React-logger", version
+    ss.dependency "React-callinvoker"
+    ss.dependency "React-perflogger"
+    ss.dependency "React-cxxreact"
+    ss.dependency "React-jsi"
+    ss.dependency "RCT-Folly"
+    ss.dependency "React-logger"
     ss.dependency "DoubleConversion"
-    ss.dependency "fmt", "9.1.0"
+    ss.dependency "fast_float"
+    ss.dependency "fmt"
     ss.dependency "glog"
     if using_hermes
       ss.dependency "hermes-engine"

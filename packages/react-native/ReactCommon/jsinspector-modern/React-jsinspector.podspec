@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   s.header_dir             = 'jsinspector-modern'
   s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = {
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\"",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "DEFINES_MODULE" => "YES"
   }.merge!(use_frameworks ? {
@@ -49,12 +49,12 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "glog"
-  s.dependency "RCT-Folly", folly_version
+  s.dependency "RCT-Folly"
   s.dependency "React-featureflags"
   s.dependency "DoubleConversion"
-  s.dependency "React-runtimeexecutor", version
+  s.dependency "React-runtimeexecutor"
   s.dependency "React-jsi"
-  s.dependency "React-perflogger", version
+  s.dependency "React-perflogger"
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
   end

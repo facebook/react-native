@@ -20,14 +20,12 @@ folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
-socket_rocket_config = get_socket_rocket_config()
-socket_rocket_version = socket_rocket_config[:version] 
-
 header_search_paths = [
   "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_TARGET_SRCROOT)/React/CoreModules\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fast_float/include\"",
   "\"$(PODS_ROOT)/fmt/include\"",
   "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
@@ -51,14 +49,15 @@ Pod::Spec.new do |s|
                              }
   s.framework = "UIKit"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
-  s.dependency "RCT-Folly", folly_version
-  s.dependency "RCTTypeSafety", version
-  s.dependency "React-Core/CoreModulesHeaders", version
-  s.dependency "React-RCTImage", version
-  s.dependency "React-jsi", version
+  s.dependency "fast_float"
+  s.dependency "fmt"
+  s.dependency "RCT-Folly"
+  s.dependency "RCTTypeSafety"
+  s.dependency "React-Core/CoreModulesHeaders"
+  s.dependency "React-RCTImage"
+  s.dependency "React-jsi"
   s.dependency 'React-RCTBlob'
-  s.dependency "SocketRocket", socket_rocket_version
+  s.dependency "SocketRocket"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   add_dependency(s, "ReactCodegen")
