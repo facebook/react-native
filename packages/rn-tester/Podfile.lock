@@ -1888,12 +1888,12 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
-  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
+  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
+  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: bba368dacede4c9dec7a58c9be5a2d3e9ea30cc7
-  fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
+  fmt: 01b82d4ca6470831d1cc0852a1af644be019e8f6
+  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   hermes-engine: f493b0a600aed5dc06532141603688a30a5b2f61
   MyNativeView: 2f73ce8600018e6fa3eedc663dbe4c299f0c81fe
   NativeCxxModuleExample: 44498f1d064fe1603abc0ab922f9bae4b33493a4
@@ -1962,7 +1962,7 @@ SPEC CHECKSUMS:
   ReactCommon-Samples: a8d1454f86a3915f29e459da34c9a097e94cabb6
   ScreenshotManager: e33e439baf5e763f4b935e591995d4dd2c0263ec
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: dea3cbe52f93ef8f722493a505c1add295fe7fba
+  Yoga: b94ff2d7559cb66837c97a3f394ddb817faad4d6
 
 PODFILE CHECKSUM: 8591f96a513620a2a83a0b9a125ad3fa32ea1369
 
