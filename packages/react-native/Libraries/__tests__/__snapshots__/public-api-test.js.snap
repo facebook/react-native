@@ -1510,7 +1510,7 @@ declare export default typeof ActivityIndicatorViewNativeComponent;
 exports[`public API should not change unintentionally Libraries/Components/Button.js 1`] = `
 "export type ButtonProps = $ReadOnly<{
   title: string,
-  onPress: (event?: GestureResponderEvent) => mixed,
+  onPress?: (event?: GestureResponderEvent) => mixed,
   touchSoundDisabled?: ?boolean,
   color?: ?ColorValue,
   hasTVPreferredFocus?: ?boolean,
@@ -3569,7 +3569,7 @@ type TouchableHighlightBaseProps = $ReadOnly<{
   onShowUnderlay?: ?() => void,
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
-  hostRef: React.RefSetter<React.ElementRef<typeof View>>,
+  hostRef?: React.RefSetter<React.ElementRef<typeof View>>,
 }>;
 export type TouchableHighlightProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
@@ -8834,6 +8834,7 @@ type MacOSPlatform = {
 };
 type WebPlatform = {
   OS: \\"web\\",
+  get Version(): void,
   get constants(): {
     reactNativeVersion: {
       major: number,
@@ -9703,7 +9704,7 @@ exports[`public API should not change unintentionally src/private/setup/setUpPer
 
 exports[`public API should not change unintentionally src/private/types/HostComponent.js 1`] = `
 "export type HostComponent<Config: { ... }> = component(
-  ref: React.RefSetter<HostInstance>,
+  ref?: React.RefSetter<HostInstance>,
   ...Config
 );
 "
