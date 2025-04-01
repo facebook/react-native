@@ -1569,11 +1569,6 @@ public abstract interface class com/facebook/react/bridge/queue/MessageQueueThre
 	public abstract fun runOnQueue (Ljava/lang/Runnable;)Z
 }
 
-public final class com/facebook/react/bridge/queue/MessageQueueThreadHandler : android/os/Handler {
-	public fun <init> (Landroid/os/Looper;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)V
-	public fun dispatchMessage (Landroid/os/Message;)V
-}
-
 public final class com/facebook/react/bridge/queue/MessageQueueThreadImpl : com/facebook/react/bridge/queue/MessageQueueThread {
 	public static final field Companion Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl$Companion;
 	public synthetic fun <init> (Ljava/lang/String;Landroid/os/Looper;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;Lcom/facebook/react/bridge/queue/MessageQueueThreadPerfStats;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
