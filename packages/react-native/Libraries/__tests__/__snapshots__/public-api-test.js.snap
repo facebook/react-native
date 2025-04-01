@@ -1674,7 +1674,7 @@ type KeyboardEventDefinitions = {
   keyboardWillChangeFrame: [KeyboardEvent],
   keyboardDidChangeFrame: [KeyboardEvent],
 };
-declare class Keyboard {
+declare class KeyboardImpl {
   constructor(): void;
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
@@ -1687,7 +1687,8 @@ declare class Keyboard {
   metrics(): ?KeyboardMetrics;
   scheduleLayoutAnimation(event: KeyboardEvent): void;
 }
-declare export default Keyboard;
+declare const Keyboard: KeyboardImpl;
+declare export default typeof Keyboard;
 "
 `;
 
