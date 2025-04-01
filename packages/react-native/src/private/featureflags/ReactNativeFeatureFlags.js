@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7fc4b0dd8278af97eee54ed0a7f129d3>>
+ * @generated SignedSource<<1e478fb409ecd800a1e7dd274a636ae1>>
  * @flow strict
  */
 
@@ -302,7 +302,7 @@ export const useEditTextStockAndroidFocusBehavior: Getter<boolean> = createNativ
 /**
  * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
  */
-export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', true);
+export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', false);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */
