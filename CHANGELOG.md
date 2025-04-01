@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.79.0-rc.4
+
+### Fixed
+
+#### iOS specific
+
+- **Network:** Back out "fix: avoid race condition crash in [RCTDataRequestHandler invalidate]" ([53eaf3e](https://github.com/facebook/react-native/commit/53eaf3e4e444e5cf26e70a94d09f60af976edf2b) by [@cipolleschi](https://github.com/cipolleschi))
+- **CocoaPods:** `JSRuntimeFactoryCAPI.h` build error for  `use_frameworks` build ([7786805337](https://github.com/facebook/react-native/commit/7786805337526fa6e8ed758407b78884a37b89ef) by [@Kudo](https://github.com/Kudo))
+
+
 ## v0.79.0-rc.3
 
 ### Changed
