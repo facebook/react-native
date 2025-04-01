@@ -398,8 +398,13 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
                   CGRect frame;
                   CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
-
-                  frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
+                  
+                  // Calculate the center of the text line
+                  CGFloat textLineCenter = glyphRect.origin.y + (glyphRect.size.height / 2.0);
+                  // Position the attachment so its center aligns with the text line center with a small vertical offset
+                  CGFloat attachmentY = textLineCenter - (attachmentSize.height / 2.0) + 2.0; // Increase offset to 2.0 points
+                  
+                  frame = {{glyphRect.origin.x, attachmentY}, attachmentSize};
 
                   auto rect = facebook::react::Rect{
                       facebook::react::Point{frame.origin.x, frame.origin.y},

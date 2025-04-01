@@ -124,7 +124,10 @@
 - (void)postprocessAttributedText:(NSMutableAttributedString *)attributedText
 {
   __block CGFloat maximumLineHeight = 0;
+  __block CGFloat maximumAscender = 0;
+  __block CGFloat maximumDescender = 0;
 
+  // First pass: find maximum line height and font metrics
   [attributedText enumerateAttribute:NSParagraphStyleAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
@@ -132,16 +135,8 @@
                             if (!paragraphStyle) {
                               return;
                             }
-
                             maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
                           }];
-
-  if (maximumLineHeight == 0) {
-    // `lineHeight` was not specified, nothing to do.
-    return;
-  }
-
-  __block CGFloat maximumFontLineHeight = 0;
 
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
@@ -150,21 +145,31 @@
                             if (!font) {
                               return;
                             }
-
-                            if (maximumFontLineHeight <= font.lineHeight) {
-                              maximumFontLineHeight = font.lineHeight;
-                            }
+                            maximumAscender = MAX(font.ascender, maximumAscender);
+                            maximumDescender = MIN(font.descender, maximumDescender);
                           }];
 
-  if (maximumLineHeight < maximumFontLineHeight) {
-    return;
+  CGFloat naturalLineHeight = maximumAscender - maximumDescender;
+  
+  // Always create a new paragraph style to ensure consistent layout
+  NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+  
+  if (maximumLineHeight > 0) {
+    // If we have a maximum line height, use it
+    paragraphStyle.minimumLineHeight = maximumLineHeight;
+    paragraphStyle.maximumLineHeight = maximumLineHeight;
+    
+    // Calculate baseline offset to center text vertically
+    CGFloat baselineOffset = (maximumLineHeight - naturalLineHeight) / 2.0;
+    [attributedText addAttribute:NSBaselineOffsetAttributeName value:@(baselineOffset) range:NSMakeRange(0, attributedText.length)];
+  } else {
+    // If no maximum line height, use natural line height
+    paragraphStyle.minimumLineHeight = naturalLineHeight;
+    paragraphStyle.maximumLineHeight = naturalLineHeight;
   }
-
-  CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
-
-  [attributedText addAttribute:NSBaselineOffsetAttributeName
-                         value:@(baseLineOffset)
-                         range:NSMakeRange(0, attributedText.length)];
+  
+  // Apply paragraph style
+  [attributedText addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, attributedText.length)];
 }
 
 - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
@@ -333,10 +338,14 @@
 
                 UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
 
+                // Calculate the center of the text line
+                CGFloat textLineCenter = glyphRect.origin.y + (glyphRect.size.height / 2.0);
+                // Calculate the center of the attachment with a small vertical offset
+                CGFloat attachmentCenter = textLineCenter - (attachmentSize.height / 2.0) + 2.0; // Increase offset to 2.0 points
+
                 CGRect frame = {
                     {RCTRoundPixelValue(glyphRect.origin.x),
-                     RCTRoundPixelValue(
-                         glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender)},
+                     RCTRoundPixelValue(attachmentCenter)},
                     {RCTRoundPixelValue(attachmentSize.width), RCTRoundPixelValue(attachmentSize.height)}};
 
                 NSRange truncatedGlyphRange =
@@ -398,20 +407,39 @@
 
 - (CGFloat)lastBaselineForSize:(CGSize)size
 {
-  NSAttributedString *attributedText = [self textStorageAndLayoutManagerThatFitsSize:size exclusiveOwnership:NO];
-
-  __block CGFloat maximumDescender = 0.0;
-
-  [attributedText enumerateAttribute:NSFontAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
-                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                          usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
-                            if (maximumDescender > font.descender) {
-                              maximumDescender = font.descender;
-                            }
-                          }];
-
-  return size.height + maximumDescender;
+  NSTextStorage *textStorage = [self textStorageAndLayoutManagerThatFitsSize:size exclusiveOwnership:NO];
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  
+  [layoutManager ensureLayoutForTextContainer:textContainer];
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  
+  __block CGFloat lastBaseline = 0.0;
+  __block CGFloat lastLineHeight = 0.0;
+  __block CGFloat lastAscender = 0.0;
+  __block CGFloat lastDescender = 0.0;
+  
+  [layoutManager enumerateLineFragmentsForGlyphRange:glyphRange
+                                         usingBlock:^(CGRect rect, CGRect usedRect, 
+                                                    NSTextContainer *container, NSRange glyphRange, BOOL *stop) {
+    lastBaseline = CGRectGetMaxY(usedRect);
+    lastLineHeight = usedRect.size.height;
+    
+    // Get the font metrics for the last line
+    NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+    UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:characterRange.location effectiveRange:nil];
+    if (font) {
+      lastAscender = font.ascender;
+      lastDescender = font.descender;
+    }
+    
+    *stop = YES; // We only need the last line
+  }];
+  
+  // Calculate the center of the text line
+  CGFloat textCenter = lastBaseline - (lastLineHeight / 2.0);
+  // Adjust baseline to be relative to the text center
+  return textCenter + (lastAscender - lastDescender) / 2.0;
 }
 
 static YGSize RCTTextShadowViewMeasure(
@@ -455,12 +483,12 @@ static YGSize RCTTextShadowViewMeasure(
 static float RCTTextShadowViewBaseline(YGNodeConstRef node, const float width, const float height)
 {
   RCTTextShadowView *shadowTextView = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
-
   CGSize size = (CGSize){RCTCoreGraphicsFloatFromYogaFloat(width), RCTCoreGraphicsFloatFromYogaFloat(height)};
-
+  
   CGFloat lastBaseline = [shadowTextView lastBaselineForSize:size];
-
-  return RCTYogaFloatFromCoreGraphicsFloat(lastBaseline);
+  
+  // Convert to Yoga units and ensure we're not returning negative values
+  return RCTYogaFloatFromCoreGraphicsFloat(MAX(0, lastBaseline));
 }
 
 @end
