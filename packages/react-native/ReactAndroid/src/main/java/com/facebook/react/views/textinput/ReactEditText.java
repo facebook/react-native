@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -125,9 +126,11 @@ public class ReactEditText extends AppCompatEditText {
   private boolean mOnKeyPress = false;
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
+  private boolean mForceSetTypeFaceOnDraw = false;
   private @Nullable String mFontFamily = null;
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
+  private @Nullable Typeface mTypeface = null;
   private boolean mAutoFocus = false;
   private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
@@ -636,10 +639,17 @@ public class ReactEditText extends AppCompatEditText {
 
     mTypefaceDirty = false;
 
-    Typeface newTypeface =
+    mTypeface =
         ReactTypefaceUtils.applyStyles(
             getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
-    setTypeface(newTypeface);
+    setTypeface(mTypeface);
+
+    // Ensure the hint uses the same typeface
+    if (getHint() != null) {
+      SpannableString hintSpan = new SpannableString(getHint());
+      hintSpan.setSpan(new ReactEditHintTypefaceSpan(mTypeface), 0, hintSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      setHint(hintSpan);
+    }
 
     // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
     // nonstandard
@@ -651,20 +661,20 @@ public class ReactEditText extends AppCompatEditText {
     } else {
       setPaintFlags(getPaintFlags() & (~Paint.SUBPIXEL_TEXT_FLAG));
     }
+
+    mForceSetTypeFaceOnDraw = true;
   }
 
+  // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
-    if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
-      requestFocusProgramatically();
-    } else {
-      requestFocusInternal();
-    }
+    requestFocusInternal();
   }
 
   /* package */ void clearFocusFromJS() {
     clearFocus();
   }
 
+  // VisibleForTesting from {@link TextInputEventsTestCase}.
   public int incrementAndGetEventCounter() {
     return ++mNativeEventCount;
   }
@@ -1330,6 +1340,13 @@ public class ReactEditText extends AppCompatEditText {
   public void onDraw(Canvas canvas) {
     if (mOverflow != Overflow.VISIBLE) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+    }
+
+
+    // Force the typeface to be set on draw when using a custom typeface
+    if (mForceSetTypeFaceOnDraw) {
+      mForceSetTypeFaceOnDraw = false;
+      setTypeface(mTypeface);
     }
 
     super.onDraw(canvas);
