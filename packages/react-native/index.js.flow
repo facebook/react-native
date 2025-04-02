@@ -134,7 +134,6 @@ export type {
   TextInputEndEditingEvent,
   TextInputFocusEvent,
   TextInputKeyPressEvent,
-  TextInputScrollEvent,
   TextInputSelectionChangeEvent,
   TextInputSubmitEditingEvent,
   ReturnKeyTypeOptions,
