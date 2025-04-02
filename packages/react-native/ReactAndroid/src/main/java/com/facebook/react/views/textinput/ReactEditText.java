@@ -30,6 +30,7 @@ import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.util.TypedValue;
 import android.view.ActionMode;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -116,6 +117,7 @@ public class ReactEditText extends AppCompatEditText {
   protected boolean mContainsImages;
   private @Nullable String mSubmitBehavior = null;
   private boolean mDisableFullscreen;
+  private boolean mDisableDragAndDropPasting = false;
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
@@ -526,6 +528,10 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setSubmitBehavior(@Nullable String submitBehavior) {
     mSubmitBehavior = submitBehavior;
+  }
+
+  public void setDisableDragAndDropPasting(boolean disableDragAndDropPasting) {
+    mDisableDragAndDropPasting = disableDragAndDropPasting;
   }
 
   public void setDisableFullscreenUI(boolean disableFullscreenUI) {
@@ -1333,6 +1339,14 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     super.onDraw(canvas);
+  }
+
+  @Override
+  public boolean onDragEvent(DragEvent event) {
+    if (mDisableDragAndDropPasting) {
+      return false;
+    }
+    return super.onDragEvent(event);
   }
 
   /**
