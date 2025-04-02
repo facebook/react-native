@@ -38,7 +38,7 @@ internal class DeviceInfoModule : NativeDeviceInfoSpec, LifecycleEventListener {
     fontScale = context.resources.configuration.fontScale
   }
 
-  override fun getTypedExportedConstants(): Map<String, Any> {
+  public override fun getTypedExportedConstants(): Map<String, Any> {
     val displayMetrics = getDisplayMetricsWritableMap(fontScale.toDouble())
 
     // Cache the initial dimensions for later comparison in emitUpdateDimensionsEvent
