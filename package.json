@@ -8,7 +8,7 @@
     "android": "yarn --cwd packages/rn-tester android",
     "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
     "build": "node ./scripts/build/build.js",
-    "build-types": "node ./scripts/build/build-types.js",
+    "build-types": "node ./scripts/build-types",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "clean": "node ./scripts/build/clean.js",
     "flow-check": "flow check",
