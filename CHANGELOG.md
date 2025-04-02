@@ -297,6 +297,24 @@ ChuiHW))
 - **TextInput:** Fixed TextInput's `onContentSizeChange` event being dispatched multiple times with the same size ([2bb65717b7](https://github.com/facebook/react-native/commit/2bb65717b7b86d19e4d35707003df7d5be31c2fb) by [@j-piasecki](https://github.com/j-piasecki))
 - **TextInput:** Implement `dataDetectorTypes` in the same way as the old architecture ([2ae45ec3ce](https://github.com/facebook/react-native/commit/2ae45ec3ce50cb9d95782173f6dfca74e8110848) by [@VidocqH](https://github.com/VidocqH))
 
+## v0.78.2
+
+### Changed
+- **Deps:** Metro minimum to 0.81.3, fix "_interopRequireDefault is not a function" ([23c9dbc563](https://github.com/facebook/react-native/commit/23c9dbc563637a6b8c22c1b9d86fa03b65bde520) by [@robhogan](https://github.com/robhogan))
+
+### Fixed
+
+#### Android specific
+
+- **Runtime:** Fixes issue with z-indexed sibling removal ([34ae9facd5](https://github.com/facebook/react-native/commit/34ae9facd52b5da28b5ced22110532bbcdad2cec) by [@rozele](https://github.com/rozele))
+
+#### iOS specific
+
+- **RCTNetworking:** app crash caused by the `[RCTFileRequestHanlder invalidate]` method ([5861f7eea7](https://github.com/facebook/react-native/commit/5861f7eea79767f14a06719937cbdabed39be9c9) by [@zhouzh1](https://github.com/zhouzh1))
+- **Runtime:** Implement the `loadSourceForBridge:onProgress:onComplete` in the `RCTDefaultReactNativeFactoryDelegate`. ([8b33668c43](https://github.com/facebook/react-native/commit/8b33668c4338d31c27e6bd90b2a0e6fc0a077588) by [@cipolleschi](https://github.com/cipolleschi))
+- **Text:** Fix selection makes TextInput clear its content when using children ([301532b51fe33cd08152c7dde2b15d57105332dd](https://github.com/facebook/react-native/commit/301532b51fe33cd08152c7dde2b15d57105332dd) by [freeboub](https://github.com/freeboub))
+- **TurboModules:** Make sure the TM infra does not crash on NSException when triggered by async method ([ae1841ac964](https://github.com/facebook/react-native/commit/ae1841ac9645c10d66aeef784579b94fa0169e03) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.78.1
 
 ### Fixed
