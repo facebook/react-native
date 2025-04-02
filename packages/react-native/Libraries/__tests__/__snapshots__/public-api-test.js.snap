@@ -1744,6 +1744,7 @@ declare export default typeof LayoutConformanceNativeComponent;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
 "type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
+export type { PressableAndroidRippleConfig };
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -4433,7 +4434,8 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
   addListener(eventType: string): void;
   removeListeners(count: number): void;
 }
-export type { EventSubscription };
+type EmitterSubscription = EventSubscription;
+export type { EventSubscription, EmitterSubscription };
 export type NativeEventSubscription = EventSubscription;
 type UnsafeObject = Object;
 declare export default class NativeEventEmitter<
@@ -7394,6 +7396,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/Rect.
   right?: ?number,
   top?: ?number,
 }>;
+export type Insets = Rect;
 export type RectOrSize = Rect | number;
 declare export function createSquare(size: number): Rect;
 declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
@@ -7430,15 +7433,15 @@ declare export default typeof StyleSheet;
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js.flow 1`] = `
 "export * as default from \\"./StyleSheetExports\\";
 export type {
-  StyleProp,
   BoxShadowValue,
   FilterFunction,
+  NativeColorValue,
+  StyleProp,
 } from \\"./StyleSheetTypes\\";
 export type StyleSheetProperties = {
   hairlineWidth: number,
   flatten<T: string>(style: T): T,
 };
-export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
 export type OpaqueColorValue = NativeColorValue;
 export type TransformsStyle = ____TransformStyle_Internal;
@@ -9408,6 +9411,7 @@ export type {
 } from \\"./Libraries/Modal/Modal\\";
 export { default as Modal } from \\"./Libraries/Modal/Modal\\";
 export type {
+  PressableAndroidRippleConfig,
   PressableProps,
   PressableStateCallbackType,
 } from \\"./Libraries/Components/Pressable/Pressable\\";
@@ -9477,6 +9481,7 @@ export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/
 export type { TouchableWithoutFeedbackProps } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export type {
+  AccessibilityProps,
   AccessibilityRole,
   AccessibilityState,
 } from \\"./Libraries/Components/View/ViewAccessibility\\";
@@ -9590,8 +9595,12 @@ export type {
 export { default as LogBox } from \\"./Libraries/LogBox/LogBox\\";
 export { default as NativeAppEventEmitter } from \\"./Libraries/EventEmitter/RCTNativeAppEventEmitter\\";
 export { default as NativeDialogManagerAndroid } from \\"./Libraries/NativeModules/specs/NativeDialogManagerAndroid\\";
+export type {
+  EventSubscription,
+  EmitterSubscription,
+  NativeEventSubscription,
+} from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
 export { default as NativeEventEmitter } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
-export type { NativeEventSubscription } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
 export { default as NativeModules } from \\"./Libraries/BatchedBridge/NativeModules\\";
 export { default as Networking } from \\"./Libraries/Network/RCTNetworking\\";
 export type {
@@ -9634,8 +9643,13 @@ export { default as Share } from \\"./Libraries/Share/Share\\";
 export type {
   ColorValue,
   ImageStyle,
+  FilterFunction,
+  FontVariant,
+  NativeColorValue,
+  OpaqueColorValue,
   StyleProp,
   TextStyle,
+  TransformsStyle,
   ViewStyle,
 } from \\"./Libraries/StyleSheet/StyleSheet\\";
 export type {
@@ -9646,6 +9660,7 @@ export type {
   EdgeInsetsValue,
   PointValue,
 } from \\"./Libraries/StyleSheet/StyleSheetTypes\\";
+export type { Insets } from \\"./Libraries/StyleSheet/Rect\\";
 export { default as StyleSheet } from \\"./Libraries/StyleSheet/StyleSheet\\";
 export * as Systrace from \\"./Libraries/Performance/Systrace\\";
 export { default as ToastAndroid } from \\"./Libraries/Components/ToastAndroid/ToastAndroid\\";
@@ -9675,6 +9690,7 @@ export type {
   TargetedEvent,
   TextLayoutEvent,
 } from \\"./Libraries/Types/CoreEventTypes\\";
+export type { TurboModule } from \\"./Libraries/TurboModule/RCTExport\\";
 export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
 export type {
   HostInstance,
