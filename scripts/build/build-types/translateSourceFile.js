@@ -14,6 +14,7 @@ import type {ParseResult} from 'hermes-transform/dist/transform/parse';
 import type {TransformASTResult} from 'hermes-transform/dist/transform/transformAST';
 
 const getDependencies = require('./resolution/getDependencies');
+const createReplaceDefaultExportName = require('./transforms/replaceDefaultExportName');
 const babel = require('@babel/core');
 const translate = require('flow-api-translator');
 const {parse, print} = require('hermes-transform');
@@ -77,7 +78,7 @@ async function translateSourceFile(
   }
 
   // Apply post-transforms
-  const result = await applyPostTransforms(tsDefResult);
+  const result = await applyPostTransforms(tsDefResult, filePath);
 
   return {
     result,
@@ -101,14 +102,16 @@ async function applyPreTransforms(source: ParseResult): Promise<ParseResult> {
 /**
  * Apply post-transforms to .d.ts source code containing @build-types directives.
  */
-async function applyPostTransforms(source: string): Promise<string> {
-  if (!source.includes('@build-types')) {
-    // Exiting early, as there are no @build-types directives
-    return source;
-  }
-
+async function applyPostTransforms(
+  source: string,
+  filePath: string,
+): Promise<string> {
   const result = await babel.transformAsync(source, {
-    plugins: ['@babel/plugin-syntax-typescript', ...postTransforms],
+    plugins: [
+      '@babel/plugin-syntax-typescript',
+      ...postTransforms,
+      createReplaceDefaultExportName(filePath),
+    ],
   });
 
   return result.code;

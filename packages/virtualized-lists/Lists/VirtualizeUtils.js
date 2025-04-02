@@ -10,9 +10,8 @@
 
 'use strict';
 
-import type ListMetricsAggregator, {
-  CellMetricProps,
-} from './ListMetricsAggregator';
+import type ListMetricsAggregator from './ListMetricsAggregator';
+import type {CellMetricProps} from './ListMetricsAggregator';
 
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
