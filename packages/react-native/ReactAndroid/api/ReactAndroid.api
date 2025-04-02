@@ -2096,18 +2096,6 @@ public abstract interface class com/facebook/react/devsupport/HMRClient : com/fa
 	public abstract fun setup (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZLjava/lang/String;)V
 }
 
-public final class com/facebook/react/devsupport/LogBoxModule : com/facebook/fbreact/specs/NativeLogBoxSpec {
-	public static final field Companion Lcom/facebook/react/devsupport/LogBoxModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
-	public fun hide ()V
-	public fun invalidate ()V
-	public fun show ()V
-}
-
-public final class com/facebook/react/devsupport/LogBoxModule$Companion {
-}
-
 public abstract interface class com/facebook/react/devsupport/ReactInstanceDevHelper {
 	public abstract fun createRootView (Ljava/lang/String;)Landroid/view/View;
 	public abstract fun destroyRootView (Landroid/view/View;)V
