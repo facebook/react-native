@@ -47,7 +47,8 @@ TextMeasurement TextLayoutManager::measure(
 
             auto measurement = [textLayoutManager measureAttributedString:attributedString
                                                       paragraphAttributes:paragraphAttributes
-                                                        layoutConstraints:layoutConstraints];
+                                                        layoutConstraints:layoutConstraints
+                                                            layoutContext:layoutContext];
 
             if (telemetry) {
               telemetry->didMeasureText();
@@ -69,7 +70,8 @@ TextMeasurement TextLayoutManager::measure(
 
       measurement = [textLayoutManager measureNSAttributedString:nsAttributedString
                                              paragraphAttributes:paragraphAttributes
-                                               layoutConstraints:layoutConstraints];
+                                               layoutConstraints:layoutConstraints
+                                                   layoutContext:layoutContext];
 
       if (telemetry) {
         telemetry->didMeasureText();

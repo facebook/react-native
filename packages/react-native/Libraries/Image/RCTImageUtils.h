@@ -61,7 +61,7 @@ RCT_EXTERN BOOL RCTUpscalingRequired(
  * Pass a destSize of CGSizeZero to decode the image at its original size.
  */
 RCT_EXTERN UIImage *__nullable
-RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode);
+RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode, CGFloat screenScale);
 
 /**
  * This function takes the source data for an image and decodes just the
