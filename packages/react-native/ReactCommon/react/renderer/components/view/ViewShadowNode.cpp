@@ -72,6 +72,9 @@ void ViewShadowNode::initialize() noexcept {
       HostPlatformViewTraitsInitializer::formsView(viewProps) ||
       viewProps.outlineWidth > 0;
 
+  bool isKeyboardFocusable = viewProps.accessible ||
+      HostPlatformViewTraitsInitializer::isKeyboardFocusable(viewProps);
+
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);
   } else {
@@ -82,6 +85,12 @@ void ViewShadowNode::initialize() noexcept {
     traits_.set(ShadowNodeTraits::Trait::FormsStackingContext);
   } else {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
+  }
+
+  if (isKeyboardFocusable) {
+    traits_.set(ShadowNodeTraits::Trait::KeyboardFocusable);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::KeyboardFocusable);
   }
 
   if (!viewProps.collapsableChildren) {
