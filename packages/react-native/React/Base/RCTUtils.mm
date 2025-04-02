@@ -112,7 +112,7 @@ NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error)
   }
 }
 
-static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable, NSError **error)
+static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL isMutable, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
   static SEL JSONKitMutableSelector = NULL;
@@ -133,7 +133,7 @@ static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable
         unichar c = [jsonString characterAtIndex:i];
         if (strchr("{[", c)) {
           static const int options = (1 << 2); // loose unicode
-          SEL selector = mutable ? JSONKitMutableSelector : JSONKitSelector;
+          SEL selector = isMutable ? JSONKitMutableSelector : JSONKitSelector;
           return ((id(*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
         }
         if (!strchr(" \r\n\t", c)) {
@@ -162,7 +162,7 @@ static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable
       }
     }
     NSJSONReadingOptions options = NSJSONReadingAllowFragments;
-    if (mutable) {
+    if (isMutable) {
       options |= NSJSONReadingMutableContainers;
     }
     return [NSJSONSerialization JSONObjectWithData:jsonData options:options error:error];
@@ -674,9 +674,15 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
   }
 
   void *libz = dlopen("/usr/lib/libz.dylib", RTLD_LAZY);
-  int (*deflateInit2_)(z_streamp, int, int, int, int, int, const char *, int) = dlsym(libz, "deflateInit2_");
-  int (*deflate)(z_streamp, int) = dlsym(libz, "deflate");
-  int (*deflateEnd)(z_streamp) = dlsym(libz, "deflateEnd");
+
+  typedef int (*DeflateInit2_)(z_streamp, int, int, int, int, int, const char *, int);
+  DeflateInit2_ deflateInit2_ = (DeflateInit2_)dlsym(libz, "deflateInit2_");
+
+  typedef int (*Deflate)(z_streamp, int);
+  Deflate deflate = (Deflate)dlsym(libz, "deflate");
+
+  typedef int (*DeflateEnd)(z_streamp);
+  DeflateEnd deflateEnd = (DeflateEnd)dlsym(libz, "deflateEnd");
 
   z_stream stream;
   stream.zalloc = Z_NULL;
