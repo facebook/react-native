@@ -317,18 +317,11 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   }
 }
 
-static dispatch_once_t onceTokenScreenScale;
-static CGFloat screenScale;
-
-void RCTComputeScreenScale(void)
-{
-  dispatch_once(&onceTokenScreenScale, ^{
-    screenScale = [UITraitCollection currentTraitCollection].displayScale;
-  });
-}
-
 CGFloat RCTScreenScale(void)
 {
+  static dispatch_once_t onceTokenScreenScale;
+  static CGFloat screenScale;
+
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
     screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
