@@ -20,7 +20,6 @@ import type {
 } from '../../Types/CoreEventTypes';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {KeyboardEvent, KeyboardMetrics} from '../Keyboard/Keyboard';
-import typeof View from '../View/View';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
@@ -44,6 +43,7 @@ import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
 import Keyboard from '../Keyboard/Keyboard';
 import TextInputState from '../TextInput/TextInputState';
+import View from '../View/View';
 import processDecelerationRate from './processDecelerationRate';
 import Commands from './ScrollViewCommands';
 import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
@@ -153,7 +153,7 @@ export interface PublicScrollViewInstance
   extends HostInstance,
     ScrollViewImperativeMethods {}
 
-type InnerViewInstance = React.ElementRef<View>;
+type InnerViewInstance = React.ElementRef<typeof View>;
 
 export type ScrollViewPropsIOS = $ReadOnly<{
   /**
@@ -655,7 +655,7 @@ export type ScrollViewProps = $ReadOnly<{
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
 
-type State = {
+type ScrollViewState = {
   layoutHeight: ?number,
 };
 
@@ -700,7 +700,7 @@ export type ScrollViewComponentStatics = $ReadOnly<{
  * multiple columns, infinite scroll loading, or any number of other features it
  * supports out of the box.
  */
-class ScrollView extends React.Component<ScrollViewProps, State> {
+class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
   static Context: typeof ScrollViewContext = ScrollViewContext;
 
   constructor(props: ScrollViewProps) {
@@ -742,7 +742,7 @@ class ScrollView extends React.Component<ScrollViewProps, State> {
   _subscriptionKeyboardDidShow: ?EventSubscription = null;
   _subscriptionKeyboardDidHide: ?EventSubscription = null;
 
-  state: State = {
+  state: ScrollViewState = {
     layoutHeight: null,
   };
 

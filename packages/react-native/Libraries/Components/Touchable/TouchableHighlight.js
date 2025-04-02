@@ -70,7 +70,7 @@ type ExtraStyles = $ReadOnly<{
   underlay: ViewStyleProp,
 }>;
 
-type State = $ReadOnly<{
+type TouchableHighlightState = $ReadOnly<{
   pressability: Pressability,
   extraStyles: ?ExtraStyles,
 }>;
@@ -173,12 +173,12 @@ type State = $ReadOnly<{
  */
 class TouchableHighlightImpl extends React.Component<
   TouchableHighlightProps,
-  State,
+  TouchableHighlightState,
 > {
   _hideTimeout: ?TimeoutID;
   _isMounted: boolean = false;
 
-  state: State = {
+  state: TouchableHighlightState = {
     pressability: new Pressability(this._createPressabilityConfig()),
     extraStyles:
       this.props.testOnly_pressed === true ? this._createExtraStyles() : null,
@@ -389,7 +389,10 @@ class TouchableHighlightImpl extends React.Component<
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 
-  componentDidUpdate(prevProps: TouchableHighlightProps, prevState: State) {
+  componentDidUpdate(
+    prevProps: TouchableHighlightProps,
+    prevState: TouchableHighlightState,
+  ) {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 

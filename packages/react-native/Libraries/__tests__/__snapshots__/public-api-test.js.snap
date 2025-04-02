@@ -1700,15 +1700,18 @@ exports[`public API should not change unintentionally Libraries/Components/Keybo
   enabled?: ?boolean,
   keyboardVerticalOffset?: number,
 }>;
-type State = {
+type KeyboardAvoidingViewState = {
   bottom: number,
 };
 declare class KeyboardAvoidingView
-  extends React.Component<KeyboardAvoidingViewProps, State>
+  extends React.Component<KeyboardAvoidingViewProps, KeyboardAvoidingViewState>
 {
   viewRef: { current: React.ElementRef<typeof View> | null, ... };
   constructor(props: KeyboardAvoidingViewProps): void;
-  componentDidUpdate(_: KeyboardAvoidingViewProps, prevState: State): void;
+  componentDidUpdate(
+    _: KeyboardAvoidingViewProps,
+    prevState: KeyboardAvoidingViewState
+  ): void;
   componentDidMount(): void;
   componentWillUnmount(): void;
   render(): React.Node;
@@ -1959,7 +1962,7 @@ export type ScrollResponderType = ScrollViewImperativeMethods;
 export interface PublicScrollViewInstance
   extends HostInstance,
     ScrollViewImperativeMethods {}
-type InnerViewInstance = React.ElementRef<View>;
+type InnerViewInstance = React.ElementRef<typeof View>;
 export type ScrollViewPropsIOS = $ReadOnly<{
   automaticallyAdjustContentInsets?: ?boolean,
   automaticallyAdjustKeyboardInsets?: ?boolean,
@@ -2049,16 +2052,18 @@ export type ScrollViewProps = $ReadOnly<{
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
-type State = {
+type ScrollViewState = {
   layoutHeight: ?number,
 };
 export type ScrollViewComponentStatics = $ReadOnly<{
   Context: typeof ScrollViewContext,
 }>;
-declare class ScrollView extends React.Component<ScrollViewProps, State> {
+declare class ScrollView
+  extends React.Component<ScrollViewProps, ScrollViewState>
+{
   static Context: typeof ScrollViewContext;
   constructor(props: ScrollViewProps): void;
-  state: State;
+  state: ScrollViewState;
   componentDidMount(): void;
   componentDidUpdate(prevProps: ScrollViewProps): void;
   componentWillUnmount(): void;
@@ -3177,7 +3182,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   RESPONDER_ACTIVE_LONG_PRESS_OUT: \\"RESPONDER_ACTIVE_LONG_PRESS_OUT\\",
   ERROR: \\"ERROR\\",
 };
-type State =
+type TouchableState =
   | typeof States.NOT_RESPONDER
   | typeof States.RESPONDER_INACTIVE_PRESS_IN
   | typeof States.RESPONDER_INACTIVE_PRESS_OUT
@@ -3208,7 +3213,7 @@ declare const TouchableMixinImpl: {
   componentWillUnmount: () => void,
   touchableGetInitialState: () => {
     touchable: {
-      touchState: ?State,
+      touchState: ?TouchableState,
       responderID: ?GestureResponderEvent[\\"currentTarget\\"],
     },
   },
@@ -3236,7 +3241,7 @@ declare export default typeof TouchableImpl;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableBounce.js 1`] = `
-"type Props = $ReadOnly<{
+"type TouchableBounceProps = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
   onPressAnimationComplete?: ?() => void,
   onPressWithCompletion?: ?(callback: () => void) => void,
@@ -3247,7 +3252,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 }>;
 declare export default component(
   ref: React.RefSetter<mixed>,
-  ...props: $ReadOnly<$Diff<Props, { hostRef: mixed }>>
+  ...props: $ReadOnly<$Diff<TouchableBounceProps, { hostRef: mixed }>>
 );
 "
 `;
@@ -3315,11 +3320,12 @@ export type TouchableNativeFeedbackProps = $ReadOnly<{
   ),
   useForeground?: ?boolean,
 }>;
-type State = $ReadOnly<{
+type TouchableNativeFeedbackState = $ReadOnly<{
   pressability: Pressability,
 }>;
 declare class TouchableNativeFeedback
-  extends React.Component<TouchableNativeFeedbackProps, State>
+  extends
+    React.Component<TouchableNativeFeedbackProps, TouchableNativeFeedbackState>
 {
   static SelectableBackground: (rippleRadius?: ?number) => $ReadOnly<{
     attribute: \\"selectableItemBackground\\",
@@ -3342,11 +3348,11 @@ declare class TouchableNativeFeedback
     type: \\"RippleAndroid\\",
   }>;
   static canUseNativeForeground: () => boolean;
-  state: State;
+  state: TouchableNativeFeedbackState;
   render(): React.Node;
   componentDidUpdate(
     prevProps: TouchableNativeFeedbackProps,
-    prevState: State
+    prevState: TouchableNativeFeedbackState
   ): void;
   componentDidMount(): mixed;
   componentWillUnmount(): void;
@@ -4317,7 +4323,7 @@ exports[`public API should not change unintentionally Libraries/Image/Image.js.f
   ImageBackgroundProps,
 } from \\"./ImageProps\\";
 export type { ImageResolvedAssetSource, ImageSize } from \\"./ImageTypes.flow\\";
-declare export default Image;
+declare export default ImageType;
 "
 `;
 
@@ -4446,7 +4452,7 @@ export type ImageBackgroundProps = $ReadOnly<{
   children?: React.Node,
   style?: ?ViewStyleProp,
   imageStyle?: ?ImageStyleProp,
-  imageRef?: RefSetter<ElementRef<Image>>,
+  imageRef?: RefSetter<ElementRef<ImageType>>,
 }>;
 "
 `;
@@ -4554,7 +4560,7 @@ export type AbstractImageIOS = component(
   ...props: ImagePropsType
 );
 export type ImageIOS = AbstractImageIOS & ImageComponentStaticsIOS;
-export type Image = ImageIOS | ImageAndroid;
+export type ImageType = ImageIOS | ImageAndroid;
 export type { ImageProps } from \\"./ImageProps\\";
 "
 `;
@@ -7816,11 +7822,11 @@ exports[`public API should not change unintentionally Libraries/Text/Text.js 1`]
 type TextForwardRef = React.ElementRef<
   typeof NativeText | typeof NativeVirtualText,
 >;
-declare const Text: component(
+declare const TextImpl: component(
   ref?: React.RefSetter<TextForwardRef>,
   ...props: TextProps
 );
-declare export default typeof Text;
+declare export default typeof TextImpl;
 "
 `;
 
