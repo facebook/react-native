@@ -395,12 +395,6 @@ CGFloat RCTCeilPixelValue(CGFloat value)
   return ceil(value * scale) / scale;
 }
 
-CGFloat RCTFloorPixelValue(CGFloat value)
-{
-  CGFloat scale = RCTScreenScale();
-  return floor(value * scale) / scale;
-}
-
 CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
 {
   return (CGSize){

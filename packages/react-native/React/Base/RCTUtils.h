@@ -58,7 +58,6 @@ RCT_EXTERN CGSize RCTViewportSize(void);
 // Round float coordinates to nearest whole screen pixel (not point)
 RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
-RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value);
 
 // Convert a size in points to pixels, rounded up to the nearest integral size
 RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale);
