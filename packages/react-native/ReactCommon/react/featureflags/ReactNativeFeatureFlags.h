@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<669a4826ae528a7c410058dfd47a4b78>>
+ * @generated SignedSource<<5462f5953f4501f8348916617ca7dfb3>>
  */
 
 /**
@@ -108,6 +108,11 @@ class ReactNativeFeatureFlags {
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  RN_EXPORT static bool enableLineHeightCenteringOnIOS();
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
