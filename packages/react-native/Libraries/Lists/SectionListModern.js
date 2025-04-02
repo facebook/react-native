@@ -21,7 +21,8 @@ import type {ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
 import VirtualizedLists from '@react-native/virtualized-lists';
-import React, {forwardRef, useImperativeHandle, useRef} from 'react';
+import * as React from 'react';
+import {forwardRef, useImperativeHandle, useRef} from 'react';
 
 const VirtualizedSectionList = VirtualizedLists.VirtualizedSectionList;
 
