@@ -2659,7 +2659,8 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
   target: number,
   text: string,
 }>;
-type TextInputChangeEvent = NativeSyntheticEvent<TextInputChangeEventData>;
+export type TextInputChangeEvent =
+  NativeSyntheticEvent<TextInputChangeEventData>;
 export type TextInputEvent = NativeSyntheticEvent<
   $ReadOnly<{
     eventCount: number,
@@ -2683,17 +2684,19 @@ export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 type TargetEvent = $ReadOnly<{
   target: number,
+  ...
 }>;
 type TextInputFocusEventData = TargetEvent;
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-type Selection = $ReadOnly<{
+export type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
 type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
+  ...
 }>;
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
@@ -2702,6 +2705,7 @@ type TextInputKeyPressEventData = $ReadOnly<{
   key: string,
   target?: ?number,
   eventCount: number,
+  ...
 }>;
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
@@ -2709,6 +2713,7 @@ type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
+  ...
 }>;
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
@@ -2716,6 +2721,7 @@ type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
+  ...
 }>;
 export type TextInputSubmitEditingEvent =
   NativeSyntheticEvent<TextInputSubmitEditingEventData>;
@@ -2860,367 +2866,6 @@ export type TextInputIOSProps = $ReadOnly<{
 export type TextInputAndroidProps = $ReadOnly<{
   cursorColor?: ?ColorValue,
   selectionHandleColor?: ?ColorValue,
-  disableFullscreenUI?: ?boolean,
-  importantForAutofill?: ?(
-    | \\"auto\\"
-    | \\"no\\"
-    | \\"noExcludeDescendants\\"
-    | \\"yes\\"
-    | \\"yesExcludeDescendants\\"
-  ),
-  inlineImageLeft?: ?string,
-  inlineImagePadding?: ?number,
-  numberOfLines?: ?number,
-  returnKeyLabel?: ?string,
-  rows?: ?number,
-  showSoftInputOnFocus?: ?boolean,
-  textBreakStrategy?: ?(\\"simple\\" | \\"highQuality\\" | \\"balanced\\"),
-  underlineColorAndroid?: ?ColorValue,
-}>;
-export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
-  ...TextInputIOSProps,
-  ...TextInputAndroidProps,
-  autoCapitalize?: ?AutoCapitalize,
-  autoComplete?: ?(
-    | \\"additional-name\\"
-    | \\"address-line1\\"
-    | \\"address-line2\\"
-    | \\"birthdate-day\\"
-    | \\"birthdate-full\\"
-    | \\"birthdate-month\\"
-    | \\"birthdate-year\\"
-    | \\"cc-csc\\"
-    | \\"cc-exp\\"
-    | \\"cc-exp-day\\"
-    | \\"cc-exp-month\\"
-    | \\"cc-exp-year\\"
-    | \\"cc-number\\"
-    | \\"cc-name\\"
-    | \\"cc-given-name\\"
-    | \\"cc-middle-name\\"
-    | \\"cc-family-name\\"
-    | \\"cc-type\\"
-    | \\"country\\"
-    | \\"current-password\\"
-    | \\"email\\"
-    | \\"family-name\\"
-    | \\"gender\\"
-    | \\"given-name\\"
-    | \\"honorific-prefix\\"
-    | \\"honorific-suffix\\"
-    | \\"name\\"
-    | \\"name-family\\"
-    | \\"name-given\\"
-    | \\"name-middle\\"
-    | \\"name-middle-initial\\"
-    | \\"name-prefix\\"
-    | \\"name-suffix\\"
-    | \\"new-password\\"
-    | \\"nickname\\"
-    | \\"one-time-code\\"
-    | \\"organization\\"
-    | \\"organization-title\\"
-    | \\"password\\"
-    | \\"password-new\\"
-    | \\"postal-address\\"
-    | \\"postal-address-country\\"
-    | \\"postal-address-extended\\"
-    | \\"postal-address-extended-postal-code\\"
-    | \\"postal-address-locality\\"
-    | \\"postal-address-region\\"
-    | \\"postal-code\\"
-    | \\"street-address\\"
-    | \\"sms-otp\\"
-    | \\"tel\\"
-    | \\"tel-country-code\\"
-    | \\"tel-national\\"
-    | \\"tel-device\\"
-    | \\"url\\"
-    | \\"username\\"
-    | \\"username-new\\"
-    | \\"off\\"
-  ),
-  autoCorrect?: ?boolean,
-  autoFocus?: ?boolean,
-  allowFontScaling?: ?boolean,
-  caretHidden?: ?boolean,
-  contextMenuHidden?: ?boolean,
-  defaultValue?: ?Stringish,
-  editable?: ?boolean,
-  forwardedRef?: ?React.RefSetter<TextInputInstance>,
-  enterKeyHint?: ?EnterKeyHintTypeOptions,
-  inputMode?: ?InputModeOptions,
-  keyboardType?: ?KeyboardTypeOptions,
-  maxFontSizeMultiplier?: ?number,
-  maxLength?: ?number,
-  multiline?: ?boolean,
-  onBlur?: ?(e: TextInputBlurEvent) => mixed,
-  onChange?: ?(e: TextInputChangeEvent) => mixed,
-  unstable_onChangeSync?: ?(e: TextInputChangeEvent) => mixed,
-  onChangeText?: ?(text: string) => mixed,
-  unstable_onChangeTextSync?: ?(text: string) => mixed,
-  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
-  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
-  onFocus?: ?(e: TextInputFocusEvent) => mixed,
-  onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
-  unstable_onKeyPressSync?: ?(e: TextInputKeyPressEvent) => mixed,
-  onPress?: ?(event: GestureResponderEvent) => mixed,
-  onPressIn?: ?(event: GestureResponderEvent) => mixed,
-  onPressOut?: ?(event: GestureResponderEvent) => mixed,
-  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
-  onScroll?: ?(e: ScrollEvent) => mixed,
-  placeholder?: ?Stringish,
-  placeholderTextColor?: ?ColorValue,
-  readOnly?: ?boolean,
-  returnKeyType?: ?ReturnKeyTypeOptions,
-  secureTextEntry?: ?boolean,
-  selection?: ?$ReadOnly<{
-    start: number,
-    end?: ?number,
-  }>,
-  selectionColor?: ?ColorValue,
-  selectTextOnFocus?: ?boolean,
-  blurOnSubmit?: ?boolean,
-  submitBehavior?: ?SubmitBehavior,
-  style?: ?TextStyleProp,
-  value?: ?Stringish,
-}>;
-export interface TextInputInstance extends HostInstance {
-  +clear: () => void;
-  +isFocused: () => boolean;
-  +getNativeRef: () => ?HostInstance;
-  +setSelection: (start: number, end: number) => void;
-}
-type InternalTextInput = component(
-  ref?: React.RefSetter<TextInputInstance>,
-  ...TextInputProps
-);
-export type TextInputComponentStatics = $ReadOnly<{
-  State: $ReadOnly<{
-    currentlyFocusedInput: () => ?HostInstance,
-    currentlyFocusedField: () => ?number,
-    focusTextInput: (textField: ?HostInstance) => void,
-    blurTextInput: (textField: ?HostInstance) => void,
-  }>,
-}>;
-export type TextInputType = InternalTextInput & TextInputComponentStatics;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
-"type TextInputChangeEventData = $ReadOnly<{
-  eventCount: number,
-  target: number,
-  text: string,
-}>;
-export type TextInputChangeEvent =
-  NativeSyntheticEvent<TextInputChangeEventData>;
-export type TextInputEvent = NativeSyntheticEvent<
-  $ReadOnly<{
-    eventCount: number,
-    previousText: string,
-    range: $ReadOnly<{
-      start: number,
-      end: number,
-    }>,
-    target: number,
-    text: string,
-  }>,
->;
-type TextInputContentSizeChangeEventData = $ReadOnly<{
-  target: number,
-  contentSize: $ReadOnly<{
-    width: number,
-    height: number,
-  }>,
-}>;
-export type TextInputContentSizeChangeEvent =
-  NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
-export type TargetEvent = $ReadOnly<{
-  target: number,
-}>;
-type TextInputFocusEventData = TargetEvent;
-export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-type TextInputScrollEventData = {
-  contentOffset: { x: number, y: number },
-};
-export type TextInputScrollEvent =
-  NativeSyntheticEvent<TextInputScrollEventData>;
-type Selection = $ReadOnly<{
-  start: number,
-  end: number,
-}>;
-type TextInputSelectionChangeEventData = $ReadOnly<{
-  ...TargetEvent,
-  selection: Selection,
-}>;
-export type TextInputSelectionChangeEvent =
-  NativeSyntheticEvent<TextInputSelectionChangeEventData>;
-type TextInputKeyPressEventData = $ReadOnly<{
-  ...TargetEvent,
-  key: string,
-  target?: ?number,
-  eventCount?: ?number,
-}>;
-export type TextInputKeyPressEvent =
-  NativeSyntheticEvent<TextInputKeyPressEventData>;
-type TextInputEndEditingEventData = $ReadOnly<{
-  ...TargetEvent,
-  eventCount: number,
-  text: string,
-}>;
-export type TextInputEndEditingEvent =
-  NativeSyntheticEvent<TextInputEndEditingEventData>;
-type TextInputSubmitEditingEventData = $ReadOnly<{
-  ...TargetEvent,
-  eventCount: number,
-  text: string,
-}>;
-export type TextInputSubmitEditingEvent =
-  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
-export type TextInputEditingEvent =
-  NativeSyntheticEvent<TextInputEndEditingEventData>;
-type DataDetectorTypesType =
-  | \\"phoneNumber\\"
-  | \\"link\\"
-  | \\"address\\"
-  | \\"calendarEvent\\"
-  | \\"trackingNumber\\"
-  | \\"flightNumber\\"
-  | \\"lookupSuggestion\\"
-  | \\"none\\"
-  | \\"all\\";
-export type KeyboardType =
-  | \\"default\\"
-  | \\"email-address\\"
-  | \\"numeric\\"
-  | \\"phone-pad\\"
-  | \\"number-pad\\"
-  | \\"decimal-pad\\"
-  | \\"url\\";
-export type KeyboardTypeIOS =
-  | \\"ascii-capable\\"
-  | \\"numbers-and-punctuation\\"
-  | \\"name-phone-pad\\"
-  | \\"twitter\\"
-  | \\"web-search\\"
-  | \\"ascii-capable-number-pad\\";
-export type KeyboardTypeAndroid = \\"visible-password\\";
-export type KeyboardTypeOptions =
-  | KeyboardType
-  | KeyboardTypeIOS
-  | KeyboardTypeAndroid;
-export type InputModeOptions =
-  | \\"none\\"
-  | \\"text\\"
-  | \\"decimal\\"
-  | \\"numeric\\"
-  | \\"tel\\"
-  | \\"search\\"
-  | \\"email\\"
-  | \\"url\\";
-export type ReturnKeyType = \\"done\\" | \\"go\\" | \\"next\\" | \\"search\\" | \\"send\\";
-export type ReturnKeyTypeIOS =
-  | \\"default\\"
-  | \\"emergency-call\\"
-  | \\"google\\"
-  | \\"join\\"
-  | \\"route\\"
-  | \\"yahoo\\";
-export type ReturnKeyTypeAndroid = \\"none\\" | \\"previous\\";
-export type ReturnKeyTypeOptions =
-  | ReturnKeyType
-  | ReturnKeyTypeIOS
-  | ReturnKeyTypeAndroid;
-export type SubmitBehavior = \\"submit\\" | \\"blurAndSubmit\\" | \\"newline\\";
-export type AutoCapitalize = \\"none\\" | \\"sentences\\" | \\"words\\" | \\"characters\\";
-export type TextContentType =
-  | \\"none\\"
-  | \\"URL\\"
-  | \\"addressCity\\"
-  | \\"addressCityAndState\\"
-  | \\"addressState\\"
-  | \\"countryName\\"
-  | \\"creditCardNumber\\"
-  | \\"creditCardExpiration\\"
-  | \\"creditCardExpirationMonth\\"
-  | \\"creditCardExpirationYear\\"
-  | \\"creditCardSecurityCode\\"
-  | \\"creditCardType\\"
-  | \\"creditCardName\\"
-  | \\"creditCardGivenName\\"
-  | \\"creditCardMiddleName\\"
-  | \\"creditCardFamilyName\\"
-  | \\"emailAddress\\"
-  | \\"familyName\\"
-  | \\"fullStreetAddress\\"
-  | \\"givenName\\"
-  | \\"jobTitle\\"
-  | \\"location\\"
-  | \\"middleName\\"
-  | \\"name\\"
-  | \\"namePrefix\\"
-  | \\"nameSuffix\\"
-  | \\"nickname\\"
-  | \\"organizationName\\"
-  | \\"postalCode\\"
-  | \\"streetAddressLine1\\"
-  | \\"streetAddressLine2\\"
-  | \\"sublocality\\"
-  | \\"telephoneNumber\\"
-  | \\"username\\"
-  | \\"password\\"
-  | \\"newPassword\\"
-  | \\"oneTimeCode\\"
-  | \\"birthdate\\"
-  | \\"birthdateDay\\"
-  | \\"birthdateMonth\\"
-  | \\"birthdateYear\\"
-  | \\"cellularEID\\"
-  | \\"cellularIMEI\\"
-  | \\"dateTime\\"
-  | \\"flightNumber\\"
-  | \\"shipmentTrackingNumber\\";
-export type EnterKeyHintTypeAndroid = \\"previous\\";
-export type EnterKeyHintTypeIOS = \\"enter\\";
-export type EnterKeyHintType = \\"done\\" | \\"go\\" | \\"next\\" | \\"search\\" | \\"send\\";
-export type EnterKeyHintTypeOptions =
-  | EnterKeyHintType
-  | EnterKeyHintTypeAndroid
-  | EnterKeyHintTypeIOS;
-type PasswordRules = string;
-export type TextInputIOSProps = $ReadOnly<{
-  disableKeyboardShortcuts?: ?boolean,
-  clearButtonMode?: ?(\\"never\\" | \\"while-editing\\" | \\"unless-editing\\" | \\"always\\"),
-  clearTextOnFocus?: ?boolean,
-  dataDetectorTypes?:
-    | ?DataDetectorTypesType
-    | $ReadOnlyArray<DataDetectorTypesType>,
-  enablesReturnKeyAutomatically?: ?boolean,
-  inputAccessoryViewID?: ?string,
-  inputAccessoryViewButtonLabel?: ?string,
-  keyboardAppearance?: ?(\\"default\\" | \\"light\\" | \\"dark\\"),
-  passwordRules?: ?PasswordRules,
-  rejectResponderTermination?: ?boolean,
-  scrollEnabled?: ?boolean,
-  spellCheck?: ?boolean,
-  textContentType?: ?TextContentType,
-  lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
-  lineBreakModeIOS?: ?(
-    | \\"wordWrapping\\"
-    | \\"char\\"
-    | \\"clip\\"
-    | \\"head\\"
-    | \\"middle\\"
-    | \\"tail\\"
-  ),
-  smartInsertDelete?: ?boolean,
-}>;
-export type TextInputAndroidProps = $ReadOnly<{
-  cursorColor?: ?ColorValue,
   disableFullscreenUI?: ?boolean,
   importantForAutofill?: ?(
     | \\"auto\\"
@@ -3336,7 +2981,6 @@ type TextInputBaseProps = $ReadOnly<{
     end?: ?number,
   }>,
   selectionColor?: ?ColorValue,
-  selectionHandleColor?: ?ColorValue,
   selectTextOnFocus?: ?boolean,
   blurOnSubmit?: ?boolean,
   submitBehavior?: ?SubmitBehavior,
@@ -3349,6 +2993,60 @@ export type TextInputProps = $ReadOnly<{
   ...TextInputAndroidProps,
   ...TextInputBaseProps,
 }>;
+export interface TextInputInstance extends HostInstance {
+  +clear: () => void;
+  +isFocused: () => boolean;
+  +getNativeRef: () => ?HostInstance;
+  +setSelection: (start: number, end: number) => void;
+}
+type InternalTextInput = component(
+  ref?: React.RefSetter<TextInputInstance>,
+  ...TextInputProps
+);
+export type TextInputComponentStatics = $ReadOnly<{
+  State: $ReadOnly<{
+    currentlyFocusedInput: () => ?HostInstance,
+    currentlyFocusedField: () => ?number,
+    focusTextInput: (textField: ?HostInstance) => void,
+    blurTextInput: (textField: ?HostInstance) => void,
+  }>,
+}>;
+export type TextInputType = InternalTextInput & TextInputComponentStatics;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
+"export type {
+  AutoCapitalize,
+  EnterKeyHintType,
+  EnterKeyHintTypeAndroid,
+  EnterKeyHintTypeIOS,
+  EnterKeyHintTypeOptions,
+  InputModeOptions,
+  KeyboardType,
+  KeyboardTypeAndroid,
+  KeyboardTypeIOS,
+  KeyboardTypeOptions,
+  ReturnKeyType,
+  ReturnKeyTypeAndroid,
+  ReturnKeyTypeIOS,
+  ReturnKeyTypeOptions,
+  SubmitBehavior,
+  TextContentType,
+  TextInputAndroidProps,
+  TextInputBlurEvent,
+  TextInputChangeEvent,
+  TextInputContentSizeChangeEvent,
+  TextInputEditingEvent,
+  TextInputEndEditingEvent,
+  TextInputEvent,
+  TextInputFocusEvent,
+  TextInputIOSProps,
+  TextInputKeyPressEvent,
+  TextInputProps,
+  TextInputSelectionChangeEvent,
+  TextInputSubmitEditingEvent,
+};
 type TextInputStateType = $ReadOnly<{
   currentlyFocusedField: () => ?number,
   currentlyFocusedInput: () => ?HostInstance,
@@ -9464,7 +9162,6 @@ export type {
   TextInputEndEditingEvent,
   TextInputFocusEvent,
   TextInputKeyPressEvent,
-  TextInputScrollEvent,
   TextInputSelectionChangeEvent,
   TextInputSubmitEditingEvent,
   ReturnKeyTypeOptions,
