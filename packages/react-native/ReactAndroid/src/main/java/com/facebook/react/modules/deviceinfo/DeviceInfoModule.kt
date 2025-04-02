@@ -20,25 +20,25 @@ import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNot
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = NativeDeviceInfoSpec.NAME)
-public class DeviceInfoModule : NativeDeviceInfoSpec, LifecycleEventListener {
+internal class DeviceInfoModule : NativeDeviceInfoSpec, LifecycleEventListener {
   private var reactApplicationContext: ReactApplicationContext? = null
   private var fontScale: Float
   private var previousDisplayMetrics: ReadableMap? = null
 
-  public constructor(reactContext: ReactApplicationContext) : super(reactContext) {
+  constructor(reactContext: ReactApplicationContext) : super(reactContext) {
     initDisplayMetricsIfNotInitialized(reactContext)
     fontScale = reactContext.resources.configuration.fontScale
     reactContext.addLifecycleEventListener(this)
     reactApplicationContext = reactContext
   }
 
-  public constructor(context: Context) : super(null) {
+  constructor(context: Context) : super(null) {
     reactApplicationContext = null
     initDisplayMetricsIfNotInitialized(context)
     fontScale = context.resources.configuration.fontScale
   }
 
-  public override fun getTypedExportedConstants(): Map<String, Any> {
+  override fun getTypedExportedConstants(): Map<String, Any> {
     val displayMetrics = getDisplayMetricsWritableMap(fontScale.toDouble())
 
     // Cache the initial dimensions for later comparison in emitUpdateDimensionsEvent
@@ -58,7 +58,7 @@ public class DeviceInfoModule : NativeDeviceInfoSpec, LifecycleEventListener {
 
   override fun onHostDestroy(): Unit = Unit
 
-  public fun emitUpdateDimensionsEvent() {
+  fun emitUpdateDimensionsEvent() {
     reactApplicationContext?.let { context ->
       if (context.hasActiveReactInstance()) {
         // Don't emit an event to JS if the dimensions haven't changed
