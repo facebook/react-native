@@ -35,10 +35,15 @@ async function buildTypes(): Promise<void> {
   );
   const translatedFiles = new Set<string>();
   const dependencyEdges: DependencyEdges = [];
+  const allErrors: Array<ModuleTranslationError> = [];
 
   while (files.size > 0) {
-    const dependencies = await translateSourceFiles(dependencyEdges, files);
+    const {dependencies, errors} = await translateSourceFiles(
+      dependencyEdges,
+      files,
+    );
     dependencyEdges.push(...dependencies);
+    allErrors.push(...errors);
 
     files.forEach(file => translatedFiles.add(file));
     files.clear();
@@ -57,16 +62,25 @@ async function buildTypes(): Promise<void> {
     path.join(__dirname, 'templates/tsconfig.json'),
     path.join(PACKAGES_DIR, 'react-native', OUTPUT_DIR, 'tsconfig.json'),
   );
+
+  if (allErrors.length > 0) {
+    process.exitCode = 1;
+  }
 }
 
 type DependencyEdges = Array<[string, string]>;
+type TranslateFilesResult = {
+  dependencies: DependencyEdges,
+  errors: Array<ModuleTranslationError>,
+};
 
 async function translateSourceFiles(
   dependencyEdges: DependencyEdges,
   inputFiles: Iterable<string>,
-): Promise<DependencyEdges> {
+): Promise<TranslateFilesResult> {
   const files = new Set<string>([...inputFiles]);
   const dependencies: DependencyEdges = [];
+  const errors: Array<ModuleTranslationError> = [];
 
   await Promise.all(
     Array.from(files).map(async file => {
@@ -91,19 +105,15 @@ async function translateSourceFiles(
           }),
         );
       } catch (e) {
-        console.error(`Failed to build ${path.relative(REPO_ROOT, file)}\n`, e);
-        const requireStack = getRequireStack(dependencyEdges, file);
-        if (requireStack.length > 0) {
-          console.error('Require stack:');
-          for (const stackEntry of requireStack) {
-            console.error(`- ${stackEntry}`);
-          }
-        }
+        const error = new ModuleTranslationError(file, e);
+        error.requireStack = getRequireStack(dependencyEdges, file);
+        errors.push(error);
+        console.error(error.formatError());
       }
     }),
   );
 
-  return dependencies;
+  return {dependencies, errors};
 }
 
 function getPackageName(file: string): string {
@@ -134,6 +144,34 @@ function extractTripleSlashDirectives(source: string): Array<string> {
   }
 
   return directives.map(directive => directive.replace(/^\/\/\//g, '').trim());
+}
+
+class ModuleTranslationError extends Error {
+  requireStack: Array<string> = [];
+  originalError: Error;
+
+  constructor(filePath: string, originalError: Error) {
+    super(`Failed to build ${path.relative(REPO_ROOT, filePath)}`);
+    this.name = 'ModuleTranslationError';
+    this.originalError = originalError;
+  }
+
+  formatError(): string {
+    let output = `${this.name}: ${this.message}`;
+
+    if (this.originalError?.stack != null) {
+      output += `\n  ${this.originalError.stack}`;
+    }
+
+    if (this.requireStack.length > 0) {
+      output += '\n  Require stack:';
+      for (const stackEntry of this.requireStack) {
+        output += `\n  - ${stackEntry}`;
+      }
+    }
+
+    return output;
+  }
 }
 
 module.exports = buildTypes;
