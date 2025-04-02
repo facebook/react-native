@@ -14,7 +14,7 @@ import type XMLHttpRequest from '../../../Libraries/Network/XMLHttpRequest';
 import type {ListRenderItemInfo} from '@react-native/virtualized-lists';
 
 import ScrollView from '../../../Libraries/Components/ScrollView/ScrollView';
-import React from 'react';
+import * as React from 'react';
 
 const TouchableHighlight =
   require('../../../Libraries/Components/Touchable/TouchableHighlight').default;

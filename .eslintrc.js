@@ -75,6 +75,7 @@ module.exports = {
         'lint/no-react-native-imports': 2,
         'lint/require-extends-error': 2,
         'lint/no-react-node-imports': 2,
+        'lint/no-react-default-imports': 2,
       },
     },
     {
