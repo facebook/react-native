@@ -22,14 +22,6 @@ const OUTPUT_DIR = 'types_generated';
 const IGNORE_PATTERNS = [
   '**/__{tests,mocks,fixtures,flowtests}__/**',
   '**/*.{macos,windows}.js',
-
-  // TODO(T210505449): Enable remaining library entry points
-  'packages/react-native/Libraries/Animated/Animated.js',
-  'packages/react-native/Libraries/StyleSheet/PlatformColorValueTypesIOS.js',
-  'packages/react-native/Libraries/StyleSheet/processColor.js',
-  'packages/react-native/Libraries/StyleSheet/StyleSheet.js',
-  'packages/react-native/Libraries/Components/TextInput/TextInput.js',
-  'packages/react-native/Libraries/Components/TextInput/InputAccessoryView.js',
 ];
 
 const ENTRY_POINTS = ['packages/react-native/index.js.flow'];
