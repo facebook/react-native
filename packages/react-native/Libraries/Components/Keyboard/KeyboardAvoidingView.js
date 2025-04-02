@@ -51,7 +51,7 @@ export type KeyboardAvoidingViewProps = $ReadOnly<{
   keyboardVerticalOffset?: number,
 }>;
 
-type State = {
+type KeyboardAvoidingViewState = {
   bottom: number,
 };
 
@@ -61,7 +61,7 @@ type State = {
  */
 class KeyboardAvoidingView extends React.Component<
   KeyboardAvoidingViewProps,
-  State,
+  KeyboardAvoidingViewState,
 > {
   _frame: ?ViewLayout = null;
   _keyboardEvent: ?KeyboardEvent = null;
@@ -178,7 +178,10 @@ class KeyboardAvoidingView extends React.Component<
     }
   };
 
-  componentDidUpdate(_: KeyboardAvoidingViewProps, prevState: State): void {
+  componentDidUpdate(
+    _: KeyboardAvoidingViewProps,
+    prevState: KeyboardAvoidingViewState,
+  ): void {
     const enabled = this.props.enabled ?? true;
     if (enabled && this._bottom !== prevState.bottom) {
       this.setState({bottom: this._bottom});
