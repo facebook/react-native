@@ -41,7 +41,7 @@ export type MeasureLayoutOnSuccessCallback = (
  * For more information, see [Direct Manipulation](https://reactnative.dev/docs/direct-manipulation).
  * @see https://github.com/facebook/react-native/blob/master/Libraries/Renderer/shims/ReactNativeTypes.js#L87
  */
-export interface NativeMethods {
+export interface LegacyHostInstanceMethods {
   /**
    * Removes focus from an input or view. This is the opposite of `focus()`.
    */
@@ -105,4 +105,12 @@ export interface NativeMethods {
   setNativeProps(nativeProps: {...}): void;
 }
 
-export type HostInstance = NativeMethods;
+export type HostInstance = LegacyHostInstanceMethods;
+
+/** @deprecated Use HostInstance instead */
+export type NativeMethods = LegacyHostInstanceMethods;
+
+/**
+ * @deprecated Use HostInstance instead.
+ */
+export type NativeMethodsMixin = LegacyHostInstanceMethods;

@@ -421,6 +421,7 @@ export type * from './Libraries/Types/CodegenTypesNamespace';
 export type {
   HostInstance,
   NativeMethods,
+  NativeMethodsMixin,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,

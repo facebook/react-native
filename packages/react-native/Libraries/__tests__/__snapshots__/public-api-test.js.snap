@@ -9398,6 +9398,7 @@ export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
 export type {
   HostInstance,
   NativeMethods,
+  NativeMethodsMixin,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
@@ -9457,7 +9458,7 @@ export type MeasureLayoutOnSuccessCallback = (
   width: number,
   height: number
 ) => void;
-export interface NativeMethods {
+export interface LegacyHostInstanceMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
@@ -9469,7 +9470,9 @@ export interface NativeMethods {
   ): void;
   setNativeProps(nativeProps: { ... }): void;
 }
-export type HostInstance = NativeMethods;
+export type HostInstance = LegacyHostInstanceMethods;
+export type NativeMethods = LegacyHostInstanceMethods;
+export type NativeMethodsMixin = LegacyHostInstanceMethods;
 "
 `;
 
