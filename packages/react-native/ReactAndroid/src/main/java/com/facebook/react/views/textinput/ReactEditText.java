@@ -665,16 +665,18 @@ public class ReactEditText extends AppCompatEditText {
     mForceSetTypeFaceOnDraw = true;
   }
 
-  // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
-    requestFocusInternal();
+    if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
+      requestFocusProgramatically();
+    } else {
+      requestFocusInternal();
+    }
   }
 
   /* package */ void clearFocusFromJS() {
     clearFocus();
   }
 
-  // VisibleForTesting from {@link TextInputEventsTestCase}.
   public int incrementAndGetEventCounter() {
     return ++mNativeEventCount;
   }
