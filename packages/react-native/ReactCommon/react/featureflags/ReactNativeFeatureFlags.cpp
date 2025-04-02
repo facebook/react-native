@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ba5830499c05aad7e1bb58668027a41>>
+ * @generated SignedSource<<637a883106342d65133f54a8e931a5d4>>
  */
 
 /**
@@ -36,6 +36,10 @@ bool ReactNativeFeatureFlags::animatedShouldSignalBatch() {
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
   return getAccessor().cxxNativeAnimatedEnabled();
+}
+
+bool ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS() {
+  return getAccessor().disableMainQueueSyncDispatchIOS();
 }
 
 bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {

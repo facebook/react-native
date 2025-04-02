@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d0b9092d395eb18a892946d4b3a5a6b>>
+ * @generated SignedSource<<8bc15cf2356e248a791c68f134c39a2f>>
  */
 
 /**
@@ -47,6 +47,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedEnabled(): Boolean = accessor.cxxNativeAnimatedEnabled()
+
+  /**
+   * Disable sync dispatch on the main queue on iOS
+   */
+  @JvmStatic
+  public fun disableMainQueueSyncDispatchIOS(): Boolean = accessor.disableMainQueueSyncDispatchIOS()
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread

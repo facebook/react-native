@@ -11,6 +11,7 @@
 #import <mach/mach_time.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <zlib.h>
 
 #import <UIKit/UIKit.h>
@@ -295,6 +296,25 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
   if (RCTIsMainQueue()) {
     block();
   } else {
+    if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+      RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: Sync dispatches to the main queue can deadlock React Native.");
+    }
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      block();
+    });
+  }
+}
+
+// Please do not use this method
+// unless you know what you are doing.
+void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *context)
+{
+  if (RCTIsMainQueue()) {
+    block();
+  } else {
+    if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+      RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: %@", context);
+    }
     dispatch_sync(dispatch_get_main_queue(), ^{
       block();
     });
@@ -310,6 +330,10 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
     dispatch_once(onceToken, block);
   } else {
     if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+      if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+        RCTLogError(
+            @"RCTUnsafeExecuteOnMainQueueOnceSync: Sync dispatches to the main queue can deadlock React Native.");
+      }
       dispatch_sync(dispatch_get_main_queue(), ^{
         dispatch_once(onceToken, block);
       });

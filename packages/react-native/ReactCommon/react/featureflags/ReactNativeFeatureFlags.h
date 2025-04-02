@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<669a4826ae528a7c410058dfd47a4b78>>
+ * @generated SignedSource<<881026a6a7c333595552737f29539b79>>
  */
 
 /**
@@ -53,6 +53,11 @@ class ReactNativeFeatureFlags {
    * Use a C++ implementation of Native Animated instead of the platform implementation.
    */
   RN_EXPORT static bool cxxNativeAnimatedEnabled();
+
+  /**
+   * Disable sync dispatch on the main queue on iOS
+   */
+  RN_EXPORT static bool disableMainQueueSyncDispatchIOS();
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
