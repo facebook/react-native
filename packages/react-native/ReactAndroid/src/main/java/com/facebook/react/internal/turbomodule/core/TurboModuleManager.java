@@ -23,6 +23,7 @@ import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +45,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
   private final TurboModuleManagerDelegate mDelegate;
 
   static {
-    NativeModuleSoLoader.maybeLoadSoLibrary();
+    SoLoader.loadLibrary("turbomodulejsijni");
   }
 
   // Prevents the creation of new TurboModules once cleanup as been initiated.
