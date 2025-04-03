@@ -129,7 +129,6 @@ public class ReactEditText extends AppCompatEditText {
   private @Nullable String mFontFamily = null;
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
-  private @Nullable Typeface mTypeface = null;
   private boolean mAutoFocus = false;
   private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
@@ -264,7 +263,7 @@ public class ReactEditText extends AppCompatEditText {
     // Resolves issue with custom fonts not being applied, especially on hint text
     if (mForceSetTypeFaceOnLayout) {
       mForceSetTypeFaceOnLayout = false;
-      setTypeface(mTypeface);
+      updateTypefaceAndFlags();
     }
   }
 
@@ -637,14 +636,8 @@ public class ReactEditText extends AppCompatEditText {
     }
   }
 
-  public void maybeUpdateTypeface() {
-    if (!mTypefaceDirty) {
-      return;
-    }
-
-    mTypefaceDirty = false;
-
-    mTypeface =
+  private void updateTypefaceAndFlags() {
+    Typeface newTypeface =
         ReactTypefaceUtils.applyStyles(
             getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
     setTypeface(mTypeface);
@@ -659,7 +652,15 @@ public class ReactEditText extends AppCompatEditText {
     } else {
       setPaintFlags(getPaintFlags() & (~Paint.SUBPIXEL_TEXT_FLAG));
     }
+  }
 
+  public void maybeUpdateTypeface() {
+    if (!mTypefaceDirty) {
+      return;
+    }
+
+    mTypefaceDirty = false;
+    updateTypefaceAndFlags();
     mForceSetTypeFaceOnLayout = true;
   }
 
