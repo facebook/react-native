@@ -38,6 +38,7 @@ export type {default as AnimatedModulo} from './nodes/AnimatedModulo';
 export type {default as AnimatedMultiplication} from './nodes/AnimatedMultiplication';
 export type {default as AnimatedSubtraction} from './nodes/AnimatedSubtraction';
 export type {WithAnimatedValue} from './createAnimatedComponent';
+export type {AnimatedComponentType as AnimatedComponent} from './createAnimatedComponent';
 
 export const add = AnimatedImplementation.add;
 export const attachNativeEvent = AnimatedImplementation.attachNativeEvent;
