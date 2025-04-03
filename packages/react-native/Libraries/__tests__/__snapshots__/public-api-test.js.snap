@@ -3118,6 +3118,32 @@ declare export default typeof NativeToastAndroid;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/ToastAndroid.js 1`] = `
+"declare export default typeof ToastAndroid;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/ToastAndroid.js.flow 1`] = `
+"declare const ToastAndroid: {
+  SHORT: number,
+  LONG: number,
+  TOP: number,
+  BOTTOM: number,
+  CENTER: number,
+  show: (message: string, duration: number) => void,
+  showWithGravity: (message: string, duration: number, gravity: number) => void,
+  showWithGravityAndOffset: (
+    message: string,
+    duration: number,
+    gravity: number,
+    xOffset: number,
+    yOffset: number
+  ) => void,
+};
+declare export default typeof ToastAndroid;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/ToastAndroidFallback.js 1`] = `
 "declare const ToastAndroid: {
   SHORT: number,
   LONG: number,
