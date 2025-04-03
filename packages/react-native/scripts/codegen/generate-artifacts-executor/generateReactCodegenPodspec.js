@@ -60,7 +60,7 @@ function getInputFiles(appPath, appPkgJSon) {
     )[0];
   const jsFiles = '-name "Native*.js" -or -name "*NativeComponent.js"';
   const tsFiles = '-name "Native*.ts" -or -name "*NativeComponent.ts"';
-  const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f \\( ${jsFiles} -or ${tsFiles} \\)`;
+  const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;
   const list = String(execSync(findCommand))
     .trim()
     .split('\n')
