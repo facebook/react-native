@@ -214,6 +214,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_utils>
           $<TARGET_OBJECTS:reactnativeblob>
           $<TARGET_OBJECTS:reactnativejni>
+          $<TARGET_OBJECTS:reactnativejni_common>
           $<TARGET_OBJECTS:reactperflogger>
           $<TARGET_OBJECTS:rninstance>
           $<TARGET_OBJECTS:rrc_image>
@@ -303,6 +304,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_utils,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactnativeblob,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactnativejni,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:reactnativejni_common,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactperflogger,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rninstance,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_image,INTERFACE_INCLUDE_DIRECTORIES>
