@@ -27,9 +27,11 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return reactApplicationContext.getNativeModule(BlobModule.class);
     }
 
+    // NULLSAFE_FIXME[Return Not Nullable]
     return null;
   }
 
@@ -47,6 +49,7 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
     }
 
     byte[] bytes =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         blobModule.resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
 
     if (bytes == null) {
@@ -75,6 +78,7 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
     }
 
     byte[] bytes =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         blobModule.resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
 
     if (bytes == null) {
@@ -86,6 +90,7 @@ public class FileReaderModule extends NativeFileReaderModuleSpec {
       StringBuilder sb = new StringBuilder();
       sb.append("data:");
 
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (blob.hasKey("type") && !blob.getString("type").isEmpty()) {
         sb.append(blob.getString("type"));
       } else {
