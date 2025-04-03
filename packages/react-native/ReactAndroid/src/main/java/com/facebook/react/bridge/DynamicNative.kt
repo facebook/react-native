@@ -9,6 +9,7 @@ package com.facebook.react.bridge
 
 import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStripAny
+import com.facebook.soloader.SoLoader
 
 /**
  * An implementation of [Dynamic] that has a C++ implementation.
@@ -44,5 +45,11 @@ private class DynamicNative : HybridClassBase(), Dynamic {
 
   override fun recycle() {
     // Noop - nothing to recycle since there is no pooling
+  }
+
+  private companion object {
+    init {
+      SoLoader.loadLibrary("reactnativejni_common")
+    }
   }
 }
