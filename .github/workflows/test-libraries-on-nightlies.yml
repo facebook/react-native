@@ -3,6 +3,9 @@ name: Test Libraries on Nightlies
 on:
   workflow_call:
 
+
+# We use the matrix.library entry to specify the dependency we want to use
+# The key is used directly as the <pkg> in the `yarn add <pkg>` command.
 jobs:
   test-library-on-nightly-android:
     name: "[Android] ${{ matrix.library }}"
@@ -21,7 +24,7 @@ jobs:
           "@react-native-masked-view/masked-view",
           "react-native-maps",
           "@react-native-community/netinfo",
-          "react-native-reanimated@nightly react-native-worklets@nightly",
+          "react-native-reanimated@nightly react-native-worklets@nightly", #reanimated requires worklet to be explicitly installed as a separate package
           "react-native-svg",
           "react-native-video",
           "react-native-webview",
@@ -56,7 +59,7 @@ jobs:
           "@react-native-masked-view/masked-view",
           "react-native-maps",
           "@react-native-community/netinfo",
-          "react-native-reanimated@nightly  react-native-worklets@nightly",
+          "react-native-reanimated@nightly  react-native-worklets@nightly", #reanimated requires worklet to be explicitly installed as a separate package
           "react-native-svg",
           "react-native-video",
           "react-native-webview",
