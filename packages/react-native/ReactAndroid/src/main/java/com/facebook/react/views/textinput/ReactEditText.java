@@ -125,7 +125,7 @@ public class ReactEditText extends AppCompatEditText {
   private boolean mOnKeyPress = false;
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
-  private boolean mForceSetTypeFaceOnLayout = false;
+  private boolean mForceUpdateTypefaceAndFlagsOnLayout = false;
   private @Nullable String mFontFamily = null;
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
@@ -261,8 +261,8 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     // Resolves issue with custom fonts not being applied, especially on hint text
-    if (mForceSetTypeFaceOnLayout) {
-      mForceSetTypeFaceOnLayout = false;
+    if (mForceUpdateTypefaceAndFlagsOnLayout) {
+      mForceUpdateTypefaceAndFlagsOnLayout = false;
       updateTypefaceAndFlags();
     }
   }
@@ -661,7 +661,7 @@ public class ReactEditText extends AppCompatEditText {
 
     mTypefaceDirty = false;
     updateTypefaceAndFlags();
-    mForceSetTypeFaceOnLayout = true;
+    mForceUpdateTypefaceAndFlagsOnLayout = true;
   }
 
   public void requestFocusFromJS() {
