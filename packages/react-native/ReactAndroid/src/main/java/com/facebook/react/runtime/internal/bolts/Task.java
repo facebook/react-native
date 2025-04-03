@@ -75,9 +75,12 @@ public class Task<TResult> implements TaskInterface<TResult> {
   private final Object lock = new Object();
   private boolean complete;
   private boolean cancelled;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private TResult result;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Exception error;
   private boolean errorHasBeenObserved;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private UnobservedErrorNotifier unobservedErrorNotifier;
   private List<Continuation<TResult, Void>> continuations = new ArrayList<>();
 
@@ -91,6 +94,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
     if (cancelled) {
       trySetCancelled();
     } else {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       trySetResult(null);
     }
   }
@@ -151,6 +155,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
         errorHasBeenObserved = true;
         if (unobservedErrorNotifier != null) {
           unobservedErrorNotifier.setObserved();
+          // NULLSAFE_FIXME[Field Not Nullable]
           unobservedErrorNotifier = null;
         }
       }
@@ -175,6 +180,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
    *     false} otherwise.
    */
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public boolean waitForCompletion(long duration, TimeUnit timeUnit) throws InterruptedException {
     synchronized (lock) {
       if (!isCompleted()) {
@@ -489,6 +495,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
           throw new RuntimeException(e);
         }
       }
+      // NULLSAFE_FIXME[Field Not Nullable]
       continuations = null;
     }
   }
@@ -538,6 +545,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
+  // NULLSAFE_FIXME[Parameter Not Nullable]
   private static Task<?> TASK_NULL = new Task<>(null);
   private static Task<Boolean> TASK_TRUE = new Task<>((Boolean) true);
   private static Task<Boolean> TASK_FALSE = new Task<>((Boolean) false);
