@@ -101,6 +101,11 @@ declare export default typeof NativeAlertManager;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js 1`] = `
+"declare export default typeof RCTAlertManager;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js.flow 1`] = `
 "declare export default {
   alertWithArgs(
@@ -1476,6 +1481,11 @@ declare export default typeof NativeAccessibilityManager;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/legacySendAccessibilityEvent.js 1`] = `
+"declare export default typeof legacySendAccessibilityEvent;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/legacySendAccessibilityEvent.js.flow 1`] = `
 "declare function legacySendAccessibilityEvent(
   reactTag: number,
@@ -1573,11 +1583,21 @@ declare export default typeof AndroidDrawerLayoutNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js 1`] = `
+"declare export default typeof DrawerLayoutAndroid;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js.flow 1`] = `
 "export type {
   DrawerLayoutAndroidProps,
   DrawerSlideEvent,
 } from \\"./DrawerLayoutAndroidTypes\\";
-declare export default class DrawerLayoutAndroid
+declare export default typeof DrawerLayoutAndroid;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroidFallback.js 1`] = `
+"declare export default class DrawerLayoutAndroid
   extends React.Component<DrawerLayoutAndroidProps, DrawerLayoutAndroidState>
   implements DrawerLayoutAndroidMethods
 {
@@ -1820,12 +1840,13 @@ declare export default function useAndroidRippleForView(
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.js 1`] = `
 "export type { ProgressBarAndroidProps };
-declare export default component(
+declare let ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<ProgressBarAndroidNativeComponentType>,
   >,
   ...props: ProgressBarAndroidProps
 );
+declare export default typeof ProgressBarAndroid;
 "
 `;
 
@@ -4304,6 +4325,11 @@ declare export function getUrlCacheBreaker(): string;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Image/Image.js 1`] = `
+"declare export default typeof Image;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Image/Image.js.flow 1`] = `
 "export type {
   ImageProgressEventIOS,
@@ -5749,6 +5775,11 @@ declare export default typeof RCTModalHostViewNativeComponent;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/NativeComponent/BaseViewConfig.js 1`] = `
+"declare export default typeof BaseViewConfig;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/NativeComponent/BaseViewConfig.js.flow 1`] = `
 "declare const PlatformBaseViewConfig: PartialViewConfigWithoutName;
 declare export default typeof PlatformBaseViewConfig;
@@ -5920,6 +5951,11 @@ declare export default typeof NativeNetworkingAndroid;
 exports[`public API should not change unintentionally Libraries/Network/NativeNetworkingIOS.js 1`] = `
 "export * from \\"../../src/private/specs_DEPRECATED/modules/NativeNetworkingIOS\\";
 declare export default typeof NativeNetworkingIOS;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.js 1`] = `
+"declare export default typeof RCTNetworking;
 "
 `;
 
@@ -6997,6 +7033,18 @@ declare export default typeof NativeSettingsManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Settings/Settings.js 1`] = `
+"declare let Settings: {
+  get(key: string): any,
+  set(settings: Object): void,
+  watchKeys(keys: string | Array<string>, callback: () => void): number,
+  clearWatch(watchId: number): void,
+  ...
+};
+declare export default typeof Settings;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Settings/SettingsFallback.js 1`] = `
 "declare const Settings: {
   get(key: string): any,
   set(settings: Object): void,
@@ -7051,6 +7099,11 @@ declare export default typeof Share;
 exports[`public API should not change unintentionally Libraries/StyleSheet/EdgeInsetsPropType.js 1`] = `
 "export type EdgeInsetsProp = Rect;
 export type EdgeInsetsOrSizeProp = RectOrSize;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/PlatformColorValueTypes.js 1`] = `
+"export * from \\"./PlatformColorValueTypes\\";
 "
 `;
 
@@ -8227,6 +8280,11 @@ declare export function addChangeListener(
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.js 1`] = `
+"declare export default typeof BackHandler;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.js.flow 1`] = `
 "export type BackPressEventName = \\"backPress\\" | \\"hardwareBackPress\\";
 type TBackHandler = {
@@ -8413,6 +8471,11 @@ exports[`public API should not change unintentionally Libraries/Utilities/PixelR
   static startDetecting(): void;
 }
 declare export default typeof PixelRatio;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Utilities/Platform.js 1`] = `
+"declare export default typeof Platform;
 "
 `;
 
