@@ -2639,10 +2639,7 @@ declare export default HostComponent<{ ... }>;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTTextInputViewConfig.js 1`] = `
-"type PartialViewConfigWithoutName = $Rest<
-  PartialViewConfig,
-  { uiViewClassName: string },
->;
+"type PartialViewConfigWithoutName = Omit<PartialViewConfig, \\"uiViewClassName\\">;
 declare export default PartialViewConfigWithoutName;
 "
 `;
@@ -5811,9 +5808,9 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeComponent/PlatformBaseViewConfig.js 1`] = `
-"export type PartialViewConfigWithoutName = $Rest<
+"export type PartialViewConfigWithoutName = Omit<
   PartialViewConfig,
-  { uiViewClassName: string },
+  \\"uiViewClassName\\",
 >;
 declare const PlatformBaseViewConfig: PartialViewConfigWithoutName;
 declare export default typeof PlatformBaseViewConfig;
