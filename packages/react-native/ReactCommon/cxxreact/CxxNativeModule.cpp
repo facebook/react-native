@@ -47,9 +47,12 @@ namespace {
 CxxModule::Callback convertCallback(
     std::function<void(folly::dynamic)> callback) {
   return [callback = std::move(callback)](std::vector<folly::dynamic> args) {
-    callback(folly::dynamic(
-        std::make_move_iterator(args.begin()),
-        std::make_move_iterator(args.end())));
+    // after unpinning folly, can use folly::dynamic::array_range
+    folly::dynamic obj = folly::dynamic::array;
+    for (auto& arg : args) {
+      obj.push_back(std::move(arg));
+    }
+    callback(std::move(obj));
   };
 }
 

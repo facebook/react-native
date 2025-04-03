@@ -24,6 +24,7 @@ header_search_paths = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fast_float/include\"",
   "\"$(PODS_ROOT)/fmt/include\"",
   "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
@@ -48,7 +49,8 @@ Pod::Spec.new do |s|
                              }
 
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float"
+  s.dependency "fmt"
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi"
   s.dependency "React-Core/RCTBlobHeaders"

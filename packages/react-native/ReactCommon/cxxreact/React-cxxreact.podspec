@@ -35,24 +35,25 @@ Pod::Spec.new do |s|
   s.exclude_files          = "SampleCxxModule.*"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }
   s.header_dir             = "cxxreact"
 
   s.dependency "boost"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
-  s.dependency "RCT-Folly", folly_version
+  s.dependency "fast_float"
+  s.dependency "fmt"
+  s.dependency "RCT-Folly"
   s.dependency "glog"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
-  s.dependency "React-callinvoker", version
-  s.dependency "React-runtimeexecutor", version
-  s.dependency "React-perflogger", version
-  s.dependency "React-jsi", version
-  s.dependency "React-logger", version
-  s.dependency "React-debug", version
-  s.dependency "React-timing", version
+  s.dependency "React-callinvoker"
+  s.dependency "React-runtimeexecutor"
+  s.dependency "React-perflogger"
+  s.dependency "React-jsi"
+  s.dependency "React-logger"
+  s.dependency "React-debug"
+  s.dependency "React-timing"
 
   s.resource_bundles = {'React-cxxreact_privacy' => 'PrivacyInfo.xcprivacy'}
 

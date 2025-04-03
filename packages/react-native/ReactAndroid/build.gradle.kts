@@ -66,6 +66,7 @@ val prefabHeadersDir = project.file("$buildDir/prefab-headers")
 // Native versions which are defined inside the version catalog (libs.versions.toml)
 val BOOST_VERSION = libs.versions.boost.get()
 val DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
+val FAST_FLOAT_VERSION = libs.versions.fastFloat.get()
 val FMT_VERSION = libs.versions.fmt.get()
 val FOLLY_VERSION = libs.versions.folly.get()
 val GLOG_VERSION = libs.versions.glog.get()
@@ -179,6 +180,7 @@ val preparePrefab by
                       // react_nativemodule_core
                       Pair(File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+                      Pair(File(buildDir, "third-party-ndk/fast_float/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
@@ -303,6 +305,27 @@ val prepareFolly by
       eachFile { this.path = this.path.removePrefix("folly-${FOLLY_VERSION}/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/folly")
+    }
+val downloadFastFloat by
+    tasks.creating(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src("https://github.com/fastfloat/fast_float/archive/v${FAST_FLOAT_VERSION}.tar.gz")
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(File(downloadsDir, "fast_float-${FAST_FLOAT_VERSION}.tar.gz"))
+    }
+
+val prepareFastFloat by
+    tasks.registering(Copy::class) {
+      dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFastFloat))
+      from(dependenciesPath ?: tarTree(downloadFastFloat.dest))
+      from("src/main/jni/third-party/fast_float/")
+      include("fast_float-${FAST_FLOAT_VERSION}/include/**/*", "CMakeLists.txt")
+      eachFile { this.path = this.path.removePrefix("fast_float-${FAST_FLOAT_VERSION}/") }
+      includeEmptyDirs = false
+      into("$thirdPartyNdkDir/fast_float")
     }
 
 val downloadFmt by
@@ -541,6 +564,7 @@ android {
           "generateCodegenArtifactsFromSchema",
           prepareBoost,
           prepareDoubleConversion,
+          prepareFastFloat,
           prepareFmt,
           prepareFolly,
           prepareGlog,

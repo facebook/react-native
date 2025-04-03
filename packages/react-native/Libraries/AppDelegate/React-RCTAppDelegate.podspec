@@ -32,6 +32,7 @@ header_search_paths = [
   "$(PODS_ROOT)/Headers/Private/React-Core",
   "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/DoubleConversion",
+  "$(PODS_ROOT)/fast_float/include",
   "$(PODS_ROOT)/fmt/include",
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",

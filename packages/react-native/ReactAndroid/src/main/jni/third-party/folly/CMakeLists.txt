@@ -51,8 +51,7 @@ SET(folly_runtime_SRC
         folly/synchronization/SanitizeThread.cpp
         folly/synchronization/ParkingLot.cpp
         folly/system/AtFork.cpp
-        folly/system/ThreadId.cpp
-        folly/system/ThreadName.cpp)
+        folly/system/ThreadId.cpp)
 
 add_library(folly_runtime STATIC ${folly_runtime_SRC})
 
@@ -67,4 +66,4 @@ target_compile_options(folly_runtime
 target_compile_options(folly_runtime PUBLIC ${folly_FLAGS})
 
 target_include_directories(folly_runtime PUBLIC .)
-target_link_libraries(folly_runtime glog double-conversion boost fmt)
+target_link_libraries(folly_runtime glog double-conversion boost fmt fast_float)

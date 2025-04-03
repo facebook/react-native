@@ -80,13 +80,12 @@ class CodegenUtils
           "\"$(PODS_ROOT)/boost\"",
           "\"$(PODS_ROOT)/RCT-Folly\"",
           "\"$(PODS_ROOT)/DoubleConversion\"",
+          "\"$(PODS_ROOT)/fast_float/include\"",
           "\"$(PODS_ROOT)/fmt/include\"",
           "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
           "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
           "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
           "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-          "\"$(PODS_ROOT)/DoubleConversion\"",
-          "\"$(PODS_ROOT)/fmt/include\"",
           "\"$(PODS_TARGET_SRCROOT)\"",
         ]
         framework_search_paths = []

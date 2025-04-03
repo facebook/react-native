@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
     "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/DoubleConversion\"",
+    "\"$(PODS_ROOT)/fast_float/include\"",
     "\"$(PODS_ROOT)/fmt/include\""
   ]
 
@@ -61,10 +62,11 @@ Pod::Spec.new do |s|
                              "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
   s.dependency "glog"
-  s.dependency "RCT-Folly/Fabric", folly_version
+  s.dependency "RCT-Folly/Fabric"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float"
+  s.dependency "fmt"
 end

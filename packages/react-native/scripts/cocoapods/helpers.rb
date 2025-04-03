@@ -46,9 +46,13 @@ module Helpers
         }
 
         @@folly_config = {
-            :version => '2024.01.01.00',
+            :version => '2024.10.14.00',
             :git => 'https://github.com/facebook/folly.git',
             :compiler_flags => '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
+        }
+
+        @@fast_float_config = {
+            :git => "https://github.com/fastfloat/fast_float.git",
         }
 
         @@fmt_config = {
@@ -77,6 +81,14 @@ module Helpers
 
         def self.set_folly_config(new_folly_config)
             @@folly_config.update(new_folly_config)
+        end
+
+        def self.fast_float_config
+          return @@fast_float_config
+        end
+
+        def self.set_fast_float_config(new_fast_float_config)
+            @@fast_float_config.update(new_fast_float_config)
         end
 
         def self.boost_config
