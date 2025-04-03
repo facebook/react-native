@@ -2963,17 +2963,6 @@ public abstract interface class com/facebook/react/modules/debug/interfaces/Deve
 	public abstract fun setStartSamplingProfilerOnInit (Z)V
 }
 
-public final class com/facebook/react/modules/deviceinfo/DeviceInfoModule : com/facebook/fbreact/specs/NativeDeviceInfoSpec, com/facebook/react/bridge/LifecycleEventListener {
-	public fun <init> (Landroid/content/Context;)V
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public final fun emitUpdateDimensionsEvent ()V
-	public fun getTypedExportedConstants ()Ljava/util/Map;
-	public fun invalidate ()V
-	public fun onHostDestroy ()V
-	public fun onHostPause ()V
-	public fun onHostResume ()V
-}
-
 public class com/facebook/react/modules/dialog/AlertFragment : androidx/fragment/app/DialogFragment, android/content/DialogInterface$OnClickListener {
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/modules/dialog/DialogModule$AlertFragmentListener;Landroid/os/Bundle;)V
