@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const {REPO_ROOT} = require('../../../consts');
+const {REPO_ROOT} = require('../../consts');
 const debug = require('debug')('build-types:resolution');
 const fs = require('fs');
 const path = require('path');

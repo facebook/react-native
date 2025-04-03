@@ -13,7 +13,7 @@ import type {TransformVisitor} from 'hermes-transform';
 
 const {
   visitors: stripPrivateProperties,
-} = require('../../../../scripts/build/build-types/transforms/stripPrivateProperties');
+} = require('../../../../scripts/build-types/transforms/stripPrivateProperties');
 const translate = require('flow-api-translator');
 const {existsSync, promises: fs} = require('fs');
 const glob = require('glob');
