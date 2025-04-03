@@ -26,8 +26,5 @@ class ReactNativeFeatureFlagsOverridesOSSStable
   bool useNativeViewConfigsInBridgelessMode() override {
     return true;
   }
-  bool useFabricInterop() override {
-    return true;
-  }
 };
 } // namespace facebook::react

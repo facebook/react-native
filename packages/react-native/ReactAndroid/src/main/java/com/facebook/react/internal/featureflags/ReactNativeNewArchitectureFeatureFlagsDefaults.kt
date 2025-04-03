@@ -27,8 +27,6 @@ public open class ReactNativeNewArchitectureFeatureFlagsDefaults(
 
   override fun enableFabricRenderer(): Boolean = newArchitectureEnabled
 
-  override fun useFabricInterop(): Boolean = newArchitectureEnabled
-
   override fun useNativeViewConfigsInBridgelessMode(): Boolean =
       newArchitectureEnabled || super.useNativeViewConfigsInBridgelessMode()
 

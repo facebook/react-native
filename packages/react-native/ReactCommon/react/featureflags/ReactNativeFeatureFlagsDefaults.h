@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c7344e302f7ece9f41eec0dff5714d6e>>
+ * @generated SignedSource<<a98f50869ebeb68bd94bca19b7b40123>>
  */
 
 /**
@@ -172,7 +172,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useFabricInterop() override {
-    return false;
+    return true;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {

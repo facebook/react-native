@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3e23c7633c684049fdcbdd9655bfbe46>>
+ * @generated SignedSource<<c44a616fd7c941ead315be0b83ae15a7>>
  */
 
 /**
@@ -103,9 +103,7 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
 
 
 
-  bool useFabricInterop() override {
-    return true;
-  }
+
 
   bool useNativeViewConfigsInBridgelessMode() override {
     return true;
