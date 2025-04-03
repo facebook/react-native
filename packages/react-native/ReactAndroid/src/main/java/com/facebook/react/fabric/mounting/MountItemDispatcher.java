@@ -12,10 +12,11 @@ import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONME
 
 import android.os.SystemClock;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactIgnorableMountingException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MountItemDispatcher {
 
   private static final String TAG = "MountItemDispatcher";
@@ -39,14 +41,11 @@ public class MountItemDispatcher {
   private final MountingManager mMountingManager;
   private final ItemDispatchListener mItemDispatchListener;
 
-  @NonNull
   private final ConcurrentLinkedQueue<DispatchCommandMountItem> mViewCommandMountItems =
       new ConcurrentLinkedQueue<>();
 
-  @NonNull
   private final ConcurrentLinkedQueue<MountItem> mMountItems = new ConcurrentLinkedQueue<>();
 
-  @NonNull
   private final ConcurrentLinkedQueue<MountItem> mPreMountItems = new ConcurrentLinkedQueue<>();
 
   private boolean mInDispatch = false;
@@ -122,8 +121,8 @@ public class MountItemDispatcher {
   public void dispatchMountItems(Queue<MountItem> mountItems) {
     while (!mountItems.isEmpty()) {
       MountItem item = mountItems.poll();
+      Assertions.assertNotNull(item);
       try {
-        // NULLSAFE_FIXME[Nullable Dereference]
         item.execute(mMountingManager);
       } catch (RetryableMountingLayerException e) {
         if (item instanceof DispatchCommandMountItem) {
@@ -138,7 +137,6 @@ public class MountItemDispatcher {
           }
         } else {
           printMountItem(
-              // NULLSAFE_FIXME[Parameter Not Nullable]
               item, "dispatchExternalMountItems: mounting failed with " + e.getMessage());
         }
       }
@@ -345,8 +343,8 @@ public class MountItemDispatcher {
             item.getSurfaceId());
       }
       SurfaceMountingManager surfaceMountingManager =
-          mMountingManager.getSurfaceManager(item.getSurfaceId());
-      // NULLSAFE_FIXME[Nullable Dereference]
+          mMountingManager.getSurfaceManagerEnforced(
+              item.getSurfaceId(), "MountItemDispatcher::executeOrEnqueue");
       surfaceMountingManager.scheduleMountItemOnViewAttach(item);
     } else {
       item.execute(mMountingManager);
