@@ -1,6 +1,6 @@
 {
   "name": "react-native-info",
-  "version": "0.76.8",
+  "version": "0.76.9",
   "main": "build/index.js",
   "license": "MIT",
   "private": true,
