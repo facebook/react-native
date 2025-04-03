@@ -39,6 +39,9 @@ runs:
         New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\icu
         New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\deps
         New-Item -ItemType Directory -ErrorAction SilentlyContinue $Env:HERMES_WS_DIR\win64-bin
+    - name: Downgrade CMake
+      shell: powershell
+      run: choco install cmake --version 3.31.6 --force
     - name: Build HermesC for Windows
       shell: powershell
       run: |
