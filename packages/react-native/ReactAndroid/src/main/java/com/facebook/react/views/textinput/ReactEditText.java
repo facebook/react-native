@@ -125,7 +125,7 @@ public class ReactEditText extends AppCompatEditText {
   private boolean mOnKeyPress = false;
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
-  private boolean mForceSetTypeFaceOnDraw = false;
+  private boolean mForceSetTypeFaceOnLayout = false;
   private @Nullable String mFontFamily = null;
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
