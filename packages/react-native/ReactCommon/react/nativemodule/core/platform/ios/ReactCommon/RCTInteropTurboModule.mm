@@ -336,6 +336,10 @@ jsi::Value ObjCInteropTurboModule::create(jsi::Runtime &runtime, const jsi::Prop
 
 void ObjCInteropTurboModule::_logLegacyArchitectureWarning(NSString *moduleName, const std::string &methodName)
 {
+  if (!RCTAreLegacyLogsEnabled()) {
+    return;
+  }
+
   std::string separator = std::string(".");
 
   std::string moduleInvocation = [moduleName cStringUsingEncoding:NSUTF8StringEncoding] + separator + methodName;
