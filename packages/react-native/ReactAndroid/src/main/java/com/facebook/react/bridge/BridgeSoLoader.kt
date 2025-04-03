@@ -22,20 +22,10 @@ internal object BridgeSoLoader {
   @JvmStatic
   @Synchronized
   fun staticInit() {
-    if (initialized) {
-      return
-    }
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "BridgeSoLoader")
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_START)
     SoLoader.loadLibrary("reactnativejni")
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_END)
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE)
-    initialized = true
   }
-
-  @get:JvmStatic
-  @get:JvmName("isInitialized")
-  @Volatile
-  var initialized: Boolean = false
-    private set
 }

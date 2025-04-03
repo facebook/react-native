@@ -11,6 +11,8 @@ import android.os.SystemClock;
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
+
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -211,18 +213,17 @@ public class ReactMarker {
       now = SystemClock.uptimeMillis();
     }
 
-    if (BridgeSoLoader.isInitialized()) {
-      // First send the current marker
-      nativeLogMarker(name.name(), now);
+    // Load the reactnativejni_common library. This is idempotent so that SoLoader won't do
+    // anything if the library is already loaded.
+    SoLoader.loadLibrary("reactnativejni_common");
 
-      // Then send all cached native ReactMarkers
-      ReactMarkerRecord record;
-      while ((record = sNativeReactMarkerQueue.poll()) != null) {
-        nativeLogMarker(record.getMarkerName(), record.getMarkerTime());
-      }
-    } else {
-      // The native JNI method is not loaded at this point.
-      sNativeReactMarkerQueue.add(new ReactMarkerRecord(name.name(), now));
+    // First send the current marker
+    nativeLogMarker(name.name(), now);
+
+    // Then send all cached native ReactMarkers
+    ReactMarkerRecord record;
+    while ((record = sNativeReactMarkerQueue.poll()) != null) {
+      nativeLogMarker(record.getMarkerName(), record.getMarkerTime());
     }
   }
 
