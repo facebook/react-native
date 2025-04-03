@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f43ddaa47a45d604adda2e2296c1484>>
+ * @generated SignedSource<<8bc15cf2356e248a791c68f134c39a2f>>
  */
 
 /**
@@ -47,6 +47,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedEnabled(): Boolean = accessor.cxxNativeAnimatedEnabled()
+
+  /**
+   * Disable sync dispatch on the main queue on iOS
+   */
+  @JvmStatic
+  public fun disableMainQueueSyncDispatchIOS(): Boolean = accessor.disableMainQueueSyncDispatchIOS()
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
@@ -95,12 +101,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
-
-  /**
-   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
-   */
-  @JvmStatic
-  public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
 
   /**
    * Trigger JS runtime GC on memory pressure event on iOS

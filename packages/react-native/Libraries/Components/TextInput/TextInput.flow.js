@@ -23,13 +23,17 @@ import {
 } from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
+/**
+ * @see TextInputProps.onChange
+ */
 type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
 }>;
 
-type TextInputChangeEvent = NativeSyntheticEvent<TextInputChangeEventData>;
+export type TextInputChangeEvent =
+  NativeSyntheticEvent<TextInputChangeEventData>;
 
 export type TextInputEvent = NativeSyntheticEvent<
   $ReadOnly<{
@@ -52,19 +56,30 @@ type TextInputContentSizeChangeEventData = $ReadOnly<{
   }>,
 }>;
 
+/**
+ * @see TextInputProps.onContentSizeChange
+ */
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 
 type TargetEvent = $ReadOnly<{
   target: number,
+  ...
 }>;
 
 type TextInputFocusEventData = TargetEvent;
 
+/**
+ * @see TextInputProps.onBlur
+ */
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+
+/**
+ * @see TextInputProps.onFocus
+ */
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
-type Selection = $ReadOnly<{
+export type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
@@ -72,8 +87,12 @@ type Selection = $ReadOnly<{
 type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
+  ...
 }>;
 
+/**
+ * @see TextInputProps.onSelectionChange
+ */
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 
@@ -82,8 +101,12 @@ type TextInputKeyPressEventData = $ReadOnly<{
   key: string,
   target?: ?number,
   eventCount: number,
+  ...
 }>;
 
+/**
+ * @see TextInputProps.onKeyPress
+ */
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
 
@@ -91,6 +114,7 @@ type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
+  ...
 }>;
 
 /**
@@ -103,6 +127,7 @@ type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
+  ...
 }>;
 
 /**
@@ -488,11 +513,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 
-export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
-  ...TextInputIOSProps,
-  ...TextInputAndroidProps,
-
+type TextInputBaseProps = $ReadOnly<{
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
    *
@@ -777,31 +798,10 @@ export type TextInputProps = $ReadOnly<{
   onChange?: ?(e: TextInputChangeEvent) => mixed,
 
   /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   * Callback that is called when the text input's text changes.
-   *
-   * @platform ios
-   */
-  unstable_onChangeSync?: ?(e: TextInputChangeEvent) => mixed,
-
-  /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
   onChangeText?: ?(text: string) => mixed,
-
-  /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   * Callback that is called when the text input's text changes.
-   * Changed text is passed as an argument to the callback handler.
-   *
-   * @platform ios
-   */
-  unstable_onChangeTextSync?: ?(text: string) => mixed,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -830,21 +830,6 @@ export type TextInputProps = $ReadOnly<{
    * Fires before `onChange` callbacks.
    */
   onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
-
-  /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   *
-   * Callback that is called when a key is pressed.
-   * This will be called with `{ nativeEvent: { key: keyValue } }`
-   * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
-   * the typed-in character otherwise including `' '` for space.
-   * Fires before `onChange` callbacks.
-   *
-   * @platform ios
-   */
-  unstable_onKeyPressSync?: ?(e: TextInputKeyPressEvent) => mixed,
 
   /**
    * Called when a single tap gesture is detected.
@@ -1020,6 +1005,13 @@ export type TextInputProps = $ReadOnly<{
    * unwanted edits without flicker.
    */
   value?: ?Stringish,
+}>;
+
+export type TextInputProps = $ReadOnly<{
+  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
+  ...TextInputIOSProps,
+  ...TextInputAndroidProps,
+  ...TextInputBaseProps,
 }>;
 
 export interface TextInputInstance extends HostInstance {

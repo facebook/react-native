@@ -13,7 +13,7 @@
 import type {InspectorData} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
 
-import React from 'react';
+import * as React from 'react';
 
 const TouchableHighlight =
   require('../../../Libraries/Components/Touchable/TouchableHighlight').default;

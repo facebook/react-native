@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ import okhttp3.WebSocketListener;
 import okio.ByteString;
 
 /** A wrapper around WebSocketClient that reconnects automatically */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ReconnectingWebSocket extends WebSocketListener {
   private static final String TAG = ReconnectingWebSocket.class.getSimpleName();
 
@@ -138,7 +140,8 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   }
 
   @Override
-  public synchronized void onFailure(WebSocket webSocket, Throwable t, Response response) {
+  public synchronized void onFailure(
+      @Nullable WebSocket webSocket, Throwable t, @Nullable Response response) {
     if (mWebSocket != null) {
       abort("Websocket exception", t);
     }

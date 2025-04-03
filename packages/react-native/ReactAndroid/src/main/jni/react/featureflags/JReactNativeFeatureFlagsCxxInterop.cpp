@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2e1dacd320fd57c091996e3e8e2843a9>>
+ * @generated SignedSource<<34180cac91373696c9d55316b9faf66c>>
  */
 
 /**
@@ -57,6 +57,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool disableMainQueueSyncDispatchIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMainQueueSyncDispatchIOS");
+    return method(javaProvider_);
+  }
+
   bool disableMountItemReorderingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMountItemReorderingAndroid");
@@ -102,12 +108,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableIOSViewClipToPaddingBox() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSViewClipToPaddingBox");
-    return method(javaProvider_);
-  }
-
-  bool enableImagePrefetchingAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingAndroid");
     return method(javaProvider_);
   }
 
@@ -310,6 +310,11 @@ bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::disableMainQueueSyncDispatchIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
@@ -348,11 +353,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer(
 bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableJSRuntimeGCOnMemoryPressureOnIOS(
@@ -546,6 +546,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
       makeNativeMethod(
+        "disableMainQueueSyncDispatchIOS",
+        JReactNativeFeatureFlagsCxxInterop::disableMainQueueSyncDispatchIOS),
+      makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
       makeNativeMethod(
@@ -569,9 +572,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
-      makeNativeMethod(
-        "enableImagePrefetchingAndroid",
-        JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid),
       makeNativeMethod(
         "enableJSRuntimeGCOnMemoryPressureOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableJSRuntimeGCOnMemoryPressureOnIOS),

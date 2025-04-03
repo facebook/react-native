@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca15768ea69f30904f9f6453287ca834>>
+ * @generated SignedSource<<aa11071b2b2561cd2433c74d56a0df80>>
  */
 
 /**
@@ -35,6 +35,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool commonTestFlag();
   bool animatedShouldSignalBatch();
   bool cxxNativeAnimatedEnabled();
+  bool disableMainQueueSyncDispatchIOS();
   bool disableMountItemReorderingAndroid();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
   bool enableBridgelessArchitecture();
@@ -43,7 +44,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFabricLogs();
   bool enableFabricRenderer();
   bool enableIOSViewClipToPaddingBox();
-  bool enableImagePrefetchingAndroid();
   bool enableJSRuntimeGCOnMemoryPressureOnIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
@@ -90,6 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
+  std::atomic<std::optional<bool>> disableMainQueueSyncDispatchIOS_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
@@ -98,7 +99,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
-  std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
   std::atomic<std::optional<bool>> enableJSRuntimeGCOnMemoryPressureOnIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;

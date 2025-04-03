@@ -25,7 +25,7 @@ import type {
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 
-import React from 'react';
+import * as React from 'react';
 
 export type PressRetentionOffset = $ReadOnly<{
   top: number,

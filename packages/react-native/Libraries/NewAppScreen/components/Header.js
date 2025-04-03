@@ -14,7 +14,7 @@ import Text from '../../Text/Text';
 import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
 import HermesBadge from './HermesBadge';
-import React from 'react';
+import * as React from 'react';
 
 const Header = (): React.Node => {
   const isDarkMode = useColorScheme() === 'dark';

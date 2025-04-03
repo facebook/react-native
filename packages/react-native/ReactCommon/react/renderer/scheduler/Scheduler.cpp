@@ -320,6 +320,14 @@ void Scheduler::uiManagerDidSetIsJSResponder(
   }
 }
 
+void Scheduler::uiManagerShouldSynchronouslyUpdateViewOnUIThread(
+    Tag tag,
+    const folly::dynamic& props) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldSynchronouslyUpdateViewOnUIThread(tag, props);
+  }
+}
+
 void Scheduler::reportMount(SurfaceId surfaceId) const {
   uiManager_->reportMount(surfaceId);
 }

@@ -243,7 +243,12 @@ jobs:
     uses: ./.github/workflows/generate-changelog.yml
     secrets: inherit
 
-  bump-podfile-lock:
+  bump_podfile_lock:
     needs: build_npm_package
     uses: ./.github/workflows/bump-podfile-lock.yml
+    secrets: inherit
+
+  create_draft_release:
+    needs: generate_changelog
+    uses: ./.github/workflows/create-draft-release.yml
     secrets: inherit

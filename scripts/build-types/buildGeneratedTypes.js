@@ -9,7 +9,8 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
+const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
+const {ENTRY_POINT, IGNORE_PATTERNS, TYPES_OUTPUT_DIR} = require('./config');
 const getRequireStack = require('./resolution/getRequireStack');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
@@ -17,36 +18,29 @@ const {promises: fs} = require('fs');
 const micromatch = require('micromatch');
 const path = require('path');
 
-const OUTPUT_DIR = 'types_generated';
-
-const IGNORE_PATTERNS = [
-  '**/__{tests,mocks,fixtures,flowtests}__/**',
-  '**/*.{macos,windows}.js',
-
-  // TODO(T210505449): Enable remaining library entry points
-  'packages/react-native/Libraries/Animated/Animated.js',
-  'packages/react-native/Libraries/StyleSheet/PlatformColorValueTypesIOS.js',
-  'packages/react-native/Libraries/StyleSheet/processColor.js',
-  'packages/react-native/Libraries/StyleSheet/StyleSheet.js',
-  'packages/react-native/Libraries/Components/TextInput/TextInput.js',
-  'packages/react-native/Libraries/Components/TextInput/InputAccessoryView.js',
-];
-
-const ENTRY_POINTS = ['packages/react-native/index.js.flow'];
-
 /**
- * [Experimental] Build generated TypeScript types for react-native.
+ * Build generated TypeScript types for react-native.
+ *
+ * Bundles the react-native package and its type dependencies into an output
+ * directory of TypeScript definition files which will be published to npm.
+ *
+ * We translate Flow source code to TypeScript using
+ * [flow-api-translator](https://www.npmjs.com/package/flow-api-translator)
+ * along with our own pre and post-processing.
  */
-async function buildTypes(): Promise<void> {
-  const files = new Set<string>(
-    ENTRY_POINTS.map(file => path.join(REPO_ROOT, file)),
-  );
+async function buildGeneratedTypes(): Promise<void> {
+  const files = new Set<string>([path.join(REPO_ROOT, ENTRY_POINT)]);
   const translatedFiles = new Set<string>();
   const dependencyEdges: DependencyEdges = [];
+  const allErrors: Array<ModuleTranslationError> = [];
 
   while (files.size > 0) {
-    const dependencies = await translateSourceFiles(dependencyEdges, files);
+    const {dependencies, errors} = await translateSourceFiles(
+      dependencyEdges,
+      files,
+    );
     dependencyEdges.push(...dependencies);
+    allErrors.push(...errors);
 
     files.forEach(file => translatedFiles.add(file));
     files.clear();
@@ -63,18 +57,27 @@ async function buildTypes(): Promise<void> {
 
   await fs.copyFile(
     path.join(__dirname, 'templates/tsconfig.json'),
-    path.join(PACKAGES_DIR, 'react-native', OUTPUT_DIR, 'tsconfig.json'),
+    path.join(PACKAGES_DIR, 'react-native', TYPES_OUTPUT_DIR, 'tsconfig.json'),
   );
+
+  if (allErrors.length > 0) {
+    process.exitCode = 1;
+  }
 }
 
 type DependencyEdges = Array<[string, string]>;
+type TranslateFilesResult = {
+  dependencies: DependencyEdges,
+  errors: Array<ModuleTranslationError>,
+};
 
 async function translateSourceFiles(
   dependencyEdges: DependencyEdges,
   inputFiles: Iterable<string>,
-): Promise<DependencyEdges> {
+): Promise<TranslateFilesResult> {
   const files = new Set<string>([...inputFiles]);
   const dependencies: DependencyEdges = [];
+  const errors: Array<ModuleTranslationError> = [];
 
   await Promise.all(
     Array.from(files).map(async file => {
@@ -99,19 +102,15 @@ async function translateSourceFiles(
           }),
         );
       } catch (e) {
-        console.error(`Failed to build ${path.relative(REPO_ROOT, file)}\n`, e);
-        const requireStack = getRequireStack(dependencyEdges, file);
-        if (requireStack.length > 0) {
-          console.error('Require stack:');
-          for (const stackEntry of requireStack) {
-            console.error(`- ${stackEntry}`);
-          }
-        }
+        const error = new ModuleTranslationError(file, e);
+        error.requireStack = getRequireStack(dependencyEdges, file);
+        errors.push(error);
+        console.error(error.formatError());
       }
     }),
   );
 
-  return dependencies;
+  return {dependencies, errors};
 }
 
 function getPackageName(file: string): string {
@@ -124,7 +123,7 @@ function getBuildPath(file: string): string {
   return path.join(
     packageDir,
     file
-      .replace(packageDir, OUTPUT_DIR)
+      .replace(packageDir, TYPES_OUTPUT_DIR)
       .replace(/\.js\.flow$/, '.js')
       .replace(/\.js$/, '.d.ts'),
   );
@@ -144,4 +143,32 @@ function extractTripleSlashDirectives(source: string): Array<string> {
   return directives.map(directive => directive.replace(/^\/\/\//g, '').trim());
 }
 
-module.exports = buildTypes;
+class ModuleTranslationError extends Error {
+  requireStack: Array<string> = [];
+  originalError: Error;
+
+  constructor(filePath: string, originalError: Error) {
+    super(`Failed to build ${path.relative(REPO_ROOT, filePath)}`);
+    this.name = 'ModuleTranslationError';
+    this.originalError = originalError;
+  }
+
+  formatError(): string {
+    let output = `${this.name}: ${this.message}`;
+
+    if (this.originalError?.stack != null) {
+      output += `\n  ${this.originalError.stack}`;
+    }
+
+    if (this.requireStack.length > 0) {
+      output += '\n  Require stack:';
+      for (const stackEntry of this.requireStack) {
+        output += `\n  - ${stackEntry}`;
+      }
+    }
+
+    return output;
+  }
+}
+
+module.exports = buildGeneratedTypes;

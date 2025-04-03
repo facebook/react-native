@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db41f69099c193919e931d3879541fe3>>
+ * @generated SignedSource<<a98f50869ebeb68bd94bca19b7b40123>>
  */
 
 /**
@@ -39,6 +39,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableMainQueueSyncDispatchIOS() override {
+    return false;
+  }
+
   bool disableMountItemReorderingAndroid() override {
     return false;
   }
@@ -68,10 +72,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableIOSViewClipToPaddingBox() override {
-    return false;
-  }
-
-  bool enableImagePrefetchingAndroid() override {
     return false;
   }
 

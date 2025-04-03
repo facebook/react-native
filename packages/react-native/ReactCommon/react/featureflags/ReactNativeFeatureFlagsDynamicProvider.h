@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03140604c630ec88815c53be4177f2c1>>
+ * @generated SignedSource<<8d19b32f41249aca2af9dcc429c8f8d1>>
  */
 
 /**
@@ -70,6 +70,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedEnabled();
+  }
+
+  bool disableMainQueueSyncDispatchIOS() override {
+    auto value = values_["disableMainQueueSyncDispatchIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableMainQueueSyncDispatchIOS();
   }
 
   bool disableMountItemReorderingAndroid() override {
@@ -142,15 +151,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
-  }
-
-  bool enableImagePrefetchingAndroid() override {
-    auto value = values_["enableImagePrefetchingAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingAndroid();
   }
 
   bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {

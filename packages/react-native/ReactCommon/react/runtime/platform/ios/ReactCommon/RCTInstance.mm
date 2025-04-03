@@ -322,24 +322,29 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
      * will wait until this module init finishes, before executing the js bundle.
      */
     NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
-    if ([modulesRequiringMainQueueSetup count] > 0) {
-      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-      _waitUntilModuleSetupComplete = ^{
-        if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
-          RCTLogError(
-              @"Timed out waiting for native modules to be setup on the main queue: %@",
-              modulesRequiringMainQueueSetup);
-        };
-      };
 
-      // TODO(T218039767): Integrate perf logging into main queue module init
-      RCTExecuteOnMainQueue(^{
-        for (NSString *moduleName in modulesRequiringMainQueueSetup) {
-          [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
-        }
-        dispatch_semaphore_signal(semaphore);
-      });
-    }
+    std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
+    std::shared_ptr<std::condition_variable> cv = std::make_shared<std::condition_variable>();
+    std::shared_ptr<bool> isReady = std::make_shared<bool>(false);
+
+    _waitUntilModuleSetupComplete = ^{
+      std::unique_lock<std::mutex> lock(*mutex);
+      cv->wait(lock, [isReady] { return *isReady; });
+    };
+
+    // TODO(T218039767): Integrate perf logging into main queue module init
+    RCTExecuteOnMainQueue(^{
+      for (NSString *moduleName in modulesRequiringMainQueueSetup) {
+        [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
+      }
+
+      RCTScreenSize();
+      RCTScreenScale();
+
+      std::lock_guard<std::mutex> lock(*mutex);
+      *isReady = true;
+      cv->notify_all();
+    });
   }
 
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);

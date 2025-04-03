@@ -9,6 +9,7 @@ package com.facebook.react.views.swiperefresh
 
 import android.view.MotionEvent
 import android.view.ViewConfiguration
+import android.view.ViewGroup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.PixelUtil

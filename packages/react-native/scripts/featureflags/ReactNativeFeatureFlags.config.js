@@ -81,6 +81,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableMainQueueSyncDispatchIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-02',
+        description: 'Disable sync dispatch on the main queue on iOS',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {
@@ -158,17 +168,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-08-30',
         description: 'iOS Views will clip to their padding box vs border box',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableImagePrefetchingAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-11-19',
-        description:
-          'When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -432,10 +431,10 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.',
-        expectedReleaseValue: true,
+        expectedReleaseValue: false,
         purpose: 'release',
       },
-      ossReleaseStage: 'canary',
+      ossReleaseStage: 'none',
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,

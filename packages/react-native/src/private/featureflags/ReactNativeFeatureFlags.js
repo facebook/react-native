@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b4da778c80a82ff5c93c7d799ff0c580>>
+ * @generated SignedSource<<5e3d982c0dfc71417fc6a1838758c6f4>>
  * @flow strict
  */
 
@@ -50,6 +50,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
+  disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -58,7 +59,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
-  enableImagePrefetchingAndroid: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
@@ -173,6 +173,10 @@ export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
 /**
+ * Disable sync dispatch on the main queue on iOS
+ */
+export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlagGetter('disableMainQueueSyncDispatchIOS', false);
+/**
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
@@ -204,10 +208,6 @@ export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('ena
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
-/**
- * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
- */
-export const enableImagePrefetchingAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingAndroid', false);
 /**
  * Trigger JS runtime GC on memory pressure event on iOS
  */

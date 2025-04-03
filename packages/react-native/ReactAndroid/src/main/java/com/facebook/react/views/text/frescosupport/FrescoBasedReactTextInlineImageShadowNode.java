@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode;
@@ -30,6 +31,7 @@ import java.util.Locale;
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
+@LegacyArchitecture
 class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;

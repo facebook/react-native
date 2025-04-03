@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1465adf7db643faefb579cafd9ef9dcf>>
+ * @generated SignedSource<<f12093c4d572ad5ee667739473b0e31f>>
  */
 
 /**
@@ -43,6 +43,8 @@ class NativeReactNativeFeatureFlags
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
+  bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
+
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
@@ -58,8 +60,6 @@ class NativeReactNativeFeatureFlags
   bool enableFabricRenderer(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
-
-  bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
 
   bool enableJSRuntimeGCOnMemoryPressureOnIOS(jsi::Runtime& runtime);
 

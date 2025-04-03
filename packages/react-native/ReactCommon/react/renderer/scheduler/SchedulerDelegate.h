@@ -64,6 +64,10 @@ class SchedulerDelegate {
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 
+  virtual void schedulerShouldSynchronouslyUpdateViewOnUIThread(
+      Tag tag,
+      const folly::dynamic& props) = 0;
+
   virtual ~SchedulerDelegate() noexcept = default;
 };
 

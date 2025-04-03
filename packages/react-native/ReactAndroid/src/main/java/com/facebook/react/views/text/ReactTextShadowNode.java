@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
  * <p>The class measures text in {@code <Text>} view and feeds native {@link TextView} using {@code
  * Spannable} object constructed in superclass.
  */
+@LegacyArchitecture
 public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it

@@ -7,7 +7,6 @@
 
 package com.facebook.react.modules.deviceinfo
 
-import android.content.Context
 import com.facebook.fbreact.specs.NativeDeviceInfoSpec
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
@@ -20,22 +19,14 @@ import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNot
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = NativeDeviceInfoSpec.NAME)
-public class DeviceInfoModule : NativeDeviceInfoSpec, LifecycleEventListener {
-  private var reactApplicationContext: ReactApplicationContext? = null
-  private var fontScale: Float
+internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
+    NativeDeviceInfoSpec(reactContext), LifecycleEventListener {
+  private var fontScale: Float = reactContext.resources.configuration.fontScale
   private var previousDisplayMetrics: ReadableMap? = null
 
-  public constructor(reactContext: ReactApplicationContext) : super(reactContext) {
+  init {
     initDisplayMetricsIfNotInitialized(reactContext)
-    fontScale = reactContext.resources.configuration.fontScale
     reactContext.addLifecycleEventListener(this)
-    reactApplicationContext = reactContext
-  }
-
-  public constructor(context: Context) : super(null) {
-    reactApplicationContext = null
-    initDisplayMetricsIfNotInitialized(context)
-    fontScale = context.resources.configuration.fontScale
   }
 
   public override fun getTypedExportedConstants(): Map<String, Any> {
@@ -58,7 +49,7 @@ public class DeviceInfoModule : NativeDeviceInfoSpec, LifecycleEventListener {
 
   override fun onHostDestroy(): Unit = Unit
 
-  public fun emitUpdateDimensionsEvent() {
+  fun emitUpdateDimensionsEvent() {
     reactApplicationContext?.let { context ->
       if (context.hasActiveReactInstance()) {
         // Don't emit an event to JS if the dimensions haven't changed

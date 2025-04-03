@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae8953b9c5b0efae6fe67b9b799426d7>>
+ * @generated SignedSource<<637a883106342d65133f54a8e931a5d4>>
  */
 
 /**
@@ -38,6 +38,10 @@ bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
   return getAccessor().cxxNativeAnimatedEnabled();
 }
 
+bool ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS() {
+  return getAccessor().disableMainQueueSyncDispatchIOS();
+}
+
 bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
 }
@@ -68,10 +72,6 @@ bool ReactNativeFeatureFlags::enableFabricRenderer() {
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
-}
-
-bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
-  return getAccessor().enableImagePrefetchingAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS() {

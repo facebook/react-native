@@ -1118,7 +1118,10 @@ class VirtualizedList extends StateSafePureComponent<
           (
             this.props.renderScrollComponent ||
             this._defaultRenderScrollComponent
-          )(scrollProps) as ExactReactElement_DEPRECATED<any>,
+          )(
+            // $FlowExpectedError[prop-missing] scrollProps is a superset of ScrollViewProps
+            scrollProps,
+          ) as ExactReactElement_DEPRECATED<any>,
           {
             ref: this._captureScrollRef,
           },

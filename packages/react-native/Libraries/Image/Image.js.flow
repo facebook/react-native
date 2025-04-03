@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {Image} from './ImageTypes.flow';
+import type {ImageType} from './ImageTypes.flow';
 
 export type {
   ImageProgressEventIOS,
@@ -24,4 +24,4 @@ export type {
 
 export type {ImageResolvedAssetSource, ImageSize} from './ImageTypes.flow';
 
-declare export default Image;
+declare export default ImageType;

@@ -17,7 +17,7 @@ import com.facebook.react.R
 @TargetApi(29)
 internal object BlendModeHelper {
 
-  /** @see https://www.w3.org/TR/compositing-1/#mix-blend-mode */
+  /** @see <a href="https://www.w3.org/TR/compositing-1/#mix-blend-mode">mix-blend-mode</a> */
   @JvmStatic
   fun parseMixBlendMode(mixBlendMode: String?): BlendMode? {
     if (mixBlendMode == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {

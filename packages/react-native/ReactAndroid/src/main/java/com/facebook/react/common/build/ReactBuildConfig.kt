@@ -23,7 +23,7 @@ public object ReactBuildConfig {
   @JvmField public val IS_INTERNAL_BUILD: Boolean = BuildConfig.IS_INTERNAL_BUILD
 
   /**
-   * [true] if Perfetto was enabled on this build (`WITH_PERFETTO=1`), indicating it is a profiling
+   * `true` if Perfetto was enabled on this build (`WITH_PERFETTO=1`), indicating it is a profiling
    * build.
    */
   @JvmField public val ENABLE_PERFETTO: Boolean = BuildConfig.ENABLE_PERFETTO

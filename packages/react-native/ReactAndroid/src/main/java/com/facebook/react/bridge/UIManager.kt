@@ -124,7 +124,8 @@ public interface UIManager : PerformanceCounter {
    *
    * @param reactTag tag
    * @return view if found
-   * @throws IllegalViewOperationException if tag could not be resolved.
+   * @throws [com.facebook.react.uimanager.IllegalViewOperationException] if tag could not be
+   *   resolved.
    */
   public fun resolveView(reactTag: Int): View?
 

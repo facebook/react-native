@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc7536e8280fdc7d3f2106486439676a>>
+ * @generated SignedSource<<881026a6a7c333595552737f29539b79>>
  */
 
 /**
@@ -55,6 +55,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool cxxNativeAnimatedEnabled();
 
   /**
+   * Disable sync dispatch on the main queue on iOS
+   */
+  RN_EXPORT static bool disableMainQueueSyncDispatchIOS();
+
+  /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
@@ -93,11 +98,6 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
-
-  /**
-   * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
-   */
-  RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
    * Trigger JS runtime GC on memory pressure event on iOS

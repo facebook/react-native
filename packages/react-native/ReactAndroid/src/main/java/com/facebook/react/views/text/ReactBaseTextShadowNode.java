@@ -21,6 +21,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -64,6 +65,7 @@ import java.util.Map;
  * <p>This also node calculates {@link Spannable} object based on subnodes of the same type, which
  * can be used in concrete classes to feed native views and compute layout.
  */
+@LegacyArchitecture
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   // Use a direction weak character so the placeholder doesn't change the direction of the previous

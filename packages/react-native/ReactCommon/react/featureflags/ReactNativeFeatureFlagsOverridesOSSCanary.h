@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<072a24fe2750a87888dba8d93ae0dd7b>>
+ * @generated SignedSource<<c44a616fd7c941ead315be0b83ae15a7>>
  */
 
 /**
@@ -26,6 +26,8 @@ namespace facebook::react {
 class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlagsOverridesOSSStable {
  public:
     ReactNativeFeatureFlagsOverridesOSSCanary() = default;
+
+
 
 
 
@@ -102,10 +104,6 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
 
 
 
-
-  bool useFabricInterop() override {
-    return true;
-  }
 
   bool useNativeViewConfigsInBridgelessMode() override {
     return true;

@@ -11,6 +11,7 @@
 #import <mach/mach_time.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <zlib.h>
 
 #import <UIKit/UIKit.h>
@@ -49,6 +50,18 @@ void RCTSetNewArchEnabled(BOOL enabled)
   // This function is now deprecated and will be removed in the future.
   // This function is now no-op. You need to modify the Info.plist adding a `RCTNewArchEnabled` bool property to control
   // whether the New Arch is enabled or not.
+}
+
+static BOOL _legacyWarningEnabled = true;
+BOOL RCTAreLegacyLogsEnabled(void)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSNumber *rctNewArchEnabled =
+        (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"];
+    _legacyWarningEnabled = rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  });
+  return _legacyWarningEnabled;
 }
 
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
@@ -112,7 +125,7 @@ NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error)
   }
 }
 
-static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable, NSError **error)
+static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL isMutable, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
   static SEL JSONKitMutableSelector = NULL;
@@ -133,7 +146,7 @@ static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable
         unichar c = [jsonString characterAtIndex:i];
         if (strchr("{[", c)) {
           static const int options = (1 << 2); // loose unicode
-          SEL selector = mutable ? JSONKitMutableSelector : JSONKitSelector;
+          SEL selector = isMutable ? JSONKitMutableSelector : JSONKitSelector;
           return ((id(*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
         }
         if (!strchr(" \r\n\t", c)) {
@@ -162,7 +175,7 @@ static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable
       }
     }
     NSJSONReadingOptions options = NSJSONReadingAllowFragments;
-    if (mutable) {
+    if (isMutable) {
       options |= NSJSONReadingMutableContainers;
     }
     return [NSJSONSerialization JSONObjectWithData:jsonData options:options error:error];
@@ -295,6 +308,25 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
   if (RCTIsMainQueue()) {
     block();
   } else {
+    if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+      RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: Sync dispatches to the main queue can deadlock React Native.");
+    }
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      block();
+    });
+  }
+}
+
+// Please do not use this method
+// unless you know what you are doing.
+void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *context)
+{
+  if (RCTIsMainQueue()) {
+    block();
+  } else {
+    if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+      RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: %@", context);
+    }
     dispatch_sync(dispatch_get_main_queue(), ^{
       block();
     });
@@ -310,6 +342,10 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
     dispatch_once(onceToken, block);
   } else {
     if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+      if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+        RCTLogError(
+            @"RCTUnsafeExecuteOnMainQueueOnceSync: Sync dispatches to the main queue can deadlock React Native.");
+      }
       dispatch_sync(dispatch_get_main_queue(), ^{
         dispatch_once(onceToken, block);
       });
@@ -317,18 +353,11 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   }
 }
 
-static dispatch_once_t onceTokenScreenScale;
-static CGFloat screenScale;
-
-void RCTComputeScreenScale(void)
-{
-  dispatch_once(&onceTokenScreenScale, ^{
-    screenScale = [UITraitCollection currentTraitCollection].displayScale;
-  });
-}
-
 CGFloat RCTScreenScale(void)
 {
+  static dispatch_once_t onceTokenScreenScale;
+  static CGFloat screenScale;
+
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
     screenScale = [UITraitCollection currentTraitCollection].displayScale;
   });
@@ -393,12 +422,6 @@ CGFloat RCTCeilPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();
   return ceil(value * scale) / scale;
-}
-
-CGFloat RCTFloorPixelValue(CGFloat value)
-{
-  CGFloat scale = RCTScreenScale();
-  return floor(value * scale) / scale;
 }
 
 CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
@@ -687,9 +710,15 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
   }
 
   void *libz = dlopen("/usr/lib/libz.dylib", RTLD_LAZY);
-  int (*deflateInit2_)(z_streamp, int, int, int, int, int, const char *, int) = dlsym(libz, "deflateInit2_");
-  int (*deflate)(z_streamp, int) = dlsym(libz, "deflate");
-  int (*deflateEnd)(z_streamp) = dlsym(libz, "deflateEnd");
+
+  typedef int (*DeflateInit2_)(z_streamp, int, int, int, int, int, const char *, int);
+  DeflateInit2_ deflateInit2_ = (DeflateInit2_)dlsym(libz, "deflateInit2_");
+
+  typedef int (*Deflate)(z_streamp, int);
+  Deflate deflate = (Deflate)dlsym(libz, "deflate");
+
+  typedef int (*DeflateEnd)(z_streamp);
+  DeflateEnd deflateEnd = (DeflateEnd)dlsym(libz, "deflateEnd");
 
   z_stream stream;
   stream.zalloc = Z_NULL;

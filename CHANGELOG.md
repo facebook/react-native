@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.79.0-rc.4
+
+### Fixed
+
+#### iOS specific
+
+- **Network:** Back out "fix: avoid race condition crash in [RCTDataRequestHandler invalidate]" ([53eaf3e](https://github.com/facebook/react-native/commit/53eaf3e4e444e5cf26e70a94d09f60af976edf2b) by [@cipolleschi](https://github.com/cipolleschi))
+- **CocoaPods:** `JSRuntimeFactoryCAPI.h` build error for  `use_frameworks` build ([7786805337](https://github.com/facebook/react-native/commit/7786805337526fa6e8ed758407b78884a37b89ef) by [@Kudo](https://github.com/Kudo))
+
+
 ## v0.79.0-rc.3
 
 ### Changed
@@ -286,6 +296,24 @@ ChuiHW))
 - **TextInput:** Fix selection makes TextInput clear its content when using children ([e3b176a598](https://github.com/facebook/react-native/commit/e3b176a598bd47338b52522f05893f781e3a7744) by Olivier Bouillet)
 - **TextInput:** Fixed TextInput's `onContentSizeChange` event being dispatched multiple times with the same size ([2bb65717b7](https://github.com/facebook/react-native/commit/2bb65717b7b86d19e4d35707003df7d5be31c2fb) by [@j-piasecki](https://github.com/j-piasecki))
 - **TextInput:** Implement `dataDetectorTypes` in the same way as the old architecture ([2ae45ec3ce](https://github.com/facebook/react-native/commit/2ae45ec3ce50cb9d95782173f6dfca74e8110848) by [@VidocqH](https://github.com/VidocqH))
+
+## v0.78.2
+
+### Changed
+- **Deps:** Metro minimum to 0.81.3, fix "_interopRequireDefault is not a function" ([23c9dbc563](https://github.com/facebook/react-native/commit/23c9dbc563637a6b8c22c1b9d86fa03b65bde520) by [@robhogan](https://github.com/robhogan))
+
+### Fixed
+
+#### Android specific
+
+- **Runtime:** Fixes issue with z-indexed sibling removal ([34ae9facd5](https://github.com/facebook/react-native/commit/34ae9facd52b5da28b5ced22110532bbcdad2cec) by [@rozele](https://github.com/rozele))
+
+#### iOS specific
+
+- **RCTNetworking:** app crash caused by the `[RCTFileRequestHanlder invalidate]` method ([5861f7eea7](https://github.com/facebook/react-native/commit/5861f7eea79767f14a06719937cbdabed39be9c9) by [@zhouzh1](https://github.com/zhouzh1))
+- **Runtime:** Implement the `loadSourceForBridge:onProgress:onComplete` in the `RCTDefaultReactNativeFactoryDelegate`. ([8b33668c43](https://github.com/facebook/react-native/commit/8b33668c4338d31c27e6bd90b2a0e6fc0a077588) by [@cipolleschi](https://github.com/cipolleschi))
+- **Text:** Fix selection makes TextInput clear its content when using children ([301532b51fe33cd08152c7dde2b15d57105332dd](https://github.com/facebook/react-native/commit/301532b51fe33cd08152c7dde2b15d57105332dd) by [freeboub](https://github.com/freeboub))
+- **TurboModules:** Make sure the TM infra does not crash on NSException when triggered by async method ([ae1841ac964](https://github.com/facebook/react-native/commit/ae1841ac9645c10d66aeef784579b94fa0169e03) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.78.1
 
@@ -845,6 +873,25 @@ github.com/robhogan))
 - **TextInput:** Fixed problem with third party libraries overwriting `inputAccessoryView` ([d34032b6c0](https://github.com/facebook/react-native/commit/d34032b6c0bb3564a7b77ef270cc3289d99365f2) by [@kirillzyusko](https://github.com/kirillzyusko))
 - **TextInput:** Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
 - **TextInput:** Fix `maxLength` not working in old arch ([4b3ef3b00c](https://github.com/facebook/react-native/commit/4b3ef3b00ce0026c0d1e1f2a5546fcec249255d8) by [@mateoguzmana](https://github.com/mateoguzmana))
+
+## v0.76.9
+
+### Changed
+
+- **Deps:** Bump folly to 2024.10.18. This allow to use Xcode 16.3 with React Native ([73b41b5808](https://github.com/facebook/react-native/commit/73b41b5808e37d8d40d9c504ce5299ba2c315efd) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Bump fmt to 11.0.2. This allow to use Xcode 16.3 with React Native ([73b41b5808](https://github.com/facebook/react-native/commit/73b41b5808e37d8d40d9c504ce5299ba2c315efd) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Add dependency to fast_float v6.1.4, as it is required by folly. This allow to use Xcode 16.3 with React Native ([73b41b5808](https://github.com/facebook/react-native/commit/73b41b5808e37d8d40d9c504ce5299ba2c315efd) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### Android specific
+
+- **Deps:** Move CMakeLists for fast_float to third-party folder ([71abbab169](https://github.com/facebook/react-native/commit/71abbab169960e7bd48f18ad72eafe042836ec7f) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Fix Folly CMakeLists ([21919be5ee](https://github.com/facebook/react-native/commit/21919be5ee646c0c6b6235298b66371d44cf153e) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### iOS specific
+
+- **Runtime:** Fixed crash caused by the request operation canceling ([2bddb0012e](https://github.com/facebook/react-native/commit/2bddb0012e2e6b87d2c4ddb8ff788fc16f211f12) by [@zhouzh1](https://github.com/zhouzh1))
 
 ## v0.76.8
 
