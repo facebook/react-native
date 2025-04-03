@@ -874,6 +874,25 @@ github.com/robhogan))
 - **TextInput:** Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
 - **TextInput:** Fix `maxLength` not working in old arch ([4b3ef3b00c](https://github.com/facebook/react-native/commit/4b3ef3b00ce0026c0d1e1f2a5546fcec249255d8) by [@mateoguzmana](https://github.com/mateoguzmana))
 
+## v0.76.9
+
+### Changed
+
+- **Deps:** Bump folly to 2024.10.18. This allow to use Xcode 16.3 with React Native ([73b41b5808](https://github.com/facebook/react-native/commit/73b41b5808e37d8d40d9c504ce5299ba2c315efd) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Bump fmt to 11.0.2. This allow to use Xcode 16.3 with React Native ([73b41b5808](https://github.com/facebook/react-native/commit/73b41b5808e37d8d40d9c504ce5299ba2c315efd) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Add dependency to fast_float v6.1.4, as it is required by folly. This allow to use Xcode 16.3 with React Native ([73b41b5808](https://github.com/facebook/react-native/commit/73b41b5808e37d8d40d9c504ce5299ba2c315efd) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### Android specific
+
+- **Deps:** Move CMakeLists for fast_float to third-party folder ([71abbab169](https://github.com/facebook/react-native/commit/71abbab169960e7bd48f18ad72eafe042836ec7f) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Fix Folly CMakeLists ([21919be5ee](https://github.com/facebook/react-native/commit/21919be5ee646c0c6b6235298b66371d44cf153e) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### iOS specific
+
+- **Runtime:** Fixed crash caused by the request operation canceling ([2bddb0012e](https://github.com/facebook/react-native/commit/2bddb0012e2e6b87d2c4ddb8ff788fc16f211f12) by [@zhouzh1](https://github.com/zhouzh1))
+
 ## v0.76.8
 
 ### Fixed
