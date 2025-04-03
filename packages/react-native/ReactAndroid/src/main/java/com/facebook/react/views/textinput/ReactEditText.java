@@ -640,7 +640,7 @@ public class ReactEditText extends AppCompatEditText {
     Typeface newTypeface =
         ReactTypefaceUtils.applyStyles(
             getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
-    setTypeface(mTypeface);
+    setTypeface(newTypeface);
 
     // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
     // nonstandard
