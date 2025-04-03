@@ -10,21 +10,13 @@
  */
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
+const {ENTRY_POINT, IGNORE_PATTERNS, TYPES_OUTPUT_DIR} = require('./config');
 const getRequireStack = require('./resolution/getRequireStack');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
 const {promises: fs} = require('fs');
 const micromatch = require('micromatch');
 const path = require('path');
-
-const OUTPUT_DIR = 'types_generated';
-
-const IGNORE_PATTERNS = [
-  '**/__{tests,mocks,fixtures,flowtests}__/**',
-  '**/*.{macos,windows}.js',
-];
-
-const ENTRY_POINTS = ['packages/react-native/index.js.flow'];
 
 /**
  * Build generated TypeScript types for react-native.
@@ -37,9 +29,7 @@ const ENTRY_POINTS = ['packages/react-native/index.js.flow'];
  * along with our own pre and post-processing.
  */
 async function buildGeneratedTypes(): Promise<void> {
-  const files = new Set<string>(
-    ENTRY_POINTS.map(file => path.join(REPO_ROOT, file)),
-  );
+  const files = new Set<string>([path.join(REPO_ROOT, ENTRY_POINT)]);
   const translatedFiles = new Set<string>();
   const dependencyEdges: DependencyEdges = [];
   const allErrors: Array<ModuleTranslationError> = [];
@@ -67,7 +57,7 @@ async function buildGeneratedTypes(): Promise<void> {
 
   await fs.copyFile(
     path.join(__dirname, 'templates/tsconfig.json'),
-    path.join(PACKAGES_DIR, 'react-native', OUTPUT_DIR, 'tsconfig.json'),
+    path.join(PACKAGES_DIR, 'react-native', TYPES_OUTPUT_DIR, 'tsconfig.json'),
   );
 
   if (allErrors.length > 0) {
@@ -133,7 +123,7 @@ function getBuildPath(file: string): string {
   return path.join(
     packageDir,
     file
-      .replace(packageDir, OUTPUT_DIR)
+      .replace(packageDir, TYPES_OUTPUT_DIR)
       .replace(/\.js\.flow$/, '.js')
       .replace(/\.js$/, '.d.ts'),
   );
