@@ -38,8 +38,6 @@ const PAGES_LIST_JSON_URL = '/json';
 const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 
-const PROXY_IDLE_TIMEOUT_MS = 10000;
-
 const HEARTBEAT_TIME_BETWEEN_PINGS_MS = 5000;
 const HEARTBEAT_TIMEOUT_MS = 60000;
 const MIN_PING_TO_REPORT = 500;
@@ -89,7 +87,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #logger: ?Logger;
 
-  #lastMessageTimestamp: number = 0;
+  #lastMessageTimestamp: number | null = null;
 
   #eventLoopPerfTracker: EventLoopPerfTracker;
 
@@ -283,10 +281,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response.end(data);
   }
 
-  /* returns true if proxy didn't receive any messages from
-   * either the device or debugger for PROXY_IDLE_TIMEOUT_MS */
-  #isIdle(): boolean {
-    return Date.now() - this.#lastMessageTimestamp > PROXY_IDLE_TIMEOUT_MS;
+  #getTimeSinceLastCommunication(): number | null {
+    const timestamp = this.#lastMessageTimestamp;
+    return timestamp == null ? null : Date.now() - timestamp;
   }
 
   #onMessageFromDeviceOrDebugger(
@@ -390,20 +387,17 @@ export default class InspectorProxy implements InspectorProxyQueries {
           minHighPingToReport: MIN_PING_TO_REPORT,
           timeoutMs: HEARTBEAT_TIMEOUT_MS,
           onHighPing: roundtripDuration => {
-            const isIdle = this.#isIdle();
-
             debug(
-              "[high ping] [ Device ] %sms for app='%s' on device='%s' with idle='%s'",
+              "[high ping] [ Device ] %sms for app='%s' on device='%s'",
               String(roundtripDuration).padStart(5),
               debuggerSessionIDs.appId,
               debuggerSessionIDs.deviceName,
-              isIdle ? 'true' : 'false',
             );
 
             this.#eventReporter?.logEvent({
               type: 'device_high_ping',
               duration: roundtripDuration,
-              isIdle,
+              timeSinceLastCommunication: this.#getTimeSinceLastCommunication(),
               connectionUptime: Date.now() - wssTimestamp,
               ...debuggerSessionIDs,
             });
@@ -416,20 +410,17 @@ export default class InspectorProxy implements InspectorProxyQueries {
             // inform any clients.
             socket.terminate();
 
-            const isIdle = this.#isIdle();
-
             this.#logger?.error(
-              "[timeout] connection terminated with Device for app='%s' on device='%s' with idle='%s' after not responding for %s seconds.",
+              "[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.",
               debuggerSessionIDs.appId ?? 'unknown',
               debuggerSessionIDs.deviceName ?? 'unknown',
-              isIdle ? 'true' : 'false',
               String(roundtripDuration / 1000),
             );
 
             this.#eventReporter?.logEvent({
               type: 'device_timeout',
               duration: roundtripDuration,
-              isIdle,
+              timeSinceLastCommunication: this.#getTimeSinceLastCommunication(),
               connectionUptime: Date.now() - wssTimestamp,
               ...debuggerSessionIDs,
             });
@@ -459,7 +450,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
             type: 'device_connection_closed',
             code,
             reason,
-            isIdle: this.#isIdle(),
+            timeSinceLastCommunication: this.#getTimeSinceLastCommunication(),
             connectionUptime: Date.now() - wssTimestamp,
             ...debuggerSessionIDs,
           });
@@ -537,20 +528,17 @@ export default class InspectorProxy implements InspectorProxyQueries {
           minHighPingToReport: MIN_PING_TO_REPORT,
           timeoutMs: HEARTBEAT_TIMEOUT_MS,
           onHighPing: roundtripDuration => {
-            const isIdle = this.#isIdle();
-
             debug(
-              "[high ping] [DevTools] %sms for app='%s' on device='%s' with idle='%s'",
+              "[high ping] [DevTools] %sms for app='%s' on device='%s'",
               String(roundtripDuration).padStart(5),
               debuggerSessionIDs.appId,
               debuggerSessionIDs.deviceName,
-              isIdle ? 'true' : 'false',
             );
 
             this.#eventReporter?.logEvent({
               type: 'debugger_high_ping',
               duration: roundtripDuration,
-              isIdle,
+              timeSinceLastCommunication: this.#getTimeSinceLastCommunication(),
               connectionUptime: Date.now() - wssTimestamp,
               ...debuggerSessionIDs,
             });
@@ -563,20 +551,17 @@ export default class InspectorProxy implements InspectorProxyQueries {
             // inform any clients.
             socket.terminate();
 
-            const isIdle = this.#isIdle();
-
             this.#logger?.error(
-              "[timeout] connection terminated with DevTools for app='%s' on device='%s' with idle='%s' after not responding for %s seconds.",
+              "[timeout] connection terminated with DevTools for app='%s' on device='%s' after not responding for %s seconds.",
               debuggerSessionIDs.appId ?? 'unknown',
               debuggerSessionIDs.deviceName ?? 'unknown',
-              isIdle ? 'true' : 'false',
               String(roundtripDuration / 1000),
             );
 
             this.#eventReporter?.logEvent({
               type: 'debugger_timeout',
               duration: roundtripDuration,
-              isIdle,
+              timeSinceLastCommunication: this.#getTimeSinceLastCommunication(),
               connectionUptime: Date.now() - wssTimestamp,
               ...debuggerSessionIDs,
             });
@@ -611,7 +596,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
             type: 'debugger_connection_closed',
             code,
             reason,
-            isIdle: this.#isIdle(),
+            timeSinceLastCommunication: this.#getTimeSinceLastCommunication(),
             connectionUptime: Date.now() - wssTimestamp,
             ...debuggerSessionIDs,
           });
