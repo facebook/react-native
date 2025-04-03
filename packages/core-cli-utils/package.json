@@ -10,7 +10,7 @@
     "directory": "packages/core-cli-utils"
   },
   "exports": {
-    ".": "./src/index.flow.js",
+    ".": "./src/index.js",
     "./package.json": "./package.json",
     "./version.js": "./src/public/version.js"
   },
