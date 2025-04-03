@@ -141,11 +141,13 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   // TODO(T174674274): Implement lazy loading of legacy view managers in the new architecture.
   if (RCTFabricInteropLayerEnabled() && [RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
     RCTLogNewArchitectureValidation(
-        RCTNotAllowedInBridgeless,
+        RCTNotAllowedInFabricWithoutLegacy,
         self,
         [NSString
             stringWithFormat:
-                @"Legacy ViewManagers should be migrated to Fabric ComponentViews in the new architecture to reduce risk. Component using interop layer: %@",
+                @"The `%@` component is loaded in the app using the Fabric Interop layer. This is part of the compatibility layer with the Legacy Architecture. If `%@` is a local component, please migrate it to be a Native Component as described at https://reactnative.dev/docs/next/fabric-native-components-introduction. If `%@` is a third party dependency, please open an issue in the library repository.",
+                componentNameString,
+                componentNameString,
                 componentNameString]);
 
     auto flavor = std::make_shared<const std::string>(name);
