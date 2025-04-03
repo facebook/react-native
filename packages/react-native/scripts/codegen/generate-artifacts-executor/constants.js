@@ -25,7 +25,10 @@ const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..', '..');
 const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
 
 const RNCORE_CONFIGS = {
-  ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
+  ios: path.join(
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+    'ReactCommon/react/renderer/components/rncore'
+  ),
   android: path.join(
     REACT_NATIVE_PACKAGE_ROOT_FOLDER,
     'ReactAndroid',
