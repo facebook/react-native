@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.bridge.ReactContext;
@@ -23,6 +24,7 @@ import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class BlobProvider extends ContentProvider {
 
   private static final int PIPE_CAPACITY = 65536;
@@ -72,7 +74,9 @@ public final class BlobProvider extends ContentProvider {
     if (context instanceof ReactApplication) {
       ReactNativeHost host = ((ReactApplication) context).getReactNativeHost();
       ReactContext reactContext = host.getReactInstanceManager().getCurrentReactContext();
-      // NULLSAFE_FIXME[Nullable Dereference]
+      if (reactContext == null) {
+        throw new RuntimeException("No ReactContext associated with BlobProvider");
+      }
       blobModule = reactContext.getNativeModule(BlobModule.class);
     }
 
@@ -87,7 +91,6 @@ public final class BlobProvider extends ContentProvider {
 
     ParcelFileDescriptor[] pipe;
     try {
-      // NULLSAFE_FIXME[Not Vetted Third-Party]
       pipe = ParcelFileDescriptor.createPipe();
     } catch (IOException exception) {
       return null;
