@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
+const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
 const getRequireStack = require('./resolution/getRequireStack');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
@@ -27,9 +27,16 @@ const IGNORE_PATTERNS = [
 const ENTRY_POINTS = ['packages/react-native/index.js.flow'];
 
 /**
- * [Experimental] Build generated TypeScript types for react-native.
+ * Build generated TypeScript types for react-native.
+ *
+ * Bundles the react-native package and its type dependencies into an output
+ * directory of TypeScript definition files which will be published to npm.
+ *
+ * We translate Flow source code to TypeScript using
+ * [flow-api-translator](https://www.npmjs.com/package/flow-api-translator)
+ * along with our own pre and post-processing.
  */
-async function buildTypes(): Promise<void> {
+async function buildGeneratedTypes(): Promise<void> {
   const files = new Set<string>(
     ENTRY_POINTS.map(file => path.join(REPO_ROOT, file)),
   );
@@ -174,4 +181,4 @@ class ModuleTranslationError extends Error {
   }
 }
 
-module.exports = buildTypes;
+module.exports = buildGeneratedTypes;

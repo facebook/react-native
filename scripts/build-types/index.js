@@ -11,7 +11,7 @@
 
 require('../babel-register').registerForScript();
 
-const buildTypes = require('./build-types/buildTypes');
+const buildGeneratedTypes = require('./buildGeneratedTypes');
 const chalk = require('chalk');
 const debug = require('debug');
 const {parseArgs} = require('util');
@@ -30,7 +30,7 @@ async function main() {
 
   if (help) {
     console.log(`
-  Usage: node ./scripts/build/build-types.js
+  Usage: node ./scripts/build-types
 
   [Experimental] Build generated TypeScript types for react-native.
     `);
@@ -62,7 +62,7 @@ async function main() {
     );
   }
 
-  await buildTypes();
+  await buildGeneratedTypes();
 }
 
 if (require.main === module) {
