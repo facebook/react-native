@@ -25,7 +25,7 @@ internal class TaskCompletionSource<TResult>() {
   fun trySetResult(result: TResult?): Boolean = task.trySetResult(result)
 
   /** Sets the error on the Task if the Task hasn't already been completed. */
-  fun trySetError(error: Exception?): Boolean = task.trySetError(error)
+  fun trySetError(error: Exception): Boolean = task.trySetError(error)
 
   /** Sets the cancelled flag on the task, throwing if the Task has already been completed. */
   fun setCancelled(): Unit {
@@ -42,7 +42,7 @@ internal class TaskCompletionSource<TResult>() {
   }
 
   /** Sets the error of the Task, throwing if the Task has already been completed. */
-  fun setError(error: Exception?): Unit {
+  fun setError(error: Exception): Unit {
     if (!trySetError(error)) {
       throw IllegalStateException("Cannot set the error on a completed task.")
     }
