@@ -14,8 +14,12 @@ runs:
       shell: bash
       run: |
         sudo apt update
-        sudo apt install -y git openssh-client cmake build-essential \
+        sudo apt install -y git openssh-client build-essential \
             libreadline-dev libicu-dev jq zip python3
+
+        # Install cmake 3.28.3-1build7
+        sudo apt-get install cmake=3.28.3-1build7
+        sudo ln -sf /usr/bin/cmake /usr/local/bin/cmake
     - name: Restore Hermes workspace
       uses: ./.github/actions/restore-hermes-workspace
     - name: Linux cache
