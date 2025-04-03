@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<04b05f74eacf566f99d00c630dcb61f4>>
+ * @generated SignedSource<<f82b5905d822f8009c054a9443f86e39>>
  */
 
 /**
@@ -26,8 +26,6 @@ public open class ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android : ReactN
   override fun enableBridgelessArchitecture(): Boolean = true
 
   override fun enableFabricRenderer(): Boolean = true
-
-  override fun useFabricInterop(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = true
 
