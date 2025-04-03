@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -260,6 +259,12 @@ public class ReactEditText extends AppCompatEditText {
       selectAll();
       // Prevent text on being selected for next layout pass
       mSelectTextOnFocus = false;
+    }
+
+    // Resolves issue with custom fonts not being applied, especially on hint text
+    if (mForceSetTypeFaceOnLayout) {
+      mForceSetTypeFaceOnLayout = false;
+      setTypeface(mTypeface);
     }
   }
 
@@ -644,13 +649,6 @@ public class ReactEditText extends AppCompatEditText {
             getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
     setTypeface(mTypeface);
 
-    // Ensure the hint uses the same typeface
-    if (getHint() != null) {
-      SpannableString hintSpan = new SpannableString(getHint());
-      hintSpan.setSpan(new ReactEditHintTypefaceSpan(mTypeface), 0, hintSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-      setHint(hintSpan);
-    }
-
     // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
     // nonstandard
     if (mFontStyle != ReactConstants.UNSET
@@ -662,7 +660,7 @@ public class ReactEditText extends AppCompatEditText {
       setPaintFlags(getPaintFlags() & (~Paint.SUBPIXEL_TEXT_FLAG));
     }
 
-    mForceSetTypeFaceOnDraw = true;
+    mForceSetTypeFaceOnLayout = true;
   }
 
   public void requestFocusFromJS() {
@@ -1342,13 +1340,6 @@ public class ReactEditText extends AppCompatEditText {
   public void onDraw(Canvas canvas) {
     if (mOverflow != Overflow.VISIBLE) {
       BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
-    }
-
-
-    // Force the typeface to be set on draw when using a custom typeface
-    if (mForceSetTypeFaceOnDraw) {
-      mForceSetTypeFaceOnDraw = false;
-      setTypeface(mTypeface);
     }
 
     super.onDraw(canvas);
