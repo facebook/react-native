@@ -616,9 +616,12 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedScrollView.js 1`] = `
-"type Props = React.ElementConfig<typeof ScrollView>;
-type Instance = React.ElementRef<typeof ScrollView>;
-declare const AnimatedScrollView: AnimatedComponentType<Props, Instance>;
+"type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
+type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
+declare const AnimatedScrollView: AnimatedComponentType<
+  AnimatedScrollViewProps,
+  AnimatedScrollViewInstance,
+>;
 declare export default typeof AnimatedScrollView;
 "
 `;
@@ -1946,16 +1949,33 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   animated?: boolean;
 }
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: ScrollView[\\"getScrollResponder\\"];
-  +getScrollableNode: ScrollView[\\"getScrollableNode\\"];
-  +getInnerViewNode: ScrollView[\\"getInnerViewNode\\"];
-  +getInnerViewRef: ScrollView[\\"getInnerViewRef\\"];
-  +getNativeScrollRef: ScrollView[\\"getNativeScrollRef\\"];
-  +scrollTo: ScrollView[\\"scrollTo\\"];
-  +scrollToEnd: ScrollView[\\"scrollToEnd\\"];
-  +flashScrollIndicators: ScrollView[\\"flashScrollIndicators\\"];
-  +scrollResponderZoomTo: ScrollView[\\"scrollResponderZoomTo\\"];
-  +scrollResponderScrollNativeHandleToKeyboard: ScrollView[\\"scrollResponderScrollNativeHandleToKeyboard\\"];
+  +getScrollResponder: () => ScrollResponderType;
+  +getScrollableNode: () => ?number;
+  +getInnerViewNode: () => ?number;
+  +getInnerViewRef: () => InnerViewInstance | null;
+  +getNativeScrollRef: () => HostInstance | null;
+  +scrollTo: (
+    options?: ScrollViewScrollToOptions | number,
+    deprecatedX?: number,
+    deprecatedAnimated?: boolean
+  ) => void;
+  +scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
+  +flashScrollIndicators: () => void;
+  +scrollResponderZoomTo: (
+    rect: {
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      animated?: boolean,
+    },
+    animated?: boolean
+  ) => void;
+  +scrollResponderScrollNativeHandleToKeyboard: (
+    nodeHandle: number | HostInstance,
+    additionalOffset?: number,
+    preventNegativeScrollOffset?: boolean
+  ) => void;
 }
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
@@ -2052,66 +2072,14 @@ export type ScrollViewProps = $ReadOnly<{
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
-type ScrollViewState = {
-  layoutHeight: ?number,
-};
 export type ScrollViewComponentStatics = $ReadOnly<{
   Context: typeof ScrollViewContext,
 }>;
-declare class ScrollView
-  extends React.Component<ScrollViewProps, ScrollViewState>
-{
-  static Context: typeof ScrollViewContext;
-  constructor(props: ScrollViewProps): void;
-  state: ScrollViewState;
-  componentDidMount(): void;
-  componentDidUpdate(prevProps: ScrollViewProps): void;
-  componentWillUnmount(): void;
-  getScrollResponder: () => ScrollResponderType;
-  getScrollableNode: () => ?number;
-  getInnerViewNode: () => ?number;
-  getInnerViewRef: () => InnerViewInstance | null;
-  getNativeScrollRef: () => HostInstance | null;
-  scrollTo: (
-    options?: ScrollViewScrollToOptions | number,
-    deprecatedX?: number,
-    deprecatedAnimated?: boolean
-  ) => void;
-  scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
-  flashScrollIndicators: () => void;
-  scrollResponderScrollNativeHandleToKeyboard: (
-    nodeHandle: number | HostInstance,
-    additionalOffset?: number,
-    preventNegativeScrollOffset?: boolean
-  ) => void;
-  scrollResponderZoomTo: (
-    rect: {
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      animated?: boolean,
-    },
-    animated?: boolean
-  ) => void;
-  scrollResponderKeyboardWillShow: (e: KeyboardEvent) => void;
-  scrollResponderKeyboardWillHide: (e: KeyboardEvent) => void;
-  scrollResponderKeyboardDidShow: (e: KeyboardEvent) => void;
-  scrollResponderKeyboardDidHide: (e: KeyboardEvent) => void;
-  render(): React.Node;
-}
-type RefForwarder<TNativeInstance, TPublicInstance> = {
-  getForwardingRef: (
-    ?React.RefSetter<TPublicInstance>
-  ) => (TNativeInstance | null) => void,
-  nativeInstance: TNativeInstance | null,
-  publicInstance: TPublicInstance | null,
-};
-declare const Wrapper: component(
+declare const ScrollViewWrapper: component(
   ref?: React.RefSetter<PublicScrollViewInstance>,
   ...props: ScrollViewProps
 );
-declare export default typeof Wrapper & ScrollViewComponentStatics;
+declare export default typeof ScrollViewWrapper & ScrollViewComponentStatics;
 "
 `;
 
@@ -9156,6 +9124,7 @@ export type {
 export { default as RefreshControl } from \\"./Libraries/Components/RefreshControl/RefreshControl\\";
 export { default as SafeAreaView } from \\"./Libraries/Components/SafeAreaView/SafeAreaView\\";
 export type {
+  ScrollResponderType,
   ScrollViewProps,
   ScrollViewPropsAndroid,
   ScrollViewPropsIOS,
