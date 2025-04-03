@@ -621,7 +621,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   //   * Taking `layer.zIndex` field into an account is not required because
   //     lists of `ShadowView`s are already sorted based on `zIndex` prop.
 
-  if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+  if (!self.userInteractionEnabled || self.hidden) {
     return nil;
   }
 
