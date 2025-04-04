@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8bc15cf2356e248a791c68f134c39a2f>>
+ * @generated SignedSource<<0274d00d328b83c1c653737200ce9b5b>>
  */
 
 /**
@@ -161,12 +161,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableSynchronousStateUpdates(): Boolean = accessor.enableSynchronousStateUpdates()
-
-  /**
-   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
-   */
-  @JvmStatic
-  public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
 
   /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.

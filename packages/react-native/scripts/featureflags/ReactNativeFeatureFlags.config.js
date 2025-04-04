@@ -276,17 +276,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableUIConsistency: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-25',
-        description:
-          'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableViewCulling: {
       defaultValue: false,
       metadata: {

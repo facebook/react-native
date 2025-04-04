@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<881026a6a7c333595552737f29539b79>>
+ * @generated SignedSource<<f898916fad826270649a0eb84719bc80>>
  */
 
 /**
@@ -148,11 +148,6 @@ class ReactNativeFeatureFlags {
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   RN_EXPORT static bool enableSynchronousStateUpdates();
-
-  /**
-   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
-   */
-  RN_EXPORT static bool enableUIConsistency();
 
   /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<92f9ae1833854159495119059d39bba9>>
+ * @generated SignedSource<<7b5f542e6fab922f017e2b037b822293>>
  */
 
 /**
@@ -42,7 +42,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
-  private var enableUIConsistencyCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
@@ -257,15 +256,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableSynchronousStateUpdates()
       enableSynchronousStateUpdatesCache = cached
-    }
-    return cached
-  }
-
-  override fun enableUIConsistency(): Boolean {
-    var cached = enableUIConsistencyCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableUIConsistency()
-      enableUIConsistencyCache = cached
     }
     return cached
   }

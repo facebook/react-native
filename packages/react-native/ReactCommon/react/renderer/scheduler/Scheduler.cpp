@@ -56,10 +56,8 @@ Scheduler::Scheduler(
 
   runtimeScheduler_ = weakRuntimeScheduler.value().lock().get();
 
-  if (ReactNativeFeatureFlags::enableUIConsistency()) {
-    runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
-        uiManager->getShadowTreeRevisionConsistencyManager());
-  }
+  runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
+      uiManager->getShadowTreeRevisionConsistencyManager());
 
   if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d094e8d5d6d4fdc6de0eb5e7c3677ef6>>
+ * @generated SignedSource<<db6135bdc1d847d4f112850b806dd3f1>>
  */
 
 /**
@@ -66,8 +66,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableReportEventPaintTime(): Boolean
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
-
-  @DoNotStrip public fun enableUIConsistency(): Boolean
 
   @DoNotStrip public fun enableViewCulling(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<34180cac91373696c9d55316b9faf66c>>
+ * @generated SignedSource<<c9710a7f21cd1652bc03c6467a903ee2>>
  */
 
 /**
@@ -168,12 +168,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableSynchronousStateUpdates() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSynchronousStateUpdates");
-    return method(javaProvider_);
-  }
-
-  bool enableUIConsistency() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableUIConsistency");
     return method(javaProvider_);
   }
 
@@ -405,11 +399,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableSynchronousStateUpdates(
   return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableUIConsistency();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableViewCulling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableViewCulling();
@@ -602,9 +591,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableSynchronousStateUpdates",
         JReactNativeFeatureFlagsCxxInterop::enableSynchronousStateUpdates),
-      makeNativeMethod(
-        "enableUIConsistency",
-        JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),
       makeNativeMethod(
         "enableViewCulling",
         JReactNativeFeatureFlagsCxxInterop::enableViewCulling),
