@@ -13,7 +13,7 @@ export declare type AccessibilityAnnouncementEventName = 'announcementFinished';
 export declare type AccessibilityAnnouncementFinishedEventHandler = (
   event: AccessibilityAnnouncementFinishedEvent
 ) => void;
-export declare type AccessibilityChangeEvent = string;
+export declare type AccessibilityChangeEvent = boolean;
 
 declare const stagger: (
     time: number,
