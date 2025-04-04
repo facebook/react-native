@@ -307,7 +307,7 @@ folly::dynamic PerformanceTracer::serializeTraceEvent(
 
   if (event.id.has_value()) {
     std::array<char, 16> buffer{};
-    snprintf(buffer.data(), buffer.size(), "0x%08x", event.id.value());
+    snprintf(buffer.data(), buffer.size(), "0x%x", event.id.value());
     result["id"] = buffer.data();
   }
   result["name"] = event.name;
