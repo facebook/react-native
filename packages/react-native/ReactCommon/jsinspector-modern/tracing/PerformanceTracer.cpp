@@ -301,7 +301,8 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
   });
 }
 
-folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
+folly::dynamic PerformanceTracer::serializeTraceEvent(
+    const TraceEvent& event) const {
   folly::dynamic result = folly::dynamic::object;
 
   if (event.id.has_value()) {

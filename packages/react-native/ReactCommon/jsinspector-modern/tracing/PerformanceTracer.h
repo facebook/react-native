@@ -126,7 +126,7 @@ class PerformanceTracer {
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
-  folly::dynamic serializeTraceEvent(TraceEvent event) const;
+  folly::dynamic serializeTraceEvent(const TraceEvent& event) const;
 
   bool tracing_{false};
   uint64_t processId_;
