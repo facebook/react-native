@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f898916fad826270649a0eb84719bc80>>
+ * @generated SignedSource<<2cb475fe28309af74249013e06ea6e69>>
  */
 
 /**
@@ -193,11 +193,6 @@ class ReactNativeFeatureFlags {
    * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
    */
   RN_EXPORT static bool removeTurboModuleManagerDelegateMutex();
-
-  /**
-   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
-   */
-  RN_EXPORT static bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

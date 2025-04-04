@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca5e033ab15204739218965c99b79324>>
+ * @generated SignedSource<<2fc4a56feb9686df603170c2ec8295ab>>
  */
 
 /**
@@ -148,10 +148,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool removeTurboModuleManagerDelegateMutex() override {
-    return false;
-  }
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
     return false;
   }
 
