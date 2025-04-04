@@ -2873,14 +2873,6 @@ public final class com/facebook/react/modules/core/TimingModule : com/facebook/f
 public final class com/facebook/react/modules/core/TimingModule$Companion {
 }
 
-public final class com/facebook/react/modules/debug/DevMenuModule : com/facebook/fbreact/specs/NativeDevMenuSpec {
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
-	public fun reload ()V
-	public fun setHotLoadingEnabled (Z)V
-	public fun setProfilingEnabled (Z)V
-	public fun show ()V
-}
-
 public final class com/facebook/react/modules/debug/DevSettingsModule : com/facebook/fbreact/specs/NativeDevSettingsSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
 	public fun addListener (Ljava/lang/String;)V
