@@ -9,7 +9,6 @@ package com.facebook.react.bridge
 
 import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.soloader.SoLoader
 
 /** Base class for a Map whose keys and values are stored in native code (C++). */
 @DoNotStrip
@@ -18,7 +17,7 @@ public abstract class NativeMap : HybridClassBase() {
 
   private companion object {
     init {
-      SoLoader.loadLibrary("reactnativejni_common")
+      ReactNativeJniCommonSoLoader.staticInit()
     }
   }
 }

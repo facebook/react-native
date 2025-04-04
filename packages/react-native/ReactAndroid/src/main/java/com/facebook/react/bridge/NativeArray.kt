@@ -9,7 +9,6 @@ package com.facebook.react.bridge
 
 import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.soloader.SoLoader
 
 /** Base class for an array whose members are stored in native code (C++). */
 @DoNotStrip
@@ -20,7 +19,7 @@ public abstract class NativeArray protected constructor() :
 
   private companion object {
     init {
-      SoLoader.loadLibrary("reactnativejni_common")
+      ReactNativeJniCommonSoLoader.staticInit()
     }
   }
 }
