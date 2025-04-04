@@ -107,7 +107,7 @@ public class BlobModule extends NativeBlobModuleSpec {
         }
 
         @Override
-        public RequestBody toRequestBody(ReadableMap data, String contentType) {
+        public RequestBody toRequestBody(ReadableMap data, @Nullable String contentType) {
           String type = contentType;
           if (data.hasKey("type")
               && data.getString("type") != null
