@@ -121,6 +121,7 @@ function execute(
         platform,
       );
 
+      let librariesSupportedApplePlatforms = {};
       if (runReactNativeCodegen) {
         const schemaInfos = generateSchemaInfos(libraries);
         generateNativeCode(
@@ -131,11 +132,23 @@ function execute(
           pkgJsonIncludesGeneratedCode(pkgJson),
           platform,
         );
+
+        librariesSupportedApplePlatforms = schemaInfos.reduce(
+          (acc, {library, supportedApplePlatforms}) => {
+            acc[library.config.name] = supportedApplePlatforms;
+            return acc;
+          },
+          {},
+        );
       }
 
       if (source === 'app' && platform !== 'android') {
         // These components are only required by apps, not by libraries and are Apple specific.
-        generateRCTThirdPartyComponents(libraries, outputPath);
+        generateRCTThirdPartyComponents(
+          libraries,
+          librariesSupportedApplePlatforms,
+          outputPath,
+        );
         generateRCTModuleProviders(projectRoot, pkgJson, libraries, outputPath);
         generateCustomURLHandlers(libraries, outputPath);
         generateUnstableModulesRequiringMainQueueSetupProvider(
