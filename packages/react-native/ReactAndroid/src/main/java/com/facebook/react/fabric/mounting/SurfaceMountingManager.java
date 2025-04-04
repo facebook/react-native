@@ -14,12 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.collection.SparseArrayCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -56,6 +56,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SurfaceMountingManager {
   public static final String TAG = SurfaceMountingManager.class.getSimpleName();
 
@@ -66,14 +67,15 @@ public class SurfaceMountingManager {
 
   @Nullable private ThemedReactContext mThemedReactContext;
 
-  // These are all non-null, until StopSurface is called
-  private ConcurrentHashMap<Integer, ViewState> mTagToViewState =
+  private final ConcurrentHashMap<Integer, ViewState> mTagToViewState =
       new ConcurrentHashMap<>(); // any thread
-  private Queue<MountItem> mOnViewAttachMountItems = new ArrayDeque<>();
+  private final Queue<MountItem> mOnViewAttachMountItems = new ArrayDeque<>();
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
-  private RootViewManager mRootViewManager;
-  private MountItemExecutor mMountItemExecutor;
+
+  // These are non-null, until StopSurface is called
+  private @Nullable RootViewManager mRootViewManager;
+  private @Nullable MountItemExecutor mMountItemExecutor;
 
   @ThreadConfined(UI)
   private final Set<Integer> mErroneouslyReaddedReactTags = new HashSet<>();
@@ -90,18 +92,17 @@ public class SurfaceMountingManager {
   private final Set<Integer> mViewsToDeleteAfterTouchFinishes = new HashSet<>();
 
   // This is null *until* StopSurface is called.
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private SparseArrayCompat<Object> mTagSetForStoppedSurface;
+  private @Nullable SparseArrayCompat<Object> mTagSetForStoppedSurface;
 
   private final int mSurfaceId;
 
   public SurfaceMountingManager(
       int surfaceId,
-      @NonNull JSResponderHandler jsResponderHandler,
-      @NonNull ViewManagerRegistry viewManagerRegistry,
-      @NonNull RootViewManager rootViewManager,
-      @NonNull MountItemExecutor mountItemExecutor,
-      @NonNull ThemedReactContext reactContext) {
+      JSResponderHandler jsResponderHandler,
+      ViewManagerRegistry viewManagerRegistry,
+      RootViewManager rootViewManager,
+      MountItemExecutor mountItemExecutor,
+      ThemedReactContext reactContext) {
     mSurfaceId = surfaceId;
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
@@ -182,11 +183,13 @@ public class SurfaceMountingManager {
   }
 
   @AnyThread
-  private void addRootView(@NonNull final View rootView) {
+  private void addRootView(final View rootView) {
     if (isStopped()) {
       return;
     }
-
+    // mRootViewManager is non-null until StopSurface is called, which we know hasn't happened yet
+    // due to the isStopped() check above
+    Assertions.assertNotNull(mRootViewManager);
     mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
 
     Runnable runnable =
@@ -253,6 +256,10 @@ public class SurfaceMountingManager {
   @UiThread
   @ThreadConfined(UI)
   private void executeMountItemsOnViewAttach() {
+    Assertions.assertNotNull(
+        mMountItemExecutor,
+        "executeMountItemsOnViewAttach was called after StopSurface, and this wasn't checked by the"
+            + " caller with isStopped().");
     mMountItemExecutor.executeItems(mOnViewAttachMountItems);
   }
 
@@ -315,15 +322,12 @@ public class SurfaceMountingManager {
           }
 
           // Evict all views from cache and memory
-          // TODO: clear instead of nulling out to simplify null-safety in this class
-          // NULLSAFE_FIXME[Field Not Nullable]
-          mTagToViewState = null;
-          // NULLSAFE_FIXME[Field Not Nullable]
-          mJSResponderHandler = null;
-          // NULLSAFE_FIXME[Field Not Nullable]
+          mTagToViewState.clear();
+          mJSResponderHandler.clearJSResponder();
+
           mRootViewManager = null;
-          // NULLSAFE_FIXME[Field Not Nullable]
           mMountItemExecutor = null;
+
           mThemedReactContext = null;
           mOnViewAttachMountItems.clear();
 
@@ -616,9 +620,9 @@ public class SurfaceMountingManager {
 
   @UiThread
   public void createView(
-      @NonNull String componentName,
+      String componentName,
       int reactTag,
-      @Nullable ReadableMap props,
+      ReadableMap props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
@@ -654,9 +658,9 @@ public class SurfaceMountingManager {
    */
   @UiThread
   public void createViewUnsafe(
-      @NonNull String componentName,
+      String componentName,
       int reactTag,
-      @Nullable ReadableMap props,
+      ReadableMap props,
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
@@ -664,7 +668,6 @@ public class SurfaceMountingManager {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "SurfaceMountingManager::createViewUnsafe(" + componentName + ")");
     try {
-      // NULLSAFE_FIXME[Parameter Not Nullable]
       ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
 
       ViewState viewState = new ViewState(reactTag);
@@ -675,10 +678,16 @@ public class SurfaceMountingManager {
 
       if (isLayoutable) {
         ViewManager viewManager = mViewManagerRegistry.get(componentName);
+        if (mThemedReactContext == null) {
+          throw new IllegalStateException(
+              "Unable to create view for tag ["
+                  + reactTag
+                  + "], mThemedReactContext is null. This can happen if you are creating a view"
+                  + " after the surface has been stopped.");
+        }
         // View Managers are responsible for dealing with inital state and props.
         viewState.mView =
             viewManager.createView(
-                // NULLSAFE_FIXME[Parameter Not Nullable]
                 reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
         viewState.mViewManager = viewManager;
       }
@@ -733,8 +742,7 @@ public class SurfaceMountingManager {
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
   }
 
-  public void receiveCommand(
-      int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
+  public void receiveCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     if (isStopped()) {
       return;
     }
@@ -936,12 +944,12 @@ public class SurfaceMountingManager {
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
     }
-    Object extraData =
-        // NULLSAFE_FIXME[Parameter Not Nullable]
-        viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
-    if (extraData != null) {
-      // NULLSAFE_FIXME[Parameter Not Nullable]
-      viewManager.updateExtraData(viewState.mView, extraData);
+    if (viewState.mView != null && viewState.mCurrentProps != null && stateWrapper != null) {
+      Object extraData =
+          viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
+      if (extraData != null) {
+        viewManager.updateExtraData(viewState.mView, extraData);
+      }
     }
 
     // Immediately clear native side of previous state wrapper. This causes the State object in C++
@@ -953,7 +961,7 @@ public class SurfaceMountingManager {
 
   /** We update the event emitter from the main thread when the view is mounted. */
   @UiThread
-  public void updateEventEmitter(int reactTag, @NonNull EventEmitterWrapper eventEmitter) {
+  public void updateEventEmitter(int reactTag, EventEmitterWrapper eventEmitter) {
     UiThreadUtil.assertOnUiThread();
     if (isStopped()) {
       return;
@@ -1034,8 +1042,7 @@ public class SurfaceMountingManager {
 
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
     ViewManager viewManager = viewState.mViewManager;
-    if (!viewState.mIsRoot && viewManager != null) {
-      // NULLSAFE_FIXME[Parameter Not Nullable]
+    if (!viewState.mIsRoot && viewManager != null && viewState.mView != null) {
       viewManager.onDropViewInstance(viewState.mView);
     }
   }
@@ -1076,9 +1083,9 @@ public class SurfaceMountingManager {
 
   @UiThread
   public void preallocateView(
-      @NonNull String componentName,
+      String componentName,
       int reactTag,
-      @Nullable ReadableMap props,
+      ReadableMap props,
       @Nullable StateWrapper stateWrapper,
       boolean isLayoutable) {
     UiThreadUtil.assertOnUiThread();
@@ -1113,7 +1120,7 @@ public class SurfaceMountingManager {
     return view;
   }
 
-  private @NonNull ViewState getViewState(int tag) {
+  private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
       throw new RetryableMountingLayerException(
@@ -1131,8 +1138,7 @@ public class SurfaceMountingManager {
   }
 
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
-  private static @NonNull IViewGroupManager<ViewGroup> getViewGroupManager(
-      @NonNull ViewState viewState) {
+  private static IViewGroupManager<ViewGroup> getViewGroupManager(ViewState viewState) {
     if (viewState.mViewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
@@ -1237,7 +1243,6 @@ public class SurfaceMountingManager {
       mViewManager = viewManager;
     }
 
-    @NonNull
     @Override
     public String toString() {
       boolean isLayoutOnly = mViewManager == null;
