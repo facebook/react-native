@@ -49,7 +49,7 @@ protected constructor(
   private companion object {
     init {
       BridgeSoLoader.staticInit()
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "CxxModuleWrapperBase", LegacyArchitectureLogLevel.WARNING)
     }
   }

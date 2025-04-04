@@ -66,7 +66,7 @@ import java.util.Map;
 class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "CoreModulesPackage", LegacyArchitectureLogLevel.WARNING);
   }
 

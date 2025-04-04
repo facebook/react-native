@@ -51,7 +51,7 @@ internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
     private const val USE_TRANSLATE_ANIMATION = false
 
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "LayoutUpdateAnimation", LegacyArchitectureLogLevel.WARNING)
     }
   }

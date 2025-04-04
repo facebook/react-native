@@ -60,7 +60,7 @@ public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEv
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEventEmitter")
+      LegacyArchitectureLogger.assertLegacyArchitecture("InteropEventEmitter")
     }
   }
 }
