@@ -31,7 +31,7 @@ async function detectBreakingChange() {
   const prevoiusStatements = previousRollupAST.program.body;
   const currentStatements = currentRollupAST.program.body;
   const result = analyzeStatements(prevoiusStatements, currentStatements);
-  console.log(`IS BREAKING: ${result}`)
+  console.log(`IS BREAKING: ${result ? 'YES' : 'NO'}`);
 }
 
 function analyzeStatements(
