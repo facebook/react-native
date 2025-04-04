@@ -108,6 +108,11 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * Cached content of the subtree started from the node.
    */
   mutable std::optional<Content> content_{};
+
+  /*
+   * FontSizeMultiplier that was used to layout this node.
+   */
+  mutable float fontSizeMultiplier_{};
 };
 
 } // namespace facebook::react

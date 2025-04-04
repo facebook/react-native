@@ -31,8 +31,12 @@ ParagraphShadowNode::ParagraphShadowNode(
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   auto& sourceParagraphShadowNode =
       static_cast<const ParagraphShadowNode&>(sourceShadowNode);
+  auto& state = getStateData();
+  fontSizeMultiplier_ = sourceParagraphShadowNode.fontSizeMultiplier_;
+
   if (!fragment.children && !fragment.props &&
-      sourceParagraphShadowNode.getIsLayoutClean()) {
+      sourceParagraphShadowNode.getIsLayoutClean() &&
+      fontSizeMultiplier_ == state.attributedString.getBaseTextAttributes().fontSizeMultiplier) {
     // This ParagraphShadowNode was cloned but did not change
     // in a way that affects its layout. Let's mark it clean
     // to stop Yoga from traversing it.
@@ -202,6 +206,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
   updateStateIfNeeded(content);
+  fontSizeMultiplier_ = layoutContext.fontSizeMultiplier;
 
   TextLayoutContext textLayoutContext{};
   textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
