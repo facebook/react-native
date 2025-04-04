@@ -178,7 +178,8 @@ class ReactSurfaceTest {
         offsetY: Int,
         doLeftAndRightSwapInRTL: Boolean,
         isRTL: Boolean,
-        pixelDensity: Float
+        pixelDensity: Float,
+        fontScale: Float
     ) {
       this.widthMeasureSpec = widthMeasureSpec
       this.heightMeasureSpec = heightMeasureSpec

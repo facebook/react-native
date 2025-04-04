@@ -80,7 +80,8 @@ public class ReactSurfaceImpl implements ReactSurface {
         0,
         doRTLSwap(context),
         isRTL(context),
-        getPixelDensity(context));
+        getPixelDensity(context),
+        getFontScale(context));
   }
 
   @VisibleForTesting
@@ -214,7 +215,8 @@ public class ReactSurfaceImpl implements ReactSurface {
         offsetY,
         doRTLSwap(mContext),
         isRTL(mContext),
-        getPixelDensity(mContext));
+        getPixelDensity(mContext),
+        getFontScale(mContext));
   }
 
   /* package */ @Nullable
@@ -243,6 +245,10 @@ public class ReactSurfaceImpl implements ReactSurface {
 
   private static float getPixelDensity(Context context) {
     return context.getResources().getDisplayMetrics().density;
+  }
+
+  private static float getFontScale(Context context) {
+    return context.getResources().getConfiguration().fontScale;
   }
 
   private static boolean isRTL(Context context) {
