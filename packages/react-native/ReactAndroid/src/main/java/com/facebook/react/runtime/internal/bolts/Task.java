@@ -8,8 +8,6 @@
 package com.facebook.react.runtime.internal.bolts;
 
 import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.interfaces.TaskInterface;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  *
  * @param <TResult> The type of the result of the task.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 public class Task<TResult> implements TaskInterface<TResult> {
   /**
    * An {@link java.util.concurrent.Executor} that executes tasks in the current thread unless the
@@ -78,16 +75,18 @@ public class Task<TResult> implements TaskInterface<TResult> {
   private final Object lock = new Object();
   private boolean complete;
   private boolean cancelled;
-
-  private @Nullable TResult result;
-  private @Nullable Exception error;
+  // NULLSAFE_FIXME[Field Not Initialized]
+  private TResult result;
+  // NULLSAFE_FIXME[Field Not Initialized]
+  private Exception error;
   private boolean errorHasBeenObserved;
-  private @Nullable UnobservedErrorNotifier unobservedErrorNotifier;
-  private @Nullable List<Continuation<TResult, Void>> continuations = new ArrayList<>();
+  // NULLSAFE_FIXME[Field Not Initialized]
+  private UnobservedErrorNotifier unobservedErrorNotifier;
+  private List<Continuation<TResult, Void>> continuations = new ArrayList<>();
 
   /* package */ Task() {}
 
-  private Task(@Nullable TResult result) {
+  private Task(TResult result) {
     trySetResult(result);
   }
 
@@ -95,6 +94,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
     if (cancelled) {
       trySetCancelled();
     } else {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       trySetResult(null);
     }
   }
@@ -139,7 +139,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
    * @return The result of the task, if set. {@code null} otherwise.
    */
   @Override
-  public @Nullable TResult getResult() {
+  public TResult getResult() {
     synchronized (lock) {
       return result;
     }
@@ -149,12 +149,13 @@ public class Task<TResult> implements TaskInterface<TResult> {
    * @return The error for the task, if set. {@code null} otherwise.
    */
   @Override
-  public @Nullable Exception getError() {
+  public Exception getError() {
     synchronized (lock) {
       if (error != null) {
         errorHasBeenObserved = true;
         if (unobservedErrorNotifier != null) {
           unobservedErrorNotifier.setObserved();
+          // NULLSAFE_FIXME[Field Not Nullable]
           unobservedErrorNotifier = null;
         }
       }
@@ -179,10 +180,10 @@ public class Task<TResult> implements TaskInterface<TResult> {
    *     false} otherwise.
    */
   @Override
-  public boolean waitForCompletion(long duration, @Nullable TimeUnit timeUnit)
-      throws InterruptedException {
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
+  public boolean waitForCompletion(long duration, TimeUnit timeUnit) throws InterruptedException {
     synchronized (lock) {
-      if (!isCompleted() && timeUnit != null) {
+      if (!isCompleted()) {
         lock.wait(timeUnit.toMillis(duration));
       }
       return isCompleted();
@@ -226,7 +227,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
               return Task.cancelled();
             }
             if (task.isFaulted()) {
-              Assertions.assertNotNull(task.getError());
               return Task.forError(task.getError());
             }
             return Task.forResult(null);
@@ -270,7 +270,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
     synchronized (lock) {
       completed = this.isCompleted();
       if (!completed) {
-        Assertions.assertNotNull(continuations);
         continuations.add(
             new Continuation<TResult, Void>() {
               @Override
@@ -308,7 +307,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
     synchronized (lock) {
       completed = this.isCompleted();
       if (!completed) {
-        Assertions.assertNotNull(continuations);
         continuations.add(
             new Continuation<TResult, Void>() {
               @Override
@@ -345,7 +343,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
           @Override
           public Task<TContinuationResult> then(Task<TResult> task) {
             if (task.isFaulted()) {
-              Assertions.assertNotNull(task.getError());
               return Task.forError(task.getError());
             } else if (task.isCancelled()) {
               return Task.cancelled();
@@ -377,7 +374,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
           @Override
           public Task<TContinuationResult> then(Task<TResult> task) {
             if (task.isFaulted()) {
-              Assertions.assertNotNull(task.getError());
               return Task.forError(task.getError());
             } else if (task.isCancelled()) {
               return Task.cancelled();
@@ -468,7 +464,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
                           if (task.isCancelled()) {
                             tcs.setCancelled();
                           } else if (task.isFaulted()) {
-                            Assertions.assertNotNull(task.getError());
                             tcs.setError(task.getError());
                           } else {
                             tcs.setResult(task.getResult());
@@ -491,7 +486,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
 
   private void runContinuations() {
     synchronized (lock) {
-      Assertions.assertNotNull(continuations);
       for (Continuation<TResult, ?> continuation : continuations) {
         try {
           continuation.then(this);
@@ -501,7 +495,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
           throw new RuntimeException(e);
         }
       }
-      // only setting continuations to null in siutations where complete is set to true
+      // NULLSAFE_FIXME[Field Not Nullable]
       continuations = null;
     }
   }
@@ -521,7 +515,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
   }
 
   /** Sets the result on the Task if the Task hasn't already been completed. */
-  /* package */ boolean trySetResult(@Nullable TResult result) {
+  /* package */ boolean trySetResult(TResult result) {
     synchronized (lock) {
       if (complete) {
         return false;
@@ -551,6 +545,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
     }
   }
 
+  // NULLSAFE_FIXME[Parameter Not Nullable]
   private static Task<?> TASK_NULL = new Task<>(null);
   private static Task<Boolean> TASK_TRUE = new Task<>((Boolean) true);
   private static Task<Boolean> TASK_FALSE = new Task<>((Boolean) false);
