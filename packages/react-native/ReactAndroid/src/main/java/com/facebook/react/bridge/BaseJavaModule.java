@@ -22,9 +22,9 @@ import java.util.Map;
 
 /**
  * Base class for Catalyst native modules whose implementations are written in Java. Default
- * implementations for {@link #initialize} and {@link #onCatalystInstanceDestroy} are provided for
- * convenience. Subclasses which override these don't need to call {@code super} in case of
- * overriding those methods as implementation of those methods is empty.
+ * implementations for {@link #initialize} and {@link #invalidate} are provided for convenience.
+ * Subclasses which override these don't need to call {@code super} in case of overriding those
+ * methods as implementation of those methods is empty.
  *
  * <p>BaseJavaModules can be linked to Fragments' lifecycle events, {@link CatalystInstance}
  * creation and destruction, by being called on the appropriate method when a life cycle event
@@ -85,10 +85,6 @@ public abstract class BaseJavaModule implements NativeModule {
     return false;
   }
 
-  /**
-   * The CatalystInstance is going away with Venice. Therefore, the TurboModule infra introduces the
-   * invalidate() method to allow NativeModules to clean up after themselves.
-   */
   @Override
   public void invalidate() {}
 
