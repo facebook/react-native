@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8bc15cf2356e248a791c68f134c39a2f>>
+ * @generated SignedSource<<b294817af1331927d579f9989ba468ea>>
  */
 
 /**
@@ -221,12 +221,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun removeTurboModuleManagerDelegateMutex(): Boolean = accessor.removeTurboModuleManagerDelegateMutex()
-
-  /**
-   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
-   */
-  @JvmStatic
-  public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = accessor.throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

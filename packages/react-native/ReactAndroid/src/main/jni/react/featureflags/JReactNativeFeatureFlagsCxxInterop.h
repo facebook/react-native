@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b73b48dcf930c8d45ff48fbebe5881f2>>
+ * @generated SignedSource<<2aaadcbf377513681de42eb7779248b4>>
  */
 
 /**
@@ -124,9 +124,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool removeTurboModuleManagerDelegateMutex(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool traceTurboModulePromiseRejectionsOnAndroid(

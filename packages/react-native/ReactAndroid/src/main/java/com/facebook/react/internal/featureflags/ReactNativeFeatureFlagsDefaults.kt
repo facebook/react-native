@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b8e277be7a521cbc3c4034d127af0a8a>>
+ * @generated SignedSource<<90ab78a962d6d8aba6c73e0095b047b7>>
  */
 
 /**
@@ -86,8 +86,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
   override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
-
-  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 

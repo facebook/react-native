@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<045dab52c3701c760f9fadc6a86169d6>>
+ * @generated SignedSource<<f342d1fc53bd4f448a80764d714d9247>>
  */
 
 /**
@@ -57,7 +57,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
   virtual bool removeTurboModuleManagerDelegateMutex() = 0;
-  virtual bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool useAlwaysAvailableJSErrorHandling() = 0;
   virtual bool useEditTextStockAndroidFocusBehavior() = 0;

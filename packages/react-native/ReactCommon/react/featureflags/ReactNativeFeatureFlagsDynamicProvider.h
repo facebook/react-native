@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8d19b32f41249aca2af9dcc429c8f8d1>>
+ * @generated SignedSource<<3e3f3db9178b602d0dc3569a0aa8561a>>
  */
 
 /**
@@ -331,15 +331,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::removeTurboModuleManagerDelegateMutex();
-  }
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
-    auto value = values_["throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

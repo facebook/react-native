@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<92f9ae1833854159495119059d39bba9>>
+ * @generated SignedSource<<486be8e6ca611a41f9f972742025b714>>
  */
 
 /**
@@ -52,7 +52,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
-  private var throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
@@ -347,15 +346,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.removeTurboModuleManagerDelegateMutex()
       removeTurboModuleManagerDelegateMutexCache = cached
-    }
-    return cached
-  }
-
-  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean {
-    var cached = throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()
-      throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e3d982c0dfc71417fc6a1838758c6f4>>
+ * @generated SignedSource<<f3aa4c3a65acb1ce9f8db3e9b3dae761>>
  * @flow strict
  */
 
@@ -79,7 +79,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   removeTurboModuleManagerDelegateMutex: Getter<boolean>,
-  throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useEditTextStockAndroidFocusBehavior: Getter<boolean>,
@@ -288,10 +287,6 @@ export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlag
  * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
  */
 export const removeTurboModuleManagerDelegateMutex: Getter<boolean> = createNativeFlagGetter('removeTurboModuleManagerDelegateMutex', false);
-/**
- * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
- */
-export const throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: Getter<boolean> = createNativeFlagGetter('throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

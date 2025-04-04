@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f12093c4d572ad5ee667739473b0e31f>>
+ * @generated SignedSource<<e4e4d8a9d3de5c14f82c1383f7ec6588>>
  */
 
 /**
@@ -100,8 +100,6 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool removeTurboModuleManagerDelegateMutex(jsi::Runtime& runtime);
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

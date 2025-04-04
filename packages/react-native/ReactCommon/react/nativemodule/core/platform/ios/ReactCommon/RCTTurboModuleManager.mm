@@ -29,7 +29,6 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
-#import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>

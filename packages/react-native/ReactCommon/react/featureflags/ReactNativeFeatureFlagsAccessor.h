@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aa11071b2b2561cd2433c74d56a0df80>>
+ * @generated SignedSource<<a5f8e3a9a25258e94c40cf02c5813a61>>
  */
 
 /**
@@ -64,7 +64,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
   bool removeTurboModuleManagerDelegateMutex();
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool useAlwaysAvailableJSErrorHandling();
   bool useEditTextStockAndroidFocusBehavior();
@@ -85,7 +84,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -119,7 +118,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> removeTurboModuleManagerDelegateMutex_;
-  std::atomic<std::optional<bool>> throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useEditTextStockAndroidFocusBehavior_;

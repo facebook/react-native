@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<34180cac91373696c9d55316b9faf66c>>
+ * @generated SignedSource<<e3b942365f5a8e65fd98bad4acc8f04f>>
  */
 
 /**
@@ -231,12 +231,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS");
-    return method(javaProvider_);
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("traceTurboModulePromiseRejectionsOnAndroid");
@@ -455,11 +449,6 @@ bool JReactNativeFeatureFlagsCxxInterop::removeTurboModuleManagerDelegateMutex(
   return ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -632,9 +621,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "removeTurboModuleManagerDelegateMutex",
         JReactNativeFeatureFlagsCxxInterop::removeTurboModuleManagerDelegateMutex),
-      makeNativeMethod(
-        "throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS",
-        JReactNativeFeatureFlagsCxxInterop::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),
