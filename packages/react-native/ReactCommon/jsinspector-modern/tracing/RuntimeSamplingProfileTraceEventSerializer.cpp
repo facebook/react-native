@@ -87,15 +87,15 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
         notificationCallback,
     uint16_t traceEventChunkSize,
     uint16_t profileChunkSize) {
-  std::vector<RuntimeSamplingProfile::Sample> runtimeSamples =
+  const std::vector<RuntimeSamplingProfile::Sample>& samples =
       profile.getSamples();
-  if (runtimeSamples.empty()) {
+  if (samples.empty()) {
     return;
   }
 
   std::vector<folly::dynamic> buffer;
 
-  uint64_t chunkThreadId = runtimeSamples.front().getThreadId();
+  uint64_t chunkThreadId = samples.front().getThreadId();
   uint64_t tracingStartUnixTimestamp =
       formatTimePointToUnixTimestamp(tracingStartTime);
   buffer.push_back(performanceTracer.getSerializedRuntimeProfileTraceEvent(
@@ -151,7 +151,7 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
           0,
           "(garbage collector)"};
   uint64_t chunkTimestamp = tracingStartUnixTimestamp;
-  for (const RuntimeSamplingProfile::Sample& sample : runtimeSamples) {
+  for (const RuntimeSamplingProfile::Sample& sample : samples) {
     uint64_t sampleThreadId = sample.getThreadId();
     // If next sample was recorded on a different thread, emit the current chunk
     // and continue.
