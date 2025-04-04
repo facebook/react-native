@@ -1,0 +1,47 @@
+name: Run API Breaking Change Detection
+
+on: push
+jobs:
+  check-api-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check-diff.outputs.exit_code }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Detect rollup changes
+        id: check-diff
+        run: |
+          ROLLUP_PATH=packages/react-native/types/rollup.d.ts
+          DIFF_OUTPUT=$(git diff HEAD^ HEAD -- $ROLLUP_PATH)
+
+          echo $DIFF_OUTPUT
+
+          echo "Checking if rollup.d.ts has changed"
+          if [ -z "$DIFF_OUTPUT" ]; then
+            echo "No changes to rollup.d.ts"
+            echo "exit_code=0" >> $GITHUB_OUTPUT
+          else
+              echo "Changes detected in rollup.d.ts"
+              echo "exit_code=1" >> $GITHUB_OUTPUT
+          fi
+  detect-breaking-change:
+    needs: check-api-changes
+    if: needs.check-api-changes.outputs.has_changes == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - name: Run yarn
+        uses: ./.github/actions/yarn-install
+      - name: Run breaking change detection
+        run: |
+          node scripts/detect-breaking-change
