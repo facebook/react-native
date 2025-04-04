@@ -9,18 +9,22 @@
  * @oncall react_native
  */
 
-const {REPO_ROOT} = require('../consts');
 const babel = require('@babel/core');
 const generate = require('@babel/generator').default;
 const {execSync} = require('child_process');
-const path = require('path');
 
 const ROLLUP_PATH = 'packages/react-native/types/rollup.d.ts';
 const BREAKING = true;
 const NOT_BREAKING = false;
 
 async function detectBreakingChange() {
-  const {previousRollup, currentRollup} = getRollups();
+  const rollups = getRollups();
+  if (!rollups) {
+    console.log('No rollups found');
+    return;
+  }
+
+  const {previousRollup, currentRollup} = rollups;
   const previousRollupAST = babel.parseSync(previousRollup, {
     plugins: ['@babel/plugin-syntax-typescript'],
   });
@@ -57,7 +61,6 @@ function analyzeStatements(
       external: Array<BabelNodeExportNamedDeclaration>,
     },
   };
-  //   let detectedcurrentStatements = false;
 
   // ImportDeclaration should not have impact on the API
   // If the imported type is used, it will be compared in the next steps
@@ -67,11 +70,6 @@ function analyzeStatements(
   const currentStatementsFiltered = currentStatements.filter(
     statement => statement.type !== 'ImportDeclaration',
   );
-
-  //   if (currentStatementsFiltered.length > prevoiusStatementsFiltered.length) {
-  //     console.log('New statements found');
-  //     detectedcurrentStatements = true;
-  //   }
 
   const categorize = (statements: any, mapping: any) => {
     statements.forEach(statement => {
@@ -87,7 +85,7 @@ function analyzeStatements(
   categorize(currentStatementsFiltered, cache.new);
 
   if (cache.new.external.length < cache.previous.external.length) {
-    console.log('External statements removed');
+    console.log('External statement removed');
     return BREAKING;
   }
 
@@ -106,7 +104,7 @@ function analyzeStatements(
       pairMap.set('previous', previousNode);
       mapping.push([name, pairMap]);
     } else {
-      // There is no statement of that name in new rollup which means that:
+      // There is no statement of that name in the new rollup which means that:
       // 1. This statement was entirely removed
       // 2. This statement was renamed
       // 3. It is not public anymore
@@ -114,7 +112,6 @@ function analyzeStatements(
     }
   }
 
-  // TODO: Check if paired statements are equal
   let isBreaking = false;
   for (const [name, pair] of mapping) {
     const previousNode = pair.get('previous');
@@ -124,6 +121,7 @@ function analyzeStatements(
     }
     const isDiff = didStatementChange(previousNode, newNode);
     if (isDiff) {
+      // Let analyze all statements and gather some logs
       console.log(`Breaking change detected for ${name}`);
       isBreaking = true;
     }
@@ -198,14 +196,19 @@ function getMinifiedCode(ast: BabelNodeStatement) {
   }).code;
 }
 
-function getRollups() {
-  const commits = execSync('git log --format="%H" -n 2')
-    .toString()
-    .trim()
-    .split('\n');
-  if (commits.length < 2) {
-    console.error('Not enough commits');
-    return {previousRollup: '', currentRollup: ''}
+function getRollups(): null | {previousRollup: string, currentRollup: string} {
+  let commits: Array<string> = [];
+  try {
+    commits = execSync('git log --format="%H" -n 2')
+      .toString()
+      .trim()
+      .split('\n');
+    if (commits.length < 2) {
+      throw new Error('Not enough commits');
+    }
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 
   const currentCommit = commits[0];
@@ -222,7 +225,7 @@ function getRollups() {
     ).toString();
   } catch (error) {
     console.error(error);
-    return {previousRollup: '', currentRollup: ''}
+    return null;
   }
 
   return {previousRollup, currentRollup};
