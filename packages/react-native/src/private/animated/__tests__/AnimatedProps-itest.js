@@ -11,10 +11,10 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Animated} from 'react-native';
+import NativeAnimatedHelper from 'react-native/src/private/animated/NativeAnimatedHelper';
 
 function mockNativeAnimatedHelperAPI() {
   const mocks = {
