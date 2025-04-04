@@ -92,14 +92,14 @@ class TurboModuleInteropUtils {
 
       if ("getConstants".equals(methodName)) {
         if (returnType != Map.class) {
-          // TODO(T145105887) Output error. getConstants must always have a return type of Map
+          throw new ParsingException(moduleName, "getConstants must return a Map");
         }
-        // NULLSAFE_FIXME[Nullable Dereference]
-      } else if (annotation.isBlockingSynchronousMethod() && returnType == void.class
-          // NULLSAFE_FIXME[Nullable Dereference]
-          || !annotation.isBlockingSynchronousMethod() && returnType != void.class) {
-        // TODO(T145105887): Output error. TurboModule system assumes returnType == void iff the
-        // method is synchronous.
+      } else if (annotation != null
+          && (annotation.isBlockingSynchronousMethod() && returnType == void.class
+              || !annotation.isBlockingSynchronousMethod() && returnType != void.class)) {
+        throw new ParsingException(
+            moduleName,
+            "TurboModule system assumes returnType == void iff the method is synchronous.");
       }
 
       methodDescriptors.add(
