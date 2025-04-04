@@ -25,6 +25,23 @@ public object LegacyArchitectureLogger {
   private val tag: String = "LegacyArchitectureLogger"
 
   /**
+   * Whether the OSS_LEGACY_WARNINGS_ENABLED should be enabled or not for OSS users. This is
+   * controlled through the `legacyWarningsEnabled` property in the gradle.properties file.
+   */
+  @JvmField public var OSS_LEGACY_WARNINGS_ENABLED: Boolean = false
+
+  private val exceptionMessage: String
+    get() =
+        if (OSS_LEGACY_WARNINGS_ENABLED) {
+          "is being executed when app is fully running on the NEW Architecture."
+        } else {
+          "is being executed when `legacyWarningsEnabled` is enabled. " +
+              "You're accessing a legacy API that will be removed in a future version of React Native. " +
+              "You should investigate the stacktrace you find below and understand which class is " +
+              "accessing this API and clean it up."
+        }
+
+  /**
    * Asserts and logs when legacy architecture components are being used in new architecture. This
    * method will throw an exception if the app is running on the new architecture and the logLevel
    * received by parameter is [LegacyArchitectureLogLevel.ERROR].
@@ -37,17 +54,15 @@ public object LegacyArchitectureLogger {
       name: String,
       logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
   ) {
-    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE ||
+        OSS_LEGACY_WARNINGS_ENABLED) {
       when (logLevel) {
         LegacyArchitectureLogLevel.ERROR -> {
-          throw AssertionException(
-              "$name is being executed when app is fully running on the NEW Architecture.")
+          throw AssertionException("$name $exceptionMessage")
         }
         LegacyArchitectureLogLevel.WARNING -> {
           ReactSoftExceptionLogger.logSoftException(
-              tag,
-              ReactNoCrashSoftException(
-                  "$name is being executed when app is fully running on the NEW Architecture."))
+              tag, ReactNoCrashSoftException("$name $exceptionMessage."))
         }
       }
     }
