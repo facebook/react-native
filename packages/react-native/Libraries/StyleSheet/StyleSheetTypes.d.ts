@@ -368,7 +368,7 @@ export type BlendMode =
   | 'luminosity';
 
 export type GradientValue = {
-  type: 'linearGradient';
+  type: 'linear-gradient';
   // Angle or direction enums
   direction?: string | undefined;
   colorStops: ReadonlyArray<{
