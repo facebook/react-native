@@ -9863,7 +9863,7 @@ declare export default class Performance {
     endMark?: string
   ): PerformanceMeasure;
   clearMeasures(measureName?: string): void;
-  now(): DOMHighResTimeStamp;
+  now: () => DOMHighResTimeStamp;
   getEntries(): PerformanceEntryList;
   getEntriesByType(entryType: PerformanceEntryType): PerformanceEntryList;
   getEntriesByName(
