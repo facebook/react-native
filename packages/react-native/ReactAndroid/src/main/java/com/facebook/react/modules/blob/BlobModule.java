@@ -106,6 +106,7 @@ public class BlobModule extends NativeBlobModuleSpec {
         @Override
         public RequestBody toRequestBody(ReadableMap data, String contentType) {
           String type = contentType;
+          // NULLSAFE_FIXME[Nullable Dereference]
           if (data.hasKey("type") && !data.getString("type").isEmpty()) {
             type = data.getString("type");
           }
@@ -113,7 +114,9 @@ public class BlobModule extends NativeBlobModuleSpec {
             type = "application/octet-stream";
           }
           ReadableMap blob = data.getMap("blob");
+          // NULLSAFE_FIXME[Nullable Dereference]
           String blobId = blob.getString("blobId");
+          // NULLSAFE_FIXME[Parameter Not Nullable, Nullable Dereference]
           byte[] bytes = resolve(blobId, blob.getInt("offset"), blob.getInt("size"));
 
           return RequestBody.create(MediaType.parse(type), bytes);
@@ -148,6 +151,7 @@ public class BlobModule extends NativeBlobModuleSpec {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public @Nullable Map<String, Object> getTypedExportedConstants() {
     // The application can register BlobProvider as a ContentProvider so that blobs are resolvable.
     // If it does, it needs to tell us what authority was used via this string resource.
@@ -201,6 +205,7 @@ public class BlobModule extends NativeBlobModuleSpec {
     if (sizeParam != null) {
       size = Integer.parseInt(sizeParam, 10);
     }
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     return resolve(blobId, offset, size);
   }
 
@@ -221,6 +226,7 @@ public class BlobModule extends NativeBlobModuleSpec {
   }
 
   public @Nullable byte[] resolve(ReadableMap blob) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     return resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
   }
 
@@ -269,6 +275,7 @@ public class BlobModule extends NativeBlobModuleSpec {
 
   private String getNameFromUri(Uri contentUri) {
     if ("file".equals(contentUri.getScheme())) {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return contentUri.getLastPathSegment();
     }
     String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
@@ -279,12 +286,14 @@ public class BlobModule extends NativeBlobModuleSpec {
     if (metaCursor != null) {
       try {
         if (metaCursor.moveToFirst()) {
+          // NULLSAFE_FIXME[Return Not Nullable]
           return metaCursor.getString(0);
         }
       } finally {
         metaCursor.close();
       }
     }
+    // NULLSAFE_FIXME[Return Not Nullable]
     return contentUri.getLastPathSegment();
   }
 
@@ -316,9 +325,11 @@ public class BlobModule extends NativeBlobModuleSpec {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return reactApplicationContext.getNativeModule(WebSocketModule.class);
     }
 
+    // NULLSAFE_FIXME[Return Not Nullable]
     return null;
   }
 
@@ -329,8 +340,11 @@ public class BlobModule extends NativeBlobModuleSpec {
     if (reactApplicationContext != null) {
       NetworkingModule networkingModule =
           reactApplicationContext.getNativeModule(NetworkingModule.class);
+      // NULLSAFE_FIXME[Nullable Dereference]
       networkingModule.addUriHandler(mNetworkingUriHandler);
+      // NULLSAFE_FIXME[Nullable Dereference]
       networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
+      // NULLSAFE_FIXME[Nullable Dereference]
       networkingModule.addResponseHandler(mNetworkingResponseHandler);
     }
   }
@@ -364,11 +378,13 @@ public class BlobModule extends NativeBlobModuleSpec {
     WebSocketModule webSocketModule = getWebSocketModule("sendOverSocket");
 
     if (webSocketModule != null) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       byte[] data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
 
       if (data != null) {
         webSocketModule.sendBinary(ByteString.of(data), id);
       } else {
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         webSocketModule.sendBinary((ByteString) null, id);
       }
     }
@@ -380,18 +396,24 @@ public class BlobModule extends NativeBlobModuleSpec {
     ArrayList<byte[]> partList = new ArrayList<>(parts.size());
     for (int i = 0; i < parts.size(); i++) {
       ReadableMap part = parts.getMap(i);
+      // NULLSAFE_FIXME[Nullable Dereference]
       switch (part.getString("type")) {
         case "blob":
+          // NULLSAFE_FIXME[Nullable Dereference]
           ReadableMap blob = part.getMap("data");
+          // NULLSAFE_FIXME[Nullable Dereference]
           totalBlobSize += blob.getInt("size");
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           partList.add(i, resolve(blob));
           break;
         case "string":
+          // NULLSAFE_FIXME[Nullable Dereference]
           byte[] bytes = part.getString("data").getBytes(Charset.forName("UTF-8"));
           totalBlobSize += bytes.length;
           partList.add(i, bytes);
           break;
         default:
+          // NULLSAFE_FIXME[Nullable Dereference]
           throw new IllegalArgumentException("Invalid type for blob: " + part.getString("type"));
       }
     }
