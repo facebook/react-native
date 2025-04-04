@@ -1257,11 +1257,6 @@ declare export default typeof File;
 `;
 
 exports[`public API should not change unintentionally Libraries/Blob/FileReader.js 1`] = `
-"declare export default FileReader;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Blob/FileReader_new.js 1`] = `
 "type ReadyState = 0 | 1 | 2;
 type ReaderResult = string | ArrayBuffer;
 declare class FileReader extends EventTarget {
@@ -1291,29 +1286,6 @@ declare class FileReader extends EventTarget {
   set onloadend(listener: ?EventCallback): void;
   get onprogress(): EventCallback | null;
   set onprogress(listener: ?EventCallback): void;
-}
-declare export default typeof FileReader;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Blob/FileReader_old.js 1`] = `
-"type ReadyState = 0 | 1 | 2;
-type ReaderResult = string | ArrayBuffer;
-declare class FileReader extends EventTarget {
-  static EMPTY: 0;
-  static LOADING: 1;
-  static DONE: 2;
-  EMPTY: 0;
-  LOADING: 1;
-  DONE: 2;
-  constructor(): void;
-  readAsArrayBuffer(blob: ?Blob): void;
-  readAsDataURL(blob: ?Blob): void;
-  readAsText(blob: ?Blob, encoding: string): void;
-  abort(): void;
-  get readyState(): ReadyState;
-  get error(): ?Error;
-  get result(): ?ReaderResult;
 }
 declare export default typeof FileReader;
 "
@@ -5995,12 +5967,6 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest.js 1`] = `
-"export type * from \\"./XMLHttpRequest_old\\";
-declare export default XMLHttpRequest;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest_new.js 1`] = `
 "export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
 export type ResponseType =
   | \\"\\"
@@ -6089,85 +6055,6 @@ declare class XMLHttpRequest extends EventTarget {
   set onloadend(listener: ?EventCallback): void;
   get onreadystatechange(): EventCallback | null;
   set onreadystatechange(listener: ?EventCallback): void;
-}
-declare export default typeof XMLHttpRequest;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest_old.js 1`] = `
-"export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
-export type ResponseType =
-  | \\"\\"
-  | \\"arraybuffer\\"
-  | \\"blob\\"
-  | \\"document\\"
-  | \\"json\\"
-  | \\"text\\";
-export type Response = ?Object | string;
-type XHRInterceptor = interface {
-  requestSent(id: number, url: string, method: string, headers: Object): void,
-  responseReceived(
-    id: number,
-    url: string,
-    status: number,
-    headers: Object
-  ): void,
-  dataReceived(id: number, data: string): void,
-  loadingFinished(id: number, encodedDataLength: number): void,
-  loadingFailed(id: number, error: string): void,
-};
-declare class XMLHttpRequestEventTarget extends EventTarget {
-  onload: ?Function;
-  onloadstart: ?Function;
-  onprogress: ?Function;
-  ontimeout: ?Function;
-  onerror: ?Function;
-  onabort: ?Function;
-  onloadend: ?Function;
-}
-declare class XMLHttpRequest extends EventTarget {
-  static UNSENT: number;
-  static OPENED: number;
-  static HEADERS_RECEIVED: number;
-  static LOADING: number;
-  static DONE: number;
-  UNSENT: number;
-  OPENED: number;
-  HEADERS_RECEIVED: number;
-  LOADING: number;
-  DONE: number;
-  onload: ?Function;
-  onloadstart: ?Function;
-  onprogress: ?Function;
-  ontimeout: ?Function;
-  onerror: ?Function;
-  onabort: ?Function;
-  onloadend: ?Function;
-  onreadystatechange: ?Function;
-  readyState: number;
-  responseHeaders: ?Object;
-  status: number;
-  timeout: number;
-  responseURL: ?string;
-  withCredentials: boolean;
-  upload: XMLHttpRequestEventTarget;
-  static enableProfiling(enableProfiling: boolean): void;
-  constructor(): void;
-  get responseType(): ResponseType;
-  set responseType(responseType: ResponseType): void;
-  get responseText(): string;
-  get response(): Response;
-  getAllResponseHeaders(): ?string;
-  getResponseHeader(header: string): ?string;
-  setRequestHeader(header: string, value: any): void;
-  setTrackingName(trackingName: ?string): XMLHttpRequest;
-  setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
-  open(method: string, url: string, async: ?boolean): void;
-  send(data: any): void;
-  abort(): void;
-  setResponseHeaders(responseHeaders: ?Object): void;
-  setReadyState(newState: number): void;
-  addEventListener(type: string, listener: EventListener): void;
 }
 declare export default typeof XMLHttpRequest;
 "
@@ -8918,11 +8805,6 @@ declare export default typeof NativeWebSocketModule;
 `;
 
 exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket.js 1`] = `
-"declare export default WebSocket;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket_new.js 1`] = `
 "type ArrayBufferView =
   | Int8Array
   | Uint8Array
@@ -8979,71 +8861,6 @@ declare class WebSocket extends EventTarget {
   set onopen(listener: ?EventCallback): void;
 }
 declare export default typeof WebSocket;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket_old.js 1`] = `
-"type ArrayBufferView =
-  | Int8Array
-  | Uint8Array
-  | Uint8ClampedArray
-  | Int16Array
-  | Uint16Array
-  | Int32Array
-  | Uint32Array
-  | Float32Array
-  | Float64Array
-  | DataView;
-type BinaryType = \\"blob\\" | \\"arraybuffer\\";
-type WebSocketEventDefinitions = {
-  websocketOpen: [{ id: number, protocol: string }],
-  websocketClosed: [{ id: number, code: number, reason: string }],
-  websocketMessage: [
-    | { type: \\"binary\\", id: number, data: string }
-    | { type: \\"text\\", id: number, data: string }
-    | { type: \\"blob\\", id: number, data: BlobData },
-  ],
-  websocketFailed: [{ id: number, message: string }],
-};
-declare class WebSocket extends EventTarget {
-  static CONNECTING: number;
-  static OPEN: number;
-  static CLOSING: number;
-  static CLOSED: number;
-  CONNECTING: number;
-  OPEN: number;
-  CLOSING: number;
-  CLOSED: number;
-  onclose: ?Function;
-  onerror: ?Function;
-  onmessage: ?Function;
-  onopen: ?Function;
-  bufferedAmount: number;
-  extension: ?string;
-  protocol: ?string;
-  readyState: number;
-  url: ?string;
-  constructor(
-    url: string,
-    protocols: ?string | ?Array<string>,
-    options: ?{ headers?: { origin?: string, ... }, ... }
-  ): void;
-  get binaryType(): ?BinaryType;
-  set binaryType(binaryType: BinaryType): void;
-  close(code?: number, reason?: string): void;
-  send(data: string | ArrayBuffer | ArrayBufferView | Blob): void;
-  ping(): void;
-}
-declare export default typeof WebSocket;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketEvent.js 1`] = `
-"declare class WebSocketEvent {
-  type: string;
-  constructor(type: string, eventInitDict: ?{ ... }): void;
-}
-declare export default typeof WebSocketEvent;
 "
 `;
 
