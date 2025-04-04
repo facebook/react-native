@@ -48,11 +48,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Test ${{ inputs.library-name }}
+      - name: Test ${{ matrix.library }}
+        id: run-test
         uses: ./.github/actions/test-library-on-nightly
         with:
           library-npm-package: ${{ matrix.library }}
           platform: android
+      - name: Save outcome
+        if: always()
+        run: |
+          echo "${{matrix.library}}: ${{steps.run-test.outcome}}" >> "/tmp/${{matrix.library}}-android-outcome"
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.library }}-android-outcome
+          path: /tmp/${{ matrix.library }}-android-outcome
 
   test-library-on-nightly-ios:
     name: "[iOS] ${{ matrix.library }}"
@@ -95,8 +106,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Test ${{ inputs.library-name }}
+      - name: Test ${{ matrix.library }}
+        id: run-test
         uses: ./.github/actions/test-library-on-nightly
         with:
           library-npm-package: ${{ matrix.library }}
           platform: ios
+      - name: Save outcome
+        if: always()
+        run: |
+          echo "${{matrix.library}}: ${{steps.run-test.outcome}}" > "/tmp/${{matrix.library}}-ios-outcome"
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.library }}-ios-outcome
+          path: /tmp/${{ matrix.library }}-ios-outcome
+
+
+  collect-results:
+    runs-on: ubuntu-latest
+    needs: [test-library-on-nightly-android, test-library-on-nightly-ios]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Restore outcomes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-outcome'
+          path: /tmp
+      - name: Collect failures
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {collectResults} = require('./.github/workflow-scripts/collectNightlyOutcomes.js');
+            collectResults();
