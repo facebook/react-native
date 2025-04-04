@@ -6719,8 +6719,6 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableSynchronousStateUpdates(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableUIConsistency(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableViewRecycling(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool excludeYogaFromRawProps(
@@ -15814,7 +15812,6 @@ class NativeReactNativeFeatureFlags
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
   bool enableReportEventPaintTime(jsi::Runtime& runtime);
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
-  bool enableUIConsistency(jsi::Runtime& runtime);
   bool enableViewRecycling(jsi::Runtime& runtime);
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
   bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(
@@ -32949,8 +32946,6 @@ class UIManager final : public ShadowTreeDelegate {
   std::unique_ptr<LeakChecker> leakChecker_;
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager>
       lazyShadowTreeRevisionConsistencyManager_;
-  std::unique_ptr<LatestShadowTreeRevisionProvider>
-      latestShadowTreeRevisionProvider_;
 };
 } // namespace facebook::react
 
@@ -33057,16 +33052,6 @@ jsi::Value callMethodOfModule(
     const std::string& methodName,
     std::initializer_list<jsi::Value> args);
 }
-
-/// @src {packages/react-native/ReactCommon/react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.h}:
-namespace facebook::react {
-class LatestShadowTreeRevisionProvider : public ShadowTreeRevisionProvider {
- public:
-  explicit LatestShadowTreeRevisionProvider(
-      ShadowTreeRegistry& shadowTreeRegistry);
-  RootShadowNode::Shared getCurrentRevision(SurfaceId surfaceId) override;
-};
-} // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/renderer/uimanager/consistency/LazyShadowTreeRevisionConsistencyManager.h}:
 namespace facebook::react {
