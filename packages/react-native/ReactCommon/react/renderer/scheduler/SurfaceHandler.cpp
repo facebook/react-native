@@ -232,6 +232,38 @@ Size SurfaceHandler::measure(
   return rootShadowNode->getLayoutMetrics().frame.size;
 }
 
+std::shared_ptr<ShadowNode> SurfaceHandler::dirtyMeasurableNodesRecursive(std::shared_ptr<const ShadowNode> node) const {
+  ShadowNode::UnsharedListOfShared newChildren = std::make_shared<ShadowNode::ListOfShared>();
+  
+  for (const auto& child : node->getChildren()) {
+    if (const auto& layoutableNode = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child)) {
+      auto newChild = dirtyMeasurableNodesRecursive(layoutableNode);
+      newChildren->push_back(newChild);
+    } else {
+      newChildren->push_back(child);
+    }
+  }
+  
+  const auto newNode = node->getComponentDescriptor().cloneShadowNode(*node, {
+    // Preserve the original state of the node
+    .children = newChildren,
+    .state = node->getState(),
+  });
+  if (newNode->getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
+    std::static_pointer_cast<YogaLayoutableShadowNode>(newNode)->dirtyLayout();
+  }
+
+  return newNode;
+}
+
+void SurfaceHandler::dirtyMeasurableNodes(std::shared_ptr<ShadowNode> root) const {
+  for (const auto& child : root->getChildren()) {
+    if (const auto& layoutableNode = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child)) {
+      root->replaceChild(*child, dirtyMeasurableNodesRecursive(layoutableNode));
+    }
+  }
+}
+
 void SurfaceHandler::constraintLayout(
     const LayoutConstraints& layoutConstraints,
     const LayoutContext& layoutContext) const {
@@ -262,8 +294,16 @@ void SurfaceHandler::constraintLayout(
         link_.shadowTree && "`link_.shadowTree` must not be null.");
     link_.shadowTree->commit(
         [&](const RootShadowNode& oldRootShadowNode) {
-          return oldRootShadowNode.clone(
+          const auto newRoot = oldRootShadowNode.clone(
               propsParserContext, layoutConstraints, layoutContext);
+          
+          // Dirty all measurable nodes when the fontSizeMultiplier changes to
+          // trigger remeasurement.
+          if (layoutContext.fontSizeMultiplier != oldRootShadowNode.getConcreteProps().layoutContext.fontSizeMultiplier) {
+            dirtyMeasurableNodes(newRoot);
+          }
+          
+          return newRoot;
         },
         {/* default commit options */});
   }
