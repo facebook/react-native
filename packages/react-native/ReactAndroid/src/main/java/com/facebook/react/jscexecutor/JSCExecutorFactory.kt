@@ -18,7 +18,7 @@ public class JSCExecutorFactory(private val appName: String, private val deviceN
     JavaScriptExecutorFactory {
 
   init {
-    LegacyArchitectureLogger.assertLegacyArchitecture("JSCExecutorFactory")
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("JSCExecutorFactory")
   }
 
   @Throws(Exception::class)

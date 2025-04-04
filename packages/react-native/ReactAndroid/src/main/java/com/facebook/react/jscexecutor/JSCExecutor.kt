@@ -27,7 +27,7 @@ public class JSCExecutor internal constructor(jscConfig: ReadableNativeMap) :
   private companion object {
     init {
       loadLibrary()
-      LegacyArchitectureLogger.assertLegacyArchitecture("JSCExecutor")
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("JSCExecutor")
     }
 
     @JvmStatic

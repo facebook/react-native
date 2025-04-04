@@ -52,7 +52,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 public class NativeViewHierarchyOptimizer {
 
   static {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "NativeViewHierarchyOptimizer", LegacyArchitectureLogLevel.WARNING);
   }
 

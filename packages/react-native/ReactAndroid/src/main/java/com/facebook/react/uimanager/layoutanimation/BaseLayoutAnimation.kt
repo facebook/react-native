@@ -78,7 +78,7 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
           "BaseLayoutAnimation", LegacyArchitectureLogLevel.WARNING)
     }
   }

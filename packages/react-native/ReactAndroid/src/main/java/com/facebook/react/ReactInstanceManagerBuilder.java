@@ -51,7 +51,7 @@ import java.util.Map;
 public class ReactInstanceManagerBuilder {
 
   static {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "ReactInstanceManagerBuilder", LegacyArchitectureLogLevel.WARNING);
   }
 

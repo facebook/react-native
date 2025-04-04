@@ -18,7 +18,7 @@ import java.lang.reflect.Method
 @LegacyArchitecture
 public object ReactCxxErrorHandler {
   init {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "ReactCxxErrorHandler", LegacyArchitectureLogLevel.WARNING)
   }
 

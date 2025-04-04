@@ -81,7 +81,8 @@ internal class PositionAndSizeAnimation(view: View, x: Int, y: Int, width: Int, 
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("PositionAndSizeAnimation")
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "PositionAndSizeAnimation")
     }
   }
 }

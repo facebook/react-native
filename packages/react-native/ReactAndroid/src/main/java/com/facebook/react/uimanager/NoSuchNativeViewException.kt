@@ -20,7 +20,8 @@ internal class NoSuchNativeViewException(detailMessage: String) :
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("NoSuchNativeViewException")
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "NoSuchNativeViewException")
     }
   }
 }

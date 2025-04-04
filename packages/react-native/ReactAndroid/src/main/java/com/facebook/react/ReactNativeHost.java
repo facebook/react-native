@@ -41,7 +41,7 @@ import java.util.List;
 public abstract class ReactNativeHost {
 
   static {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "ReactNativeHost", LegacyArchitectureLogLevel.WARNING);
   }
 

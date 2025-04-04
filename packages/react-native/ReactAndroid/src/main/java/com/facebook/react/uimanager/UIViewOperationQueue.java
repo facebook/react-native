@@ -52,7 +52,7 @@ import java.util.Map;
 public class UIViewOperationQueue {
 
   static {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "UIViewOperationQueue", LegacyArchitectureLogLevel.WARNING);
   }
 

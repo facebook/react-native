@@ -10,6 +10,7 @@ package com.facebook.react.uimanager.layoutanimation
 import android.view.animation.Interpolator
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
+import com.facebook.react.bridge.ReadableType.Number
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
@@ -38,7 +39,7 @@ internal class SimpleSpringInterpolator : Interpolator {
   companion object {
 
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
           "SimpleSpringInterpolator", LegacyArchitectureLogLevel.WARNING)
     }
 

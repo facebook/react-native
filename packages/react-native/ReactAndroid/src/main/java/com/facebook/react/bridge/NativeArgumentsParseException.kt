@@ -20,7 +20,8 @@ internal class NativeArgumentsParseException : JSApplicationCausedNativeExceptio
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("NativeArgumentsParseException")
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "NativeArgumentsParseException")
     }
   }
 }

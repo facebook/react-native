@@ -78,7 +78,7 @@ public class UIManagerHelper {
     // - BridgeReactContext is compiled-out when UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true
     //
     // To detect a potential regression we add the following assertion ERROR
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "UIManagerHelper.getUIManager(context, uiManagerType)", LegacyArchitectureLogLevel.ERROR);
     if (!context.hasCatalystInstance()) {
       ReactSoftExceptionLogger.logSoftException(

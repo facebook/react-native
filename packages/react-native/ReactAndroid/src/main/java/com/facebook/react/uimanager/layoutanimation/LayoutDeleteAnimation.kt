@@ -22,7 +22,7 @@ internal class LayoutDeleteAnimation : BaseLayoutAnimation() {
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
           "LayoutDeleteAnimation", LegacyArchitectureLogLevel.WARNING)
     }
   }

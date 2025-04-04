@@ -84,7 +84,7 @@ internal class ShadowNodeRegistry {
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
           "ShadowNodeRegistry", LegacyArchitectureLogLevel.WARNING)
     }
   }

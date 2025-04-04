@@ -16,7 +16,7 @@ import com.facebook.yoga.YogaNode
 @LegacyArchitecture
 internal object YogaNodePool {
   init {
-    LegacyArchitectureLogger.assertLegacyArchitecture("YogaNodePool")
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("YogaNodePool")
   }
 
   private val pool: ClearableSynchronizedPool<YogaNode> by

@@ -44,7 +44,7 @@ import java.util.Map;
 @LegacyArchitecture
 public class UIImplementation {
   static {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "UIImplementation", LegacyArchitectureLogLevel.WARNING);
   }
 

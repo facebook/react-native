@@ -41,7 +41,7 @@ public class ViewAtIndex(
     }
 
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
           "ViewAtIndex", LegacyArchitectureLogLevel.WARNING)
     }
   }

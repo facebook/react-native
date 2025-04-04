@@ -65,7 +65,7 @@ by autolinking. Try removing the existing entry and rebuild.
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
           "NativeModuleRegistryBuilder", LegacyArchitectureLogLevel.WARNING)
     }
   }

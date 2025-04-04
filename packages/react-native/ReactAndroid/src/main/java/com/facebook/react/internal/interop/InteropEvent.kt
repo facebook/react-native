@@ -31,7 +31,7 @@ public class InteropEvent(
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("InteropEvent")
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEvent")
     }
   }
 }

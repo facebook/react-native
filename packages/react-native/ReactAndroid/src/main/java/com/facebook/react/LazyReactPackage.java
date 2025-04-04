@@ -36,7 +36,7 @@ import java.util.Map;
 public abstract class LazyReactPackage implements ReactPackage {
 
   static {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "LazyReactPackage", LegacyArchitectureLogLevel.WARNING);
   }
 

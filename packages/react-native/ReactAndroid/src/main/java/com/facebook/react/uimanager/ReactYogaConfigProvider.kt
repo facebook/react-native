@@ -16,7 +16,7 @@ import com.facebook.yoga.YogaErrata
 @LegacyArchitecture
 internal object ReactYogaConfigProvider {
   init {
-    LegacyArchitectureLogger.assertLegacyArchitecture("ReactYogaConfigProvider")
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("ReactYogaConfigProvider")
   }
 
   val yogaConfig: YogaConfig by

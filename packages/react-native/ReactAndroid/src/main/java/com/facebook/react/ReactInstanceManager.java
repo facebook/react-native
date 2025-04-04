@@ -150,7 +150,7 @@ import java.util.Set;
 public class ReactInstanceManager {
 
   static {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "ReactInstanceManager", LegacyArchitectureLogLevel.WARNING);
   }
 

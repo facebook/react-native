@@ -21,7 +21,8 @@ internal class InvalidIteratorException @DoNotStrip constructor(msg: String) :
     RuntimeException(msg) {
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("InvalidIteratorException")
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "InvalidIteratorException")
     }
   }
 }

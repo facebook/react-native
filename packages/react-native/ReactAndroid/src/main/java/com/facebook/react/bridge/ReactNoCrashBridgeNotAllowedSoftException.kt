@@ -21,7 +21,8 @@ public class ReactNoCrashBridgeNotAllowedSoftException : ReactNoCrashSoftExcepti
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("ReactNoCrashBridgeNotAllowedSoftException")
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "ReactNoCrashBridgeNotAllowedSoftException")
     }
   }
 }

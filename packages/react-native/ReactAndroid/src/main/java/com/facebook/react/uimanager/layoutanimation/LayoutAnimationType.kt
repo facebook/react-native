@@ -22,7 +22,7 @@ internal enum class LayoutAnimationType {
 
   companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture(
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
           "LayoutAnimationType", LegacyArchitectureLogLevel.WARNING)
     }
 

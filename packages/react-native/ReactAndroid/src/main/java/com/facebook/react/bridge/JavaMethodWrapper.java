@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 @LegacyArchitecture
 class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
   static {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "JavaMethodWrapper", LegacyArchitectureLogLevel.WARNING);
   }
 

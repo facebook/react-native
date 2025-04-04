@@ -42,54 +42,28 @@ public object LegacyArchitectureLogger {
         }
 
   /**
-   * Asserts and logs when legacy architecture classes are being used in New Architecture. This
+   * Asserts and logs when legacy architecture components are being used in new architecture. This
    * method will throw an exception if the app is running on the new architecture and the logLevel
-   * received by parameter is [LegacyArchitectureLogLevel.ERROR]. Otherwise it will show a warning
-   * on logcat.
+   * received by parameter is [LegacyArchitectureLogLevel.ERROR].
    *
-   * @param name The name of the legacy class being used
+   * @param name The name of the legacy component being used
    * @param logLevel The severity level of the log (ERROR or WARNING, defaults to WARNING)
    */
   @JvmStatic
-  public fun assertLegacyArchitecture(
+  public fun assertWhenLegacyArchitectureMinifyingEnabled(
       name: String,
       logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
   ) {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE ||
         OSS_LEGACY_WARNINGS_ENABLED) {
-      executeAssert(name, logLevel)
-    }
-  }
-
-  /**
-   * Similar to [assertLegacyArchitecture] but executes only when
-   * [UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE] is set to true. This applies only to internal
-   * builds.
-   *
-   * @param name The name of the legacy class being used
-   * @param logLevel The severity level of the log (ERROR or WARNING, defaults to WARNING)
-   */
-  @JvmStatic
-  public fun assertLegacyArchitectureOnlyWhenMinifyEnabled(
-      name: String,
-      logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
-  ) {
-    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      executeAssert(name, logLevel)
-    }
-  }
-
-  private fun executeAssert(
-      name: String,
-      logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
-  ) {
-    when (logLevel) {
-      LegacyArchitectureLogLevel.ERROR -> {
-        throw AssertionException("$name $exceptionMessage")
-      }
-      LegacyArchitectureLogLevel.WARNING -> {
-        ReactSoftExceptionLogger.logSoftException(
-            tag, ReactNoCrashSoftException("$name $exceptionMessage"))
+      when (logLevel) {
+        LegacyArchitectureLogLevel.ERROR -> {
+          throw AssertionException("$name $exceptionMessage")
+        }
+        LegacyArchitectureLogLevel.WARNING -> {
+          ReactSoftExceptionLogger.logSoftException(
+              tag, ReactNoCrashSoftException("$name $exceptionMessage"))
+        }
       }
     }
   }
