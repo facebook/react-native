@@ -35,6 +35,7 @@ internal object BridgeSoLoader {
 
   @get:JvmStatic
   @get:JvmName("isInitialized")
+  @Volatile
   var initialized: Boolean = false
     private set
 }

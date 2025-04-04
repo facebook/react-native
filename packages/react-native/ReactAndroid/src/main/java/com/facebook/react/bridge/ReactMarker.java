@@ -211,7 +211,7 @@ public class ReactMarker {
       now = SystemClock.uptimeMillis();
     }
 
-    if (ReactNativeJniCommonSoLoader.isInitialized()) {
+    if (BridgeSoLoader.isInitialized()) {
       // First send the current marker
       nativeLogMarker(name.name(), now);
 
