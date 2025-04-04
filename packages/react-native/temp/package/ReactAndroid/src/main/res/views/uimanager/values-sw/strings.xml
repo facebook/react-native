@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: sw_KE -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Kiungo</string>
+    <string name="image_description" gender="unknown">Picha</string>
+    <string name="imagebutton_description" gender="unknown">Kitufe, Picha</string>
+    <string name="header_description" gender="unknown">Kichwa</string>
+    <string name="alert_description" gender="unknown">Arifa</string>
+    <string name="combobox_description" gender="unknown">Kisanduku cha Combo</string>
+    <string name="menu_description" gender="unknown">Menyu</string>
+    <string name="menubar_description" gender="unknown">Upau wa Menyu</string>
+    <string name="menuitem_description" gender="unknown">Kipengee cha Menyu</string>
+    <string name="progressbar_description" gender="unknown">Upau wa Hatua</string>
+    <string name="radiogroup_description" gender="unknown">Kundi la Redio</string>
+    <string name="scrollbar_description" gender="unknown">Mwambaa wa Kubiringiza</string>
+    <string name="spinbutton_description" gender="unknown">Kitufe cha Kuzungusha</string>
+    <string name="rn_tab_description" gender="unknown">Kichupo</string>
+    <string name="tablist_description" gender="unknown">Orodha ya Kichupo</string>
+    <string name="timer_description" gender="unknown">Kipima muda</string>
+    <string name="toolbar_description" gender="unknown">Upau wa Zana</string>
+    <string name="summary_description" gender="unknown">Muhtasari</string>
+    <string name="state_busy_description" gender="unknown">shughulini</string>
+    <string name="state_expanded_description" gender="unknown">imepanuliwa</string>
+    <string name="state_collapsed_description" gender="unknown">imekunjwa</string>
+    <string name="state_unselected_description" gender="unknown">haijateuliwa</string>
+    <string name="state_on_description" gender="unknown">imewashwa</string>
+    <string name="state_off_description" gender="unknown">imezimwa</string>
+    <string name="state_mixed_description" gender="unknown">mchanganyiko</string>
+</resources>
