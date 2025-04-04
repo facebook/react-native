@@ -117,14 +117,20 @@ void Node::setMeasureFunc(YGMeasureFunc measureFunc) {
 }
 
 void Node::replaceChild(Node* child, size_t index) {
-  auto previousChild = children_[index];
-  if (previousChild->style().display() == Display::Contents &&
-      child->style().display() != Display::Contents) {
-    contentsChildrenCount_--;
-  } else if (
-      previousChild->style().display() != Display::Contents &&
-      child->style().display() == Display::Contents) {
-    contentsChildrenCount_++;
+  // Without this conditional, if the index is out of bounds this will seg
+  // fault, so we are guarding against that here. Writing to this index
+  // afterwards is undefined behavior, and we ideally don't do that, but it is
+  // legacy behavior that we are keeping for now.
+  if (index < children_.size()) {
+    auto previousChild = children_[index];
+    if (previousChild->style().display() == Display::Contents &&
+        child->style().display() != Display::Contents) {
+      contentsChildrenCount_--;
+    } else if (
+        previousChild->style().display() != Display::Contents &&
+        child->style().display() == Display::Contents) {
+      contentsChildrenCount_++;
+    }
   }
 
   children_[index] = child;
