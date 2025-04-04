@@ -172,15 +172,21 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
         props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
 
     AttributedString attributedString;
-    attributedString.appendFragment(AttributedString::Fragment{
-        .string = props.text,
-        .textAttributes = textAttributes,
-        .parentShadowView = ShadowView(*this)});
-
     auto attachments = BaseTextShadowNode::Attachments{};
+    // Use BaseTextShadowNode to get attributed string from children
     BaseTextShadowNode::buildAttributedString(
         textAttributes, *this, attributedString, attachments);
     attributedString.setBaseTextAttributes(textAttributes);
+
+    // BaseTextShadowNode only gets children. We must detect and prepend text
+    // value attributes manually.
+    if (!props.text.empty()) {
+      attributedString.appendFragment(AttributedString::Fragment{
+          .string = props.text,
+          .textAttributes = textAttributes,
+          .parentShadowView = ShadowView(*this)});
+    }
+
     return attributedString;
   }
 
