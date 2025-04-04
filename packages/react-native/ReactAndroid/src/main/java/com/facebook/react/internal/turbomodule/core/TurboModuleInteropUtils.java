@@ -8,6 +8,8 @@
 package com.facebook.react.internal.turbomodule.core;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Dynamic;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class TurboModuleInteropUtils {
 
   static class MethodDescriptor {
@@ -117,14 +120,12 @@ class TurboModuleInteropUtils {
     Class<? extends NativeModule> classForMethods = module.getClass();
     Class<? extends NativeModule> superClass =
         (Class<? extends NativeModule>) classForMethods.getSuperclass();
-    // NULLSAFE_FIXME[Parameter Not Nullable]
-    if (TurboModule.class.isAssignableFrom(superClass)) {
+    if (superClass != null && TurboModule.class.isAssignableFrom(superClass)) {
       // For java module that is based on generated flow-type spec, inspect the
       // spec abstract class instead, which is the super class of the given java
       // module.
       classForMethods = superClass;
     }
-    // NULLSAFE_FIXME[Nullable Dereference]
     return classForMethods.getDeclaredMethods();
   }
 
@@ -218,8 +219,9 @@ class TurboModuleInteropUtils {
   }
 
   private static String convertClassToJniType(Class<?> cls) {
-    // NULLSAFE_FIXME[Nullable Dereference]
-    return 'L' + cls.getCanonicalName().replace('.', '/') + ';';
+    String canonicalName = cls.getCanonicalName();
+    Assertions.assertNotNull(canonicalName, "Class must have a canonical name");
+    return 'L' + canonicalName.replace('.', '/') + ';';
   }
 
   private static int getJsArgCount(String moduleName, String methodName, Class<?>[] paramClasses) {
