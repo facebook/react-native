@@ -54,6 +54,7 @@ export interface LinkingImpl extends NativeEventEmitter {
   sendIntent(
     action: string,
     extras?: Array<{key: string; value: string | number | boolean}>,
+    flags?: Array<number>,
   ): Promise<void>;
 }
 

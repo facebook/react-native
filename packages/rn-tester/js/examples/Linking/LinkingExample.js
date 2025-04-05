@@ -67,7 +67,11 @@ class OpenSettingsExample extends React.Component<Props, any> {
 class SendIntentButton extends React.Component<Props> {
   handleIntent = async () => {
     try {
-      await Linking.sendIntent(this.props.action, this.props.extras);
+      await Linking.sendIntent(
+        this.props.action,
+        this.props.extras,
+        this.props.flags,
+      );
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.LONG);
     }
@@ -107,6 +111,10 @@ class IntentAndroidExample extends React.Component {
               extras={[
                 {'android.provider.extra.APP_PACKAGE': 'com.facebook.katana'},
               ]}
+            />
+            <SendIntentButton
+              action="android.settings.BLUETOOTH_SETTINGS"
+              flags={[0x10000000, 0x00008000]}
             />
           </RNTesterBlock>
         )}
