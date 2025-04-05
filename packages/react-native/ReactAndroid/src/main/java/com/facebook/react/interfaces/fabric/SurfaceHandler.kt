@@ -33,7 +33,8 @@ public interface SurfaceHandler {
       offsetY: Int,
       doLeftAndRightSwapInRTL: Boolean,
       isRTL: Boolean,
-      pixelDensity: Float
+      pixelDensity: Float,
+      fontScale: Float
   )
 
   public fun setMountable(mountable: Boolean)
