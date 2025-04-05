@@ -14,6 +14,8 @@ import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeBlobModuleSpec;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -41,6 +43,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okio.ByteString;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeBlobModuleSpec.NAME)
 public class BlobModule extends NativeBlobModuleSpec {
 
@@ -104,17 +107,23 @@ public class BlobModule extends NativeBlobModuleSpec {
         }
 
         @Override
-        public RequestBody toRequestBody(ReadableMap data, String contentType) {
+        public RequestBody toRequestBody(ReadableMap data, @Nullable String contentType) {
           String type = contentType;
-          if (data.hasKey("type") && !data.getString("type").isEmpty()) {
+          if (data.hasKey("type")
+              && data.getString("type") != null
+              && !data.getString("type").isEmpty()) {
             type = data.getString("type");
           }
           if (type == null) {
             type = "application/octet-stream";
           }
           ReadableMap blob = data.getMap("blob");
-          String blobId = blob.getString("blobId");
-          byte[] bytes = resolve(blobId, blob.getInt("offset"), blob.getInt("size"));
+
+          // supports() ensures blob is not null, but for nullability we have to check it
+          Assertions.assertNotNull(blob, "Blob is null even though supports() returned true");
+
+          byte[] bytes =
+              resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
 
           return RequestBody.create(MediaType.parse(type), bytes);
         }
@@ -148,7 +157,7 @@ public class BlobModule extends NativeBlobModuleSpec {
   }
 
   @Override
-  public @Nullable Map<String, Object> getTypedExportedConstants() {
+  public Map<String, Object> getTypedExportedConstants() {
     // The application can register BlobProvider as a ContentProvider so that blobs are resolvable.
     // If it does, it needs to tell us what authority was used via this string resource.
     Resources resources = getReactApplicationContext().getResources();
@@ -204,7 +213,7 @@ public class BlobModule extends NativeBlobModuleSpec {
     return resolve(blobId, offset, size);
   }
 
-  public @Nullable byte[] resolve(String blobId, int offset, int size) {
+  public @Nullable byte[] resolve(@Nullable String blobId, int offset, int size) {
     synchronized (mBlobs) {
       byte[] data = mBlobs.get(blobId);
       if (data == null) {
@@ -267,7 +276,7 @@ public class BlobModule extends NativeBlobModuleSpec {
     }
   }
 
-  private String getNameFromUri(Uri contentUri) {
+  private @Nullable String getNameFromUri(Uri contentUri) {
     if ("file".equals(contentUri.getScheme())) {
       return contentUri.getLastPathSegment();
     }
@@ -312,7 +321,7 @@ public class BlobModule extends NativeBlobModuleSpec {
     return type;
   }
 
-  private WebSocketModule getWebSocketModule(String reason) {
+  private @Nullable WebSocketModule getWebSocketModule(String reason) {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
@@ -329,6 +338,7 @@ public class BlobModule extends NativeBlobModuleSpec {
     if (reactApplicationContext != null) {
       NetworkingModule networkingModule =
           reactApplicationContext.getNativeModule(NetworkingModule.class);
+      Assertions.assertNotNull(networkingModule, "NetworkingModule is null");
       networkingModule.addUriHandler(mNetworkingUriHandler);
       networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
       networkingModule.addResponseHandler(mNetworkingResponseHandler);
@@ -368,8 +378,6 @@ public class BlobModule extends NativeBlobModuleSpec {
 
       if (data != null) {
         webSocketModule.sendBinary(ByteString.of(data), id);
-      } else {
-        webSocketModule.sendBinary((ByteString) null, id);
       }
     }
   }
@@ -380,14 +388,20 @@ public class BlobModule extends NativeBlobModuleSpec {
     ArrayList<byte[]> partList = new ArrayList<>(parts.size());
     for (int i = 0; i < parts.size(); i++) {
       ReadableMap part = parts.getMap(i);
-      switch (part.getString("type")) {
+      Assertions.assertNotNull(part, "Blob part is null");
+      String type = part.getString("type");
+      Assertions.assertNotNull(type, "Invalid type for blob: null");
+      switch (type) {
         case "blob":
           ReadableMap blob = part.getMap("data");
+          Assertions.assertNotNull(blob, "Blob is null");
           totalBlobSize += blob.getInt("size");
           partList.add(i, resolve(blob));
           break;
         case "string":
-          byte[] bytes = part.getString("data").getBytes(Charset.forName("UTF-8"));
+          String data = part.getString("data");
+          Assertions.assertNotNull(data, "Data is null");
+          byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
           totalBlobSize += bytes.length;
           partList.add(i, bytes);
           break;
