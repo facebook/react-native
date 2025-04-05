@@ -9,7 +9,7 @@
 
 CURR_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHermesc.cmake}
+IMPORT_HERMESC_PATH=${HERMES_OVERRIDE_HERMESC_PATH:-$PWD/build_host_hermesc/ImportHostCompilers.cmake}
 BUILD_TYPE=${BUILD_TYPE:-Debug}
 
 HERMES_PATH="$CURR_SCRIPT_DIR/.."
@@ -60,7 +60,7 @@ function get_mac_deployment_target {
 function build_host_hermesc {
   echo "Building hermesc"
   pushd "$HERMES_PATH" > /dev/null || exit 1
-    cmake -S . -B build_host_hermesc -DJSI_DIR="$JSI_PATH"
+    cmake -S . -B build_host_hermesc -DJSI_DIR="$JSI_PATH" -DCMAKE_BUILD_TYPE=Release
     cmake --build ./build_host_hermesc --target hermesc -j "${NUM_CORES}"
   popd > /dev/null || exit 1
 }
@@ -88,6 +88,11 @@ function configure_apple_framework {
     xcode_15_flags="LINKER:-ld_classic"
   fi
 
+  boost_context_flag=""
+  if [[ $1 == "catalyst" ]]; then
+    boost_context_flag="-DHERMES_ALLOW_BOOST_CONTEXT=0"
+  fi
+
   pushd "$HERMES_PATH" > /dev/null || exit 1
     cmake -S . -B "build_$1" \
       -DHERMES_EXTRA_LINKER_FLAGS="$xcode_15_flags" \
@@ -103,10 +108,14 @@ function configure_apple_framework {
       -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
       -DHERMES_BUILD_SHARED_JSI:BOOLEAN=false \
       -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
+      -DCMAKE_CXX_FLAGS="-gdwarf ${CMAKE_CXX_FLAGS}" \
+      -DCMAKE_C_FLAGS="-gdwarf ${CMAKE_CXX_FLAGS}" \
       -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
+      -DIMPORT_HOST_COMPILERS="$IMPORT_HERMESC_PATH" \
       -DJSI_DIR="$JSI_PATH" \
-      -DHERMES_RELEASE_VERSION="for RN $(get_release_version)" \
-      -DCMAKE_BUILD_TYPE="$cmake_build_type"
+      -DHERMES_RELEASE_VERSION="for RN $(get_release_version) (static)" \
+      -DCMAKE_BUILD_TYPE="$cmake_build_type" \
+      $boost_context_flag
     popd > /dev/null || exit 1
 }
 
@@ -116,6 +125,14 @@ function build_host_hermesc_if_needed {
   else
     echo "[HermesC] Skipping! Found an existent hermesc already at: $IMPORT_HERMESC_PATH"
   fi
+}
+
+function generate_dSYM {
+  TARGET_PLATFORM="$1"
+  DSYM_PATH="$PWD/build_$TARGET_PLATFORM/lib/hermesvm.framework.dSYM"
+  xcrun dsymutil "$PWD/build_$TARGET_PLATFORM/lib/hermesvm.framework/hermesvm" --out "$DSYM_PATH"
+  mkdir -p "$PWD/destroot/Library/Frameworks/$TARGET_PLATFORM"
+  cp -R "$DSYM_PATH" "$PWD/destroot/Library/Frameworks/$TARGET_PLATFORM"
 }
 
 # Utility function to build an Apple framework
@@ -133,12 +150,13 @@ function build_apple_framework {
 
   pushd "$HERMES_PATH" > /dev/null || exit 1
     mkdir -p "destroot/Library/Frameworks/$1"
-    cmake --build "./build_$1" --target libhermes -j "${NUM_CORES}"
-    cp -R "./build_$1"/API/hermes/hermes.framework* "destroot/Library/Frameworks/$1"
+    cmake --build "./build_$1" --target hermesvm -j "${NUM_CORES}"
+    cp -R "./build_$1"/lib/hermesvm.framework* "destroot/Library/Frameworks/$1"
+    generate_dSYM "$1"
 
     # In a MacOS build, also produce the hermes and hermesc CLI tools.
     if [[ $1 == macosx ]]; then
-      cmake --build "./build_$1" --target hermesc hermes -j "${NUM_CORES}"
+      cmake --build "./build_$1" --target hermesc hermesvm -j "${NUM_CORES}"
       mkdir -p destroot/bin
       cp "./build_$1/bin"/* "destroot/bin"
     fi
@@ -153,12 +171,6 @@ function build_apple_framework {
     mkdir -p destroot/include/hermes/cdp
     cp API/hermes/cdp/*.h destroot/include/hermes/cdp
 
-    mkdir -p destroot/include/hermes/inspector
-    cp API/hermes/inspector/*.h destroot/include/hermes/inspector
-
-    mkdir -p destroot/include/hermes/inspector/chrome
-    cp API/hermes/inspector/chrome/*.h destroot/include/hermes/inspector/chrome
-
     mkdir -p destroot/include/jsi
     cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
   popd > /dev/null || exit 1
@@ -168,7 +180,7 @@ function prepare_dest_root_for_ci {
   mkdir -p  "destroot/bin"
   for platform in "${PLATFORMS[@]}"; do
     mkdir -p "destroot/Library/Frameworks/$platform"
-    cp -R "./build_$platform/API/hermes/hermes.framework"* "destroot/Library/Frameworks/$platform"
+    cp -R "./build_$platform/lib/hermesvm.framework"* "destroot/Library/Frameworks/$platform"
   done
 
   cp "./build_macosx/bin/"* "destroot/bin"
@@ -182,12 +194,6 @@ function prepare_dest_root_for_ci {
 
   mkdir -p destroot/include/hermes/cdp
   cp API/hermes/cdp/*.h destroot/include/hermes/cdp
-
-  mkdir -p destroot/include/hermes/inspector
-  cp API/hermes/inspector/*.h destroot/include/hermes/inspector
-
-  mkdir -p destroot/include/hermes/inspector/chrome
-  cp API/hermes/inspector/chrome/*.h destroot/include/hermes/inspector/chrome
 
   mkdir -p destroot/include/jsi
   cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
@@ -206,15 +212,15 @@ function create_universal_framework {
 
   for i in "${!platforms[@]}"; do
     local platform="${platforms[$i]}"
-    local hermes_framework_path="${platform}/hermes.framework"
+    local hermes_framework_path="${platform}/hermesvm.framework"
     args+="-framework $hermes_framework_path "
   done
 
   mkdir -p universal
   # shellcheck disable=SC2086
-  if xcodebuild -create-xcframework $args -output "universal/hermes.xcframework"
+  if xcodebuild -create-xcframework $args -output "universal/hermesvm.xcframework"
   then
-    # # Remove the thin iOS hermes.frameworks that are now part of the universal
+    # # Remove the thin iOS hermesvm.frameworks that are now part of the universal
     # XCFramework
     for platform in "${platforms[@]}"; do
       rm -r "$platform"

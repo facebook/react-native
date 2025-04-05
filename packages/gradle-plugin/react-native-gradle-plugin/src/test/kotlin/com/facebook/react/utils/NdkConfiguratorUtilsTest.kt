@@ -24,8 +24,8 @@ class NdkConfiguratorUtilsTest {
     assertThat(excludes).containsExactly("**/libjsc.so", "**/libjsctooling.so")
     assertThat(includes).doesNotContain("**/libjsc.so", "**/libjsctooling.so")
 
-    assertThat(includes).containsExactly("**/libhermes.so", "**/libhermestooling.so")
-    assertThat(excludes).doesNotContain("**/libhermes.so", "**/libhermestooling.so")
+    assertThat(includes).containsExactly("**/libhermesvm.so", "**/libhermestooling.so")
+    assertThat(excludes).doesNotContain("**/libhermesvm.so", "**/libhermestooling.so")
   }
 
   @Test
@@ -51,8 +51,8 @@ class NdkConfiguratorUtilsTest {
             useThirdPartyJSC = false,
         )
 
-    assertThat(excludes).containsExactly("**/libhermes.so", "**/libhermestooling.so")
-    assertThat(includes).doesNotContain("**/libhermes.so", "**/libhermestooling.so")
+    assertThat(excludes).containsExactly("**/libhermesvm.so", "**/libhermestooling.so")
+    assertThat(includes).doesNotContain("**/libhermesvm.so", "**/libhermestooling.so")
 
     assertThat(includes).containsExactly("**/libjsc.so", "**/libjsctooling.so")
     assertThat(excludes).doesNotContain("**/libjsc.so", "**/libjsctooling.so")

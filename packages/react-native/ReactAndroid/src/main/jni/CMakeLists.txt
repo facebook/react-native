@@ -382,7 +382,7 @@ target_link_libraries(reactnative_unittest
   glog
   glog_init
   gtest_main
-  hermes-engine::libhermes
+  hermes-engine::hermesvm
   hermes_inspector_modern
   jserrorhandler
   jsi
