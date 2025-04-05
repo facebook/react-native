@@ -59,7 +59,7 @@ BOOL RCTAreLegacyLogsEnabled(void)
   dispatch_once(&onceToken, ^{
     NSNumber *rctNewArchEnabled =
         (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"];
-    _legacyWarningEnabled = rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+    _legacyWarningEnabled = rctNewArchEnabled.boolValue;
   });
   return _legacyWarningEnabled;
 }
