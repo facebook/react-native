@@ -8,6 +8,8 @@
 package com.facebook.react.internal.turbomodule.core;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Dynamic;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class TurboModuleInteropUtils {
 
   static class MethodDescriptor {
@@ -92,12 +95,14 @@ class TurboModuleInteropUtils {
 
       if ("getConstants".equals(methodName)) {
         if (returnType != Map.class) {
-          // TODO(T145105887) Output error. getConstants must always have a return type of Map
+          throw new ParsingException(moduleName, "getConstants must return a Map");
         }
-      } else if (annotation.isBlockingSynchronousMethod() && returnType == void.class
-          || !annotation.isBlockingSynchronousMethod() && returnType != void.class) {
-        // TODO(T145105887): Output error. TurboModule system assumes returnType == void iff the
-        // method is synchronous.
+      } else if (annotation != null
+          && (annotation.isBlockingSynchronousMethod() && returnType == void.class
+              || !annotation.isBlockingSynchronousMethod() && returnType != void.class)) {
+        throw new ParsingException(
+            moduleName,
+            "TurboModule system assumes returnType == void iff the method is synchronous.");
       }
 
       methodDescriptors.add(
@@ -115,7 +120,7 @@ class TurboModuleInteropUtils {
     Class<? extends NativeModule> classForMethods = module.getClass();
     Class<? extends NativeModule> superClass =
         (Class<? extends NativeModule>) classForMethods.getSuperclass();
-    if (TurboModule.class.isAssignableFrom(superClass)) {
+    if (superClass != null && TurboModule.class.isAssignableFrom(superClass)) {
       // For java module that is based on generated flow-type spec, inspect the
       // spec abstract class instead, which is the super class of the given java
       // module.
@@ -214,7 +219,9 @@ class TurboModuleInteropUtils {
   }
 
   private static String convertClassToJniType(Class<?> cls) {
-    return 'L' + cls.getCanonicalName().replace('.', '/') + ';';
+    String canonicalName = cls.getCanonicalName();
+    Assertions.assertNotNull(canonicalName, "Class must have a canonical name");
+    return 'L' + canonicalName.replace('.', '/') + ';';
   }
 
   private static int getJsArgCount(String moduleName, String methodName, Class<?>[] paramClasses) {

@@ -241,7 +241,9 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  surfaceHandler.setProps(initialProps->consume());
+  if (initialProps != nullptr) {
+    surfaceHandler.setProps(initialProps->consume());
+  }
   surfaceHandler.constraintLayout(constraints, context);
 
   scheduler->registerSurface(surfaceHandler);
