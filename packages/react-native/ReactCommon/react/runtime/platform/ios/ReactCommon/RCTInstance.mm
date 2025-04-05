@@ -39,6 +39,7 @@
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
+#import <react/renderer/graphics/Size.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -315,6 +316,17 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
 
+  auto contextContainer = std::make_shared<ContextContainer>();
+  RCTExecuteOnMainQueue(^{
+    CGSize screenSize = RCTScreenSize();
+    contextContainer->insert<facebook::react::Size>(
+        "RCTScreenSize",
+        {
+            .width = screenSize.width,
+            .height = screenSize.height,
+        });
+  });
+
   if (ReactNativeFeatureFlags::enableMainQueueModulesOnIOS()) {
     /**
      * Some native modules need to capture uikit objects on the main thread.
@@ -350,7 +362,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
 
-  auto contextContainer = std::make_shared<ContextContainer>();
   [_delegate didCreateContextContainer:contextContainer];
 
   contextContainer->insert(

@@ -12,6 +12,11 @@
 #include <react/renderer/components/rncore/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
+#if defined(__APPLE__) && TARGET_OS_IOS
+#include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/graphics/Size.h>
+#endif
+
 namespace facebook::react {
 
 extern const char ModalHostViewComponentName[];
@@ -32,6 +37,18 @@ class ModalHostViewShadowNode final : public ConcreteViewShadowNode<
     traits.set(ShadowNodeTraits::Trait::RootNodeKind);
     return traits;
   }
+
+#if defined(__APPLE__) && TARGET_OS_IOS
+  static ConcreteStateData initialStateData(
+      const Props::Shared& /*props*/,
+      const ShadowNodeFamily::Shared& /*family*/,
+      const ComponentDescriptor& componentDescriptor) {
+    const std::shared_ptr<const ContextContainer>& contextContainer =
+        componentDescriptor.getContextContainer();
+    Size screenSize = contextContainer->at<Size>("RCTScreenSize");
+    return screenSize;
+  }
+#endif
 };
 
 } // namespace facebook::react
