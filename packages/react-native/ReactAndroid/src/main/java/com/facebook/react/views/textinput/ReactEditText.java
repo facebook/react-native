@@ -125,6 +125,7 @@ public class ReactEditText extends AppCompatEditText {
   private boolean mOnKeyPress = false;
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
+  private boolean mForceUpdateTypefaceAndFlagsOnLayout = false;
   private @Nullable String mFontFamily = null;
   private int mFontWeight = ReactConstants.UNSET;
   private int mFontStyle = ReactConstants.UNSET;
@@ -257,6 +258,12 @@ public class ReactEditText extends AppCompatEditText {
       selectAll();
       // Prevent text on being selected for next layout pass
       mSelectTextOnFocus = false;
+    }
+
+    // Resolves issue with custom fonts not being applied, especially on hint text
+    if (mForceUpdateTypefaceAndFlagsOnLayout) {
+      mForceUpdateTypefaceAndFlagsOnLayout = false;
+      updateTypefaceAndFlags();
     }
   }
 
@@ -629,13 +636,7 @@ public class ReactEditText extends AppCompatEditText {
     }
   }
 
-  public void maybeUpdateTypeface() {
-    if (!mTypefaceDirty) {
-      return;
-    }
-
-    mTypefaceDirty = false;
-
+  private void updateTypefaceAndFlags() {
     Typeface newTypeface =
         ReactTypefaceUtils.applyStyles(
             getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
@@ -651,6 +652,16 @@ public class ReactEditText extends AppCompatEditText {
     } else {
       setPaintFlags(getPaintFlags() & (~Paint.SUBPIXEL_TEXT_FLAG));
     }
+  }
+
+  public void maybeUpdateTypeface() {
+    if (!mTypefaceDirty) {
+      return;
+    }
+
+    mTypefaceDirty = false;
+    updateTypefaceAndFlags();
+    mForceUpdateTypefaceAndFlagsOnLayout = true;
   }
 
   public void requestFocusFromJS() {
