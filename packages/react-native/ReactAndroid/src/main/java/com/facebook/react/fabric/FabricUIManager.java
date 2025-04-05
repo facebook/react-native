@@ -25,10 +25,11 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.ColorPropConverter;
@@ -98,6 +99,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
  * only called through the JNI from Cxx so it appears that most of this class is "unused".
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
 public class FabricUIManager
@@ -107,7 +109,7 @@ public class FabricUIManager
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
-  public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
+  public @Nullable DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   private static final DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener FABRIC_PERF_LOGGER =
       commitPoint -> {
@@ -160,27 +162,24 @@ public class FabricUIManager
   }
 
   @Nullable private FabricUIManagerBinding mBinding;
-  @NonNull private final ReactApplicationContext mReactApplicationContext;
-  @NonNull private final MountingManager mMountingManager;
-  @NonNull private final FabricEventDispatcher mEventDispatcher;
-  @NonNull private final MountItemDispatcher mMountItemDispatcher;
-  @NonNull private final ViewManagerRegistry mViewManagerRegistry;
+  private final ReactApplicationContext mReactApplicationContext;
+  private final MountingManager mMountingManager;
+  private final FabricEventDispatcher mEventDispatcher;
+  private final MountItemDispatcher mMountItemDispatcher;
+  private final ViewManagerRegistry mViewManagerRegistry;
 
-  @NonNull private final BatchEventDispatchedListener mBatchEventDispatchedListener;
+  private final BatchEventDispatchedListener mBatchEventDispatchedListener;
 
-  @NonNull
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
   private boolean mMountNotificationScheduled = false;
   private List<Integer> mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
 
   @ThreadConfined(UI)
-  @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
   @ThreadConfined(UI)
-  @NonNull
   private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
 
   /**
@@ -218,9 +217,9 @@ public class FabricUIManager
   @Nullable private InteropUIBlockListener mInteropUIBlockListener;
 
   public FabricUIManager(
-      @NonNull ReactApplicationContext reactContext,
-      @NonNull ViewManagerRegistry viewManagerRegistry,
-      @NonNull BatchEventDispatchedListener batchEventDispatchedListener) {
+      ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagerRegistry,
+      BatchEventDispatchedListener batchEventDispatchedListener) {
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
     mReactApplicationContext = reactContext;
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
@@ -238,7 +237,8 @@ public class FabricUIManager
   @UiThread
   @ThreadConfined(UI)
   @Deprecated
-  public <T extends View> int addRootView(final T rootView, final WritableMap initialProps) {
+  public <T extends View> int addRootView(
+      final T rootView, final @Nullable WritableMap initialProps) {
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
@@ -255,6 +255,7 @@ public class FabricUIManager
     if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
   }
@@ -265,7 +266,7 @@ public class FabricUIManager
   public <T extends View> int startSurface(
       final T rootView,
       final String moduleName,
-      final WritableMap initialProps,
+      final @Nullable WritableMap initialProps,
       int widthMeasureSpec,
       int heightMeasureSpec) {
     final int rootTag = ((ReactRoot) rootView).getRootViewTag();
@@ -284,6 +285,7 @@ public class FabricUIManager
     Point viewportOffset =
         UiThreadUtil.isOnUiThread() ? RootViewUtil.getViewportOffset(rootView) : new Point(0, 0);
 
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.startSurfaceWithConstraints(
         rootTag,
         moduleName,
@@ -311,6 +313,7 @@ public class FabricUIManager
     if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
       throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.startSurfaceWithSurfaceHandler(
         rootTag, (SurfaceHandlerBinding) surfaceHandler, rootView != null);
   }
@@ -339,6 +342,7 @@ public class FabricUIManager
     if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
       throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.stopSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
   }
 
@@ -355,6 +359,7 @@ public class FabricUIManager
     // Mark surfaceId as dead, stop executing mounting instructions
     mMountingManager.stopSurface(surfaceID);
 
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     // Communicate stopSurface to Cxx - causes an empty ShadowTree to be committed,
     // but all mounting instructions will be ignored because stopSurface was called
     // on the MountingManager
@@ -408,7 +413,9 @@ public class FabricUIManager
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
 
-    mBinding.unregister();
+    if (mBinding != null) {
+      mBinding.unregister();
+    }
     mBinding = null;
 
     ViewManagerPropertyUpdater.clear();
@@ -452,7 +459,6 @@ public class FabricUIManager
     }
   }
 
-  @NonNull
   private InteropUIBlockListener getInteropUIBlockListener() {
     if (mInteropUIBlockListener == null) {
       mInteropUIBlockListener = new InteropUIBlockListener();
@@ -539,6 +545,8 @@ public class FabricUIManager
         return 0;
       }
       context = surfaceMountingManager.getContext();
+      Assertions.assertNotNull(
+          context, "Context in SurfaceMountingManager is null. surfaceId: " + surfaceId);
     } else {
       context = mReactApplicationContext;
     }
@@ -577,6 +585,8 @@ public class FabricUIManager
         return 0;
       }
       context = surfaceMountingManager.getContext();
+      Assertions.assertNotNull(
+          context, "Context in SurfaceMountingManager is null. surfaceId: " + surfaceId);
     } else {
       context = mReactApplicationContext;
     }
@@ -631,8 +641,7 @@ public class FabricUIManager
   @Override
   @UiThread
   @ThreadConfined(UI)
-  public void synchronouslyUpdateViewOnUIThread(
-      final int reactTag, @NonNull final ReadableMap props) {
+  public void synchronouslyUpdateViewOnUIThread(final int reactTag, final ReadableMap props) {
     UiThreadUtil.assertOnUiThread();
 
     int commitNumber = mCurrentSynchronousCommitNumber++;
@@ -663,7 +672,7 @@ public class FabricUIManager
     MountItem synchronousMountItem =
         new MountItem() {
           @Override
-          public void execute(@NonNull MountingManager mountingManager) {
+          public void execute(MountingManager mountingManager) {
             try {
               mountingManager.updateProps(reactTag, props);
             } catch (Exception ex) {
@@ -681,7 +690,6 @@ public class FabricUIManager
             return View.NO_ID;
           }
 
-          @NonNull
           @Override
           public String toString() {
             String propsString =
@@ -721,7 +729,7 @@ public class FabricUIManager
       int rootTag,
       int reactTag,
       final String componentName,
-      @Nullable Object props,
+      ReadableMap props,
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
     mMountItemDispatcher.addPreAllocateMountItem(
@@ -786,10 +794,14 @@ public class FabricUIManager
     // calls scheduleMountItems with a BatchMountItem.
     long scheduleMountItemStartTime = SystemClock.uptimeMillis();
     boolean isBatchMountItem = mountItem instanceof BatchMountItem;
-    boolean shouldSchedule =
-        (isBatchMountItem && !((BatchMountItem) mountItem).isBatchEmpty())
-            || (!isBatchMountItem && mountItem != null);
-
+    boolean shouldSchedule = false;
+    if (isBatchMountItem) {
+      BatchMountItem batchMountItem = (BatchMountItem) mountItem;
+      Assertions.assertNotNull(batchMountItem, "BatchMountItem is null");
+      shouldSchedule = batchMountItem.isBatchEmpty();
+    } else {
+      shouldSchedule = mountItem != null;
+    }
     // In case of sync rendering, this could be called on the UI thread. Otherwise,
     // it should ~always be called on the JS thread.
     for (UIManagerListener listener : mListeners) {
@@ -805,6 +817,7 @@ public class FabricUIManager
     }
 
     if (shouldSchedule) {
+      Assertions.assertNotNull(mountItem, "MountItem is null");
       mMountItemDispatcher.addMountItem(mountItem);
       Runnable runnable =
           new GuardedRunnable(mReactApplicationContext) {
@@ -901,6 +914,7 @@ public class FabricUIManager
       doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(context);
     }
 
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.setConstraints(
         surfaceId,
         getMinSize(widthMeasureSpec),
@@ -914,7 +928,7 @@ public class FabricUIManager
   }
 
   @Override
-  public View resolveView(int reactTag) {
+  public @Nullable View resolveView(int reactTag) {
     UiThreadUtil.assertOnUiThread();
 
     SurfaceMountingManager surfaceManager = mMountingManager.getSurfaceManagerForView(reactTag);
@@ -960,7 +974,7 @@ public class FabricUIManager
   public void receiveEvent(
       int surfaceId,
       int reactTag,
-      @NonNull String eventName,
+      String eventName,
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory,
@@ -1013,7 +1027,6 @@ public class FabricUIManager
   }
 
   @Override
-  @NonNull
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
   }
@@ -1126,7 +1139,7 @@ public class FabricUIManager
     mMountItemDispatcher.addMountItem(
         new MountItem() {
           @Override
-          public void execute(@NonNull MountingManager mountingManager) {
+          public void execute(MountingManager mountingManager) {
             SurfaceMountingManager surfaceMountingManager =
                 mountingManager.getSurfaceManager(surfaceId);
             if (surfaceMountingManager != null) {
@@ -1143,7 +1156,6 @@ public class FabricUIManager
             return surfaceId;
           }
 
-          @NonNull
           @SuppressLint("DefaultLocale")
           @Override
           public String toString() {
@@ -1160,7 +1172,7 @@ public class FabricUIManager
     mMountItemDispatcher.addMountItem(
         new MountItem() {
           @Override
-          public void execute(@NonNull MountingManager mountingManager) {
+          public void execute(MountingManager mountingManager) {
             mountingManager.clearJSResponder();
           }
 
@@ -1169,7 +1181,6 @@ public class FabricUIManager
             return View.NO_ID;
           }
 
-          @NonNull
           @Override
           public String toString() {
             return "CLEAR_JS_RESPONDER";
@@ -1318,7 +1329,7 @@ public class FabricUIManager
     @ThreadConfined(UI)
     private boolean mIsScheduled = false;
 
-    private DispatchUIFrameCallback(@NonNull ReactContext reactContext) {
+    private DispatchUIFrameCallback(ReactContext reactContext) {
       super(reactContext);
     }
 
