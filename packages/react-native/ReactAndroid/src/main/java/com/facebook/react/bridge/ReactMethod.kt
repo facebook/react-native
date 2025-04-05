@@ -7,8 +7,6 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
-
 /**
  * Annotation which is used to mark methods that are exposed to React Native.
  *
@@ -17,7 +15,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture
  * for each.
  */
 @Retention(AnnotationRetention.RUNTIME)
-@LegacyArchitecture
 public annotation class ReactMethod(
     /**
      * Whether the method can be called from JS synchronously **on the JS thread**, possibly
