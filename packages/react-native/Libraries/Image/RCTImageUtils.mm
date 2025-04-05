@@ -256,7 +256,8 @@ BOOL RCTUpscalingRequired(
   }
 }
 
-UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode)
+UIImage *__nullable
+RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode, CGFloat screenScale)
 {
   CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
   if (!sourceRef) {
@@ -280,7 +281,7 @@ UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloa
       destScale = 1;
     }
   } else if (!destScale) {
-    destScale = RCTScreenScale();
+    destScale = screenScale;
   }
 
   if (resizeMode == RCTResizeModeStretch) {
