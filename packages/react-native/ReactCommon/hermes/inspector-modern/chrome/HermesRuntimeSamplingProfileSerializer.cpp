@@ -7,6 +7,8 @@
 
 #include "HermesRuntimeSamplingProfileSerializer.h"
 
+namespace fhsp = facebook::hermes::sampling_profiler;
+
 namespace facebook::react::jsinspector_modern::tracing {
 
 namespace {
@@ -21,30 +23,26 @@ const std::string GARBAGE_COLLECTOR_FRAME_NAME = "(garbage collector)";
 /// Filters out Hermes Suspend frames related to Debugger.
 /// Even though Debugger domain is expected to be disabled, Hermes might run
 /// Debugger loop while recording sampling profile. We only allow GC frames.
-bool shouldIgnoreHermesFrame(
-    hermes::sampling_profiler::ProfileSampleCallStackFrame* hermesFrame) {
+bool shouldIgnoreHermesFrame(fhsp::ProfileSampleCallStackFrame* hermesFrame) {
   if (hermesFrame->getKind() !=
-      hermes::sampling_profiler::ProfileSampleCallStackFrame::Kind::Suspend) {
+      fhsp::ProfileSampleCallStackFrame::Kind::Suspend) {
     return false;
   }
 
-  auto* suspendFrame = static_cast<
-      hermes::sampling_profiler::ProfileSampleCallStackSuspendFrame*>(
-      hermesFrame);
+  auto* suspendFrame =
+      static_cast<fhsp::ProfileSampleCallStackSuspendFrame*>(hermesFrame);
   auto suspendFrameKind = suspendFrame->getSuspendFrameKind();
   return suspendFrameKind !=
-      hermes::sampling_profiler::ProfileSampleCallStackSuspendFrame::
-          SuspendFrameKind::GC;
+      fhsp::ProfileSampleCallStackSuspendFrame::SuspendFrameKind::GC;
 }
 
 RuntimeSamplingProfile::SampleCallStackFrame convertHermesFrameToTracingFrame(
-    hermes::sampling_profiler::ProfileSampleCallStackFrame* hermesFrame) {
+    fhsp::ProfileSampleCallStackFrame* hermesFrame) {
   switch (hermesFrame->getKind()) {
-    case hermes::sampling_profiler::ProfileSampleCallStackFrame::Kind::
-        JSFunction: {
-      auto* jsFunctionFrame = static_cast<
-          hermes::sampling_profiler::ProfileSampleCallStackJSFunctionFrame*>(
-          hermesFrame);
+    case fhsp::ProfileSampleCallStackFrame::Kind::JSFunction: {
+      auto* jsFunctionFrame =
+          static_cast<fhsp::ProfileSampleCallStackJSFunctionFrame*>(
+              hermesFrame);
       return RuntimeSamplingProfile::SampleCallStackFrame{
           RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
           jsFunctionFrame->hasScriptId() ? jsFunctionFrame->getScriptId()
@@ -65,11 +63,9 @@ RuntimeSamplingProfile::SampleCallStackFrame convertHermesFrameToTracingFrame(
               : std::nullopt,
       };
     }
-    case hermes::sampling_profiler::ProfileSampleCallStackFrame::Kind::
-        NativeFunction: {
+    case fhsp::ProfileSampleCallStackFrame::Kind::NativeFunction: {
       auto* nativeFunctionFrame =
-          static_cast<hermes::sampling_profiler::
-                          ProfileSampleCallStackNativeFunctionFrame*>(
+          static_cast<fhsp::ProfileSampleCallStackNativeFunctionFrame*>(
               hermesFrame);
 
       return RuntimeSamplingProfile::SampleCallStackFrame{
@@ -79,11 +75,10 @@ RuntimeSamplingProfile::SampleCallStackFrame convertHermesFrameToTracingFrame(
           nativeFunctionFrame->getFunctionName(),
       };
     }
-    case hermes::sampling_profiler::ProfileSampleCallStackFrame::Kind::
-        HostFunction: {
-      auto* hostFunctionFrame = static_cast<
-          hermes::sampling_profiler::ProfileSampleCallStackHostFunctionFrame*>(
-          hermesFrame);
+    case fhsp::ProfileSampleCallStackFrame::Kind::HostFunction: {
+      auto* hostFunctionFrame =
+          static_cast<fhsp::ProfileSampleCallStackHostFunctionFrame*>(
+              hermesFrame);
 
       return RuntimeSamplingProfile::SampleCallStackFrame{
           RuntimeSamplingProfile::SampleCallStackFrame::Kind::HostFunction,
@@ -92,15 +87,12 @@ RuntimeSamplingProfile::SampleCallStackFrame convertHermesFrameToTracingFrame(
           hostFunctionFrame->getFunctionName(),
       };
     }
-    case hermes::sampling_profiler::ProfileSampleCallStackFrame::Kind::
-        Suspend: {
-      auto* suspendFrame = static_cast<
-          hermes::sampling_profiler::ProfileSampleCallStackSuspendFrame*>(
-          hermesFrame);
+    case fhsp::ProfileSampleCallStackFrame::Kind::Suspend: {
+      auto* suspendFrame =
+          static_cast<fhsp::ProfileSampleCallStackSuspendFrame*>(hermesFrame);
       auto suspendFrameKind = suspendFrame->getSuspendFrameKind();
       if (suspendFrameKind ==
-          hermes::sampling_profiler::ProfileSampleCallStackSuspendFrame::
-              SuspendFrameKind::GC) {
+          fhsp::ProfileSampleCallStackSuspendFrame::SuspendFrameKind::GC) {
         return RuntimeSamplingProfile::SampleCallStackFrame{
             RuntimeSamplingProfile::SampleCallStackFrame::Kind::
                 GarbageCollector,
@@ -122,26 +114,26 @@ RuntimeSamplingProfile::SampleCallStackFrame convertHermesFrameToTracingFrame(
 }
 
 RuntimeSamplingProfile::Sample convertHermesSampleToTracingSample(
-    hermes::sampling_profiler::ProfileSample& hermesSample) {
-  uint64_t reconciledTimestamp = hermesSample.getTimestamp();
-  std::vector<hermes::sampling_profiler::ProfileSampleCallStackFrame*>
+    const fhsp::ProfileSample& hermesSample) {
+  const std::vector<std::unique_ptr<fhsp::ProfileSampleCallStackFrame>>&
       hermesSampleCallStack = hermesSample.getCallStack();
 
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame>
       reconciledSampleCallStack;
   reconciledSampleCallStack.reserve(hermesSampleCallStack.size());
 
-  for (auto* hermesFrame : hermesSampleCallStack) {
-    if (shouldIgnoreHermesFrame(hermesFrame)) {
+  for (const auto& hermesFrame : hermesSampleCallStack) {
+    if (shouldIgnoreHermesFrame(hermesFrame.get())) {
       continue;
     }
+
     RuntimeSamplingProfile::SampleCallStackFrame reconciledFrame =
-        convertHermesFrameToTracingFrame(hermesFrame);
+        convertHermesFrameToTracingFrame(hermesFrame.get());
     reconciledSampleCallStack.push_back(std::move(reconciledFrame));
   }
 
   return RuntimeSamplingProfile::Sample{
-      reconciledTimestamp,
+      hermesSample.getTimestamp(),
       hermesSample.getThreadId(),
       std::move(reconciledSampleCallStack)};
 }
@@ -150,13 +142,13 @@ RuntimeSamplingProfile::Sample convertHermesSampleToTracingSample(
 
 /* static */ RuntimeSamplingProfile
 HermesRuntimeSamplingProfileSerializer::serializeToTracingSamplingProfile(
-    const hermes::sampling_profiler::Profile& hermesProfile) {
-  std::vector<hermes::sampling_profiler::ProfileSample> hermesSamples =
+    const fhsp::Profile& hermesProfile) {
+  const std::vector<fhsp::ProfileSample>& hermesSamples =
       hermesProfile.getSamples();
   std::vector<RuntimeSamplingProfile::Sample> reconciledSamples;
   reconciledSamples.reserve(hermesSamples.size());
 
-  for (auto& hermesSample : hermesSamples) {
+  for (const auto& hermesSample : hermesSamples) {
     RuntimeSamplingProfile::Sample reconciledSample =
         convertHermesSampleToTracingSample(hermesSample);
     reconciledSamples.push_back(std::move(reconciledSample));
