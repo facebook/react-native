@@ -1129,18 +1129,6 @@ public final class com/facebook/react/bridge/ReactCxxErrorHandler {
 	public static final fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
 }
 
-public final class com/facebook/react/bridge/ReactIgnorableMountingException : java/lang/RuntimeException {
-	public static final field Companion Lcom/facebook/react/bridge/ReactIgnorableMountingException$Companion;
-	public fun <init> (Ljava/lang/String;)V
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public fun <init> (Ljava/lang/Throwable;)V
-	public static final fun isIgnorable (Ljava/lang/Throwable;)Z
-}
-
-public final class com/facebook/react/bridge/ReactIgnorableMountingException$Companion {
-	public final fun isIgnorable (Ljava/lang/Throwable;)Z
-}
-
 public class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget : java/lang/AutoCloseable {
 	public fun <init> (Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate;)V
 	public fun close ()V
