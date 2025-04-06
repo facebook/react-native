@@ -517,14 +517,19 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         // Set up hot module reloading in Dev only.
         [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
         [devSettings setupHMRClientWithBundleURL:sourceURL];
-
+#if RCT_DEV
         [strongSelf _logOldArchitectureWarnings];
+#endif
       }];
 }
 
 - (void)_logOldArchitectureWarnings
 {
-  NSMutableArray<NSString *> *modulesInOldArchMode = getModulesLoadedWithOldArch();
+  if (!RCTAreLegacyLogsEnabled()) {
+    return;
+  }
+
+  NSArray<NSString *> *modulesInOldArchMode = [getModulesLoadedWithOldArch() copy];
   if (modulesInOldArchMode.count > 0) {
     NSMutableString *moduleList = [NSMutableString new];
     for (NSString *moduleName in modulesInOldArchMode) {
@@ -533,7 +538,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     RCTLogWarn(
         @"The following modules have been registered using a RCT_EXPORT_MODULE. That's a Legacy Architecture API. Please migrate to the new approach as described in the https://reactnative.dev/docs/next/turbo-native-modules-introduction#register-the-native-module-in-your-app website or open a PR in the library repository:\n%@",
         moduleList);
-    [modulesInOldArchMode removeAllObjects];
   }
 }
 
