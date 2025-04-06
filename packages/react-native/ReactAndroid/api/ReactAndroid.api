@@ -2565,15 +2565,6 @@ public abstract interface class com/facebook/react/interfaces/fabric/ReactSurfac
 	public abstract fun stop ()Lcom/facebook/react/interfaces/TaskInterface;
 }
 
-public abstract interface class com/facebook/react/interfaces/fabric/SurfaceHandler {
-	public abstract fun getModuleName ()Ljava/lang/String;
-	public abstract fun getSurfaceId ()I
-	public abstract fun isRunning ()Z
-	public abstract fun setLayoutConstraints (IIIIZZF)V
-	public abstract fun setMountable (Z)V
-	public abstract fun setProps (Lcom/facebook/react/bridge/NativeMap;)V
-}
-
 public final class com/facebook/react/jscexecutor/JSCExecutor : com/facebook/react/bridge/JavaScriptExecutor {
 	public fun getName ()Ljava/lang/String;
 	public static final fun loadLibrary ()V
