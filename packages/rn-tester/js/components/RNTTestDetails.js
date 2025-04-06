@@ -25,30 +25,31 @@ function RNTTestDetails({
 }): React.Node {
   const [collapsed, setCollapsed] = React.useState(true);
 
-  const content = (
-    <>
-      {description == null ? null : (
-        <View style={styles.section}>
-          <Text style={[styles.heading, {color: theme.LabelColor}]}>
-            Description
-          </Text>
-          <Text style={[styles.paragraph, {color: theme.LabelColor}]}>
-            {description}
-          </Text>
-        </View>
-      )}
-      {expect == null ? null : (
-        <View style={styles.section}>
-          <Text style={[styles.heading, {color: theme.LabelColor}]}>
-            Expectation
-          </Text>
-          <Text style={[styles.paragraph, {color: theme.LabelColor}]}>
-            {expect}
-          </Text>
-        </View>
-      )}
-    </>
-  );
+  const content =
+    description == null && expect == null ? null : (
+      <>
+        {description && (
+          <View style={styles.section}>
+            <Text style={[styles.heading, {color: theme.LabelColor}]}>
+              Description
+            </Text>
+            <Text style={[styles.paragraph, {color: theme.LabelColor}]}>
+              {description}
+            </Text>
+          </View>
+        )}
+        {expect && (
+          <View style={styles.section}>
+            <Text style={[styles.heading, {color: theme.LabelColor}]}>
+              Expectation
+            </Text>
+            <Text style={[styles.paragraph, {color: theme.LabelColor}]}>
+              {expect}
+            </Text>
+          </View>
+        )}
+      </>
+    );
   return (
     <View
       style={StyleSheet.compose(styles.container, {
