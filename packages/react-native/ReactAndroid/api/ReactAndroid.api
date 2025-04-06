@@ -6527,11 +6527,6 @@ public final class com/facebook/react/views/text/DefaultStyleValuesUtil {
 	public static final fun getDefaultTextColorHint (Landroid/content/Context;)Landroid/content/res/ColorStateList;
 }
 
-public final class com/facebook/react/views/text/FontMetricsUtil {
-	public static final field INSTANCE Lcom/facebook/react/views/text/FontMetricsUtil;
-	public static final fun getFontMetrics (Ljava/lang/CharSequence;Landroid/text/Layout;Landroid/text/TextPaint;Landroid/content/Context;)Lcom/facebook/react/bridge/WritableArray;
-}
-
 public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : com/facebook/react/uimanager/LayoutShadowNode {
 	public static final field DEFAULT_TEXT_SHADOW_COLOR I
 	public static final field PROP_SHADOW_COLOR Ljava/lang/String;
