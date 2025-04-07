@@ -609,7 +609,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                             name:errorData[@"name"]
                   componentStack:errorData[@"componentStack"]
                      exceptionId:error.id
-                         isFatal:errorData[@"isFatal"]
+                         isFatal:[errorData[@"isFatal"] boolValue]
                        extraData:errorData[@"extraData"]]) {
     JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
     id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
