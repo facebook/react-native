@@ -324,6 +324,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
             Response originalResponse = chain.proceed(chain.request());
             ProgressResponseBody responseBody =
                 new ProgressResponseBody(
+                    // NULLSAFE_FIXME[Parameter Not Nullable]
                     originalResponse.body(),
                     new ProgressListener() {
                       long last = System.nanoTime();
@@ -385,6 +386,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         || method.toLowerCase(Locale.ROOT).equals("head")) {
       requestBody = RequestBodyUtil.getEmptyBody(method);
     } else if (handler != null) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       requestBody = handler.toRequestBody(data, contentType);
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
@@ -398,6 +400,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       String body = data.getString(REQUEST_BODY_KEY_STRING);
       MediaType contentMediaType = MediaType.parse(contentType);
       if (RequestBodyUtil.isGzipEncoding(contentEncoding)) {
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
         if (requestBody == null) {
           ResponseUtil.onRequestError(
@@ -412,6 +415,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
             contentMediaType == null
                 ? StandardCharsets.UTF_8
                 : contentMediaType.charset(StandardCharsets.UTF_8);
+        // NULLSAFE_FIXME[Parameter Not Nullable, Nullable Dereference]
         requestBody = RequestBody.create(contentMediaType, body.getBytes(charset));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
@@ -425,6 +429,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       }
       String base64String = data.getString(REQUEST_BODY_KEY_BASE64);
       MediaType contentMediaType = MediaType.parse(contentType);
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       requestBody = RequestBody.create(contentMediaType, ByteString.decodeBase64(base64String));
     } else if (data.hasKey(REQUEST_BODY_KEY_URI)) {
       if (contentType == null) {
@@ -437,6 +442,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
       InputStream fileInputStream =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
         ResponseUtil.onRequestError(
@@ -450,6 +456,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       }
       ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
       MultipartBody.Builder multipartBuilder =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           constructMultipartBody(parts, contentType, requestId);
       if (multipartBuilder == null) {
         return;
@@ -460,6 +467,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       requestBody = RequestBodyUtil.getEmptyBody(method);
     }
 
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     requestBuilder.method(method, wrapRequestBodyWithProgressEmitter(requestBody, requestId));
 
     addRequest(requestId);
@@ -524,6 +532,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                   // Check if a handler is registered
                   for (ResponseHandler handler : mResponseHandlers) {
                     if (handler.supports(responseType)) {
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       WritableMap res = handler.toResponseData(responseBody);
                       ResponseUtil.onDataReceived(reactApplicationContext, requestId, res);
                       ResponseUtil.onRequestSuccess(reactApplicationContext, requestId);
@@ -535,6 +544,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                   // response,
                   // periodically send response data updates to JS.
                   if (useIncrementalUpdates && responseType.equals("text")) {
+                    // NULLSAFE_FIXME[Parameter Not Nullable]
                     readWithProgress(requestId, responseBody);
                     ResponseUtil.onRequestSuccess(reactApplicationContext, requestId);
                     return;
@@ -544,6 +554,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                   String responseString = "";
                   if (responseType.equals("text")) {
                     try {
+                      // NULLSAFE_FIXME[Nullable Dereference]
                       responseString = responseBody.string();
                     } catch (IOException e) {
                       if (response.request().method().equalsIgnoreCase("HEAD")) {
@@ -558,6 +569,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                       }
                     }
                   } else if (responseType.equals("base64")) {
+                    // NULLSAFE_FIXME[Nullable Dereference]
                     responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
                   }
                   ResponseUtil.onDataReceived(reactApplicationContext, requestId, responseString);
@@ -573,6 +585,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private RequestBody wrapRequestBodyWithProgressEmitter(
       final RequestBody requestBody, final int requestId) {
     if (requestBody == null) {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     }
     final ReactApplicationContext reactApplicationContext =
@@ -610,6 +623,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
             ? StandardCharsets.UTF_8
             : responseBody.contentType().charset(StandardCharsets.UTF_8);
 
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
     InputStream inputStream = responseBody.byteStream();
     try {
@@ -689,6 +703,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private @Nullable MultipartBody.Builder constructMultipartBody(
       ReadableArray body, String contentType, int requestId) {
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     multipartBuilder.setType(MediaType.parse(contentType));
 
     final ReactApplicationContext reactApplicationContext =
@@ -698,6 +713,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       ReadableMap bodyPart = body.getMap(i);
 
       // Determine part's content type.
+      // NULLSAFE_FIXME[Nullable Dereference]
       ReadableArray headersArray = bodyPart.getArray("headers");
       Headers headers = extractHeaders(headersArray, null);
       if (headers == null) {
@@ -717,9 +733,13 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         headers = headers.newBuilder().removeAll(CONTENT_TYPE_HEADER_NAME).build();
       }
 
+      // NULLSAFE_FIXME[Nullable Dereference]
       if (bodyPart.hasKey(REQUEST_BODY_KEY_STRING)) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         String bodyValue = bodyPart.getString(REQUEST_BODY_KEY_STRING);
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         multipartBuilder.addPart(headers, RequestBody.create(partContentType, bodyValue));
+        // NULLSAFE_FIXME[Nullable Dereference]
       } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI)) {
         if (partContentType == null) {
           ResponseUtil.onRequestError(
@@ -729,8 +749,10 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
               null);
           return null;
         }
+        // NULLSAFE_FIXME[Nullable Dereference]
         String fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI);
         InputStream fileInputStream =
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr);
         if (fileInputStream == null) {
           ResponseUtil.onRequestError(
@@ -763,6 +785,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       if (header == null || header.size() != 2) {
         return null;
       }
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       String headerName = HeaderUtil.stripHeaderName(header.getString(0));
       String headerValue = header.getString(1);
       if (headerName == null || headerValue == null) {
