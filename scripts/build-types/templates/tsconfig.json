@@ -1,5 +1,3 @@
 {
-  "compilerOptions": {
-    "paths": {"event-target-shim": ["../src/types/third_party/event-target-shim.d.ts"]}
-  }
+  "compilerOptions": {}
 }
