@@ -2341,7 +2341,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
 	public fun addUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
 	public fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
-	public fun attachRootView (Lcom/facebook/react/fabric/SurfaceHandler;Landroid/view/View;)V
+	public fun attachRootView (Lcom/facebook/react/fabric/SurfaceHandlerBinding;Landroid/view/View;)V
 	public fun clearJSResponder ()V
 	public fun dispatchCommand (IIILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
@@ -2373,9 +2373,9 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun sendAccessibilityEventFromJS (IILjava/lang/String;)V
 	public fun setJSResponder (IIIZ)V
 	public fun startSurface (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;II)I
-	public fun startSurface (Lcom/facebook/react/fabric/SurfaceHandler;Landroid/content/Context;Landroid/view/View;)V
+	public fun startSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;Landroid/content/Context;Landroid/view/View;)V
 	public fun stopSurface (I)V
-	public fun stopSurface (Lcom/facebook/react/fabric/SurfaceHandler;)V
+	public fun stopSurface (Lcom/facebook/react/fabric/SurfaceHandlerBinding;)V
 	public fun sweepActiveTouchForTag (II)V
 	public fun synchronouslyUpdateViewOnUIThread (ILcom/facebook/react/bridge/ReadableMap;)V
 	public fun updateRootLayoutSpecs (IIIII)V

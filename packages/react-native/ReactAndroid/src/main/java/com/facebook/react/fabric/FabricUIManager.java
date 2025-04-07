@@ -299,22 +299,19 @@ public class FabricUIManager
   }
 
   public void startSurface(
-      final SurfaceHandler surfaceHandler, final Context context, final @Nullable View rootView) {
+      final SurfaceHandlerBinding surfaceHandler,
+      final Context context,
+      final @Nullable View rootView) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
 
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
-
-    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
-      throw new IllegalArgumentException("Invalid SurfaceHandler");
-    }
-    mBinding.startSurfaceWithSurfaceHandler(
-        rootTag, (SurfaceHandlerBinding) surfaceHandler, rootView != null);
+    mBinding.startSurfaceWithSurfaceHandler(rootTag, surfaceHandler, rootView != null);
   }
 
-  public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
+  public void attachRootView(final SurfaceHandlerBinding surfaceHandler, final View rootView) {
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext,
@@ -326,7 +323,7 @@ public class FabricUIManager
     surfaceHandler.setMountable(true);
   }
 
-  public void stopSurface(final SurfaceHandler surfaceHandler) {
+  public void stopSurface(final SurfaceHandlerBinding surfaceHandler) {
     if (!surfaceHandler.isRunning()) {
       ReactSoftExceptionLogger.logSoftException(
           FabricUIManager.TAG,
@@ -335,10 +332,7 @@ public class FabricUIManager
     }
 
     mMountingManager.stopSurface(surfaceHandler.getSurfaceId());
-    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
-      throw new IllegalArgumentException("Invalid SurfaceHandler");
-    }
-    mBinding.stopSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
+    mBinding.stopSurfaceWithSurfaceHandler(surfaceHandler);
   }
 
   /** Method called when an event has been dispatched on the C++ side. */
