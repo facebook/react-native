@@ -83,8 +83,8 @@
  
      /** Removes the given [Runnable] on the UI thread. */
      @JvmStatic
-     public fun removeOnUiThread(runnable: Runnable?) {
-         runnable?.let { mainHandler.removeCallbacks(it) }
+     public fun removeOnUiThread(runnable: Runnable) {
+           mainHandler.removeCallbacks(runnable) 
      }
  }
  
