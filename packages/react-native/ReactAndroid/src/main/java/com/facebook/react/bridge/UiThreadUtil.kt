@@ -5,81 +5,99 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge
+ package com.facebook.react.bridge
 
-import android.os.Handler
-import android.os.Looper
-import com.facebook.react.common.build.ReactBuildConfig
+ import android.os.Handler
+ import android.os.Looper
+ import com.facebook.react.common.build.ReactBuildConfig
  
-/** Utility for interacting with the UI thread. */
-public object UiThreadUtil {
+ /**
+  * Utility for interacting with the UI thread.
+  */
+ public object UiThreadUtil {
  
-    @Volatile private var sMainHandler: Handler? = null
+     @Volatile private var mainHandlerInternal: Handler? = null
  
-    private val mainHandler: Handler
-        get() {
-             if (sMainHandler == null) {
+     /**
+      * Handler associated with the main (UI) thread.
+      * Exposed for Java interop as `getUiThreadHandler()`.
+      */
+     private val mainHandler: Handler
+         get() {
+             if (mainHandlerInternal == null) {
                  synchronized(this) {
-                     if (sMainHandler == null) {
-                         sMainHandler = Handler(Looper.getMainLooper())
+                     if (mainHandlerInternal == null) {
+                         mainHandlerInternal = Handler(Looper.getMainLooper())
                      }
                  }
              }
-             return sMainHandler!!
-        }
+             return mainHandlerInternal!!
+         }
  
-    /** Exposed for Java interop (e.g. Java calls to `UiThreadUtil.getUiThreadHandler()`) */
-    @JvmStatic
-    public fun getUiThreadHandler(): Handler {
-         return mainHandler
-    }
+     /**
+     * Java-compatible static getter for the UI thread handler.
+     */
+     @JvmStatic
+     public fun getUiThreadHandler(): Handler = mainHandler
+     /**
+      * Checks if the current thread is the UI thread.
+      *
+      * @return `true` if the current thread is the UI thread, `false` otherwise
+      */
+     @JvmStatic
+     public fun isOnUiThread(): Boolean = Looper.getMainLooper().thread == Thread.currentThread()
  
-    /** @return `true` if current thread is the UI thread. */
-    @JvmStatic
-    public fun isOnUiThread(): Boolean {
-         return Looper.getMainLooper().thread == Thread.currentThread()
-    }
- 
-    /**
-      * Throws an {@link AssertionException} if the current thread is not the UI thread. This is a
-      * noop in production, and is only meant to run in debug mode! If you need to check for
-      * incorrect-thread issues in production, duplicate this code and call it elsewhere.
-    */
-    @JvmStatic
-    public fun assertOnUiThread() {
+     /**
+      * Throws an [AssertionException] if the current thread is not the UI thread.
+      * This method is only active in debug mode and is a no-op in production.
+      */
+     @JvmStatic
+     public fun assertOnUiThread() {
          if (ReactBuildConfig.DEBUG) {
              SoftAssertions.assertCondition(isOnUiThread(), "Expected to run on UI thread!")
          }
-    }
+     }
  
-    /**
-      * Throws an {@link AssertionException} if the current thread is the UI thread. This is a noop
-      * in production, and is only meant to run in debug mode! If you need to check for
-      * incorrect-thread issues in production, duplicate this code and call it elsewhere.
+     /**
+      * Throws an [AssertionException] if the current thread is the UI thread.
+      * This method is only active in debug mode and is a no-op in production.
       */
-    @JvmStatic
-    public fun assertNotOnUiThread() {
+     @JvmStatic
+     public fun assertNotOnUiThread() {
          if (ReactBuildConfig.DEBUG) {
              SoftAssertions.assertCondition(!isOnUiThread(), "Expected not to run on UI thread!")
          }
-    }
- 
-     /** Runs the given {@code Runnable} on the UI thread. */
-    @JvmStatic
-    public fun runOnUiThread(runnable: Runnable): Boolean {
-         return mainHandler.postDelayed(runnable, 0)
-    }
- 
-    /** Posts a Runnable on the UI thread after a delay. */
-    @JvmStatic
-    public fun runOnUiThread(runnable: Runnable, delayInMs: Long): Boolean {
-         return mainHandler.postDelayed(runnable, delayInMs)
      }
  
-    /** Removes the given {@code Runnable} on the UI thread. */
-    @JvmStatic
-    public fun removeOnUiThread(runnable: Runnable?) {
+     /**
+      * Runs the given [Runnable] on the UI thread.
+      *
+      * @param runnable the task to run
+      * @return `true` if the runnable was successfully placed in the message queue
+      */
+     @JvmStatic
+     public fun runOnUiThread(runnable: Runnable): Boolean =
+         mainHandler.postDelayed(runnable, 0)
+ 
+     /**
+      * Posts a [Runnable] to run on the UI thread after a specified delay.
+      *
+      * @param runnable the task to run
+      * @param delayInMs the delay in milliseconds before the task is executed
+      * @return `true` if the runnable was successfully placed in the message queue
+      */
+     @JvmStatic
+     public fun runOnUiThread(runnable: Runnable, delayInMs: Long): Boolean =
+         mainHandler.postDelayed(runnable, delayInMs)
+ 
+     /**
+      * Removes the given [Runnable] from the UI thread queue.
+      *
+      * @param runnable the task to remove
+      */
+     @JvmStatic
+     public fun removeOnUiThread(runnable: Runnable?) {
          runnable?.let { mainHandler.removeCallbacks(it) }
-    }
+     }
  }
  
