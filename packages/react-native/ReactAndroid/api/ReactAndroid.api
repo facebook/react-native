@@ -4763,13 +4763,13 @@ public final class com/facebook/react/uimanager/ViewDefaults {
 	public static final field NUMBER_OF_LINES I
 }
 
-public class com/facebook/react/uimanager/ViewGroupDrawingOrderHelper {
+public final class com/facebook/react/uimanager/ViewGroupDrawingOrderHelper {
 	public fun <init> (Landroid/view/ViewGroup;)V
-	public fun getChildDrawingOrder (II)I
-	public fun handleAddView (Landroid/view/View;)V
-	public fun handleRemoveView (Landroid/view/View;)V
-	public fun shouldEnableCustomDrawingOrder ()Z
-	public fun update ()V
+	public final fun getChildDrawingOrder (II)I
+	public final fun handleAddView (Landroid/view/View;)V
+	public final fun handleRemoveView (Landroid/view/View;)V
+	public final fun shouldEnableCustomDrawingOrder ()Z
+	public final fun update ()V
 }
 
 public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/uimanager/IViewGroupManager {
