@@ -39,7 +39,7 @@ import java.util.Collection;
 @LegacyArchitecture
 public class BridgeReactContext extends ReactApplicationContext {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "BridgeReactContext", LegacyArchitectureLogLevel.WARNING);
   }
 

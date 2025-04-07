@@ -54,7 +54,7 @@ import java.util.Map;
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "BridgeDevSupportManager", LegacyArchitectureLogLevel.WARNING);
   }
 

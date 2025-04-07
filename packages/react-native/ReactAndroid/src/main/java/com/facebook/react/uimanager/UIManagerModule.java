@@ -89,7 +89,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "UIManagerModule", LegacyArchitectureLogLevel.WARNING);
   }
 
