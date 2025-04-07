@@ -2522,24 +2522,6 @@ public abstract interface class com/facebook/react/interfaces/TaskInterface {
 	public abstract fun waitForCompletion (JLjava/util/concurrent/TimeUnit;)Z
 }
 
-public abstract interface class com/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedError {
-	public abstract fun getComponentStack ()Ljava/lang/String;
-	public abstract fun getExtraData ()Lcom/facebook/react/bridge/ReadableMap;
-	public abstract fun getId ()I
-	public abstract fun getMessage ()Ljava/lang/String;
-	public abstract fun getName ()Ljava/lang/String;
-	public abstract fun getOriginalMessage ()Ljava/lang/String;
-	public abstract fun getStack ()Ljava/util/List;
-	public abstract fun isFatal ()Z
-}
-
-public abstract interface class com/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedError$StackFrame {
-	public abstract fun getColumn ()Ljava/lang/Integer;
-	public abstract fun getFile ()Ljava/lang/String;
-	public abstract fun getLineNumber ()Ljava/lang/Integer;
-	public abstract fun getMethodName ()Ljava/lang/String;
-}
-
 public abstract interface class com/facebook/react/interfaces/fabric/ReactSurface {
 	public abstract fun clear ()V
 	public abstract fun detach ()V
