@@ -95,7 +95,7 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       redBoxHandler: RedBoxHandler?,
       devBundleDownloadListener: DevBundleDownloadListener?,
       minNumShakes: Int,
-      customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+      customPackagerCommandHandlers: Map<String, RequestHandler>?,
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
       pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
