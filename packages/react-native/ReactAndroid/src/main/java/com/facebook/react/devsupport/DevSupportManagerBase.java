@@ -38,6 +38,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.DefaultJSExceptionHandler;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -540,7 +541,13 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   private @Nullable String getJSExecutorDescription() {
     try {
-      return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+      JavaScriptExecutorFactory factory =
+          getReactInstanceDevHelper().getJavaScriptExecutorFactory();
+      if (factory != null) {
+        return factory.toString();
+      } else {
+        return null;
+      }
     } catch (IllegalStateException e) {
       return null;
     }
