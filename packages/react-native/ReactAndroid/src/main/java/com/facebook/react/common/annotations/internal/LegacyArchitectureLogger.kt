@@ -33,12 +33,12 @@ public object LegacyArchitectureLogger {
   private val exceptionMessage: String
     get() =
         if (OSS_LEGACY_WARNINGS_ENABLED) {
-          "is being executed when app is fully running on the NEW Architecture."
-        } else {
           "is being executed when `legacyWarningsEnabled` is enabled. " +
               "You're accessing a legacy API that will be removed in a future version of React Native. " +
               "You should investigate the stacktrace you find below and understand which class is " +
               "accessing this API and clean it up."
+        } else {
+          "is being executed when app is fully running on the NEW Architecture."
         }
 
   /**
