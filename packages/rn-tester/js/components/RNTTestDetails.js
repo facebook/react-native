@@ -28,7 +28,7 @@ function RNTTestDetails({
   const content =
     description == null && expect == null ? null : (
       <>
-        {description && (
+        {description == null ? null : (
           <View style={styles.section}>
             <Text style={[styles.heading, {color: theme.LabelColor}]}>
               Description
@@ -38,7 +38,7 @@ function RNTTestDetails({
             </Text>
           </View>
         )}
-        {expect && (
+        {expect == null ? null : (
           <View style={styles.section}>
             <Text style={[styles.heading, {color: theme.LabelColor}]}>
               Expectation
