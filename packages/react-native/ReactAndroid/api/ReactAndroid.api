@@ -4786,20 +4786,6 @@ public abstract interface class com/facebook/react/uimanager/UIViewOperationQueu
 	public abstract fun execute ()V
 }
 
-public final class com/facebook/react/uimanager/ViewAtIndex {
-	public static field COMPARATOR Ljava/util/Comparator;
-	public static final field Companion Lcom/facebook/react/uimanager/ViewAtIndex$Companion;
-	public final field mIndex I
-	public final field mTag I
-	public fun <init> (II)V
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/uimanager/ViewAtIndex$Companion {
-}
-
 public final class com/facebook/react/uimanager/ViewDefaults {
 	public static final field FONT_SIZE_SP F
 	public static final field INSTANCE Lcom/facebook/react/uimanager/ViewDefaults;
