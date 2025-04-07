@@ -374,7 +374,7 @@ public class ReactInstanceManager {
       }
 
       @Override
-      public void reload(String s) {
+      public void reload(String reason) {
         // no-op not implemented for Bridge Mode
       }
 
