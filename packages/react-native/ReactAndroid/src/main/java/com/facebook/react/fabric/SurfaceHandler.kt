@@ -5,28 +5,28 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.interfaces.fabric
+package com.facebook.react.fabric
 
 import com.facebook.react.bridge.NativeMap
 import javax.annotation.concurrent.ThreadSafe
 
 /** Represents a Java variant of the surface, its status and inner data required to display it. */
 @ThreadSafe
-public interface SurfaceHandler {
+internal interface SurfaceHandler {
 
   /**
    * Provides current surface id. Id should be updated after each call to {@link
    * SurfaceHandler#stop}
    */
-  public val surfaceId: Int
+  val surfaceId: Int
 
-  public val isRunning: Boolean
+  val isRunning: Boolean
 
-  public val moduleName: String
+  val moduleName: String
 
-  public fun setProps(props: NativeMap)
+  fun setProps(props: NativeMap)
 
-  public fun setLayoutConstraints(
+  fun setLayoutConstraints(
       widthMeasureSpec: Int,
       heightMeasureSpec: Int,
       offsetX: Int,
@@ -36,5 +36,5 @@ public interface SurfaceHandler {
       pixelDensity: Float
   )
 
-  public fun setMountable(mountable: Boolean)
+  fun setMountable(mountable: Boolean)
 }

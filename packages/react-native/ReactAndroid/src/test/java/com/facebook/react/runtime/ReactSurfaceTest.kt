@@ -12,7 +12,7 @@ import android.content.Context
 import android.view.View
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.interfaces.fabric.SurfaceHandler
+import com.facebook.react.fabric.SurfaceHandler
 import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.testutils.shadows.ShadowSoLoader

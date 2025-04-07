@@ -10,7 +10,6 @@ package com.facebook.react.fabric
 import com.facebook.jni.HybridClassBase
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.fabric.mounting.LayoutMetricsConversions
-import com.facebook.react.interfaces.fabric.SurfaceHandler
 
 internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(), SurfaceHandler {
 
