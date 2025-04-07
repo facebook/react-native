@@ -67,12 +67,14 @@ public class TurboModuleManager implements TurboModuleRegistry {
       @Nullable final TurboModuleManagerDelegate delegate,
       CallInvokerHolder jsCallInvokerHolder,
       NativeMethodCallInvokerHolder nativeMethodCallInvokerHolder) {
+    // NULLSAFE_FIXME[Field Not Nullable]
     mDelegate = delegate;
     mHybridData =
         initHybrid(
             runtimeExecutor,
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (NativeMethodCallInvokerHolderImpl) nativeMethodCallInvokerHolder,
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             delegate);
     installJSIBindings(shouldEnableLegacyModuleInterop());
 
@@ -240,12 +242,16 @@ public class TurboModuleManager implements TurboModuleRegistry {
       moduleHolder = mModuleHolders.get(moduleName);
     }
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     TurboModulePerfLogger.moduleCreateStart(moduleName, moduleHolder.getModuleId());
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     NativeModule module = getOrCreateModule(moduleName, moduleHolder, true);
 
     if (module != null) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       TurboModulePerfLogger.moduleCreateEnd(moduleName, moduleHolder.getModuleId());
     } else {
+      // NULLSAFE_FIXME[Nullable Dereference]
       TurboModulePerfLogger.moduleCreateFail(moduleName, moduleHolder.getModuleId());
     }
 
@@ -426,6 +432,7 @@ public class TurboModuleManager implements TurboModuleRegistry {
   }
 
   private static class ModuleHolder {
+    // NULLSAFE_FIXME[Field Not Nullable]
     private volatile NativeModule mModule = null;
     private volatile boolean mIsTryingToCreate = false;
     private volatile boolean mIsDoneCreatingModule = false;
