@@ -326,6 +326,16 @@ void Scheduler::uiManagerShouldSynchronouslyUpdateViewOnUIThread(
   }
 }
 
+void Scheduler::uiManagerShouldAddEventListener(
+    std::shared_ptr<const EventListener> listener) {
+  addEventListener(listener);
+}
+
+void Scheduler::uiManagerShouldRemoveEventListener(
+    const std::shared_ptr<const EventListener>& listener) {
+  removeEventListener(listener);
+}
+
 void Scheduler::reportMount(SurfaceId surfaceId) const {
   uiManager_->reportMount(surfaceId);
 }

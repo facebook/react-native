@@ -97,6 +97,10 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) override;
+  void uiManagerShouldAddEventListener(
+      std::shared_ptr<const EventListener> listener) final;
+  void uiManagerShouldRemoveEventListener(
+      const std::shared_ptr<const EventListener>& listener) final;
 
 #pragma mark - ContextContainer
   ContextContainer::Shared getContextContainer() const;
