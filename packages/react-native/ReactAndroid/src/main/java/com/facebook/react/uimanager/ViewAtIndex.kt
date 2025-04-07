@@ -39,7 +39,7 @@ internal class ViewAtIndex(
     var COMPARATOR: Comparator<ViewAtIndex> = Comparator { lhs, rhs -> lhs.mIndex - rhs.mIndex }
 
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "ViewAtIndex", LegacyArchitectureLogLevel.WARNING)
     }
   }

@@ -71,7 +71,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 public class NativeViewHierarchyManager {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "NativeViewHierarchyManager", LegacyArchitectureLogLevel.WARNING);
   }
 
