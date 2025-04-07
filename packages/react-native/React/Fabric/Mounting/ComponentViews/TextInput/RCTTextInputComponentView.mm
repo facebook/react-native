@@ -23,12 +23,21 @@
 
 #import "RCTFabricComponentsPlugins.h"
 
+#if TARGET_OS_IPHONE
+#import <MobileCoreServices/MobileCoreServices.h>
+#else
+#import <CoreServices/CoreServices.h>
+#endif
+
 /** Native iOS text field bottom keyboard offset amount */
 static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
 
 using namespace facebook::react;
 
-@interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
+@interface RCTTextInputComponentView () <
+    RCTBackedTextInputDelegate,
+    RCTTextInputViewProtocol,
+    UIDropInteractionDelegate>
 @end
 
 static NSSet<NSNumber *> *returnKeyTypesSet;
@@ -89,6 +98,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
     [self addSubview:_backedTextInputView];
     [self initializeReturnKeyType];
+
+    // Add drop interaction
+    // UIDropInteraction *dropInteraction = [[UIDropInteraction alloc] initWithDelegate:self];
+    // [_backedTextInputView addInteraction:dropInteraction];
   }
 
   return self;
@@ -290,9 +303,45 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _backedTextInputView.disableKeyboardShortcuts = newTextInputProps.disableKeyboardShortcuts;
   }
 
+  bool areDragAndDropTypesEqual = [self _areDragAndDropTypesEqual:newTextInputProps.acceptDragAndDropTypes
+                                                         oldState:oldTextInputProps.acceptDragAndDropTypes];
+  if (!areDragAndDropTypesEqual) {
+    if (!newTextInputProps.acceptDragAndDropTypes.has_value()) {
+      _backedTextInputView.acceptDragAndDropTypes = nil;
+    }
+    const std::vector<std::string> &vector = newTextInputProps.acceptDragAndDropTypes.value();
+    NSMutableArray<NSString *> *array = [NSMutableArray arrayWithCapacity:vector.size()];
+    for (const std::string &str : vector) {
+      [array addObject:[NSString stringWithUTF8String:str.c_str()]];
+    }
+    _backedTextInputView.acceptDragAndDropTypes = array;
+  }
+
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];
+}
+
+- (bool)_areDragAndDropTypesEqual:(const std::optional<std::vector<std::string>> &)lhs
+                         oldState:(const std::optional<std::vector<std::string>> &)rhs
+{
+  if (lhs.has_value() != rhs.has_value()) {
+    return NO;
+  }
+  if (!lhs.has_value()) {
+    return YES; // Both are empty
+  }
+  const std::vector<std::string> &lhsVector = lhs.value();
+  const std::vector<std::string> &rhsVector = rhs.value();
+  if (lhsVector.size() != rhsVector.size()) {
+    return NO;
+  }
+  for (size_t i = 0; i < lhsVector.size(); ++i) {
+    if (lhsVector[i] != rhsVector[i]) {
+      return NO;
+    }
+  }
+  return YES;
 }
 
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState

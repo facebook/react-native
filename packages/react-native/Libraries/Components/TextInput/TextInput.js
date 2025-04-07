@@ -669,12 +669,17 @@ function InternalTextInput(props: TextInputProps): React.Node {
           flattenedStyle.paddingVertical == null &&
           flattenedStyle.paddingTop == null));
 
+    console.log(
+      'Abbo.acceptDragAndDropTypes',
+      props.experimental_acceptDragAndDropTypes,
+    );
     textInput = (
       <RCTTextInputView
         // Figure out imperative + forward refs.
         ref={(ref: $FlowFixMe)}
         {...otherProps}
         {...eventHandlers}
+        acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}

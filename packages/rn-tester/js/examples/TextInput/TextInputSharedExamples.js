@@ -1261,4 +1261,27 @@ module.exports = ([
       );
     },
   },
+  {
+    title: 'Drag and drop',
+    render: function (): React.Node {
+      return (
+        <View>
+          <ExampleTextInput
+            experimental_acceptDragAndDropTypes={[]}
+            placeholder="Does not accept drag drops"
+          />
+          <ExampleTextInput
+            experimental_acceptDragAndDropTypes={
+              Platform.OS === 'android' ? ['text/plain'] : ['public.plain-text']
+            }
+            placeholder="Only accepts plaintext drag drops"
+          />
+          <ExampleTextInput
+            experimental_acceptDragAndDropTypes={null}
+            placeholder="Accepts all drag drops"
+          />
+        </View>
+      );
+    },
+  },
 ]: Array<RNTesterModuleExample>);

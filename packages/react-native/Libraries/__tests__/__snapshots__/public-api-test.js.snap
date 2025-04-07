@@ -2827,7 +2827,6 @@ export type TextInputIOSProps = $ReadOnly<{
   smartInsertDelete?: ?boolean,
 }>;
 export type TextInputAndroidProps = $ReadOnly<{
-  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
   cursorColor?: ?ColorValue,
   selectionHandleColor?: ?ColorValue,
   disableFullscreenUI?: ?boolean,
@@ -2848,6 +2847,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 type TextInputBaseProps = $ReadOnly<{
+  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
   autoCapitalize?: ?AutoCapitalize,
   autoComplete?: ?(
     | \\"additional-name\\"

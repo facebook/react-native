@@ -90,6 +90,7 @@ const RCTTextInputViewConfig = {
     },
   },
   validAttributes: {
+    acceptDragAndDropTypes: true,
     dynamicTypeRamp: true,
     fontSize: true,
     fontWeight: true,

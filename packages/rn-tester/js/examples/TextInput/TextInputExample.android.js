@@ -448,27 +448,6 @@ const examples: Array<RNTesterModuleExample> = [
       return <ToggleDefaultPaddingExample />;
     },
   },
-  {
-    title: 'Drag and drop',
-    render: function (): React.Node {
-      return (
-        <View>
-          <ExampleTextInput
-            experimental_acceptDragAndDropTypes={[]}
-            placeholder="Does not accept drag drops"
-          />
-          <ExampleTextInput
-            experimental_acceptDragAndDropTypes={['text/plain']}
-            placeholder="Only accepts plaintext drag drops"
-          />
-          <ExampleTextInput
-            experimental_acceptDragAndDropTypes={null}
-            placeholder="Accepts all drag drops"
-          />
-        </View>
-      );
-    },
-  },
 ];
 
 module.exports = ({

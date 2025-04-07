@@ -24,6 +24,7 @@
     _backedTextInputView = [[RCTUITextField alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _backedTextInputView.textInputDelegate = self;
+    NSLog(@"Abbo.init single %@", _backedTextInputView.textDropDelegate);
 
     [self addSubview:_backedTextInputView];
   }
