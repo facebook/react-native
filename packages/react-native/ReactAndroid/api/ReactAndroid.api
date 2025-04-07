@@ -7225,10 +7225,3 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 public final class com/facebook/react/views/view/ReactViewManager$Companion {
 }
 
-public final class com/facebook/react/views/view/ViewGroupClickEvent : com/facebook/react/uimanager/events/Event {
-	public fun <init> (I)V
-	public fun <init> (II)V
-	public fun canCoalesce ()Z
-	public fun getEventName ()Ljava/lang/String;
-}
-
