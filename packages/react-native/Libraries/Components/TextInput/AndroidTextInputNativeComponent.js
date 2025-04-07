@@ -658,6 +658,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     },
   },
   validAttributes: {
+    acceptDragAndDropTypes: true,
     maxFontSizeMultiplier: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,
