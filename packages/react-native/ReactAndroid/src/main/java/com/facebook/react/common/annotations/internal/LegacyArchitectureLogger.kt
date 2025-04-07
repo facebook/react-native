@@ -62,7 +62,7 @@ public object LegacyArchitectureLogger {
         }
         LegacyArchitectureLogLevel.WARNING -> {
           ReactSoftExceptionLogger.logSoftException(
-              tag, ReactNoCrashSoftException("$name $exceptionMessage."))
+              tag, ReactNoCrashSoftException("$name $exceptionMessage"))
         }
       }
     }
