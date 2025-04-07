@@ -94,7 +94,9 @@ class TurboModuleInteropUtils {
         if (returnType != Map.class) {
           // TODO(T145105887) Output error. getConstants must always have a return type of Map
         }
+        // NULLSAFE_FIXME[Nullable Dereference]
       } else if (annotation.isBlockingSynchronousMethod() && returnType == void.class
+          // NULLSAFE_FIXME[Nullable Dereference]
           || !annotation.isBlockingSynchronousMethod() && returnType != void.class) {
         // TODO(T145105887): Output error. TurboModule system assumes returnType == void iff the
         // method is synchronous.
@@ -115,12 +117,14 @@ class TurboModuleInteropUtils {
     Class<? extends NativeModule> classForMethods = module.getClass();
     Class<? extends NativeModule> superClass =
         (Class<? extends NativeModule>) classForMethods.getSuperclass();
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     if (TurboModule.class.isAssignableFrom(superClass)) {
       // For java module that is based on generated flow-type spec, inspect the
       // spec abstract class instead, which is the super class of the given java
       // module.
       classForMethods = superClass;
     }
+    // NULLSAFE_FIXME[Nullable Dereference]
     return classForMethods.getDeclaredMethods();
   }
 
@@ -214,6 +218,7 @@ class TurboModuleInteropUtils {
   }
 
   private static String convertClassToJniType(Class<?> cls) {
+    // NULLSAFE_FIXME[Nullable Dereference]
     return 'L' + cls.getCanonicalName().replace('.', '/') + ';';
   }
 
