@@ -332,7 +332,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-08-27',
         description:
@@ -340,7 +340,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'stable',
     },
     fuseboxEnabledRelease: {
       defaultValue: false,
