@@ -14,18 +14,18 @@ import com.facebook.react.common.build.ReactBuildConfig
 /** Utility for interacting with the UI thread. */
 public object UiThreadUtil {
  
-    @Volatile private var _mainHandler: Handler? = null
+    @Volatile private var sMainHandler: Handler? = null
  
     private val mainHandler: Handler
         get() {
-             if (_mainHandler == null) {
+             if (sMainHandler == null) {
                  synchronized(this) {
-                     if (_mainHandler == null) {
-                         _mainHandler = Handler(Looper.getMainLooper())
+                     if (sMainHandler == null) {
+                         sMainHandler = Handler(Looper.getMainLooper())
                      }
                  }
              }
-             return _mainHandler!!
+             return sMainHandler!!
         }
  
     /** Exposed for Java interop (e.g. Java calls to `UiThreadUtil.getUiThreadHandler()`) */
