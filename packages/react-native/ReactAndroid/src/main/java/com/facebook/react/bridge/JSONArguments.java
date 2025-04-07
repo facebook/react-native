@@ -18,7 +18,7 @@ import org.json.JSONObject;
 @LegacyArchitecture
 public class JSONArguments {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "JSONArguments", LegacyArchitectureLogLevel.WARNING);
   }
 

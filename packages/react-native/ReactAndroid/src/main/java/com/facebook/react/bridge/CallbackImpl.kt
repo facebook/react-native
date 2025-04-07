@@ -28,7 +28,7 @@ internal class CallbackImpl(private val jsInstance: JSInstance, private val call
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "CallbackImpl", LegacyArchitectureLogLevel.WARNING)
     }
   }

@@ -115,7 +115,7 @@ public class NativeModuleRegistry {
     // short-circuit
     // the search, and simply call OnBatchComplete on the UI Manager.
     // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "NativeModuleRegistry.onBatchComplete()", LegacyArchitectureLogLevel.ERROR);
     ModuleHolder moduleHolder = mModules.get("UIManager");
     if (moduleHolder != null && moduleHolder.hasInstance()) {

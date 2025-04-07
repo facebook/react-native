@@ -17,7 +17,7 @@ import java.util.Objects
  * operation.
  */
 @LegacyArchitecture
-public class ViewAtIndex(
+internal class ViewAtIndex(
     @Suppress("NoHungarianNotation") @JvmField public val mTag: Int,
     @Suppress("NoHungarianNotation") @JvmField public val mIndex: Int
 ) {
@@ -34,14 +34,12 @@ public class ViewAtIndex(
 
   override fun toString(): String = "[$mTag, $mIndex]"
 
-  public companion object {
+  companion object {
     @JvmField
-    public var COMPARATOR: Comparator<ViewAtIndex> = Comparator { lhs, rhs ->
-      lhs.mIndex - rhs.mIndex
-    }
+    var COMPARATOR: Comparator<ViewAtIndex> = Comparator { lhs, rhs -> lhs.mIndex - rhs.mIndex }
 
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "ViewAtIndex", LegacyArchitectureLogLevel.WARNING)
     }
   }

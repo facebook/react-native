@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
     BridgeSoLoader.staticInit();
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "CatalystInstanceImpl", LegacyArchitectureLogLevel.WARNING);
   }
 

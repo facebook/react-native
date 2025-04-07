@@ -11,17 +11,17 @@ package com.facebook.react.bridge
  * If thrown during a MountItem execution, FabricUIManager will print diagnostics and ignore the
  * error. Use this carefully and sparingly!
  */
-public class ReactIgnorableMountingException : RuntimeException {
+internal class ReactIgnorableMountingException : RuntimeException {
 
-  public constructor(m: String) : super(m)
+  constructor(m: String) : super(m)
 
-  public constructor(e: Throwable) : super(e)
+  constructor(e: Throwable) : super(e)
 
-  public constructor(m: String, e: Throwable) : super(m, e)
+  constructor(m: String, e: Throwable) : super(m, e)
 
-  public companion object {
+  companion object {
     @JvmStatic
-    public fun isIgnorable(e: Throwable): Boolean {
+    fun isIgnorable(e: Throwable): Boolean {
       var cause: Throwable? = e
       while (cause != null) {
         if (cause is ReactIgnorableMountingException) {
