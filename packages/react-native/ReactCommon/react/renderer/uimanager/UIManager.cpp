@@ -681,4 +681,20 @@ void UIManager::synchronouslyUpdateViewOnUIThread(
   }
 }
 
+#pragma mark - Add & Remove event listener
+
+void UIManager::addEventListener(
+    std::shared_ptr<const EventListener> listener) {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerShouldAddEventListener(listener);
+  }
+}
+
+void UIManager::removeEventListener(
+    const std::shared_ptr<const EventListener>& listener) {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerShouldRemoveEventListener(listener);
+  }
+}
+
 } // namespace facebook::react
