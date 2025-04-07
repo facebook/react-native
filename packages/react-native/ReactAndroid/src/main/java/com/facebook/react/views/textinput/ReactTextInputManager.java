@@ -77,6 +77,7 @@ import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -931,6 +932,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "returnKeyType")
   public void setReturnKeyType(ReactEditText view, String returnKeyType) {
     view.setReturnKeyType(returnKeyType);
+  }
+
+  @ReactProp(name = "acceptDragAndDropTypes")
+  public void setAcceptDragAndDropTypes(
+      ReactEditText view, @Nullable ReadableArray acceptDragAndDropTypes) {
+    if (acceptDragAndDropTypes == null) {
+      view.removeDragAndDropFilter();
+    } else {
+      ArrayList<String> acceptedTypes = new ArrayList<>();
+      for (int i = 0; i < acceptDragAndDropTypes.size(); i++) {
+        acceptedTypes.add(acceptDragAndDropTypes.getString(i));
+      }
+      view.setDragAndDropFilter(acceptedTypes);
+    }
   }
 
   @ReactProp(name = "disableFullscreenUI", defaultBoolean = false)
