@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<595cf2b1445869d3ad42b4ff04392201>>
+ * @generated SignedSource<<c841e4d2f91254ead7f4796471ffb7df>>
  */
 
 /**
@@ -66,6 +66,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool disableMountItemReorderingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMountItemReorderingAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableAccessibilityOrder() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccessibilityOrder");
     return method(javaProvider_);
   }
 
@@ -308,6 +314,11 @@ bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableAccessibilityOrder();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
@@ -529,6 +540,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
+      makeNativeMethod(
+        "enableAccessibilityOrder",
+        JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder),
       makeNativeMethod(
         "enableAccumulatedUpdatesInRawPropsAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid),

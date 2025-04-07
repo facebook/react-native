@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2524c90672ddaa0e23f860282a1c07de>>
+ * @generated SignedSource<<d8f5cc9ed8e642b143777c4711c66938>>
  */
 
 /**
@@ -67,6 +67,11 @@ bool NativeReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS(
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableAccessibilityOrder(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAccessibilityOrder();
 }
 
 bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(

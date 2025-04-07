@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -303,6 +304,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_ORDER)
   public void setAccessibilityOrder(@NonNull T view, @Nullable ReadableArray nativeIds) {
+    if (!ReactNativeFeatureFlags.enableAccessibilityOrder()) {
+      return;
+    }
 
     view.setTag(R.id.accessibility_order, nativeIds);
     view.setTag(R.id.accessibility_order_dirty, true);

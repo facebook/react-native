@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a463df7202bcc8971ef68113c7fb6d9>>
+ * @generated SignedSource<<1250be4d57759bde60ba93d50e53c129>>
  */
 
 /**
@@ -37,6 +37,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool cxxNativeAnimatedEnabled();
   bool disableMainQueueSyncDispatchIOS();
   bool disableMountItemReorderingAndroid();
+  bool enableAccessibilityOrder();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
   bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
@@ -83,13 +84,14 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 40> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
   std::atomic<std::optional<bool>> disableMainQueueSyncDispatchIOS_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
+  std::atomic<std::optional<bool>> enableAccessibilityOrder_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
