@@ -12,7 +12,7 @@ package com.facebook.react.uimanager.events
  * first-class API for accessing the [EventDispatcher] from the
  * [com.facebook.react.bridge.UIManager].
  */
-public fun interface EventDispatcherProvider {
+internal fun interface EventDispatcherProvider {
   /**
    * This should always return an [EventDispatcher], even if the instance doesn't exist; in that
    * case it should return the empty [BlackHoleEventDispatcher].
