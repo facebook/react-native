@@ -43,6 +43,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -619,6 +620,13 @@ public class FabricUIManager
   @Override
   public void removeUIManagerEventListener(UIManagerListener listener) {
     mListeners.remove(listener);
+  }
+
+  @UiThread
+  @ThreadConfined(UI)
+  public void synchronouslyUpdateViewOnUIThread(
+      final int reactTag, @NonNull final ReadableNativeMap props) {
+    synchronouslyUpdateViewOnUIThread(reactTag, (ReadableMap) props);
   }
 
   @Override
