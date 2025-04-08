@@ -49,17 +49,12 @@ public class FrescoBasedReactTextInlineImageSpan(
     private val resizeMode: String?
 ) : TextInlineImageSpan() {
 
-    override var drawable: Drawable? = null
-        private set
-
-    private val draweeHolder: DraweeHolder<GenericDraweeHierarchy> =
-        DraweeHolder(GenericDraweeHierarchyBuilder.newInstance(resources).build())
-
+    private var textView: TextView? = null
     private val _uri: Uri = uri ?: Uri.EMPTY
     private val _width: Int = PixelUtil.toPixelFromDIP(width.toDouble()).toInt()
     private val _height: Int = PixelUtil.toPixelFromDIP(height.toDouble()).toInt()
-
-    private var textView: TextView? = null
+    private val draweeHolder: DraweeHolder<GenericDraweeHierarchy> =
+        DraweeHolder(GenericDraweeHierarchyBuilder.newInstance(resources).build())
 
     override val width: Int
         get() = _width
@@ -67,9 +62,12 @@ public class FrescoBasedReactTextInlineImageSpan(
     override val height: Int
         get() = _height
 
+    override var drawable: Drawable? = null
+        private set
+
     /**
-     * The ReactTextView that holds this ImageSpan is responsible for passing these methods on so that
-     * we can do proper lifetime management for Fresco
+     * The ReactTextView that holds this ImageSpan is responsible for passing these methods on so
+     * that we can do proper lifetime management for Fresco
      */
     public override fun onDetachedFromWindow() {
         draweeHolder.onDetach()
@@ -94,7 +92,8 @@ public class FrescoBasedReactTextInlineImageSpan(
         end: Int,
         fm: Paint.FontMetricsInt?
     ): Int {
-        // NOTE: This getSize code is copied from DynamicDrawableSpan and modified to not use a Drawable
+        // NOTE: This getSize code is copied from DynamicDrawableSpan and modified
+        // to not use a Drawable
 
         fm?.let {
             it.ascent = -_height
