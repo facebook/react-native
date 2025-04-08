@@ -349,6 +349,16 @@ class JSI_EXPORT Runtime {
   /// which returns no metrics.
   virtual Instrumentation& instrumentation();
 
+  /// Stores the pointer \p data with the \p uuid in the runtime. This can be
+  /// used to store some custom data within the runtime. When the runtime is
+  /// destroyed, it should release its ownership of the held object.
+  virtual void setRuntimeData(
+      const UUID& uuid,
+      const std::shared_ptr<void>& data);
+  /// Returns the data associated with the \p uuid in the runtime. If there's no
+  /// data associated with the uuid, return a null pointer.
+  virtual std::shared_ptr<void> getRuntimeData(const UUID& uuid);
+
  protected:
   friend class Pointer;
   friend class PropNameID;
