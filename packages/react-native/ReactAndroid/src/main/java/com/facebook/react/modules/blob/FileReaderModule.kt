@@ -1,9 +1,9 @@
 /*
-* Copyright (c) Meta Platforms, Inc. and affiliates.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.modules.blob
 
@@ -18,97 +18,98 @@ import com.facebook.react.module.annotations.ReactModule
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeFileReaderModuleSpec.NAME)
 public class FileReaderModule(reactContext: ReactApplicationContext) :
-    NativeFileReaderModuleSpec(reactContext) {
+  NativeFileReaderModuleSpec(reactContext) {
 
-    companion object {
-        private const val ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB"
+  public companion object {
+    public val NAME: String = NativeFileReaderModuleSpec.NAME
+    private const val ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB"
+  }
+
+  private fun getBlobModule(reason: String): BlobModule? {
+    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
+
+    return if (reactApplicationContext != null) {
+      reactApplicationContext.getNativeModule(BlobModule::class.java)
+    } else {
+      null
+    }
+  }
+
+  public override fun readAsText(blob: ReadableMap, encoding: String, promise: Promise) {
+    val blobModule = getBlobModule("readAsText")
+
+    if (blobModule == null) {
+      promise.reject(
+        IllegalStateException("Could not get BlobModule from ReactApplicationContext")
+      )
+      return
+    } else if (blob == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob is null")
+      return
     }
 
-    private fun getBlobModule(reason: String): BlobModule? {
-        val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-
-        return if (reactApplicationContext != null) {
-            reactApplicationContext.getNativeModule(BlobModule::class.java)
-        } else {
-            null
-        }
+    val blobId = blob.getString("blobId")
+    if (blobId == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob does not contain a blobId")
+      return
     }
 
-    public override fun readAsText(blob: ReadableMap, encoding: String, promise: Promise) {
-        val blobModule = getBlobModule("readAsText")
+    val bytes = blobModule.resolve(blobId, blob.getInt("offset"), blob.getInt("size"))
 
-        if (blobModule == null) {
-            promise.reject(
-                IllegalStateException("Could not get BlobModule from ReactApplicationContext")
-            )
-            return
-        } else if (blob == null) {
-            promise.reject(ERROR_INVALID_BLOB, "The specified blob is null")
-            return
-        }
-
-        val blobId = blob.getString("blobId")
-        if (blobId == null) {
-            promise.reject(ERROR_INVALID_BLOB, "The specified blob does not contain a blobId")
-            return
-        }
-
-        val bytes = blobModule.resolve(blobId, blob.getInt("offset"), blob.getInt("size"))
-
-        if (bytes == null) {
-            promise.reject(ERROR_INVALID_BLOB, "The specified blob is invalid")
-            return
-        }
-
-        try {
-            promise.resolve(String(bytes, charset(encoding)))
-        } catch (e: Exception) {
-            promise.reject(e)
-        }
+    if (bytes == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob is invalid")
+      return
     }
 
-    public override fun readAsDataURL(blob: ReadableMap, promise: Promise) {
-        val blobModule = getBlobModule("readAsDataURL")
-
-        if (blobModule == null) {
-            promise.reject(
-                IllegalStateException("Could not get BlobModule from ReactApplicationContext")
-            )
-            return
-        } else if (blob == null) {
-            promise.reject(ERROR_INVALID_BLOB, "The specified blob is null")
-            return
-        }
-
-        val blobId = blob.getString("blobId")
-        if (blobId == null) {
-            promise.reject(ERROR_INVALID_BLOB, "The specified blob does not contain a blobId")
-            return
-        }
-
-        val bytes = blobModule.resolve(blobId, blob.getInt("offset"), blob.getInt("size"))
-
-        if (bytes == null) {
-            promise.reject(ERROR_INVALID_BLOB, "The specified blob is invalid")
-            return
-        }
-
-        try {
-            val sb = StringBuilder()
-            sb.append("data:")
-
-            if (blob.hasKey("type") && !blob.getString("type").isNullOrEmpty()) {
-                sb.append(blob.getString("type"))
-            } else {
-                sb.append("application/octet-stream")
-            }
-
-            sb.append(";base64,")
-            sb.append(Base64.encodeToString(bytes, Base64.NO_WRAP))
-
-            promise.resolve(sb.toString())
-        } catch (e: Exception) {
-            promise.reject(e)
-        }
+    try {
+      promise.resolve(String(bytes, charset(encoding)))
+    } catch (e: Exception) {
+      promise.reject(e)
     }
+  }
+
+  public override fun readAsDataURL(blob: ReadableMap, promise: Promise) {
+    val blobModule = getBlobModule("readAsDataURL")
+
+    if (blobModule == null) {
+      promise.reject(
+        IllegalStateException("Could not get BlobModule from ReactApplicationContext")
+      )
+      return
+    } else if (blob == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob is null")
+      return
+    }
+
+    val blobId = blob.getString("blobId")
+    if (blobId == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob does not contain a blobId")
+      return
+    }
+
+    val bytes = blobModule.resolve(blobId, blob.getInt("offset"), blob.getInt("size"))
+
+    if (bytes == null) {
+      promise.reject(ERROR_INVALID_BLOB, "The specified blob is invalid")
+      return
+    }
+
+    try {
+      val sb = StringBuilder()
+      sb.append("data:")
+
+      if (blob.hasKey("type") && !blob.getString("type").isNullOrEmpty()) {
+        sb.append(blob.getString("type"))
+      } else {
+        sb.append("application/octet-stream")
+      }
+
+      sb.append(";base64,")
+      sb.append(Base64.encodeToString(bytes, Base64.NO_WRAP))
+
+      promise.resolve(sb.toString())
+    } catch (e: Exception) {
+      promise.reject(e)
+    }
+  }
 }
