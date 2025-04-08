@@ -172,9 +172,7 @@ void FabricUIManagerBinding::startSurface(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler.setProps(initialProps->consume());
-  }
+  surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout({}, layoutContext);
 
   scheduler->registerSurface(surfaceHandler);
@@ -243,9 +241,7 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  if (initialProps != nullptr) {
-    surfaceHandler.setProps(initialProps->consume());
-  }
+  surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout(constraints, context);
 
   scheduler->registerSurface(surfaceHandler);
