@@ -44,7 +44,7 @@ TODO: Explain the different components of React Native at a high level.
     - Misc
       - Web APIs
         - DOM Traversal & Layout APIs
-        - IntersectionObserver
+        - [IntersectionObserver](../packages/react-native/src/private/webapis/intersectionobserver/__docs__/README.md)
         - [MutationObserver](../packages/react-native/src/private/webapis/mutationobserver/__docs__/README.md)
         - Performance & PerformanceObserver
         - Timers
