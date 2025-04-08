@@ -44,7 +44,7 @@ public class FrescoBasedReactTextInlineImageSpan(
     private val tintColor: Int,
     uri: Uri?,
     private val headers: ReadableMap?,
-    private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, ImageRequest, *>,
+    private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, ImageRequest, *, *>,
     private val callerContext: Any?,
     private val resizeMode: String?
 ) : TextInlineImageSpan() {
