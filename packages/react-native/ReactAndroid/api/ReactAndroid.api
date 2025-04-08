@@ -2137,12 +2137,13 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun toggleElementInspector ()V
 }
 
-public class com/facebook/react/devsupport/StackTraceHelper {
+public final class com/facebook/react/devsupport/StackTraceHelper {
 	public static final field COLUMN_KEY Ljava/lang/String;
 	public static final field COMPONENT_STACK_KEY Ljava/lang/String;
 	public static final field EXTRA_DATA_KEY Ljava/lang/String;
 	public static final field FILE_KEY Ljava/lang/String;
 	public static final field ID_KEY Ljava/lang/String;
+	public static final field INSTANCE Lcom/facebook/react/devsupport/StackTraceHelper;
 	public static final field IS_FATAL_KEY Ljava/lang/String;
 	public static final field LINE_NUMBER_KEY Ljava/lang/String;
 	public static final field MESSAGE_KEY Ljava/lang/String;
@@ -2150,17 +2151,17 @@ public class com/facebook/react/devsupport/StackTraceHelper {
 	public static final field NAME_KEY Ljava/lang/String;
 	public static final field ORIGINAL_MESSAGE_KEY Ljava/lang/String;
 	public static final field STACK_KEY Ljava/lang/String;
-	public fun <init> ()V
-	public static fun convertJavaStackTrace (Ljava/lang/Throwable;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertJsStackTrace (Lcom/facebook/react/bridge/ReadableArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertJsStackTrace (Ljava/lang/String;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertJsStackTrace (Lorg/json/JSONArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertProcessedError (Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedError;)Lcom/facebook/react/bridge/JavaOnlyMap;
-	public static fun formatFrameSource (Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
-	public static fun formatStackTrace (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
+	public static final fun convertJavaStackTrace (Ljava/lang/Throwable;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public static final fun convertJsStackTrace (Lcom/facebook/react/bridge/ReadableArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public final fun convertJsStackTrace (Ljava/lang/String;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public final fun convertJsStackTrace (Lorg/json/JSONArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public final fun formatFrameSource (Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
+	public static final fun formatStackTrace (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
 }
 
-public class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl : com/facebook/react/devsupport/interfaces/StackFrame {
+public final class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl : com/facebook/react/devsupport/interfaces/StackFrame {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZ)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun getColumn ()I
 	public fun getFile ()Ljava/lang/String;
 	public fun getFileName ()Ljava/lang/String;
