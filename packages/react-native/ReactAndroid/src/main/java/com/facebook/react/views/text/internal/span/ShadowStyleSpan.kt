@@ -10,13 +10,13 @@ package com.facebook.react.views.text.internal.span
 import android.text.TextPaint
 import android.text.style.CharacterStyle
 
-public class ShadowStyleSpan(
+internal class ShadowStyleSpan(
     private val dx: Float,
     private val dy: Float,
     private val radius: Float,
-    public val color: Int
+    val color: Int
 ) : CharacterStyle(), ReactSpan {
-  public override fun updateDrawState(textPaint: TextPaint) {
+  override fun updateDrawState(textPaint: TextPaint) {
     textPaint.setShadowLayer(radius, dx, dy, color)
   }
 }
