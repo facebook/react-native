@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28e3a307300f53f69b5585cc639f0097>>
+ * @generated SignedSource<<383b618f8b93333992d1ce4d61932dc2>>
  */
 
 /**
@@ -101,6 +101,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
+
+  /**
+   * Enables font scale changes updating layout for measurable nodes.
+   */
+  @JvmStatic
+  public fun enableFontScaleChangesUpdatingLayout(): Boolean = accessor.enableFontScaleChangesUpdatingLayout()
 
   /**
    * iOS Views will clip to their padding box vs border box

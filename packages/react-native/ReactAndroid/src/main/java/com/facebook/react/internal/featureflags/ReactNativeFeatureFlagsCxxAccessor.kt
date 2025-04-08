@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fedd5579e4fb417bd1ddf9081985f427>>
+ * @generated SignedSource<<4eaac16d5869aa4d4d6552e052f1fbe7>>
  */
 
 /**
@@ -32,6 +32,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
+  private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
@@ -166,6 +167,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableFabricRenderer()
       enableFabricRendererCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean {
+    var cached = enableFontScaleChangesUpdatingLayoutCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableFontScaleChangesUpdatingLayout()
+      enableFontScaleChangesUpdatingLayoutCache = cached
     }
     return cached
   }
