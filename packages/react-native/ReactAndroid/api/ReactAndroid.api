@@ -456,8 +456,10 @@ public abstract class com/facebook/react/animated/AnimatedNode {
 public final class com/facebook/react/animated/AnimatedNode$Companion {
 }
 
-public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
+public final class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
 	public static final field ANIMATED_MODULE_DEBUG Z
+	public static final field Companion Lcom/facebook/react/animated/NativeAnimatedModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun addAnimatedEventToView (DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun addListener (Ljava/lang/String;)V
@@ -473,7 +475,7 @@ public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbr
 	public fun extractAnimatedNodeOffset (D)V
 	public fun finishOperationBatch ()V
 	public fun flattenAnimatedNodeOffset (D)V
-	public fun getNodesManager ()Lcom/facebook/react/animated/NativeAnimatedNodesManager;
+	public final fun getNodesManager ()Lcom/facebook/react/animated/NativeAnimatedNodesManager;
 	public fun getValue (DLcom/facebook/react/bridge/Callback;)V
 	public fun initialize ()V
 	public fun invalidate ()V
@@ -492,9 +494,12 @@ public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbr
 	public fun stopAnimation (D)V
 	public fun stopListeningToAnimatedNodeValue (D)V
 	public fun updateAnimatedNodeConfig (DLcom/facebook/react/bridge/ReadableMap;)V
-	public fun userDrivenScrollEnded (I)V
+	public final fun userDrivenScrollEnded (I)V
 	public fun willDispatchViewUpdates (Lcom/facebook/react/bridge/UIManager;)V
 	public fun willMountItems (Lcom/facebook/react/bridge/UIManager;)V
+}
+
+public final class com/facebook/react/animated/NativeAnimatedModule$Companion {
 }
 
 public class com/facebook/react/animated/NativeAnimatedNodesManager : com/facebook/react/uimanager/events/EventDispatcherListener {
