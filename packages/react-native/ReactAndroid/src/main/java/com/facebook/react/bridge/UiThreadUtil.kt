@@ -16,20 +16,10 @@
   */
  public object UiThreadUtil {
  
-     @Volatile private var mainHandlerInternal: Handler? = null
  
-     
-     private val mainHandler: Handler
-         get() {
-             if (mainHandlerInternal == null) {
-                 synchronized(this) {
-                     if (mainHandlerInternal == null) {
-                         mainHandlerInternal = Handler(Looper.getMainLooper())
-                     }
-                 }
-             }
-             return mainHandlerInternal!!
-         }
+     private val mainHandler: Handler by lazy {
+          Handler(Looper.getMainLooper())
+     }
  
      /**
       * Returns the handler associated with the main (UI) thread.
