@@ -15,50 +15,44 @@ import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.EventDispatcher
 
 /**
- * A class to implement the TextInput 'onKeyPress' API on android for soft keyboards. It is
- * instantiated in {@link ReactEditText#onCreateInputConnection(EditorInfo)}.
+ * A class to implement the TextInput 'onKeyPress' API on android for soft keyboards.
+ * It is instantiated in [ReactEditText.onCreateInputConnection].
  *
- * <p>Android IMEs interface with EditText views through the {@link InputConnection} interface, so
+ * <p>Android IMEs interface with EditText views through the [InputConnection] interface, so
  * any observable change in state of the EditText via the soft-keyboard, should be a side effect of
- * one or more of the methods in {@link InputConnectionWrapper}.
+ * one or more of the methods in [InputConnectionWrapper].
  *
- * <p>{@link InputConnection#setComposingText(CharSequence, int)} is used to set the composing
- * region (the underlined text) in the {@link android.widget.EditText} view, i.e. when React
+ * <p>[InputConnection.setComposingText] is used to set the composing
+ * region (the underlined text) in the [android.widget.EditText] view, i.e. when React
  * Native's TextInput has the property 'autoCorrect' set to true. When text is being composed in the
- * composing state within the EditText, each key press will result in a call to {@link
- * InputConnection#setComposingText(CharSequence, int)} with a CharSequence argument equal to that
+ * composing state within the EditText, each key press will result in a call to
+ * [InputConnection.setComposingText] with a CharSequence argument equal to that
  * of the entire composing region, rather than a single character diff. We can reason about the
  * keyPress based on the resultant cursor position changes of the EditText after applying this
  * change. For example if the cursor moved backwards by one character when composing, it's likely it
  * was a delete; if it moves forward by a character, likely to be a key press of that character.
  *
- * <p>IMEs can also call {@link InputConnection#beginBatchEdit()} to signify a batch of operations.
+ * <p>IMEs can also call [InputConnection.beginBatchEdit] to signify a batch of operations.
  * One such example is committing a word currently in composing state with the press of the space
  * key. It is IME dependent but the stock Android keyboard behavior seems to be to commit the
- * currently composing text with {@link InputConnection#setComposingText(CharSequence, int)} and
- * commits a space character with a separate call to {@link
- * InputConnection#setComposingText(CharSequence, int)}. Here we chose to emit the last input of a
- * batch edit as that tends to be the user input, but it's completely arbitrary.
+ * currently composing text with [InputConnection.setComposingText] and
+ * commits a space character with a separate call to [InputConnection.setComposingText].
+ * Here we chose to emit the last input of a batch edit as that tends to be the user input,
+ * but it's completely arbitrary.
  *
- * <p>Another function of this class is to detect backspaces when the cursor at the beginning of the
- * {@link android.widget.EditText}, i.e no text is deleted.
+ * <p>Another function of this class is to detect backspaces when the cursor is
+ * at the beginning of the [android.widget.EditText], i.e no text is deleted.
  *
- * <p>N.B. this class is only applicable for soft keyboards behavior. For hardware keyboards {@link
- * android.view.View#onKeyDown(int, KeyEvent)} can be overridden to obtain the keycode of the key
- * pressed.
+ * <p>N.B. this class is only applicable for soft keyboards behavior. For hardware keyboards
+ * [android.view.View.onKeyDown] can be overridden to obtain the keycode of the key pressed.
  */
-public class ReactEditTextInputConnectionWrapper(
+internal class ReactEditTextInputConnectionWrapper(
   target: InputConnection,
   reactContext: ReactContext,
   private val editText: ReactEditText,
   private val eventDispatcher: EventDispatcher
 ) : InputConnectionWrapper(target, false) {
 
-  public companion object {
-    public const val NEWLINE_RAW_VALUE: String = "\n"
-    public const val BACKSPACE_KEY_VALUE: String = "Backspace"
-    public const val ENTER_KEY_VALUE: String = "Enter"
-  }
 
   private var isBatchEdit = false
   private var key: String? = null
@@ -77,7 +71,7 @@ public class ReactEditTextInputConnectionWrapper(
     return super.endBatchEdit()
   }
 
-  override fun setComposingText(text: CharSequence?, newCursorPosition: Int): Boolean {
+  override fun setComposingText(text: CharSequence, newCursorPosition: Int): Boolean {
     val previousSelectionStart = editText.selectionStart
     val previousSelectionEnd = editText.selectionEnd
 
@@ -100,7 +94,7 @@ public class ReactEditTextInputConnectionWrapper(
     return consumed
   }
 
-  override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean {
+  override fun commitText(text: CharSequence, newCursorPosition: Int): Boolean {
     var inputKey = text.toString()
     // Assume not a keyPress if length > 1 (or 2 if unicode)
     if (inputKey.length <= 2) {
@@ -119,7 +113,7 @@ public class ReactEditTextInputConnectionWrapper(
 
   // Called by SwiftKey when cursor at beginning of input when there is a delete
   // or when enter is pressed anywhere in the text. Whereas stock Android Keyboard calls
-  // {@link InputConnection#deleteSurroundingText} & {@link InputConnection#commitText}
+  // [InputConnection.deleteSurroundingText] & [InputConnection.commitText]
   // in each case, respectively.
   override fun sendKeyEvent(event: KeyEvent): Boolean {
     if (event.action == KeyEvent.ACTION_DOWN) {
@@ -148,4 +142,11 @@ public class ReactEditTextInputConnectionWrapper(
       ReactTextInputKeyPressEvent(surfaceId, editText.id, resolvedKey)
     )
   }
+
+  companion object {
+    const val NEWLINE_RAW_VALUE: String = "\n"
+    const val BACKSPACE_KEY_VALUE: String = "Backspace"
+    const val ENTER_KEY_VALUE: String = "Enter"
+  }
 }
+
