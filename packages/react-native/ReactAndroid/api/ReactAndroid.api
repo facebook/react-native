@@ -6555,26 +6555,6 @@ public final class com/facebook/react/views/text/ReactFontManager$Companion {
 	public final fun getInstance ()Lcom/facebook/react/views/text/ReactFontManager;
 }
 
-public final class com/facebook/react/views/text/ReactRawTextManager : com/facebook/react/uimanager/ViewManager {
-	public static final field REACT_CLASS Ljava/lang/String;
-	public fun <init> ()V
-	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
-	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactRawTextShadowNode;
-	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/text/ReactTextView;
-	public fun getName ()Ljava/lang/String;
-	public fun getShadowNodeClass ()Ljava/lang/Class;
-	public fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
-}
-
-public final class com/facebook/react/views/text/ReactRawTextShadowNode : com/facebook/react/uimanager/ReactShadowNodeImpl {
-	public fun <init> ()V
-	public final fun getText ()Ljava/lang/String;
-	public fun isVirtual ()Z
-	public final fun setText (Ljava/lang/String;)V
-	public fun toString ()Ljava/lang/String;
-}
-
 public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager : com/facebook/react/uimanager/BaseViewManager {
 	public fun <init> ()V
 	public fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
