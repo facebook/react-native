@@ -8,7 +8,7 @@ export declare type AccessibilityActionName =
   | 'longpress'
   | 'magicTap'
   | 'escape'
-  |  'back';
+  |  'bak';
 
 export declare type AccessibilityAnnouncementEventName = 'announcementFinished';
 export declare type AccessibilityAnnouncementFinishedEventHandler = (
