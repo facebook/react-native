@@ -10,26 +10,25 @@ package com.facebook.systrace
 import java.util.ArrayList
 import kotlin.jvm.JvmField
 
-public object SystraceMessage {
+internal object SystraceMessage {
 
-  @JvmField public var INCLUDE_ARGS: Boolean = false
+  @JvmField var INCLUDE_ARGS: Boolean = false
 
   @JvmStatic
-  public fun beginSection(tag: Long, sectionName: String): Builder =
-      StartSectionBuilder(tag, sectionName)
+  fun beginSection(tag: Long, sectionName: String): Builder = StartSectionBuilder(tag, sectionName)
 
-  @JvmStatic public fun endSection(tag: Long): Builder = EndSectionBuilder(tag)
+  @JvmStatic fun endSection(tag: Long): Builder = EndSectionBuilder(tag)
 
-  public abstract class Builder {
-    public abstract fun flush()
+  abstract class Builder {
+    abstract fun flush()
 
-    public abstract fun arg(key: String, value: Any): Builder
+    abstract fun arg(key: String, value: Any): Builder
 
-    public abstract fun arg(key: String, value: Int): Builder
+    abstract fun arg(key: String, value: Int): Builder
 
-    public abstract fun arg(key: String, value: Long): Builder
+    abstract fun arg(key: String, value: Long): Builder
 
-    public abstract fun arg(key: String, value: Double): Builder
+    abstract fun arg(key: String, value: Double): Builder
   }
 
   private class StartSectionBuilder(private val tag: Long, private val sectionName: String) :

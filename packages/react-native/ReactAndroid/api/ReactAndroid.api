@@ -1446,10 +1446,6 @@ public final class com/facebook/react/bridge/SoftAssertions {
 	public static final fun assertUnreachable (Ljava/lang/String;)V
 }
 
-public abstract interface class com/facebook/react/bridge/Systrace : com/facebook/react/bridge/JavaScriptModule {
-	public abstract fun setEnabled (Z)V
-}
-
 public abstract interface class com/facebook/react/bridge/UIManager : com/facebook/react/bridge/PerformanceCounter {
 	public abstract fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
 	public abstract fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
