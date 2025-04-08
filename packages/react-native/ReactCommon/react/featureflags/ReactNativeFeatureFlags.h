@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e9a8af0faacb2bd1ee4a922851ba0f17>>
+ * @generated SignedSource<<c998de5cb17443f38645ce34f620702c>>
  */
 
 /**
@@ -98,6 +98,11 @@ class ReactNativeFeatureFlags {
    * Enables the use of the Fabric renderer in the whole app.
    */
   RN_EXPORT static bool enableFabricRenderer();
+
+  /**
+   * Enables font scale changes updating layout for measurable nodes.
+   */
+  RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
 
   /**
    * iOS Views will clip to their padding box vs border box

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50fd901c1ebdda0bfc77f9cf6753c2d8>>
+ * @generated SignedSource<<66b582a0da650a0beaa58d39e3b1f52b>>
  */
 
 /**
@@ -72,6 +72,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFabricRenderer() override {
+    return false;
+  }
+
+  bool enableFontScaleChangesUpdatingLayout() override {
     return false;
   }
 

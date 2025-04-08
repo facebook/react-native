@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c20566ca0fb97ba9f50cf18f687f2723>>
+ * @generated SignedSource<<427718c81c99f041fb69b1275d8b486b>>
  */
 
 /**
@@ -72,6 +72,10 @@ bool ReactNativeFeatureFlags::enableFabricLogs() {
 
 bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
+}
+
+bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
+  return getAccessor().enableFontScaleChangesUpdatingLayout();
 }
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {

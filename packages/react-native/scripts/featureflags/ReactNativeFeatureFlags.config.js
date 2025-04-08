@@ -174,6 +174,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    enableFontScaleChangesUpdatingLayout: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-07',
+        description:
+          'Enables font scale changes updating layout for measurable nodes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
       metadata: {
