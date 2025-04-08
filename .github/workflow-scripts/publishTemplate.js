@@ -69,6 +69,9 @@ module.exports.verifyPublishedTemplate = async (
   retries = MAX_RETRIES,
 ) => {
   try {
+    if (version.startsWith('v')) {
+      version = version.slice(1);
+    }
     await verifyPublishedPackage(
       TEMPLATE_NPM_PKG,
       version,
