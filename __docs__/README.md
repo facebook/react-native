@@ -24,11 +24,59 @@ TODO: Explain the different components of React Native at a high level.
 
 ### Part of this
 
-- Android platform
-    - [New architecture event lifecycle](../packages/react-native/ReactAndroid/src/main/java/com/facebook/react/fabric/events/__docs__/README.md)
-- [Feature Flags](../packages/react-native/src/private/featureflags/__docs__/README.md)
-- Web APIs
-    - [MutationObserver API](../packages/react-native/src/private/webapis/mutationobserver/__docs__/README.md)
+- Runtime
+  - Cross-platform
+    - [Feature Flags](../packages/react-native/src/private/featureflags/__docs__/README.md)
+    - Host / Instance / Bridgeless
+    - UI / Fabric
+      - Events
+      - Shadow Tree Lifecycle
+      - Layout
+      - Mounting
+    - Native Modules / TurboModules
+    - JS Runtime
+      - Event Loop
+      - Globals and environment setup
+      - Error handling
+    - Developer Tools
+      - React DevTools
+      - LogBox
+    - Misc
+      - Web APIs
+        - DOM Traversal & Layout APIs
+        - IntersectionObserver
+        - [MutationObserver](../packages/react-native/src/private/webapis/mutationobserver/__docs__/README.md)
+        - Performance & PerformanceObserver
+        - Timers
+  - Platform-specific
+    - Host Platform Interface
+  - Android
+    - UI
+      - [Events](../packages/react-native/ReactAndroid/src/main/java/com/facebook/react/fabric/events/__docs__/README.md)
+      - Mounting
+  - iOS
+    - UI
+      - Events
+      - Mounting
+- Build system
+  - Android
+  - iOS
+  - C++
+  - JavaScript
+    - Metro
+- Testing
+  - Android
+  - iOS
+  - C++
+  - JavaScript
+    - Flow
+    - TypeScript
+    - Jest
+    - ESLint
+  - Integration / E2E
+    - Fantom
+- Tooling
+  - React Native DevTools
 
 ### Used by this
 
