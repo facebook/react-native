@@ -54,6 +54,12 @@ module.exports = {
       parser: '@babel/eslint-parser',
     },
     {
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      rules: {
+        '@react-native/no-deep-imports': 1,
+      },
+    },
+    {
       files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint/eslint-plugin'],
