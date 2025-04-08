@@ -1073,10 +1073,11 @@ void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
     const folly::dynamic& props) {
   static auto synchronouslyUpdateViewOnUIThreadJNI =
       JFabricUIManager::javaClassStatic()
-          ->getMethod<void(jint, ReadableNativeMap::javaobject)>(
+          ->getMethod<void(jint, ReadableMap::javaobject)>(
               "synchronouslyUpdateViewOnUIThread");
-  auto propsMap = ReadableNativeMap::newObjectCxxArgs(props);
-  synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap.get());
+  auto propsMap = reinterpret_cast<ReadableMap::javaobject>(
+      ReadableNativeMap::newObjectCxxArgs(props).release());
+  synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
 }
 
 } // namespace facebook::react
