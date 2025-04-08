@@ -19,5 +19,5 @@ internal fun interface EventDispatcherProvider {
    *
    * @return An [EventDispatcher] to emit events to JS.
    */
-  public fun getEventDispatcher(): EventDispatcher
+  fun getEventDispatcher(): EventDispatcher
 }
