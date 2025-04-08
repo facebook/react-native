@@ -1,9 +1,9 @@
 /*
-* Copyright (c) Meta Platforms, Inc. and affiliates.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.views.text.frescosupport
 
@@ -50,6 +50,7 @@ public class FrescoBasedReactTextInlineImageSpan(
 ) : TextInlineImageSpan() {
 
     override var drawable: Drawable? = null
+        private set
 
     private val draweeHolder: DraweeHolder<GenericDraweeHierarchy> =
         DraweeHolder(GenericDraweeHierarchyBuilder.newInstance(resources).build())
@@ -67,9 +68,9 @@ public class FrescoBasedReactTextInlineImageSpan(
         get() = _height
 
     /**
-    * The ReactTextView that holds this ImageSpan is responsible for passing these methods on so
-    * that we can do proper lifetime management for Fresco
-    */
+     * The ReactTextView that holds this ImageSpan is responsible for passing these methods on so that
+     * we can do proper lifetime management for Fresco
+     */
     public override fun onDetachedFromWindow() {
         draweeHolder.onDetach()
     }
@@ -93,6 +94,8 @@ public class FrescoBasedReactTextInlineImageSpan(
         end: Int,
         fm: Paint.FontMetricsInt?
     ): Int {
+        // NOTE: This getSize code is copied from DynamicDrawableSpan and modified to not use a Drawable
+
         fm?.let {
             it.ascent = -_height
             it.descent = 0
@@ -100,6 +103,7 @@ public class FrescoBasedReactTextInlineImageSpan(
             it.top = it.ascent
             it.bottom = 0
         }
+
         return _width
     }
 
@@ -138,20 +142,18 @@ public class FrescoBasedReactTextInlineImageSpan(
 
             drawable = draweeHolder.topLevelDrawable!!
             drawable!!.setBounds(0, 0, _width, _height)
-
-            if (tintColor != 0) {
-                drawable!!.setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
-            }
-
+            drawable!!.takeIf { tintColor != 0 }?.setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
             drawable!!.callback = this.textView
         }
 
+        // NOTE: This drawing code is copied from DynamicDrawableSpan
+
         canvas.save()
 
+        // Align to center
         val fontHeight = (paint.descent() - paint.ascent()).toInt()
         val centerY = y + paint.descent().toInt() - fontHeight / 2
-        val drawableHeight = drawable!!.bounds.height()
-        val transY = centerY - drawableHeight / 2
+        val transY = centerY - drawable!!.bounds.height() / 2
 
         canvas.translate(x, transY.toFloat())
         drawable!!.draw(canvas)
