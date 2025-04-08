@@ -35,7 +35,7 @@ TODO: Explain the different components of React Native at a high level.
       - Mounting
     - Native Modules / TurboModules
     - JS Runtime
-      - Event Loop
+      - [Event Loop](../packages/react-native/ReactCommon/react/renderer/runtimescheduler/__docs__/README.md)
       - Globals and environment setup
       - Error handling
     - Developer Tools
