@@ -34,7 +34,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
 @Deprecated(
     message =
         "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
-public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : CatalystInstance {
+internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : CatalystInstance {
 
   override fun handleMemoryPressure(level: Int) {
     throw UnsupportedOperationException("Unimplemented method 'handleMemoryPressure'")
