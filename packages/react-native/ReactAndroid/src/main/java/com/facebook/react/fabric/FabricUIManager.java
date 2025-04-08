@@ -106,6 +106,7 @@ public class FabricUIManager
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
+  // NULLSAFE_FIXME[Field Not Initialized]
   public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   private static final DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener FABRIC_PERF_LOGGER =
@@ -237,6 +238,7 @@ public class FabricUIManager
   @UiThread
   @ThreadConfined(UI)
   @Deprecated
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public <T extends View> int addRootView(final T rootView, final WritableMap initialProps) {
     ReactSoftExceptionLogger.logSoftException(
         TAG,
@@ -254,6 +256,7 @@ public class FabricUIManager
     if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
+    // NULLSAFE_FIXME[Nullable Dereference]
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
   }
@@ -261,6 +264,7 @@ public class FabricUIManager
   @Override
   @AnyThread
   @ThreadConfined(ANY)
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public <T extends View> int startSurface(
       final T rootView,
       final String moduleName,
@@ -283,6 +287,7 @@ public class FabricUIManager
     Point viewportOffset =
         UiThreadUtil.isOnUiThread() ? RootViewUtil.getViewportOffset(rootView) : new Point(0, 0);
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     mBinding.startSurfaceWithConstraints(
         rootTag,
         moduleName,
@@ -308,6 +313,7 @@ public class FabricUIManager
         new ThemedReactContext(
             mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
+    // NULLSAFE_FIXME[Nullable Dereference]
     mBinding.startSurfaceWithSurfaceHandler(rootTag, surfaceHandler, rootView != null);
   }
 
@@ -332,6 +338,7 @@ public class FabricUIManager
     }
 
     mMountingManager.stopSurface(surfaceHandler.getSurfaceId());
+    // NULLSAFE_FIXME[Nullable Dereference]
     mBinding.stopSurfaceWithSurfaceHandler(surfaceHandler);
   }
 
@@ -351,6 +358,7 @@ public class FabricUIManager
     // Communicate stopSurface to Cxx - causes an empty ShadowTree to be committed,
     // but all mounting instructions will be ignored because stopSurface was called
     // on the MountingManager
+    // NULLSAFE_FIXME[Nullable Dereference]
     mBinding.stopSurface(surfaceID);
   }
 
@@ -401,6 +409,7 @@ public class FabricUIManager
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     mBinding.unregister();
     mBinding = null;
 
@@ -537,6 +546,7 @@ public class FabricUIManager
     }
 
     return mMountingManager.measure(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         context,
         componentName,
         localData,
@@ -576,6 +586,7 @@ public class FabricUIManager
 
     // TODO: replace ReadableNativeMap -> ReadableMapBuffer
     return mMountingManager.measureMapBuffer(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         context,
         componentName,
         localData,
@@ -612,11 +623,13 @@ public class FabricUIManager
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void addUIManagerEventListener(UIManagerListener listener) {
     mListeners.add(listener);
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void removeUIManagerEventListener(UIManagerListener listener) {
     mListeners.remove(listener);
   }
@@ -624,6 +637,7 @@ public class FabricUIManager
   @Override
   @UiThread
   @ThreadConfined(UI)
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void synchronouslyUpdateViewOnUIThread(
       final int reactTag, @NonNull final ReadableMap props) {
     UiThreadUtil.assertOnUiThread();
@@ -780,6 +794,7 @@ public class FabricUIManager
     long scheduleMountItemStartTime = SystemClock.uptimeMillis();
     boolean isBatchMountItem = mountItem instanceof BatchMountItem;
     boolean shouldSchedule =
+        // NULLSAFE_FIXME[Nullable Dereference]
         (isBatchMountItem && !((BatchMountItem) mountItem).isBatchEmpty())
             || (!isBatchMountItem && mountItem != null);
 
@@ -798,6 +813,7 @@ public class FabricUIManager
     }
 
     if (shouldSchedule) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       mMountItemDispatcher.addMountItem(mountItem);
       Runnable runnable =
           new GuardedRunnable(mReactApplicationContext) {
@@ -894,6 +910,7 @@ public class FabricUIManager
       doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(context);
     }
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     mBinding.setConstraints(
         surfaceId,
         getMinSize(widthMeasureSpec),
@@ -911,6 +928,7 @@ public class FabricUIManager
     UiThreadUtil.assertOnUiThread();
 
     SurfaceMountingManager surfaceManager = mMountingManager.getSurfaceManagerForView(reactTag);
+    // NULLSAFE_FIXME[Return Not Nullable]
     return surfaceManager == null ? null : surfaceManager.getView(reactTag);
   }
 
