@@ -12,6 +12,9 @@
 const babel = require('@babel/core');
 const generate = require('@babel/generator').default;
 const {execSync} = require('child_process');
+const traverse = require('@babel/traverse').default;
+// $FlowFixMe[prop-missing]
+const {VISITOR_KEYS} = require('@babel/types');
 
 const ROLLUP_PATH = 'packages/react-native/types/rollup.d.ts';
 const BREAKING = true;
@@ -121,6 +124,7 @@ function analyzeStatements(
     }
     const isDiff = didStatementChange(previousNode, newNode);
     if (isDiff) {
+      traverseSubtrees(previousNode, newNode);
       // Let analyze all statements and gather some logs
       console.log(`Breaking change detected for ${name}`);
       isBreaking = true;
@@ -229,6 +233,120 @@ function getRollups(): null | {previousRollup: string, currentRollup: string} {
   }
 
   return {previousRollup, currentRollup};
+}
+
+function traverseSubtrees(prevTree: BabelNode, newTree: BabelNode): boolean {
+  if (prevTree.type !== newTree.type) {
+    return BREAKING;
+  }
+
+  if (prevTree.type === undefined || prevTree.type === null) {
+    return NOT_BREAKING;
+  }
+
+  // $FlowFixMe[incompatible-use]
+  const keys = VISITOR_KEYS[prevTree.type];
+
+  if (!keys) {
+    return NOT_BREAKING;
+  }
+
+  let isBreaking = false;
+
+  if (prevTree.type === 'TSUnionType' && newTree.type === 'TSUnionType') {
+    analyzeLiteralUnionType(prevTree, newTree);
+  }
+
+  for (const key of keys) {
+    const prevChild = prevTree[key];
+    const newChild = newTree[key];
+
+    if (
+      prevChild === newChild &&
+      (newChild === undefined || newChild === null)
+    ) {
+      continue;
+    }
+
+    if (Array.isArray(prevChild) && !Array.isArray(newChild)) {
+      return BREAKING;
+    }
+
+    if (Array.isArray(prevChild)) {
+      isBreaking ||= traverseMultiple(prevChild, newChild);
+    } else {
+      isBreaking ||= traverseSubtrees(prevChild, newChild);
+    }
+  }
+
+  return isBreaking ? BREAKING : NOT_BREAKING;
+}
+
+function traverseMultiple(
+  prevTrees: Array<BabelNode>,
+  newTrees: Array<BabelNode>,
+): boolean {
+  if (prevTrees.length !== newTrees.length) {
+    return BREAKING;
+  }
+
+  let isBreaking = false;
+
+  for (let i = 0; i < prevTrees.length; i++) {
+    const prevTree = prevTrees[i];
+    const newTree = newTrees[i];
+    isBreaking ||= traverseSubtrees(prevTree, newTree);
+  }
+
+  return isBreaking ? BREAKING : NOT_BREAKING;
+}
+
+function analyzeLiteralUnionType(
+  prevNode: BabelNodeTSUnionType,
+  newNode: BabelNodeTSUnionType,
+): boolean {
+  const isPrevLiteralUnion = prevNode.types.every(
+    type => type.type === 'TSLiteralType',
+  );
+  const isNewLiteralUnion = newNode.types.every(
+    type => type.type === 'TSLiteralType',
+  );
+
+  if (isPrevLiteralUnion !== isNewLiteralUnion) return BREAKING;
+  if (!isPrevLiteralUnion && !isNewLiteralUnion) return NOT_BREAKING;
+
+  const prevLiteralTypes = prevNode.types.map(type =>
+    String(type.literal?.value),
+  );
+  const newLiteralTypes = newNode.types.map(type =>
+    String(type.literal?.value),
+  );
+
+  if (prevLiteralTypes.length > newLiteralTypes.length) return BREAKING;
+  if (prevLiteralTypes.length === newLiteralTypes.length) {
+    const typesSet = new Set(newLiteralTypes);
+    prevLiteralTypes.forEach(type => {
+      if (!typesSet.has(type)) {
+        console.log(`Could not match previous literal type: ${type}`);
+        return BREAKING;
+      }
+    });
+  } else {
+    const typesSet = new Set(newLiteralTypes);
+    prevLiteralTypes.forEach(type => {
+      if (!typesSet.has(type)) {
+        console.log(`Could not match previous literal type: ${type}`);
+        return BREAKING;
+      }
+      typesSet.delete(type);
+    });
+    const remainingTypes = Array.from(typesSet);
+    remainingTypes.forEach(type => {
+      console.log(`New type added to the union: ${type}`);
+    });
+  }
+
+  return NOT_BREAKING;
 }
 
 module.exports = detectBreakingChange;
