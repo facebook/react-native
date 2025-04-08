@@ -11,4 +11,4 @@ package com.facebook.react.views.text.internal.span
  * Instances of this class are used to place reactTag information of nested text react nodes into
  * spannable text rendered by single [TextView]
  */
-public class ReactTagSpan(public val reactTag: Int) : ReactSpan
+internal class ReactTagSpan(val reactTag: Int) : ReactSpan
