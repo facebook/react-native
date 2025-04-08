@@ -1,8 +1,6 @@
-# React Native Technical Documentation
+# React Native Technical Documentation Guidelines
 
-The React Native technical documentation describes how React Native works internally, the subsystems it is composed of, how they work and how they interact with each other.
-
-The intended audience is people who want to learn about the internals of React Native and contribute to it. **End users of React Native are meant to use the [public website](https://reactnative.dev) instead** (its code can be found [here](https://github.com/facebook/react-native-website)).
+_This is a document about documentation (hence the file name)._
 
 ## Motivation
 
