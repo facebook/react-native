@@ -202,39 +202,44 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
       return
     }
 
-    if (extras != null) {
-      for (i in 0..<extras.size()) {
-        val map = extras.getMap(i) ?: continue
-        val name = map.getString("key")
-        val type = map.getType(EXTRA_MAP_KEY_FOR_VALUE)
+    try {
+      if (extras != null) {
+        for (i in 0..<extras.size()) {
+          val map = extras.getMap(i) ?: continue
+          val name = map.getString("key")
+          val type = map.getType(EXTRA_MAP_KEY_FOR_VALUE)
 
-        when (type) {
-          ReadableType.String -> {
-            intent.putExtra(name, map.getString(EXTRA_MAP_KEY_FOR_VALUE))
-          }
+          when (type) {
+            ReadableType.String -> {
+              intent.putExtra(name, map.getString(EXTRA_MAP_KEY_FOR_VALUE))
+            }
 
-          ReadableType.Number -> {
-            // We cannot know from JS if is an Integer or Double
-            // See: https://github.com/facebook/react-native/issues/4141
-            // We might need to find a workaround if this is really an issue
-            val number = map.getDouble(EXTRA_MAP_KEY_FOR_VALUE)
-            intent.putExtra(name, number)
-          }
+            ReadableType.Number -> {
+              // We cannot know from JS if is an Integer or Double
+              // See: https://github.com/facebook/react-native/issues/4141
+              // We might need to find a workaround if this is really an issue
+              val number = map.getDouble(EXTRA_MAP_KEY_FOR_VALUE)
+              intent.putExtra(name, number)
+            }
 
-          ReadableType.Boolean -> {
-            intent.putExtra(name, map.getBoolean(EXTRA_MAP_KEY_FOR_VALUE))
-          }
+            ReadableType.Boolean -> {
+              intent.putExtra(name, map.getBoolean(EXTRA_MAP_KEY_FOR_VALUE))
+            }
 
-          else -> {
-            promise.reject(
-                JSApplicationIllegalArgumentException("Extra type for $name not supported."))
-            return
+            else -> {
+              promise.reject(
+                  JSApplicationIllegalArgumentException("Extra type for $name not supported."))
+              return
+            }
           }
         }
       }
-    }
 
-    sendOSIntent(intent, true)
+      sendOSIntent(intent, true)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject(e)
+    }
   }
 
   private fun sendOSIntent(intent: Intent, useNewTaskFlag: Boolean) {
