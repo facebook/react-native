@@ -5189,56 +5189,6 @@ public class com/facebook/react/uimanager/events/PointerEvent$PointerEventState 
 	public fun supportsHover (I)Z
 }
 
-public final class com/facebook/react/uimanager/events/PointerEventHelper {
-	public static final field CLICK Ljava/lang/String;
-	public static final field INSTANCE Lcom/facebook/react/uimanager/events/PointerEventHelper;
-	public static final field POINTER_CANCEL Ljava/lang/String;
-	public static final field POINTER_DOWN Ljava/lang/String;
-	public static final field POINTER_ENTER Ljava/lang/String;
-	public static final field POINTER_LEAVE Ljava/lang/String;
-	public static final field POINTER_MOVE Ljava/lang/String;
-	public static final field POINTER_OUT Ljava/lang/String;
-	public static final field POINTER_OVER Ljava/lang/String;
-	public static final field POINTER_TYPE_MOUSE Ljava/lang/String;
-	public static final field POINTER_TYPE_PEN Ljava/lang/String;
-	public static final field POINTER_TYPE_TOUCH Ljava/lang/String;
-	public static final field POINTER_TYPE_UNKNOWN Ljava/lang/String;
-	public static final field POINTER_UP Ljava/lang/String;
-	public static final fun getButtonChange (Ljava/lang/String;II)I
-	public static final fun getButtons (Ljava/lang/String;Ljava/lang/String;I)I
-	public static final fun getEventCategory (Ljava/lang/String;)I
-	public static final fun getPressure (ILjava/lang/String;)D
-	public static final fun getW3CPointerType (I)Ljava/lang/String;
-	public static final fun isBubblingEvent (Ljava/lang/String;)Z
-	public final fun isExitEvent (Ljava/lang/String;)Z
-	public static final fun isListening (Landroid/view/View;Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;)Z
-	public final fun supportsHover (Landroid/view/MotionEvent;)Z
-}
-
-public final class com/facebook/react/uimanager/events/PointerEventHelper$EVENT : java/lang/Enum {
-	public static final field CANCEL Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field CANCEL_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field CLICK Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field CLICK_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field DOWN Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field DOWN_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field ENTER Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field ENTER_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field LEAVE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field LEAVE_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field MOVE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field MOVE_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field OUT Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field OUT_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field OVER Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field OVER_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field UP Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field UP_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static fun values ()[Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-}
-
 public abstract interface class com/facebook/react/uimanager/events/RCTEventEmitter : com/facebook/react/bridge/JavaScriptModule {
 	public abstract fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public abstract fun receiveTouches (Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
