@@ -4089,10 +4089,6 @@ public abstract interface class com/facebook/react/uimanager/ReactCompoundViewGr
 	public abstract fun interceptsTouchEvent (FF)Z
 }
 
-public final class com/facebook/react/uimanager/ReactInvalidPropertyException : java/lang/RuntimeException {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-}
-
 public abstract interface class com/facebook/react/uimanager/ReactOverflowView {
 	public abstract fun getOverflow ()Ljava/lang/String;
 }
