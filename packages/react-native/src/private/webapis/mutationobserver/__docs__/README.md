@@ -29,6 +29,7 @@ In native, it relies on ShadowTree commit hooks to get notifications about chang
 
 - This relies on `ShadowTree` commit hooks provided by `UIManager`.
 - It uses the C++ TurboModule infra for communication between JavaScript and native.
+- It uses the [`Event Loop`](../../../../../ReactCommon/react/renderer/runtimescheduler/__docs__/README.md) to schedule mutation observer callbacks as microtasks.
 
 ### Uses this
 
