@@ -12,6 +12,8 @@ Native and contribute to it. **End users of React Native are meant to use the
 For details on how we approach technical documentation in this repository, see
 [GUIDELINES.md](./GUIDELINES.md).
 
+[This link does not exist!](./doesnotexist.md).
+
 ## Usage
 
 This repository is not meant to be consumed directly by end users. Instead, it
