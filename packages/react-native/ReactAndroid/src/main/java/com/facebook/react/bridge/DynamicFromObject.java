@@ -31,32 +31,38 @@ public class DynamicFromObject implements Dynamic {
 
   @Override
   public boolean asBoolean() {
+    // NULLSAFE_FIXME[Nullable Dereference]
     return (boolean) mObject;
   }
 
   @Override
   public double asDouble() {
+    // NULLSAFE_FIXME[Nullable Dereference]
     return (double) mObject;
   }
 
   @Override
   public int asInt() {
     // Numbers from JS are always Doubles
+    // NULLSAFE_FIXME[Nullable Dereference]
     return ((Double) mObject).intValue();
   }
 
   @Override
   public String asString() {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return (String) mObject;
   }
 
   @Override
   public ReadableArray asArray() {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return (ReadableArray) mObject;
   }
 
   @Override
   public ReadableMap asMap() {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return (ReadableMap) mObject;
   }
 
