@@ -45,9 +45,11 @@ public class JsonWriterHelper {
         writer.value(value.asString());
         break;
       case Map:
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         readableMapValue(writer, value.asMap());
         break;
       case Array:
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         readableArrayValue(writer, value.asArray());
         break;
       default:
@@ -76,9 +78,11 @@ public class JsonWriterHelper {
             writer.value(value.getString(key));
             break;
           case Map:
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             readableMapValue(writer, value.getMap(key));
             break;
           case Array:
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             readableArrayValue(writer, value.getArray(key));
             break;
           default:
@@ -108,9 +112,11 @@ public class JsonWriterHelper {
             writer.value(value.getString(key));
             break;
           case Map:
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             readableMapValue(writer, value.getMap(key));
             break;
           case Array:
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             readableArrayValue(writer, value.getArray(key));
             break;
           default:
