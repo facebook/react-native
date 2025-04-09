@@ -106,6 +106,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
       if (child instanceof ReactRawTextShadowNode) {
         sb.append(
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             TextTransform.apply(
                 ((ReactRawTextShadowNode) child).getText(), textAttributes.getTextTransform()));
       } else if (child instanceof ReactBaseTextShadowNode) {
@@ -153,6 +154,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                 sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
+        // NULLSAFE_FIXME[Nullable Dereference]
         inlineViews.put(reactTag, child);
       } else {
         throw new IllegalViewOperationException(
@@ -259,12 +261,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
       // TextInput).
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       sb.append(TextTransform.apply(text, textShadowNode.mTextAttributes.getTextTransform()));
     }
 
     buildSpannedFromShadowNode(textShadowNode, sb, ops, null, supportsInlineViews, inlineViews, 0);
 
     textShadowNode.mContainsImages = false;
+    // NULLSAFE_FIXME[Field Not Nullable]
     textShadowNode.mInlineViews = inlineViews;
     float heightOfTallestInlineViewOrImage = Float.NaN;
 
@@ -286,10 +290,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
           // Inline views cannot be layout-only because the ReactTextView needs to be able to grab
           // ahold of them on the UI thread to size and position them.
+          // NULLSAFE_FIXME[Nullable Dereference]
           ReactShadowNode childNode = inlineViews.get(placeholder.getReactTag());
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           nativeViewHierarchyOptimizer.handleForceViewToBeNonLayoutOnly(childNode);
 
           // The ReactTextView is responsible for laying out the inline views.
+          // NULLSAFE_FIXME[Nullable Dereference]
           childNode.setLayoutParent(textShadowNode);
         }
 
@@ -379,6 +386,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
+  // NULLSAFE_FIXME[Field Not Initialized]
   protected Map<Integer, ReactShadowNode> mInlineViews;
 
   public ReactBaseTextShadowNode() {
@@ -476,6 +484,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   public void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       mColor = color;
     }
     markUpdated();
@@ -490,6 +499,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     if (isVirtual()) {
       mIsBackgroundColorSet = (color != null);
       if (mIsBackgroundColorSet) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         mBackgroundColor = color;
       }
       markUpdated();
