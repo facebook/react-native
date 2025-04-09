@@ -87,6 +87,7 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
 
   private @Nullable ViewManager getViewManagerFromResolver(String className) {
     @Nullable ViewManager viewManager;
+    // NULLSAFE_FIXME[Nullable Dereference]
     viewManager = mViewManagerResolver.getViewManager(className);
     if (viewManager != null) {
       mViewManagers.put(className, viewManager);
