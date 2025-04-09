@@ -19,11 +19,6 @@ import com.facebook.react.module.annotations.ReactModule
 public class FileReaderModule(reactContext: ReactApplicationContext) :
   NativeFileReaderModuleSpec(reactContext) {
 
-  public companion object {
-    public val NAME: String = NativeFileReaderModuleSpec.NAME
-    private const val ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB"
-  }
-
   private fun getBlobModule(reason: String): BlobModule? {
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
 
@@ -107,4 +102,10 @@ public class FileReaderModule(reactContext: ReactApplicationContext) :
       promise.reject(e)
     }
   }
+
+  public companion object {
+    public val NAME: String = NativeFileReaderModuleSpec.NAME
+    private const val ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB"
+  }
+  
 }
