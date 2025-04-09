@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e9a8af0faacb2bd1ee4a922851ba0f17>>
+ * @generated SignedSource<<a7a33656c2bd4e293c0e52cf1a410e8b>>
  */
 
 /**
@@ -65,6 +65,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool disableMountItemReorderingAndroid();
 
   /**
+   * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
+   */
+  RN_EXPORT static bool disableShadowNodeOnNewArchitectureAndroid();
+
+  /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
    */
   RN_EXPORT static bool enableAccessibilityOrder();
@@ -98,6 +103,11 @@ class ReactNativeFeatureFlags {
    * Enables the use of the Fabric renderer in the whole app.
    */
   RN_EXPORT static bool enableFabricRenderer();
+
+  /**
+   * Enables font scale changes updating layout for measurable nodes.
+   */
+  RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
 
   /**
    * iOS Views will clip to their padding box vs border box

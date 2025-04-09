@@ -502,7 +502,7 @@ public class TextLayoutManager {
       MapBuffer paragraphAttributes,
       float width,
       float height,
-      ReactTextViewManagerCallback reactTextViewManagerCallback) {
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     Spannable text =
         getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
 
@@ -666,7 +666,7 @@ public class TextLayoutManager {
       YogaMeasureMode widthYogaMeasureMode,
       float height,
       YogaMeasureMode heightYogaMeasureMode,
-      ReactTextViewManagerCallback reactTextViewManagerCallback,
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback,
       @Nullable float[] attachmentsPositions) {
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     Layout layout =

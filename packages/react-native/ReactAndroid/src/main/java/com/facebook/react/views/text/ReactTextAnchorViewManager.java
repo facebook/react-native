@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.BaseViewManager;
@@ -38,6 +39,7 @@ import com.facebook.react.uimanager.style.LogicalEdge;
  * Instead we use @{link ReactBaseTextShadowNode} hierarchy to calculate a {@link Spannable} text
  * represented the whole text subtree.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactTextAnchorViewManager<T extends View, C extends ReactBaseTextShadowNode>
     extends BaseViewManager<T, C> {
 

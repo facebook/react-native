@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c8a43244cf7e009b66d8351d1c0afdb7>>
+ * @generated SignedSource<<ae5f943ca33b132f8ea336cddddee2ed>>
  */
 
 /**
@@ -29,6 +29,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
+  private var disableShadowNodeOnNewArchitectureAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -36,6 +37,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
+  private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
@@ -116,6 +118,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean {
+    var cached = disableShadowNodeOnNewArchitectureAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableShadowNodeOnNewArchitectureAndroid()
+      accessedFeatureFlags.add("disableShadowNodeOnNewArchitectureAndroid")
+      disableShadowNodeOnNewArchitectureAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun enableAccessibilityOrder(): Boolean {
     var cached = enableAccessibilityOrderCache
     if (cached == null) {
@@ -182,6 +194,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableFabricRenderer()
       accessedFeatureFlags.add("enableFabricRenderer")
       enableFabricRendererCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean {
+    var cached = enableFontScaleChangesUpdatingLayoutCache
+    if (cached == null) {
+      cached = currentProvider.enableFontScaleChangesUpdatingLayout()
+      accessedFeatureFlags.add("enableFontScaleChangesUpdatingLayout")
+      enableFontScaleChangesUpdatingLayoutCache = cached
     }
     return cached
   }

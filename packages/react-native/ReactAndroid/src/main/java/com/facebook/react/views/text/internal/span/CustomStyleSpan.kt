@@ -27,22 +27,22 @@ import com.facebook.react.views.text.ReactTypefaceUtils
  * appropriate default typeface depending on the style. Fonts are retrieved and cached using the
  * [ReactFontManager]
  */
-public class CustomStyleSpan(
+internal class CustomStyleSpan(
     private val privateStyle: Int,
     private val privateWeight: Int,
-    public val fontFeatureSettings: String?,
-    public val fontFamily: String?,
+    val fontFeatureSettings: String?,
+    val fontFamily: String?,
     private val assetManager: AssetManager
 ) : MetricAffectingSpan(), ReactSpan {
-  public override fun updateDrawState(ds: TextPaint) {
+  override fun updateDrawState(ds: TextPaint) {
     apply(ds, privateStyle, privateWeight, fontFeatureSettings, fontFamily, assetManager)
   }
 
-  public override fun updateMeasureState(paint: TextPaint) {
+  override fun updateMeasureState(paint: TextPaint) {
     apply(paint, privateStyle, privateWeight, fontFeatureSettings, fontFamily, assetManager)
   }
 
-  public val style: Int
+  val style: Int
     get() =
         if (privateStyle == ReactConstants.UNSET) {
           Typeface.NORMAL
@@ -50,7 +50,7 @@ public class CustomStyleSpan(
           privateStyle
         }
 
-  public val weight: Int
+  val weight: Int
     get() =
         if (privateWeight == ReactConstants.UNSET) {
           ReactFontManager.TypefaceStyle.NORMAL
@@ -58,7 +58,7 @@ public class CustomStyleSpan(
           privateWeight
         }
 
-  public companion object {
+  companion object {
     private fun apply(
         paint: Paint,
         style: Int,

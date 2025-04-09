@@ -7,10 +7,18 @@
 
 package com.facebook.react.uimanager
 
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 
 class UIManagerModuleConstantsHelperTest {
+
+  @Before
+  fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
+  }
+
   @Test
   fun normalizeEventTypes_withNull_doesNothing() {
     assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(null)).isNull()

@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.PointerEventHelper
@@ -42,6 +43,7 @@ class JSPointerDispatcherTest {
 
   @Before
   fun setupViewHierarchy() {
+    ReactNativeFeatureFlagsForTests.setUp()
     val ctx: Context = RuntimeEnvironment.getApplication()
     root = LinearLayout(ctx)
     val childView = TextView(ctx)

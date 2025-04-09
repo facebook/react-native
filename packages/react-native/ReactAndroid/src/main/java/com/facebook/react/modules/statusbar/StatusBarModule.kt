@@ -35,7 +35,7 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
   @Suppress("DEPRECATION")
   override fun getTypedExportedConstants(): Map<String, Any> {
     val statusBarColor =
-        currentActivity?.window?.statusBarColor?.let { color ->
+        reactApplicationContext.getCurrentActivity()?.window?.statusBarColor?.let { color ->
           String.format("#%06X", 0xFFFFFF and color)
         } ?: "black"
     return mapOf(
@@ -44,10 +44,13 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
     )
   }
 
-  @Suppress("DEPRECATION")
   private fun getStatusBarHeightPx(): Float {
     val windowInsets =
-        currentActivity?.window?.decorView?.let(ViewCompat::getRootWindowInsets) ?: return 0f
+        reactApplicationContext
+            .getCurrentActivity()
+            ?.window
+            ?.decorView
+            ?.let(ViewCompat::getRootWindowInsets) ?: return 0f
     return windowInsets
         .getInsets(
             WindowInsetsCompat.Type.statusBars() or
@@ -60,7 +63,7 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
   @Suppress("DEPRECATION")
   override fun setColor(colorDouble: Double, animated: Boolean) {
     val color = colorDouble.toInt()
-    val activity = currentActivity
+    val activity = reactApplicationContext.getCurrentActivity()
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
@@ -87,9 +90,8 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
         })
   }
 
-  @Suppress("DEPRECATION")
   override fun setTranslucent(translucent: Boolean) {
-    val activity = currentActivity
+    val activity = reactApplicationContext.getCurrentActivity()
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
@@ -104,9 +106,8 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
         })
   }
 
-  @Suppress("DEPRECATION")
   override fun setHidden(hidden: Boolean) {
-    val activity = currentActivity
+    val activity = reactApplicationContext.getCurrentActivity()
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
@@ -118,7 +119,7 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
 
   @Suppress("DEPRECATION")
   override fun setStyle(style: String?) {
-    val activity = currentActivity
+    val activity = reactApplicationContext.getCurrentActivity()
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,

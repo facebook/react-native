@@ -10,9 +10,7 @@
 #include <mutex>
 #include <unordered_set>
 
-#include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
-#include <react/renderer/core/EventBeat.h>
 
 namespace facebook::react {
 
@@ -34,9 +32,6 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
 
   static void registerNatives();
 
-  explicit EventBeatManager(
-      jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
-
   /*
    * Adds (or removes) observers.
    * `EventBeatManager` does not own/retain observers; observers must overlive
@@ -51,15 +46,12 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
    */
   void tick();
 
-  jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject_;
-
   mutable std::unordered_set<const EventBeatManagerObserver*>
       observers_{}; // Protected by `mutex_`
 
   mutable std::mutex mutex_;
 
-  static jni::local_ref<EventBeatManager::jhybriddata> initHybrid(
-      jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
+  static void initHybrid(jni::alias_ref<jhybridobject> jobj);
 };
 
 } // namespace facebook::react

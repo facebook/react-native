@@ -12,6 +12,7 @@ import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
@@ -65,7 +66,7 @@ public class JSPointerDispatcher {
   }
 
   public void onChildStartedNativeGesture(
-      View childView, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
+      @Nullable View childView, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
     if (mChildHandlingNativeGesture != UNSET_CHILD_VIEW_ID || childView == null) {
       // This means we previously had another child start handling this native gesture and now a
       // different native parent of that child has decided to intercept the touch stream and handle

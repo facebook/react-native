@@ -3,6 +3,11 @@
   <string name="catalyst_reload" project="catalyst" translatable="false">Reload</string>
   <string name="catalyst_reload_error" project="catalyst" translatable="false">Failed to load bundle. Try restarting the bundler or reconnecting your device.</string>
   <string name="catalyst_change_bundle_location" project="catalyst" translatable="false">Change Bundle Location</string>
+  <string name="catalyst_change_bundle_location_input_label" project="catalyst" translatable="false">Provide a custom bundler address and port:</string>
+  <string name="catalyst_change_bundle_location_input_hint" project="catalyst" translatable="false">127.0.0.1:8081</string>
+  <string name="catalyst_change_bundle_location_instructions" project="catalyst" translatable="false">You can connect either via USB (localhost - default) or Wifi. If you connect via USB and running with a physical device, make sure you:\n 1. Connect your device via USB\n 2. Set the bundle location to `localhost:8081`\n 3. Run this command in your terminal:\n&#160;&#160;&#160;&#160;&#160;&#160;`%1$s`</string>
+  <string name="catalyst_change_bundle_location_apply" project="catalyst" translatable="false">Apply Changes</string>
+  <string name="catalyst_change_bundle_location_cancel" project="catalyst" translatable="false">Cancel</string>
   <string name="catalyst_open_debugger_error" project="catalyst" translatable="false">Failed to open DevTools. Please check that the dev server is running and reload the app.</string>
   <string name="catalyst_debug_open" project="catalyst" translatable="false">Open DevTools</string>
   <string name="catalyst_debug_open_disabled" project="catalyst" translatable="false">Connect to the bundler to debug JavaScript</string>

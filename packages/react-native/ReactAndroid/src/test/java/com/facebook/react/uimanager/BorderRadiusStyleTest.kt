@@ -8,11 +8,13 @@
 package com.facebook.react.uimanager
 
 import android.content.Context
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadiusProp
 import com.facebook.react.uimanager.style.CornerRadii
 import org.assertj.core.api.Assertions.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -65,6 +67,11 @@ class BorderRadiusStyleTest {
         count -= 1f
       }
     }
+  }
+
+  @Before
+  fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
   }
 
   @Test

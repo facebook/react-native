@@ -191,6 +191,7 @@ export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
 export type { WithAnimatedValue } from \\"./createAnimatedComponent\\";
+export type { AnimatedComponentType as AnimatedComponent } from \\"./createAnimatedComponent\\";
 declare export const add: $FlowFixMe;
 declare export const attachNativeEvent: $FlowFixMe;
 declare export const createAnimatedComponent: $FlowFixMe;
@@ -2020,10 +2021,7 @@ type StickyHeaderComponentType = component(
   >,
   ...ScrollViewStickyHeaderProps
 );
-export type ScrollViewProps = $ReadOnly<{
-  ...ViewProps,
-  ...ScrollViewPropsIOS,
-  ...ScrollViewPropsAndroid,
+type ScrollViewBaseProps = $ReadOnly<{
   contentContainerStyle?: ?ViewStyleProp,
   contentOffset?: ?PointProp,
   disableIntervalMomentum?: ?boolean,
@@ -2064,6 +2062,12 @@ export type ScrollViewProps = $ReadOnly<{
   children?: React.Node,
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
+}>;
+export type ScrollViewProps = $ReadOnly<{
+  ...ViewProps,
+  ...ScrollViewPropsIOS,
+  ...ScrollViewPropsAndroid,
+  ...ScrollViewBaseProps,
 }>;
 export type ScrollViewComponentStatics = $ReadOnly<{
   Context: typeof ScrollViewContext,
@@ -3356,7 +3360,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 }>;
 type TouchableOpacityBaseProps = $ReadOnly<{
   activeOpacity?: ?number,
-  style?: ?ViewStyleProp,
+  style?: ?Animated.WithAnimatedValue<ViewStyleProp>,
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 }>;
 export type TouchableOpacityProps = $ReadOnly<{
@@ -5011,8 +5015,10 @@ export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
 };
-declare export default class SectionList<ItemT, SectionT = DefaultSectionT>
-  extends React.PureComponent<SectionListProps<ItemT, SectionT>>
+declare export default class SectionList<
+  ItemT = any,
+  SectionT = DefaultSectionT,
+> extends React.PureComponent<SectionListProps<ItemT, SectionT>>
 {
   props: SectionListProps<ItemT, SectionT>;
   scrollToLocation(params: ScrollToLocationParamsType): void;
@@ -7079,8 +7085,7 @@ export type EdgeInsetsValue = {
   right: number,
   bottom: number,
 };
-export type DimensionValue = number | string | \\"auto\\" | AnimatedNode | null;
-export type AnimatableNumericValue = number | AnimatedNode;
+export type DimensionValue = number | string | \\"auto\\" | null;
 export type CursorValue = \\"auto\\" | \\"pointer\\";
 type ____LayoutStyle_Internal = $ReadOnly<{
   display?: \\"none\\" | \\"flex\\" | \\"contents\\",
@@ -7185,7 +7190,7 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
     width?: number,
     height?: number,
   }>,
-  shadowOpacity?: AnimatableNumericValue,
+  shadowOpacity?: number,
   shadowRadius?: number,
 }>;
 export type ____ShadowStyle_Internal = $ReadOnly<{
@@ -7256,32 +7261,32 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue | string,
-  borderBottomEndRadius?: AnimatableNumericValue | string,
-  borderBottomLeftRadius?: AnimatableNumericValue | string,
-  borderBottomRightRadius?: AnimatableNumericValue | string,
-  borderBottomStartRadius?: AnimatableNumericValue | string,
-  borderEndEndRadius?: AnimatableNumericValue | string,
-  borderEndStartRadius?: AnimatableNumericValue | string,
-  borderStartEndRadius?: AnimatableNumericValue | string,
-  borderStartStartRadius?: AnimatableNumericValue | string,
-  borderTopEndRadius?: AnimatableNumericValue | string,
-  borderTopLeftRadius?: AnimatableNumericValue | string,
-  borderTopRightRadius?: AnimatableNumericValue | string,
-  borderTopStartRadius?: AnimatableNumericValue | string,
+  borderRadius?: number | string,
+  borderBottomEndRadius?: number | string,
+  borderBottomLeftRadius?: number | string,
+  borderBottomRightRadius?: number | string,
+  borderBottomStartRadius?: number | string,
+  borderEndEndRadius?: number | string,
+  borderEndStartRadius?: number | string,
+  borderStartEndRadius?: number | string,
+  borderStartStartRadius?: number | string,
+  borderTopEndRadius?: number | string,
+  borderTopLeftRadius?: number | string,
+  borderTopRightRadius?: number | string,
+  borderTopStartRadius?: number | string,
   borderStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
-  borderWidth?: AnimatableNumericValue,
-  borderBottomWidth?: AnimatableNumericValue,
-  borderEndWidth?: AnimatableNumericValue,
-  borderLeftWidth?: AnimatableNumericValue,
-  borderRightWidth?: AnimatableNumericValue,
-  borderStartWidth?: AnimatableNumericValue,
-  borderTopWidth?: AnimatableNumericValue,
-  opacity?: AnimatableNumericValue,
+  borderWidth?: number,
+  borderBottomWidth?: number,
+  borderEndWidth?: number,
+  borderLeftWidth?: number,
+  borderRightWidth?: number,
+  borderStartWidth?: number,
+  borderTopWidth?: number,
+  opacity?: number,
   outlineColor?: ____ColorValue_Internal,
-  outlineOffset?: AnimatableNumericValue,
+  outlineOffset?: number,
   outlineStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
-  outlineWidth?: AnimatableNumericValue,
+  outlineWidth?: number,
   elevation?: number,
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
@@ -7454,9 +7459,8 @@ export type StyleProp<+T> =
 export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
-export type ____DangerouslyImpreciseAnimatedStyleProp_Internal = StyleProp<
-  Partial<AnimatedBaseProps<____DangerouslyImpreciseStyle_Internal>>,
->;
+export type ____DangerouslyImpreciseAnimatedStyleProp_Internal =
+  WithAnimatedValue<StyleProp<Partial<____DangerouslyImpreciseStyle_Internal>>>;
 export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
@@ -7492,11 +7496,14 @@ export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/flattenStyle.js 1`] = `
-"declare function flattenStyle<
+"type NonAnimatedNodeObject<TStyleProp> = TStyleProp extends AnimatedNode
+  ? empty
+  : TStyleProp;
+declare function flattenStyle<
   TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
 >(
   style: ?TStyleProp
-): ?____FlattenStyleProp_Internal<TStyleProp>;
+): ?NonAnimatedNodeObject<____FlattenStyleProp_Internal<TStyleProp>>;
 declare export default typeof flattenStyle;
 "
 `;

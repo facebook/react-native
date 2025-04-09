@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8f5cc9ed8e642b143777c4711c66938>>
+ * @generated SignedSource<<08f8d3073d62f515b0850936de189361>>
  */
 
 /**
@@ -69,6 +69,11 @@ bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
 }
 
+bool NativeReactNativeFeatureFlags::disableShadowNodeOnNewArchitectureAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableShadowNodeOnNewArchitectureAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::enableAccessibilityOrder(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAccessibilityOrder();
@@ -102,6 +107,11 @@ bool NativeReactNativeFeatureFlags::enableFabricLogs(
 bool NativeReactNativeFeatureFlags::enableFabricRenderer(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricRenderer();
+}
+
+bool NativeReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout();
 }
 
 bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(

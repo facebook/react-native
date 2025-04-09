@@ -63,7 +63,8 @@ void SurfaceHandlerBinding::setLayoutConstraints(
 }
 
 void SurfaceHandlerBinding::setProps(NativeMap* props) {
-  surfaceHandler_.setProps(props->consume());
+  surfaceHandler_.setProps(
+      props != nullptr ? props->consume() : folly::dynamic::object());
 }
 
 const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {

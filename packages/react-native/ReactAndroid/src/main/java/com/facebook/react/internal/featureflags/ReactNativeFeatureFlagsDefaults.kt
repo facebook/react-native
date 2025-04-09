@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95e258c60535844bc096e6d291785c71>>
+ * @generated SignedSource<<b2ce97a43a2fdf285fe860183207474b>>
  */
 
 /**
@@ -33,6 +33,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
+  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = true
+
   override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
@@ -46,6 +48,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
+
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 

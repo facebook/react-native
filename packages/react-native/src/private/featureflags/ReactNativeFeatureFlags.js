@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<45566b4c0ac8ebf08c1c82eb774b0683>>
+ * @generated SignedSource<<4f1e4de5196d3bd22b774e1da6202e88>>
  * @flow strict
  */
 
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
+  disableShadowNodeOnNewArchitectureAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -59,6 +60,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
+  enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
@@ -180,6 +182,10 @@ export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlag
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
 /**
+ * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
+ */
+export const disableShadowNodeOnNewArchitectureAndroid: Getter<boolean> = createNativeFlagGetter('disableShadowNodeOnNewArchitectureAndroid', true);
+/**
  * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
  */
 export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter('enableAccessibilityOrder', false);
@@ -207,6 +213,10 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
  * Enables the use of the Fabric renderer in the whole app.
  */
 export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
+/**
+ * Enables font scale changes updating layout for measurable nodes.
+ */
+export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */

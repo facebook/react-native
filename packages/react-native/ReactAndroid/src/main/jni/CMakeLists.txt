@@ -8,6 +8,13 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 project(ReactAndroid)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_SUPPORT)
+if (IPO_SUPPORT)
+  message(STATUS "LTO support is enabled")
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 # Convert input paths to CMake format (with forward slashes)

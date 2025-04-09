@@ -16,7 +16,7 @@ public interface Dynamic {
 
   public val isNull: Boolean
 
-  public fun asArray(): ReadableArray
+  public fun asArray(): ReadableArray?
 
   public fun asBoolean(): Boolean
 
@@ -24,9 +24,9 @@ public interface Dynamic {
 
   public fun asInt(): Int
 
-  public fun asMap(): ReadableMap
+  public fun asMap(): ReadableMap?
 
-  public fun asString(): String
+  public fun asString(): String?
 
   public fun recycle(): Unit
 }

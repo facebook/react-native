@@ -16,9 +16,9 @@ import com.facebook.react.uimanager.annotations.ReactProp
  * can only have simple string value without any attributes, properties or state.
  */
 @LegacyArchitecture
-public class ReactRawTextShadowNode : ReactShadowNodeImpl() {
+internal class ReactRawTextShadowNode : ReactShadowNodeImpl() {
   @set:ReactProp(name = "text")
-  public var text: String? = null
+  var text: String? = null
     set(value) {
       field = value
       markUpdated()

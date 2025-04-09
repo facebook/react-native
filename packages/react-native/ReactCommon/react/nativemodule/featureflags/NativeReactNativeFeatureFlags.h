@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4eb990a0eb33d51b99016529b3a5ffd6>>
+ * @generated SignedSource<<7dfd3c6be24565c6fcfd8c77222f4248>>
  */
 
 /**
@@ -47,6 +47,8 @@ class NativeReactNativeFeatureFlags
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
+  bool disableShadowNodeOnNewArchitectureAndroid(jsi::Runtime& runtime);
+
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
@@ -60,6 +62,8 @@ class NativeReactNativeFeatureFlags
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
+
+  bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 

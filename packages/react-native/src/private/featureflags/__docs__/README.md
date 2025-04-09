@@ -1,15 +1,16 @@
 # Feature Flags
 
-* [Main doc](../../../../../../__docs__/README.md)
+- [Main doc](../../../../../../__docs__/README.md)
 
 Feature flags are values that determine the behavior of specific parts of React
 Native. This directory contains the configuration for those values, and scripts
 to generate files for different languages to access and customize them.
 
 There are 2 types of feature flags:
-* Common: can be accessed from any language and they provide consistent values
-everywhere.
-* JS-only: they can only be accessed and customized from JavaScript.
+
+- Common: can be accessed from any language and they provide consistent values
+  everywhere.
+- JS-only: they can only be accessed and customized from JavaScript.
 
 ## Usage
 
@@ -19,26 +20,26 @@ The source of truth for the definition of the flags is the file
 `ReactNativeFeatureFlags.config.js` in this directory.
 
 Example contents:
+
 ```javascript
 module.exports = {
   common: {
     enableNativeBehavior: {
       description: 'Enable some behavior both in native and in JS.',
-      defaultValue: false
-    }
+      defaultValue: false,
+    },
   },
   jsOnly: {
     enableJSBehavior: {
       description: 'Enables some behavior in the JS layer.',
-      defaultValue: false
-    }
-  }
+      defaultValue: false,
+    },
+  },
 };
 ```
 
 **After any change to these definitions**, the code that provides access to them
-must be regenerated running this from the `react-native`
-repository:
+must be regenerated running this from the `react-native` repository:
 
 ```shell
 yarn featureflags --update
@@ -51,10 +52,10 @@ the `ReactNativeFeatureFlags` interface (available in C++/Objective-C++,
 Kotlin/Java and JavaScript). JS-only feature flags can only be accessed from
 JavaScript.
 
-**Accessing feature flags should be considered fast for all use cases**.
-Feature flags are cached at every layer, which prevents having to go through JNI
-when accessing the values from Kotlin and through JSI when accessing the values
-from JavaScript.
+**Accessing feature flags should be considered fast for all use cases**. Feature
+flags are cached at every layer, which prevents having to go through JNI when
+accessing the values from Kotlin and through JSI when accessing the values from
+JavaScript.
 
 #### C++ / Objective-C
 
@@ -147,12 +148,13 @@ ReactNativeFeatureFlags.override({
 ## Design
 
 The architecture of this feature flags system can be described as follows:
-* A shared C++ core, where we provide access to the flags and allow
-customizations.
-* A Kotlin/Java interface that allows accessing and customizing the values in
-the C++ core (via JNI).
-* A JavaScript interface that allows accessing the common values (via a native
-module) and accessing and customizing the JS-only values.
+
+- A shared C++ core, where we provide access to the flags and allow
+  customizations.
+- A Kotlin/Java interface that allows accessing and customizing the values in
+  the C++ core (via JNI).
+- A JavaScript interface that allows accessing the common values (via a native
+  module) and accessing and customizing the JS-only values.
 
 ![Diagram of the architecture of feature flags in React Native](./architecture.excalidraw.svg)
 
@@ -167,8 +169,10 @@ module) and accessing and customizing the JS-only values.
 
 ### Used by this
 
-- The only dependency is the C++ TurboModule infrastructure (including codegen), as the JavaScript API uses it to access the feature flag values from native.
+- The only dependency is the C++ TurboModule infrastructure (including codegen),
+  as the JavaScript API uses it to access the feature flag values from native.
 
 ### Uses this
 
-This system is used extensively throughout the codebase and it evolves over time as feature flags are added or cleaned up.
+This system is used extensively throughout the codebase and it evolves over time
+as feature flags are added or cleaned up.

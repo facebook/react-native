@@ -172,7 +172,9 @@ void FabricUIManagerBinding::startSurface(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  surfaceHandler.setProps(initialProps->consume());
+  if (initialProps != nullptr) {
+    surfaceHandler.setProps(initialProps->consume());
+  }
   surfaceHandler.constraintLayout({}, layoutContext);
 
   scheduler->registerSurface(surfaceHandler);
@@ -241,7 +243,9 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  surfaceHandler.setProps(initialProps->consume());
+  if (initialProps != nullptr) {
+    surfaceHandler.setProps(initialProps->consume());
+  }
   surfaceHandler.constraintLayout(constraints, context);
 
   scheduler->registerSurface(surfaceHandler);
@@ -622,7 +626,11 @@ void FabricUIManagerBinding::schedulerDidSetIsJSResponder(
 
 void FabricUIManagerBinding::schedulerShouldSynchronouslyUpdateViewOnUIThread(
     Tag tag,
-    const folly::dynamic& props) {}
+    const folly::dynamic& props) {
+  if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() && mountingManager_) {
+    mountingManager_->synchronouslyUpdateViewOnUIThread(tag, props);
+  }
+}
 
 void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");

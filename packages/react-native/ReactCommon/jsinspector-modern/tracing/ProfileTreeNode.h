@@ -7,7 +7,10 @@
 
 #pragma once
 
-#include "RuntimeSamplingProfile.h"
+#include <memory>
+#include <utility>
+
+#include <jsinspector-modern/tracing/RuntimeSamplingProfile.h>
 
 namespace facebook::react::jsinspector_modern::tracing {
 
@@ -28,7 +31,7 @@ class ProfileTreeNode {
   ProfileTreeNode(
       uint32_t id,
       CodeType codeType,
-      ProfileTreeNode* parent,
+      std::shared_ptr<ProfileTreeNode> parent,
       RuntimeSamplingProfile::SampleCallStackFrame callFrame)
       : id_(id),
         codeType_(codeType),
@@ -47,7 +50,7 @@ class ProfileTreeNode {
    * \return pointer to the parent node, nullptr if this is the root node.
    */
   ProfileTreeNode* getParent() const {
-    return parent_;
+    return parent_.get();
   }
 
   /**
@@ -58,12 +61,14 @@ class ProfileTreeNode {
   }
 
   /**
-   * Will only add unique child node. Returns pointer to the already existing
-   * child node, nullptr if the added child node is unique.
+   * Will only add unique child node.
+   * \return shared pointer to the already existing child node, nullptr if the
+   * added child node is unique.
    */
-  ProfileTreeNode* addChild(ProfileTreeNode* child) {
-    for (auto existingChild : children_) {
-      if (*existingChild == child) {
+  std::shared_ptr<ProfileTreeNode> addChild(
+      std::shared_ptr<ProfileTreeNode> child) {
+    for (const auto& existingChild : children_) {
+      if (*existingChild == child.get()) {
         return existingChild;
       }
     }
@@ -94,13 +99,13 @@ class ProfileTreeNode {
    */
   CodeType codeType_;
   /**
-   * Pointer to the parent node. Should be nullptr only for root node.
+   * Shared pointer to the parent node. Can be nullptr only for root node.
    */
-  ProfileTreeNode* parent_{nullptr};
+  std::shared_ptr<ProfileTreeNode> parent_;
   /**
-   * Lst of pointers to children nodes.
+   * Lst of shared pointers to children nodes.
    */
-  std::vector<ProfileTreeNode*> children_{};
+  std::vector<std::shared_ptr<ProfileTreeNode>> children_;
   /**
    * Information about the corresponding call frame that is represented by this
    * node.

@@ -72,7 +72,9 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     instanceAgent_->stopTracing();
-    bool correctlyStopped = PerformanceTracer::getInstance().stopTracing();
+
+    PerformanceTracer& performanceTracer = PerformanceTracer::getInstance();
+    bool correctlyStopped = performanceTracer.stopTracing();
     if (!correctlyStopped) {
       frontendChannel_(cdp::jsonError(
           req.id,
@@ -90,15 +92,16 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
           "Tracing.dataCollected",
           folly::dynamic::object("value", eventsChunk)));
     };
-    PerformanceTracer::getInstance().collectEvents(
+    performanceTracer.collectEvents(
         dataCollectedCallback, TRACE_EVENT_CHUNK_SIZE);
 
-    tracing::RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
-        PerformanceTracer::getInstance(),
-        instanceAgent_->collectTracingProfile().getRuntimeSamplingProfile(),
-        instanceTracingStartTimestamp_,
+    tracing::RuntimeSamplingProfileTraceEventSerializer serializer(
+        performanceTracer,
         dataCollectedCallback,
         PROFILE_TRACE_EVENT_CHUNK_SIZE);
+    serializer.serializeAndNotify(
+        instanceAgent_->collectTracingProfile().getRuntimeSamplingProfile(),
+        instanceTracingStartTimestamp_);
 
     frontendChannel_(cdp::jsonNotification(
         "Tracing.tracingComplete",

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28e3a307300f53f69b5585cc639f0097>>
+ * @generated SignedSource<<dac4d84f1b143b2673198843ff1f6328>>
  */
 
 /**
@@ -61,6 +61,12 @@ public object ReactNativeFeatureFlags {
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
 
   /**
+   * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
+   */
+  @JvmStatic
+  public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = accessor.disableShadowNodeOnNewArchitectureAndroid()
+
+  /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
    */
   @JvmStatic
@@ -101,6 +107,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
+
+  /**
+   * Enables font scale changes updating layout for measurable nodes.
+   */
+  @JvmStatic
+  public fun enableFontScaleChangesUpdatingLayout(): Boolean = accessor.enableFontScaleChangesUpdatingLayout()
 
   /**
    * iOS Views will clip to their padding box vs border box

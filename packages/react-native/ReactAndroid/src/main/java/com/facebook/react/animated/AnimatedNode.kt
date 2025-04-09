@@ -10,11 +10,11 @@ package com.facebook.react.animated
 import java.util.ArrayList
 
 /** Base class for all Animated.js library node types that can be created on the "native" side. */
-public abstract class AnimatedNode {
+internal abstract class AnimatedNode {
 
-  public companion object {
-    public const val INITIAL_BFS_COLOR: Int = 0
-    public const val DEFAULT_ANIMATED_NODE_CHILD_COUNT: Int = 1
+  companion object {
+    const val INITIAL_BFS_COLOR: Int = 0
+    const val DEFAULT_ANIMATED_NODE_CHILD_COUNT: Int = 1
   }
 
   // TODO: T196787278 Reduce the visibility of these fields to package once we have
@@ -27,7 +27,7 @@ public abstract class AnimatedNode {
   @JvmField internal var BFSColor: Int = INITIAL_BFS_COLOR
   @JvmField internal var tag: Int = -1
 
-  public fun addChild(child: AnimatedNode): Unit {
+  fun addChild(child: AnimatedNode): Unit {
     val currentChildren =
         children
             ?: ArrayList<AnimatedNode>(DEFAULT_ANIMATED_NODE_CHILD_COUNT).also { children = it }
@@ -36,7 +36,7 @@ public abstract class AnimatedNode {
     child.onAttachedToNode(this)
   }
 
-  public fun removeChild(child: AnimatedNode): Unit {
+  fun removeChild(child: AnimatedNode): Unit {
     val currentChildren = children ?: return
     child.onDetachedFromNode(this)
     currentChildren.remove(child)
@@ -48,24 +48,24 @@ public abstract class AnimatedNode {
    * is important to also override [onDetachedFromNode] to clear that reference once current node
    * gets detached.
    */
-  public open fun onAttachedToNode(parent: AnimatedNode): Unit = Unit
+  open fun onAttachedToNode(parent: AnimatedNode): Unit = Unit
 
   /** See [onAttachedToNode] */
-  public open fun onDetachedFromNode(parent: AnimatedNode): Unit = Unit
+  open fun onDetachedFromNode(parent: AnimatedNode): Unit = Unit
 
   /**
    * This method will be run on each node at most once every repetition of the animation loop. It
    * will be executed on a node only when all the node's parent has already been updated. Therefore
    * it can be used to calculate node's value.
    */
-  public open fun update(): Unit = Unit
+  open fun update(): Unit = Unit
 
   /**
    * Pretty-printer for the AnimatedNode. Only called in production pre-crash for debug diagnostics.
    */
-  public abstract fun prettyPrint(): String
+  abstract fun prettyPrint(): String
 
-  public fun prettyPrintWithChildren(): String {
+  fun prettyPrintWithChildren(): String {
 
     val currentChildren = children?.joinToString(" ")
     return prettyPrint() +

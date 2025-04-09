@@ -44,3 +44,6 @@ runs:
     - name: Check formatting
       shell: bash
       run: yarn run format-check
+    - name: Lint markdown
+      shell: bash
+      run: yarn run lint-markdown

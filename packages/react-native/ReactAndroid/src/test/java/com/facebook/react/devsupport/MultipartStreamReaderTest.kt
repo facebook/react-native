@@ -37,7 +37,7 @@ class MultipartStreamReaderTest {
             super.onChunkComplete(headers, body, done)
 
             assertThat(done).isTrue
-            assertThat(headers!!["Content-Type"]).isEqualTo("application/json; charset=utf-8")
+            assertThat(headers["Content-Type"]).isEqualTo("application/json; charset=utf-8")
             assertThat(body.readUtf8()).isEqualTo("{}")
           }
         }

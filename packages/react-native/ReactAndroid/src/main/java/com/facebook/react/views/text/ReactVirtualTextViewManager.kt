@@ -8,6 +8,7 @@
 package com.facebook.react.views.text
 
 import android.view.View
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -17,6 +18,7 @@ import com.facebook.react.uimanager.ThemedReactContext
  * operation will throw an [IllegalStateException]
  */
 @ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
+@LegacyArchitecture
 internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualTextShadowNode>() {
 
   override fun getName(): String = REACT_CLASS

@@ -35,7 +35,9 @@ internal class DebuggingOverlay(context: Context) : View(context) {
     for (traceUpdate in traceUpdates) {
       val traceUpdateId = traceUpdate.id
       if (traceUpdateIdToCleanupRunnableMap.containsKey(traceUpdateId)) {
-        UiThreadUtil.removeOnUiThread(traceUpdateIdToCleanupRunnableMap[traceUpdateId])
+        traceUpdateIdToCleanupRunnableMap[traceUpdateId]?.let { runnable ->
+          UiThreadUtil.removeOnUiThread(runnable)
+        }
         traceUpdateIdToCleanupRunnableMap.remove(traceUpdateId)
       }
 

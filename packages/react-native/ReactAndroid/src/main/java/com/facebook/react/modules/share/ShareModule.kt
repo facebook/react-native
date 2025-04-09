@@ -44,7 +44,7 @@ public class ShareModule(reactContext: ReactApplicationContext) :
       }
       val chooser = Intent.createChooser(intent, dialogTitle)
       chooser.addCategory(Intent.CATEGORY_DEFAULT)
-      val currentActivity = getCurrentActivity()
+      val currentActivity = reactApplicationContext.getCurrentActivity()
       if (currentActivity != null) {
         currentActivity.startActivity(chooser)
       } else {
