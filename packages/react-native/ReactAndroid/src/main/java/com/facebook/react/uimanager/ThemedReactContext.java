@@ -190,6 +190,7 @@ public class ThemedReactContext extends ReactContext {
 
   @Override
   public UIManager getFabricUIManager() {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mReactApplicationContext.getFabricUIManager();
   }
 
