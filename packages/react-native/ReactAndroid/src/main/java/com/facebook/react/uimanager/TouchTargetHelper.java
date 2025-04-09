@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -31,6 +32,7 @@ import java.util.Objects;
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It
  * uses the event coordinates to traverse the view hierarchy and return a suitable view.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchTargetHelper {
 
   private static final float[] mEventCoords = new float[2];
@@ -140,11 +142,11 @@ public class TouchTargetHelper {
         pathAccumulator = pathAccumulator.subList(firstReactAncestor, pathAccumulator.size());
       }
 
-      // NULLSAFE_FIXME[Parameter Not Nullable]
-      int targetTag = getTouchTargetForView(reactTargetView, viewCoords[0], viewCoords[1]);
-      // NULLSAFE_FIXME[Nullable Dereference]
-      if (targetTag != reactTargetView.getId()) {
-        pathAccumulator.add(0, new ViewTarget(targetTag, (View) null));
+      if (reactTargetView != null) {
+        int targetTag = getTouchTargetForView(reactTargetView, viewCoords[0], viewCoords[1]);
+        if (targetTag != reactTargetView.getId()) {
+          pathAccumulator.add(0, new ViewTarget(targetTag, (View) null));
+        }
       }
     }
 
@@ -152,11 +154,10 @@ public class TouchTargetHelper {
   }
 
   @SuppressLint("ResourceType")
-  private static View findClosestReactAncestor(View view) {
+  private static @Nullable View findClosestReactAncestor(View view) {
     while (view != null && view.getId() <= 0) {
       view = (View) view.getParent();
     }
-    // NULLSAFE_FIXME[Return Not Nullable]
     return view;
   }
 
@@ -179,11 +180,11 @@ public class TouchTargetHelper {
    * be relative to the current viewGroup. When the method returns, it will contain the eventCoords
    * relative to the targetView found.
    */
-  private static View findTouchTargetView(
+  private static @Nullable View findTouchTargetView(
       float[] eventCoords,
       View view,
       EnumSet<TouchTargetReturnType> allowReturnTouchTargetTypes,
-      List<ViewTarget> pathAccumulator) {
+      @Nullable List<ViewTarget> pathAccumulator) {
     // We prefer returning a child, so we check for a child that can handle the touch first
     if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.CHILD)
         && view instanceof ViewGroup) {
@@ -196,13 +197,11 @@ public class TouchTargetHelper {
           // it.
           if (ViewUtil.getUIManagerType(view.getId()) == FABRIC
               && !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
-            // NULLSAFE_FIXME[Return Not Nullable]
             return null;
           }
 
           @Nullable String overflow = ((ReactOverflowViewWithInset) view).getOverflow();
           if (ViewProps.HIDDEN.equals(overflow) || ViewProps.SCROLL.equals(overflow)) {
-            // NULLSAFE_FIXME[Return Not Nullable]
             return null;
           }
         }
@@ -210,7 +209,6 @@ public class TouchTargetHelper {
         // We don't allow touches on views that are outside the bounds and has clipChildren set to
         // true.
         if (viewGroup.getClipChildren()) {
-          // NULLSAFE_FIXME[Return Not Nullable]
           return null;
         }
       }
@@ -247,7 +245,6 @@ public class TouchTargetHelper {
       return view;
     }
 
-    // NULLSAFE_FIXME[Return Not Nullable]
     return null;
   }
 
@@ -336,7 +333,6 @@ public class TouchTargetHelper {
       // This view may be the target, its children don't matter
       View targetView =
           findTouchTargetView(
-              // NULLSAFE_FIXME[Parameter Not Nullable]
               eventCoords, view, EnumSet.of(TouchTargetReturnType.SELF), pathAccumulator);
       if (targetView != null && pathAccumulator != null) {
         pathAccumulator.add(new ViewTarget(view.getId(), view));
@@ -347,7 +343,6 @@ public class TouchTargetHelper {
       // This view can't be the target, but its children might.
       View targetView =
           findTouchTargetView(
-              // NULLSAFE_FIXME[Parameter Not Nullable]
               eventCoords, view, EnumSet.of(TouchTargetReturnType.CHILD), pathAccumulator);
       if (targetView != null) {
         if (pathAccumulator != null) {
@@ -395,7 +390,6 @@ public class TouchTargetHelper {
               eventCoords,
               view,
               EnumSet.of(TouchTargetReturnType.SELF, TouchTargetReturnType.CHILD),
-              // NULLSAFE_FIXME[Parameter Not Nullable]
               pathAccumulator);
       if (result != null && pathAccumulator != null) {
         pathAccumulator.add(new ViewTarget(view.getId(), view));
@@ -432,8 +426,7 @@ public class TouchTargetHelper {
     }
 
     @Override
-    // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
       // If the object is compared with itself then return true
       if (o == this) {
         return true;
