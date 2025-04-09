@@ -27,11 +27,7 @@ public class FileReaderModule(reactContext: ReactApplicationContext) :
   private fun getBlobModule(reason: String): BlobModule? {
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
 
-    return if (reactApplicationContext != null) {
-      reactApplicationContext.getNativeModule(BlobModule::class.java)
-    } else {
-      null
-    }
+   return reactApplicationContext?.getNativeModule(BlobModule::class.java)
   }
 
   public override fun readAsText(blob: ReadableMap, encoding: String, promise: Promise) {
