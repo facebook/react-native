@@ -2398,9 +2398,8 @@ public class com/facebook/react/fabric/StateWrapperImpl : com/facebook/jni/Hybri
 	public fun updateStateImpl (Lcom/facebook/react/bridge/NativeMap;)V
 }
 
-public final class com/facebook/react/fabric/events/EventBeatManager : com/facebook/react/uimanager/events/BatchEventDispatchedListener {
+public final class com/facebook/react/fabric/events/EventBeatManager : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/events/BatchEventDispatchedListener {
 	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun onBatchEventDispatched ()V
 }
 
