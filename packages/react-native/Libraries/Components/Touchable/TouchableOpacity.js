@@ -71,7 +71,7 @@ type TouchableOpacityBaseProps = $ReadOnly<{
    * Defaults to 0.2
    */
   activeOpacity?: ?number,
-  style?: ?ViewStyleProp,
+  style?: ?Animated.WithAnimatedValue<ViewStyleProp>,
 
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 }>;
