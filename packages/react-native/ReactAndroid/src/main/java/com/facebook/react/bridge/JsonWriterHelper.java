@@ -8,11 +8,14 @@
 package com.facebook.react.bridge;
 
 import android.util.JsonWriter;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 /** Helper for generating JSON for lists and maps. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class JsonWriterHelper {
   public static void value(JsonWriter writer, Object value) throws IOException {
     if (value instanceof Map) {
@@ -45,12 +48,14 @@ public class JsonWriterHelper {
         writer.value(value.asString());
         break;
       case Map:
-        // NULLSAFE_FIXME[Parameter Not Nullable]
-        readableMapValue(writer, value.asMap());
+        ReadableMap map = value.asMap();
+        Assertions.assertNotNull(map);
+        readableMapValue(writer, map);
         break;
       case Array:
-        // NULLSAFE_FIXME[Parameter Not Nullable]
-        readableArrayValue(writer, value.asArray());
+        ReadableArray array = value.asArray();
+        Assertions.assertNotNull(array);
+        readableArrayValue(writer, array);
         break;
       default:
         throw new IllegalArgumentException("Unknown data type: " + value.getType());
@@ -78,12 +83,14 @@ public class JsonWriterHelper {
             writer.value(value.getString(key));
             break;
           case Map:
-            // NULLSAFE_FIXME[Parameter Not Nullable]
-            readableMapValue(writer, value.getMap(key));
+            ReadableMap map = value.getMap(key);
+            Assertions.assertNotNull(map);
+            readableMapValue(writer, map);
             break;
           case Array:
-            // NULLSAFE_FIXME[Parameter Not Nullable]
-            readableArrayValue(writer, value.getArray(key));
+            ReadableArray array = value.getArray(key);
+            Assertions.assertNotNull(array);
+            readableArrayValue(writer, array);
             break;
           default:
             throw new IllegalArgumentException("Unknown data type: " + value.getType(key));
@@ -112,12 +119,14 @@ public class JsonWriterHelper {
             writer.value(value.getString(key));
             break;
           case Map:
-            // NULLSAFE_FIXME[Parameter Not Nullable]
-            readableMapValue(writer, value.getMap(key));
+            ReadableMap map = value.getMap(key);
+            Assertions.assertNotNull(map);
+            readableMapValue(writer, map);
             break;
           case Array:
-            // NULLSAFE_FIXME[Parameter Not Nullable]
-            readableArrayValue(writer, value.getArray(key));
+            ReadableArray array = value.getArray(key);
+            Assertions.assertNotNull(array);
+            readableArrayValue(writer, array);
             break;
           default:
             throw new IllegalArgumentException("Unknown data type: " + value.getType(key));
