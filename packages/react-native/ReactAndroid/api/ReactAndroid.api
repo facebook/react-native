@@ -1996,35 +1996,35 @@ public abstract interface class com/facebook/react/devsupport/DevServerHelper$Pa
 }
 
 public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/facebook/react/devsupport/interfaces/DevSupportManager {
-	protected final field mReactInstanceDevHelper Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
+	public static final field Companion Lcom/facebook/react/devsupport/DevSupportManagerBase$Companion;
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)V
 	public fun addCustomDevOption (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevOptionHandler;)V
 	public fun createRootView (Ljava/lang/String;)Landroid/view/View;
 	public fun createSurfaceDelegate (Ljava/lang/String;)Lcom/facebook/react/common/SurfaceDelegate;
 	public fun destroyRootView (Landroid/view/View;)V
 	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
-	public fun fetchSplitBundleAndCreateBundleLoader (Ljava/lang/String;Lcom/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader;)V
-	protected fun getApplicationContext ()Landroid/content/Context;
+	public final fun fetchSplitBundleAndCreateBundleLoader (Ljava/lang/String;Lcom/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader;)V
+	protected final fun getApplicationContext ()Landroid/content/Context;
 	public fun getCurrentActivity ()Landroid/app/Activity;
-	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
-	public fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
-	public fun getDevServerHelper ()Lcom/facebook/react/devsupport/DevServerHelper;
-	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
-	public fun getDevSupportEnabled ()Z
+	public final fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public final fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
+	public final fun getDevServerHelper ()Lcom/facebook/react/devsupport/DevServerHelper;
+	public final fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
+	public final fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
-	public fun getJSAppBundleName ()Ljava/lang/String;
-	public fun getLastErrorCookie ()I
-	public fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public fun getLastErrorTitle ()Ljava/lang/String;
-	public fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
-	public fun getReactInstanceDevHelper ()Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
+	public final fun getJSAppBundleName ()Ljava/lang/String;
+	public final fun getLastErrorCookie ()I
+	public final fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public final fun getLastErrorTitle ()Ljava/lang/String;
+	public final fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
+	public final fun getReactInstanceDevHelper ()Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
 	public fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
 	public fun getSourceMapUrl ()Ljava/lang/String;
 	public fun getSourceUrl ()Ljava/lang/String;
 	protected abstract fun getUniqueTag ()Ljava/lang/String;
 	public fun handleException (Ljava/lang/Exception;)V
 	public fun hasUpToDateJSBundleInCache ()Z
-	protected fun hideDevLoadingView ()V
+	protected final fun hideDevLoadingView ()V
 	public fun hidePausedInDebuggerOverlay ()V
 	public fun hideRedboxDialog ()V
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
@@ -2036,11 +2036,16 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
 	public fun reloadSettings ()V
 	public fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
-	public fun setDevSupportEnabled (Z)V
+	public final fun setDevLoadingViewManager (Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)V
+	public final fun setDevSupportEnabled (Z)V
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
+	public final fun setLastErrorCookie (I)V
+	public final fun setLastErrorStack ([Lcom/facebook/react/devsupport/interfaces/StackFrame;)V
+	public final fun setLastErrorTitle (Ljava/lang/String;)V
+	public final fun setLastErrorType (Lcom/facebook/react/devsupport/interfaces/ErrorType;)V
 	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
-	protected fun showDevLoadingViewForRemoteJSEnabled ()V
+	protected final fun showDevLoadingViewForRemoteJSEnabled ()V
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -2053,6 +2058,9 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 public abstract interface class com/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader {
 	public abstract fun onError (Ljava/lang/String;Ljava/lang/Throwable;)V
 	public abstract fun onSuccess (Lcom/facebook/react/bridge/JSBundleLoader;)V
+}
+
+public final class com/facebook/react/devsupport/DevSupportManagerBase$Companion {
 }
 
 public abstract interface class com/facebook/react/devsupport/DevSupportManagerFactory {

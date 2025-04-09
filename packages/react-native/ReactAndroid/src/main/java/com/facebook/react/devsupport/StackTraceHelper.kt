@@ -12,7 +12,6 @@ import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.interfaces.StackFrame
 import java.io.File
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 import org.json.JSONArray
 import org.json.JSONException
@@ -43,13 +42,12 @@ public object StackTraceHelper {
 
   /** Convert a JavaScript stack trace (see `parseErrorStack` JS module) to an array of [ ]s. */
   @JvmStatic
-  public fun convertJsStackTrace(stack: ReadableArray?): Array<StackFrame?> {
+  public fun convertJsStackTrace(stack: ReadableArray?): Array<StackFrame> {
     val size = stack?.size() ?: 0
-    val result = arrayOfNulls<StackFrame>(size)
     if (stack == null) {
-      return result
+      return arrayOf()
     }
-    for (i in 0..<size) {
+    return Array(size) { i ->
       val type = stack.getType(i)
       if (type == ReadableType.Map) {
         val frame = requireNotNull(stack.getMap(i))
@@ -65,34 +63,31 @@ public object StackTraceHelper {
         if (frame.hasKey(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
           columnNumber = frame.getInt(COLUMN_KEY)
         }
-        result[i] =
-            StackFrameImpl(
-                file = file,
-                method = method,
-                line = lineNumber,
-                column = columnNumber,
-                isCollapsed = collapse)
+        StackFrameImpl(
+            file = file,
+            method = method,
+            line = lineNumber,
+            column = columnNumber,
+            isCollapsed = collapse)
       } else if (type == ReadableType.String) {
-        val stackFrame = stack.getString(i)
-        if (stackFrame != null) {
-          result[i] = StackFrameImpl(file = null, method = stackFrame, line = -1, column = -1)
-        }
+        StackFrameImpl(
+            file = null, method = checkNotNull(stack.getString(i)), line = -1, column = -1)
+      } else {
+        error("Cannot parse the stackframe for $stack")
       }
     }
-    return result
   }
 
   /**
    * Convert a JavaScript stack trace (see `parseErrorStack` JS module) to an array of [StackFrame].
    */
-  public fun convertJsStackTrace(stack: JSONArray?): Array<StackFrame?> {
-    val size = stack?.length() ?: 0
-    val result = arrayOfNulls<StackFrame>(size)
+  public fun convertJsStackTrace(stack: JSONArray?): Array<StackFrame> {
     if (stack == null) {
-      return result
+      return arrayOf()
     }
+    val size = stack.length()
     try {
-      for (i in 0..<size) {
+      return Array(size) { i ->
         val frame = stack.getJSONObject(i)
         val method = frame.getString("methodName")
         val file = frame.getString("file")
@@ -106,68 +101,58 @@ public object StackTraceHelper {
         }
         val collapse =
             frame.has("collapse") && !frame.isNull("collapse") && frame.getBoolean("collapse")
-        result[i] =
-            StackFrameImpl(
-                file = file,
-                method = method,
-                line = lineNumber,
-                column = columnNumber,
-                isCollapsed = collapse)
+        StackFrameImpl(
+            file = file,
+            method = method,
+            line = lineNumber,
+            column = columnNumber,
+            isCollapsed = collapse)
       }
     } catch (exception: JSONException) {
       throw RuntimeException(exception)
     }
-    return result
   }
 
   /** Convert a JavaScript stack trace to an array of [StackFrame]s. */
-  public fun convertJsStackTrace(stack: String): Array<StackFrame?> {
+  public fun convertJsStackTrace(stack: String): Array<StackFrame> {
     val stackTrace = stack.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-    val result = arrayOfNulls<StackFrame>(stackTrace.size)
-    for (i in stackTrace.indices) {
+    return Array(stackTrace.size) { i ->
       val matcher1 = STACK_FRAME_PATTERN1.matcher(stackTrace[i])
       val matcher2 = STACK_FRAME_PATTERN2.matcher(stackTrace[i])
-      val matcher: Matcher
-      if (matcher2.find()) {
-        matcher = matcher2
-      } else if (matcher1.find()) {
-        matcher = matcher1
+      val matcher =
+          when {
+            matcher2.find() -> matcher2
+            matcher1.find() -> matcher1
+            else -> null
+          }
+      if (matcher != null) {
+        val file = matcher.group(2)
+        val method = matcher.group(1) ?: "(unknown)"
+        val lineString = matcher.group(3)
+        val columnString = matcher.group(4)
+        StackFrameImpl(
+            file = file,
+            method = method,
+            line = checkNotNull(lineString).toInt(),
+            column = checkNotNull(columnString).toInt())
       } else {
-        result[i] = StackFrameImpl(file = null, method = stackTrace[i], line = -1, column = -1)
-        continue
+        StackFrameImpl(file = null, method = stackTrace[i], line = -1, column = -1)
       }
-      val file = matcher.group(2)
-      val method = matcher.group(1) ?: "(unknown)"
-      val lineString = matcher.group(3)
-      val columnString = matcher.group(4)
-      if (file == null || lineString == null || columnString == null) {
-        continue
-      }
-      result[i] =
-          StackFrameImpl(
-              file = file,
-              method = method,
-              line = lineString.toInt(),
-              column = columnString.toInt())
     }
-    return result
   }
 
   /** Convert a [Throwable] to an array of [StackFrame]s. */
   @JvmStatic
-  public fun convertJavaStackTrace(exception: Throwable): Array<StackFrame?> {
+  public fun convertJavaStackTrace(exception: Throwable): Array<StackFrame> {
     val stackTrace = exception.stackTrace
-    val result = arrayOfNulls<StackFrame>(stackTrace.size)
-    for (i in stackTrace.indices) {
-      result[i] =
-          StackFrameImpl(
-              file = stackTrace[i].className,
-              fileName = stackTrace[i].fileName,
-              method = stackTrace[i].methodName,
-              line = stackTrace[i].lineNumber,
-              column = -1)
+    return Array(stackTrace.size) { i ->
+      StackFrameImpl(
+          file = stackTrace[i].className,
+          fileName = stackTrace[i].fileName,
+          method = stackTrace[i].methodName,
+          line = stackTrace[i].lineNumber,
+          column = -1)
     }
-    return result
   }
 
   /** Format a [StackFrame] to a String (method name is not included). */

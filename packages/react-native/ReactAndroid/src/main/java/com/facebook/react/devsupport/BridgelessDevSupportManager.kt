@@ -71,7 +71,8 @@ internal class BridgelessDevSupportManager(
       devLoadingViewManager = null,
       pausedInDebuggerOverlayManager = null)
 
-  override fun getUniqueTag(): String = "Bridgeless"
+  override val uniqueTag: String
+    get() = "Bridgeless"
 
   override fun loadSplitBundleFromServer(bundlePath: String, callback: DevSplitBundleCallback) {
     fetchSplitBundleAndCreateBundleLoader(
@@ -79,9 +80,9 @@ internal class BridgelessDevSupportManager(
         object : CallbackWithBundleLoader {
           override fun onSuccess(bundleLoader: JSBundleLoader) {
             try {
-              mReactInstanceDevHelper.loadBundle(bundleLoader).waitForCompletion()
+              reactInstanceDevHelper.loadBundle(bundleLoader).waitForCompletion()
               val bundleURL = devServerHelper.getDevServerSplitBundleURL(bundlePath)
-              val reactContext = mReactInstanceDevHelper.currentReactContext
+              val reactContext = reactInstanceDevHelper.currentReactContext
               reactContext?.getJSModule(HMRClient::class.java)?.registerBundle(bundleURL)
               callback.onSuccess()
             } catch (e: InterruptedException) {
@@ -99,6 +100,6 @@ internal class BridgelessDevSupportManager(
     UiThreadUtil.assertOnUiThread()
     // dismiss redbox if exists
     hideRedboxDialog()
-    mReactInstanceDevHelper.reload("BridgelessDevSupportManager.handleReloadJS()")
+    reactInstanceDevHelper.reload("BridgelessDevSupportManager.handleReloadJS()")
   }
 }
