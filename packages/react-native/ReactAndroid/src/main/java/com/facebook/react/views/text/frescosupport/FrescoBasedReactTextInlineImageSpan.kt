@@ -13,6 +13,7 @@ import android.graphics.BlendModeColorFilter
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -148,7 +149,7 @@ internal class FrescoBasedReactTextInlineImageSpan(
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         colorFilter = BlendModeColorFilter(tintColor, BlendMode.SRC_IN)
                     } else {
-                        setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
+                        colorFilter = PorterDuffColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
                     }
                 }
                 callback = textView
