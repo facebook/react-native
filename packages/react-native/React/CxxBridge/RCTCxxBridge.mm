@@ -1458,27 +1458,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
 - (void)batchDidComplete
 {
-  if (RCTBridgeModuleBatchDidCompleteDisabled()) {
-    id uiManager = [self moduleForName:@"UIManager"];
-    if ([uiManager respondsToSelector:@selector(batchDidComplete)] &&
-        [uiManager respondsToSelector:@selector(methodQueue)]) {
+  // TODO #12592471: batchDidComplete is only used by RCTUIManager,
+  // can we eliminate this special case?
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    if (moduleData.implementsBatchDidComplete) {
       [self
           dispatchBlock:^{
-            [uiManager batchDidComplete];
+            [moduleData.instance batchDidComplete];
           }
-                  queue:[uiManager methodQueue]];
-    }
-  } else {
-    // TODO #12592471: batchDidComplete is only used by RCTUIManager,
-    // can we eliminate this special case?
-    for (RCTModuleData *moduleData in _moduleDataByID) {
-      if (moduleData.implementsBatchDidComplete) {
-        [self
-            dispatchBlock:^{
-              [moduleData.instance batchDidComplete];
-            }
-                    queue:moduleData.methodQueue];
-      }
+                  queue:moduleData.methodQueue];
     }
   }
 }
