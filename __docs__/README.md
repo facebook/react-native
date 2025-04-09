@@ -85,6 +85,7 @@ This repository has many different types of dependencies: build systems, externa
 ### Uses this
 
 The main use cases for this repository are:
+
 1. Developing React Native itself.
 2. Testing and releasing React Native.
 3. Synchronizing forks like `react-native-windows` and `react-native-macos`.

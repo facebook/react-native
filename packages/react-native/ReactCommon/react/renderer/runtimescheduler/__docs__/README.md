@@ -1,13 +1,14 @@
 # Event Loop
 
-* [Main doc](../__docs__/README.md)
+- [Main doc](../../../../../../../__docs__/README.md)
 
 The Event Loop is the formalization of the execution model for JavaScript in React Native, and how that model synchronizes with rendering work in the host platform.
 
 Its main goals are:
+
 - To make the behavior of the framework more predictable, to help developers build more reliable and performant apps.
 - To increase the alignment with Web specifications, to simplify the adoption of Web APIs in React Native.
-- [Secondary] Provide a solid foundation for general performance optimizations relying on better scheduling or sequencing.
+- (Secondary) Provide a solid foundation for general performance optimizations relying on better scheduling or sequencing.
 
 The implementation of the event loop in React Native is aligned with [its definition in the HTML specification](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model). React Native only implements a subset of it, in order to support its existing semantics and APIs.
 
@@ -17,12 +18,14 @@ The implementation of the event loop in React Native is aligned with [its defini
 ## Usage
 
 The event loop is an implementation detail so it is not used directly, but several APIs integrate deeply with it:
-- State updates processed by React are scheduled to be flushed (rendered in the host platform) at the end of the current event loop tick.
-- Promises, `queueMicrotask` and APIs like `MutationObserver` add microtasks to the microtask queue, processed as part of the current event loop tick.
-- Timers and APIs like `requestIdleCallback` schedule tasks to be processed by the event loop. In the case of `requestIdleCallback`, the tasks are scheduled with specific priorities.
-- `PerformanceObserver` entries like `longtask` and `event` provide timing information about different parts of the event loop.
+
+* State updates processed by React are scheduled to be flushed (rendered in the host platform) at the end of the current event loop tick.
+* Promises, `queueMicrotask` and APIs like `MutationObserver` add microtasks to the microtask queue, processed as part of the current event loop tick.
+* Timers and APIs like `requestIdleCallback` schedule tasks to be processed by the event loop. In the case of `requestIdleCallback`, the tasks are scheduled with specific priorities.
+* `PerformanceObserver` entries like `longtask` and `event` provide timing information about different parts of the event loop.
 
 One of the most important semantics of the event loop is the **atomicity of UI updates in tasks**. All changes to the UI triggered from JavaScript in a task (processing state updates in React, dispatching view commands, etc.) are always flushed together to the host platform, so the UI is never updated with partial work done within a task. For example:
+
 1. We dispatch an event to JavaScript and execute one or more event handlers.
 2. Those event handlers do one or more state updates in React. React schedules a microtask to process them.
 3. In a microtask, React processes all those state updates together, re-rendering the necessary components and committing at the end.
@@ -73,6 +76,7 @@ function Content(props) {
 The conceptual model is **aligned with [the model on the Web](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model)** (from which it borrows some concepts and steps), while **still benefiting from the React Native threading model**.
 
 The event loop continuously goes through these steps (in what we refer to as an "event loop tick"):
+
 1. Select the next task to execute among all tasks waiting for execution.
 2. Execute the selected task.
 3. Execute **all** scheduled microtasks.
@@ -89,6 +93,7 @@ One of the key benefits of this model is that each **event loop iteration repres
 On the Web, task selection is an implementation detail left to browsers to decide.
 
 In React Native, we rely on `RuntimeScheduler` for task selection, which already supports the execution of tasks with priorities. The criteria it uses is:
+
 1. If there are expired tasks, select expired tasks in the order in which they expired.
 2. Otherwise, select tasks by priority, in the order in which they were scheduled.
 
