@@ -142,17 +142,17 @@ public class FrescoBasedReactTextInlineImageSpan(
             draweeHolder.controller = draweeController
             draweeControllerBuilder.reset()
 
-            checkNotNull(draweeHolder.topLevelDrawable).let { _drawable ->
-                _drawable.setBounds(0, 0, _width, _height)
+            checkNotNull(draweeHolder.topLevelDrawable).apply {
+                setBounds(0, 0, _width, _height)
                 if (tintColor != 0) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        _drawable.colorFilter = BlendModeColorFilter(tintColor, BlendMode.SRC_IN)
+                        colorFilter = BlendModeColorFilter(tintColor, BlendMode.SRC_IN)
                     } else {
-                        _drawable.setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
+                        setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
                     }
                 }
-                _drawable.callback = textView
-                drawable = _drawable
+                callback = textView
+                drawable = this
             }
         }
 
@@ -161,12 +161,13 @@ public class FrescoBasedReactTextInlineImageSpan(
         canvas.save()
 
         // Align to center
+        val _drawable = checkNotNull(drawable)
         val fontHeight = (paint.descent() - paint.ascent()).toInt()
         val centerY = y + paint.descent().toInt() - fontHeight / 2
-        val transY = centerY - drawable!!.bounds.height() / 2
+        val transY = centerY - _drawable.bounds.height() / 2
 
         canvas.translate(x, transY.toFloat())
-        drawable!!.draw(canvas)
+        _drawable.draw(canvas)
         canvas.restore()
     }
 }
