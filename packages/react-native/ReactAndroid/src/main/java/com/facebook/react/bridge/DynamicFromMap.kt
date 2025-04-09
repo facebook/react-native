@@ -60,6 +60,7 @@ private constructor() : Dynamic {
      * Asserts that both map and name are non-null and invokes the lambda with
      *
      * @param executor the callback to be invoked with non-null-asserted prop values
+     * @return value returned by the executor
      */
     private fun <T> accessMapSafely(executor: (map: ReadableMap, name: String) -> T): T {
         val name = checkNotNull(name) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
