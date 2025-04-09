@@ -118,6 +118,7 @@ public abstract class BaseJavaModule implements NativeModule {
    */
   @ThreadConfined(ANY)
   protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn() {
+    // NULLSAFE_FIXME[Nullable Dereference]
     if (mReactApplicationContext.hasActiveReactInstance()) {
       return mReactApplicationContext;
     }
