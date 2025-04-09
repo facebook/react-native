@@ -13,56 +13,60 @@ import androidx.core.util.Pools.SimplePool
 internal class DynamicFromMap
 // This is a pools object. Hide the constructor.
 private constructor() : Dynamic {
-    private var mMap: ReadableMap? = null
-    private var mName: String? = null
+    private var map: ReadableMap? = null
+    private var name: String? = null
 
     override fun recycle() {
-        mMap = null
-        mName = null
+        map = null
+        name = null
         sPool.get()?.release(this)
     }
 
     override val isNull: Boolean
         get() {
-            check(!(mMap == null || mName == null)) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
-            return mMap!!.isNull(mName!!)
+            return accessMapSafely { map, name -> map.isNull(name) }
         }
 
     override fun asBoolean(): Boolean {
-        check(!(mMap == null || mName == null)) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
-        return mMap!!.getBoolean(mName!!)
+        return accessMapSafely { map, name -> map.getBoolean(name) }
     }
 
     override fun asDouble(): Double {
-        check(!(mMap == null || mName == null)) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
-        return mMap!!.getDouble(mName!!)
+        return accessMapSafely { map, name -> map.getDouble(name) }
     }
 
     override fun asInt(): Int {
-        check(!(mMap == null || mName == null)) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
-        return mMap!!.getInt(mName!!)
+        return accessMapSafely { map, name -> map.getInt(name) }
     }
 
     override fun asString(): String? {
-        check(!(mMap == null || mName == null)) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
-        return mMap!!.getString(mName!!)
+        return accessMapSafely { map, name -> map.getString(name) }
     }
 
     override fun asArray(): ReadableArray? {
-        check(!(mMap == null || mName == null)) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
-        return mMap!!.getArray(mName!!)
+        return accessMapSafely { map, name -> map.getArray(name) }
     }
 
     override fun asMap(): ReadableMap? {
-        check(!(mMap == null || mName == null)) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
-        return mMap!!.getMap(mName!!)
+        return accessMapSafely { map, name -> map.getMap(name) }
     }
 
     override val type: ReadableType
         get() {
-            check(!(mMap == null || mName == null)) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
-            return mMap!!.getType(mName!!)
+            return accessMapSafely { map, name -> map.getType(name) }
         }
+
+    /**
+     * Asserts that both map and name are non-null and invokes the lambda with
+     *
+     * @param executor the callback to be invoked with non-null-asserted prop values
+     */
+    private fun <T> accessMapSafely(executor: (map: ReadableMap, name: String) -> T): T {
+        val name = checkNotNull(name) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
+        val map = checkNotNull(map) { DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE }
+
+        return executor(map, name)
+    }
 
     companion object {
         private val sPool: ThreadLocal<SimplePool<DynamicFromMap>> =
@@ -71,12 +75,12 @@ private constructor() : Dynamic {
         private const val DYNAMIC_VALUE_RECYCLED_FAILURE_MESSAGE =
             "This dynamic value has been recycled"
 
-        fun create(map: ReadableMap?, name: String?): DynamicFromMap {
+        fun create(map: ReadableMap, name: String): DynamicFromMap {
             val dynamic = sPool.get()?.acquire() ?: DynamicFromMap()
 
             return dynamic.apply {
-                mMap = map
-                mName = name
+                this.map = map
+                this.name = name
             }
         }
     }
