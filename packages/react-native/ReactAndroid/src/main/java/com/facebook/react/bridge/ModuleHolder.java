@@ -96,6 +96,7 @@ public class ModuleHolder {
       }
     }
     if (shouldInitializeNow) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       doInitialize(module);
     }
   }
