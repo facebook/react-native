@@ -105,6 +105,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mMinimumFontSize = Float.NaN;
     mLetterSpacing = 0.f;
     mOverflow = Overflow.VISIBLE;
+    // NULLSAFE_FIXME[Field Not Nullable]
     mSpanned = null;
   }
 
@@ -263,6 +264,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         // special casing the character truncation case.
         child.setVisibility(View.GONE);
         if (mNotifyOnInlineViewLayout) {
+          // NULLSAFE_FIXME[Nullable Dereference]
           inlineViewInfoArray.add(inlineViewJson(View.GONE, start, -1, -1, -1, -1));
         }
       } else {
@@ -342,6 +344,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         child.setVisibility(layoutVisibility);
         child.layout(layoutLeft, layoutTop, layoutRight, layoutBottom);
         if (mNotifyOnInlineViewLayout) {
+          // NULLSAFE_FIXME[Nullable Dereference]
           inlineViewInfoArray.add(
               inlineViewJson(
                   layoutVisibility, start, layoutLeft, layoutTop, layoutRight, layoutBottom));
@@ -361,6 +364,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             }
           });
       WritableArray inlineViewInfoArray2 = Arguments.createArray();
+      // NULLSAFE_FIXME[Nullable Dereference]
       for (Object item : inlineViewInfoArray) {
         inlineViewInfoArray2.pushMap((WritableMap) item);
       }
@@ -769,6 +773,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   public final void onFocusChanged(
       boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     AccessibilityDelegateCompat accessibilityDelegateCompat =
         ViewCompat.getAccessibilityDelegate(this);
