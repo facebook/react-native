@@ -42,7 +42,9 @@ public class JSPointerDispatcher {
   private static final float ONMOVE_EPSILON = 0.1f;
   private static final String TAG = "PointerEvents";
 
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Map<Integer, List<ViewTarget>> mLastHitPathByPointerId;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private Map<Integer, float[]> mLastEventCoordinatesByPointerId;
   private Map<Integer, List<ViewTarget>> mCurrentlyDownPointerIdsToHitPath;
   private final Set<Integer> mHoveringPointerIds = new HashSet<>();
@@ -133,6 +135,7 @@ public class JSPointerDispatcher {
     List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
     boolean listeningForUp =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.UP, EVENT.UP_CAPTURE);
     if (listeningForUp) {
       eventDispatcher.dispatchEvent(
@@ -144,6 +147,7 @@ public class JSPointerDispatcher {
 
     if (!supportsHover) {
       boolean listeningForOut =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.OUT, EVENT.OUT_CAPTURE);
       if (listeningForOut) {
         eventDispatcher.dispatchEvent(
@@ -152,6 +156,7 @@ public class JSPointerDispatcher {
       }
 
       List<ViewTarget> leaveViewTargets =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           filterByShouldDispatch(activeHitPath, EVENT.LEAVE, EVENT.LEAVE_CAPTURE, false);
 
       // target -> root
@@ -165,7 +170,9 @@ public class JSPointerDispatcher {
 
     List<ViewTarget> hitPathDown = mCurrentlyDownPointerIdsToHitPath.remove(activePointerId);
     if (hitPathDown != null
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         && isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.CLICK, EVENT.CLICK_CAPTURE)) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       List<ViewTarget> hitPathForClick = findHitPathIntersection(hitPathDown, activeHitPath);
       if (!hitPathForClick.isEmpty()) {
         final ViewTarget clickTarget = hitPathForClick.get(0);
@@ -203,6 +210,7 @@ public class JSPointerDispatcher {
     if (!supportsHover) {
       // Indirect OVER event dispatches before ENTER
       boolean listeningForOver =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.OVER, EVENT.OVER_CAPTURE);
       if (listeningForOver) {
         eventDispatcher.dispatchEvent(
@@ -211,6 +219,7 @@ public class JSPointerDispatcher {
       }
 
       List<ViewTarget> enterViewTargets =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           filterByShouldDispatch(activeHitPath, EVENT.ENTER, EVENT.ENTER_CAPTURE, false);
 
       // Dispatch root -> target, we need to reverse order of enterViewTargets
@@ -224,12 +233,15 @@ public class JSPointerDispatcher {
     }
 
     // store some information if we might need to emit a click later on
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     if (isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.CLICK, EVENT.CLICK_CAPTURE)) {
       mCurrentlyDownPointerIdsToHitPath.put(
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           eventState.getActivePointerId(), new ArrayList<>(activeHitPath));
     }
 
     boolean listeningForDown =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.DOWN, EVENT.DOWN_CAPTURE);
     if (listeningForDown) {
       eventDispatcher.dispatchEvent(
@@ -419,6 +431,7 @@ public class JSPointerDispatcher {
         onUp(activeTargetTag, eventState, motionEvent, eventDispatcher);
         break;
       case MotionEvent.ACTION_CANCEL:
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         dispatchCancelEventForTarget(activeTargetView, eventState, motionEvent, eventDispatcher);
         handleHitStateDivergence(UNSELECTED_VIEW_TAG, eventState, motionEvent, eventDispatcher);
         break;
@@ -538,13 +551,16 @@ public class JSPointerDispatcher {
     boolean nonDivergentListeningToEnter = false;
     boolean nonDivergentListeningToLeave = false;
     int firstDivergentIndexFromBack = 0;
+    // NULLSAFE_FIXME[Nullable Dereference]
     while (firstDivergentIndexFromBack < Math.min(activeHitPath.size(), lastHitPath.size())
         && activeHitPath
+            // NULLSAFE_FIXME[Nullable Dereference]
             .get(activeHitPath.size() - 1 - firstDivergentIndexFromBack)
             .equals(lastHitPath.get(lastHitPath.size() - 1 - firstDivergentIndexFromBack))) {
 
       // Track if any non-diverging views are listening to enter/leave
       View nonDivergentViewTargetView =
+          // NULLSAFE_FIXME[Nullable Dereference]
           activeHitPath.get(activeHitPath.size() - 1 - firstDivergentIndexFromBack).getView();
       if (!nonDivergentListeningToEnter
           && PointerEventHelper.isListening(nonDivergentViewTargetView, EVENT.ENTER_CAPTURE)) {
@@ -559,6 +575,7 @@ public class JSPointerDispatcher {
     }
 
     boolean hasDiverged =
+        // NULLSAFE_FIXME[Nullable Dereference]
         firstDivergentIndexFromBack < Math.max(activeHitPath.size(), lastHitPath.size());
 
     if (hasDiverged) {
@@ -595,6 +612,7 @@ public class JSPointerDispatcher {
       }
 
       boolean listeningForOver =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.OVER, EVENT.OVER_CAPTURE);
       if (listeningForOver) {
         eventDispatcher.dispatchEvent(
@@ -605,6 +623,7 @@ public class JSPointerDispatcher {
       // target -> root
       List<ViewTarget> enterViewTargets =
           filterByShouldDispatch(
+              // NULLSAFE_FIXME[Nullable Dereference]
               activeHitPath.subList(0, activeHitPath.size() - firstDivergentIndexFromBack),
               EVENT.ENTER,
               EVENT.ENTER_CAPTURE,
@@ -640,6 +659,7 @@ public class JSPointerDispatcher {
     List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
     boolean listeningToMove =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
     if (listeningToMove) {
       eventDispatcher.dispatchEvent(
@@ -667,10 +687,13 @@ public class JSPointerDispatcher {
     int activePointerId = eventState.getActivePointerId();
     List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
+    // NULLSAFE_FIXME[Nullable Dereference]
     if (!activeHitPath.isEmpty() && targetView != null) {
       boolean listeningForCancel =
+          // NULLSAFE_FIXME[Parameter Not Nullable]
           isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.CANCEL, EVENT.CANCEL_CAPTURE);
       if (listeningForCancel) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         int targetTag = activeHitPath.get(0).getViewId();
 
         // cancel events need to report client coordinates of (0, 0) and offset coordinates relative
