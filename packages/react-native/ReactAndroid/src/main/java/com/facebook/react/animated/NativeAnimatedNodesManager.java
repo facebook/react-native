@@ -482,7 +482,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   }
 
   @UiThread
-  public void getValue(int tag, Callback callback) {
+  public void getValue(int tag, @Nullable Callback callback) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
