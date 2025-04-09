@@ -5094,10 +5094,6 @@ public abstract interface class com/facebook/react/uimanager/events/EventDispatc
 	public abstract fun onEventDispatch (Lcom/facebook/react/uimanager/events/Event;)V
 }
 
-public abstract interface class com/facebook/react/uimanager/events/EventDispatcherProvider {
-	public abstract fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-}
-
 public final class com/facebook/react/uimanager/events/NativeGestureUtil {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/events/NativeGestureUtil;
 	public static final fun notifyNativeGestureEnded (Landroid/view/View;Landroid/view/MotionEvent;)V
