@@ -9,7 +9,7 @@ package com.facebook.react.packagerconnection
 
 import com.facebook.common.logging.FLog
 
-public abstract class RequestOnlyHandler : RequestHandler {
+internal abstract class RequestOnlyHandler : RequestHandler {
 
   abstract override fun onRequest(params: Any?, responder: Responder)
 
