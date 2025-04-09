@@ -33,9 +33,6 @@ public class FileReaderModule(reactContext: ReactApplicationContext) :
         IllegalStateException("Could not get BlobModule from ReactApplicationContext")
       )
       return
-    } else if (blob == null) {
-      promise.reject(ERROR_INVALID_BLOB, "The specified blob is null")
-      return
     }
 
     val blobId = blob.getString("blobId")
@@ -65,9 +62,6 @@ public class FileReaderModule(reactContext: ReactApplicationContext) :
       promise.reject(
         IllegalStateException("Could not get BlobModule from ReactApplicationContext")
       )
-      return
-    } else if (blob == null) {
-      promise.reject(ERROR_INVALID_BLOB, "The specified blob is null")
       return
     }
 
@@ -107,5 +101,5 @@ public class FileReaderModule(reactContext: ReactApplicationContext) :
     public val NAME: String = NativeFileReaderModuleSpec.NAME
     private const val ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB"
   }
-  
+
 }
