@@ -70,29 +70,26 @@ class DynamicFromArray implements Dynamic {
   }
 
   @Override
-  public String asString() {
+  public @Nullable String asString() {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
-    // NULLSAFE_FIXME[Return Not Nullable]
     return mArray.getString(mIndex);
   }
 
   @Override
-  public ReadableArray asArray() {
+  public @Nullable ReadableArray asArray() {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
-    // NULLSAFE_FIXME[Return Not Nullable]
     return mArray.getArray(mIndex);
   }
 
   @Override
-  public ReadableMap asMap() {
+  public @Nullable ReadableMap asMap() {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
-    // NULLSAFE_FIXME[Return Not Nullable]
     return mArray.getMap(mIndex);
   }
 
