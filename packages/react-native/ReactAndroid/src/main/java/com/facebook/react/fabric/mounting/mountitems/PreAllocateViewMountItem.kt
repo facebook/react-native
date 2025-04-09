@@ -19,7 +19,7 @@ internal class PreAllocateViewMountItem(
     private val surfaceId: Int,
     private val reactTag: Int,
     component: String,
-    private val props: ReadableMap?,
+    private val props: ReadableMap,
     private val stateWrapper: StateWrapper?,
     private val isLayoutable: Boolean
 ) : MountItem {
