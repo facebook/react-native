@@ -22,7 +22,7 @@ internal class LayoutCreateAnimation : BaseLayoutAnimation() {
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "LayoutCreateAnimation", LegacyArchitectureLogLevel.WARNING)
     }
   }

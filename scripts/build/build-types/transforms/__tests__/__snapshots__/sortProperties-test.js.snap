@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sortProperties should divide type properties into methods, functions and others and sort them within each group 1`] = `
+"/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+type A = {
+  a: string;
+  b: string;
+  aFn: () => void;
+  bFn: () => void;
+  aMethod(): void;
+  bMethod(): void;
+};
+interface B {
+  a: string;
+  b: string;
+  aFn: () => void;
+  bFn: () => void;
+  aMethod(): void;
+  bMethod(): void;
+}
+declare class C {
+  a: string;
+  b: string;
+  #c: string;
+  #d: string;
+  aFn: () => void;
+  bFn: () => void;
+  aMethod(): void;
+  bMethod(): void;
+}
+type Fn = (arg: {
+  a: string;
+  b: string;
+  aFn: () => void;
+  bFn: () => void;
+  aMethod(): void;
+  bMethod(): void;
+}) => void;
+enum E {
+  A,
+  B,
+  C,
+}
+enum F {
+  A = 1,
+  B = 2,
+  C = 3,
+}"
+`;

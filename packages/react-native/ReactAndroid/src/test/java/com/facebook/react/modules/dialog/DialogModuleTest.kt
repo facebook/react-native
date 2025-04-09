@@ -67,7 +67,7 @@ class DialogModuleTest {
           putBoolean("cancelable", false)
         }
 
-    dialogModule.showAlert(options, null, null)
+    dialogModule.showAlert(options, SimpleCallback(), SimpleCallback())
     shadowOf(getMainLooper()).idle()
 
     val fragment = getFragment()
@@ -85,14 +85,16 @@ class DialogModuleTest {
   fun testCallbackPositive() {
     val options = JavaOnlyMap().apply { putString("buttonPositive", "OK") }
 
+    val errorCallback = SimpleCallback()
     val actionCallback = SimpleCallback()
-    dialogModule.showAlert(options, null, actionCallback)
+    dialogModule.showAlert(options, errorCallback, actionCallback)
     shadowOf(getMainLooper()).idle()
 
     val dialog = getFragment().dialog as AlertDialog
     dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
     shadowOf(getMainLooper()).idle()
 
+    assertThat(errorCallback.calls).isEqualTo(0)
     assertThat(actionCallback.calls).isEqualTo(1)
     assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_BUTTON_CLICKED)
     assertThat(actionCallback.args?.get(1)).isEqualTo(DialogInterface.BUTTON_POSITIVE)
@@ -102,14 +104,16 @@ class DialogModuleTest {
   fun testCallbackNegative() {
     val options = JavaOnlyMap().apply { putString("buttonNegative", "Cancel") }
 
+    val errorCallback = SimpleCallback()
     val actionCallback = SimpleCallback()
-    dialogModule.showAlert(options, null, actionCallback)
+    dialogModule.showAlert(options, errorCallback, actionCallback)
     shadowOf(getMainLooper()).idle()
 
     val dialog = getFragment().dialog as AlertDialog
     dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
     shadowOf(getMainLooper()).idle()
 
+    assertThat(errorCallback.calls).isEqualTo(0)
     assertThat(actionCallback.calls).isEqualTo(1)
     assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_BUTTON_CLICKED)
     assertThat(actionCallback.args?.get(1)).isEqualTo(DialogInterface.BUTTON_NEGATIVE)
@@ -119,14 +123,16 @@ class DialogModuleTest {
   fun testCallbackNeutral() {
     val options = JavaOnlyMap().apply { putString("buttonNeutral", "Later") }
 
+    val errorCallback = SimpleCallback()
     val actionCallback = SimpleCallback()
-    dialogModule.showAlert(options, null, actionCallback)
+    dialogModule.showAlert(options, errorCallback, actionCallback)
     shadowOf(getMainLooper()).idle()
 
     val dialog = getFragment().dialog as AlertDialog
     dialog.getButton(DialogInterface.BUTTON_NEUTRAL).performClick()
     shadowOf(getMainLooper()).idle()
 
+    assertThat(errorCallback.calls).isEqualTo(0)
     assertThat(actionCallback.calls).isEqualTo(1)
     assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_BUTTON_CLICKED)
     assertThat(actionCallback.args?.get(1)).isEqualTo(DialogInterface.BUTTON_NEUTRAL)
@@ -136,13 +142,15 @@ class DialogModuleTest {
   fun testCallbackDismiss() {
     val options = JavaOnlyMap()
 
+    val errorCallback = SimpleCallback()
     val actionCallback = SimpleCallback()
-    dialogModule.showAlert(options, null, actionCallback)
+    dialogModule.showAlert(options, errorCallback, actionCallback)
     shadowOf(getMainLooper()).idle()
 
     getFragment().dialog?.dismiss()
     shadowOf(getMainLooper()).idle()
 
+    assertThat(errorCallback.calls).isEqualTo(0)
     assertThat(actionCallback.calls).isEqualTo(1)
     assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_DISMISSED)
   }
@@ -153,13 +161,15 @@ class DialogModuleTest {
 
     val options = JavaOnlyMap()
 
+    val errorCallback = SimpleCallback()
     val actionCallback = SimpleCallback()
-    dialogModule.showAlert(options, null, actionCallback)
+    dialogModule.showAlert(options, errorCallback, actionCallback)
     shadowOf(getMainLooper()).idle()
 
     getFragment().dialog?.dismiss()
     shadowOf(getMainLooper()).idle()
 
+    assertThat(errorCallback.calls).isEqualTo(0)
     assertThat(actionCallback.calls).isEqualTo(1)
     assertThat(actionCallback.args?.get(0)).isEqualTo(DialogModule.ACTION_DISMISSED)
   }

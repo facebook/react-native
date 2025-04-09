@@ -13,6 +13,8 @@ import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeNetworkingAndroidSpec;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
@@ -48,6 +50,7 @@ import okio.GzipSource;
 import okio.Okio;
 
 /** Implements the XMLHttpRequest JavaScript interface. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeNetworkingAndroidSpec.NAME)
 public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
@@ -69,7 +72,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     boolean supports(ReadableMap map);
 
     /** Returns the {@link RequestBody} for the JS body payload. */
-    RequestBody toRequestBody(ReadableMap map, String contentType);
+    RequestBody toRequestBody(ReadableMap map, @Nullable String contentType);
   }
 
   /** Allows adding custom handling to build the JS body payload from the {@link ResponseBody}. */
@@ -238,7 +241,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       String url,
       double requestIdAsDouble,
       ReadableArray headers,
-      ReadableMap data,
+      @Nullable ReadableMap data,
       String responseType,
       boolean useIncrementalUpdates,
       double timeoutAsDouble,
@@ -272,7 +275,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       String url,
       final int requestId,
       ReadableArray headers,
-      ReadableMap data,
+      @Nullable ReadableMap data,
       final String responseType,
       final boolean useIncrementalUpdates,
       int timeout,
@@ -322,9 +325,11 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       clientBuilder.addNetworkInterceptor(
           chain -> {
             Response originalResponse = chain.proceed(chain.request());
+            ResponseBody originalResponseBody = originalResponse.body();
+            Assertions.assertNotNull(originalResponseBody);
             ProgressResponseBody responseBody =
                 new ProgressResponseBody(
-                    originalResponse.body(),
+                    originalResponseBody,
                     new ProgressListener() {
                       long last = System.nanoTime();
 
@@ -398,7 +403,10 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       String body = data.getString(REQUEST_BODY_KEY_STRING);
       MediaType contentMediaType = MediaType.parse(contentType);
       if (RequestBodyUtil.isGzipEncoding(contentEncoding)) {
-        requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
+        requestBody = null;
+        if (contentMediaType != null && body != null) {
+          requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
+        }
         if (requestBody == null) {
           ResponseUtil.onRequestError(
               reactApplicationContext, requestId, "Failed to gzip request body", null);
@@ -412,6 +420,12 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
             contentMediaType == null
                 ? StandardCharsets.UTF_8
                 : contentMediaType.charset(StandardCharsets.UTF_8);
+        Assertions.assertNotNull(charset);
+        if (body == null) {
+          ResponseUtil.onRequestError(
+              reactApplicationContext, requestId, "Received request but body was empty", null);
+          return;
+        }
         requestBody = RequestBody.create(contentMediaType, body.getBytes(charset));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
@@ -424,8 +438,24 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         return;
       }
       String base64String = data.getString(REQUEST_BODY_KEY_BASE64);
+      Assertions.assertNotNull(base64String);
+
       MediaType contentMediaType = MediaType.parse(contentType);
-      requestBody = RequestBody.create(contentMediaType, ByteString.decodeBase64(base64String));
+      if (contentMediaType == null) {
+        ResponseUtil.onRequestError(
+            reactApplicationContext,
+            requestId,
+            "Invalid content type specified: " + contentType,
+            null);
+        return;
+      }
+      ByteString base64DecodedString = ByteString.decodeBase64(base64String);
+      if (base64DecodedString == null) {
+        ResponseUtil.onRequestError(
+            reactApplicationContext, requestId, "Request body base64 string was invalid", null);
+        return;
+      }
+      requestBody = RequestBody.create(contentMediaType, base64DecodedString);
     } else if (data.hasKey(REQUEST_BODY_KEY_URI)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
@@ -436,6 +466,11 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         return;
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
+      if (uri == null) {
+        ResponseUtil.onRequestError(
+            reactApplicationContext, requestId, "Request body URI field was set but null", null);
+        return;
+      }
       InputStream fileInputStream =
           RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
@@ -449,6 +484,11 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         contentType = "multipart/form-data";
       }
       ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
+      if (parts == null) {
+        ResponseUtil.onRequestError(
+            reactApplicationContext, requestId, "Received request but form data was empty", null);
+        return;
+      }
       MultipartBody.Builder multipartBuilder =
           constructMultipartBody(parts, contentType, requestId);
       if (multipartBuilder == null) {
@@ -510,8 +550,12 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                   // See
                   // https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
                   ResponseBody responseBody = response.body();
-                  if ("gzip".equalsIgnoreCase(response.header("Content-Encoding"))
-                      && responseBody != null) {
+                  if (responseBody == null) {
+                    ResponseUtil.onRequestError(
+                        reactApplicationContext, requestId, "Response body is null", null);
+                    return;
+                  }
+                  if ("gzip".equalsIgnoreCase(response.header("Content-Encoding"))) {
                     GzipSource gzipSource = new GzipSource(responseBody.source());
                     String contentType = response.header("Content-Type");
                     responseBody =
@@ -570,8 +614,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
             });
   }
 
-  private RequestBody wrapRequestBodyWithProgressEmitter(
-      final RequestBody requestBody, final int requestId) {
+  private @Nullable RequestBody wrapRequestBodyWithProgressEmitter(
+      @Nullable final RequestBody requestBody, final int requestId) {
     if (requestBody == null) {
       return null;
     }
@@ -609,6 +653,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         responseBody.contentType() == null
             ? StandardCharsets.UTF_8
             : responseBody.contentType().charset(StandardCharsets.UTF_8);
+    Assertions.assertNotNull(
+        charset, "Null character set for Content-Type: " + responseBody.contentType());
 
     ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
     InputStream inputStream = responseBody.byteStream();
@@ -688,14 +734,23 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
   private @Nullable MultipartBody.Builder constructMultipartBody(
       ReadableArray body, String contentType, int requestId) {
-    MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
-    multipartBuilder.setType(MediaType.parse(contentType));
-
     final ReactApplicationContext reactApplicationContext =
         getReactApplicationContextIfActiveOrWarn();
+    MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
+    MediaType mediaType = MediaType.parse(contentType);
+    if (mediaType == null) {
+      ResponseUtil.onRequestError(reactApplicationContext, requestId, "Invalid media type.", null);
+      return null;
+    }
+    multipartBuilder.setType(mediaType);
 
     for (int i = 0, size = body.size(); i < size; i++) {
       ReadableMap bodyPart = body.getMap(i);
+      if (bodyPart == null) {
+        ResponseUtil.onRequestError(
+            reactApplicationContext, requestId, "Unrecognized FormData part.", null);
+        return null;
+      }
 
       // Determine part's content type.
       ReadableArray headersArray = bodyPart.getArray("headers");
@@ -717,10 +772,12 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         headers = headers.newBuilder().removeAll(CONTENT_TYPE_HEADER_NAME).build();
       }
 
-      if (bodyPart.hasKey(REQUEST_BODY_KEY_STRING)) {
+      if (bodyPart.hasKey(REQUEST_BODY_KEY_STRING)
+          && bodyPart.getString(REQUEST_BODY_KEY_STRING) != null) {
         String bodyValue = bodyPart.getString(REQUEST_BODY_KEY_STRING);
         multipartBuilder.addPart(headers, RequestBody.create(partContentType, bodyValue));
-      } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI)) {
+      } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI)
+          && bodyPart.getString(REQUEST_BODY_KEY_URI) != null) {
         if (partContentType == null) {
           ResponseUtil.onRequestError(
               reactApplicationContext,
@@ -763,7 +820,10 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       if (header == null || header.size() != 2) {
         return null;
       }
-      String headerName = HeaderUtil.stripHeaderName(header.getString(0));
+      String headerName = null;
+      if (header.getString(0) != null) {
+        headerName = HeaderUtil.stripHeaderName(header.getString(0));
+      }
       String headerValue = header.getString(1);
       if (headerName == null || headerValue == null) {
         return null;

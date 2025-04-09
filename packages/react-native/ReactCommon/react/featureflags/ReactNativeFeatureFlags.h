@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<881026a6a7c333595552737f29539b79>>
+ * @generated SignedSource<<a7a33656c2bd4e293c0e52cf1a410e8b>>
  */
 
 /**
@@ -65,6 +65,16 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool disableMountItemReorderingAndroid();
 
   /**
+   * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
+   */
+  RN_EXPORT static bool disableShadowNodeOnNewArchitectureAndroid();
+
+  /**
+   * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
+   */
+  RN_EXPORT static bool enableAccessibilityOrder();
+
+  /**
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
@@ -93,6 +103,11 @@ class ReactNativeFeatureFlags {
    * Enables the use of the Fabric renderer in the whole app.
    */
   RN_EXPORT static bool enableFabricRenderer();
+
+  /**
+   * Enables font scale changes updating layout for measurable nodes.
+   */
+  RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
 
   /**
    * iOS Views will clip to their padding box vs border box
@@ -150,11 +165,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableSynchronousStateUpdates();
 
   /**
-   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
-   */
-  RN_EXPORT static bool enableUIConsistency();
-
-  /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
    */
   RN_EXPORT static bool enableViewCulling();
@@ -198,11 +208,6 @@ class ReactNativeFeatureFlags {
    * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
    */
   RN_EXPORT static bool removeTurboModuleManagerDelegateMutex();
-
-  /**
-   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
-   */
-  RN_EXPORT static bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

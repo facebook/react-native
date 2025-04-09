@@ -10,4 +10,4 @@ package com.facebook.react.views.text.internal.span
 import android.text.style.UnderlineSpan
 
 /** Wraps [UnderlineSpan] as a [ReactSpan]. */
-public class ReactUnderlineSpan : UnderlineSpan(), ReactSpan
+internal class ReactUnderlineSpan : UnderlineSpan(), ReactSpan

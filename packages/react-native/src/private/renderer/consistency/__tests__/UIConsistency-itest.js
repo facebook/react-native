@@ -8,7 +8,6 @@
  * @format
  * @oncall react_native
  * @fantom_flags enableAccessToHostTreeInFabric:true
- * @fantom_flags enableUIConsistency:true
  * @fantom_flags enableSynchronousStateUpdates:true
  */
 

@@ -43,7 +43,6 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.devsupport.StackTraceHelper;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
@@ -358,7 +357,7 @@ final class ReactInstance {
 
     @Override
     public void reportJsException(ProcessedError error) {
-      JavaOnlyMap data = StackTraceHelper.convertProcessedError(error);
+      JavaOnlyMap data = ReactInstanceProcessedErrorConverter.convertProcessedError(error);
 
       try {
         NativeExceptionsManagerSpec exceptionsManager =

@@ -53,7 +53,7 @@ internal class InteropModuleRegistry {
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropModuleRegistry")
+      LegacyArchitectureLogger.assertLegacyArchitecture("InteropModuleRegistry")
     }
   }
 }

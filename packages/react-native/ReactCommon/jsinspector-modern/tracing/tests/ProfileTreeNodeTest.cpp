@@ -25,30 +25,39 @@ TEST(ProfileTreeNodeTest, EqualityOperator) {
   EXPECT_EQ(*node1 == node2, true);
 
   node1 = new ProfileTreeNode(
-      3, ProfileTreeNode::CodeType::JavaScript, node1, callFrame);
+      3,
+      ProfileTreeNode::CodeType::JavaScript,
+      std::shared_ptr<ProfileTreeNode>(node1),
+      callFrame);
   node2 = new ProfileTreeNode(
       4, ProfileTreeNode::CodeType::JavaScript, nullptr, callFrame);
   EXPECT_EQ(*node1 == node2, false);
 
   node1 = new ProfileTreeNode(
-      5, ProfileTreeNode::CodeType::JavaScript, node2, callFrame);
+      5,
+      ProfileTreeNode::CodeType::JavaScript,
+      std::shared_ptr<ProfileTreeNode>(node2),
+      callFrame);
   node2 = new ProfileTreeNode(
-      6, ProfileTreeNode::CodeType::JavaScript, node2, callFrame);
+      6,
+      ProfileTreeNode::CodeType::JavaScript,
+      std::shared_ptr<ProfileTreeNode>(node2),
+      callFrame);
   EXPECT_EQ(*node1 == node2, true);
 }
 
 TEST(ProfileTreeNodeTest, OnlyAddsUniqueChildren) {
   auto callFrame = RuntimeSamplingProfile::SampleCallStackFrame{
       RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "foo"};
-  ProfileTreeNode* parent = new ProfileTreeNode(
+  auto parent = std::make_shared<ProfileTreeNode>(
       1, ProfileTreeNode::CodeType::JavaScript, nullptr, callFrame);
-  ProfileTreeNode* existingChild = new ProfileTreeNode(
+  auto existingChild = std::make_shared<ProfileTreeNode>(
       2, ProfileTreeNode::CodeType::JavaScript, parent, callFrame);
 
   auto maybeAlreadyExistingChild = parent->addChild(existingChild);
   EXPECT_EQ(maybeAlreadyExistingChild, nullptr);
 
-  auto copyOfExistingChild = new ProfileTreeNode(
+  auto copyOfExistingChild = std::make_shared<ProfileTreeNode>(
       3, ProfileTreeNode::CodeType::JavaScript, parent, callFrame);
 
   maybeAlreadyExistingChild = parent->addChild(copyOfExistingChild);

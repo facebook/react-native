@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<637a883106342d65133f54a8e931a5d4>>
+ * @generated SignedSource<<289424bf406db81cca78515eb71e8a84>>
  */
 
 /**
@@ -46,6 +46,14 @@ bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
 }
 
+bool ReactNativeFeatureFlags::disableShadowNodeOnNewArchitectureAndroid() {
+  return getAccessor().disableShadowNodeOnNewArchitectureAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableAccessibilityOrder() {
+  return getAccessor().enableAccessibilityOrder();
+}
+
 bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
   return getAccessor().enableAccumulatedUpdatesInRawPropsAndroid();
 }
@@ -68,6 +76,10 @@ bool ReactNativeFeatureFlags::enableFabricLogs() {
 
 bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
+}
+
+bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
+  return getAccessor().enableFontScaleChangesUpdatingLayout();
 }
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
@@ -114,10 +126,6 @@ bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
   return getAccessor().enableSynchronousStateUpdates();
 }
 
-bool ReactNativeFeatureFlags::enableUIConsistency() {
-  return getAccessor().enableUIConsistency();
-}
-
 bool ReactNativeFeatureFlags::enableViewCulling() {
   return getAccessor().enableViewCulling();
 }
@@ -152,10 +160,6 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
 
 bool ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex() {
   return getAccessor().removeTurboModuleManagerDelegateMutex();
-}
-
-bool ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() {
-  return getAccessor().throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

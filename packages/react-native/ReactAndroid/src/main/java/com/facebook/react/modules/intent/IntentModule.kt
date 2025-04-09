@@ -47,7 +47,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
    */
   override fun getInitialURL(promise: Promise) {
     try {
-      val currentActivity = getCurrentActivity()
+      val currentActivity = getReactApplicationContext().getCurrentActivity()
       if (currentActivity == null) {
         waitForActivityAndGetInitialURL(promise)
         return
@@ -159,7 +159,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
   override fun openSettings(promise: Promise) {
     try {
       val intent = Intent()
-      val currentActivity: Activity = checkNotNull(getCurrentActivity())
+      val currentActivity: Activity =
+          checkNotNull(getReactApplicationContext().getCurrentActivity())
       val selfPackageName = getReactApplicationContext().getPackageName()
 
       intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -208,51 +209,56 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
       return
     }
 
-    if (extras != null) {
-      for (i in 0..<extras.size()) {
-        val map = extras.getMap(i) ?: continue
-        val name = map.getString("key")
-        val type = map.getType(EXTRA_MAP_KEY_FOR_VALUE)
+    try {
+      if (extras != null) {
+        for (i in 0..<extras.size()) {
+          val map = extras.getMap(i) ?: continue
+          val name = map.getString("key")
+          val type = map.getType(EXTRA_MAP_KEY_FOR_VALUE)
 
-        when (type) {
-          ReadableType.String -> {
-            intent.putExtra(name, map.getString(EXTRA_MAP_KEY_FOR_VALUE))
-          }
+          when (type) {
+            ReadableType.String -> {
+              intent.putExtra(name, map.getString(EXTRA_MAP_KEY_FOR_VALUE))
+            }
 
-          ReadableType.Number -> {
-            // We cannot know from JS if is an Integer or Double
-            // See: https://github.com/facebook/react-native/issues/4141
-            // We might need to find a workaround if this is really an issue
-            val number = map.getDouble(EXTRA_MAP_KEY_FOR_VALUE)
-            intent.putExtra(name, number)
-          }
+            ReadableType.Number -> {
+              // We cannot know from JS if is an Integer or Double
+              // See: https://github.com/facebook/react-native/issues/4141
+              // We might need to find a workaround if this is really an issue
+              val number = map.getDouble(EXTRA_MAP_KEY_FOR_VALUE)
+              intent.putExtra(name, number)
+            }
 
-          ReadableType.Boolean -> {
-            intent.putExtra(name, map.getBoolean(EXTRA_MAP_KEY_FOR_VALUE))
-          }
+            ReadableType.Boolean -> {
+              intent.putExtra(name, map.getBoolean(EXTRA_MAP_KEY_FOR_VALUE))
+            }
 
-          else -> {
-            promise.reject(
-                JSApplicationIllegalArgumentException("Extra type for $name not supported."))
-            return
+            else -> {
+              promise.reject(
+                  JSApplicationIllegalArgumentException("Extra type for $name not supported."))
+              return
+            }
           }
         }
       }
-    }
 
-    if (flags != null) {
-      for (i in 0..<flags.size()) {
-        val flag = flags.getInt(i)
-        intent.addFlags(flag)
+      if (flags != null) {
+        for (i in 0..<flags.size()) {
+          val flag = flags.getInt(i)
+          intent.addFlags(flag)
+        }
       }
-    }
 
-    // If there are no flags set, we need to set the FLAG_ACTIVITY_NEW_TASK flag
-    sendOSIntent(intent, intent.flags == 0)
+      // If there are no flags set, we need to set the FLAG_ACTIVITY_NEW_TASK flag
+      sendOSIntent(intent, intent.flags == 0)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject(e)
+    }
   }
 
   private fun sendOSIntent(intent: Intent, useNewTaskFlag: Boolean) {
-    val currentActivity = getCurrentActivity()
+    val currentActivity = getReactApplicationContext().getCurrentActivity()
 
     val selfPackageName = getReactApplicationContext().getPackageName()
     val packageManager = getReactApplicationContext().getPackageManager()

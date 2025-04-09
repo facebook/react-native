@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5ad988b3cb0624cb9b46331d54c09f0a>>
+ * @generated SignedSource<<b2ce97a43a2fdf285fe860183207474b>>
  */
 
 /**
@@ -33,6 +33,10 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
+  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = true
+
+  override fun enableAccessibilityOrder(): Boolean = false
+
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
   override fun enableBridgelessArchitecture(): Boolean = false
@@ -44,6 +48,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
+
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
@@ -67,8 +73,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
-  override fun enableUIConsistency(): Boolean = false
-
   override fun enableViewCulling(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
@@ -79,7 +83,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
-  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
+  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
@@ -87,15 +91,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
 
-  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = false
-
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
   override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
 
-  override fun useFabricInterop(): Boolean = false
+  override fun useFabricInterop(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 

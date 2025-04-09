@@ -310,8 +310,8 @@ export function createRoot(rootConfig?: RootConfig): Root {
 export function enqueueNativeEvent(
   node: ReactNativeElement,
   type: string,
-  payload?: {[key: string]: mixed},
-  options?: {category?: NativeEventCategory, isUnique?: boolean},
+  payload?: $ReadOnly<{[key: string]: mixed}>,
+  options?: $ReadOnly<{category?: NativeEventCategory, isUnique?: boolean}>,
 ) {
   const shadowNode = getNativeNodeReference(node);
   NativeFantom.enqueueNativeEvent(
@@ -341,8 +341,8 @@ export function enqueueNativeEvent(
 export function dispatchNativeEvent(
   node: ReactNativeElement,
   type: string,
-  payload?: {[key: string]: mixed},
-  options?: {category?: NativeEventCategory, isUnique?: boolean},
+  payload?: $ReadOnly<{[key: string]: mixed}>,
+  options?: $ReadOnly<{category?: NativeEventCategory, isUnique?: boolean}>,
 ) {
   runOnUIThread(() => {
     enqueueNativeEvent(node, type, payload, options);
@@ -474,7 +474,7 @@ export function scrollTo(
  */
 export function enqueueModalSizeUpdate(
   node: ReactNativeElement,
-  size: {width: number, height: number},
+  size: $ReadOnly<{width: number, height: number}>,
 ) {
   const shadowNode = getNativeNodeReference(node);
   NativeFantom.enqueueModalSizeUpdate(shadowNode, size.width, size.height);

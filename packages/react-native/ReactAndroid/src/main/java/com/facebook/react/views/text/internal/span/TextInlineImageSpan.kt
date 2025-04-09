@@ -14,32 +14,32 @@ import android.view.View
 import android.widget.TextView
 
 /** Base class for inline image spans. */
-public abstract class TextInlineImageSpan : ReplacementSpan(), ReactSpan {
+internal abstract class TextInlineImageSpan : ReplacementSpan(), ReactSpan {
   /** Get the drawable that is span represents. */
-  public abstract val drawable: Drawable?
+  abstract val drawable: Drawable?
 
   /** Called by the text view from [View.onDetachedFromWindow], */
-  public abstract fun onDetachedFromWindow()
+  abstract fun onDetachedFromWindow()
 
   /** Called by the text view from [View.onStartTemporaryDetach]. */
-  public abstract fun onStartTemporaryDetach()
+  abstract fun onStartTemporaryDetach()
 
   /** Called by the text view from [View.onAttachedToWindow]. */
-  public abstract fun onAttachedToWindow()
+  abstract fun onAttachedToWindow()
 
   /** Called by the text view from [View.onFinishTemporaryDetach]. */
-  public abstract fun onFinishTemporaryDetach()
+  abstract fun onFinishTemporaryDetach()
 
   /** Set the textview that will contain this span. */
-  public abstract fun setTextView(textView: TextView?)
+  abstract fun setTextView(textView: TextView?)
 
   /** Get the width of the span. */
-  public abstract val width: Int
+  abstract val width: Int
 
   /** Get the height of the span. */
-  public abstract val height: Int
+  abstract val height: Int
 
-  public companion object {
+  companion object {
     /**
      * For TextInlineImageSpan we need to update the Span to know that the window is attached and
      * the TextView that we will set as the callback on the Drawable.
@@ -48,7 +48,7 @@ public abstract class TextInlineImageSpan : ReplacementSpan(), ReactSpan {
      * @param view The view which will be set as the callback for the Drawable
      */
     @JvmStatic
-    public fun possiblyUpdateInlineImageSpans(spannable: Spannable, view: TextView?) {
+    fun possiblyUpdateInlineImageSpans(spannable: Spannable, view: TextView?) {
       spannable.getSpans(0, spannable.length, TextInlineImageSpan::class.java).forEach { s ->
         s.onAttachedToWindow()
         s.setTextView(view)

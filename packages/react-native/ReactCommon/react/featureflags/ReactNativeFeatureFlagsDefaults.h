@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c7344e302f7ece9f41eec0dff5714d6e>>
+ * @generated SignedSource<<cbebe90f86d5c1dde20d9a24c799d6a7>>
  */
 
 /**
@@ -47,6 +47,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableShadowNodeOnNewArchitectureAndroid() override {
+    return true;
+  }
+
+  bool enableAccessibilityOrder() override {
+    return false;
+  }
+
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     return false;
   }
@@ -68,6 +76,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFabricRenderer() override {
+    return false;
+  }
+
+  bool enableFontScaleChangesUpdatingLayout() override {
     return false;
   }
 
@@ -115,10 +127,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableUIConsistency() override {
-    return false;
-  }
-
   bool enableViewCulling() override {
     return false;
   }
@@ -140,7 +148,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    return false;
+    return true;
   }
 
   bool fuseboxEnabledRelease() override {
@@ -152,10 +160,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool removeTurboModuleManagerDelegateMutex() override {
-    return false;
-  }
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
     return false;
   }
 
@@ -172,7 +176,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useFabricInterop() override {
-    return false;
+    return true;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {

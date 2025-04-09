@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.module.annotations.ReactModule;
@@ -18,11 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 /** A set of Java APIs to expose to a particular JavaScript instance. */
+@LegacyArchitecture
 public class NativeModuleRegistry {
 
   private final ReactApplicationContext mReactApplicationContext;
   private final Map<String, ModuleHolder> mModules;
-  private final String TAG = NativeModuleRegistry.class.getSimpleName();
 
   public NativeModuleRegistry(
       ReactApplicationContext reactApplicationContext, Map<String, ModuleHolder> modules) {
@@ -115,7 +116,7 @@ public class NativeModuleRegistry {
     // short-circuit
     // the search, and simply call OnBatchComplete on the UI Manager.
     // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "NativeModuleRegistry.onBatchComplete()", LegacyArchitectureLogLevel.ERROR);
     ModuleHolder moduleHolder = mModules.get("UIManager");
     if (moduleHolder != null && moduleHolder.hasInstance()) {

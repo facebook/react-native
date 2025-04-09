@@ -7,9 +7,9 @@
 
 package com.facebook.systrace
 
-public interface TraceListener {
+internal interface TraceListener {
 
-  public fun onTraceStarted()
+  fun onTraceStarted()
 
-  public fun onTraceStopped()
+  fun onTraceStopped()
 }

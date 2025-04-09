@@ -59,7 +59,7 @@ public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
 
   public companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "OnLayoutEvent", LegacyArchitectureLogLevel.WARNING)
     }
 

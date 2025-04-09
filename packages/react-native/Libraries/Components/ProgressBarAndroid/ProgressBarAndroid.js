@@ -13,12 +13,22 @@
 import typeof ProgressBarAndroidNativeComponentType from './ProgressBarAndroidNativeComponent';
 import type {ProgressBarAndroidProps} from './ProgressBarAndroidTypes';
 
+import Platform from '../../Utilities/Platform';
+
 export type {ProgressBarAndroidProps};
 
-export default require('../UnimplementedViews/UnimplementedView')
-  .default as $FlowFixMe as component(
+let ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<ProgressBarAndroidNativeComponentType>,
   >,
   ...props: ProgressBarAndroidProps
 );
+
+if (Platform.OS === 'android') {
+  ProgressBarAndroid = require('./ProgressBarAndroid').default;
+} else {
+  ProgressBarAndroid = require('../UnimplementedViews/UnimplementedView')
+    .default as $FlowFixMe;
+}
+
+export default ProgressBarAndroid;

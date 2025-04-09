@@ -150,7 +150,7 @@ import java.util.Set;
 public class ReactInstanceManager {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "ReactInstanceManager", LegacyArchitectureLogLevel.WARNING);
   }
 
@@ -374,7 +374,7 @@ public class ReactInstanceManager {
       }
 
       @Override
-      public void reload(String s) {
+      public void reload(String reason) {
         // no-op not implemented for Bridge Mode
       }
 

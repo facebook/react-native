@@ -64,8 +64,11 @@ class OpenSettingsExample extends React.Component<Props, any> {
   }
 }
 
-class SendIntentButton extends React.Component<Props> {
-  handleIntent = async () => {
+const SendIntentButton = ({action, extras}: Props) => {
+  const [isOpeningIntent, setIsOpeningIntent] = React.useState(false);
+
+  const handleIntent = async () => {
+    setIsOpeningIntent(true);
     try {
       await Linking.sendIntent(
         this.props.action,
@@ -74,19 +77,21 @@ class SendIntentButton extends React.Component<Props> {
       );
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.LONG);
+    } finally {
+      setIsOpeningIntent(false);
     }
   };
 
-  render() {
-    return (
-      <TouchableOpacity onPress={this.handleIntent}>
-        <View style={[styles.button, styles.buttonIntent]}>
-          <RNTesterText style={styles.text}>{this.props.action}</RNTesterText>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-}
+  return (
+    <TouchableOpacity onPress={handleIntent}>
+      <View style={[styles.button, styles.buttonIntent]}>
+        <RNTesterText style={styles.text}>
+          {isOpeningIntent ? `Opening ${action}...` : action}
+        </RNTesterText>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 class IntentAndroidExample extends React.Component {
   render() {
@@ -104,12 +109,15 @@ class IntentAndroidExample extends React.Component {
           <RNTesterBlock title="Send intents">
             <SendIntentButton action="android.intent.action.POWER_USAGE_SUMMARY" />
             <RNTesterText style={styles.textSeparator}>
-              Next one will crash if Facebook app is not installed.
+              Next one will throw an exception if Facebook app is not installed.
             </RNTesterText>
             <SendIntentButton
               action="android.settings.APP_NOTIFICATION_SETTINGS"
               extras={[
-                {'android.provider.extra.APP_PACKAGE': 'com.facebook.katana'},
+                {
+                  key: 'android.provider.extra.APP_PACKAGE',
+                  value: 'com.facebook.katana',
+                },
               ]}
             />
             <SendIntentButton
