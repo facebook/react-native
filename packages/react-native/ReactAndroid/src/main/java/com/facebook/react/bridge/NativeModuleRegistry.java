@@ -125,6 +125,7 @@ public class NativeModuleRegistry {
   }
 
   public <T extends NativeModule> boolean hasModule(Class<T> moduleInterface) {
+    // NULLSAFE_FIXME[Nullable Dereference]
     String name = moduleInterface.getAnnotation(ReactModule.class).name();
     return mModules.containsKey(name);
   }
