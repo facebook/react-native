@@ -10,4 +10,4 @@ package com.facebook.react.views.text.internal.span
 import android.text.style.StrikethroughSpan
 
 /** Wraps [StrikethroughSpan] as a [ReactSpan]. */
-public class ReactStrikethroughSpan : StrikethroughSpan(), ReactSpan
+internal class ReactStrikethroughSpan : StrikethroughSpan(), ReactSpan
