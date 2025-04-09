@@ -442,7 +442,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
       return
     }
 
-    val reactApplicationContext = reactApplicationContext
+    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
     if (reactApplicationContext != null) {
       val uiManager = UIManagerHelper.getUIManager(reactApplicationContext, uiManagerType)
       if (uiManager != null) {
