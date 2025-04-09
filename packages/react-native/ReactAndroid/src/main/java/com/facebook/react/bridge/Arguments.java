@@ -21,6 +21,7 @@ import java.util.Map;
 public class Arguments {
   private static Object makeNativeObject(Object object) {
     if (object == null) {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     } else if (object instanceof Float
         || object instanceof Long
@@ -97,6 +98,7 @@ public class Arguments {
           }
 
           public Object get(int index) {
+            // NULLSAFE_FIXME[Return Not Nullable]
             return Array.get(objects, index);
           }
         });
@@ -148,6 +150,7 @@ public class Arguments {
       return nativeMap;
     }
     for (String key : bundle.keySet()) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       addEntry(nativeMap, key, bundle.get(key));
     }
     return nativeMap;
