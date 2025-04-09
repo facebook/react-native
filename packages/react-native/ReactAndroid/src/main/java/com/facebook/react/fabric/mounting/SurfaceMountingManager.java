@@ -90,6 +90,7 @@ public class SurfaceMountingManager {
   private final Set<Integer> mViewsToDeleteAfterTouchFinishes = new HashSet<>();
 
   // This is null *until* StopSurface is called.
+  // NULLSAFE_FIXME[Field Not Initialized]
   private SparseArrayCompat<Object> mTagSetForStoppedSurface;
 
   private final int mSurfaceId;
@@ -315,9 +316,13 @@ public class SurfaceMountingManager {
 
           // Evict all views from cache and memory
           // TODO: clear instead of nulling out to simplify null-safety in this class
+          // NULLSAFE_FIXME[Field Not Nullable]
           mTagToViewState = null;
+          // NULLSAFE_FIXME[Field Not Nullable]
           mJSResponderHandler = null;
+          // NULLSAFE_FIXME[Field Not Nullable]
           mRootViewManager = null;
+          // NULLSAFE_FIXME[Field Not Nullable]
           mMountItemExecutor = null;
           mThemedReactContext = null;
           mOnViewAttachMountItems.clear();
@@ -659,6 +664,7 @@ public class SurfaceMountingManager {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "SurfaceMountingManager::createViewUnsafe(" + componentName + ")");
     try {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
 
       ViewState viewState = new ViewState(reactTag);
@@ -672,6 +678,7 @@ public class SurfaceMountingManager {
         // View Managers are responsible for dealing with inital state and props.
         viewState.mView =
             viewManager.createView(
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 reactTag, mThemedReactContext, propMap, stateWrapper, mJSResponderHandler);
         viewState.mViewManager = viewManager;
       }
@@ -930,8 +937,10 @@ public class SurfaceMountingManager {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
     }
     Object extraData =
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
     if (extraData != null) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       viewManager.updateExtraData(viewState.mView, extraData);
     }
 
@@ -1026,6 +1035,7 @@ public class SurfaceMountingManager {
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
     ViewManager viewManager = viewState.mViewManager;
     if (!viewState.mIsRoot && viewManager != null) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       viewManager.onDropViewInstance(viewState.mView);
     }
   }
