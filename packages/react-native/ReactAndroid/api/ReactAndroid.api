@@ -6744,6 +6744,7 @@ public final class com/facebook/react/views/text/TextTransform : java/lang/Enum 
 	public static final field UNSET Lcom/facebook/react/views/text/TextTransform;
 	public static final field UPPERCASE Lcom/facebook/react/views/text/TextTransform;
 	public static final fun apply (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
+	public static final fun applyNonNull (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/text/TextTransform;
 	public static fun values ()[Lcom/facebook/react/views/text/TextTransform;
@@ -6751,6 +6752,7 @@ public final class com/facebook/react/views/text/TextTransform : java/lang/Enum 
 
 public final class com/facebook/react/views/text/TextTransform$Companion {
 	public final fun apply (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
+	public final fun applyNonNull (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
 }
 
 public final class com/facebook/react/views/text/TextTransformKt {

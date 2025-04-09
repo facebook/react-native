@@ -18,6 +18,7 @@ import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
@@ -66,6 +67,7 @@ import java.util.Map;
  * can be used in concrete classes to feed native views and compute layout.
  */
 @LegacyArchitecture
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   // Use a direction weak character so the placeholder doesn't change the direction of the previous
@@ -105,10 +107,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       ReactShadowNode child = textShadowNode.getChildAt(i);
 
       if (child instanceof ReactRawTextShadowNode) {
-        sb.append(
-            // NULLSAFE_FIXME[Parameter Not Nullable]
-            TextTransform.apply(
-                ((ReactRawTextShadowNode) child).getText(), textAttributes.getTextTransform()));
+        String childText = ((ReactRawTextShadowNode) child).getText();
+        if (childText != null) {
+          sb.append(TextTransform.applyNonNull(childText, textAttributes.getTextTransform()));
+        }
       } else if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode(
             (ReactBaseTextShadowNode) child,
@@ -154,8 +156,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                 sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
-        // NULLSAFE_FIXME[Nullable Dereference]
-        inlineViews.put(reactTag, child);
+
+        // supportsInlineViews is true, so we can assume that inlineViews is not null
+        Assertions.assertNotNull(inlineViews).put(reactTag, child);
       } else {
         throw new IllegalViewOperationException(
             "Unexpected view type nested under a <Text> or <TextInput> node: " + child.getClass());
@@ -261,14 +264,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
       // TextInput).
-      // NULLSAFE_FIXME[Parameter Not Nullable]
-      sb.append(TextTransform.apply(text, textShadowNode.mTextAttributes.getTextTransform()));
+      sb.append(
+          TextTransform.applyNonNull(text, textShadowNode.mTextAttributes.getTextTransform()));
     }
 
     buildSpannedFromShadowNode(textShadowNode, sb, ops, null, supportsInlineViews, inlineViews, 0);
 
     textShadowNode.mContainsImages = false;
-    // NULLSAFE_FIXME[Field Not Nullable]
     textShadowNode.mInlineViews = inlineViews;
     float heightOfTallestInlineViewOrImage = Float.NaN;
 
@@ -290,13 +292,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
           // Inline views cannot be layout-only because the ReactTextView needs to be able to grab
           // ahold of them on the UI thread to size and position them.
-          // NULLSAFE_FIXME[Nullable Dereference]
-          ReactShadowNode childNode = inlineViews.get(placeholder.getReactTag());
-          // NULLSAFE_FIXME[Parameter Not Nullable]
+          ReactShadowNode childNode =
+              Assertions.assertNotNull(inlineViews).get(placeholder.getReactTag());
+
+          Assertions.assertNotNull(childNode);
           nativeViewHierarchyOptimizer.handleForceViewToBeNonLayoutOnly(childNode);
 
           // The ReactTextView is responsible for laying out the inline views.
-          // NULLSAFE_FIXME[Nullable Dereference]
           childNode.setLayoutParent(textShadowNode);
         }
 
@@ -386,8 +388,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
-  // NULLSAFE_FIXME[Field Not Initialized]
-  protected Map<Integer, ReactShadowNode> mInlineViews;
+  // Only nullable iff `supportsInlineViews` is `false`.
+  protected @Nullable Map<Integer, ReactShadowNode> mInlineViews;
 
   public ReactBaseTextShadowNode() {
     this(null);
@@ -482,9 +484,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(@Nullable Integer color) {
-    mIsColorSet = (color != null);
-    if (mIsColorSet) {
-      // NULLSAFE_FIXME[Nullable Dereference]
+    if (color != null) {
+      mIsColorSet = true;
       mColor = color;
     }
     markUpdated();
@@ -497,9 +498,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // nodes get mapped to native views and native views get their background colors get set via
     // {@link BaseViewManager}.
     if (isVirtual()) {
-      mIsBackgroundColorSet = (color != null);
-      if (mIsBackgroundColorSet) {
-        // NULLSAFE_FIXME[Nullable Dereference]
+      if (color != null) {
+        mIsBackgroundColorSet = true;
         mBackgroundColor = color;
       }
       markUpdated();
