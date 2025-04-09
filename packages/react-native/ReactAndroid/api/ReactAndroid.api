@@ -3171,6 +3171,7 @@ public final class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 	public static final fun getInspectorHostMetadata (Landroid/content/Context;)Ljava/util/Map;
 	public static final fun getServerHost (I)Ljava/lang/String;
 	public static final fun getServerHost (Landroid/content/Context;)Ljava/lang/String;
+	public static final fun getServerHost (Landroid/content/Context;I)Ljava/lang/String;
 }
 
 public final class com/facebook/react/modules/systeminfo/AndroidInfoModule : com/facebook/fbreact/specs/NativePlatformConstantsAndroidSpec {

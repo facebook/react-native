@@ -17,7 +17,7 @@ import com.facebook.react.tasks.GenerateEntryPointTask
 import com.facebook.react.tasks.GeneratePackageListTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
-import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
+import com.facebook.react.utils.AgpConfiguratorUtils.configureDevServerLocation
 import com.facebook.react.utils.AgpConfiguratorUtils.configureNamespaceForLibraries
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
@@ -71,7 +71,7 @@ class ReactPlugin : Plugin<Project> {
 
       configureReactNativeNdk(project, extension)
       configureBuildConfigFieldsForApp(project, extension)
-      configureDevPorts(project)
+      configureDevServerLocation(project)
       configureBackwardCompatibilityReactMap(project)
       configureJavaToolChains(project)
 
