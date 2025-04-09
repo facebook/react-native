@@ -8,10 +8,13 @@
 package com.facebook.react.views.text.frescosupport
 
 import android.content.res.Resources
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.net.Uri
 import android.widget.TextView
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
@@ -141,7 +144,13 @@ public class FrescoBasedReactTextInlineImageSpan(
 
             drawable = draweeHolder.topLevelDrawable!!
             drawable!!.setBounds(0, 0, _width, _height)
-            drawable!!.takeIf { tintColor != 0 }?.setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
+            drawable!!.takeIf { tintColor != 0 }?.apply {
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                  colorFilter = BlendModeColorFilter(tintColor, BlendMode.SRC_IN)
+              } else {
+                  setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
+              }
+            }
             drawable!!.callback = this.textView
         }
 
