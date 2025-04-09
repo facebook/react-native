@@ -439,23 +439,6 @@ public abstract interface class com/facebook/react/ViewManagerOnDemandReactPacka
 	public abstract fun getViewManagerNames (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/Collection;
 }
 
-public abstract class com/facebook/react/animated/AnimatedNode {
-	public static final field Companion Lcom/facebook/react/animated/AnimatedNode$Companion;
-	public static final field DEFAULT_ANIMATED_NODE_CHILD_COUNT I
-	public static final field INITIAL_BFS_COLOR I
-	public fun <init> ()V
-	public final fun addChild (Lcom/facebook/react/animated/AnimatedNode;)V
-	public fun onAttachedToNode (Lcom/facebook/react/animated/AnimatedNode;)V
-	public fun onDetachedFromNode (Lcom/facebook/react/animated/AnimatedNode;)V
-	public abstract fun prettyPrint ()Ljava/lang/String;
-	public final fun prettyPrintWithChildren ()Ljava/lang/String;
-	public final fun removeChild (Lcom/facebook/react/animated/AnimatedNode;)V
-	public fun update ()V
-}
-
-public final class com/facebook/react/animated/AnimatedNode$Companion {
-}
-
 public final class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
 	public static final field ANIMATED_MODULE_DEBUG Z
 	public static final field Companion Lcom/facebook/react/animated/NativeAnimatedModule$Companion;
