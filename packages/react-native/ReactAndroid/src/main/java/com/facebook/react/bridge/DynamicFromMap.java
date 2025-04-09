@@ -28,6 +28,7 @@ class DynamicFromMap implements Dynamic {
   private DynamicFromMap() {}
 
   public static DynamicFromMap create(ReadableMap map, String name) {
+    // NULLSAFE_FIXME[Nullable Dereference]
     DynamicFromMap dynamic = sPool.get().acquire();
     if (dynamic == null) {
       dynamic = new DynamicFromMap();
@@ -41,6 +42,7 @@ class DynamicFromMap implements Dynamic {
   public void recycle() {
     mMap = null;
     mName = null;
+    // NULLSAFE_FIXME[Nullable Dereference]
     sPool.get().release(this);
   }
 
@@ -81,6 +83,7 @@ class DynamicFromMap implements Dynamic {
     if (mMap == null || mName == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mMap.getString(mName);
   }
 
@@ -89,6 +92,7 @@ class DynamicFromMap implements Dynamic {
     if (mMap == null || mName == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mMap.getArray(mName);
   }
 
