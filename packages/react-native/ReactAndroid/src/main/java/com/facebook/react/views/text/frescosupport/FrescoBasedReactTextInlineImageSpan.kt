@@ -31,10 +31,10 @@ import com.facebook.react.views.text.internal.span.TextInlineImageSpan
  * based on the input size. When it is time to draw, it will use the Fresco framework to get the
  * right Drawable and let that draw.
  *
- * <p>Since Fresco needs to callback to the TextView that contains this, in the ViewManager, you
+ * Since Fresco needs to callback to the TextView that contains this, in the ViewManager, you
  * must tell the Span about the TextView
  *
- * <p>Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size
+ * Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size
  * or draws, we need to update this as well.
  */
 public class FrescoBasedReactTextInlineImageSpan(
