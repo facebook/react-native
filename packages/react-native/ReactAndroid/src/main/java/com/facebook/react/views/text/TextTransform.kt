@@ -23,6 +23,10 @@ internal enum class TextTransform {
     @JvmStatic
     fun apply(text: String?, textTransform: TextTransform?): String? =
         text?.applyTextTransform(textTransform)
+
+    @JvmStatic
+    public fun applyNonNull(text: String, textTransform: TextTransform?): String =
+        text.applyTextTransform(textTransform)
   }
 }
 

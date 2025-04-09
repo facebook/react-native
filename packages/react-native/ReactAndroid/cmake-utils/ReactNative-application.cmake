@@ -31,6 +31,13 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
+# If the user toolchain supports IPO, we enable it for the app build
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_SUPPORT)
+if (IPO_SUPPORT)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 set(BUILD_DIR ${PROJECT_BUILD_DIR})
 file(TO_CMAKE_PATH "${BUILD_DIR}" BUILD_DIR)
 file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)

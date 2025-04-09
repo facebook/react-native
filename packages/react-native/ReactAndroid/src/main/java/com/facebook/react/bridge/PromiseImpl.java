@@ -7,8 +7,8 @@
 
 package com.facebook.react.bridge;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /*
@@ -18,6 +18,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * Methods annotated with {@link ReactMethod} that use a {@link Promise} as the last parameter
  * will be marked as "promise" and will return a promise when invoked from JavaScript.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class PromiseImpl implements Promise {
   // Number of stack frames to parse and return to mReject.invoke
@@ -55,7 +56,7 @@ public class PromiseImpl implements Promise {
    * @param value Object
    */
   @Override
-  public void resolve(Object value) {
+  public void resolve(@Nullable Object value) {
     if (mResolve != null) {
       mResolve.invoke(value);
       mResolve = null;
@@ -70,7 +71,7 @@ public class PromiseImpl implements Promise {
    * @param message String
    */
   @Override
-  public void reject(String code, String message) {
+  public void reject(String code, @Nullable String message) {
     reject(code, message, /*Throwable*/ null, /*WritableMap*/ null);
   }
 
@@ -81,7 +82,7 @@ public class PromiseImpl implements Promise {
    * @param throwable Throwable
    */
   @Override
-  public void reject(String code, Throwable throwable) {
+  public void reject(String code, @Nullable Throwable throwable) {
     reject(code, /*Message*/ null, throwable, /*WritableMap*/ null);
   }
 
@@ -93,7 +94,7 @@ public class PromiseImpl implements Promise {
    * @param throwable Throwable
    */
   @Override
-  public void reject(String code, String message, Throwable throwable) {
+  public void reject(String code, @Nullable String message, @Nullable Throwable throwable) {
     reject(code, message, throwable, /*WritableMap*/ null);
   }
 
@@ -131,7 +132,7 @@ public class PromiseImpl implements Promise {
    * @param userInfo WritableMap
    */
   @Override
-  public void reject(String code, @NonNull WritableMap userInfo) {
+  public void reject(String code, WritableMap userInfo) {
     reject(code, /*Message*/ null, /*Throwable*/ null, userInfo);
   }
 
@@ -143,7 +144,7 @@ public class PromiseImpl implements Promise {
    * @param userInfo WritableMap
    */
   @Override
-  public void reject(String code, Throwable throwable, WritableMap userInfo) {
+  public void reject(String code, @Nullable Throwable throwable, WritableMap userInfo) {
     reject(code, /*Message*/ null, throwable, userInfo);
   }
 
@@ -156,7 +157,7 @@ public class PromiseImpl implements Promise {
    * @param userInfo WritableMap
    */
   @Override
-  public void reject(String code, String message, @NonNull WritableMap userInfo) {
+  public void reject(String code, @Nullable String message, WritableMap userInfo) {
     reject(code, message, /*Throwable*/ null, userInfo);
   }
 

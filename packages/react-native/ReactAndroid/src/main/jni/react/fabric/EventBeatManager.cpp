@@ -6,18 +6,13 @@
  */
 
 #include "EventBeatManager.h"
-#include <fbjni/fbjni.h>
+
 using namespace facebook::jni;
 
 namespace facebook::react {
 
-EventBeatManager::EventBeatManager(
-    jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject)
-    : jhybridobject_(jhybridobject) {}
-
-jni::local_ref<EventBeatManager::jhybriddata> EventBeatManager::initHybrid(
-    jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject) {
-  return makeCxxInstance(jhybridobject);
+void EventBeatManager::initHybrid(jni::alias_ref<jhybridobject> jobj) {
+  setCxxInstance(jobj);
 }
 
 void EventBeatManager::addObserver(

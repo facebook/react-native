@@ -47,7 +47,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
    */
   override fun getInitialURL(promise: Promise) {
     try {
-      val currentActivity = getCurrentActivity()
+      val currentActivity = getReactApplicationContext().getCurrentActivity()
       if (currentActivity == null) {
         waitForActivityAndGetInitialURL(promise)
         return
@@ -159,7 +159,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
   override fun openSettings(promise: Promise) {
     try {
       val intent = Intent()
-      val currentActivity: Activity = checkNotNull(getCurrentActivity())
+      val currentActivity: Activity =
+          checkNotNull(getReactApplicationContext().getCurrentActivity())
       val selfPackageName = getReactApplicationContext().getPackageName()
 
       intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -243,7 +244,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
   }
 
   private fun sendOSIntent(intent: Intent, useNewTaskFlag: Boolean) {
-    val currentActivity = getCurrentActivity()
+    val currentActivity = getReactApplicationContext().getCurrentActivity()
 
     val selfPackageName = getReactApplicationContext().getPackageName()
     val packageManager = getReactApplicationContext().getPackageManager()

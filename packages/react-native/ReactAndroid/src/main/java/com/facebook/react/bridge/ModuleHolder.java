@@ -18,6 +18,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -35,6 +36,7 @@ import javax.inject.Provider;
  * <p>Lifecycle events via a {@link LifecycleEventListener} will still always happen on the UI
  * thread.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class ModuleHolder {
 
@@ -96,6 +98,7 @@ public class ModuleHolder {
       }
     }
     if (shouldInitializeNow) {
+      Assertions.assertNotNull(module);
       doInitialize(module);
     }
   }

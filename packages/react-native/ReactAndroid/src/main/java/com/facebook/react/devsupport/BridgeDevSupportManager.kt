@@ -56,7 +56,7 @@ public class BridgeDevSupportManager(
     redBoxHandler: RedBoxHandler?,
     devBundleDownloadListener: DevBundleDownloadListener?,
     minNumShakes: Int,
-    customPackagerCommandHandlers: Map<String?, RequestHandler?>?,
+    customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
     devLoadingViewManager: DevLoadingViewManager?,
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
@@ -74,7 +74,8 @@ public class BridgeDevSupportManager(
         devLoadingViewManager,
         pausedInDebuggerOverlayManager) {
 
-  override fun getUniqueTag(): String = "Bridge"
+  override val uniqueTag: String
+    get() = "Bridge"
 
   override fun loadSplitBundleFromServer(bundlePath: String, callback: DevSplitBundleCallback) {
     fetchSplitBundleAndCreateBundleLoader(
