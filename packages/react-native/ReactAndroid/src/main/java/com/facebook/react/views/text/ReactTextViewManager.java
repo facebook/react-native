@@ -150,6 +150,7 @@ public class ReactTextViewManager
       if (stateMapBuffer != null) {
         return getReactTextUpdate(view, props, stateMapBuffer);
       } else {
+        // NULLSAFE_FIXME[Return Not Nullable]
         return null;
       }
     }
@@ -224,6 +225,7 @@ public class ReactTextViewManager
         widthMode,
         height,
         heightMode,
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         mReactTextViewManagerCallback,
         attachmentsPositions);
   }
