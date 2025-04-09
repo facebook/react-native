@@ -8,6 +8,8 @@
 #include "RuntimeSamplingProfileTraceEventSerializer.h"
 #include "ProfileTreeNode.h"
 
+#include <react/timing/primitives.h>
+
 namespace facebook::react::jsinspector_modern::tracing {
 
 namespace {
@@ -20,13 +22,6 @@ const uint16_t PROFILE_ID = 1;
 /// (program). Required for emulating the payload in a format that is expected
 /// by Chrome DevTools.
 const uint32_t FALLBACK_SCRIPT_ID = 0;
-
-uint64_t formatTimePointToUnixTimestamp(
-    std::chrono::steady_clock::time_point timestamp) {
-  return std::chrono::duration_cast<std::chrono::microseconds>(
-             timestamp.time_since_epoch())
-      .count();
-}
 
 TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
     std::shared_ptr<ProfileTreeNode> node) {
@@ -210,8 +205,8 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   }
 
   uint64_t firstChunkThreadId = samples.front().getThreadId();
-  uint64_t tracingStartUnixTimestamp =
-      formatTimePointToUnixTimestamp(tracingStartTime);
+  TracingTimeStamp tracingStartUnixTimestamp =
+      chronoToTracingTimeStamp(tracingStartTime);
   uint64_t previousSampleUnixTimestamp = tracingStartUnixTimestamp;
   uint64_t currentChunkUnixTimestamp = tracingStartUnixTimestamp;
 

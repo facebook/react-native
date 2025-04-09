@@ -8,6 +8,7 @@
 #include "PerformanceTracer.h"
 
 #include <oscompat/OSCompat.h>
+#include <react/timing/primitives.h>
 
 #include <folly/json.h>
 
@@ -18,10 +19,8 @@ namespace facebook::react::jsinspector_modern {
 
 namespace {
 
-uint64_t getUnixTimestampOfNow() {
-  return std::chrono::duration_cast<std::chrono::microseconds>(
-             std::chrono::steady_clock::now().time_since_epoch())
-      .count();
+inline TracingTimeStamp getTracingTimeStampOfNow() {
+  return chronoToTracingTimeStamp(std::chrono::steady_clock::now());
 }
 
 } // namespace
@@ -52,7 +51,7 @@ bool PerformanceTracer::startTracing() {
         .name = "TracingStartedInPage",
         .cat = "disabled-by-default-devtools.timeline",
         .ph = 'I',
-        .ts = getUnixTimestampOfNow(),
+        .ts = getTracingTimeStampOfNow(),
         .pid = processId_,
         .tid = oscompat::getCurrentThreadId(),
         .args = folly::dynamic::object("data", folly::dynamic::object()),
@@ -78,7 +77,7 @@ bool PerformanceTracer::stopTracing() {
       .name = "ReactNative-TracingStopped",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
-      .ts = getUnixTimestampOfNow(),
+      .ts = getTracingTimeStampOfNow(),
       .pid = processId_,
       .tid = oscompat::getCurrentThreadId(),
   });
@@ -117,7 +116,7 @@ void PerformanceTracer::collectEvents(
 
 void PerformanceTracer::reportMark(
     const std::string_view& name,
-    uint64_t start) {
+    TracingTimeStamp start) {
   if (!tracing_) {
     return;
   }
@@ -139,7 +138,7 @@ void PerformanceTracer::reportMark(
 
 void PerformanceTracer::reportMeasure(
     const std::string_view& name,
-    uint64_t start,
+    TracingTimeStamp start,
     uint64_t duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
   if (!tracing_) {
@@ -243,7 +242,9 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
   });
 }
 
-void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
+void PerformanceTracer::reportEventLoopTask(
+    TracingTimeStamp start,
+    TracingTimeStamp end) {
   if (!tracing_) {
     return;
   }
@@ -286,7 +287,7 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
 folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
     uint16_t profileId,
     uint64_t threadId,
-    uint64_t eventUnixTimestamp,
+    TracingTimeStamp eventUnixTimestamp,
     const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
   return serializeTraceEvent(TraceEvent{
       .id = profileId,
