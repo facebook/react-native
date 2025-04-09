@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import android.os.Bundle;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.reflect.Array;
 import java.util.AbstractList;
@@ -17,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class Arguments {
-  private static Object makeNativeObject(Object object) {
+  private static @Nullable Object makeNativeObject(@Nullable Object object) {
     if (object == null) {
-      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     } else if (object instanceof Float
         || object instanceof Long
@@ -53,7 +54,7 @@ public class Arguments {
    * best way to think of this is a way to generate a Java representation of a json list, from Java
    * types which have a natural representation in json.
    */
-  public static WritableNativeArray makeNativeArray(List objects) {
+  public static WritableNativeArray makeNativeArray(@Nullable List objects) {
     WritableNativeArray nativeArray = new WritableNativeArray();
     if (objects == null) {
       return nativeArray;
@@ -85,7 +86,7 @@ public class Arguments {
    * This overload is like the above, but uses reflection to operate on any primitive or object
    * type.
    */
-  public static <T> WritableNativeArray makeNativeArray(final Object objects) {
+  public static <T> WritableNativeArray makeNativeArray(final @Nullable Object objects) {
     if (objects == null) {
       return new WritableNativeArray();
     }
@@ -97,14 +98,13 @@ public class Arguments {
             return Array.getLength(objects);
           }
 
-          public Object get(int index) {
-            // NULLSAFE_FIXME[Return Not Nullable]
+          public @Nullable Object get(int index) {
             return Array.get(objects, index);
           }
         });
   }
 
-  private static void addEntry(WritableNativeMap nativeMap, String key, Object value) {
+  private static void addEntry(WritableNativeMap nativeMap, String key, @Nullable Object value) {
     value = makeNativeObject(value);
     if (value == null) {
       nativeMap.putNull(key);
@@ -131,7 +131,7 @@ public class Arguments {
    * Java types which have a natural representation in json.
    */
   @DoNotStrip
-  public static WritableNativeMap makeNativeMap(Map<String, Object> objects) {
+  public static WritableNativeMap makeNativeMap(@Nullable Map<String, Object> objects) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (objects == null) {
       return nativeMap;
@@ -144,13 +144,12 @@ public class Arguments {
 
   /** Like the above, but takes a Bundle instead of a Map. */
   @DoNotStrip
-  public static WritableNativeMap makeNativeMap(Bundle bundle) {
+  public static WritableNativeMap makeNativeMap(@Nullable Bundle bundle) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (bundle == null) {
       return nativeMap;
     }
     for (String key : bundle.keySet()) {
-      // NULLSAFE_FIXME[Parameter Not Nullable]
       addEntry(nativeMap, key, bundle.get(key));
     }
     return nativeMap;
