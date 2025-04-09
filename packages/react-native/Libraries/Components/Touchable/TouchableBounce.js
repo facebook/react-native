@@ -225,5 +225,5 @@ export default (React.forwardRef((props, hostRef: React.RefSetter<mixed>) => (
   <TouchableBounce {...props} hostRef={hostRef} />
 )): component(
   ref: React.RefSetter<mixed>,
-  ...props: $ReadOnly<$Diff<TouchableBounceProps, {hostRef: mixed}>>
+  ...props: $ReadOnly<Omit<TouchableBounceProps, 'hostRef'>>
 ));
