@@ -74,6 +74,7 @@ class DynamicFromArray implements Dynamic {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mArray.getString(mIndex);
   }
 
@@ -82,6 +83,7 @@ class DynamicFromArray implements Dynamic {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mArray.getArray(mIndex);
   }
 
@@ -90,6 +92,7 @@ class DynamicFromArray implements Dynamic {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mArray.getMap(mIndex);
   }
 
