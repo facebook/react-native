@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 /** A set of Java APIs to expose to a particular JavaScript instance. */
 @LegacyArchitecture
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NativeModuleRegistry {
 
   private final ReactApplicationContext mReactApplicationContext;
@@ -125,8 +127,12 @@ public class NativeModuleRegistry {
   }
 
   public <T extends NativeModule> boolean hasModule(Class<T> moduleInterface) {
-    // NULLSAFE_FIXME[Nullable Dereference]
-    String name = moduleInterface.getAnnotation(ReactModule.class).name();
+    ReactModule annotation = moduleInterface.getAnnotation(ReactModule.class);
+    if (annotation == null) {
+      throw new IllegalArgumentException(
+          "Could not find @ReactModule annotation in class " + moduleInterface.getName());
+    }
+    String name = annotation.name();
     return mModules.containsKey(name);
   }
 
