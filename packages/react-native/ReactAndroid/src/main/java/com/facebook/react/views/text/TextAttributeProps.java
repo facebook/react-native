@@ -15,6 +15,7 @@ import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
@@ -31,6 +32,7 @@ import java.util.List;
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
 // TextAttributeProps (e.g. TextAlign)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextAttributeProps {
 
   // constants for Text Attributes serialization
@@ -258,7 +260,6 @@ public class TextAttributeProps {
             : null);
     result.setBackgroundColor(
         props.hasKey(ViewProps.BACKGROUND_COLOR)
-            // NULLSAFE_FIXME[Parameter Not Nullable]
             ? props.getInt(ViewProps.BACKGROUND_COLOR, 0)
             : null);
     result.setOpacity(getFloatProp(props, ViewProps.OPACITY, Float.NaN));
@@ -269,7 +270,6 @@ public class TextAttributeProps {
     result.setIncludeFontPadding(getBooleanProp(props, ViewProps.INCLUDE_FONT_PADDING, true));
     result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
     result.setTextShadowOffset(
-        // NULLSAFE_FIXME[Parameter Not Nullable]
         props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
     result.setTextShadowRadius(getFloatProp(props, PROP_SHADOW_RADIUS, 1));
     result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
@@ -325,12 +325,10 @@ public class TextAttributeProps {
     }
   }
 
-  private static String getStringProp(ReactStylesDiffMap mProps, String name) {
+  private static @Nullable String getStringProp(ReactStylesDiffMap mProps, String name) {
     if (mProps.hasKey(name)) {
-      // NULLSAFE_FIXME[Return Not Nullable]
       return mProps.getString(name);
     } else {
-      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     }
   }
@@ -450,8 +448,7 @@ public class TextAttributeProps {
 
   private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
-    if (mIsColorSet) {
-      // NULLSAFE_FIXME[Nullable Dereference]
+    if (color != null) {
       mColor = color;
     }
   }
@@ -464,12 +461,12 @@ public class TextAttributeProps {
     return mBackgroundColor;
   }
 
-  private void setBackgroundColor(Integer color) {
+  private void setBackgroundColor(@Nullable Integer color) {
     // TODO: Don't apply background color to anchor TextView since it will be applied on the View
     // directly
     // if (!isVirtualAnchor()) {
     mIsBackgroundColorSet = (color != null);
-    if (mIsBackgroundColorSet) {
+    if (color != null) {
       mBackgroundColor = color;
     }
     // }
@@ -491,8 +488,7 @@ public class TextAttributeProps {
     return mFontStyle;
   }
 
-  public String getFontFamily() {
-    // NULLSAFE_FIXME[Return Not Nullable]
+  public @Nullable String getFontFamily() {
     return mFontFamily;
   }
 
@@ -598,8 +594,7 @@ public class TextAttributeProps {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
-  public String getFontFeatureSettings() {
-    // NULLSAFE_FIXME[Return Not Nullable]
+  public @Nullable String getFontFeatureSettings() {
     return mFontFeatureSettings;
   }
 
@@ -641,7 +636,7 @@ public class TextAttributeProps {
     return mIsLineThroughTextDecorationSet;
   }
 
-  private void setTextShadowOffset(ReadableMap offsetMap) {
+  private void setTextShadowOffset(@Nullable ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
 
@@ -729,8 +724,7 @@ public class TextAttributeProps {
     }
   }
 
-  public AccessibilityRole getAccessibilityRole() {
-    // NULLSAFE_FIXME[Return Not Nullable]
+  public @Nullable AccessibilityRole getAccessibilityRole() {
     return mAccessibilityRole;
   }
 
