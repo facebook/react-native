@@ -70,7 +70,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   private boolean mContainsImages;
   private int mNumberOfLines;
-  private TextUtils.TruncateAt mEllipsizeLocation;
+  private @Nullable TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
   private float mFontSize;
   private float mMinimumFontSize;
@@ -687,7 +687,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     applyTextAttributes();
   }
 
-  public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
+  public void setEllipsizeLocation(@Nullable TextUtils.TruncateAt ellipsizeLocation) {
     mEllipsizeLocation = ellipsizeLocation;
   }
 
