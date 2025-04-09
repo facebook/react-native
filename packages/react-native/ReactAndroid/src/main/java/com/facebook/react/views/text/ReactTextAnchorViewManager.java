@@ -72,6 +72,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     } else if (ellipsizeMode.equals("middle")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.MIDDLE);
     } else if (ellipsizeMode.equals("clip")) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       view.setEllipsizeLocation(null);
     } else {
       FLog.w(ReactConstants.TAG, "Invalid ellipsizeMode: " + ellipsizeMode);
