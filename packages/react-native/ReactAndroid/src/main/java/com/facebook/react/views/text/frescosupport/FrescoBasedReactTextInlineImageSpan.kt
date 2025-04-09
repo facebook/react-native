@@ -142,18 +142,17 @@ public class FrescoBasedReactTextInlineImageSpan(
             draweeHolder.controller = draweeController
             draweeControllerBuilder.reset()
 
-            drawable = draweeHolder.topLevelDrawable!!
-            drawable!!.setBounds(0, 0, _width, _height)
-            drawable!!
-                .takeIf { tintColor != 0 }
-                ?.apply {
+            drawable = checkNotNull(draweeHolder.topLevelDrawable).apply {
+                setBounds(0, 0, _width, _height)
+                if (tintColor != 0) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         colorFilter = BlendModeColorFilter(tintColor, BlendMode.SRC_IN)
                     } else {
                         setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
                     }
                 }
-            drawable!!.callback = this.textView
+                callback = textView
+            }
         }
 
         // NOTE: This drawing code is copied from DynamicDrawableSpan
