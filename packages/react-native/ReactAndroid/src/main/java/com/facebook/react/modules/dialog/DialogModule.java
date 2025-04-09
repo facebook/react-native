@@ -230,7 +230,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
    * MEMORY LEAKS.
    */
   private @Nullable FragmentManagerHelper getFragmentManagerHelper() {
-    Activity activity = getCurrentActivity();
+    Activity activity = getReactApplicationContext().getCurrentActivity();
     if (activity == null || !(activity instanceof FragmentActivity)) {
       return null;
     }
