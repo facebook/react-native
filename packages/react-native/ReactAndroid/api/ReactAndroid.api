@@ -4485,11 +4485,11 @@ public class com/facebook/react/uimanager/TouchTargetHelper$ViewTarget {
 	public fun hashCode ()I
 }
 
-public class com/facebook/react/uimanager/TransformHelper {
-	public fun <init> ()V
-	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[D)V
-	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;)V
-	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;Z)V
+public final class com/facebook/react/uimanager/TransformHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/TransformHelper;
+	public static final fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[D)V
+	public static final fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;)V
+	public static final fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;Z)V
 }
 
 public abstract interface class com/facebook/react/uimanager/UIBlock {
