@@ -18,6 +18,7 @@ import android.view.Gravity;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
  * Spannable} object constructed in superclass.
  */
 @LegacyArchitecture
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
@@ -246,7 +248,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
-          // NULLSAFE_FIXME[Not Vetted Third-Party]
           BoringLayout.make(
               text,
               textPaint,
@@ -356,9 +357,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   }
 
   @Override
-  @Nullable
-  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
-  public Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
+  public @Nullable Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
     // Run flexbox on and return the descendants which are inline views.
 
     if (mInlineViews == null || mInlineViews.isEmpty()) {
@@ -374,7 +373,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
     for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
       ReactShadowNode child = mInlineViews.get(placeholder.getReactTag());
-      // NULLSAFE_FIXME[Nullable Dereference]
+      Assertions.assertNotNull(child);
       child.calculateLayout();
       shadowNodes.add(child);
     }
