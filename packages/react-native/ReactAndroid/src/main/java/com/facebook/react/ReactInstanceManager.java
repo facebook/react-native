@@ -96,7 +96,7 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -357,7 +357,7 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          boolean isFabric = ReactNativeFeatureFlags.enableFabricRenderer();
+          boolean isFabric = ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer();
           rootView.setIsFabric(isFabric);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, new Bundle());
           return rootView;
@@ -1485,7 +1485,7 @@ public class ReactInstanceManager {
     // architecture so it will always be there.
     catalystInstance.getRuntimeScheduler();
 
-    if (ReactNativeFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
+    if (ReactNativeNewArchitectureFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
           mTMMDelegateBuilder
               .setPackages(mPackages)
