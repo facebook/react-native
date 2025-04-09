@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -31,6 +32,7 @@ import java.util.Objects;
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It
  * uses the event coordinates to traverse the view hierarchy and return a suitable view.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TouchTargetHelper {
 
   private static final float[] mEventCoords = new float[2];
@@ -140,9 +142,11 @@ public class TouchTargetHelper {
         pathAccumulator = pathAccumulator.subList(firstReactAncestor, pathAccumulator.size());
       }
 
-      int targetTag = getTouchTargetForView(reactTargetView, viewCoords[0], viewCoords[1]);
-      if (targetTag != reactTargetView.getId()) {
-        pathAccumulator.add(0, new ViewTarget(targetTag, (View) null));
+      if (reactTargetView != null) {
+        int targetTag = getTouchTargetForView(reactTargetView, viewCoords[0], viewCoords[1]);
+        if (targetTag != reactTargetView.getId()) {
+          pathAccumulator.add(0, new ViewTarget(targetTag, (View) null));
+        }
       }
     }
 
@@ -150,7 +154,7 @@ public class TouchTargetHelper {
   }
 
   @SuppressLint("ResourceType")
-  private static View findClosestReactAncestor(View view) {
+  private static @Nullable View findClosestReactAncestor(View view) {
     while (view != null && view.getId() <= 0) {
       view = (View) view.getParent();
     }
@@ -176,11 +180,11 @@ public class TouchTargetHelper {
    * be relative to the current viewGroup. When the method returns, it will contain the eventCoords
    * relative to the targetView found.
    */
-  private static View findTouchTargetView(
+  private static @Nullable View findTouchTargetView(
       float[] eventCoords,
       View view,
       EnumSet<TouchTargetReturnType> allowReturnTouchTargetTypes,
-      List<ViewTarget> pathAccumulator) {
+      @Nullable List<ViewTarget> pathAccumulator) {
     // We prefer returning a child, so we check for a child that can handle the touch first
     if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.CHILD)
         && view instanceof ViewGroup) {
@@ -422,7 +426,7 @@ public class TouchTargetHelper {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
       // If the object is compared with itself then return true
       if (o == this) {
         return true;

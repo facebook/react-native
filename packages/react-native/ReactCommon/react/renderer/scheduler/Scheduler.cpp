@@ -56,10 +56,8 @@ Scheduler::Scheduler(
 
   runtimeScheduler_ = weakRuntimeScheduler.value().lock().get();
 
-  if (ReactNativeFeatureFlags::enableUIConsistency()) {
-    runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
-        uiManager->getShadowTreeRevisionConsistencyManager());
-  }
+  runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
+      uiManager->getShadowTreeRevisionConsistencyManager());
 
   if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
@@ -318,6 +316,24 @@ void Scheduler::uiManagerDidSetIsJSResponder(
     delegate_->schedulerDidSetIsJSResponder(
         ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
   }
+}
+
+void Scheduler::uiManagerShouldSynchronouslyUpdateViewOnUIThread(
+    Tag tag,
+    const folly::dynamic& props) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldSynchronouslyUpdateViewOnUIThread(tag, props);
+  }
+}
+
+void Scheduler::uiManagerShouldAddEventListener(
+    std::shared_ptr<const EventListener> listener) {
+  addEventListener(listener);
+}
+
+void Scheduler::uiManagerShouldRemoveEventListener(
+    const std::shared_ptr<const EventListener>& listener) {
+  removeEventListener(listener);
 }
 
 void Scheduler::reportMount(SurfaceId surfaceId) const {

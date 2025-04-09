@@ -12,8 +12,8 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import type IntersectionObserverType from '../IntersectionObserver';
 import type {Root} from '@react-native/fantom';
+import type IntersectionObserverType from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';

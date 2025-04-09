@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Default value: `CGRectZero`.
  */
-@property (nonatomic, assign) CGRect frame;
+@property (nonatomic, assign) CGRect frameInContainerSpace;
 @end
 
 NS_ASSUME_NONNULL_END

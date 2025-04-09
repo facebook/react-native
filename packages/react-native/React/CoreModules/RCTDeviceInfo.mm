@@ -203,7 +203,9 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
   RCTAssert(_moduleRegistry, @"Failed to get exported dimensions: RCTModuleRegistry is nil");
   RCTAccessibilityManager *accessibilityManager =
       (RCTAccessibilityManager *)[_moduleRegistry moduleForName:"AccessibilityManager"];
-  RCTAssert(accessibilityManager, @"Failed to get exported dimensions: AccessibilityManager is nil");
+  if (!accessibilityManager) {
+    return nil;
+  }
   CGFloat fontScale = accessibilityManager ? accessibilityManager.multiplier : 1.0;
   return RCTExportedDimensions(fontScale);
 }

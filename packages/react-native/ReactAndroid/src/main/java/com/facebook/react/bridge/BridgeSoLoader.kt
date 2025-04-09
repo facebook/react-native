@@ -16,7 +16,7 @@ import com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE
 @LegacyArchitecture
 internal object BridgeSoLoader {
   init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("BridgeSoLoader")
+    LegacyArchitectureLogger.assertLegacyArchitecture("BridgeSoLoader")
   }
 
   @JvmStatic
@@ -35,7 +35,6 @@ internal object BridgeSoLoader {
 
   @get:JvmStatic
   @get:JvmName("isInitialized")
-  @Volatile
   var initialized: Boolean = false
     private set
 }

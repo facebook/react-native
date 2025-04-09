@@ -35,7 +35,7 @@ type TextForwardRef = React.ElementRef<
  *
  * @see https://reactnative.dev/docs/text
  */
-const Text: component(
+const TextImpl: component(
   ref?: React.RefSetter<TextForwardRef>,
   ...props: TextProps
 ) = React.forwardRef(
@@ -330,7 +330,7 @@ const Text: component(
   },
 );
 
-Text.displayName = 'Text';
+TextImpl.displayName = 'Text';
 
 type TextPressabilityProps = $ReadOnly<{
   onLongPress?: ?(event: GestureResponderEvent) => mixed,
@@ -536,4 +536,4 @@ const verticalAlignToTextAlignVerticalMap = {
   middle: 'center',
 };
 
-export default Text;
+export default TextImpl;

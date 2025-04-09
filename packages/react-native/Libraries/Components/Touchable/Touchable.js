@@ -144,7 +144,7 @@ const States = {
   ERROR: 'ERROR',
 };
 
-type State =
+type TouchableState =
   | typeof States.NOT_RESPONDER
   | typeof States.RESPONDER_INACTIVE_PRESS_IN
   | typeof States.RESPONDER_INACTIVE_PRESS_OUT
@@ -397,7 +397,7 @@ const TouchableMixinImpl = {
    */
   touchableGetInitialState: function (): {
     touchable: {
-      touchState: ?State,
+      touchState: ?TouchableState,
       responderID: ?GestureResponderEvent['currentTarget'],
     },
   } {
@@ -806,7 +806,7 @@ const TouchableMixinImpl = {
     this.longPressDelayTimeout = null;
   },
 
-  _isHighlight: function (state: State): boolean {
+  _isHighlight: function (state: TouchableState): boolean {
     return (
       state === States.RESPONDER_ACTIVE_PRESS_IN ||
       state === States.RESPONDER_ACTIVE_LONG_PRESS_IN
@@ -849,8 +849,8 @@ const TouchableMixinImpl = {
   /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
    * Flow's LTI update could not be added via codemod */
   _performSideEffectsForTransition: function (
-    curState: State,
-    nextState: State,
+    curState: TouchableState,
+    nextState: TouchableState,
     signal: Signal,
     e: GestureResponderEvent,
   ) {

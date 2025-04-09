@@ -58,6 +58,25 @@ class UIManagerDelegate {
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 
+  /*
+   * Synchronous view update.
+   */
+  virtual void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
+      Tag tag,
+      const folly::dynamic& props) = 0;
+
+  /*
+   * Add event listener.
+   */
+  virtual void uiManagerShouldAddEventListener(
+      std::shared_ptr<const EventListener> listener) = 0;
+
+  /*
+   * Remove event listener.
+   */
+  virtual void uiManagerShouldRemoveEventListener(
+      const std::shared_ptr<const EventListener>& listener) = 0;
+
   virtual ~UIManagerDelegate() noexcept = default;
 };
 

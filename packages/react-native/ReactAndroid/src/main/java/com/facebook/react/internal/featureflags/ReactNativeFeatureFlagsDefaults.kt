@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<309ae9cf008963de368916b3d28c5491>>
+ * @generated SignedSource<<b2ce97a43a2fdf285fe860183207474b>>
  */
 
 /**
@@ -29,7 +29,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
+  override fun disableMainQueueSyncDispatchIOS(): Boolean = false
+
   override fun disableMountItemReorderingAndroid(): Boolean = false
+
+  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = true
+
+  override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
@@ -43,9 +49,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricRenderer(): Boolean = false
 
-  override fun enableIOSViewClipToPaddingBox(): Boolean = false
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
 
-  override fun enableImagePrefetchingAndroid(): Boolean = false
+  override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean = false
 
@@ -67,8 +73,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
-  override fun enableUIConsistency(): Boolean = false
-
   override fun enableViewCulling(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
@@ -79,15 +83,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
-  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
+  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
   override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
-
-  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 

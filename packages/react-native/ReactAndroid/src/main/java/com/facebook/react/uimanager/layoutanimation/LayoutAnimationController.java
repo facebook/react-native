@@ -31,7 +31,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 public class LayoutAnimationController {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "LayoutAnimationController", LegacyArchitectureLogLevel.WARNING);
   }
 

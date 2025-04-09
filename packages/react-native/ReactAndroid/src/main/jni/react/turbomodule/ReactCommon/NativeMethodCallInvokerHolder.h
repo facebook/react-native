@@ -19,14 +19,15 @@ class NativeMethodCallInvokerHolder
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl;";
 
-  static void registerNatives();
-  std::shared_ptr<NativeMethodCallInvoker> getNativeMethodCallInvoker();
+  std::shared_ptr<NativeMethodCallInvoker> getNativeMethodCallInvoker() {
+    return nativeMethodCallInvoker_;
+  }
 
  private:
   friend HybridBase;
   NativeMethodCallInvokerHolder(
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker);
-  std::shared_ptr<NativeMethodCallInvoker> _nativeMethodCallInvoker;
+  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
 };
 
 } // namespace facebook::react

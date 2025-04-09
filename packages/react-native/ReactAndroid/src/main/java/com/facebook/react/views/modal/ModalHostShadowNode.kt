@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.modal
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.ReactShadowNodeImpl
 
@@ -18,6 +19,7 @@ import com.facebook.react.uimanager.ReactShadowNodeImpl
  * to be the window size. This will then cause the children of the Modal to layout as if they can
  * fill the window.
  */
+@LegacyArchitecture
 @Deprecated("This class is no longer used and will be removed soon.")
 internal class ModalHostShadowNode : LayoutShadowNode() {
   /**

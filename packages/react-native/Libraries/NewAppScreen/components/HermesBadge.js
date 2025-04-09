@@ -13,7 +13,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
-import React from 'react';
+import * as React from 'react';
 
 const HermesBadge = (): React.Node => {
   const isDarkMode = useColorScheme() === 'dark';

@@ -113,6 +113,14 @@ struct RuntimeSamplingProfile {
           threadId_(threadId),
           callStack_(std::move(callStack)) {}
 
+    // Movable.
+    Sample& operator=(Sample&&) = default;
+    Sample(Sample&&) = default;
+
+    // Not copyable.
+    Sample(const Sample&) = delete;
+    Sample& operator=(const Sample&) = delete;
+
     /// \return serialized unix timestamp in microseconds granularity. The
     /// moment when this sample was recorded.
     uint64_t getTimestamp() const {
@@ -142,6 +150,14 @@ struct RuntimeSamplingProfile {
 
   RuntimeSamplingProfile(std::string runtimeName, std::vector<Sample> samples)
       : runtimeName_(std::move(runtimeName)), samples_(std::move(samples)) {}
+
+  // Movable.
+  RuntimeSamplingProfile& operator=(RuntimeSamplingProfile&&) = default;
+  RuntimeSamplingProfile(RuntimeSamplingProfile&&) = default;
+
+  // Not copyable.
+  RuntimeSamplingProfile(const RuntimeSamplingProfile&) = delete;
+  RuntimeSamplingProfile& operator=(const RuntimeSamplingProfile&) = delete;
 
   /// \return name of the JavaScript runtime, where sampling occurred.
   const std::string& getRuntimeName() const {

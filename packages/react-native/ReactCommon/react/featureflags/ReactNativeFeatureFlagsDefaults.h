@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db41f69099c193919e931d3879541fe3>>
+ * @generated SignedSource<<cbebe90f86d5c1dde20d9a24c799d6a7>>
  */
 
 /**
@@ -39,7 +39,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableMainQueueSyncDispatchIOS() override {
+    return false;
+  }
+
   bool disableMountItemReorderingAndroid() override {
+    return false;
+  }
+
+  bool disableShadowNodeOnNewArchitectureAndroid() override {
+    return true;
+  }
+
+  bool enableAccessibilityOrder() override {
     return false;
   }
 
@@ -67,11 +79,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableIOSViewClipToPaddingBox() override {
+  bool enableFontScaleChangesUpdatingLayout() override {
     return false;
   }
 
-  bool enableImagePrefetchingAndroid() override {
+  bool enableIOSViewClipToPaddingBox() override {
     return false;
   }
 
@@ -115,10 +127,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableUIConsistency() override {
-    return false;
-  }
-
   bool enableViewCulling() override {
     return false;
   }
@@ -140,7 +148,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    return false;
+    return true;
   }
 
   bool fuseboxEnabledRelease() override {
@@ -152,10 +160,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool removeTurboModuleManagerDelegateMutex() override {
-    return false;
-  }
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
     return false;
   }
 

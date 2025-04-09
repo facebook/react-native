@@ -9,9 +9,11 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools.SimplePool;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Objects;
 
 /** Implementation of Dynamic wrapping a ReadableMap. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class DynamicFromMap implements Dynamic {
   private static final ThreadLocal<SimplePool<DynamicFromMap>> sPool =
       new ThreadLocal<SimplePool<DynamicFromMap>>() {
@@ -28,7 +30,11 @@ class DynamicFromMap implements Dynamic {
   private DynamicFromMap() {}
 
   public static DynamicFromMap create(ReadableMap map, String name) {
-    DynamicFromMap dynamic = sPool.get().acquire();
+    SimplePool<DynamicFromMap> poolValueHolder = sPool.get();
+    DynamicFromMap dynamic = null;
+    if (poolValueHolder != null) {
+      dynamic = poolValueHolder.acquire();
+    }
     if (dynamic == null) {
       dynamic = new DynamicFromMap();
     }
@@ -41,7 +47,10 @@ class DynamicFromMap implements Dynamic {
   public void recycle() {
     mMap = null;
     mName = null;
-    sPool.get().release(this);
+    SimplePool<DynamicFromMap> poolValueHolder = sPool.get();
+    if (poolValueHolder != null) {
+      poolValueHolder.release(this);
+    }
   }
 
   @Override
@@ -77,7 +86,7 @@ class DynamicFromMap implements Dynamic {
   }
 
   @Override
-  public String asString() {
+  public @Nullable String asString() {
     if (mMap == null || mName == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
@@ -85,7 +94,7 @@ class DynamicFromMap implements Dynamic {
   }
 
   @Override
-  public ReadableArray asArray() {
+  public @Nullable ReadableArray asArray() {
     if (mMap == null || mName == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }

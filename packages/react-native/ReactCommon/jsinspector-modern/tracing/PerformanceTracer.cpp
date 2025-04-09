@@ -301,12 +301,13 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
   });
 }
 
-folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
+folly::dynamic PerformanceTracer::serializeTraceEvent(
+    const TraceEvent& event) const {
   folly::dynamic result = folly::dynamic::object;
 
   if (event.id.has_value()) {
     std::array<char, 16> buffer{};
-    snprintf(buffer.data(), buffer.size(), "0x%08x", event.id.value());
+    snprintf(buffer.data(), buffer.size(), "0x%x", event.id.value());
     result["id"] = buffer.data();
   }
   result["name"] = event.name;

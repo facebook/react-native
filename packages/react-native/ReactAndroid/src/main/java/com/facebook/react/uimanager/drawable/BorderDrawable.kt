@@ -1053,7 +1053,7 @@ internal class BorderDrawable(
    * Multiplies the color with the given alpha.
    *
    * @param color color to be multiplied
-   * @param alpha value between 0 and 255
+   * @param rawAlpha value between 0 and 255
    * @return multiplied color
    */
   private fun multiplyColorAlpha(color: Int, rawAlpha: Int): Int {

@@ -8,9 +8,11 @@
 package com.facebook.react.uimanager
 
 import android.view.View
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import java.util.Date
+import org.junit.Before
 import org.junit.Test
 
 /** Test that verifies that spec of methods annotated with @ReactProp is correct */
@@ -29,6 +31,11 @@ class ReactPropAnnotationSetterSpecTest {
     override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? = null
 
     override fun updateExtraData(root: View, extraData: Any) = Unit
+  }
+
+  @Before
+  fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
   }
 
   @Test(expected = RuntimeException::class)

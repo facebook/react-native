@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1465adf7db643faefb579cafd9ef9dcf>>
+ * @generated SignedSource<<7dfd3c6be24565c6fcfd8c77222f4248>>
  */
 
 /**
@@ -43,7 +43,13 @@ class NativeReactNativeFeatureFlags
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
+  bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
+
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
+
+  bool disableShadowNodeOnNewArchitectureAndroid(jsi::Runtime& runtime);
+
+  bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
 
@@ -57,9 +63,9 @@ class NativeReactNativeFeatureFlags
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
 
-  bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
+  bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
-  bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+  bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableJSRuntimeGCOnMemoryPressureOnIOS(jsi::Runtime& runtime);
 
@@ -81,8 +87,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
-  bool enableUIConsistency(jsi::Runtime& runtime);
-
   bool enableViewCulling(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
@@ -100,8 +104,6 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool removeTurboModuleManagerDelegateMutex(jsi::Runtime& runtime);
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

@@ -87,6 +87,13 @@ int64_t getDeltaNanos(double jsTime) {
         getPerfettoWebPerfTrackSync(toPerfettoTrackName(trackName)),
         performanceNowToPerfettoTraceTime(startTime));
   }
+#elif defined(WITH_FBSYSTRACE)
+  static const char* kTrackName = "# Web Performance: Markers";
+  fbsystrace_instant_for_track_with_timedelta(
+      TRACE_TAG_REACT_APPS,
+      kTrackName,
+      eventName.data(),
+      getDeltaNanos(startTime));
 #endif
 }
 

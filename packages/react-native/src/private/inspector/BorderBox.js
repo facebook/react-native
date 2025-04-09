@@ -12,7 +12,7 @@
 
 import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
 
-import React from 'react';
+import * as React from 'react';
 
 const View = require('../../../Libraries/Components/View/View').default;
 

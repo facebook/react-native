@@ -101,6 +101,11 @@ declare export default typeof NativeAlertManager;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js 1`] = `
+"declare export default typeof RCTAlertManager;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js.flow 1`] = `
 "declare export default {
   alertWithArgs(
@@ -128,8 +133,8 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   | { [key: string]: Mapping, ... }
   | AnimatedValue
   | AnimatedValueXY;
-export type EventConfig = {
-  listener?: ?Function,
+export type EventConfig<T> = {
+  listener?: ?(NativeSyntheticEvent<T>) => mixed,
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
 };
@@ -140,7 +145,10 @@ declare export function attachNativeEvent(
   platformConfig: ?PlatformConfig
 ): { detach: () => void };
 declare export class AnimatedEvent {
-  constructor(argMapping: $ReadOnlyArray<?Mapping>, config: EventConfig): void;
+  constructor(
+    argMapping: $ReadOnlyArray<?Mapping>,
+    config: EventConfig<any>
+  ): void;
 }
 "
 `;
@@ -182,6 +190,8 @@ export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
 export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
+export type { WithAnimatedValue } from \\"./createAnimatedComponent\\";
+export type { AnimatedComponentType as AnimatedComponent } from \\"./createAnimatedComponent\\";
 declare export const add: $FlowFixMe;
 declare export const attachNativeEvent: $FlowFixMe;
 declare export const createAnimatedComponent: $FlowFixMe;
@@ -278,9 +288,9 @@ declare function unforkEvent(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): void;
-declare const event: (
+declare const event: <T>(
   argMapping: $ReadOnlyArray<?Mapping>,
-  config: EventConfig
+  config: EventConfig<T>
 ) => any;
 type AnimatedNumeric =
   | AnimatedAddition
@@ -612,9 +622,12 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedScrollView.js 1`] = `
-"type Props = React.ElementConfig<typeof ScrollView>;
-type Instance = React.ElementRef<typeof ScrollView>;
-declare const AnimatedScrollView: AnimatedComponentType<Props, Instance>;
+"type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
+type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
+declare const AnimatedScrollView: AnimatedComponentType<
+  AnimatedScrollViewProps,
+  AnimatedScrollViewInstance,
+>;
 declare export default typeof AnimatedScrollView;
 "
 `;
@@ -1245,11 +1258,6 @@ declare export default typeof File;
 `;
 
 exports[`public API should not change unintentionally Libraries/Blob/FileReader.js 1`] = `
-"declare export default FileReader;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Blob/FileReader_new.js 1`] = `
 "type ReadyState = 0 | 1 | 2;
 type ReaderResult = string | ArrayBuffer;
 declare class FileReader extends EventTarget {
@@ -1279,29 +1287,6 @@ declare class FileReader extends EventTarget {
   set onloadend(listener: ?EventCallback): void;
   get onprogress(): EventCallback | null;
   set onprogress(listener: ?EventCallback): void;
-}
-declare export default typeof FileReader;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Blob/FileReader_old.js 1`] = `
-"type ReadyState = 0 | 1 | 2;
-type ReaderResult = string | ArrayBuffer;
-declare class FileReader extends EventTarget {
-  static EMPTY: 0;
-  static LOADING: 1;
-  static DONE: 2;
-  EMPTY: 0;
-  LOADING: 1;
-  DONE: 2;
-  constructor(): void;
-  readAsArrayBuffer(blob: ?Blob): void;
-  readAsDataURL(blob: ?Blob): void;
-  readAsText(blob: ?Blob, encoding: string): void;
-  abort(): void;
-  get readyState(): ReadyState;
-  get error(): ?Error;
-  get result(): ?ReaderResult;
 }
 declare export default typeof FileReader;
 "
@@ -1345,16 +1330,21 @@ declare export class URL {
 
 exports[`public API should not change unintentionally Libraries/Blob/URLSearchParams.js.flow 1`] = `
 "declare export class URLSearchParams {
-  constructor(params?: Record<string, string>): void;
+  constructor(
+    params?: Record<string, string> | string | Array<[string, string]>
+  ): void;
   append(key: string, value: string): void;
-  delete(name: string): empty;
-  get(name: string): empty;
-  getAll(name: string): empty;
-  has(name: string): empty;
-  set(name: string, value: string): empty;
-  sort(): empty;
+  delete(name: string): void;
+  get(name: string): string;
+  getAll(name: string): Array<string>;
+  has(name: string): boolean;
+  set(name: string, value: string): void;
+  sort(): void;
   @@iterator(): Iterator<[string, string]>;
   toString(): string;
+  keys(): Iterator<string>;
+  values(): Iterator<string>;
+  entries(): Iterator<[string, string]>;
 }
 "
 `;
@@ -1464,6 +1454,11 @@ declare export default typeof NativeAccessibilityManager;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/legacySendAccessibilityEvent.js 1`] = `
+"declare export default typeof legacySendAccessibilityEvent;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/legacySendAccessibilityEvent.js.flow 1`] = `
 "declare function legacySendAccessibilityEvent(
   reactTag: number,
@@ -1502,7 +1497,7 @@ declare export default typeof ActivityIndicatorViewNativeComponent;
 exports[`public API should not change unintentionally Libraries/Components/Button.js 1`] = `
 "export type ButtonProps = $ReadOnly<{
   title: string,
-  onPress: (event?: GestureResponderEvent) => mixed,
+  onPress?: (event?: GestureResponderEvent) => mixed,
   touchSoundDisabled?: ?boolean,
   color?: ?ColorValue,
   hasTVPreferredFocus?: ?boolean,
@@ -1561,11 +1556,21 @@ declare export default typeof AndroidDrawerLayoutNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js 1`] = `
+"declare export default typeof DrawerLayoutAndroid;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js.flow 1`] = `
 "export type {
   DrawerLayoutAndroidProps,
   DrawerSlideEvent,
 } from \\"./DrawerLayoutAndroidTypes\\";
-declare export default class DrawerLayoutAndroid
+declare export default typeof DrawerLayoutAndroid;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroidFallback.js 1`] = `
+"declare export default class DrawerLayoutAndroid
   extends React.Component<DrawerLayoutAndroidProps, DrawerLayoutAndroidState>
   implements DrawerLayoutAndroidMethods
 {
@@ -1665,7 +1670,7 @@ type KeyboardEventDefinitions = {
   keyboardWillChangeFrame: [KeyboardEvent],
   keyboardDidChangeFrame: [KeyboardEvent],
 };
-declare class Keyboard {
+declare class KeyboardImpl {
   constructor(): void;
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
@@ -1678,7 +1683,8 @@ declare class Keyboard {
   metrics(): ?KeyboardMetrics;
   scheduleLayoutAnimation(event: KeyboardEvent): void;
 }
-declare export default Keyboard;
+declare const Keyboard: KeyboardImpl;
+declare export default typeof Keyboard;
 "
 `;
 
@@ -1690,15 +1696,18 @@ exports[`public API should not change unintentionally Libraries/Components/Keybo
   enabled?: ?boolean,
   keyboardVerticalOffset?: number,
 }>;
-type State = {
+type KeyboardAvoidingViewState = {
   bottom: number,
 };
 declare class KeyboardAvoidingView
-  extends React.Component<KeyboardAvoidingViewProps, State>
+  extends React.Component<KeyboardAvoidingViewProps, KeyboardAvoidingViewState>
 {
   viewRef: { current: React.ElementRef<typeof View> | null, ... };
   constructor(props: KeyboardAvoidingViewProps): void;
-  componentDidUpdate(_: KeyboardAvoidingViewProps, prevState: State): void;
+  componentDidUpdate(
+    _: KeyboardAvoidingViewProps,
+    prevState: KeyboardAvoidingViewState
+  ): void;
   componentDidMount(): void;
   componentWillUnmount(): void;
   render(): React.Node;
@@ -1734,6 +1743,7 @@ declare export default typeof LayoutConformanceNativeComponent;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
 "type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
+export type { PressableAndroidRippleConfig };
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -1803,12 +1813,13 @@ declare export default function useAndroidRippleForView(
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.js 1`] = `
 "export type { ProgressBarAndroidProps };
-declare export default component(
+declare let ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<ProgressBarAndroidNativeComponentType>,
   >,
   ...props: ProgressBarAndroidProps
 );
+declare export default typeof ProgressBarAndroid;
 "
 `;
 
@@ -1932,23 +1943,40 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   animated?: boolean;
 }
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: ScrollView[\\"getScrollResponder\\"];
-  +getScrollableNode: ScrollView[\\"getScrollableNode\\"];
-  +getInnerViewNode: ScrollView[\\"getInnerViewNode\\"];
-  +getInnerViewRef: ScrollView[\\"getInnerViewRef\\"];
-  +getNativeScrollRef: ScrollView[\\"getNativeScrollRef\\"];
-  +scrollTo: ScrollView[\\"scrollTo\\"];
-  +scrollToEnd: ScrollView[\\"scrollToEnd\\"];
-  +flashScrollIndicators: ScrollView[\\"flashScrollIndicators\\"];
-  +scrollResponderZoomTo: ScrollView[\\"scrollResponderZoomTo\\"];
-  +scrollResponderScrollNativeHandleToKeyboard: ScrollView[\\"scrollResponderScrollNativeHandleToKeyboard\\"];
+  +getScrollResponder: () => ScrollResponderType;
+  +getScrollableNode: () => ?number;
+  +getInnerViewNode: () => ?number;
+  +getInnerViewRef: () => InnerViewInstance | null;
+  +getNativeScrollRef: () => HostInstance | null;
+  +scrollTo: (
+    options?: ScrollViewScrollToOptions | number,
+    deprecatedX?: number,
+    deprecatedAnimated?: boolean
+  ) => void;
+  +scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
+  +flashScrollIndicators: () => void;
+  +scrollResponderZoomTo: (
+    rect: {
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      animated?: boolean,
+    },
+    animated?: boolean
+  ) => void;
+  +scrollResponderScrollNativeHandleToKeyboard: (
+    nodeHandle: number | HostInstance,
+    additionalOffset?: number,
+    preventNegativeScrollOffset?: boolean
+  ) => void;
 }
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 export interface PublicScrollViewInstance
   extends HostInstance,
     ScrollViewImperativeMethods {}
-type InnerViewInstance = React.ElementRef<View>;
+type InnerViewInstance = React.ElementRef<typeof View>;
 export type ScrollViewPropsIOS = $ReadOnly<{
   automaticallyAdjustContentInsets?: ?boolean,
   automaticallyAdjustKeyboardInsets?: ?boolean,
@@ -1993,10 +2021,7 @@ type StickyHeaderComponentType = component(
   >,
   ...ScrollViewStickyHeaderProps
 );
-export type ScrollViewProps = $ReadOnly<{
-  ...ViewProps,
-  ...ScrollViewPropsIOS,
-  ...ScrollViewPropsAndroid,
+type ScrollViewBaseProps = $ReadOnly<{
   contentContainerStyle?: ?ViewStyleProp,
   contentOffset?: ?PointProp,
   disableIntervalMomentum?: ?boolean,
@@ -2033,69 +2058,25 @@ export type ScrollViewProps = $ReadOnly<{
   snapToStart?: ?boolean,
   snapToEnd?: ?boolean,
   removeClippedSubviews?: ?boolean,
-  refreshControl?: ?React.Node,
+  refreshControl?: ?React.MixedElement,
   children?: React.Node,
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
-type State = {
-  layoutHeight: ?number,
-};
+export type ScrollViewProps = $ReadOnly<{
+  ...ViewProps,
+  ...ScrollViewPropsIOS,
+  ...ScrollViewPropsAndroid,
+  ...ScrollViewBaseProps,
+}>;
 export type ScrollViewComponentStatics = $ReadOnly<{
   Context: typeof ScrollViewContext,
 }>;
-declare class ScrollView extends React.Component<ScrollViewProps, State> {
-  static Context: typeof ScrollViewContext;
-  constructor(props: ScrollViewProps): void;
-  state: State;
-  componentDidMount(): void;
-  componentDidUpdate(prevProps: ScrollViewProps): void;
-  componentWillUnmount(): void;
-  getScrollResponder: () => ScrollResponderType;
-  getScrollableNode: () => ?number;
-  getInnerViewNode: () => ?number;
-  getInnerViewRef: () => InnerViewInstance | null;
-  getNativeScrollRef: () => HostInstance | null;
-  scrollTo: (
-    options?: ScrollViewScrollToOptions | number,
-    deprecatedX?: number,
-    deprecatedAnimated?: boolean
-  ) => void;
-  scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
-  flashScrollIndicators: () => void;
-  scrollResponderScrollNativeHandleToKeyboard: (
-    nodeHandle: number | HostInstance,
-    additionalOffset?: number,
-    preventNegativeScrollOffset?: boolean
-  ) => void;
-  scrollResponderZoomTo: (
-    rect: {
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      animated?: boolean,
-    },
-    animated?: boolean
-  ) => void;
-  scrollResponderKeyboardWillShow: (e: KeyboardEvent) => void;
-  scrollResponderKeyboardWillHide: (e: KeyboardEvent) => void;
-  scrollResponderKeyboardDidShow: (e: KeyboardEvent) => void;
-  scrollResponderKeyboardDidHide: (e: KeyboardEvent) => void;
-  render(): React.Node;
-}
-type RefForwarder<TNativeInstance, TPublicInstance> = {
-  getForwardingRef: (
-    ?React.RefSetter<TPublicInstance>
-  ) => (TNativeInstance | null) => void,
-  nativeInstance: TNativeInstance | null,
-  publicInstance: TPublicInstance | null,
-};
-declare const Wrapper: component(
+declare const ScrollViewWrapper: component(
   ref?: React.RefSetter<PublicScrollViewInstance>,
   ...props: ScrollViewProps
 );
-declare export default typeof Wrapper & ScrollViewComponentStatics;
+declare export default typeof ScrollViewWrapper & ScrollViewComponentStatics;
 "
 `;
 
@@ -2634,10 +2615,7 @@ declare export default HostComponent<{ ... }>;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTTextInputViewConfig.js 1`] = `
-"type PartialViewConfigWithoutName = $Rest<
-  PartialViewConfig,
-  { uiViewClassName: string },
->;
+"type PartialViewConfigWithoutName = Omit<PartialViewConfig, \\"uiViewClassName\\">;
 declare export default PartialViewConfigWithoutName;
 "
 `;
@@ -2648,7 +2626,8 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
   target: number,
   text: string,
 }>;
-type TextInputChangeEvent = NativeSyntheticEvent<TextInputChangeEventData>;
+export type TextInputChangeEvent =
+  NativeSyntheticEvent<TextInputChangeEventData>;
 export type TextInputEvent = NativeSyntheticEvent<
   $ReadOnly<{
     eventCount: number,
@@ -2672,17 +2651,19 @@ export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 type TargetEvent = $ReadOnly<{
   target: number,
+  ...
 }>;
 type TextInputFocusEventData = TargetEvent;
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-type Selection = $ReadOnly<{
+export type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
 type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
+  ...
 }>;
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
@@ -2691,6 +2672,7 @@ type TextInputKeyPressEventData = $ReadOnly<{
   key: string,
   target?: ?number,
   eventCount: number,
+  ...
 }>;
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
@@ -2698,6 +2680,7 @@ type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
+  ...
 }>;
 export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
@@ -2705,6 +2688,7 @@ type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
+  ...
 }>;
 export type TextInputSubmitEditingEvent =
   NativeSyntheticEvent<TextInputSubmitEditingEventData>;
@@ -2849,367 +2833,6 @@ export type TextInputIOSProps = $ReadOnly<{
 export type TextInputAndroidProps = $ReadOnly<{
   cursorColor?: ?ColorValue,
   selectionHandleColor?: ?ColorValue,
-  disableFullscreenUI?: ?boolean,
-  importantForAutofill?: ?(
-    | \\"auto\\"
-    | \\"no\\"
-    | \\"noExcludeDescendants\\"
-    | \\"yes\\"
-    | \\"yesExcludeDescendants\\"
-  ),
-  inlineImageLeft?: ?string,
-  inlineImagePadding?: ?number,
-  numberOfLines?: ?number,
-  returnKeyLabel?: ?string,
-  rows?: ?number,
-  showSoftInputOnFocus?: ?boolean,
-  textBreakStrategy?: ?(\\"simple\\" | \\"highQuality\\" | \\"balanced\\"),
-  underlineColorAndroid?: ?ColorValue,
-}>;
-export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
-  ...TextInputIOSProps,
-  ...TextInputAndroidProps,
-  autoCapitalize?: ?AutoCapitalize,
-  autoComplete?: ?(
-    | \\"additional-name\\"
-    | \\"address-line1\\"
-    | \\"address-line2\\"
-    | \\"birthdate-day\\"
-    | \\"birthdate-full\\"
-    | \\"birthdate-month\\"
-    | \\"birthdate-year\\"
-    | \\"cc-csc\\"
-    | \\"cc-exp\\"
-    | \\"cc-exp-day\\"
-    | \\"cc-exp-month\\"
-    | \\"cc-exp-year\\"
-    | \\"cc-number\\"
-    | \\"cc-name\\"
-    | \\"cc-given-name\\"
-    | \\"cc-middle-name\\"
-    | \\"cc-family-name\\"
-    | \\"cc-type\\"
-    | \\"country\\"
-    | \\"current-password\\"
-    | \\"email\\"
-    | \\"family-name\\"
-    | \\"gender\\"
-    | \\"given-name\\"
-    | \\"honorific-prefix\\"
-    | \\"honorific-suffix\\"
-    | \\"name\\"
-    | \\"name-family\\"
-    | \\"name-given\\"
-    | \\"name-middle\\"
-    | \\"name-middle-initial\\"
-    | \\"name-prefix\\"
-    | \\"name-suffix\\"
-    | \\"new-password\\"
-    | \\"nickname\\"
-    | \\"one-time-code\\"
-    | \\"organization\\"
-    | \\"organization-title\\"
-    | \\"password\\"
-    | \\"password-new\\"
-    | \\"postal-address\\"
-    | \\"postal-address-country\\"
-    | \\"postal-address-extended\\"
-    | \\"postal-address-extended-postal-code\\"
-    | \\"postal-address-locality\\"
-    | \\"postal-address-region\\"
-    | \\"postal-code\\"
-    | \\"street-address\\"
-    | \\"sms-otp\\"
-    | \\"tel\\"
-    | \\"tel-country-code\\"
-    | \\"tel-national\\"
-    | \\"tel-device\\"
-    | \\"url\\"
-    | \\"username\\"
-    | \\"username-new\\"
-    | \\"off\\"
-  ),
-  autoCorrect?: ?boolean,
-  autoFocus?: ?boolean,
-  allowFontScaling?: ?boolean,
-  caretHidden?: ?boolean,
-  contextMenuHidden?: ?boolean,
-  defaultValue?: ?Stringish,
-  editable?: ?boolean,
-  forwardedRef?: ?React.RefSetter<TextInputInstance>,
-  enterKeyHint?: ?EnterKeyHintTypeOptions,
-  inputMode?: ?InputModeOptions,
-  keyboardType?: ?KeyboardTypeOptions,
-  maxFontSizeMultiplier?: ?number,
-  maxLength?: ?number,
-  multiline?: ?boolean,
-  onBlur?: ?(e: TextInputBlurEvent) => mixed,
-  onChange?: ?(e: TextInputChangeEvent) => mixed,
-  unstable_onChangeSync?: ?(e: TextInputChangeEvent) => mixed,
-  onChangeText?: ?(text: string) => mixed,
-  unstable_onChangeTextSync?: ?(text: string) => mixed,
-  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
-  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
-  onFocus?: ?(e: TextInputFocusEvent) => mixed,
-  onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
-  unstable_onKeyPressSync?: ?(e: TextInputKeyPressEvent) => mixed,
-  onPress?: ?(event: GestureResponderEvent) => mixed,
-  onPressIn?: ?(event: GestureResponderEvent) => mixed,
-  onPressOut?: ?(event: GestureResponderEvent) => mixed,
-  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
-  onScroll?: ?(e: ScrollEvent) => mixed,
-  placeholder?: ?Stringish,
-  placeholderTextColor?: ?ColorValue,
-  readOnly?: ?boolean,
-  returnKeyType?: ?ReturnKeyTypeOptions,
-  secureTextEntry?: ?boolean,
-  selection?: ?$ReadOnly<{
-    start: number,
-    end?: ?number,
-  }>,
-  selectionColor?: ?ColorValue,
-  selectTextOnFocus?: ?boolean,
-  blurOnSubmit?: ?boolean,
-  submitBehavior?: ?SubmitBehavior,
-  style?: ?TextStyleProp,
-  value?: ?Stringish,
-}>;
-export interface TextInputInstance extends HostInstance {
-  +clear: () => void;
-  +isFocused: () => boolean;
-  +getNativeRef: () => ?HostInstance;
-  +setSelection: (start: number, end: number) => void;
-}
-type InternalTextInput = component(
-  ref?: React.RefSetter<TextInputInstance>,
-  ...TextInputProps
-);
-export type TextInputComponentStatics = $ReadOnly<{
-  State: $ReadOnly<{
-    currentlyFocusedInput: () => ?HostInstance,
-    currentlyFocusedField: () => ?number,
-    focusTextInput: (textField: ?HostInstance) => void,
-    blurTextInput: (textField: ?HostInstance) => void,
-  }>,
-}>;
-export type TextInputType = InternalTextInput & TextInputComponentStatics;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
-"type TextInputChangeEventData = $ReadOnly<{
-  eventCount: number,
-  target: number,
-  text: string,
-}>;
-export type TextInputChangeEvent =
-  NativeSyntheticEvent<TextInputChangeEventData>;
-export type TextInputEvent = NativeSyntheticEvent<
-  $ReadOnly<{
-    eventCount: number,
-    previousText: string,
-    range: $ReadOnly<{
-      start: number,
-      end: number,
-    }>,
-    target: number,
-    text: string,
-  }>,
->;
-type TextInputContentSizeChangeEventData = $ReadOnly<{
-  target: number,
-  contentSize: $ReadOnly<{
-    width: number,
-    height: number,
-  }>,
-}>;
-export type TextInputContentSizeChangeEvent =
-  NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
-export type TargetEvent = $ReadOnly<{
-  target: number,
-}>;
-type TextInputFocusEventData = TargetEvent;
-export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-type TextInputScrollEventData = {
-  contentOffset: { x: number, y: number },
-};
-export type TextInputScrollEvent =
-  NativeSyntheticEvent<TextInputScrollEventData>;
-type Selection = $ReadOnly<{
-  start: number,
-  end: number,
-}>;
-type TextInputSelectionChangeEventData = $ReadOnly<{
-  ...TargetEvent,
-  selection: Selection,
-}>;
-export type TextInputSelectionChangeEvent =
-  NativeSyntheticEvent<TextInputSelectionChangeEventData>;
-type TextInputKeyPressEventData = $ReadOnly<{
-  ...TargetEvent,
-  key: string,
-  target?: ?number,
-  eventCount?: ?number,
-}>;
-export type TextInputKeyPressEvent =
-  NativeSyntheticEvent<TextInputKeyPressEventData>;
-type TextInputEndEditingEventData = $ReadOnly<{
-  ...TargetEvent,
-  eventCount: number,
-  text: string,
-}>;
-export type TextInputEndEditingEvent =
-  NativeSyntheticEvent<TextInputEndEditingEventData>;
-type TextInputSubmitEditingEventData = $ReadOnly<{
-  ...TargetEvent,
-  eventCount: number,
-  text: string,
-}>;
-export type TextInputSubmitEditingEvent =
-  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
-export type TextInputEditingEvent =
-  NativeSyntheticEvent<TextInputEndEditingEventData>;
-type DataDetectorTypesType =
-  | \\"phoneNumber\\"
-  | \\"link\\"
-  | \\"address\\"
-  | \\"calendarEvent\\"
-  | \\"trackingNumber\\"
-  | \\"flightNumber\\"
-  | \\"lookupSuggestion\\"
-  | \\"none\\"
-  | \\"all\\";
-export type KeyboardType =
-  | \\"default\\"
-  | \\"email-address\\"
-  | \\"numeric\\"
-  | \\"phone-pad\\"
-  | \\"number-pad\\"
-  | \\"decimal-pad\\"
-  | \\"url\\";
-export type KeyboardTypeIOS =
-  | \\"ascii-capable\\"
-  | \\"numbers-and-punctuation\\"
-  | \\"name-phone-pad\\"
-  | \\"twitter\\"
-  | \\"web-search\\"
-  | \\"ascii-capable-number-pad\\";
-export type KeyboardTypeAndroid = \\"visible-password\\";
-export type KeyboardTypeOptions =
-  | KeyboardType
-  | KeyboardTypeIOS
-  | KeyboardTypeAndroid;
-export type InputModeOptions =
-  | \\"none\\"
-  | \\"text\\"
-  | \\"decimal\\"
-  | \\"numeric\\"
-  | \\"tel\\"
-  | \\"search\\"
-  | \\"email\\"
-  | \\"url\\";
-export type ReturnKeyType = \\"done\\" | \\"go\\" | \\"next\\" | \\"search\\" | \\"send\\";
-export type ReturnKeyTypeIOS =
-  | \\"default\\"
-  | \\"emergency-call\\"
-  | \\"google\\"
-  | \\"join\\"
-  | \\"route\\"
-  | \\"yahoo\\";
-export type ReturnKeyTypeAndroid = \\"none\\" | \\"previous\\";
-export type ReturnKeyTypeOptions =
-  | ReturnKeyType
-  | ReturnKeyTypeIOS
-  | ReturnKeyTypeAndroid;
-export type SubmitBehavior = \\"submit\\" | \\"blurAndSubmit\\" | \\"newline\\";
-export type AutoCapitalize = \\"none\\" | \\"sentences\\" | \\"words\\" | \\"characters\\";
-export type TextContentType =
-  | \\"none\\"
-  | \\"URL\\"
-  | \\"addressCity\\"
-  | \\"addressCityAndState\\"
-  | \\"addressState\\"
-  | \\"countryName\\"
-  | \\"creditCardNumber\\"
-  | \\"creditCardExpiration\\"
-  | \\"creditCardExpirationMonth\\"
-  | \\"creditCardExpirationYear\\"
-  | \\"creditCardSecurityCode\\"
-  | \\"creditCardType\\"
-  | \\"creditCardName\\"
-  | \\"creditCardGivenName\\"
-  | \\"creditCardMiddleName\\"
-  | \\"creditCardFamilyName\\"
-  | \\"emailAddress\\"
-  | \\"familyName\\"
-  | \\"fullStreetAddress\\"
-  | \\"givenName\\"
-  | \\"jobTitle\\"
-  | \\"location\\"
-  | \\"middleName\\"
-  | \\"name\\"
-  | \\"namePrefix\\"
-  | \\"nameSuffix\\"
-  | \\"nickname\\"
-  | \\"organizationName\\"
-  | \\"postalCode\\"
-  | \\"streetAddressLine1\\"
-  | \\"streetAddressLine2\\"
-  | \\"sublocality\\"
-  | \\"telephoneNumber\\"
-  | \\"username\\"
-  | \\"password\\"
-  | \\"newPassword\\"
-  | \\"oneTimeCode\\"
-  | \\"birthdate\\"
-  | \\"birthdateDay\\"
-  | \\"birthdateMonth\\"
-  | \\"birthdateYear\\"
-  | \\"cellularEID\\"
-  | \\"cellularIMEI\\"
-  | \\"dateTime\\"
-  | \\"flightNumber\\"
-  | \\"shipmentTrackingNumber\\";
-export type EnterKeyHintTypeAndroid = \\"previous\\";
-export type EnterKeyHintTypeIOS = \\"enter\\";
-export type EnterKeyHintType = \\"done\\" | \\"go\\" | \\"next\\" | \\"search\\" | \\"send\\";
-export type EnterKeyHintTypeOptions =
-  | EnterKeyHintType
-  | EnterKeyHintTypeAndroid
-  | EnterKeyHintTypeIOS;
-type PasswordRules = string;
-export type TextInputIOSProps = $ReadOnly<{
-  disableKeyboardShortcuts?: ?boolean,
-  clearButtonMode?: ?(\\"never\\" | \\"while-editing\\" | \\"unless-editing\\" | \\"always\\"),
-  clearTextOnFocus?: ?boolean,
-  dataDetectorTypes?:
-    | ?DataDetectorTypesType
-    | $ReadOnlyArray<DataDetectorTypesType>,
-  enablesReturnKeyAutomatically?: ?boolean,
-  inputAccessoryViewID?: ?string,
-  inputAccessoryViewButtonLabel?: ?string,
-  keyboardAppearance?: ?(\\"default\\" | \\"light\\" | \\"dark\\"),
-  passwordRules?: ?PasswordRules,
-  rejectResponderTermination?: ?boolean,
-  scrollEnabled?: ?boolean,
-  spellCheck?: ?boolean,
-  textContentType?: ?TextContentType,
-  lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
-  lineBreakModeIOS?: ?(
-    | \\"wordWrapping\\"
-    | \\"char\\"
-    | \\"clip\\"
-    | \\"head\\"
-    | \\"middle\\"
-    | \\"tail\\"
-  ),
-  smartInsertDelete?: ?boolean,
-}>;
-export type TextInputAndroidProps = $ReadOnly<{
-  cursorColor?: ?ColorValue,
   disableFullscreenUI?: ?boolean,
   importantForAutofill?: ?(
     | \\"auto\\"
@@ -3325,7 +2948,6 @@ type TextInputBaseProps = $ReadOnly<{
     end?: ?number,
   }>,
   selectionColor?: ?ColorValue,
-  selectionHandleColor?: ?ColorValue,
   selectTextOnFocus?: ?boolean,
   blurOnSubmit?: ?boolean,
   submitBehavior?: ?SubmitBehavior,
@@ -3338,6 +2960,60 @@ export type TextInputProps = $ReadOnly<{
   ...TextInputAndroidProps,
   ...TextInputBaseProps,
 }>;
+export interface TextInputInstance extends HostInstance {
+  +clear: () => void;
+  +isFocused: () => boolean;
+  +getNativeRef: () => ?HostInstance;
+  +setSelection: (start: number, end: number) => void;
+}
+type InternalTextInput = component(
+  ref?: React.RefSetter<TextInputInstance>,
+  ...TextInputProps
+);
+export type TextInputComponentStatics = $ReadOnly<{
+  State: $ReadOnly<{
+    currentlyFocusedInput: () => ?HostInstance,
+    currentlyFocusedField: () => ?number,
+    focusTextInput: (textField: ?HostInstance) => void,
+    blurTextInput: (textField: ?HostInstance) => void,
+  }>,
+}>;
+export type TextInputType = InternalTextInput & TextInputComponentStatics;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
+"export type {
+  AutoCapitalize,
+  EnterKeyHintType,
+  EnterKeyHintTypeAndroid,
+  EnterKeyHintTypeIOS,
+  EnterKeyHintTypeOptions,
+  InputModeOptions,
+  KeyboardType,
+  KeyboardTypeAndroid,
+  KeyboardTypeIOS,
+  KeyboardTypeOptions,
+  ReturnKeyType,
+  ReturnKeyTypeAndroid,
+  ReturnKeyTypeIOS,
+  ReturnKeyTypeOptions,
+  SubmitBehavior,
+  TextContentType,
+  TextInputAndroidProps,
+  TextInputBlurEvent,
+  TextInputChangeEvent,
+  TextInputContentSizeChangeEvent,
+  TextInputEditingEvent,
+  TextInputEndEditingEvent,
+  TextInputEvent,
+  TextInputFocusEvent,
+  TextInputIOSProps,
+  TextInputKeyPressEvent,
+  TextInputProps,
+  TextInputSelectionChangeEvent,
+  TextInputSubmitEditingEvent,
+};
 type TextInputStateType = $ReadOnly<{
   currentlyFocusedField: () => ?number,
   currentlyFocusedInput: () => ?HostInstance,
@@ -3404,6 +3080,32 @@ declare export default typeof NativeToastAndroid;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/ToastAndroid.js 1`] = `
+"declare export default typeof ToastAndroid;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/ToastAndroid.js.flow 1`] = `
+"declare const ToastAndroid: {
+  SHORT: number,
+  LONG: number,
+  TOP: number,
+  BOTTOM: number,
+  CENTER: number,
+  show: (message: string, duration: number) => void,
+  showWithGravity: (message: string, duration: number, gravity: number) => void,
+  showWithGravityAndOffset: (
+    message: string,
+    duration: number,
+    gravity: number,
+    xOffset: number,
+    yOffset: number
+  ) => void,
+};
+declare export default typeof ToastAndroid;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/ToastAndroidFallback.js 1`] = `
 "declare const ToastAndroid: {
   SHORT: number,
   LONG: number,
@@ -3468,7 +3170,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   RESPONDER_ACTIVE_LONG_PRESS_OUT: \\"RESPONDER_ACTIVE_LONG_PRESS_OUT\\",
   ERROR: \\"ERROR\\",
 };
-type State =
+type TouchableState =
   | typeof States.NOT_RESPONDER
   | typeof States.RESPONDER_INACTIVE_PRESS_IN
   | typeof States.RESPONDER_INACTIVE_PRESS_OUT
@@ -3499,7 +3201,7 @@ declare const TouchableMixinImpl: {
   componentWillUnmount: () => void,
   touchableGetInitialState: () => {
     touchable: {
-      touchState: ?State,
+      touchState: ?TouchableState,
       responderID: ?GestureResponderEvent[\\"currentTarget\\"],
     },
   },
@@ -3527,7 +3229,7 @@ declare export default typeof TouchableImpl;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableBounce.js 1`] = `
-"type Props = $ReadOnly<{
+"type TouchableBounceProps = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
   onPressAnimationComplete?: ?() => void,
   onPressWithCompletion?: ?(callback: () => void) => void,
@@ -3538,7 +3240,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 }>;
 declare export default component(
   ref: React.RefSetter<mixed>,
-  ...props: $ReadOnly<$Diff<Props, { hostRef: mixed }>>
+  ...props: $ReadOnly<$Diff<TouchableBounceProps, { hostRef: mixed }>>
 );
 "
 `;
@@ -3561,7 +3263,7 @@ type TouchableHighlightBaseProps = $ReadOnly<{
   onShowUnderlay?: ?() => void,
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
-  hostRef: React.RefSetter<React.ElementRef<typeof View>>,
+  hostRef?: React.RefSetter<React.ElementRef<typeof View>>,
 }>;
 export type TouchableHighlightProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
@@ -3606,11 +3308,12 @@ export type TouchableNativeFeedbackProps = $ReadOnly<{
   ),
   useForeground?: ?boolean,
 }>;
-type State = $ReadOnly<{
+type TouchableNativeFeedbackState = $ReadOnly<{
   pressability: Pressability,
 }>;
 declare class TouchableNativeFeedback
-  extends React.Component<TouchableNativeFeedbackProps, State>
+  extends
+    React.Component<TouchableNativeFeedbackProps, TouchableNativeFeedbackState>
 {
   static SelectableBackground: (rippleRadius?: ?number) => $ReadOnly<{
     attribute: \\"selectableItemBackground\\",
@@ -3633,11 +3336,11 @@ declare class TouchableNativeFeedback
     type: \\"RippleAndroid\\",
   }>;
   static canUseNativeForeground: () => boolean;
-  state: State;
+  state: TouchableNativeFeedbackState;
   render(): React.Node;
   componentDidUpdate(
     prevProps: TouchableNativeFeedbackProps,
-    prevState: State
+    prevState: TouchableNativeFeedbackState
   ): void;
   componentDidMount(): mixed;
   componentWillUnmount(): void;
@@ -3657,7 +3360,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 }>;
 type TouchableOpacityBaseProps = $ReadOnly<{
   activeOpacity?: ?number,
-  style?: ?ViewStyleProp,
+  style?: ?Animated.WithAnimatedValue<ViewStyleProp>,
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 }>;
 export type TouchableOpacityProps = $ReadOnly<{
@@ -3949,6 +3652,7 @@ export type AccessibilityProps = $ReadOnly<{
   accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
   \\"aria-label\\"?: ?Stringish,
+  experimental_accessibilityOrder?: ?Array<string>,
   accessibilityRole?: ?AccessibilityRole,
   role?: ?Role,
   accessibilityState?: ?AccessibilityState,
@@ -4423,7 +4127,8 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
   addListener(eventType: string): void;
   removeListeners(count: number): void;
 }
-export type { EventSubscription };
+type EmitterSubscription = EventSubscription;
+export type { EventSubscription, EmitterSubscription };
 export type NativeEventSubscription = EventSubscription;
 type UnsafeObject = Object;
 declare export default class NativeEventEmitter<
@@ -4463,83 +4168,6 @@ declare export default typeof RCTEventEmitter;
 exports[`public API should not change unintentionally Libraries/EventEmitter/RCTNativeAppEventEmitter.js 1`] = `
 "declare const RCTNativeAppEventEmitter: typeof RCTDeviceEventEmitter;
 declare export default typeof RCTNativeAppEventEmitter;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Events/CustomEvent.js 1`] = `
-"type CustomEvent$Options = $ReadOnly<{
-  bubbles?: boolean,
-  cancelable?: boolean,
-  composed?: boolean,
-  detail?: { ... },
-}>;
-declare class CustomEvent extends EventPolyfill {
-  detail: ?{ ... };
-  constructor(typeArg: string, options: CustomEvent$Options): void;
-}
-declare export default typeof CustomEvent;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Events/EventPolyfill.js 1`] = `
-"type Event$Init = {
-  bubbles?: boolean,
-  cancelable?: boolean,
-  composed?: boolean,
-  scoped?: boolean,
-  ...
-};
-interface IEvent {
-  constructor(type: string, eventInitDict?: Event$Init): void;
-  +type: string;
-  +target: EventTarget;
-  +srcElement: Element;
-  +currentTarget: EventTarget;
-  composedPath(): Array<EventTarget>;
-  +NONE: number;
-  +AT_TARGET: number;
-  +BUBBLING_PHASE: number;
-  +CAPTURING_PHASE: number;
-  +eventPhase: number;
-  stopPropagation(): void;
-  stopImmediatePropagation(): void;
-  +bubbles: boolean;
-  +cancelable: boolean;
-  preventDefault(): void;
-  +defaultPrevented: boolean;
-  +composed: boolean;
-  +isTrusted: boolean;
-  +timeStamp: number;
-  +deepPath?: () => EventTarget[];
-  +scoped: boolean;
-  initEvent(type: string, bubbles: boolean, cancelable: boolean): void;
-}
-declare class EventPolyfill implements IEvent {
-  type: string;
-  bubbles: boolean;
-  cancelable: boolean;
-  composed: boolean;
-  scoped: boolean;
-  isTrusted: boolean;
-  defaultPrevented: boolean;
-  timeStamp: number;
-  NONE: number;
-  AT_TARGET: number;
-  BUBBLING_PHASE: number;
-  CAPTURING_PHASE: number;
-  eventPhase: number;
-  currentTarget: EventTarget;
-  target: EventTarget;
-  srcElement: Element;
-  constructor(type: string, eventInitDict?: Event$Init): void;
-  composedPath(): Array<EventTarget>;
-  preventDefault(): void;
-  initEvent(type: string, bubbles: boolean, cancelable: boolean): void;
-  stopImmediatePropagation(): void;
-  stopPropagation(): void;
-  setSyntheticEvent(value: mixed): void;
-}
-declare export default typeof EventPolyfill;
 "
 `;
 
@@ -4594,6 +4222,11 @@ declare export function getUrlCacheBreaker(): string;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Image/Image.js 1`] = `
+"declare export default typeof Image;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Image/Image.js.flow 1`] = `
 "export type {
   ImageProgressEventIOS,
@@ -4607,7 +4240,7 @@ exports[`public API should not change unintentionally Libraries/Image/Image.js.f
   ImageBackgroundProps,
 } from \\"./ImageProps\\";
 export type { ImageResolvedAssetSource, ImageSize } from \\"./ImageTypes.flow\\";
-declare export default Image;
+declare export default ImageType;
 "
 `;
 
@@ -4736,7 +4369,7 @@ export type ImageBackgroundProps = $ReadOnly<{
   children?: React.Node,
   style?: ?ViewStyleProp,
   imageStyle?: ?ImageStyleProp,
-  imageRef?: RefSetter<ElementRef<Image>>,
+  imageRef?: RefSetter<ElementRef<ImageType>>,
 }>;
 "
 `;
@@ -4844,7 +4477,7 @@ export type AbstractImageIOS = component(
   ...props: ImagePropsType
 );
 export type ImageIOS = AbstractImageIOS & ImageComponentStaticsIOS;
-export type Image = ImageIOS | ImageAndroid;
+export type ImageType = ImageIOS | ImageAndroid;
 export type { ImageProps } from \\"./ImageProps\\";
 "
 `;
@@ -5382,8 +5015,10 @@ export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
 };
-declare export default class SectionList<ItemT, SectionT = DefaultSectionT>
-  extends React.PureComponent<SectionListProps<ItemT, SectionT>>
+declare export default class SectionList<
+  ItemT = any,
+  SectionT = DefaultSectionT,
+> extends React.PureComponent<SectionListProps<ItemT, SectionT>>
 {
   props: SectionListProps<ItemT, SectionT>;
   scrollToLocation(params: ScrollToLocationParamsType): void;
@@ -6039,6 +5674,11 @@ declare export default typeof RCTModalHostViewNativeComponent;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/NativeComponent/BaseViewConfig.js 1`] = `
+"declare export default typeof BaseViewConfig;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/NativeComponent/BaseViewConfig.js.flow 1`] = `
 "declare const PlatformBaseViewConfig: PartialViewConfigWithoutName;
 declare export default typeof PlatformBaseViewConfig;
@@ -6070,9 +5710,9 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeComponent/PlatformBaseViewConfig.js 1`] = `
-"export type PartialViewConfigWithoutName = $Rest<
+"export type PartialViewConfigWithoutName = Omit<
   PartialViewConfig,
-  { uiViewClassName: string },
+  \\"uiViewClassName\\",
 >;
 declare const PlatformBaseViewConfig: PartialViewConfigWithoutName;
 declare export default typeof PlatformBaseViewConfig;
@@ -6213,6 +5853,11 @@ declare export default typeof NativeNetworkingIOS;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.js 1`] = `
+"declare export default typeof RCTNetworking;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.js.flow 1`] = `
 "declare const RCTNetworking: interface {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
@@ -6252,12 +5897,6 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest.js 1`] = `
-"export type * from \\"./XMLHttpRequest_old\\";
-declare export default XMLHttpRequest;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest_new.js 1`] = `
 "export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
 export type ResponseType =
   | \\"\\"
@@ -6346,85 +5985,6 @@ declare class XMLHttpRequest extends EventTarget {
   set onloadend(listener: ?EventCallback): void;
   get onreadystatechange(): EventCallback | null;
   set onreadystatechange(listener: ?EventCallback): void;
-}
-declare export default typeof XMLHttpRequest;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest_old.js 1`] = `
-"export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
-export type ResponseType =
-  | \\"\\"
-  | \\"arraybuffer\\"
-  | \\"blob\\"
-  | \\"document\\"
-  | \\"json\\"
-  | \\"text\\";
-export type Response = ?Object | string;
-type XHRInterceptor = interface {
-  requestSent(id: number, url: string, method: string, headers: Object): void,
-  responseReceived(
-    id: number,
-    url: string,
-    status: number,
-    headers: Object
-  ): void,
-  dataReceived(id: number, data: string): void,
-  loadingFinished(id: number, encodedDataLength: number): void,
-  loadingFailed(id: number, error: string): void,
-};
-declare class XMLHttpRequestEventTarget extends EventTarget {
-  onload: ?Function;
-  onloadstart: ?Function;
-  onprogress: ?Function;
-  ontimeout: ?Function;
-  onerror: ?Function;
-  onabort: ?Function;
-  onloadend: ?Function;
-}
-declare class XMLHttpRequest extends EventTarget {
-  static UNSENT: number;
-  static OPENED: number;
-  static HEADERS_RECEIVED: number;
-  static LOADING: number;
-  static DONE: number;
-  UNSENT: number;
-  OPENED: number;
-  HEADERS_RECEIVED: number;
-  LOADING: number;
-  DONE: number;
-  onload: ?Function;
-  onloadstart: ?Function;
-  onprogress: ?Function;
-  ontimeout: ?Function;
-  onerror: ?Function;
-  onabort: ?Function;
-  onloadend: ?Function;
-  onreadystatechange: ?Function;
-  readyState: number;
-  responseHeaders: ?Object;
-  status: number;
-  timeout: number;
-  responseURL: ?string;
-  withCredentials: boolean;
-  upload: XMLHttpRequestEventTarget;
-  static enableProfiling(enableProfiling: boolean): void;
-  constructor(): void;
-  get responseType(): ResponseType;
-  set responseType(responseType: ResponseType): void;
-  get responseText(): string;
-  get response(): Response;
-  getAllResponseHeaders(): ?string;
-  getResponseHeader(header: string): ?string;
-  setRequestHeader(header: string, value: any): void;
-  setTrackingName(trackingName: ?string): XMLHttpRequest;
-  setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
-  open(method: string, url: string, async: ?boolean): void;
-  send(data: any): void;
-  abort(): void;
-  setResponseHeaders(responseHeaders: ?Object): void;
-  setReadyState(newState: number): void;
-  addEventListener(type: string, listener: EventListener): void;
 }
 declare export default typeof XMLHttpRequest;
 "
@@ -7287,6 +6847,18 @@ declare export default typeof NativeSettingsManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Settings/Settings.js 1`] = `
+"declare let Settings: {
+  get(key: string): any,
+  set(settings: Object): void,
+  watchKeys(keys: string | Array<string>, callback: () => void): number,
+  clearWatch(watchId: number): void,
+  ...
+};
+declare export default typeof Settings;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Settings/SettingsFallback.js 1`] = `
 "declare const Settings: {
   get(key: string): any,
   set(settings: Object): void,
@@ -7344,6 +6916,11 @@ export type EdgeInsetsOrSizeProp = RectOrSize;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/StyleSheet/PlatformColorValueTypes.js 1`] = `
+"export * from \\"./PlatformColorValueTypes\\";
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/StyleSheet/PlatformColorValueTypes.js.flow 1`] = `
 "declare export function PlatformColor(...names: Array<string>): ColorValue;
 declare export function normalizeColorObject(
@@ -7384,6 +6961,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/Rect.
   right?: ?number,
   top?: ?number,
 }>;
+export type Insets = Rect;
 export type RectOrSize = Rect | number;
 declare export function createSquare(size: number): Rect;
 declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
@@ -7420,15 +6998,15 @@ declare export default typeof StyleSheet;
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js.flow 1`] = `
 "export * as default from \\"./StyleSheetExports\\";
 export type {
-  StyleProp,
   BoxShadowValue,
   FilterFunction,
+  NativeColorValue,
+  StyleProp,
 } from \\"./StyleSheetTypes\\";
 export type StyleSheetProperties = {
   hairlineWidth: number,
   flatten<T: string>(style: T): T,
 };
-export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
 export type OpaqueColorValue = NativeColorValue;
 export type TransformsStyle = ____TransformStyle_Internal;
@@ -7507,8 +7085,7 @@ export type EdgeInsetsValue = {
   right: number,
   bottom: number,
 };
-export type DimensionValue = number | string | \\"auto\\" | AnimatedNode | null;
-export type AnimatableNumericValue = number | AnimatedNode;
+export type DimensionValue = number | string | \\"auto\\" | null;
 export type CursorValue = \\"auto\\" | \\"pointer\\";
 type ____LayoutStyle_Internal = $ReadOnly<{
   display?: \\"none\\" | \\"flex\\" | \\"contents\\",
@@ -7613,7 +7190,7 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
     width?: number,
     height?: number,
   }>,
-  shadowOpacity?: AnimatableNumericValue,
+  shadowOpacity?: number,
   shadowRadius?: number,
 }>;
 export type ____ShadowStyle_Internal = $ReadOnly<{
@@ -7684,32 +7261,32 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue | string,
-  borderBottomEndRadius?: AnimatableNumericValue | string,
-  borderBottomLeftRadius?: AnimatableNumericValue | string,
-  borderBottomRightRadius?: AnimatableNumericValue | string,
-  borderBottomStartRadius?: AnimatableNumericValue | string,
-  borderEndEndRadius?: AnimatableNumericValue | string,
-  borderEndStartRadius?: AnimatableNumericValue | string,
-  borderStartEndRadius?: AnimatableNumericValue | string,
-  borderStartStartRadius?: AnimatableNumericValue | string,
-  borderTopEndRadius?: AnimatableNumericValue | string,
-  borderTopLeftRadius?: AnimatableNumericValue | string,
-  borderTopRightRadius?: AnimatableNumericValue | string,
-  borderTopStartRadius?: AnimatableNumericValue | string,
+  borderRadius?: number | string,
+  borderBottomEndRadius?: number | string,
+  borderBottomLeftRadius?: number | string,
+  borderBottomRightRadius?: number | string,
+  borderBottomStartRadius?: number | string,
+  borderEndEndRadius?: number | string,
+  borderEndStartRadius?: number | string,
+  borderStartEndRadius?: number | string,
+  borderStartStartRadius?: number | string,
+  borderTopEndRadius?: number | string,
+  borderTopLeftRadius?: number | string,
+  borderTopRightRadius?: number | string,
+  borderTopStartRadius?: number | string,
   borderStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
-  borderWidth?: AnimatableNumericValue,
-  borderBottomWidth?: AnimatableNumericValue,
-  borderEndWidth?: AnimatableNumericValue,
-  borderLeftWidth?: AnimatableNumericValue,
-  borderRightWidth?: AnimatableNumericValue,
-  borderStartWidth?: AnimatableNumericValue,
-  borderTopWidth?: AnimatableNumericValue,
-  opacity?: AnimatableNumericValue,
+  borderWidth?: number,
+  borderBottomWidth?: number,
+  borderEndWidth?: number,
+  borderLeftWidth?: number,
+  borderRightWidth?: number,
+  borderStartWidth?: number,
+  borderTopWidth?: number,
+  opacity?: number,
   outlineColor?: ____ColorValue_Internal,
-  outlineOffset?: AnimatableNumericValue,
+  outlineOffset?: number,
   outlineStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
-  outlineWidth?: AnimatableNumericValue,
+  outlineWidth?: number,
   elevation?: number,
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
@@ -7882,9 +7459,8 @@ export type StyleProp<+T> =
 export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
-export type ____DangerouslyImpreciseAnimatedStyleProp_Internal = StyleProp<
-  Partial<AnimatedBaseProps<____DangerouslyImpreciseStyle_Internal>>,
->;
+export type ____DangerouslyImpreciseAnimatedStyleProp_Internal =
+  WithAnimatedValue<StyleProp<Partial<____DangerouslyImpreciseStyle_Internal>>>;
 export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
@@ -7920,11 +7496,14 @@ export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/flattenStyle.js 1`] = `
-"declare function flattenStyle<
+"type NonAnimatedNodeObject<TStyleProp> = TStyleProp extends AnimatedNode
+  ? empty
+  : TStyleProp;
+declare function flattenStyle<
   TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
 >(
   style: ?TStyleProp
-): ?____FlattenStyleProp_Internal<TStyleProp>;
+): ?NonAnimatedNodeObject<____FlattenStyleProp_Internal<TStyleProp>>;
 declare export default typeof flattenStyle;
 "
 `;
@@ -8105,11 +7684,11 @@ exports[`public API should not change unintentionally Libraries/Text/Text.js 1`]
 type TextForwardRef = React.ElementRef<
   typeof NativeText | typeof NativeVirtualText,
 >;
-declare const Text: component(
+declare const TextImpl: component(
   ref?: React.RefSetter<TextForwardRef>,
   ...props: TextProps
 );
-declare export default typeof Text;
+declare export default typeof TextImpl;
 "
 `;
 
@@ -8507,11 +8086,17 @@ declare export default typeof UTFSequence;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Appearance.js 1`] = `
-"declare export function getColorScheme(): ?ColorSchemeName;
+"export type { AppearancePreferences };
+declare export function getColorScheme(): ?ColorSchemeName;
 declare export function setColorScheme(colorScheme: ?ColorSchemeName): void;
 declare export function addChangeListener(
   listener: ({ colorScheme: ?ColorSchemeName }) => void
 ): EventSubscription;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.js 1`] = `
+"declare export default typeof BackHandler;
 "
 `;
 
@@ -8704,6 +8289,11 @@ declare export default typeof PixelRatio;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Utilities/Platform.js 1`] = `
+"declare export default typeof Platform;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
 "declare export default Platform;
 "
@@ -8826,6 +8416,7 @@ type MacOSPlatform = {
 };
 type WebPlatform = {
   OS: \\"web\\",
+  get Version(): void,
   get constants(): {
     reactNativeVersion: {
       major: number,
@@ -9145,11 +8736,6 @@ declare export default typeof NativeWebSocketModule;
 `;
 
 exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket.js 1`] = `
-"declare export default WebSocket;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket_new.js 1`] = `
 "type ArrayBufferView =
   | Int8Array
   | Uint8Array
@@ -9206,71 +8792,6 @@ declare class WebSocket extends EventTarget {
   set onopen(listener: ?EventCallback): void;
 }
 declare export default typeof WebSocket;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket_old.js 1`] = `
-"type ArrayBufferView =
-  | Int8Array
-  | Uint8Array
-  | Uint8ClampedArray
-  | Int16Array
-  | Uint16Array
-  | Int32Array
-  | Uint32Array
-  | Float32Array
-  | Float64Array
-  | DataView;
-type BinaryType = \\"blob\\" | \\"arraybuffer\\";
-type WebSocketEventDefinitions = {
-  websocketOpen: [{ id: number, protocol: string }],
-  websocketClosed: [{ id: number, code: number, reason: string }],
-  websocketMessage: [
-    | { type: \\"binary\\", id: number, data: string }
-    | { type: \\"text\\", id: number, data: string }
-    | { type: \\"blob\\", id: number, data: BlobData },
-  ],
-  websocketFailed: [{ id: number, message: string }],
-};
-declare class WebSocket extends EventTarget {
-  static CONNECTING: number;
-  static OPEN: number;
-  static CLOSING: number;
-  static CLOSED: number;
-  CONNECTING: number;
-  OPEN: number;
-  CLOSING: number;
-  CLOSED: number;
-  onclose: ?Function;
-  onerror: ?Function;
-  onmessage: ?Function;
-  onopen: ?Function;
-  bufferedAmount: number;
-  extension: ?string;
-  protocol: ?string;
-  readyState: number;
-  url: ?string;
-  constructor(
-    url: string,
-    protocols: ?string | ?Array<string>,
-    options: ?{ headers?: { origin?: string, ... }, ... }
-  ): void;
-  get binaryType(): ?BinaryType;
-  set binaryType(binaryType: BinaryType): void;
-  close(code?: number, reason?: string): void;
-  send(data: string | ArrayBuffer | ArrayBufferView | Blob): void;
-  ping(): void;
-}
-declare export default typeof WebSocket;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketEvent.js 1`] = `
-"declare class WebSocketEvent {
-  type: string;
-  constructor(type: string, eventInitDict: ?{ ... }): void;
-}
-declare export default typeof WebSocketEvent;
 "
 `;
 
@@ -9396,6 +8917,7 @@ export type {
 } from \\"./Libraries/Modal/Modal\\";
 export { default as Modal } from \\"./Libraries/Modal/Modal\\";
 export type {
+  PressableAndroidRippleConfig,
   PressableProps,
   PressableStateCallbackType,
 } from \\"./Libraries/Components/Pressable/Pressable\\";
@@ -9410,6 +8932,7 @@ export type {
 export { default as RefreshControl } from \\"./Libraries/Components/RefreshControl/RefreshControl\\";
 export { default as SafeAreaView } from \\"./Libraries/Components/SafeAreaView/SafeAreaView\\";
 export type {
+  ScrollResponderType,
   ScrollViewProps,
   ScrollViewPropsAndroid,
   ScrollViewPropsIOS,
@@ -9448,7 +8971,6 @@ export type {
   TextInputEndEditingEvent,
   TextInputFocusEvent,
   TextInputKeyPressEvent,
-  TextInputScrollEvent,
   TextInputSelectionChangeEvent,
   TextInputSubmitEditingEvent,
   ReturnKeyTypeOptions,
@@ -9464,6 +8986,11 @@ export type { TouchableOpacityProps } from \\"./Libraries/Components/Touchable/T
 export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/TouchableOpacity\\";
 export type { TouchableWithoutFeedbackProps } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
+export type {
+  AccessibilityProps,
+  AccessibilityRole,
+  AccessibilityState,
+} from \\"./Libraries/Components/View/ViewAccessibility\\";
 export type {
   GestureResponderHandlers,
   TVViewPropsIOS,
@@ -9574,8 +9101,12 @@ export type {
 export { default as LogBox } from \\"./Libraries/LogBox/LogBox\\";
 export { default as NativeAppEventEmitter } from \\"./Libraries/EventEmitter/RCTNativeAppEventEmitter\\";
 export { default as NativeDialogManagerAndroid } from \\"./Libraries/NativeModules/specs/NativeDialogManagerAndroid\\";
+export type {
+  EventSubscription,
+  EmitterSubscription,
+  NativeEventSubscription,
+} from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
 export { default as NativeEventEmitter } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
-export type { NativeEventSubscription } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
 export { default as NativeModules } from \\"./Libraries/BatchedBridge/NativeModules\\";
 export { default as Networking } from \\"./Libraries/Network/RCTNetworking\\";
 export type {
@@ -9618,8 +9149,13 @@ export { default as Share } from \\"./Libraries/Share/Share\\";
 export type {
   ColorValue,
   ImageStyle,
+  FilterFunction,
+  FontVariant,
+  NativeColorValue,
+  OpaqueColorValue,
   StyleProp,
   TextStyle,
+  TransformsStyle,
   ViewStyle,
 } from \\"./Libraries/StyleSheet/StyleSheet\\";
 export type {
@@ -9630,6 +9166,7 @@ export type {
   EdgeInsetsValue,
   PointValue,
 } from \\"./Libraries/StyleSheet/StyleSheetTypes\\";
+export type { Insets } from \\"./Libraries/StyleSheet/Rect\\";
 export { default as StyleSheet } from \\"./Libraries/StyleSheet/StyleSheet\\";
 export * as Systrace from \\"./Libraries/Performance/Systrace\\";
 export { default as ToastAndroid } from \\"./Libraries/Components/ToastAndroid/ToastAndroid\\";
@@ -9650,6 +9187,7 @@ export type {
   MouseEvent,
   NativeMouseEvent,
   NativePointerEvent,
+  NativeScrollEvent,
   NativeSyntheticEvent,
   NativeTouchEvent,
   NativeUIEvent,
@@ -9658,10 +9196,12 @@ export type {
   TargetedEvent,
   TextLayoutEvent,
 } from \\"./Libraries/Types/CoreEventTypes\\";
+export type { TurboModule } from \\"./Libraries/TurboModule/RCTExport\\";
 export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
 export type {
   HostInstance,
   NativeMethods,
+  NativeMethodsMixin,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
@@ -9694,7 +9234,7 @@ exports[`public API should not change unintentionally src/private/setup/setUpPer
 
 exports[`public API should not change unintentionally src/private/types/HostComponent.js 1`] = `
 "export type HostComponent<Config: { ... }> = component(
-  ref: React.RefSetter<HostInstance>,
+  ref?: React.RefSetter<HostInstance>,
   ...Config
 );
 "
@@ -9721,7 +9261,7 @@ export type MeasureLayoutOnSuccessCallback = (
   width: number,
   height: number
 ) => void;
-export interface NativeMethods {
+export interface LegacyHostInstanceMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
@@ -9733,7 +9273,9 @@ export interface NativeMethods {
   ): void;
   setNativeProps(nativeProps: { ... }): void;
 }
-export type HostInstance = NativeMethods;
+export type HostInstance = LegacyHostInstanceMethods;
+export type NativeMethods = LegacyHostInstanceMethods;
+export type NativeMethodsMixin = LegacyHostInstanceMethods;
 "
 `;
 
@@ -10069,7 +9611,7 @@ declare export default class Performance {
     endMark?: string
   ): PerformanceMeasure;
   clearMeasures(measureName?: string): void;
-  now(): DOMHighResTimeStamp;
+  now: () => DOMHighResTimeStamp;
   getEntries(): PerformanceEntryList;
   getEntriesByType(entryType: PerformanceEntryType): PerformanceEntryList;
   getEntriesByName(

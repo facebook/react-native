@@ -13,8 +13,7 @@
 #include <react/runtime/BindingsInstaller.h>
 #include <react/runtime/ReactInstance.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JBindingsInstaller : public jni::HybridClass<JBindingsInstaller>,
                            public BindingsInstaller {
@@ -28,5 +27,4 @@ class JBindingsInstaller : public jni::HybridClass<JBindingsInstaller>,
   friend HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

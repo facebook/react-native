@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4f3222340cd676eefdd3794d3f1d4da>>
+ * @generated SignedSource<<309be66ee7cccd6fca949015d8f19a8d>>
  */
 
 /**
@@ -29,7 +29,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
+  @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
+
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
+
+  @DoNotStrip public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean
+
+  @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
@@ -43,9 +49,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
-  @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
+  @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
-  @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
+  @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
 
@@ -67,8 +73,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
-  @DoNotStrip public fun enableUIConsistency(): Boolean
-
   @DoNotStrip public fun enableViewCulling(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
@@ -86,8 +90,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip public fun removeTurboModuleManagerDelegateMutex(): Boolean
-
-  @DoNotStrip public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

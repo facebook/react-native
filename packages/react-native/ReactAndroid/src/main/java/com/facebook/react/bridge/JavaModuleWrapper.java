@@ -35,7 +35,7 @@ import java.util.Map;
 @LegacyArchitecture
 class JavaModuleWrapper {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "JavaModuleWrapper", LegacyArchitectureLogLevel.WARNING);
   }
 

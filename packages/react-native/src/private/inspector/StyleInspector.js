@@ -13,7 +13,7 @@
 import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
 import type {____FlattenStyleProp_Internal} from '../../../Libraries/StyleSheet/StyleSheetTypes';
 
-import React from 'react';
+import * as React from 'react';
 
 const View = require('../../../Libraries/Components/View/View').default;
 const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;

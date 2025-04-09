@@ -25,7 +25,6 @@
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
-#include <react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.h>
 #include <react/renderer/uimanager/consistency/LazyShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
 #include <react/renderer/uimanager/primitives.h>
@@ -69,6 +68,8 @@ class UIManager final : public ShadowTreeDelegate {
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
   void animationTick() const;
+
+  void synchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic& props);
 
   /*
    * Provides access to a UIManagerBindging.
@@ -204,6 +205,13 @@ class UIManager final : public ShadowTreeDelegate {
   void updateShadowTree(
       const std::unordered_map<Tag, folly::dynamic>& tagToProps);
 
+#pragma mark - Add & Remove event listener
+
+  void addEventListener(std::shared_ptr<const EventListener> listener);
+
+  void removeEventListener(
+      const std::shared_ptr<const EventListener>& listener);
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -240,8 +248,6 @@ class UIManager final : public ShadowTreeDelegate {
 
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager>
       lazyShadowTreeRevisionConsistencyManager_;
-  std::unique_ptr<LatestShadowTreeRevisionProvider>
-      latestShadowTreeRevisionProvider_;
 };
 
 } // namespace facebook::react

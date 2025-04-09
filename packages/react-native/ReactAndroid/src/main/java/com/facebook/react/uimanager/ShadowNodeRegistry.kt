@@ -10,7 +10,7 @@ package com.facebook.react.uimanager
 import android.util.SparseArray
 import android.util.SparseBooleanArray
 import android.view.View
-import com.facebook.react.common.SingleThreadAsserter
+import com.facebook.infer.annotation.Assertions
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
@@ -84,8 +84,20 @@ internal class ShadowNodeRegistry {
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "ShadowNodeRegistry", LegacyArchitectureLogLevel.WARNING)
+    }
+  }
+
+  inner class SingleThreadAsserter {
+    private var thread: Thread? = null
+
+    public fun assertNow() {
+      val currentThread = Thread.currentThread()
+      if (thread == null) {
+        thread = currentThread
+      }
+      Assertions.assertCondition(thread == currentThread)
     }
   }
 }
