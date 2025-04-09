@@ -33,12 +33,12 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       componentsRegistry: ComponentFactory,
   )
 
-  external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap)
+  external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap?)
 
   external fun startSurfaceWithConstraints(
       surfaceId: Int,
       moduleName: String,
-      initialProps: NativeMap,
+      initialProps: NativeMap?,
       minWidth: Float,
       maxWidth: Float,
       minHeight: Float,
