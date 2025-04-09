@@ -246,6 +246,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
+          // NULLSAFE_FIXME[Not Vetted Third-Party]
           BoringLayout.make(
               text,
               textPaint,
@@ -356,6 +357,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   @Override
   @Nullable
+  // NULLSAFE_FIXME[Inconsistent Subclass Return Annotation]
   public Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
     // Run flexbox on and return the descendants which are inline views.
 
@@ -372,6 +374,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
     for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
       ReactShadowNode child = mInlineViews.get(placeholder.getReactTag());
+      // NULLSAFE_FIXME[Nullable Dereference]
       child.calculateLayout();
       shadowNodes.add(child);
     }
