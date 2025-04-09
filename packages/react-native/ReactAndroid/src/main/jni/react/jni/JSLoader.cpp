@@ -10,12 +10,8 @@
 #include <android/asset_manager_jni.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
-
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-using fbsystrace::FbSystraceSection;
-#endif
 
 using namespace facebook::jni;
 
@@ -54,13 +50,8 @@ __attribute__((visibility("default"))) AAssetManager* extractAssetManager(
 
 __attribute__((visibility("default"))) std::unique_ptr<const JSBigString>
 loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
-#ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(
-      TRACE_TAG_REACT_CXX_BRIDGE,
-      "reactbridge_jni_loadScriptFromAssets",
-      "assetName",
-      assetName);
-#endif
+  TraceSection s(
+      "reactbridge_jni_loadScriptFromAssets", "assetName", assetName);
   if (manager) {
     auto asset = AAssetManager_open(
         manager,
