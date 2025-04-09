@@ -29,6 +29,9 @@ const viewConfig: ViewConfig = {
     style: {},
   },
 };
+
+var test;
+
 // $FlowExpectedError[incompatible-type]
 const internalInstanceHandle: InternalInstanceHandle = {};
 // $FlowExpectedError[incompatible-type]

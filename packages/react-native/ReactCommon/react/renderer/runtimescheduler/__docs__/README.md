@@ -19,10 +19,10 @@ The implementation of the event loop in React Native is aligned with [its defini
 
 The event loop is an implementation detail so it is not used directly, but several APIs integrate deeply with it:
 
-- State updates processed by React are scheduled to be flushed (rendered in the host platform) at the end of the current event loop tick.
-- Promises, `queueMicrotask` and APIs like `MutationObserver` add microtasks to the microtask queue, processed as part of the current event loop tick.
-- Timers and APIs like `requestIdleCallback` schedule tasks to be processed by the event loop. In the case of `requestIdleCallback`, the tasks are scheduled with specific priorities.
-- `PerformanceObserver` entries like `longtask` and `event` provide timing information about different parts of the event loop.
+* State updates processed by React are scheduled to be flushed (rendered in the host platform) at the end of the current event loop tick.
+* Promises, `queueMicrotask` and APIs like `MutationObserver` add microtasks to the microtask queue, processed as part of the current event loop tick.
+* Timers and APIs like `requestIdleCallback` schedule tasks to be processed by the event loop. In the case of `requestIdleCallback`, the tasks are scheduled with specific priorities.
+* `PerformanceObserver` entries like `longtask` and `event` provide timing information about different parts of the event loop.
 
 One of the most important semantics of the event loop is the **atomicity of UI updates in tasks**. All changes to the UI triggered from JavaScript in a task (processing state updates in React, dispatching view commands, etc.) are always flushed together to the host platform, so the UI is never updated with partial work done within a task. For example:
 

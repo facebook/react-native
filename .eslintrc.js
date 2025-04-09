@@ -132,5 +132,10 @@ module.exports = {
         'lint/no-react-native-imports': 'off',
       },
     },
+    {
+      files: ['**/__docs__/*.md'],
+      parser: 'eslint-plugin-markdownlint/parser',
+      extends: ['plugin:markdownlint/recommended'],
+    },
   ],
 };
