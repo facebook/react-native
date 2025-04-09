@@ -1398,7 +1398,7 @@ public class FabricUIManager
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         mIsMountingEnabled = false;
-        throw new RuntimeException("Exception thrown when executing UIFrameGuarded", ex);
+        throw ex;
       } finally {
         schedule();
       }
