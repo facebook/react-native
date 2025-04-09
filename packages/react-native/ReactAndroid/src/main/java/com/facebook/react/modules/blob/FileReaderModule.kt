@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.module.annotations.ReactModule
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeFileReaderModuleSpec.NAME)
 public class FileReaderModule(reactContext: ReactApplicationContext) :
   NativeFileReaderModuleSpec(reactContext) {
