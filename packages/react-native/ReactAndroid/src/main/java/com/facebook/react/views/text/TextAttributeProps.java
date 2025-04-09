@@ -258,6 +258,7 @@ public class TextAttributeProps {
             : null);
     result.setBackgroundColor(
         props.hasKey(ViewProps.BACKGROUND_COLOR)
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             ? props.getInt(ViewProps.BACKGROUND_COLOR, 0)
             : null);
     result.setOpacity(getFloatProp(props, ViewProps.OPACITY, Float.NaN));
@@ -268,6 +269,7 @@ public class TextAttributeProps {
     result.setIncludeFontPadding(getBooleanProp(props, ViewProps.INCLUDE_FONT_PADDING, true));
     result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
     result.setTextShadowOffset(
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
     result.setTextShadowRadius(getFloatProp(props, PROP_SHADOW_RADIUS, 1));
     result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
@@ -325,8 +327,10 @@ public class TextAttributeProps {
 
   private static String getStringProp(ReactStylesDiffMap mProps, String name) {
     if (mProps.hasKey(name)) {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return mProps.getString(name);
     } else {
+      // NULLSAFE_FIXME[Return Not Nullable]
       return null;
     }
   }
@@ -447,6 +451,7 @@ public class TextAttributeProps {
   private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       mColor = color;
     }
   }
@@ -487,6 +492,7 @@ public class TextAttributeProps {
   }
 
   public String getFontFamily() {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mFontFamily;
   }
 
@@ -593,6 +599,7 @@ public class TextAttributeProps {
   }
 
   public String getFontFeatureSettings() {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mFontFeatureSettings;
   }
 
@@ -723,6 +730,7 @@ public class TextAttributeProps {
   }
 
   public AccessibilityRole getAccessibilityRole() {
+    // NULLSAFE_FIXME[Return Not Nullable]
     return mAccessibilityRole;
   }
 
