@@ -9,8 +9,10 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Implementation of Dynamic wrapping a ReadableArray. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class DynamicFromArray implements Dynamic {
   private static final Pools.SimplePool<DynamicFromArray> sPool = new Pools.SimplePool<>(10);
 
