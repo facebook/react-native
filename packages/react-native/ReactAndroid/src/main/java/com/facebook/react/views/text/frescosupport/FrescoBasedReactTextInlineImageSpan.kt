@@ -14,8 +14,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.net.Uri
+import android.os.Build
 import android.widget.TextView
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.drawee.generic.GenericDraweeHierarchy
@@ -34,11 +34,11 @@ import com.facebook.react.views.text.internal.span.TextInlineImageSpan
  * based on the input size. When it is time to draw, it will use the Fresco framework to get the
  * right Drawable and let that draw.
  *
- * Since Fresco needs to callback to the TextView that contains this, in the ViewManager, you
- * must tell the Span about the TextView
+ * Since Fresco needs to callback to the TextView that contains this, in the ViewManager, you must
+ * tell the Span about the TextView
  *
- * Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size
- * or draws, we need to update this as well.
+ * Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size or
+ * draws, we need to update this as well.
  */
 public class FrescoBasedReactTextInlineImageSpan(
     resources: Resources,
@@ -144,13 +144,15 @@ public class FrescoBasedReactTextInlineImageSpan(
 
             drawable = draweeHolder.topLevelDrawable!!
             drawable!!.setBounds(0, 0, _width, _height)
-            drawable!!.takeIf { tintColor != 0 }?.apply {
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                  colorFilter = BlendModeColorFilter(tintColor, BlendMode.SRC_IN)
-              } else {
-                  setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
-              }
-            }
+            drawable!!
+                .takeIf { tintColor != 0 }
+                ?.apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        colorFilter = BlendModeColorFilter(tintColor, BlendMode.SRC_IN)
+                    } else {
+                        setColorFilter(tintColor, PorterDuff.Mode.SRC_IN)
+                    }
+                }
             drawable!!.callback = this.textView
         }
 
