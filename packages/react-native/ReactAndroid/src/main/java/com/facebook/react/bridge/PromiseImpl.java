@@ -55,6 +55,7 @@ public class PromiseImpl implements Promise {
    * @param value Object
    */
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void resolve(Object value) {
     if (mResolve != null) {
       mResolve.invoke(value);
@@ -70,6 +71,7 @@ public class PromiseImpl implements Promise {
    * @param message String
    */
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void reject(String code, String message) {
     reject(code, message, /*Throwable*/ null, /*WritableMap*/ null);
   }
@@ -81,6 +83,7 @@ public class PromiseImpl implements Promise {
    * @param throwable Throwable
    */
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void reject(String code, Throwable throwable) {
     reject(code, /*Message*/ null, throwable, /*WritableMap*/ null);
   }
@@ -93,6 +96,7 @@ public class PromiseImpl implements Promise {
    * @param throwable Throwable
    */
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void reject(String code, String message, Throwable throwable) {
     reject(code, message, throwable, /*WritableMap*/ null);
   }
@@ -143,6 +147,7 @@ public class PromiseImpl implements Promise {
    * @param userInfo WritableMap
    */
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void reject(String code, Throwable throwable, WritableMap userInfo) {
     reject(code, /*Message*/ null, throwable, userInfo);
   }
@@ -156,6 +161,7 @@ public class PromiseImpl implements Promise {
    * @param userInfo WritableMap
    */
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void reject(String code, String message, @NonNull WritableMap userInfo) {
     reject(code, message, /*Throwable*/ null, userInfo);
   }
