@@ -21,6 +21,16 @@
       "options": {
         "parser": "hermes"
       }
+    },
+    {
+      "files": [
+        "**/__docs__/*.md"
+      ],
+      "options": {
+        "parser": "markdown",
+        "proseWrap": "always",
+        "requirePragma": false
+      }
     }
   ]
 }
