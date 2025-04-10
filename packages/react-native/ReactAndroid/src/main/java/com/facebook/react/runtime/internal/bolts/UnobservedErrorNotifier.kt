@@ -16,8 +16,8 @@ internal class UnobservedErrorNotifier(private var task: Task<*>?) {
 
   protected fun finalize() {
     task?.let { faultedTask ->
-      Task.getUnobservedExceptionHandler()
-          ?.unobservedException(faultedTask, UnobservedTaskException(faultedTask.getError()))
+      Task.unobservedExceptionHandler?.unobservedException(
+          faultedTask, UnobservedTaskException(faultedTask.getError()))
     }
   }
 
