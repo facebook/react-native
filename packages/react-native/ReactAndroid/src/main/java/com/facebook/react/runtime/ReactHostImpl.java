@@ -983,6 +983,16 @@ public class ReactHostImpl implements ReactHost {
             ReactNativeFeatureFlags.useTurboModules(),
             "useTurboModules FeatureFlag must be set to start ReactNative.");
       }
+      if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+        Assertions.assertCondition(
+            !ReactNativeFeatureFlags.useFabricInterop(),
+            "useFabricInterop FeatureFlag must be false when"
+                + " UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.");
+        Assertions.assertCondition(
+            !ReactNativeFeatureFlags.useTurboModuleInterop(),
+            "useTurboModuleInterop FeatureFlag must be false when"
+                + " UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.");
+      }
       mStartTask =
           waitThenCallGetOrCreateReactInstanceTask()
               .continueWithTask(
