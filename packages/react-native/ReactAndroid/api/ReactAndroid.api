@@ -3468,12 +3468,6 @@ public abstract interface class com/facebook/react/touch/ReactInterceptingViewGr
 	public abstract fun setOnInterceptTouchEventListener (Lcom/facebook/react/touch/OnInterceptTouchEventListener;)V
 }
 
-public final class com/facebook/react/turbomodule/core/CallInvokerHolderImpl : com/facebook/jni/HybridClassBase, com/facebook/react/turbomodule/core/interfaces/CallInvokerHolder {
-}
-
-public final class com/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl : com/facebook/jni/HybridClassBase, com/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder {
-}
-
 public final class com/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
 }
