@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.common.logging.FLog;
@@ -568,18 +567,15 @@ public class ReactHostImpl implements ReactHost {
    *     callback will run on a background thread.
    * @return A task that completes when React Native gets destroyed.
    */
-  @NonNull
   @Override
   public TaskInterface<Void> destroy(
-      @NonNull String reason,
-      @Nullable Exception ex,
-      @NonNull Function1<? super Boolean, Unit> onDestroyFinished) {
+      String reason, @Nullable Exception ex, Function1<? super Boolean, Unit> onDestroyFinished) {
     Task<Void> task = (Task<Void>) destroy(reason, ex);
     return task.continueWith(
         new Continuation<Void, Void>() {
           @Nullable
           @Override
-          public Void then(@NonNull Task<Void> task) throws Exception {
+          public Void then(Task<Void> task) throws Exception {
             boolean instanceDestroyedSuccessfully = task.isCompleted() && !task.isFaulted();
             onDestroyFinished.invoke(instanceDestroyedSuccessfully);
             return null;
@@ -953,12 +949,12 @@ public class ReactHostImpl implements ReactHost {
   }
 
   @Override
-  public void addBeforeDestroyListener(@NonNull Function0<Unit> onBeforeDestroy) {
+  public void addBeforeDestroyListener(Function0<Unit> onBeforeDestroy) {
     mBeforeDestroyListeners.add(onBeforeDestroy);
   }
 
   @Override
-  public void removeBeforeDestroyListener(@NonNull Function0<Unit> onBeforeDestroy) {
+  public void removeBeforeDestroyListener(Function0<Unit> onBeforeDestroy) {
     mBeforeDestroyListeners.remove(onBeforeDestroy);
   }
 
