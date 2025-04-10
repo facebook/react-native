@@ -24,7 +24,7 @@ export declare const stagger: (
 
 
 export declare type ____ViewStyle_InternalBase = Readonly<{
-  backfaceVisibility: "visible" | "hidden";
+  backfaceVisibilityNew: "visible" | "hidden";
   backgroundColor?: ____ColorValue_Internal;
   borderColor?: ____ColorValue_Internal;
 }>;
