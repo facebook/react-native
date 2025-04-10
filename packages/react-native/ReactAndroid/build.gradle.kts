@@ -45,7 +45,7 @@ extra["publishing_version"] = project.findProperty("VERSION_NAME")?.toString()!!
 // This is the version of CMake we're requesting to the Android SDK to use.
 // If missing it will be downloaded automatically. Only CMake versions shipped with the
 // Android SDK are supported (you can find them listed in the SDK Manager of Android Studio).
-val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
+val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.30.5"
 
 extra["cmake_version"] = cmakeVersion
 
