@@ -439,6 +439,14 @@ public abstract interface class com/facebook/react/ViewManagerOnDemandReactPacka
 	public abstract fun getViewManagerNames (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/Collection;
 }
 
+public abstract class com/facebook/react/animated/AnimatedNode {
+	public fun <init> ()V
+}
+
+public abstract interface class com/facebook/react/animated/AnimatedNodeValueListener {
+	public abstract fun onValueUpdate (D)V
+}
+
 public final class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
 	public static final field ANIMATED_MODULE_DEBUG Z
 	public static final field Companion Lcom/facebook/react/animated/NativeAnimatedModule$Companion;
@@ -485,32 +493,32 @@ public final class com/facebook/react/animated/NativeAnimatedModule : com/facebo
 public final class com/facebook/react/animated/NativeAnimatedModule$Companion {
 }
 
-public class com/facebook/react/animated/NativeAnimatedNodesManager : com/facebook/react/uimanager/events/EventDispatcherListener {
+public final class com/facebook/react/animated/NativeAnimatedNodesManager : com/facebook/react/uimanager/events/EventDispatcherListener {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun addAnimatedEventToView (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun connectAnimatedNodeToView (II)V
-	public fun connectAnimatedNodes (II)V
-	public fun createAnimatedNode (ILcom/facebook/react/bridge/ReadableMap;)V
-	public fun disconnectAnimatedNodeFromView (II)V
-	public fun disconnectAnimatedNodes (II)V
-	public fun dropAnimatedNode (I)V
-	public fun extractAnimatedNodeOffset (I)V
-	public fun flattenAnimatedNodeOffset (I)V
-	public fun getNodeById (I)Lcom/facebook/react/animated/AnimatedNode;
-	public fun getValue (ILcom/facebook/react/bridge/Callback;)V
-	public fun hasActiveAnimations ()Z
-	public fun initializeEventListenerForUIManagerType (I)V
+	public final fun addAnimatedEventToView (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun connectAnimatedNodeToView (II)V
+	public final fun connectAnimatedNodes (II)V
+	public final fun createAnimatedNode (ILcom/facebook/react/bridge/ReadableMap;)V
+	public final fun disconnectAnimatedNodeFromView (II)V
+	public final fun disconnectAnimatedNodes (II)V
+	public final fun dropAnimatedNode (I)V
+	public final fun extractAnimatedNodeOffset (I)V
+	public final fun flattenAnimatedNodeOffset (I)V
+	public final fun getNodeById (I)Lcom/facebook/react/animated/AnimatedNode;
+	public final fun getValue (ILcom/facebook/react/bridge/Callback;)V
+	public final fun hasActiveAnimations ()Z
+	public final fun initializeEventListenerForUIManagerType (I)V
 	public fun onEventDispatch (Lcom/facebook/react/uimanager/events/Event;)V
-	public fun removeAnimatedEventFromView (ILjava/lang/String;I)V
-	public fun restoreDefaultValues (I)V
-	public fun runUpdates (J)V
-	public fun setAnimatedNodeOffset (ID)V
-	public fun setAnimatedNodeValue (ID)V
-	public fun startAnimatingNode (IILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
-	public fun startListeningToAnimatedNodeValue (ILcom/facebook/react/animated/AnimatedNodeValueListener;)V
-	public fun stopAnimation (I)V
-	public fun stopListeningToAnimatedNodeValue (I)V
-	public fun updateAnimatedNodeConfig (ILcom/facebook/react/bridge/ReadableMap;)V
+	public final fun removeAnimatedEventFromView (ILjava/lang/String;I)V
+	public final fun restoreDefaultValues (I)V
+	public final fun runUpdates (J)V
+	public final fun setAnimatedNodeOffset (ID)V
+	public final fun setAnimatedNodeValue (ID)V
+	public final fun startAnimatingNode (IILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
+	public final fun startListeningToAnimatedNodeValue (ILcom/facebook/react/animated/AnimatedNodeValueListener;)V
+	public final fun stopAnimation (I)V
+	public final fun stopListeningToAnimatedNodeValue (I)V
+	public final fun updateAnimatedNodeConfig (ILcom/facebook/react/bridge/ReadableMap;)V
 }
 
 public abstract interface class com/facebook/react/bridge/ActivityEventListener {
