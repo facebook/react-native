@@ -3263,15 +3263,15 @@ public class com/facebook/react/packagerconnection/PackagerConnectionSettings {
 
 public final class com/facebook/react/packagerconnection/ReconnectingWebSocket : okhttp3/WebSocketListener {
 	public fun <init> (Ljava/lang/String;Lcom/facebook/react/packagerconnection/ReconnectingWebSocket$MessageCallback;Lcom/facebook/react/packagerconnection/ReconnectingWebSocket$ConnectionCallback;)V
-	public fun closeQuietly ()V
-	public fun connect ()V
+	public final fun closeQuietly ()V
+	public final fun connect ()V
 	public fun onClosed (Lokhttp3/WebSocket;ILjava/lang/String;)V
 	public fun onFailure (Lokhttp3/WebSocket;Ljava/lang/Throwable;Lokhttp3/Response;)V
 	public fun onMessage (Lokhttp3/WebSocket;Ljava/lang/String;)V
 	public fun onMessage (Lokhttp3/WebSocket;Lokio/ByteString;)V
 	public fun onOpen (Lokhttp3/WebSocket;Lokhttp3/Response;)V
-	public fun sendMessage (Ljava/lang/String;)V
-	public fun sendMessage (Lokio/ByteString;)V
+	public final fun sendMessage (Ljava/lang/String;)V
+	public final fun sendMessage (Lokio/ByteString;)V
 }
 
 public abstract interface class com/facebook/react/packagerconnection/ReconnectingWebSocket$ConnectionCallback {
