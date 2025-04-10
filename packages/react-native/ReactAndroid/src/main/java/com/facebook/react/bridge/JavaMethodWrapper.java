@@ -78,6 +78,9 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
         @Override
         public String extractArgument(
             JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          if (jsArguments.isNull(atIndex) || jsArguments.getType(atIndex) != ReadableType.String) {
+            return null;
+          }
           return jsArguments.getString(atIndex);
         }
       };
