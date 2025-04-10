@@ -977,14 +977,19 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
   BOOL horizontal = _scrollView.contentSize.width > self.frame.size.width;
   int minIdx = props.maintainVisibleContentPosition.value().minIndexForVisible;
+  BOOL reverse = props.isReversedVirtualizedList;
   for (NSUInteger ii = minIdx; ii < _contentView.subviews.count; ++ii) {
     // Find the first view that is partially or fully visible.
     UIView *subview = _contentView.subviews[ii];
     BOOL hasNewView = NO;
     if (horizontal) {
-      hasNewView = subview.frame.origin.x + subview.frame.size.width > _scrollView.contentOffset.x;
+      hasNewView = reverse ? subview.frame.origin.x <
+              _scrollView.contentOffset.x + _scrollView.bounds.size.width - _scrollView.contentInset.right
+                           : subview.frame.origin.x + subview.frame.size.width > _scrollView.contentOffset.x;
     } else {
-      hasNewView = subview.frame.origin.y + subview.frame.size.height > _scrollView.contentOffset.y;
+      hasNewView = reverse ? subview.frame.origin.y <
+              _scrollView.contentOffset.y + _scrollView.bounds.size.height - _scrollView.contentInset.bottom
+                           : subview.frame.origin.y + subview.frame.size.height > _scrollView.contentOffset.y;
     }
     if (hasNewView || ii == _contentView.subviews.count - 1) {
       _prevFirstVisibleFrame = subview.frame;
