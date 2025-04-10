@@ -5062,23 +5062,6 @@ public abstract interface class com/facebook/react/uimanager/events/Event$EventA
 	public abstract fun match (ILjava/lang/String;)Z
 }
 
-public abstract interface annotation class com/facebook/react/uimanager/events/EventCategoryDef : java/lang/annotation/Annotation {
-	public static final field CONTINUOUS I
-	public static final field CONTINUOUS_END I
-	public static final field CONTINUOUS_START I
-	public static final field Companion Lcom/facebook/react/uimanager/events/EventCategoryDef$Companion;
-	public static final field DISCRETE I
-	public static final field UNSPECIFIED I
-}
-
-public final class com/facebook/react/uimanager/events/EventCategoryDef$Companion {
-	public static final field CONTINUOUS I
-	public static final field CONTINUOUS_END I
-	public static final field CONTINUOUS_START I
-	public static final field DISCRETE I
-	public static final field UNSPECIFIED I
-}
-
 public abstract interface class com/facebook/react/uimanager/events/EventDispatcher {
 	public abstract fun addBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
 	public abstract fun addListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
