@@ -132,22 +132,24 @@ public class Task<TResult> : TaskInterface<TResult> {
       }
 
   /** Turns a Task<T> into a Task<Void>, dropping any result */
-  public fun makeVoid(): Task<Void> = continueWithTask { task ->
-    when {
-      task.isCancelled() -> cancelled()
-      task.isFaulted() -> forError(task.getError())
-      else -> TASK_NULL
-    }
-  }
+  public fun makeVoid(): Task<Void> =
+      continueWithTask({ task ->
+        when {
+          task.isCancelled() -> cancelled()
+          task.isFaulted() -> forError(task.getError())
+          else -> TASK_NULL
+        }
+      })
 
   /**
    * Adds a continuation that will be scheduled using the executor, returning a new task that
    * completes after the continuation has finished running. This allows the continuation to be
    * scheduled on different thread.
    */
+  @JvmOverloads
   public fun <TContinuationResult> continueWith(
       continuation: Continuation<TResult, TContinuationResult>,
-      executor: Executor
+      executor: Executor = IMMEDIATE_EXECUTOR
   ): Task<TContinuationResult> {
     val completed: Boolean
     val tcs = TaskCompletionSource<TContinuationResult>()
@@ -165,20 +167,13 @@ public class Task<TResult> : TaskInterface<TResult> {
   }
 
   /**
-   * Adds a synchronous continuation to this task, returning a new task that completes after the
-   * continuation has finished running.
-   */
-  public fun <TContinuationResult> continueWith(
-      continuation: Continuation<TResult, TContinuationResult>
-  ): Task<TContinuationResult> = continueWith(continuation, IMMEDIATE_EXECUTOR)
-
-  /**
    * Adds an Task-based continuation to this task that will be scheduled using the executor,
    * returning a new task that completes after the task returned by the continuation has completed.
    */
+  @JvmOverloads
   public fun <TContinuationResult> continueWithTask(
       continuation: Continuation<TResult, Task<TContinuationResult>>,
-      executor: Executor
+      executor: Executor = IMMEDIATE_EXECUTOR,
   ): Task<TContinuationResult> {
     val completed: Boolean
     val tcs = TaskCompletionSource<TContinuationResult>()
@@ -196,20 +191,12 @@ public class Task<TResult> : TaskInterface<TResult> {
   }
 
   /**
-   * Adds an asynchronous continuation to this task, returning a new task that completes after the
-   * task returned by the continuation has completed.
-   */
-  public fun <TContinuationResult> continueWithTask(
-      continuation: Continuation<TResult, Task<TContinuationResult>>
-  ): Task<TContinuationResult> = continueWithTask(continuation, IMMEDIATE_EXECUTOR)
-
-  /**
    * Runs a continuation when a task completes successfully, forwarding along [java.lang.Exception]
    * or cancellation.
    */
   public fun <TContinuationResult> onSuccess(
       continuation: Continuation<TResult, TContinuationResult>,
-      executor: Executor
+      executor: Executor = IMMEDIATE_EXECUTOR,
   ): Task<TContinuationResult> =
       continueWithTask(
           { task ->
@@ -225,17 +212,9 @@ public class Task<TResult> : TaskInterface<TResult> {
    * Runs a continuation when a task completes successfully, forwarding along [java.lang.Exception]s
    * or cancellation.
    */
-  public fun <TContinuationResult> onSuccess(
-      continuation: Continuation<TResult, TContinuationResult>
-  ): Task<TContinuationResult> = onSuccess(continuation, IMMEDIATE_EXECUTOR)
-
-  /**
-   * Runs a continuation when a task completes successfully, forwarding along [java.lang.Exception]s
-   * or cancellation.
-   */
   public fun <TContinuationResult> onSuccessTask(
       continuation: Continuation<TResult, Task<TContinuationResult>>,
-      executor: Executor
+      executor: Executor = IMMEDIATE_EXECUTOR,
   ): Task<TContinuationResult> =
       continueWithTask(
           { task ->
@@ -246,14 +225,6 @@ public class Task<TResult> : TaskInterface<TResult> {
             }
           },
           executor)
-
-  /**
-   * Runs a continuation when a task completes successfully, forwarding along [java.lang.Exception]s
-   * or cancellation.
-   */
-  public fun <TContinuationResult> onSuccessTask(
-      continuation: Continuation<TResult, Task<TContinuationResult>>
-  ): Task<TContinuationResult> = onSuccessTask(continuation, IMMEDIATE_EXECUTOR)
 
   private fun runContinuations() =
       synchronized(lock) {
@@ -446,13 +417,13 @@ public class Task<TResult> : TaskInterface<TResult> {
             if (result == null) {
               tcs.setResult(null)
             } else {
-              result.continueWith { task ->
+              result.continueWith({ task ->
                 when {
                   task.isCancelled() -> tcs.setCancelled()
                   task.isFaulted() -> tcs.setError(task.getError())
                   else -> tcs.setResult(task.getResult())
                 }
-              }
+              })
             }
           } catch (e: CancellationException) {
             tcs.setCancelled()
