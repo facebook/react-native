@@ -17,6 +17,7 @@ import {
   isCatalogAsset,
   writeImageSet,
 } from './assetCatalogIOS';
+import createKeepFileAsync from './createKeepFileAsync';
 import filterPlatformAssetScales from './filterPlatformAssetScales';
 import getAssetDestPathAndroid from './getAssetDestPathAndroid';
 import getAssetDestPathIOS from './getAssetDestPathIOS';
@@ -87,6 +88,9 @@ async function saveAssets(
     console.info('Done adding images to asset catalog');
   } else {
     assets.forEach(addAssetToCopy);
+  }
+  if (platform === 'android') {
+    await createKeepFileAsync(assets, assetsDest);
   }
 
   return copyAll(filesToCopy);
