@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "EventLoopTaskReporter.h"
+#include "EventLoopReporter.h"
 
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
 #include <react/timing/primitives.h>
@@ -16,22 +16,33 @@ namespace facebook::react::jsinspector_modern::tracing {
 
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
 
-EventLoopTaskReporter::EventLoopTaskReporter()
-    : startTimestamp_(getTracingTimeStampOfNow()) {}
+EventLoopReporter::EventLoopReporter(EventLoopPhase phase)
+    : startTimestamp_(getTracingTimeStampOfNow()), phase_(phase) {}
 
-EventLoopTaskReporter::~EventLoopTaskReporter() {
+EventLoopReporter::~EventLoopReporter() {
   PerformanceTracer& performanceTracer = PerformanceTracer::getInstance();
   if (performanceTracer.isTracing()) {
     TracingTimeStamp end = getTracingTimeStampOfNow();
-    performanceTracer.reportEventLoopTask(startTimestamp_, end);
+    switch (phase_) {
+      case EventLoopPhase::Task:
+        performanceTracer.reportEventLoopTask(startTimestamp_, end);
+        break;
+
+      case EventLoopPhase::Microtasks:
+        performanceTracer.reportEventLoopMicrotasks(startTimestamp_, end);
+        break;
+
+      default:
+        break;
+    }
   }
 }
 
 #else
 
-EventLoopTaskReporter::EventLoopTaskReporter() {}
+EventLoopReporter::EventLoopReporter(EventLoopPhase phase) {}
 
-EventLoopTaskReporter::~EventLoopTaskReporter() {}
+EventLoopReporter::~EventLoopReporter() {}
 
 #endif
 

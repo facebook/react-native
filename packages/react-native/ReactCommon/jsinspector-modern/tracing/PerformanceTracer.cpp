@@ -257,6 +257,29 @@ void PerformanceTracer::reportEventLoopTask(
   });
 }
 
+void PerformanceTracer::reportEventLoopMicrotasks(
+    TracingTimeStamp start,
+    TracingTimeStamp end) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "RunMicrotasks",
+      .cat = "v8.execute",
+      .ph = 'X',
+      .ts = start,
+      .pid = oscompat::getCurrentProcessId(),
+      .tid = oscompat::getCurrentThreadId(),
+      .dur = end - start,
+  });
+}
+
 folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
     uint64_t threadId,
     uint16_t profileId,

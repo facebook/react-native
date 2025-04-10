@@ -104,6 +104,12 @@ class PerformanceTracer {
   void reportEventLoopTask(TracingTimeStamp start, TracingTimeStamp end);
 
   /**
+   * Record Microtasks phase of the Event Loop tick. Will be represented as a
+   * "Run Microtasks" block under a task.
+   */
+  void reportEventLoopMicrotasks(TracingTimeStamp start, TracingTimeStamp end);
+
+  /**
    * Create and serialize Profile Trace Event.
    * \return serialized Trace Event that represents a Profile for CDT.
    */
