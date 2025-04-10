@@ -382,13 +382,9 @@ ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
   auto shouldUpdateChildren = false;
   std::optional<ShadowNode::ListOfShared> newChildren;
 
-  for (int i = 0; i < children.size(); i++) {
-    if (!count) {
-      break;
-    }
-
+  for (int i = 0; count > 0 && i < children.size(); i++) {
     auto childFamily = &children[i]->getFamily();
-    if (childrenCount.contains(childFamily) || families.contains(childFamily)) {
+    if (childrenCount.contains(childFamily)) {
       count--;
       shouldUpdateChildren = true;
       children[i] = cloneMultipleRecursive(
@@ -424,12 +420,18 @@ ShadowNode::Unshared ShadowNode::cloneMultiple(
       continue;
     }
 
+    childrenCount[family] = 0;
+
     auto ancestor = family;
     while ((ancestor != nullptr) && ancestor != this->family_.get()) {
       ancestor = ancestor->parent_.lock().get();
-      if (childrenCount[ancestor]++) {
+      auto ancestorIt = childrenCount.find(ancestor);
+      if (ancestorIt != childrenCount.end()) {
+        ancestorIt->second++;
         break;
       }
+
+      childrenCount[ancestor] = 1;
     }
   }
 
