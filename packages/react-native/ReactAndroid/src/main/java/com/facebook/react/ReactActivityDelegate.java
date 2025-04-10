@@ -116,7 +116,7 @@ public class ReactActivityDelegate {
 
   public void onCreate(Bundle savedInstanceState) {
     Systrace.traceSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        Systrace.TRACE_TAG_REACT,
         "ReactActivityDelegate.onCreate::init",
         () -> {
           String mainComponentName = getMainComponentName();

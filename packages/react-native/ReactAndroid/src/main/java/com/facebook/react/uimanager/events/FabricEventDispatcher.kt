@@ -44,13 +44,13 @@ internal class FabricEventDispatcher(
   private var isDispatchScheduled = false
   private val dispatchEventsRunnable = Runnable {
     isDispatchScheduled = false
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "BatchEventDispatchedListeners")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "BatchEventDispatchedListeners")
     try {
       for (listener in postEventDispatchListeners) {
         listener.onBatchEventDispatched()
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 
@@ -75,7 +75,7 @@ internal class FabricEventDispatcher(
 
   private fun dispatchSynchronous(event: Event<*>) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        Systrace.TRACE_TAG_REACT,
         "FabricEventDispatcher.dispatchSynchronous('" + event.eventName + "')")
     try {
       val fabricUIManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
@@ -96,7 +96,7 @@ internal class FabricEventDispatcher(
                 "Fabric UIManager expected to implement SynchronousEventReceiver."))
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 
@@ -182,13 +182,13 @@ internal class FabricEventDispatcher(
         dispatchBatchedEvents()
       }
 
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "BatchEventDispatchedListeners")
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "BatchEventDispatchedListeners")
       try {
         for (listener in postEventDispatchListeners) {
           listener.onBatchEventDispatched()
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+        Systrace.endSection(Systrace.TRACE_TAG_REACT)
       }
     }
 

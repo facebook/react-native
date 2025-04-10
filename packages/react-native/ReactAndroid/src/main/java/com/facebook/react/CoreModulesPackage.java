@@ -180,7 +180,7 @@ class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger 
 
   private UIManagerModule createUIManager(final ReactApplicationContext reactContext) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "createUIManagerModule");
     try {
       if (mLazyViewManagersEnabled) {
         ViewManagerResolver resolver =
@@ -205,7 +205,7 @@ class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger 
             mMinTimeLeftInFrameForNonBatchedOperationMs);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
     }
   }

@@ -74,8 +74,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
   }
 
   private void beginMarkers(String reason) {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "IntBufferBatchMountItem::" + reason);
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "IntBufferBatchMountItem::" + reason);
 
     if (mCommitNumber > 0) {
       ReactMarker.logFabricMarker(
@@ -89,7 +88,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
           ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END, null, mCommitNumber);
     }
 
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
   }
 
   @Override
@@ -120,7 +119,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
       String[] args = {"numInstructions", String.valueOf(numInstructions)};
 
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          Systrace.TRACE_TAG_REACT,
           "IntBufferBatchMountItem::mountInstructions::" + nameForInstructionString(type),
           args,
           args.length);
@@ -181,7 +180,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
               "Invalid type argument to IntBufferBatchMountItem: " + type + " at index: " + i);
         }
       }
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
     endMarkers();
   }

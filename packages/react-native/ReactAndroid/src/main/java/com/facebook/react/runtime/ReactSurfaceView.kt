@@ -41,7 +41,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactSurfaceView.onMeasure")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactSurfaceView.onMeasure")
     var width = 0
     var height = 0
     val widthMode = MeasureSpec.getMode(widthMeasureSpec)
@@ -71,7 +71,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     val viewportOffset = viewportOffset
     surface.updateLayoutSpecs(
         widthMeasureSpec, heightMeasureSpec, viewportOffset.x, viewportOffset.y)
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+    Systrace.endSection(Systrace.TRACE_TAG_REACT)
   }
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {

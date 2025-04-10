@@ -9,7 +9,7 @@ package com.facebook.react.bridge;
 
 import static com.facebook.infer.annotation.Assertions.assertCondition;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import android.content.res.AssetManager;
 import androidx.annotation.Nullable;
@@ -129,7 +129,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       JSExceptionHandler jSExceptionHandler,
       @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
+    Systrace.beginSection(TRACE_TAG_REACT, "createCatalystInstanceImpl");
 
     mHybridData = initHybrid();
 
@@ -144,10 +144,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
     mInspectorTarget = inspectorTarget;
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
+    Systrace.beginSection(TRACE_TAG_REACT, "initializeCxxBridge");
 
     initializeBridge(
         new InstanceCallback(this),
@@ -158,7 +158,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mNativeModuleRegistry.getCxxModules(),
         mInspectorTarget);
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }
@@ -560,8 +560,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();
     boolean wasIdle = oldPendingCalls == 0;
-    Systrace.traceCounter(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, mJsPendingCallsTitleForTrace, oldPendingCalls + 1);
+    Systrace.traceCounter(TRACE_TAG_REACT, mJsPendingCallsTitleForTrace, oldPendingCalls + 1);
     if (wasIdle && !mBridgeIdleListeners.isEmpty()) {
       mNativeModulesQueueThread.runOnQueue(
           () -> {
@@ -592,8 +591,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // TODO(9604406): handle case of web workers injecting messages to main thread
     // Assertions.assertCondition(newPendingCalls >= 0);
     boolean isNowIdle = newPendingCalls == 0;
-    Systrace.traceCounter(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, mJsPendingCallsTitleForTrace, newPendingCalls);
+    Systrace.traceCounter(TRACE_TAG_REACT, mJsPendingCallsTitleForTrace, newPendingCalls);
 
     if (isNowIdle && !mBridgeIdleListeners.isEmpty()) {
       mNativeModulesQueueThread.runOnQueue(

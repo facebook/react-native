@@ -181,8 +181,7 @@ public class MountItemDispatcher {
     // errors/glitches.
     if (viewCommandMountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "MountItemDispatcher::mountViews viewCommandMountItems");
+          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews viewCommandMountItems");
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
         if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
@@ -216,7 +215,7 @@ public class MountItemDispatcher {
         }
       }
 
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
 
     // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
@@ -224,7 +223,7 @@ public class MountItemDispatcher {
     List<MountItem> preMountItemsToDispatch = getAndResetPreMountItems();
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::mountViews preMountItems");
+          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews preMountItems");
       for (MountItem preMountItem : preMountItemsToDispatch) {
         if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(preMountItem, "dispatchMountItems: Executing preMountItem");
@@ -232,13 +231,12 @@ public class MountItemDispatcher {
         executeOrEnqueue(preMountItem);
       }
 
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
 
     if (mountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "MountItemDispatcher::mountViews mountItems to execute");
+          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews mountItems to execute");
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
@@ -276,7 +274,7 @@ public class MountItemDispatcher {
       }
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
 
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
 
     mItemDispatchListener.didMountItems(mountItemsToDispatch);
@@ -303,8 +301,7 @@ public class MountItemDispatcher {
   }
 
   private void dispatchPreMountItemsImpl(long deadline) {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::premountViews");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "MountItemDispatcher::premountViews");
 
     // dispatchPreMountItems cannot be reentrant, but we want to prevent dispatchMountItems from
     // reentering during dispatchPreMountItems
@@ -331,7 +328,7 @@ public class MountItemDispatcher {
       mInDispatch = false;
     }
 
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
   }
 
   private void executeOrEnqueue(MountItem item) {

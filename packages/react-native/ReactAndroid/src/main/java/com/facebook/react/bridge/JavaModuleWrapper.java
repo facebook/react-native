@@ -11,7 +11,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CONVERT_CONSTANTS_E
 import static com.facebook.react.bridge.ReactMarkerConstants.CONVERT_CONSTANTS_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_START;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -77,7 +77,7 @@ class JavaModuleWrapper {
 
   @DoNotStrip
   private void findMethods() {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
+    Systrace.beginSection(TRACE_TAG_REACT, "findMethods");
 
     Class<? extends NativeModule> classForMethods = mModuleHolder.getModule().getClass();
     Class<? extends NativeModule> superClass =
@@ -107,7 +107,7 @@ class JavaModuleWrapper {
         mDescs.add(md);
       }
     }
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
   }
 
   @DoNotStrip
@@ -121,27 +121,27 @@ class JavaModuleWrapper {
   @DoNotStrip
   public @Nullable NativeMap getConstants() {
     final String moduleName = getName();
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "JavaModuleWrapper.getConstants")
+    SystraceMessage.beginSection(TRACE_TAG_REACT, "JavaModuleWrapper.getConstants")
         .arg("moduleName", moduleName)
         .flush();
     ReactMarker.logMarker(GET_CONSTANTS_START, moduleName);
 
     BaseJavaModule baseJavaModule = getModule();
 
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "module.getConstants");
+    Systrace.beginSection(TRACE_TAG_REACT, "module.getConstants");
     Map<String, Object> map = baseJavaModule.getConstants();
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
 
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "create WritableNativeMap");
+    Systrace.beginSection(TRACE_TAG_REACT, "create WritableNativeMap");
     ReactMarker.logMarker(CONVERT_CONSTANTS_START, moduleName);
     try {
       return Arguments.makeNativeMap(map);
     } finally {
       ReactMarker.logMarker(CONVERT_CONSTANTS_END, moduleName);
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
 
       ReactMarker.logMarker(GET_CONSTANTS_END, moduleName);
-      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      SystraceMessage.endSection(TRACE_TAG_REACT).flush();
     }
   }
 
