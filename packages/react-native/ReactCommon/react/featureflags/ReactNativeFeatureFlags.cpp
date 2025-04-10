@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<289424bf406db81cca78515eb71e8a84>>
+ * @generated SignedSource<<fe803b16b13ab942259e7fbaf16c5dd1>>
  */
 
 /**
@@ -96,6 +96,10 @@ bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
   return getAccessor().enableLayoutAnimationsOnIOS();
+}
+
+bool ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS() {
+  return getAccessor().enableLineHeightCenteringOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableLongTaskAPI() {

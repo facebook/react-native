@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bcc9c131dcbfba523fe2b0938b4a8648>>
+ * @generated SignedSource<<71e4c8c4d5a65d497e04014caf888255>>
  */
 
 /**
@@ -63,6 +63,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnIOS(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableLineHeightCenteringOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLongTaskAPI(): Boolean
 
