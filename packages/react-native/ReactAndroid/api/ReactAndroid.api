@@ -654,12 +654,12 @@ public class com/facebook/react/bridge/CatalystInstanceImpl$PendingJSCall {
 	public fun toString ()Ljava/lang/String;
 }
 
-public class com/facebook/react/bridge/ColorPropConverter {
-	public fun <init> ()V
-	public static fun getColor (Ljava/lang/Object;Landroid/content/Context;)Ljava/lang/Integer;
-	public static fun getColor (Ljava/lang/Object;Landroid/content/Context;I)Ljava/lang/Integer;
-	public static fun getColorInstance (Ljava/lang/Object;Landroid/content/Context;)Landroid/graphics/Color;
-	public static fun resolveResourcePath (Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Integer;
+public final class com/facebook/react/bridge/ColorPropConverter {
+	public static final field INSTANCE Lcom/facebook/react/bridge/ColorPropConverter;
+	public static final fun getColor (Ljava/lang/Object;Landroid/content/Context;)Ljava/lang/Integer;
+	public static final fun getColor (Ljava/lang/Object;Landroid/content/Context;I)I
+	public static final fun getColorInstance (Ljava/lang/Object;Landroid/content/Context;)Landroid/graphics/Color;
+	public static final fun resolveResourcePath (Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Integer;
 }
 
 public final class com/facebook/react/bridge/CxxCallbackImpl : com/facebook/jni/HybridClassBase, com/facebook/react/bridge/Callback {
