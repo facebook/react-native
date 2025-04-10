@@ -505,11 +505,10 @@ public class ReactHostImpl implements ReactHost {
                   task -> {
                     if (task.isFaulted()) {
                       final Exception ex = task.getError();
+                      Assertions.assertNotNull(ex, "Reload failed without an exception");
                       if (mUseDevSupport) {
-                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         mDevSupportManager.handleException(ex);
                       } else {
-                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         mReactHostDelegate.handleInstanceException(ex);
                       }
                       return getOrCreateDestroyTask("Reload failed", ex);
@@ -993,21 +992,16 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   (task) -> {
                     if (task.isFaulted()) {
-                      Exception ex = task.getError();
+                      Exception ex = Assertions.assertNotNull(task.getError());
                       if (mUseDevSupport) {
-                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         mDevSupportManager.handleException(ex);
                       } else {
-                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         mReactHostDelegate.handleInstanceException(ex);
                       }
                       // Wait for destroy to finish
                       return getOrCreateDestroyTask(
-                              // NULLSAFE_FIXME[Nullable Dereference]
-                              "getOrCreateStartTask() failure: " + task.getError().getMessage(),
-                              task.getError())
-                          // NULLSAFE_FIXME[Parameter Not Nullable]
-                          .continueWithTask(destroyTask -> Task.forError(task.getError()))
+                              "getOrCreateStartTask() failure: " + ex.getMessage(), ex)
+                          .continueWithTask(destroyTask -> Task.forError(ex))
                           .makeVoid();
                     }
                     return task.makeVoid();
@@ -1089,8 +1083,7 @@ public class ReactHostImpl implements ReactHost {
         .continueWith(
             task -> {
               if (task.isFaulted()) {
-                // NULLSAFE_FIXME[Parameter Not Nullable]
-                handleHostException(task.getError());
+                handleHostException(Assertions.assertNotNull(task.getError()));
               }
               return null;
             });
@@ -1182,7 +1175,8 @@ public class ReactHostImpl implements ReactHost {
               getJsBundleLoader()
                   .onSuccess(
                       task -> {
-                        final JSBundleLoader bundleLoader = task.getResult();
+                        final JSBundleLoader bundleLoader =
+                            Assertions.assertNotNull(task.getResult());
                         final BridgelessReactContext reactContext = getOrCreateReactContext();
                         final DevSupportManager devSupportManager = getDevSupportManager();
                         reactContext.setJSExceptionHandler(devSupportManager);
@@ -1209,7 +1203,6 @@ public class ReactHostImpl implements ReactHost {
                         instance.initializeEagerTurboModules();
 
                         log(method, "Loading JS Bundle");
-                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         instance.loadJSBundle(bundleLoader);
 
                         log(
@@ -1233,12 +1226,10 @@ public class ReactHostImpl implements ReactHost {
 
           Continuation<CreationResult, ReactInstance> lifecycleUpdateTask =
               task -> {
-                // NULLSAFE_FIXME[Nullable Dereference]
-                final ReactInstance reactInstance = task.getResult().mInstance;
-                // NULLSAFE_FIXME[Nullable Dereference]
-                final ReactContext reactContext = task.getResult().mContext;
-                // NULLSAFE_FIXME[Nullable Dereference]
-                final boolean isReloading = task.getResult().mIsReloading;
+                CreationResult result = Assertions.assertNotNull(task.getResult());
+                final ReactInstance reactInstance = result.mInstance;
+                final ReactContext reactContext = result.mContext;
+                final boolean isReloading = result.mIsReloading;
                 final boolean isManagerResumed =
                     mReactLifecycleStateManager.getLifecycleState() == LifecycleState.RESUMED;
 
@@ -1284,8 +1275,7 @@ public class ReactHostImpl implements ReactHost {
 
           creationTask.onSuccess(lifecycleUpdateTask, mUIExecutor);
           return creationTask.onSuccess(
-              // NULLSAFE_FIXME[Nullable Dereference]
-              task -> task.getResult().mInstance,
+              task -> Assertions.assertNotNull(task.getResult()).mInstance,
               Task.IMMEDIATE_EXECUTOR);
         });
   }
@@ -1298,8 +1288,7 @@ public class ReactHostImpl implements ReactHost {
       return isMetroRunning()
           .onSuccessTask(
               task -> {
-                // NULLSAFE_FIXME[Nullable Dereference]
-                boolean isMetroRunning = task.getResult();
+                boolean isMetroRunning = Assertions.assertNotNull(task.getResult());
                 if (isMetroRunning) {
                   // Since metro is running, fetch the JS bundle from the server
                   return loadJSBundleFromMetro();
@@ -1422,8 +1411,7 @@ public class ReactHostImpl implements ReactHost {
       final String stageLabel = "Stage: " + stage;
       final String reasonLabel = tag + " reason: " + reason;
       if (task.isFaulted()) {
-        final Exception ex = task.getError();
-        // NULLSAFE_FIXME[Nullable Dereference]
+        final Exception ex = Assertions.assertNotNull(task.getError());
         final String faultLabel = "Fault reason: " + ex.getMessage();
         raiseSoftException(
             method,
@@ -1599,11 +1587,10 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     if (task.isFaulted()) {
-                      Exception fault = task.getError();
+                      Exception fault = Assertions.assertNotNull(task.getError());
                       raiseSoftException(
                           method,
                           "Error during reload. ReactInstance task faulted. Fault reason: "
-                              // NULLSAFE_FIXME[Nullable Dereference]
                               + fault.getMessage()
                               + ". Reload reason: "
                               + reason,
@@ -1773,11 +1760,10 @@ public class ReactHostImpl implements ReactHost {
               .continueWith(
                   task -> {
                     if (task.isFaulted()) {
-                      Exception fault = task.getError();
+                      Exception fault = Assertions.assertNotNull(task.getError());
                       raiseSoftException(
                           method,
                           "React destruction failed. ReactInstance task faulted. Fault reason: "
-                              // NULLSAFE_FIXME[Nullable Dereference]
                               + fault.getMessage()
                               + ". Destroy reason: "
                               + reason,
