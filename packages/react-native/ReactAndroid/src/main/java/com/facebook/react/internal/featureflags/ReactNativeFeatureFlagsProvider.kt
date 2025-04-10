@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f449cffb347487bb2cfb9f83c04e4b64>>
+ * @generated SignedSource<<fbd1aa85f9992de3da924a98c68b55af>>
  */
 
 /**
@@ -29,7 +29,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
+  @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
+
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
+
+  @DoNotStrip public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean
+
+  @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
@@ -42,6 +48,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
+
+  @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
@@ -67,8 +75,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
-  @DoNotStrip public fun enableUIConsistency(): Boolean
-
   @DoNotStrip public fun enableViewCulling(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
@@ -86,8 +92,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip public fun removeTurboModuleManagerDelegateMutex(): Boolean
-
-  @DoNotStrip public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c2e6ecf2df22ae536d0ee3d2a79955fa>>
+ * @generated SignedSource<<b033aef3718808786a7e46d2e9c06d9e>>
  */
 
 /**
@@ -43,7 +43,13 @@ class NativeReactNativeFeatureFlags
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
+  bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
+
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
+
+  bool disableShadowNodeOnNewArchitectureAndroid(jsi::Runtime& runtime);
+
+  bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
 
@@ -56,6 +62,8 @@ class NativeReactNativeFeatureFlags
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
+
+  bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
@@ -81,8 +89,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
-  bool enableUIConsistency(jsi::Runtime& runtime);
-
   bool enableViewCulling(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
@@ -100,8 +106,6 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool removeTurboModuleManagerDelegateMutex(jsi::Runtime& runtime);
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

@@ -42,7 +42,6 @@ using namespace facebook::react;
 @end
 
 @implementation RCTParagraphComponentView {
-  ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
@@ -77,11 +76,11 @@ using namespace facebook::react;
 
 - (NSAttributedString *_Nullable)attributedText
 {
-  if (!_state) {
+  if (!_textView.state) {
     return nil;
   }
 
-  return RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
+  return RCTNSAttributedStringFromAttributedString(_textView.state->getData().attributedString);
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -119,8 +118,7 @@ using namespace facebook::react;
 
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
-  _state = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state);
-  _textView.state = _state;
+  _textView.state = std::static_pointer_cast<const ParagraphShadowNode::ConcreteState>(state);
   [_textView setNeedsDisplay];
   [self setNeedsLayout];
 }
@@ -139,7 +137,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _state.reset();
+  _textView.state = nullptr;
   _accessibilityProvider = nil;
 }
 
@@ -181,11 +179,11 @@ using namespace facebook::react;
   // If the component is not `accessible`, we return an empty array.
   // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
   // in other words, all nested <Text> components individually have no sense without the <Paragraph>.
-  if (!_state || !paragraphProps.accessible) {
+  if (!_textView.state || !paragraphProps.accessible) {
     return [NSArray new];
   }
 
-  auto &data = _state->getData();
+  auto &data = _textView.state->getData();
 
   if (![_accessibilityProvider isUpToDate:data.attributedString]) {
     auto textLayoutManager = data.layoutManager.lock();
@@ -252,11 +250,13 @@ using namespace facebook::react;
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
-  if (!_state) {
+  const auto &state = _textView.state;
+  if (!state) {
     return _eventEmitter;
   }
 
-  auto textLayoutManager = _state->getData().layoutManager.lock();
+  const auto &stateData = state->getData();
+  auto textLayoutManager = stateData.layoutManager.lock();
 
   if (!textLayoutManager) {
     return _eventEmitter;
@@ -266,7 +266,7 @@ using namespace facebook::react;
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
+  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:stateData.attributedString
                                                               paragraphAttributes:_paragraphAttributes
                                                                             frame:frame
                                                                           atPoint:point];
@@ -408,8 +408,8 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
     return;
   }
 
-  auto textLayoutManager = _state->getData().layoutManager.lock();
-
+  const auto &stateData = _state->getData();
+  auto textLayoutManager = stateData.layoutManager.lock();
   if (!textLayoutManager) {
     return;
   }
@@ -424,7 +424,7 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
     frame = [self calculateCenteredFrameWithAttributedText:attributedText frame:frame];
   }
 
-  [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
+  [nativeTextLayoutManager drawAttributedString:stateData.attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame
                               drawHighlightPath:^(UIBezierPath *highlightPath) {

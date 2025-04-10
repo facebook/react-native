@@ -11,7 +11,7 @@
 import type {
   AbstractImageAndroid,
   AbstractImageIOS,
-  Image as ImageComponent,
+  ImageType as ImageComponent,
 } from './ImageTypes.flow';
 
 import useMergeRefs from '../Utilities/useMergeRefs';

@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
@@ -15,10 +16,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @LegacyArchitecture
 public class JSONArguments {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "JSONArguments", LegacyArchitectureLogLevel.WARNING);
   }
 

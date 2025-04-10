@@ -21,11 +21,12 @@ import type {
   LayoutChangeEvent,
   NativeSyntheticEvent,
 } from '../Types/CoreEventTypes';
-import typeof Image from './Image';
+import type {ImageType} from './ImageTypes.flow';
 import type {ImageResizeMode} from './ImageResizeMode';
 import type {ImageSource, ImageURISource} from './ImageSource';
-import type React from 'react';
 import type {ElementRef, RefSetter} from 'react';
+
+import * as React from 'react';
 
 export type ImageSourcePropType = ImageSource;
 
@@ -128,7 +129,7 @@ export type ImagePropsAndroid = $ReadOnly<{
 }>;
 
 export type ImagePropsBase = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
+  ...Omit<ViewProps, 'style'>,
   /**
    * When true, indicates the image is an accessibility element.
    *
@@ -367,5 +368,5 @@ export type ImageBackgroundProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/imagebackground#imageref
    */
-  imageRef?: RefSetter<ElementRef<Image>>,
+  imageRef?: RefSetter<ElementRef<ImageType>>,
 }>;

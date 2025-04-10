@@ -13,7 +13,7 @@
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
 
 import TouchableWithoutFeedback from '../Components/Touchable/TouchableWithoutFeedback';
-import React from 'react';
+import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 
 const Switch = require('../Components/Switch/Switch').default;

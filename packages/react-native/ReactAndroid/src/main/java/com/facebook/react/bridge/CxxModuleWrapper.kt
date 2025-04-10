@@ -19,7 +19,7 @@ public open class CxxModuleWrapper protected constructor(hybridData: HybridData)
     CxxModuleWrapperBase(hybridData) {
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("CxxModuleWrapper")
+      LegacyArchitectureLogger.assertLegacyArchitecture("CxxModuleWrapper")
     }
   }
 }

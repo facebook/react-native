@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<921b8cf50a1d09fd5e2e37b62c1761c2>>
+ * @generated SignedSource<<1db4d0a5542650e2d206fc598ef97159>>
  */
 
 /**
@@ -27,13 +27,17 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var commonTestFlagCache: Boolean? = null
   private var animatedShouldSignalBatchCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
+  private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
+  private var disableShadowNodeOnNewArchitectureAndroidCache: Boolean? = null
+  private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
+  private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
@@ -46,7 +50,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
-  private var enableUIConsistencyCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
@@ -56,7 +59,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
-  private var throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
@@ -97,12 +99,42 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun disableMainQueueSyncDispatchIOS(): Boolean {
+    var cached = disableMainQueueSyncDispatchIOSCache
+    if (cached == null) {
+      cached = currentProvider.disableMainQueueSyncDispatchIOS()
+      accessedFeatureFlags.add("disableMainQueueSyncDispatchIOS")
+      disableMainQueueSyncDispatchIOSCache = cached
+    }
+    return cached
+  }
+
   override fun disableMountItemReorderingAndroid(): Boolean {
     var cached = disableMountItemReorderingAndroidCache
     if (cached == null) {
       cached = currentProvider.disableMountItemReorderingAndroid()
       accessedFeatureFlags.add("disableMountItemReorderingAndroid")
       disableMountItemReorderingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean {
+    var cached = disableShadowNodeOnNewArchitectureAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableShadowNodeOnNewArchitectureAndroid()
+      accessedFeatureFlags.add("disableShadowNodeOnNewArchitectureAndroid")
+      disableShadowNodeOnNewArchitectureAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAccessibilityOrder(): Boolean {
+    var cached = enableAccessibilityOrderCache
+    if (cached == null) {
+      cached = currentProvider.enableAccessibilityOrder()
+      accessedFeatureFlags.add("enableAccessibilityOrder")
+      enableAccessibilityOrderCache = cached
     }
     return cached
   }
@@ -163,6 +195,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableFabricRenderer()
       accessedFeatureFlags.add("enableFabricRenderer")
       enableFabricRendererCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean {
+    var cached = enableFontScaleChangesUpdatingLayoutCache
+    if (cached == null) {
+      cached = currentProvider.enableFontScaleChangesUpdatingLayout()
+      accessedFeatureFlags.add("enableFontScaleChangesUpdatingLayout")
+      enableFontScaleChangesUpdatingLayoutCache = cached
     }
     return cached
   }
@@ -287,16 +329,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun enableUIConsistency(): Boolean {
-    var cached = enableUIConsistencyCache
-    if (cached == null) {
-      cached = currentProvider.enableUIConsistency()
-      accessedFeatureFlags.add("enableUIConsistency")
-      enableUIConsistencyCache = cached
-    }
-    return cached
-  }
-
   override fun enableViewCulling(): Boolean {
     var cached = enableViewCullingCache
     if (cached == null) {
@@ -383,16 +415,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.removeTurboModuleManagerDelegateMutex()
       accessedFeatureFlags.add("removeTurboModuleManagerDelegateMutex")
       removeTurboModuleManagerDelegateMutexCache = cached
-    }
-    return cached
-  }
-
-  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean {
-    var cached = throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache
-    if (cached == null) {
-      cached = currentProvider.throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()
-      accessedFeatureFlags.add("throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS")
-      throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache = cached
     }
     return cached
   }

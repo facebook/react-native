@@ -14,6 +14,7 @@ import android.view.View
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.views.text.ReactTextView
+import com.facebook.react.views.text.TextLayoutManager
 import com.facebook.react.views.view.ViewGroupClickEvent
 
 /**
@@ -35,18 +36,18 @@ import com.facebook.react.views.view.ViewGroupClickEvent
  * (TalkBack announces that the text has links available, and the links are exposed in the context
  * menu).
  */
-public class ReactClickableSpan(public val reactTag: Int) : ClickableSpan(), ReactSpan {
-  public var isKeyboardFocused: Boolean = false
-  public var focusBgColor: Int = Color.TRANSPARENT
+internal class ReactClickableSpan(val reactTag: Int) : ClickableSpan(), ReactSpan {
+  var isKeyboardFocused: Boolean = false
+  var focusBgColor: Int = Color.TRANSPARENT
 
-  public override fun onClick(view: View) {
+  override fun onClick(view: View) {
     val context = view.context as ReactContext
     val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, reactTag)
     eventDispatcher?.dispatchEvent(
         ViewGroupClickEvent(UIManagerHelper.getSurfaceId(context), reactTag))
   }
 
-  public override fun updateDrawState(ds: TextPaint) {
+  override fun updateDrawState(ds: TextPaint) {
     // no super call so we don't change the link color or add an underline by default, as the
     // superclass does.
     if (isKeyboardFocused) {

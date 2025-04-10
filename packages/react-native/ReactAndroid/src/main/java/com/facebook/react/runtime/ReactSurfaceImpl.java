@@ -20,12 +20,10 @@ import com.facebook.react.ReactHost;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.fabric.SurfaceHandlerBinding;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.fabric.ReactSurface;
-import com.facebook.react.interfaces.fabric.SurfaceHandler;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -41,7 +39,7 @@ public class ReactSurfaceImpl implements ReactSurface {
 
   private final AtomicReference<ReactHostImpl> mReactHost = new AtomicReference<>(null);
 
-  private final SurfaceHandler mSurfaceHandler;
+  private final SurfaceHandlerBinding mSurfaceHandler;
 
   /**
    * Surface can hold two types of context: one used to init the surface without view (e.g. during
@@ -67,9 +65,7 @@ public class ReactSurfaceImpl implements ReactSurface {
     this(new SurfaceHandlerBinding(moduleName), context);
 
     NativeMap nativeProps =
-        initialProps == null
-            ? new WritableNativeMap()
-            : (NativeMap) Arguments.fromBundle(initialProps);
+        initialProps != null ? (NativeMap) Arguments.fromBundle(initialProps) : null;
     mSurfaceHandler.setProps(nativeProps);
 
     DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -84,7 +80,7 @@ public class ReactSurfaceImpl implements ReactSurface {
   }
 
   @VisibleForTesting
-  ReactSurfaceImpl(SurfaceHandler surfaceHandler, Context context) {
+  ReactSurfaceImpl(SurfaceHandlerBinding surfaceHandler, Context context) {
     mSurfaceHandler = surfaceHandler;
     mContext = context;
   }
@@ -134,7 +130,7 @@ public class ReactSurfaceImpl implements ReactSurface {
   }
 
   /** package */
-  SurfaceHandler getSurfaceHandler() {
+  SurfaceHandlerBinding getSurfaceHandler() {
     return mSurfaceHandler;
   }
 

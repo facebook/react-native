@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7255ac7aca3a6e375e6f580e99c0b98>>
+ * @generated SignedSource<<b9dca6ffceaa6279a9472a8b41cec8ec>>
  * @flow strict
  */
 
@@ -50,13 +50,17 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
+  disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
+  disableShadowNodeOnNewArchitectureAndroid: Getter<boolean>,
+  enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
+  enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
@@ -69,7 +73,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
-  enableUIConsistency: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
@@ -79,7 +82,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   removeTurboModuleManagerDelegateMutex: Getter<boolean>,
-  throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useEditTextStockAndroidFocusBehavior: Getter<boolean>,
@@ -173,9 +175,21 @@ export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
 /**
+ * Disable sync dispatch on the main queue on iOS
+ */
+export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlagGetter('disableMainQueueSyncDispatchIOS', false);
+/**
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
+/**
+ * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
+ */
+export const disableShadowNodeOnNewArchitectureAndroid: Getter<boolean> = createNativeFlagGetter('disableShadowNodeOnNewArchitectureAndroid', true);
+/**
+ * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
+ */
+export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter('enableAccessibilityOrder', false);
 /**
  * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
  */
@@ -200,6 +214,10 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
  * Enables the use of the Fabric renderer in the whole app.
  */
 export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
+/**
+ * Enables font scale changes updating layout for measurable nodes.
+ */
+export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */
@@ -249,10 +267,6 @@ export const enableReportEventPaintTime: Getter<boolean> = createNativeFlagGette
  */
 export const enableSynchronousStateUpdates: Getter<boolean> = createNativeFlagGetter('enableSynchronousStateUpdates', false);
 /**
- * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
- */
-export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enableUIConsistency', false);
-/**
  * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
  */
 export const enableViewCulling: Getter<boolean> = createNativeFlagGetter('enableViewCulling', false);
@@ -275,7 +289,7 @@ export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> =
 /**
  * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
  */
-export const fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMountingCoordinatorReportedPendingTransactionsOnAndroid', false);
+export const fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMountingCoordinatorReportedPendingTransactionsOnAndroid', true);
 /**
  * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
  */
@@ -288,10 +302,6 @@ export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlag
  * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
  */
 export const removeTurboModuleManagerDelegateMutex: Getter<boolean> = createNativeFlagGetter('removeTurboModuleManagerDelegateMutex', false);
-/**
- * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
- */
-export const throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: Getter<boolean> = createNativeFlagGetter('throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */
@@ -307,7 +317,7 @@ export const useEditTextStockAndroidFocusBehavior: Getter<boolean> = createNativ
 /**
  * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
  */
-export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', false);
+export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', true);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */

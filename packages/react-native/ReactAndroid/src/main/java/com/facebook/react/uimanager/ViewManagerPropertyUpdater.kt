@@ -84,11 +84,13 @@ public object ViewManagerPropertyUpdater {
   @JvmStatic
   public fun getNativeProps(
       viewManagerTopClass: Class<out ViewManager<Nothing, *>>,
-      shadowNodeTopClass: Class<out Nothing>
+      shadowNodeTopClass: Class<out Nothing>?
   ): Map<String, String> {
     val props: MutableMap<String, String> = HashMap()
     findManagerSetter(viewManagerTopClass).getProperties(props)
-    findNodeSetter(shadowNodeTopClass).getProperties(props)
+    if (shadowNodeTopClass != null) {
+      findNodeSetter(shadowNodeTopClass).getProperties(props)
+    }
     return props
   }
 

@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sortUnions should sort union members 1`] = `
+"/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+type AFoo = unknown;
+type BFoo = unknown;
+type CFoo = unknown;
+type DFoo = unknown;
+type A = number | string;
+type B = AFoo | BFoo | CFoo | DFoo;
+type C = AFoo | BFoo | CFoo | DFoo;
+type D = BFoo | BFoo | number | string;
+type E = AFoo | BFoo | number | string | {
+  bar: string;
+} | {
+  foo: string;
+};
+type F = \\"A\\" | \\"B\\" | \\"C\\" | \\"D\\";
+type G = \\"A\\" | \\"B\\" | \\"C\\" | \\"D\\" | 0 | 1 | 2 | 3;"
+`;

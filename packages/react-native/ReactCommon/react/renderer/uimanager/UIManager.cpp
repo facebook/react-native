@@ -50,15 +50,8 @@ UIManager::UIManager(
       contextContainer_(std::move(contextContainer)),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)),
       lazyShadowTreeRevisionConsistencyManager_(
-          ReactNativeFeatureFlags::enableUIConsistency()
-              ? std::make_unique<LazyShadowTreeRevisionConsistencyManager>(
-                    shadowTreeRegistry_)
-              : nullptr),
-      latestShadowTreeRevisionProvider_(
-          ReactNativeFeatureFlags::enableUIConsistency()
-              ? nullptr
-              : std::make_unique<LatestShadowTreeRevisionProvider>(
-                    shadowTreeRegistry_)) {}
+          std::make_unique<LazyShadowTreeRevisionConsistencyManager>(
+              shadowTreeRegistry_)) {}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
@@ -205,8 +198,7 @@ void UIManager::completeSurface(
         },
         commitOptions);
 
-    if (result == ShadowTree::CommitStatus::Succeeded &&
-        lazyShadowTreeRevisionConsistencyManager_ != nullptr) {
+    if (result == ShadowTree::CommitStatus::Succeeded) {
       // It's safe to update the visible revision of the shadow tree immediately
       // after we commit a specific one.
       lazyShadowTreeRevisionConsistencyManager_->updateCurrentRevision(
@@ -325,16 +317,7 @@ UIManager::getShadowTreeRevisionConsistencyManager() {
 }
 
 ShadowTreeRevisionProvider* UIManager::getShadowTreeRevisionProvider() {
-  if (lazyShadowTreeRevisionConsistencyManager_ != nullptr) {
-    return lazyShadowTreeRevisionConsistencyManager_.get();
-  } else if (latestShadowTreeRevisionProvider_ != nullptr) {
-    return latestShadowTreeRevisionProvider_.get();
-  }
-
-  LOG(ERROR) << "Unexpected state found in UIManager where both "
-             << "lazyShadowTreeRevisionConsistencyManager_ and "
-             << "latestShadowTreeRevisionProvider_ were null";
-  return nullptr;
+  return lazyShadowTreeRevisionConsistencyManager_.get();
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(
@@ -695,6 +678,22 @@ void UIManager::synchronouslyUpdateViewOnUIThread(
     const folly::dynamic& props) {
   if (delegate_ != nullptr) {
     delegate_->uiManagerShouldSynchronouslyUpdateViewOnUIThread(tag, props);
+  }
+}
+
+#pragma mark - Add & Remove event listener
+
+void UIManager::addEventListener(
+    std::shared_ptr<const EventListener> listener) {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerShouldAddEventListener(listener);
+  }
+}
+
+void UIManager::removeEventListener(
+    const std::shared_ptr<const EventListener>& listener) {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerShouldRemoveEventListener(listener);
   }
 }
 

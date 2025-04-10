@@ -141,7 +141,8 @@ NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
-  if (RCTIsNewArchEnabled() && ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
+  if (RCTAreLegacyLogsEnabled() && RCTIsNewArchEnabled() &&
+      ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
     addModuleLoadedWithOldArch([moduleClass description]);
   }
   static dispatch_once_t onceToken;
@@ -251,17 +252,6 @@ BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
 void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
 {
   gTurboModuleEnableSyncVoidMethods = enabled;
-}
-
-static BOOL gBridgeModuleDisableBatchDidComplete = NO;
-BOOL RCTBridgeModuleBatchDidCompleteDisabled(void)
-{
-  return gBridgeModuleDisableBatchDidComplete;
-}
-
-void RCTDisableBridgeModuleBatchDidComplete(BOOL disabled)
-{
-  gBridgeModuleDisableBatchDidComplete = disabled;
 }
 
 BOOL kDispatchAccessibilityManagerInitOntoMain = NO;

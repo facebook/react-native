@@ -606,18 +606,19 @@ export default ({
       description: 'Ensure borders can render properly with scaling transforms',
       render: function (): React.Node {
         return (
-          <View
-            testID="border-test-scaling-transforms"
-            style={[
-              styles.smallBox,
-              {
-                backgroundColor: 'red',
-                borderLeftWidth: 10,
-                borderRadius: 10,
-                transform: [{scale: 1.2}],
-              },
-            ]}
-          />
+          <View testID="border-test-scaling-transforms" style={{padding: 10}}>
+            <View
+              style={[
+                styles.smallBox,
+                {
+                  backgroundColor: 'red',
+                  borderLeftWidth: 10,
+                  borderRadius: 10,
+                  transform: [{scale: 1.2}],
+                },
+              ]}
+            />
+          </View>
         );
       },
     },

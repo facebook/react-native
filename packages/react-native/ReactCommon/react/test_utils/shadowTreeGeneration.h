@@ -18,9 +18,6 @@
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs/stubs.h>
 
-#include <react/renderer/components/root/RootComponentDescriptor.h>
-#include <react/renderer/components/view/ViewComponentDescriptor.h>
-
 #include "Entropy.h"
 
 namespace facebook::react {

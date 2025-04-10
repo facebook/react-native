@@ -11,6 +11,7 @@ import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.facebook.testutils.shadows.ShadowSoLoader
@@ -101,6 +102,7 @@ class ReactPropForShadowNodeSetterTest {
 
   @Before
   fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
     yogaNodeFactory = mockStatic(YogaNodeFactory::class.java)
     yogaNodeFactory
         .`when`<YogaNode> { YogaNodeFactory.create(any()) }

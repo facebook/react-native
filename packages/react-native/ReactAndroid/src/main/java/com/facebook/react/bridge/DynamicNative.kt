@@ -45,4 +45,10 @@ private class DynamicNative : HybridClassBase(), Dynamic {
   override fun recycle() {
     // Noop - nothing to recycle since there is no pooling
   }
+
+  private companion object {
+    init {
+      ReactNativeJniCommonSoLoader.staticInit()
+    }
+  }
 }

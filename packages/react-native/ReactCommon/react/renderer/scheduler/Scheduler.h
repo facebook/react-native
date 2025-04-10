@@ -13,7 +13,6 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/EventListener.h>
@@ -98,6 +97,10 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) override;
+  void uiManagerShouldAddEventListener(
+      std::shared_ptr<const EventListener> listener) final;
+  void uiManagerShouldRemoveEventListener(
+      const std::shared_ptr<const EventListener>& listener) final;
 
 #pragma mark - ContextContainer
   ContextContainer::Shared getContextContainer() const;

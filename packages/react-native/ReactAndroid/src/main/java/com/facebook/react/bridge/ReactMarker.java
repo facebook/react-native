@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import android.os.SystemClock;
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.List;
 import java.util.Queue;
@@ -20,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Static class that allows markers to be placed in React code and responded to in a configurable
  * way
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class ReactMarker {
 
@@ -211,7 +213,7 @@ public class ReactMarker {
       now = SystemClock.uptimeMillis();
     }
 
-    if (BridgeSoLoader.isInitialized()) {
+    if (ReactNativeJniCommonSoLoader.isInitialized()) {
       // First send the current marker
       nativeLogMarker(name.name(), now);
 

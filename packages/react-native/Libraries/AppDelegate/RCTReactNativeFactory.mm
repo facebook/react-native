@@ -50,6 +50,7 @@ using namespace facebook::react;
 {
   if (self = [super init]) {
     self.delegate = delegate;
+    RCTNewArchitectureSetMinValidationLevel(RCTNotAllowedInFabricWithoutLegacy);
     [self _setUpFeatureFlags:releaseLevel];
 
     auto newArchEnabled = [self newArchEnabled];

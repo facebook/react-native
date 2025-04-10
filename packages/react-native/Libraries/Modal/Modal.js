@@ -19,7 +19,7 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import VirtualizedLists from '@react-native/virtualized-lists';
-import React from 'react';
+import * as React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
 const View = require('../Components/View/View').default;
@@ -197,11 +197,11 @@ function confirmProps(props: ModalProps) {
 
 // Create a state to track whether the Modal is rendering or not.
 // This is the only prop that controls whether the modal is rendered or not.
-type State = {
+type ModalState = {
   isRendered: boolean,
 };
 
-class Modal extends React.Component<ModalProps, State> {
+class Modal extends React.Component<ModalProps, ModalState> {
   static defaultProps: {hardwareAccelerated: boolean, visible: boolean} = {
     visible: true,
     hardwareAccelerated: false,

@@ -24,10 +24,10 @@ public interface ReactClippingViewGroup {
   /**
    * Notify view that clipping area may have changed and it should recalculate the list of children
    * that should be attached/detached. This method should be called only when property
-   * `removeClippedSubviews` is set to `true` on a view.
+   * [removeClippedSubviews] is set to `true` on a view.
    *
    * CAUTION: Views are responsible for calling [updateClippingRect] on it's children. This should
-   * happen if child implement [ReactClippingViewGroup], return true from [getRemoveClippedSubviews]
+   * happen if child implement [ReactClippingViewGroup], return true from [removeClippedSubviews]
    * and clipping rect change of the current view may affect clipping rect of this child.
    */
   public fun updateClippingRect()

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3bce13ba04c4847b7f36711d045ade26>>
+ * @generated SignedSource<<30b78ef5870a09bb116e828555be6d60>>
  */
 
 /**
@@ -39,7 +39,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableMainQueueSyncDispatchIOS() override {
+    return false;
+  }
+
   bool disableMountItemReorderingAndroid() override {
+    return false;
+  }
+
+  bool disableShadowNodeOnNewArchitectureAndroid() override {
+    return true;
+  }
+
+  bool enableAccessibilityOrder() override {
     return false;
   }
 
@@ -64,6 +76,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFabricRenderer() override {
+    return false;
+  }
+
+  bool enableFontScaleChangesUpdatingLayout() override {
     return false;
   }
 
@@ -115,10 +131,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableUIConsistency() override {
-    return false;
-  }
-
   bool enableViewCulling() override {
     return false;
   }
@@ -140,7 +152,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    return false;
+    return true;
   }
 
   bool fuseboxEnabledRelease() override {
@@ -152,10 +164,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool removeTurboModuleManagerDelegateMutex() override {
-    return false;
-  }
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
     return false;
   }
 
@@ -172,7 +180,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useFabricInterop() override {
-    return false;
+    return true;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {

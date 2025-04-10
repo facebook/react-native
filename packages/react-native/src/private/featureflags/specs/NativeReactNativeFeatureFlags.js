@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8ce7d207a999d281e944fefd1ef84eed>>
+ * @generated SignedSource<<487cbcfcee94847590719f97275a4494>>
  * @flow strict
  */
 
@@ -27,13 +27,17 @@ export interface Spec extends TurboModule {
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +animatedShouldSignalBatch?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
+  +disableMainQueueSyncDispatchIOS?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
+  +disableShadowNodeOnNewArchitectureAndroid?: () => boolean;
+  +enableAccessibilityOrder?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
+  +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableJSRuntimeGCOnMemoryPressureOnIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
@@ -46,7 +50,6 @@ export interface Spec extends TurboModule {
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableReportEventPaintTime?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
-  +enableUIConsistency?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
@@ -56,7 +59,6 @@ export interface Spec extends TurboModule {
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +removeTurboModuleManagerDelegateMutex?: () => boolean;
-  +throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useEditTextStockAndroidFocusBehavior?: () => boolean;

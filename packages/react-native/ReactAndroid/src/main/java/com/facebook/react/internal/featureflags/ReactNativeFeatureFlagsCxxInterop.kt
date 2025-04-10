@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<96961a00225330b56b4a530af5ec7c29>>
+ * @generated SignedSource<<71e4c8c4d5a65d497e04014caf888255>>
  */
 
 /**
@@ -34,7 +34,13 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedEnabled(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun disableMainQueueSyncDispatchIOS(): Boolean
+
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun disableShadowNodeOnNewArchitectureAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
@@ -47,6 +53,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricRenderer(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableFontScaleChangesUpdatingLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
@@ -72,8 +80,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableSynchronousStateUpdates(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableViewCulling(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewRecycling(): Boolean
@@ -91,8 +97,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun removeTurboModuleManagerDelegateMutex(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

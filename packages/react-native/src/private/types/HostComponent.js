@@ -11,6 +11,6 @@
 import type {HostInstance} from './HostInstance';
 
 export type HostComponent<Config: {...}> = component(
-  ref: React.RefSetter<HostInstance>,
+  ref?: React.RefSetter<HostInstance>,
   ...Config
 );

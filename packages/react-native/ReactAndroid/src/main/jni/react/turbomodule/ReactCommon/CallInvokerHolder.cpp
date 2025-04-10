@@ -10,12 +10,6 @@
 namespace facebook::react {
 
 CallInvokerHolder::CallInvokerHolder(std::shared_ptr<CallInvoker> callInvoker)
-    : _callInvoker(callInvoker) {}
-
-std::shared_ptr<CallInvoker> CallInvokerHolder::getCallInvoker() {
-  return _callInvoker;
-}
-
-void CallInvokerHolder::registerNatives() {}
+    : callInvoker_(std::move(callInvoker)) {}
 
 } // namespace facebook::react

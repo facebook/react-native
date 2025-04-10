@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<72fd57b02ce2afcdac0b28e757715138>>
+ * @generated SignedSource<<fe803b16b13ab942259e7fbaf16c5dd1>>
  */
 
 /**
@@ -38,8 +38,20 @@ bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
   return getAccessor().cxxNativeAnimatedEnabled();
 }
 
+bool ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS() {
+  return getAccessor().disableMainQueueSyncDispatchIOS();
+}
+
 bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
+}
+
+bool ReactNativeFeatureFlags::disableShadowNodeOnNewArchitectureAndroid() {
+  return getAccessor().disableShadowNodeOnNewArchitectureAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableAccessibilityOrder() {
+  return getAccessor().enableAccessibilityOrder();
 }
 
 bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
@@ -64,6 +76,10 @@ bool ReactNativeFeatureFlags::enableFabricLogs() {
 
 bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
+}
+
+bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
+  return getAccessor().enableFontScaleChangesUpdatingLayout();
 }
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
@@ -114,10 +130,6 @@ bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {
   return getAccessor().enableSynchronousStateUpdates();
 }
 
-bool ReactNativeFeatureFlags::enableUIConsistency() {
-  return getAccessor().enableUIConsistency();
-}
-
 bool ReactNativeFeatureFlags::enableViewCulling() {
   return getAccessor().enableViewCulling();
 }
@@ -152,10 +164,6 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
 
 bool ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex() {
   return getAccessor().removeTurboModuleManagerDelegateMutex();
-}
-
-bool ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() {
-  return getAccessor().throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

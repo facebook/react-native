@@ -18,9 +18,9 @@ import com.facebook.react.uimanager.events.Event
  * [com.facebook.react.uimanager.events.EventDispatcher]
  */
 @LegacyArchitecture
-public class InteropEvent(
-    @get:JvmName("eventName") public val eventName: String,
-    @get:JvmName("eventData") public val eventData: WritableMap?,
+internal class InteropEvent(
+    @get:JvmName("eventName") val eventName: String,
+    @get:JvmName("eventData") val eventData: WritableMap?,
     surfaceId: Int,
     viewTag: Int
 ) : Event<InteropEvent>(surfaceId, viewTag) {
@@ -31,7 +31,7 @@ public class InteropEvent(
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEvent")
+      LegacyArchitectureLogger.assertLegacyArchitecture("InteropEvent")
     }
   }
 }

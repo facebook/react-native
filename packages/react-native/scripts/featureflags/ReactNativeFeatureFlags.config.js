@@ -81,12 +81,44 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableMainQueueSyncDispatchIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-02',
+        description: 'Disable sync dispatch on the main queue on iOS',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {
         dateAdded: '2024-10-26',
         description:
           'Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    disableShadowNodeOnNewArchitectureAndroid: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-04-07',
+        description:
+          'Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableAccessibilityOrder: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-4-3',
+        description:
+          'When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -152,6 +184,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    enableFontScaleChangesUpdatingLayout: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-07',
+        description:
+          'Enables font scale changes updating layout for measurable nodes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
@@ -276,17 +319,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableUIConsistency: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-25',
-        description:
-          'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableViewCulling: {
       defaultValue: false,
       metadata: {
@@ -343,7 +375,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-08-27',
         description:
@@ -351,7 +383,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'stable',
     },
     fuseboxEnabledRelease: {
       defaultValue: false,
@@ -380,17 +412,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-02-24',
         description:
           'When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-02-18',
-        description:
-          'Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -427,14 +448,14 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     useFabricInterop: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description:
           'Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.',
-        expectedReleaseValue: true,
+        expectedReleaseValue: false,
         purpose: 'release',
       },
-      ossReleaseStage: 'canary',
+      ossReleaseStage: 'none',
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,

@@ -13,6 +13,7 @@ import android.text.Spannable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -35,6 +36,7 @@ import java.util.Map;
  * Concrete class for {@link ReactTextAnchorViewManager} which represents view managers of anchor
  * {@code <Text>} nodes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
 public class ReactTextViewManager
     extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
@@ -143,7 +145,7 @@ public class ReactTextViewManager
   }
 
   @Override
-  public Object updateState(
+  public @Nullable Object updateState(
       ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     try (SystraceSection s = new SystraceSection("ReactTextViewManager.updateState")) {
       MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();

@@ -8,11 +8,13 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * A context wrapper that always wraps Android Application {@link Context} and {@link
  * CatalystInstance} by extending {@link ReactContext}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactApplicationContext extends ReactContext {
   // We want to wrap ApplicationContext, since there is no easy way to verify that application
   // context is passed as a param, we use {@link Context#getApplicationContext} to ensure that

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e63d8071ae3c886d2c2f2c3d89178093>>
+ * @generated SignedSource<<ab0f519ae00f2ab1b99f36648a8e1a5d>>
  */
 
 /**
@@ -49,10 +49,28 @@ public object ReactNativeFeatureFlags {
   public fun cxxNativeAnimatedEnabled(): Boolean = accessor.cxxNativeAnimatedEnabled()
 
   /**
+   * Disable sync dispatch on the main queue on iOS
+   */
+  @JvmStatic
+  public fun disableMainQueueSyncDispatchIOS(): Boolean = accessor.disableMainQueueSyncDispatchIOS()
+
+  /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
+
+  /**
+   * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
+   */
+  @JvmStatic
+  public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = accessor.disableShadowNodeOnNewArchitectureAndroid()
+
+  /**
+   * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
+   */
+  @JvmStatic
+  public fun enableAccessibilityOrder(): Boolean = accessor.enableAccessibilityOrder()
 
   /**
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
@@ -89,6 +107,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
+
+  /**
+   * Enables font scale changes updating layout for measurable nodes.
+   */
+  @JvmStatic
+  public fun enableFontScaleChangesUpdatingLayout(): Boolean = accessor.enableFontScaleChangesUpdatingLayout()
 
   /**
    * iOS Views will clip to their padding box vs border box
@@ -163,12 +187,6 @@ public object ReactNativeFeatureFlags {
   public fun enableSynchronousStateUpdates(): Boolean = accessor.enableSynchronousStateUpdates()
 
   /**
-   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
-   */
-  @JvmStatic
-  public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
-
-  /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
    */
   @JvmStatic
@@ -221,12 +239,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun removeTurboModuleManagerDelegateMutex(): Boolean = accessor.removeTurboModuleManagerDelegateMutex()
-
-  /**
-   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
-   */
-  @JvmStatic
-  public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = accessor.throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

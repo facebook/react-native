@@ -37,6 +37,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 - (TextMeasurement)measureNSAttributedString:(NSAttributedString *)attributedString
                          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                               layoutContext:(TextLayoutContext)layoutContext
                            layoutConstraints:(LayoutConstraints)layoutConstraints
 {
   if (attributedString.length == 0) {
@@ -51,15 +52,17 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                                   paragraphAttributes:paragraphAttributes
                                                                                  size:maximumSize];
 
-  return [self _measureTextStorage:textStorage paragraphAttributes:paragraphAttributes];
+  return [self _measureTextStorage:textStorage paragraphAttributes:paragraphAttributes layoutContext:layoutContext];
 }
 
 - (TextMeasurement)measureAttributedString:(AttributedString)attributedString
                        paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                             layoutContext:(TextLayoutContext)layoutContext
                          layoutConstraints:(LayoutConstraints)layoutConstraints
 {
   return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
                      paragraphAttributes:paragraphAttributes
+                           layoutContext:layoutContext
                        layoutConstraints:layoutConstraints];
 }
 
@@ -346,6 +349,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 - (TextMeasurement)_measureTextStorage:(NSTextStorage *)textStorage
                    paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                         layoutContext:(TextLayoutContext)layoutContext
 {
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
@@ -399,7 +403,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
     size.height = enumeratedLinesHeight;
   }
 
-  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
+  size = (CGSize){
+      ceil(size.width * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor,
+      ceil(size.height * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor};
 
   __block auto attachments = TextMeasurement::Attachments{};
 

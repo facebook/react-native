@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ff2b391cdaedd6c2a10148b5ba182bf7>>
+ * @generated SignedSource<<679bb1e5744b6b535e5fa000fc68b11a>>
  */
 
 /**
@@ -59,9 +59,24 @@ bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
 }
 
+bool NativeReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS();
+}
+
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::disableShadowNodeOnNewArchitectureAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableShadowNodeOnNewArchitectureAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableAccessibilityOrder(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAccessibilityOrder();
 }
 
 bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
@@ -92,6 +107,11 @@ bool NativeReactNativeFeatureFlags::enableFabricLogs(
 bool NativeReactNativeFeatureFlags::enableFabricRenderer(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricRenderer();
+}
+
+bool NativeReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout();
 }
 
 bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
@@ -154,11 +174,6 @@ bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
   return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
 }
 
-bool NativeReactNativeFeatureFlags::enableUIConsistency(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableUIConsistency();
-}
-
 bool NativeReactNativeFeatureFlags::enableViewCulling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableViewCulling();
@@ -202,11 +217,6 @@ bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
 bool NativeReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex();
-}
-
-bool NativeReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
