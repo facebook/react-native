@@ -32,6 +32,8 @@ public interface ReactClippingViewGroup {
    */
   public fun updateClippingRect()
 
+  public fun updateClippingRect(excludedView: Set<Int>?)
+
   /**
    * Get rectangular bounds to which view is currently clipped to. Called only on views that has set
    * `removeCLippedSubviews` property value to `true`.
