@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ef12a46ed2ad5ccc02131795f26c78c>>
+ * @generated SignedSource<<9b4ec50728968382d35d7fa09fd82d62>>
  */
 
 /**
@@ -38,7 +38,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
-  private var enableLongTaskAPICache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
@@ -222,15 +221,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableLayoutAnimationsOnIOS()
       enableLayoutAnimationsOnIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableLongTaskAPI(): Boolean {
-    var cached = enableLongTaskAPICache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableLongTaskAPI()
-      enableLongTaskAPICache = cached
     }
     return cached
   }

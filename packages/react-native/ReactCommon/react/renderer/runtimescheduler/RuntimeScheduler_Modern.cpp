@@ -124,9 +124,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
 bool RuntimeScheduler_Modern::getShouldYield() noexcept {
   std::shared_lock lock(schedulingMutex_);
 
-  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-    markYieldingOpportunity(now_());
-  }
+  markYieldingOpportunity(now_());
 
   return syncTaskRequests_ > 0 ||
       (!taskQueue_.empty() && taskQueue_.top().get() != currentTask_);
@@ -318,11 +316,8 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   currentTask_ = &task;
   currentPriority_ = task.priority;
 
-  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-    lastYieldingOpportunity_ = taskStartTime;
-    longestPeriodWithoutYieldingOpportunity_ =
-        std::chrono::milliseconds::zero();
-  }
+  lastYieldingOpportunity_ = taskStartTime;
+  longestPeriodWithoutYieldingOpportunity_ = std::chrono::milliseconds::zero();
 
   auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
   executeTask(runtime, task, didUserCallbackTimeout);
@@ -330,11 +325,9 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   // "Perform a microtask checkpoint" step.
   performMicrotaskCheckpoint(runtime);
 
-  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-    auto taskEndTime = now_();
-    markYieldingOpportunity(taskEndTime);
-    reportLongTasks(task, taskStartTime, taskEndTime);
-  }
+  auto taskEndTime = now_();
+  markYieldingOpportunity(taskEndTime);
+  reportLongTasks(task, taskStartTime, taskEndTime);
 
   // "Update the rendering" step.
   updateRendering();

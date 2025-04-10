@@ -235,16 +235,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableLongTaskAPI: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableMainQueueModulesOnIOS: {
       defaultValue: false,
       metadata: {

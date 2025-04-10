@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f1e4de5196d3bd22b774e1da6202e88>>
+ * @generated SignedSource<<4da4c4feadaf11301733bbaa0c7fd3ee>>
  * @flow strict
  */
 
@@ -65,7 +65,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
-  enableLongTaskAPI: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
@@ -233,10 +232,6 @@ export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlag
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */
 export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
-/**
- * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
- */
-export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
 /**
  * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
  */

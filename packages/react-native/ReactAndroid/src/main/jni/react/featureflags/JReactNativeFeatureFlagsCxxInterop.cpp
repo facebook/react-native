@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<edc9dcff342dfb3f9e82437b8f295bb5>>
+ * @generated SignedSource<<8ac2407f6a67c7f07bdd3dd44c606f21>>
  */
 
 /**
@@ -144,12 +144,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableLayoutAnimationsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnIOS");
-    return method(javaProvider_);
-  }
-
-  bool enableLongTaskAPI() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLongTaskAPI");
     return method(javaProvider_);
   }
 
@@ -391,11 +385,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableLongTaskAPI();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
@@ -601,9 +590,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),
-      makeNativeMethod(
-        "enableLongTaskAPI",
-        JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI),
       makeNativeMethod(
         "enableMainQueueModulesOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS),

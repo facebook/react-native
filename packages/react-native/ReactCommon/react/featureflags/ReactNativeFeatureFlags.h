@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7a33656c2bd4e293c0e52cf1a410e8b>>
+ * @generated SignedSource<<887302f2325abea2e40dd01566ce73e0>>
  */
 
 /**
@@ -128,11 +128,6 @@ class ReactNativeFeatureFlags {
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
-
-  /**
-   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
-   */
-  RN_EXPORT static bool enableLongTaskAPI();
 
   /**
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.

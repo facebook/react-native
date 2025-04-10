@@ -25,11 +25,8 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
       PerformanceEntryType::MARK,
       PerformanceEntryType::MEASURE,
       PerformanceEntryType::EVENT,
+      PerformanceEntryType::LONGTASK,
   };
-
-  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-    supportedEntryTypes.emplace_back(PerformanceEntryType::LONGTASK);
-  }
 
   return supportedEntryTypes;
 }

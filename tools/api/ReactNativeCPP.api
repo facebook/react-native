@@ -6709,8 +6709,6 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableLayoutAnimationsOnIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableLongTaskAPI(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableNewBackgroundAndBorderDrawables(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enablePropsUpdateReconciliationAndroid(
@@ -15807,7 +15805,6 @@ class NativeReactNativeFeatureFlags
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
-  bool enableLongTaskAPI(jsi::Runtime& runtime);
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
   bool enableReportEventPaintTime(jsi::Runtime& runtime);

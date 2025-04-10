@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dac4d84f1b143b2673198843ff1f6328>>
+ * @generated SignedSource<<3b0f031a85072d0d70f5316b4940f5e1>>
  */
 
 /**
@@ -137,12 +137,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
-
-  /**
-   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
-   */
-  @JvmStatic
-  public fun enableLongTaskAPI(): Boolean = accessor.enableLongTaskAPI()
 
   /**
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
