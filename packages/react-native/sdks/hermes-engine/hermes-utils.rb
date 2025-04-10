@@ -86,7 +86,7 @@ def hermes_commit_envvar_defined()
 end
 
 def force_build_from_tag(react_native_path)
-    return ENV[ENV_BUILD_FROM_SOURCE] === 'true' && File.exist?(hermestag_file(react_native_path))
+    return File.exist?(hermestag_file(react_native_path))
 end
 
 def force_build_from_main(react_native_path)
@@ -171,7 +171,11 @@ end
 def podspec_source_build_from_github_tag(react_native_path)
     tag = File.read(hermestag_file(react_native_path)).strip
     hermes_log("Using tag difined in sdks/.hermesversion: #{tag}")
-    return {:git => HERMES_GITHUB_URL, :tag => tag}
+    if tag.include? "."
+        return {:git => HERMES_GITHUB_URL, :tag => tag}
+    end
+    # Temporary workaround to test static Hermes from a specific commit, until the proper tag is created
+    return {:git => HERMES_GITHUB_URL, :commit => tag}
 end
 
 def podspec_source_build_from_github_main()

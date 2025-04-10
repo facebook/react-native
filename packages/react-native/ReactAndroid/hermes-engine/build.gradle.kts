@@ -77,7 +77,7 @@ val hermesBuildOutputFileTree =
     fileTree(hermesBuildDir.toString())
         .include("**/*.cmake", "**/*.marks", "**/compiler_depends.ts", "**/Makefile", "**/link.txt")
 
-var hermesVersion = "main"
+var hermesVersion = "static_h"
 val hermesVersionFile = File(reactNativeRootDir, "sdks/.hermesversion")
 
 if (hermesVersionFile.exists()) {
@@ -93,7 +93,7 @@ val jsiDir = File(reactNativeRootDir, "ReactCommon/jsi")
 val downloadHermesDest = File(downloadsDir, "hermes.tar.gz")
 val downloadHermes by
     tasks.registering(Download::class) {
-      src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
+      src("https://github.com/software-mansion-labs/hermes/tarball/${hermesVersion}")
       onlyIfModified(true)
       overwrite(true)
       quiet(true)
@@ -109,7 +109,7 @@ val unzipHermes by
         eachFile {
           // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
           // folder at the top level.
-          if (this.path.startsWith("facebook-hermes-")) {
+          if (this.path.startsWith("software-mansion-labs-") || this.path.startsWith("facebook-hermes-")) {
             this.path = this.path.substringAfter("/")
           }
         }
@@ -148,6 +148,7 @@ val configureBuildForHermes by
               "-B",
               hermesBuildDir.toString(),
               "-DJSI_DIR=" + jsiDir.absolutePath,
+              "-DCMAKE_BUILD_TYPE=Release",
           ))
       standardOutputFile.set(project.file("$buildDir/configure-hermesc.log"))
     }
@@ -234,16 +235,18 @@ android {
             "-DANDROID_STL=c++_shared",
             "-DANDROID_PIE=True",
             "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
-            "-DIMPORT_HERMESC=${File(hermesBuildDir, "ImportHermesc.cmake").toString()}",
+            "-DIMPORT_HOST_COMPILERS=${File(hermesBuildDir, "ImportHostCompilers.cmake").toString()}",
             "-DJSI_DIR=${jsiDir}",
             "-DHERMES_SLOW_DEBUG=False",
             "-DHERMES_BUILD_SHARED_JSI=True",
-            "-DHERMES_RELEASE_VERSION=for RN ${version}",
+            "-DHERMES_RELEASE_VERSION=for RN ${version} (static)",
             // We intentionally build Hermes with Intl support only. This is to simplify
             // the build setup and to avoid overcomplicating the build-type matrix.
-            "-DHERMES_ENABLE_INTL=True")
+            "-DHERMES_ENABLE_INTL=True",
+            "-DHERMES_IS_MOBILE_BUILD:BOOLEAN=OFF",
+            )
 
-        targets("libhermes")
+        targets("hermesvm")
       }
     }
     ndk { abiFilters.addAll(reactNativeArchitectures()) }
@@ -264,17 +267,17 @@ android {
           // Therefore we're passing as build type Release, to provide a faster build.
           // This has the (unlucky) side effect of letting AGP call the build
           // tasks `configureCMakeRelease` while is actually building the debug flavor.
-          arguments("-DCMAKE_BUILD_TYPE=Release")
+          arguments(
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DHERMES_ENABLE_DEBUGGER=1"
+          )
         }
       }
     }
     release {
       externalNativeBuild {
         cmake {
-          arguments(
-              "-DCMAKE_BUILD_TYPE=MinSizeRel",
-              // For release builds, we don't want to enable the Hermes Debugger.
-              "-DHERMES_ENABLE_DEBUGGER=False")
+          arguments("-DCMAKE_BUILD_TYPE=MinSizeRel")
         }
       }
     }
@@ -310,9 +313,8 @@ android {
   }
 
   prefab {
-    create("libhermes") {
+    create("hermesvm") {
       headers = prefabHeadersDir.absolutePath
-      libraryName = "libhermes"
     }
   }
 }

@@ -609,7 +609,7 @@ android {
     // we produce. The reason behind this is that we want to allow users to pick the
     // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
     // that will include the necessary .so files to load.
-    jniLibs.excludes.add("**/libhermes.so")
+    jniLibs.excludes.add("**/libhermesvm.so")
     jniLibs.excludes.add("**/libjsc.so")
   }
 
