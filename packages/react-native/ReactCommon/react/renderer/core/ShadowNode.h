@@ -107,6 +107,22 @@ class ShadowNode : public Sealable,
       const std::function<Unshared(const ShadowNode& oldShadowNode)>& callback)
       const;
 
+  Unshared cloneMultipleRecursive(
+      const ShadowNode& shadowNode,
+      const std::unordered_set<const ShadowNodeFamily*>& families,
+      const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
+      const std::function<Unshared(
+          const ShadowNode& oldShadowNode,
+          const std::optional<ShadowNode::ListOfShared>& newChildren)>&
+          callback) const;
+
+  Unshared cloneMultiple(
+      const std::unordered_set<const ShadowNodeFamily*>& families,
+      const std::function<Unshared(
+          const ShadowNode& oldShadowNode,
+          const std::optional<ShadowNode::ListOfShared>& newChildren)>&
+          callback) const;
+
 #pragma mark - Getters
 
   ComponentName getComponentName() const;

@@ -368,6 +368,78 @@ ShadowNode::Unshared ShadowNode::cloneTree(
   return std::const_pointer_cast<ShadowNode>(childNode);
 }
 
+ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
+    const ShadowNode& shadowNode,
+    const std::unordered_set<const ShadowNodeFamily*>& families,
+    const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
+    const std::function<Unshared(
+        const ShadowNode& oldShadowNode,
+        const std::optional<ShadowNode::ListOfShared>& newChildren)>& callback)
+    const {
+  auto children = shadowNode.getChildren();
+  auto family = &shadowNode.getFamily();
+  auto count = childrenCount[family];
+  auto shouldUpdateChildren = false;
+  std::optional<ShadowNode::ListOfShared> newChildren;
+
+  for (int i = 0; i < children.size(); i++) {
+    if (!count) {
+      break;
+    }
+
+    auto childFamily = &children[i]->getFamily();
+    if (childrenCount.contains(childFamily) || families.contains(childFamily)) {
+      count--;
+      shouldUpdateChildren = true;
+      children[i] = cloneMultipleRecursive(
+          *children[i], families, childrenCount, callback);
+    }
+  }
+
+  if (shouldUpdateChildren) {
+    newChildren = std::move(children);
+  }
+
+  if (families.contains(family)) {
+    return callback(shadowNode, newChildren);
+  }
+
+  return shadowNode.clone(
+      {ShadowNodeFragment::propsPlaceholder(),
+       newChildren
+           ? std::make_shared<ShadowNode::ListOfShared>(std::move(*newChildren))
+           : ShadowNodeFragment::childrenPlaceholder()});
+}
+
+ShadowNode::Unshared ShadowNode::cloneMultiple(
+    const std::unordered_set<const ShadowNodeFamily*>& families,
+    const std::function<Unshared(
+        const ShadowNode& oldShadowNode,
+        const std::optional<ShadowNode::ListOfShared>& newChildren)>& callback)
+    const {
+  std::unordered_map<const ShadowNodeFamily*, int> childrenCount;
+
+  for (auto family : families) {
+    if (childrenCount.contains(family)) {
+      continue;
+    }
+
+    auto ancestor = family;
+    while ((ancestor != nullptr) && ancestor != this->family_.get()) {
+      ancestor = ancestor->parent_.lock().get();
+      if (childrenCount[ancestor]++) {
+        break;
+      }
+    }
+  }
+
+  if (childrenCount.empty()) {
+    return ShadowNode::Unshared{nullptr};
+  }
+
+  return cloneMultipleRecursive(*this, families, childrenCount, callback);
+}
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
