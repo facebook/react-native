@@ -786,12 +786,12 @@ public abstract interface class com/facebook/react/bridge/JSInstance {
 	public abstract fun invokeCallback (ILcom/facebook/react/bridge/NativeArrayInterface;)V
 }
 
-public class com/facebook/react/bridge/JSONArguments {
-	public fun <init> ()V
-	public static fun fromJSONArray (Lorg/json/JSONArray;)Lcom/facebook/react/bridge/ReadableArray;
-	public static fun fromJSONArrayString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
-	public static fun fromJSONObject (Lorg/json/JSONObject;)Lcom/facebook/react/bridge/ReadableMap;
-	public static fun fromJSONObjectString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
+public final class com/facebook/react/bridge/JSONArguments {
+	public static final field INSTANCE Lcom/facebook/react/bridge/JSONArguments;
+	public static final fun fromJSONArray (Lorg/json/JSONArray;)Lcom/facebook/react/bridge/ReadableArray;
+	public static final fun fromJSONArrayString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
+	public static final fun fromJSONObject (Lorg/json/JSONObject;)Lcom/facebook/react/bridge/ReadableMap;
+	public static final fun fromJSONObjectString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
 }
 
 public final class com/facebook/react/bridge/JavaOnlyArray : com/facebook/react/bridge/ReadableArray, com/facebook/react/bridge/WritableArray {
