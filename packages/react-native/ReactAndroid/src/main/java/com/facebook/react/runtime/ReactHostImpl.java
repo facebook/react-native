@@ -506,8 +506,10 @@ public class ReactHostImpl implements ReactHost {
                     if (task.isFaulted()) {
                       final Exception ex = task.getError();
                       if (mUseDevSupport) {
+                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         mDevSupportManager.handleException(ex);
                       } else {
+                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         mReactHostDelegate.handleInstanceException(ex);
                       }
                       return getOrCreateDestroyTask("Reload failed", ex);
@@ -993,14 +995,18 @@ public class ReactHostImpl implements ReactHost {
                     if (task.isFaulted()) {
                       Exception ex = task.getError();
                       if (mUseDevSupport) {
+                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         mDevSupportManager.handleException(ex);
                       } else {
+                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         mReactHostDelegate.handleInstanceException(ex);
                       }
                       // Wait for destroy to finish
                       return getOrCreateDestroyTask(
+                              // NULLSAFE_FIXME[Nullable Dereference]
                               "getOrCreateStartTask() failure: " + task.getError().getMessage(),
                               task.getError())
+                          // NULLSAFE_FIXME[Parameter Not Nullable]
                           .continueWithTask(destroyTask -> Task.forError(task.getError()))
                           .makeVoid();
                     }
@@ -1083,6 +1089,7 @@ public class ReactHostImpl implements ReactHost {
         .continueWith(
             task -> {
               if (task.isFaulted()) {
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 handleHostException(task.getError());
               }
               return null;
@@ -1202,6 +1209,7 @@ public class ReactHostImpl implements ReactHost {
                         instance.initializeEagerTurboModules();
 
                         log(method, "Loading JS Bundle");
+                        // NULLSAFE_FIXME[Parameter Not Nullable]
                         instance.loadJSBundle(bundleLoader);
 
                         log(
@@ -1225,8 +1233,11 @@ public class ReactHostImpl implements ReactHost {
 
           Continuation<CreationResult, ReactInstance> lifecycleUpdateTask =
               task -> {
+                // NULLSAFE_FIXME[Nullable Dereference]
                 final ReactInstance reactInstance = task.getResult().mInstance;
+                // NULLSAFE_FIXME[Nullable Dereference]
                 final ReactContext reactContext = task.getResult().mContext;
+                // NULLSAFE_FIXME[Nullable Dereference]
                 final boolean isReloading = task.getResult().mIsReloading;
                 final boolean isManagerResumed =
                     mReactLifecycleStateManager.getLifecycleState() == LifecycleState.RESUMED;
@@ -1273,7 +1284,9 @@ public class ReactHostImpl implements ReactHost {
 
           creationTask.onSuccess(lifecycleUpdateTask, mUIExecutor);
           return creationTask.onSuccess(
-              task -> task.getResult().mInstance, Task.IMMEDIATE_EXECUTOR);
+              // NULLSAFE_FIXME[Nullable Dereference]
+              task -> task.getResult().mInstance,
+              Task.IMMEDIATE_EXECUTOR);
         });
   }
 
@@ -1285,6 +1298,7 @@ public class ReactHostImpl implements ReactHost {
       return isMetroRunning()
           .onSuccessTask(
               task -> {
+                // NULLSAFE_FIXME[Nullable Dereference]
                 boolean isMetroRunning = task.getResult();
                 if (isMetroRunning) {
                   // Since metro is running, fetch the JS bundle from the server
@@ -1409,6 +1423,7 @@ public class ReactHostImpl implements ReactHost {
       final String reasonLabel = tag + " reason: " + reason;
       if (task.isFaulted()) {
         final Exception ex = task.getError();
+        // NULLSAFE_FIXME[Nullable Dereference]
         final String faultLabel = "Fault reason: " + ex.getMessage();
         raiseSoftException(
             method,
@@ -1588,6 +1603,7 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method,
                           "Error during reload. ReactInstance task faulted. Fault reason: "
+                              // NULLSAFE_FIXME[Nullable Dereference]
                               + fault.getMessage()
                               + ". Reload reason: "
                               + reason,
@@ -1761,6 +1777,7 @@ public class ReactHostImpl implements ReactHost {
                       raiseSoftException(
                           method,
                           "React destruction failed. ReactInstance task faulted. Fault reason: "
+                              // NULLSAFE_FIXME[Nullable Dereference]
                               + fault.getMessage()
                               + ". Destroy reason: "
                               + reason,
