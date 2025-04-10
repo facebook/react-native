@@ -21,7 +21,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.interfaces.fabric.ReactSurface;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.systrace.Systrace;
 
@@ -124,7 +124,7 @@ public class ReactActivityDelegate {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
             mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
           }
-          if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+          if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
             mReactDelegate =
                 new ReactDelegate(
                     getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
@@ -267,7 +267,7 @@ public class ReactActivityDelegate {
    * @return true if Fabric is enabled for this Activity, false otherwise.
    */
   protected boolean isFabricEnabled() {
-    return ReactNativeFeatureFlags.enableFabricRenderer();
+    return ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer();
   }
 
   /**
