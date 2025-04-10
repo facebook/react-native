@@ -9,6 +9,7 @@
 
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -56,7 +57,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     instanceAgent_->startTracing();
-    instanceTracingStartTimestamp_ = std::chrono::steady_clock::now();
+    instanceTracingStartTimestamp_ = getTracingTimeStampOfNow();
     frontendChannel_(cdp::jsonResult(req.id));
 
     return true;

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/timing/primitives.h>
+
 #include "PerformanceTracer.h"
 #include "ProfileTreeNode.h"
 #include "RuntimeSamplingProfile.h"
@@ -36,7 +38,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
     ProfileChunk(
         uint16_t chunkSize,
         uint64_t chunkThreadId,
-        uint64_t chunkTimestamp)
+        TracingTimeStamp chunkTimestamp)
         : size(chunkSize), threadId(chunkThreadId), timestamp(chunkTimestamp) {
       samples.reserve(size);
       timeDeltas.reserve(size);
@@ -55,7 +57,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
     std::vector<long long> timeDeltas;
     uint16_t size;
     uint64_t threadId;
-    uint64_t timestamp;
+    TracingTimeStamp timestamp;
   };
 
  public:
@@ -89,7 +91,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
    */
   void serializeAndNotify(
       const RuntimeSamplingProfile& profile,
-      std::chrono::steady_clock::time_point tracingStartTime);
+      TracingTimeStamp tracingStartTime);
 
  private:
   /**
@@ -102,7 +104,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
   void sendProfileTraceEvent(
       uint64_t threadId,
       uint16_t profileId,
-      uint64_t profileStartUnixTimestamp) const;
+      TracingTimeStamp profileStartUnixTimestamp) const;
 
   /**
    * Encapsulates logic for processing the empty sample, when the VM was idling.

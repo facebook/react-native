@@ -11,6 +11,7 @@
 #include "InstanceAgent.h"
 
 #include <jsinspector-modern/cdp/CdpJson.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -56,7 +57,7 @@ class TracingAgent {
    * Timestamp of when we started tracing of an Instance, will be used as a
    * a start of JavaScript samples recording.
    */
-  std::chrono::steady_clock::time_point instanceTracingStartTimestamp_;
+  TracingTimeStamp instanceTracingStartTimestamp_;
 };
 
 } // namespace facebook::react::jsinspector_modern
