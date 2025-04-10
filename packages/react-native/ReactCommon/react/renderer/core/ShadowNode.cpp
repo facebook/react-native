@@ -376,14 +376,14 @@ ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
         const ShadowNode& oldShadowNode,
         const std::optional<ShadowNode::ListOfShared>& newChildren)>& callback)
     const {
+  const auto family = &shadowNode.getFamily();
   auto children = shadowNode.getChildren();
-  auto family = &shadowNode.getFamily();
   auto count = childrenCount.at(family);
   auto shouldUpdateChildren = false;
   std::optional<ShadowNode::ListOfShared> newChildren;
 
   for (int i = 0; count > 0 && i < children.size(); i++) {
-    auto childFamily = &children[i]->getFamily();
+    const auto childFamily = &children[i]->getFamily();
     if (childrenCount.contains(childFamily)) {
       count--;
       shouldUpdateChildren = true;
@@ -415,7 +415,7 @@ ShadowNode::Unshared ShadowNode::cloneMultiple(
     const {
   std::unordered_map<const ShadowNodeFamily*, int> childrenCount;
 
-  for (auto family : families) {
+  for (const auto& family : families) {
     if (childrenCount.contains(family)) {
       continue;
     }
