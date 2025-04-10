@@ -3289,12 +3289,6 @@ public abstract interface class com/facebook/react/packagerconnection/RequestHan
 	public abstract fun onRequest (Ljava/lang/Object;Lcom/facebook/react/packagerconnection/Responder;)V
 }
 
-public abstract class com/facebook/react/packagerconnection/RequestOnlyHandler : com/facebook/react/packagerconnection/RequestHandler {
-	public fun <init> ()V
-	public final fun onNotification (Ljava/lang/Object;)V
-	public abstract fun onRequest (Ljava/lang/Object;Lcom/facebook/react/packagerconnection/Responder;)V
-}
-
 public abstract interface class com/facebook/react/packagerconnection/Responder {
 	public abstract fun error (Ljava/lang/Object;)V
 	public abstract fun respond (Ljava/lang/Object;)V
