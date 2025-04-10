@@ -674,17 +674,18 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
       .bottomRightVertical = (CGFloat)borderRadii.bottomRight.vertical};
 }
 
-static RCTCornerRadii RCTCreateOutlineCornerRadiiFromBorderRadii(const BorderRadii &borderRadii, CGFloat outlineWidth)
+static RCTCornerRadii
+RCTCreateOutlineCornerRadiiFromBorderRadii(const BorderRadii &borderRadii, CGFloat outlineWidth, CGFloat outlineOffset)
 {
   return RCTCornerRadii{
-      borderRadii.topLeft.horizontal != 0 ? borderRadii.topLeft.horizontal + outlineWidth : 0,
-      borderRadii.topLeft.vertical != 0 ? borderRadii.topLeft.vertical + outlineWidth : 0,
-      borderRadii.topRight.horizontal != 0 ? borderRadii.topRight.horizontal + outlineWidth : 0,
-      borderRadii.topRight.vertical != 0 ? borderRadii.topRight.vertical + outlineWidth : 0,
-      borderRadii.bottomLeft.horizontal != 0 ? borderRadii.bottomLeft.horizontal + outlineWidth : 0,
-      borderRadii.bottomLeft.vertical != 0 ? borderRadii.bottomLeft.vertical + outlineWidth : 0,
-      borderRadii.bottomRight.horizontal != 0 ? borderRadii.bottomRight.horizontal + outlineWidth : 0,
-      borderRadii.bottomRight.vertical != 0 ? borderRadii.bottomRight.vertical + outlineWidth : 0};
+      borderRadii.topLeft.horizontal != 0 ? borderRadii.topLeft.horizontal + outlineWidth + outlineOffset : 0,
+      borderRadii.topLeft.vertical != 0 ? borderRadii.topLeft.vertical + outlineWidth + outlineOffset : 0,
+      borderRadii.topRight.horizontal != 0 ? borderRadii.topRight.horizontal + outlineWidth + outlineOffset : 0,
+      borderRadii.topRight.vertical != 0 ? borderRadii.topRight.vertical + outlineWidth + outlineOffset : 0,
+      borderRadii.bottomLeft.horizontal != 0 ? borderRadii.bottomLeft.horizontal + outlineWidth + outlineOffset : 0,
+      borderRadii.bottomLeft.vertical != 0 ? borderRadii.bottomLeft.vertical + outlineWidth + outlineOffset : 0,
+      borderRadii.bottomRight.horizontal != 0 ? borderRadii.bottomRight.horizontal + outlineWidth + outlineOffset : 0,
+      borderRadii.bottomRight.vertical != 0 ? borderRadii.bottomRight.vertical + outlineWidth + outlineOffset : 0};
 }
 
 // To be used for CSS properties like `border` and `outline`.
@@ -958,7 +959,8 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 
       RCTAddContourEffectToLayer(
           _outlineLayer,
-          RCTCreateOutlineCornerRadiiFromBorderRadii(borderMetrics.borderRadii, _props->outlineWidth),
+          RCTCreateOutlineCornerRadiiFromBorderRadii(
+              borderMetrics.borderRadii, _props->outlineWidth, _props->outlineOffset),
           RCTBorderColors{outlineColor, outlineColor, outlineColor, outlineColor},
           UIEdgeInsets{_props->outlineWidth, _props->outlineWidth, _props->outlineWidth, _props->outlineWidth},
           RCTBorderStyleFromOutlineStyle(_props->outlineStyle));
