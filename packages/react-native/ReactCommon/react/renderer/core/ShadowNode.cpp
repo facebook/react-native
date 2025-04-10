@@ -378,7 +378,7 @@ ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
     const {
   auto children = shadowNode.getChildren();
   auto family = &shadowNode.getFamily();
-  auto count = childrenCount[family];
+  auto count = childrenCount.at(family);
   auto shouldUpdateChildren = false;
   std::optional<ShadowNode::ListOfShared> newChildren;
 
