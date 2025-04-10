@@ -92,7 +92,7 @@
     "jest-junit": "^10.0.0",
     "jest-snapshot": "^29.7.0",
     "markdownlint-cli2": "^0.17.2",
-    "markdownlint-rule-relative-links": "^4.0.1",
+    "markdownlint-rule-relative-links": "^3.0.0",
     "metro-babel-register": "^0.82.0",
     "metro-memory-fs": "^0.82.0",
     "metro-transform-plugins": "^0.82.0",
