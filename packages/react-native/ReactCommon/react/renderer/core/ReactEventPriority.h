@@ -30,6 +30,11 @@ enum class ReactEventPriority {
    * scrolling.
    */
   Continuous,
+
+  /*
+   * Other events that can be processed in the background.
+   */
+  Idle,
 };
 
 static constexpr std::underlying_type<ReactEventPriority>::type serialize(

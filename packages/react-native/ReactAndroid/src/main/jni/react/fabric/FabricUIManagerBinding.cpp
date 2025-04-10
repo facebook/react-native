@@ -10,7 +10,6 @@
 #include "AndroidEventBeat.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
-#include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
 
 #include <cxxreact/TraceSection.h>
