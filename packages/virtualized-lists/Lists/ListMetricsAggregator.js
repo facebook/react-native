@@ -38,6 +38,7 @@ export type CellMetrics = {
 // based implementation instead of transform.
 export type ListOrientation = {
   horizontal: boolean,
+  reversed: boolean,
   rtl: boolean,
 };
 
@@ -66,6 +67,7 @@ export default class ListMetricsAggregator {
   _orientation: ListOrientation = {
     horizontal: false,
     rtl: false,
+    reversed: false,
   };
 
   /**
@@ -268,9 +270,9 @@ export default class ListMetricsAggregator {
     layout: LayoutRectangle,
     referenceContentLength?: ?number,
   ): number {
-    const {horizontal, rtl} = this._orientation;
+    const {horizontal, reversed, rtl} = this._orientation;
 
-    if (horizontal && rtl) {
+    if ((horizontal && rtl) || reversed) {
       const contentLength = referenceContentLength ?? this._contentLength;
       invariant(
         contentLength != null,
@@ -289,9 +291,9 @@ export default class ListMetricsAggregator {
    * Converts a flow-relative offset to a cartesian offset
    */
   cartesianOffset(flowRelativeOffset: number): number {
-    const {horizontal, rtl} = this._orientation;
+    const {horizontal, reversed, rtl} = this._orientation;
 
-    if (horizontal && rtl) {
+    if ((horizontal && rtl) || reversed) {
       invariant(
         this._contentLength != null,
         'ListMetricsAggregator must be notified of list content layout before resolving offsets',
@@ -308,6 +310,14 @@ export default class ListMetricsAggregator {
     }
 
     if (orientation.horizontal !== this._orientation.horizontal) {
+      this._averageCellLength = 0;
+      this._highestMeasuredCellIndex = 0;
+      this._measuredCellsLength = 0;
+      this._measuredCellsCount = 0;
+    }
+
+    if (orientation.reversed !== this._orientation.reversed) {
+      this._cellMetrics.clear();
       this._averageCellLength = 0;
       this._highestMeasuredCellIndex = 0;
       this._measuredCellsLength = 0;
