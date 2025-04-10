@@ -518,17 +518,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    avoidAnimatedRefInvalidation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-03-12',
-        description:
-          'Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     avoidStateUpdateInAnimatedPropsMemo: {
       defaultValue: false,
       metadata: {
