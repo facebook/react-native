@@ -2899,7 +2899,9 @@ public class com/facebook/react/modules/dialog/AlertFragment : androidx/fragment
 	public fun onDismiss (Landroid/content/DialogInterface;)V
 }
 
-public class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbreact/specs/NativeDialogManagerAndroidSpec, com/facebook/react/bridge/LifecycleEventListener {
+public final class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbreact/specs/NativeDialogManagerAndroidSpec, com/facebook/react/bridge/LifecycleEventListener {
+	public static final field Companion Lcom/facebook/react/modules/dialog/DialogModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getTypedExportedConstants ()Ljava/util/Map;
 	public fun initialize ()V
@@ -2908,6 +2910,9 @@ public class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbrea
 	public fun onHostPause ()V
 	public fun onHostResume ()V
 	public fun showAlert (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
+}
+
+public final class com/facebook/react/modules/dialog/DialogModule$Companion {
 }
 
 public class com/facebook/react/modules/fresco/FrescoModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/modules/common/ModuleDataCleaner$Cleanable, com/facebook/react/turbomodule/core/interfaces/TurboModule {
