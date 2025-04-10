@@ -9,7 +9,6 @@ package com.facebook.react.modules.blob
 
 import android.util.Base64
 import com.facebook.fbreact.specs.NativeFileReaderModuleSpec
-import com.facebook.infer.annotation.Nullsafe
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
@@ -22,7 +21,7 @@ public class FileReaderModule(reactContext: ReactApplicationContext) :
   private fun getBlobModule(reason: String): BlobModule? {
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
 
-   return reactApplicationContext?.getNativeModule(BlobModule::class.java)
+    return reactApplicationContext?.getNativeModule(BlobModule::class.java)
   }
 
   public override fun readAsText(blob: ReadableMap, encoding: String, promise: Promise) {
@@ -101,5 +100,4 @@ public class FileReaderModule(reactContext: ReactApplicationContext) :
     public val NAME: String = NativeFileReaderModuleSpec.NAME
     private const val ERROR_INVALID_BLOB = "ERROR_INVALID_BLOB"
   }
-
 }
