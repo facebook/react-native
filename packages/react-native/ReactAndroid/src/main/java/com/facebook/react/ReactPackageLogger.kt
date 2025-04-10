@@ -7,7 +7,10 @@
 
 package com.facebook.react
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
 /** Interface for the bridge to call for TTI start and end markers. */
+@LegacyArchitecture
 internal interface ReactPackageLogger {
   fun startProcessPackage(): Unit
 
