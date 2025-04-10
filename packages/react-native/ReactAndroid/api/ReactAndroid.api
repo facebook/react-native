@@ -903,10 +903,10 @@ public final class com/facebook/react/bridge/JavaScriptModuleRegistry {
 	public fun getJavaScriptModule (Lcom/facebook/react/bridge/CatalystInstance;Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
 }
 
-public class com/facebook/react/bridge/JsonWriterHelper {
-	public fun <init> ()V
-	public static fun readableArrayValue (Landroid/util/JsonWriter;Lcom/facebook/react/bridge/ReadableArray;)V
-	public static fun value (Landroid/util/JsonWriter;Ljava/lang/Object;)V
+public final class com/facebook/react/bridge/JsonWriterHelper {
+	public static final field INSTANCE Lcom/facebook/react/bridge/JsonWriterHelper;
+	public static final fun readableArrayValue (Landroid/util/JsonWriter;Lcom/facebook/react/bridge/ReadableArray;)V
+	public static final fun value (Landroid/util/JsonWriter;Ljava/lang/Object;)V
 }
 
 public abstract interface class com/facebook/react/bridge/LifecycleEventListener {
