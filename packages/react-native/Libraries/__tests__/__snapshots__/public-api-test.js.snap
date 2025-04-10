@@ -2413,7 +2413,7 @@ export type ReturnKeyType =
   | \\"yahoo\\";
 export type SubmitBehavior = \\"submit\\" | \\"blurAndSubmit\\" | \\"newline\\";
 export type NativeProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
+  ...Omit<ViewProps, \\"style\\">,
   autoComplete?: WithDefault<
     | \\"birthdate-day\\"
     | \\"birthdate-full\\"
@@ -2955,7 +2955,7 @@ type TextInputBaseProps = $ReadOnly<{
   value?: ?Stringish,
 }>;
 export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
+  ...Omit<ViewProps, \\"style\\">,
   ...TextInputIOSProps,
   ...TextInputAndroidProps,
   ...TextInputBaseProps,
@@ -3240,7 +3240,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 }>;
 declare export default component(
   ref: React.RefSetter<mixed>,
-  ...props: $ReadOnly<$Diff<TouchableBounceProps, { hostRef: mixed }>>
+  ...props: $ReadOnly<Omit<TouchableBounceProps, \\"hostRef\\">>
 );
 "
 `;
@@ -3273,7 +3273,7 @@ export type TouchableHighlightProps = $ReadOnly<{
 }>;
 declare const TouchableHighlight: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
-  ...props: $ReadOnly<$Diff<TouchableHighlightProps, { +hostRef: mixed }>>
+  ...props: $ReadOnly<Omit<TouchableHighlightProps, \\"hostRef\\">>
 );
 declare export default typeof TouchableHighlight;
 "
@@ -4323,7 +4323,7 @@ export type ImagePropsAndroid = $ReadOnly<{
   resizeMultiplier?: ?number,
 }>;
 export type ImagePropsBase = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
+  ...Omit<ViewProps, \\"style\\">,
   accessible?: ?boolean,
   internal_analyticTag?: ?string,
   accessibilityLabel?: ?Stringish,

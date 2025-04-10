@@ -129,7 +129,7 @@ export type ImagePropsAndroid = $ReadOnly<{
 }>;
 
 export type ImagePropsBase = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
+  ...Omit<ViewProps, 'style'>,
   /**
    * When true, indicates the image is an accessibility element.
    *
