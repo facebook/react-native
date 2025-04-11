@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<85b3567191a3094a34813fcfef4a5af1>>
+ * @generated SignedSource<<ecc132d7b847c78ec8493df457b36a17>>
  */
 
 /**
@@ -53,7 +53,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
-  private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
@@ -353,16 +352,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
-    }
-    return cached
-  }
-
-  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean {
-    var cached = fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
-      accessedFeatureFlags.add("fixMountingCoordinatorReportedPendingTransactionsOnAndroid")
-      fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache = cached
     }
     return cached
   }

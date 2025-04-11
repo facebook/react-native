@@ -354,17 +354,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-08-27',
-        description:
-          'Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
-    },
     fuseboxEnabledRelease: {
       defaultValue: false,
       metadata: {
