@@ -36,7 +36,7 @@ const config = {
     'relative-links': true,
   },
   globs: ['**/__docs__/*.md'],
-  ignores: ['**/node_modules'],
+  ignores: ['**/node_modules', '__docs__/README-template.md'],
   customRules: [relativeLinksRule],
 };
 

@@ -1,6 +1,6 @@
 # _Subsystem name_
 
-- [Main doc](../__docs__/README.md)
+[🏠 Home](path/to/main/__docs__/README.md)
 
 _Description of the subsystem with the necessary context._
 

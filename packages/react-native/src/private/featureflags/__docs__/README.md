@@ -1,6 +1,6 @@
 # Feature Flags
 
-- [Main doc](../../../../../../__docs__/README.md)
+[🏠 Home](../../../../../../__docs__/README.md)
 
 Feature flags are values that determine the behavior of specific parts of React
 Native. This directory contains the configuration for those values, and scripts

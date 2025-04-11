@@ -1,6 +1,6 @@
 # 👻 React Native Fantom
 
-- [Main doc](../../../__docs__/README.md)
+[🏠 Home](../../../__docs__/README.md)
 
 Fantom is the new **integration testing and benchmarking tool for React
 Native**.
