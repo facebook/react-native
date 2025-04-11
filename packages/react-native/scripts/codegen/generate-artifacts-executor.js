@@ -1087,13 +1087,13 @@ function execute(projectRoot, targetPlatform, baseOutputPath, source) {
         generateRCTModuleProviders(projectRoot, pkgJson, libraries, outputPath);
         generateCustomURLHandlers(libraries, outputPath);
         generateAppDependencyProvider(outputPath);
+        generateReactCodegenPodspec(
+          projectRoot,
+          pkgJson,
+          outputPath,
+          baseOutputPath,
+        );
       }
-      generateReactCodegenPodspec(
-        projectRoot,
-        pkgJson,
-        outputPath,
-        baseOutputPath,
-      );
 
       cleanupEmptyFilesAndFolders(outputPath);
     }
