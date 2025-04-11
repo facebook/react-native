@@ -123,13 +123,13 @@ function execute(
           outputPath,
         );
         generateAppDependencyProvider(outputPath);
+        generateReactCodegenPodspec(
+          projectRoot,
+          pkgJson,
+          outputPath,
+          baseOutputPath,
+        );
       }
-      generateReactCodegenPodspec(
-        projectRoot,
-        pkgJson,
-        outputPath,
-        baseOutputPath,
-      );
 
       cleanupEmptyFilesAndFolders(outputPath);
     }
