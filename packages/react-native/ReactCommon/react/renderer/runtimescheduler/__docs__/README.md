@@ -20,7 +20,9 @@ The implementation of the event loop in React Native is aligned with
 React Native only implements a subset of it, in order to support its existing
 semantics and APIs.
 
-> [!NOTE] The Event Loop in React Native was originally proposed in this
+> [!NOTE]
+>
+> The Event Loop in React Native was originally proposed in this
 > [RFC](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0744-well-defined-event-loop.md),
 > which contains additional context (e.g.: how this was introduced and what
 > React Native had before).
