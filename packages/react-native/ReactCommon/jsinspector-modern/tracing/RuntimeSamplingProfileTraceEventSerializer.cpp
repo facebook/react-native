@@ -21,13 +21,6 @@ const uint16_t PROFILE_ID = 1;
 /// by Chrome DevTools.
 const uint32_t FALLBACK_SCRIPT_ID = 0;
 
-uint64_t formatTimePointToUnixTimestamp(
-    std::chrono::steady_clock::time_point timestamp) {
-  return std::chrono::duration_cast<std::chrono::microseconds>(
-             timestamp.time_since_epoch())
-      .count();
-}
-
 TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
     std::shared_ptr<ProfileTreeNode> node) {
   ProfileTreeNode* nodeParent = node->getParent();
@@ -113,7 +106,7 @@ std::shared_ptr<ProfileTreeNode> createIdleNode(
 void RuntimeSamplingProfileTraceEventSerializer::sendProfileTraceEvent(
     uint64_t threadId,
     uint16_t profileId,
-    uint64_t profileStartUnixTimestamp) const {
+    TracingTimeStamp profileStartUnixTimestamp) const {
   folly::dynamic serializedTraceEvent =
       performanceTracer_.getSerializedRuntimeProfileTraceEvent(
           threadId, profileId, profileStartUnixTimestamp);
@@ -202,7 +195,7 @@ void RuntimeSamplingProfileTraceEventSerializer::
 
 void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
     const RuntimeSamplingProfile& profile,
-    std::chrono::steady_clock::time_point tracingStartTime) {
+    TracingTimeStamp tracingStartTime) {
   const std::vector<RuntimeSamplingProfile::Sample>& samples =
       profile.getSamples();
   if (samples.empty()) {
@@ -210,13 +203,10 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   }
 
   uint64_t firstChunkThreadId = samples.front().getThreadId();
-  uint64_t tracingStartUnixTimestamp =
-      formatTimePointToUnixTimestamp(tracingStartTime);
-  uint64_t previousSampleUnixTimestamp = tracingStartUnixTimestamp;
-  uint64_t currentChunkUnixTimestamp = tracingStartUnixTimestamp;
+  TracingTimeStamp previousSampleUnixTimestamp = tracingStartTime;
+  TracingTimeStamp currentChunkUnixTimestamp = tracingStartTime;
 
-  sendProfileTraceEvent(
-      firstChunkThreadId, PROFILE_ID, tracingStartUnixTimestamp);
+  sendProfileTraceEvent(firstChunkThreadId, PROFILE_ID, tracingStartTime);
 
   NodeIdGenerator nodeIdGenerator{};
   auto rootNode = createRootNode(nodeIdGenerator);
