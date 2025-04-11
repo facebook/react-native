@@ -6889,6 +6889,9 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun updateState (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 }
 
+public final class com/facebook/react/views/textinput/ReactTextInputShadowNode$Companion {
+}
+
 public abstract interface class com/facebook/react/views/textinput/ScrollWatcher {
 	public abstract fun onScrollChanged (IIII)V
 }
