@@ -48,7 +48,7 @@ public object ViewManagerPropertyUpdater {
       view: V,
       props: ReactStylesDiffMap
   ) {
-    val iterator = props.mBackingMap.entryIterator
+    val iterator = props.backingMap.entryIterator
     while (iterator.hasNext()) {
       val entry = iterator.next()
       delegate.setProperty(view, entry.key, entry.value)
@@ -63,7 +63,7 @@ public object ViewManagerPropertyUpdater {
       props: ReactStylesDiffMap
   ) {
     val setter = findManagerSetter(manager.javaClass)
-    val iterator = props.mBackingMap.entryIterator
+    val iterator = props.backingMap.entryIterator
     while (iterator.hasNext()) {
       val entry = iterator.next()
       setter.setProperty(manager, view, entry.key, entry.value)
@@ -74,7 +74,7 @@ public object ViewManagerPropertyUpdater {
   @JvmStatic
   public fun <T : ReactShadowNode<T>> updateProps(node: T, props: ReactStylesDiffMap) {
     val setter = findNodeSetter(node.javaClass)
-    val iterator = props.mBackingMap.entryIterator
+    val iterator = props.backingMap.entryIterator
     while (iterator.hasNext()) {
       val entry = iterator.next()
       setter.setProperty(node, entry.key, entry.value)
