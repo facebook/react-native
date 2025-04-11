@@ -13,12 +13,13 @@ import type {
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
-import type {ScrollViewProps} from 'react-native';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
   LayoutChangeEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+  ScrollViewProps,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import * as React from 'react';
 
@@ -45,7 +46,7 @@ export type CellRendererProps<ItemT> = $ReadOnly<{
   item: ItemT,
   onFocusCapture?: (event: FocusEvent) => void,
   onLayout?: (event: LayoutChangeEvent) => void,
-  style: ViewStyleProp,
+  style: StyleProp<ViewStyle>,
 }>;
 
 export type ListRenderItem<ItemT> = (
@@ -169,7 +170,7 @@ type OptionalProps = {
   /**
    * Styling for internal View for ListFooterComponent
    */
-  ListFooterComponentStyle?: ViewStyleProp,
+  ListFooterComponentStyle?: StyleProp<ViewStyle>,
   /**
    * Rendered at the top of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -178,7 +179,7 @@ type OptionalProps = {
   /**
    * Styling for internal View for ListHeaderComponent
    */
-  ListHeaderComponentStyle?: ViewStyleProp,
+  ListHeaderComponentStyle?: StyleProp<ViewStyle>,
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness may suffer because rendering content may

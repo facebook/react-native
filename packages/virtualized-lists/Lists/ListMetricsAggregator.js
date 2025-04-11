@@ -9,7 +9,7 @@
  */
 
 import type {VirtualizedListProps} from './VirtualizedListProps';
-import type {LayoutRectangle} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {LayoutRectangle} from 'react-native';
 
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
