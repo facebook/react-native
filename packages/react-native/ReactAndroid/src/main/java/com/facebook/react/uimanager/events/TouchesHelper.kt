@@ -14,7 +14,10 @@ import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.events.TouchEventType.Companion.getJSEventName
 import com.facebook.systrace.Systrace
 
-/** Class responsible for generating catalyst touch events based on android [MotionEvent]. */
+/**
+ * Class responsible for generating catalyst touch events based on android
+ * [android.view.MotionEvent].
+ */
 internal object TouchesHelper {
   @JvmField @Deprecated("Not used in New Architecture") public val TARGET_KEY: String = "target"
 
@@ -108,7 +111,8 @@ internal object TouchesHelper {
 
   /**
    * Generate touch event data to match JS expectations. Combines logic in [sendTouchEvent] and
-   * [FabricEventEmitter] to create the same data structure in a more efficient manner.
+   * [com.facebook.react.fabric.events.FabricEventEmitter] to create the same data structure in a
+   * more efficient manner.
    *
    * Touches have to be dispatched as separate events for each changed pointer to make JS process
    * them correctly. To avoid allocations, we preprocess touch events in Java world and then convert

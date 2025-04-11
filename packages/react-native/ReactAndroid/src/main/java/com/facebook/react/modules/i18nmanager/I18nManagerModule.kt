@@ -11,7 +11,7 @@ import com.facebook.fbreact.specs.NativeI18nManagerSpec
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.annotations.ReactModule
 
-/** [NativeModule] that allows JS to set allowRTL and get isRTL status. */
+/** [com.facebook.react.bridge.NativeModule] that allows JS to set allowRTL and get isRTL status. */
 @ReactModule(name = NativeI18nManagerSpec.NAME)
 public class I18nManagerModule(context: ReactApplicationContext?) : NativeI18nManagerSpec(context) {
   public override fun getTypedExportedConstants(): Map<String, Any> {

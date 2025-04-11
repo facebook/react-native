@@ -25,7 +25,10 @@ import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.systrace.Systrace
 import java.util.Objects
 
-/** A view created by [ReactSurface] that's responsible for rendering a React component. */
+/**
+ * A view created by [com.facebook.react.interfaces.fabric.ReactSurface] that's responsible for
+ * rendering a React component.
+ */
 public class ReactSurfaceView(context: Context?, private val surface: ReactSurfaceImpl) :
     ReactRootView(context) {
   private val jsTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
