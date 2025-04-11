@@ -120,10 +120,8 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   }
 
   override fun handleException(t: Throwable) {
-    val reactHost = surface.reactHost
-    val errorMessage = Objects.toString(t.message, "")
-    val e: Exception = IllegalViewOperationException(errorMessage, this, t)
-    reactHost.handleHostException(e)
+    val e = IllegalViewOperationException(Objects.toString(t.message, ""), this, t)
+    (surface.reactHost ?: throw e).handleHostException(e)
   }
 
   override fun setIsFabric(isFabric: Boolean) {
@@ -140,7 +138,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     val eventDispatcher = surface.eventDispatcher
     if (eventDispatcher != null) {
       jsTouchDispatcher.handleTouchEvent(
-          event, eventDispatcher, surface.reactHost.currentReactContext)
+          event, eventDispatcher, surface.reactHost?.currentReactContext)
     } else {
       FLog.w(
           TAG, "Unable to dispatch touch events to JS as the React instance has not been attached")
@@ -166,14 +164,14 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
   }
 
   override fun hasActiveReactContext(): Boolean =
-      surface.isAttached && surface.reactHost.currentReactContext != null
+      surface.isAttached && surface.reactHost?.currentReactContext != null
 
   override fun hasActiveReactInstance(): Boolean =
-      surface.isAttached && surface.reactHost.isInstanceInitialized
+      surface.isAttached && surface.reactHost?.isInstanceInitialized == true
 
   override fun getCurrentReactContext(): ReactContext? =
       if (surface.isAttached) {
-        surface.reactHost.currentReactContext
+        surface.reactHost?.currentReactContext
       } else null
 
   override fun isViewAttachedToReactInstance(): Boolean = surface.isAttached

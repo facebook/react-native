@@ -3345,12 +3345,12 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
 
-public class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/interfaces/fabric/ReactSurface {
+public final class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/interfaces/fabric/ReactSurface {
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)V
-	public fun attach (Lcom/facebook/react/ReactHost;)V
-	public fun attachView (Lcom/facebook/react/runtime/ReactSurfaceView;)V
+	public final fun attach (Lcom/facebook/react/ReactHost;)V
+	public final fun attachView (Lcom/facebook/react/runtime/ReactSurfaceView;)V
 	public fun clear ()V
-	public static fun createWithView (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/runtime/ReactSurfaceImpl;
+	public static final fun createWithView (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/runtime/ReactSurfaceImpl;
 	public fun detach ()V
 	public fun getContext ()Landroid/content/Context;
 	public fun getModuleName ()Ljava/lang/String;
@@ -3360,7 +3360,7 @@ public class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/in
 	public fun prerender ()Lcom/facebook/react/interfaces/TaskInterface;
 	public fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 	public fun stop ()Lcom/facebook/react/interfaces/TaskInterface;
-	public fun updateInitProps (Landroid/os/Bundle;)V
+	public final fun updateInitProps (Landroid/os/Bundle;)V
 }
 
 public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/react/ReactRootView {
