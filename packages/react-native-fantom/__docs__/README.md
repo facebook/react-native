@@ -169,27 +169,45 @@ If you have any questions not answered here, please reach out to us.
 
 ## Design
 
-_TODO: Explain how the subsystem is designed, relevant implementation details,
-etc. Ideally include an Excalidraw diagram._
+![Diagram of the architecture of Fantom in React Native](./architecture.excalidraw.svg)
+
+Fantom tests are meant to be written, executed and reported as regular Jests
+tests. To accomplish that, **Fantom is implemented as a Jest test runner**.
+
+Fantom provides a [Jest configuration](../config/jest.config.js) to use
+[its runner](../runner/runner.js) for any tests matching the `-itest.js` suffix
+within the repository.
+
+When Jest runs, for every file that matches that configuration, it calls into
+the Fantom runner, which receives the path to the test file along with different
+configuration objects.
+
+The runner then follows these steps:
+
+1. It creates a single "executable" JavaScript file using Metro (with this
+   [configuration](../config/metro.config.js)), containing the test itself, its
+   dependencies and some glue code to run the test at runtime and report its
+   results. Depending on the configured "mode" for the test, the runner might
+   compile that JavaScript file into Hermes bytecode.
+2. It calls into the Fantom CLI passing the path to the executable JavaScript
+   code (or Hermes bytecode). The Fantom CLI evaluates that code in the context
+   of a React Native C++ application and prints the results as JSON via its
+   standard output.
+3. The runner receives the output from the Fantom CLI and reports the provided
+   results back to Jest in the correct format.
 
 ## Relationship with other systems
 
-### Part of
-
-- _TODO: A single bullet for the parent subsystem. Link to the documentation of
-  that subsystem if it exists._
-
 ### Part of this
 
-- _TODO: One bullet point for each subsystem that is part of this one. Link to
-  the documentation of those subsystems if it exists._
+- The Fantom runner, which provides the integration point with Jest.
+- The Fantom CLI, which provides the execution environment for the Fantom
+  JavaScript tests.
+- The Fantom benchmarking system, which is just a library and some automatic
+  configuration on top of Fantom.
 
 ### Used by this
 
-- _TODO: One bullet point for each subsystem used by this one, explaining why it
-  uses it and how. Link to the documentation of those subsystems if it exists._
-
-### Uses this
-
-- _TODO: One bullet point for each subsystem using this one, explaining why it
-  uses it and how. Link to the documentation of those subsystems if it exists._
+- Metro, to compile the test code into a single file consumable by the Fantom
+  CLI.
+- Hermes Compiler, to compile the JavaScript test code into Hermes bytecode.
