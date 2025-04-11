@@ -19,6 +19,11 @@ using DOMHighResTimeStamp = double;
 
 constexpr DOMHighResTimeStamp DOM_HIGH_RES_TIME_STAMP_UNSET = -1.0;
 
+// A unix time stamp in microseconds (μs) that is used in Tracing. All timeline
+// events of the Performance panel in DevTools are in this time base.
+// https://chromedevtools.github.io/devtools-protocol/tot/Tracing/
+using TracingTimeStamp = uint64_t;
+
 inline DOMHighResTimeStamp chronoToDOMHighResTimeStamp(
     std::chrono::steady_clock::duration duration) {
   return static_cast<std::chrono::duration<double, std::milli>>(duration)
@@ -28,6 +33,13 @@ inline DOMHighResTimeStamp chronoToDOMHighResTimeStamp(
 inline DOMHighResTimeStamp chronoToDOMHighResTimeStamp(
     std::chrono::steady_clock::time_point timePoint) {
   return chronoToDOMHighResTimeStamp(timePoint.time_since_epoch());
+}
+
+inline TracingTimeStamp chronoToTracingTimeStamp(
+    std::chrono::steady_clock::time_point timePoint) {
+  return std::chrono::duration_cast<std::chrono::microseconds>(
+             timePoint.time_since_epoch())
+      .count();
 }
 
 } // namespace facebook::react

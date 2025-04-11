@@ -11,6 +11,8 @@
 #include "TraceEvent.h"
 #include "TraceEventProfile.h"
 
+#include <react/timing/primitives.h>
+
 #include <folly/dynamic.h>
 
 #include <functional>
@@ -65,7 +67,7 @@ class PerformanceTracer {
    *
    * See https://w3c.github.io/user-timing/#mark-method.
    */
-  void reportMark(const std::string_view& name, uint64_t start);
+  void reportMark(const std::string_view& name, TracingTimeStamp start);
 
   /**
    * Record a `Performance.measure()` event - a labelled duration. If not
@@ -75,7 +77,7 @@ class PerformanceTracer {
    */
   void reportMeasure(
       const std::string_view& name,
-      uint64_t start,
+      TracingTimeStamp start,
       uint64_t duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
 
@@ -99,7 +101,7 @@ class PerformanceTracer {
    * Record an Event Loop tick, which will be represented as an Event Loop task
    * on a timeline view and grouped with JavaScript samples.
    */
-  void reportEventLoopTask(uint64_t start, uint64_t end);
+  void reportEventLoopTask(TracingTimeStamp start, TracingTimeStamp end);
 
   /**
    * Create and serialize Profile Trace Event.
@@ -108,7 +110,7 @@ class PerformanceTracer {
   folly::dynamic getSerializedRuntimeProfileTraceEvent(
       uint64_t threadId,
       uint16_t profileId,
-      uint64_t eventUnixTimestamp);
+      TracingTimeStamp eventUnixTimestamp);
 
   /**
    * Create and serialize ProfileChunk Trace Event.

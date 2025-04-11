@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/timing/primitives.h>
+
 #include <folly/dynamic.h>
 
 namespace facebook::react::jsinspector_modern {
@@ -42,7 +44,7 @@ struct TraceEvent {
   char ph;
 
   /** The tracing clock timestamp of the event, in microseconds (µs). */
-  uint64_t ts;
+  TracingTimeStamp ts;
 
   /** The process ID for the process that output this event. */
   uint64_t pid;
