@@ -7,12 +7,16 @@ require "json"
 require_relative "./hermes-utils.rb"
 
 begin
-  react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
-    'require.resolve(
-    "react-native",
-    {paths: [process.argv[1]]},
-    )', __dir__]).strip
-  )
+  if !ENV['REACT_NATIVE_PATH'].nil?
+    react_native_path = File.expand_path(ENV['REACT_NATIVE_PATH'], Pod::Config.instance.project_root)
+  else
+    react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
+      'require.resolve(
+      "react-native",
+        {paths: [process.argv[1]]},
+      )', __dir__]).strip
+    )
+  end
 rescue => e
   # Fallback to the parent directory if the above command fails (e.g when building locally in OOT Platform)
   react_native_path = File.join(__dir__, "..", "..")
