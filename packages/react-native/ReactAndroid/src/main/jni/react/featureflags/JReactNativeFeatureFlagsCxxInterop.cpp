@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8ac2407f6a67c7f07bdd3dd44c606f21>>
+ * @generated SignedSource<<adfdbaa12388c56648970cf5e2389fb0>>
  */
 
 /**
@@ -210,12 +210,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
-    return method(javaProvider_);
-  }
-
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMountingCoordinatorReportedPendingTransactionsOnAndroid");
     return method(javaProvider_);
   }
 
@@ -440,11 +434,6 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabri
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fuseboxEnabledRelease();
@@ -623,9 +612,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
-      makeNativeMethod(
-        "fixMountingCoordinatorReportedPendingTransactionsOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::fixMountingCoordinatorReportedPendingTransactionsOnAndroid),
       makeNativeMethod(
         "fuseboxEnabledRelease",
         JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease),

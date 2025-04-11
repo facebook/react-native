@@ -6725,8 +6725,6 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fuseboxEnabledDebug(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fuseboxEnabledRelease(
@@ -15814,8 +15812,6 @@ class NativeReactNativeFeatureFlags
   bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(
       jsi::Runtime& runtime);
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
-      jsi::Runtime& runtime);
   bool fuseboxEnabledDebug(jsi::Runtime& runtime);
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
   bool initEagerTurboModulesOnNativeModulesQueueAndroid(jsi::Runtime& runtime);

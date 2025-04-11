@@ -7,10 +7,8 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 
-@DoNotStripAny
 @Deprecated("Use [TurboModule] to identify generated specs")
 @LegacyArchitecture
 public interface ReactModuleWithSpec

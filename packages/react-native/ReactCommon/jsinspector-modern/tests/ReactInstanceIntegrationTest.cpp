@@ -13,6 +13,7 @@
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <jsinspector-modern/InspectorFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/runtime/hermes/HermesInstance.h>
 
 using namespace ::testing;
@@ -32,6 +33,11 @@ void ReactInstanceIntegrationTest::SetUp() {
   if (testMode_ == ReactInstanceIntegrationTestMode::LEGACY_HERMES) {
     InspectorFlags::getInstance().dangerouslyDisableFuseboxForTest();
   }
+
+  // Valdiate that the test mode in InspectorFlags is set correctly
+  EXPECT_EQ(
+      InspectorFlags::getInstance().getFuseboxEnabled(),
+      testMode_ == ReactInstanceIntegrationTestMode::FUSEBOX);
 
   auto mockRegistry = std::make_unique<MockTimerRegistry>();
   auto timerManager =
@@ -131,6 +137,12 @@ void ReactInstanceIntegrationTest::TearDown() {
 
   // Expect the remote connection to have been destroyed.
   EXPECT_EQ(mockRemoteConnections_[0], nullptr);
+
+  // Make sure that any dangerous overriding is removed before the next test.
+  // Seemingly, we need both of these to cleanly reset and not break subsequent
+  // tests.
+  InspectorFlags::getInstance().dangerouslyResetFlags();
+  ReactNativeFeatureFlags::dangerouslyReset();
 }
 
 void ReactInstanceIntegrationTest::initializeRuntime(std::string_view script) {

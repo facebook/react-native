@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<887302f2325abea2e40dd01566ce73e0>>
+ * @generated SignedSource<<bb996be6cd68e1b349d3859a29250f28>>
  */
 
 /**
@@ -183,11 +183,6 @@ class ReactNativeFeatureFlags {
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
-
-  /**
-   * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
-   */
-  RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.

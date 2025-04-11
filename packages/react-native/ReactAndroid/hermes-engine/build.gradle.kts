@@ -136,19 +136,22 @@ val configureBuildForHermes by
       workingDir(hermesDir)
       inputs.dir(hermesDir)
       outputs.files(hermesBuildOutputFileTree)
-      commandLine(
+      var cmakeCommandLine =
           windowsAwareCommandLine(
               cmakeBinaryPath,
               // Suppress all warnings as this is the Hermes build and we can't fix them.
               "--log-level=ERROR",
               "-Wno-dev",
-              if (Os.isFamily(Os.FAMILY_WINDOWS)) "-GNMake Makefiles" else "",
               "-S",
               ".",
               "-B",
               hermesBuildDir.toString(),
               "-DJSI_DIR=" + jsiDir.absolutePath,
-          ))
+          )
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        cmakeCommandLine = cmakeCommandLine + "-GNMake Makefiles"
+      }
+      commandLine(cmakeCommandLine)
       standardOutputFile.set(project.file("$buildDir/configure-hermesc.log"))
     }
 
@@ -236,9 +239,9 @@ android {
             "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
             "-DIMPORT_HERMESC=${File(hermesBuildDir, "ImportHermesc.cmake").toString()}",
             "-DJSI_DIR=${jsiDir}",
-            "-DHERMES_SLOW_DEBUG=False",
             "-DHERMES_BUILD_SHARED_JSI=True",
             "-DHERMES_RELEASE_VERSION=for RN ${version}",
+            "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True",
             // We intentionally build Hermes with Intl support only. This is to simplify
             // the build setup and to avoid overcomplicating the build-type matrix.
             "-DHERMES_ENABLE_INTL=True")

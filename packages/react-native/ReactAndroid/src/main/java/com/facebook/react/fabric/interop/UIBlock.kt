@@ -16,8 +16,8 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
  * Historically those methods were only available in `UIManagerModule` (Paper, the old renderer).
  * We're re-adding them to Fabric to make it easier to migrate.
  *
- * @deprecated When developing new libraries for Fabric you should instead use [UIManagerListener]
- *   or View Commands to achieve a same results.
+ * @deprecated When developing new libraries for Fabric you should instead use
+ *   [com.facebook.react.bridge.UIManagerListener] or View Commands to achieve a same results.
  */
 @UnstableReactNativeAPI
 @Deprecated("Use UIManagerListener or View Commands instead of addUIBlock and prependUIBlock.")

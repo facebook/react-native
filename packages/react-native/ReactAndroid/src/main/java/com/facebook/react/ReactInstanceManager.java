@@ -74,7 +74,6 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
-import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
@@ -94,7 +93,7 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -143,7 +142,6 @@ import java.util.Set;
  * <p>To instantiate an instance of this class use {@link #builder}.
  */
 @ThreadSafe
-@StableReactNativeAPI
 @LegacyArchitecture
 public class ReactInstanceManager {
 
@@ -354,7 +352,7 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          boolean isFabric = ReactNativeFeatureFlags.enableFabricRenderer();
+          boolean isFabric = ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer();
           rootView.setIsFabric(isFabric);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, new Bundle());
           return rootView;
@@ -1480,7 +1478,7 @@ public class ReactInstanceManager {
     // architecture so it will always be there.
     catalystInstance.getRuntimeScheduler();
 
-    if (ReactNativeFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
+    if (ReactNativeNewArchitectureFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
           mTMMDelegateBuilder
               .setPackages(mPackages)

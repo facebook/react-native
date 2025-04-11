@@ -35,8 +35,8 @@ class JSPointerDispatcherTest {
   private lateinit var root: ViewGroup
   private lateinit var pointerDispatcher: JSPointerDispatcher
 
-  class EventWithName(private val eventName: String) : ArgumentMatcher<Event<Event<*>>> {
-    override fun matches(argument: Event<Event<*>>?): Boolean = argument?.eventName == eventName
+  class EventWithName(private val eventName: String) : ArgumentMatcher<Event<*>> {
+    override fun matches(argument: Event<*>?): Boolean = argument?.getEventName() == eventName
 
     override fun toString(): String = "[event with name: $eventName]"
   }

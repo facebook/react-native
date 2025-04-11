@@ -11,7 +11,6 @@
 import type {AnimatedPropsAllowlist} from '../../../Libraries/Animated/nodes/AnimatedProps';
 import type {EventSubscription} from '../../../Libraries/EventEmitter/NativeEventEmitter';
 
-import {AnimatedEvent} from '../../../Libraries/Animated/AnimatedEvent';
 import AnimatedNode from '../../../Libraries/Animated/nodes/AnimatedNode';
 import AnimatedProps from '../../../Libraries/Animated/nodes/AnimatedProps';
 import AnimatedValue from '../../../Libraries/Animated/nodes/AnimatedValue';
@@ -24,7 +23,6 @@ import {
   useCallback,
   useEffect,
   useInsertionEffect,
-  useMemo,
   useReducer,
   useRef,
 } from 'react';
@@ -54,28 +52,6 @@ export default function createAnimatedPropsHook(
 
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
-
-  const useNativeAnimatedEvents: <TProps: {...}>(
-    node: AnimatedProps,
-    props: TProps,
-  ) => $ReadOnlyArray<[string, AnimatedEvent]> =
-    ReactNativeFeatureFlags.avoidAnimatedRefInvalidation()
-      ? function useNativeAnimatedEventsFromAnimatedProps(node, props) {
-          return useMemo(() => node.__getNativeAnimatedEventTuples(), [node]);
-        }
-      : function useNativeAnimatedEventsFromProps(node, props) {
-          return useMemo(() => {
-            const tuples = [];
-            for (const propName in props) {
-              // $FlowFixMe[invalid-computed-prop]
-              const propValue = props[propName];
-              if (propValue instanceof AnimatedEvent && propValue.__isNative) {
-                tuples.push([propName, propValue]);
-              }
-            }
-            return tuples;
-          }, [props]);
-        };
 
   return function useAnimatedProps<TProps: {...}, TInstance>(
     props: TProps,
@@ -117,8 +93,6 @@ export default function createAnimatedPropsHook(
         : useAnimatedPropsLifecycleWithPrevNodeRef;
 
     useAnimatedPropsLifecycle(node);
-
-    const eventTuples = useNativeAnimatedEvents(node, props);
 
     // TODO: This "effect" does three things:
     //
@@ -209,6 +183,7 @@ export default function createAnimatedPropsHook(
 
         const target = getEventTarget(instance);
         const animatedValueListeners: AnimatedValueListeners = [];
+        const eventTuples = node.__getNativeAnimatedEventTuples();
 
         for (const [propName, propValue] of eventTuples) {
           propValue.__attach(target, propName);
@@ -228,7 +203,7 @@ export default function createAnimatedPropsHook(
           }
         };
       },
-      [eventTuples, node],
+      [node],
     );
     const callbackRef = useRefEffect<TInstance>(refEffect);
 

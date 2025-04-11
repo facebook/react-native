@@ -29,7 +29,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
@@ -465,7 +465,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private TurboModuleRegistry getTurboModuleRegistry() {
-    if (ReactNativeFeatureFlags.useTurboModules()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useTurboModules()) {
       return Assertions.assertNotNull(
           mTurboModuleRegistry,
           "TurboModules are enabled, but mTurboModuleRegistry hasn't been set.");

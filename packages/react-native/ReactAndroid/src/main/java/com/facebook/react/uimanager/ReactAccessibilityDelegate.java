@@ -323,7 +323,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
                 }
 
                 @Override
-                protected WritableMap getEventData() {
+                public WritableMap getEventData() {
                   return event;
                 }
               });

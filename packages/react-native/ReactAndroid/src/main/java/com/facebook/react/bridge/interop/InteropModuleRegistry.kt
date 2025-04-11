@@ -10,8 +10,8 @@ package com.facebook.react.bridge.interop
 import com.facebook.react.bridge.JavaScriptModule
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.enableFabricRenderer
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useFabricInterop
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags.useFabricInterop
 
 /**
  * A utility class that takes care of returning [JavaScriptModule] which are used for the Fabric

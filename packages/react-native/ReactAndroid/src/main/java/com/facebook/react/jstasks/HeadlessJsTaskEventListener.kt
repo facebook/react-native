@@ -19,7 +19,7 @@ public interface HeadlessJsTaskEventListener {
 
   /**
    * Called when a JS task finishes (i.e. when
-   * [om.facebook.react.modules.core.HeadlessJsTaskSupportModule.notifyTaskFinished] is called, or
+   * [com.facebook.react.modules.core.HeadlessJsTaskSupportModule.notifyTaskFinished] is called, or
    * when it times out), on the UI thread.
    */
   public fun onHeadlessJsTaskFinish(taskId: Int)

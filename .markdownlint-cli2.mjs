@@ -11,6 +11,7 @@ import relativeLinksRule from 'markdownlint-rule-relative-links';
 
 const config = {
   config: {
+    default: false,
     'heading-increment': true,
     'no-reversed-links': true,
     'no-missing-space-atx': true,

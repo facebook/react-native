@@ -122,8 +122,8 @@ function execute(
         );
       }
 
-      if (source === 'app') {
-        // These components are only required by apps, not by libraries
+      if (source === 'app' && platform !== 'android') {
+        // These components are only required by apps, not by libraries and are Apple specific.
         generateRCTThirdPartyComponents(
           libraries,
           librariesSupportedApplePlatforms,

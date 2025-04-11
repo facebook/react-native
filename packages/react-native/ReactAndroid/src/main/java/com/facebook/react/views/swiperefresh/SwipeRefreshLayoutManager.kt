@@ -52,7 +52,7 @@ internal open class SwipeRefreshLayoutManager :
       val colorValues = IntArray(colors.size())
       for (i in 0..<colors.size()) {
         if (colors.getType(i) == ReadableType.Map) {
-          colorValues[i] = ColorPropConverter.getColor(colors.getMap(i), view.context)
+          colorValues[i] = ColorPropConverter.getColor(colors.getMap(i), view.context, 0)
         } else {
           colorValues[i] = colors.getInt(i)
         }

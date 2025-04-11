@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<35708a651629057128ccb30b5f478e2a>>
+ * @generated SignedSource<<c9fe9dd4de520ebddba05822ee2c77da>>
  */
 
 /**
@@ -61,7 +61,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
   bool removeTurboModuleManagerDelegateMutex();
@@ -85,7 +84,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -116,7 +115,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
-  std::atomic<std::optional<bool>> fixMountingCoordinatorReportedPendingTransactionsOnAndroid_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> removeTurboModuleManagerDelegateMutex_;

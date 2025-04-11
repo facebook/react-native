@@ -354,17 +354,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-08-27',
-        description:
-          'Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
-    },
     fuseboxEnabledRelease: {
       defaultValue: false,
       metadata: {
@@ -513,17 +502,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-02-05',
         description:
           'Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    avoidAnimatedRefInvalidation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-03-12',
-        description:
-          'Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

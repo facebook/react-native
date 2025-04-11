@@ -53,7 +53,9 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
       scrollViewWidth: Int,
       scrollViewHeight: Int,
   ) {
-    super.init(surfaceId, viewTag)
+    val timestampMs = SystemClock.uptimeMillis()
+    super.init(surfaceId, viewTag, timestampMs)
+
     this.scrollEventType = scrollEventType
     this.scrollX = scrollX
     this.scrollY = scrollY
@@ -63,7 +65,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     this.contentHeight = contentHeight
     this.scrollViewWidth = scrollViewWidth
     this.scrollViewHeight = scrollViewHeight
-    this.timestamp = SystemClock.uptimeMillis()
+    this.timestamp = timestampMs
   }
 
   override fun getEventName(): String =

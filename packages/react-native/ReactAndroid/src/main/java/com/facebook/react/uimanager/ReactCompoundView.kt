@@ -8,9 +8,9 @@
 package com.facebook.react.uimanager
 
 /**
- * This interface should be implemented by native [View] subclasses that can represent more than a
- * single react node (e.g. [TextView]). It is use by touch event emitter for determining the react
- * tag of the inner-view element that was touched.
+ * This interface should be implemented by native [android.view.View] subclasses that can represent
+ * more than a single react node (e.g. [android.widget.TextView]). It is use by touch event emitter
+ * for determining the react tag of the inner-view element that was touched.
  */
 public interface ReactCompoundView {
 
