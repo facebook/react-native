@@ -19,28 +19,6 @@ import java.util.concurrent.TimeUnit
  * @param <TResult> The type of the result of the task.
  */
 public class Task<TResult> : TaskInterface<TResult> {
-
-  /**
-   * Interface for handlers invoked when a failed `Task` is about to be finalized, but the exception
-   * has not been consumed.
-   *
-   * The handler will execute in the GC thread, so if the handler needs to do anything time
-   * consuming or complex it is a good idea to fire off a `Task` to handle the exception.
-   *
-   * @see [unobservedExceptionHandler]
-   */
-  internal fun interface UnobservedExceptionHandler {
-    /**
-     * Method invoked when the given task has an unobserved exception.
-     *
-     * Any exception thrown by this method will be ignored.
-     *
-     * @param t the task
-     * @param e the exception
-     */
-    public fun unobservedException(t: Task<*>, e: UnobservedTaskException)
-  }
-
   private val lock = Object()
   private var complete = false
   private var cancelled = false
@@ -48,9 +26,6 @@ public class Task<TResult> : TaskInterface<TResult> {
   private var result: TResult? = null
 
   private var error: Exception? = null
-  private var errorHasBeenObserved = false
-
-  private var unobservedErrorNotifier: UnobservedErrorNotifier? = null
   private val continuations: MutableList<Continuation<TResult, Unit>> = mutableListOf()
 
   internal constructor()
@@ -97,13 +72,6 @@ public class Task<TResult> : TaskInterface<TResult> {
   /** @return The error for the task, if set. `null` otherwise. */
   override fun getError(): Exception? =
       synchronized(lock) {
-        if (error != null) {
-          this.errorHasBeenObserved = true
-          if (unobservedErrorNotifier != null) {
-            unobservedErrorNotifier!!.setObserved()
-            this.unobservedErrorNotifier = null
-          }
-        }
         return error
       }
 
@@ -274,11 +242,8 @@ public class Task<TResult> : TaskInterface<TResult> {
         }
         this.complete = true
         this.error = error
-        this.errorHasBeenObserved = false
         lock.notifyAll()
         runContinuations()
-        if (!errorHasBeenObserved && unobservedExceptionHandler != null)
-            this.unobservedErrorNotifier = UnobservedErrorNotifier(this)
         return true
       }
 
@@ -292,14 +257,6 @@ public class Task<TResult> : TaskInterface<TResult> {
 
     /** An [java.util.concurrent.Executor] that executes tasks on the UI thread. */
     @JvmField public val UI_THREAD_EXECUTOR: Executor = Executors.UI_THREAD
-
-    /**
-     * Handler invoked when a task has an unobserved exception. Null, unless explicitly set.
-     *
-     * @param eh the object to use as an unobserved exception handler. If <tt>null</tt> then
-     *   unobserved exceptions will be ignored.
-     */
-    internal var unobservedExceptionHandler: UnobservedExceptionHandler? = null
 
     @JvmStatic
     internal fun <TResult> create(): TaskCompletionSource<TResult> {
