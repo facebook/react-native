@@ -1,6 +1,6 @@
 # Event Loop
 
-- [Main doc](../../../../../../../__docs__/README.md)
+[🏠 Home](../../../../../../../__docs__/README.md)
 
 The Event Loop is the formalization of the execution model for JavaScript in
 React Native, and how that model synchronizes with rendering work in the host
