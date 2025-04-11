@@ -108,6 +108,33 @@ Similar to Jest, you can also run Fantom in watch mode using `--watch`:
 yarn fantom --watch [optional test pattern]
 ```
 
+### Test configuration
+
+You can configure certain aspects of the test execution using pragmas in the
+docblock at the top of the file. E.g.:
+
+```javascript
+/**
+ * @fantom_flags jsOnlyTestFlag:true
+ * @fantom_mode opt
+ */
+```
+
+Available pragmas:
+
+- `@fantom_flags`: used to set overrides for
+  [`ReactNativeFeatureFlags`](../../react-native/src/private/featureflags/__docs__/README.md).
+  - Example: `@fantom_flags name:value`.
+  - Multiple flags can be defined in different lines or in the same line
+    separated by spaces (e.g.: `@fantom_flags name:value otherName:otherValue`).
+- `@fantom_mode`: used to define the compilation mode for the bundle.
+  - Example: `@fantom_mode opt`
+  - Possible values:
+    - `dev`: development, default for tests.
+    - `opt`: optimized and using Hermes bytecode, default for benchmarks.
+    - `dev-bytecode`: development but using Hermes bytecode instead of plain
+      text JavaScript code.
+
 ### FAQ
 
 #### How is this different from Jest tests?
@@ -190,9 +217,9 @@ The runner then follows these steps:
    results. Depending on the configured "mode" for the test, the runner might
    compile that JavaScript file into Hermes bytecode.
 2. It calls into the Fantom CLI passing the path to the executable JavaScript
-   code (or Hermes bytecode). The Fantom CLI evaluates that code in the context
-   of a React Native C++ application and prints the results as JSON via its
-   standard output.
+   code (or Hermes bytecode) and the configured feature flags for the test. The
+   Fantom CLI evaluates that code in the context of a React Native C++
+   application and prints the results as JSON via its standard output.
 3. The runner receives the output from the Fantom CLI and reports the provided
    results back to Jest in the correct format.
 
@@ -211,3 +238,7 @@ The runner then follows these steps:
 - Metro, to compile the test code into a single file consumable by the Fantom
   CLI.
 - Hermes Compiler, to compile the JavaScript test code into Hermes bytecode.
+- The
+  [React Native Feature Flags](../../react-native/src/private/featureflags/__docs__/README.md)
+  system, via the `@fantom_flags` pragmas defined in the docblock for test
+  files.
