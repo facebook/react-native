@@ -2890,13 +2890,17 @@ public abstract interface class com/facebook/react/modules/debug/interfaces/Deve
 	public abstract fun setStartSamplingProfilerOnInit (Z)V
 }
 
-public class com/facebook/react/modules/dialog/AlertFragment : androidx/fragment/app/DialogFragment, android/content/DialogInterface$OnClickListener {
+public final class com/facebook/react/modules/dialog/AlertFragment : androidx/fragment/app/DialogFragment, android/content/DialogInterface$OnClickListener {
+	public static final field Companion Lcom/facebook/react/modules/dialog/AlertFragment$Companion;
 	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/modules/dialog/DialogModule$AlertFragmentListener;Landroid/os/Bundle;)V
-	public static fun createDialog (Landroid/content/Context;Landroid/os/Bundle;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/Dialog;
+	public static final fun createDialog (Landroid/content/Context;Landroid/os/Bundle;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/Dialog;
 	public fun onClick (Landroid/content/DialogInterface;I)V
 	public fun onCreateDialog (Landroid/os/Bundle;)Landroid/app/Dialog;
 	public fun onDismiss (Landroid/content/DialogInterface;)V
+}
+
+public final class com/facebook/react/modules/dialog/AlertFragment$Companion {
+	public final fun createDialog (Landroid/content/Context;Landroid/os/Bundle;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/Dialog;
 }
 
 public final class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbreact/specs/NativeDialogManagerAndroidSpec, com/facebook/react/bridge/LifecycleEventListener {
