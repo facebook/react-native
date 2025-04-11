@@ -24,6 +24,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.fabric.SurfaceHandlerBinding;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.fabric.ReactSurface;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -76,7 +77,8 @@ public class ReactSurfaceImpl implements ReactSurface {
         0,
         doRTLSwap(context),
         isRTL(context),
-        getPixelDensity(context));
+        getPixelDensity(context),
+        getFontScale(context));
   }
 
   @VisibleForTesting
@@ -210,7 +212,8 @@ public class ReactSurfaceImpl implements ReactSurface {
         offsetY,
         doRTLSwap(mContext),
         isRTL(mContext),
-        getPixelDensity(mContext));
+        getPixelDensity(mContext),
+        getFontScale(mContext));
   }
 
   /* package */ @Nullable
@@ -239,6 +242,14 @@ public class ReactSurfaceImpl implements ReactSurface {
 
   private static float getPixelDensity(Context context) {
     return context.getResources().getDisplayMetrics().density;
+  }
+
+  private static float getFontScale(Context context) {
+    if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+      return context.getResources().getConfiguration().fontScale;
+    }
+
+    return 1f;
   }
 
   private static boolean isRTL(Context context) {

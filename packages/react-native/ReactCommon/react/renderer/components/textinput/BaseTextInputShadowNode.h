@@ -193,7 +193,10 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
       const LayoutContext& layoutContext) const {
     bool meaningfulState = BaseShadowNode::getState() &&
         BaseShadowNode::getState()->getRevision() !=
-            State::initialRevisionValue;
+            State::initialRevisionValue &&
+        BaseShadowNode::getStateData()
+                .reactTreeAttributedString.getBaseTextAttributes()
+                .fontSizeMultiplier == layoutContext.fontSizeMultiplier;
     if (meaningfulState) {
       const auto& stateData = BaseShadowNode::getStateData();
       auto attributedStringBox = stateData.attributedStringBox;

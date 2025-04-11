@@ -7,6 +7,7 @@
 
 #import "RCTTextInputComponentView.h"
 
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
 #import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
@@ -121,6 +122,20 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 
   [self _restoreTextSelection];
+}
+
+// TODO: replace with registerForTraitChanges once iOS 17.0 is the lowest supported version
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (facebook::react::ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() &&
+      UITraitCollection.currentTraitCollection.preferredContentSizeCategory !=
+          previousTraitCollection.preferredContentSizeCategory) {
+    const auto &newTextInputProps = static_cast<const TextInputProps &>(*_props);
+    _backedTextInputView.defaultTextAttributes =
+        RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+  }
 }
 
 - (void)reactUpdateResponderOffsetForScrollView:(RCTScrollViewComponentView *)scrollView
