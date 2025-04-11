@@ -64,7 +64,7 @@
 
         <activity
             android:name=".RNTesterActivity"
-            android:configChanges="orientation|screenSize|uiMode"
+            android:configChanges="orientation|screenSize|uiMode|fontScale"
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"

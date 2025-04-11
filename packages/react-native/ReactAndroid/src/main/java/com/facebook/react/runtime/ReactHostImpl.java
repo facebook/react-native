@@ -59,6 +59,7 @@ import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.fabric.ReactSurface;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -68,6 +69,7 @@ import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -823,6 +825,10 @@ public class ReactHostImpl implements ReactHost {
   public void onConfigurationChanged(Context updatedContext) {
     ReactContext currentReactContext = getCurrentReactContext();
     if (currentReactContext != null) {
+      if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+        DisplayMetricsHolder.initDisplayMetrics(currentReactContext);
+      }
+
       AppearanceModule appearanceModule =
           currentReactContext.getNativeModule(AppearanceModule.class);
 
