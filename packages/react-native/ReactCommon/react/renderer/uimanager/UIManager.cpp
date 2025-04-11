@@ -664,12 +664,21 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
   }
 }
 
+void UIManager::setNativeAnimatedDelegate(
+    std::weak_ptr<UIManagerNativeAnimatedDelegate> delegate) {
+  nativeAnimatedDelegate_ = delegate;
+}
+
 void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
     shadowTreeRegistry_.enumerate([](const ShadowTree& shadowTree, bool&) {
       shadowTree.notifyDelegatesOfUpdates();
     });
+  }
+
+  if (auto nativeAnimatedDelegate = nativeAnimatedDelegate_.lock()) {
+    nativeAnimatedDelegate->runAnimationFrame();
   }
 }
 

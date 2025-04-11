@@ -25,6 +25,7 @@
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
+#include <react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h>
 #include <react/renderer/uimanager/consistency/LazyShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
 #include <react/renderer/uimanager/primitives.h>
@@ -66,6 +67,9 @@ class UIManager final : public ShadowTreeDelegate {
    * Execute stopSurface on any UIMAnagerAnimationDelegate.
    */
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
+
+  void setNativeAnimatedDelegate(
+      std::weak_ptr<UIManagerNativeAnimatedDelegate> delegate);
 
   void animationTick() const;
 
@@ -192,9 +196,9 @@ class UIManager final : public ShadowTreeDelegate {
 
   /*
    * Iterates over all shadow nodes which are parts of all registered surfaces
-   * and find the one that has given `tag`. Returns `nullptr` if the node wasn't
-   * found. This is a temporary workaround that should not be used in any core
-   * functionality.
+   * and find the one that has given `tag`. Returns `nullptr` if the node
+   * wasn't found. This is a temporary workaround that should not be used in
+   * any core functionality.
    */
   ShadowNode::Shared findShadowNodeByTag_DEPRECATED(Tag tag) const;
 
@@ -234,6 +238,8 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate* delegate_{};
   UIManagerAnimationDelegate* animationDelegate_{nullptr};
+  std::weak_ptr<UIManagerNativeAnimatedDelegate> nativeAnimatedDelegate_;
+
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   ContextContainer::Shared contextContainer_;
