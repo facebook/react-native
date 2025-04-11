@@ -374,13 +374,11 @@ ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
     const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
     const std::function<Unshared(
         const ShadowNode& oldShadowNode,
-        const std::optional<ShadowNode::ListOfShared>& newChildren)>& callback)
-    const {
+        const ShadowNodeFragment& fragment)>& callback) const {
   const auto family = &shadowNode.getFamily();
   auto children = shadowNode.getChildren();
   auto count = childrenCount.at(family);
   auto shouldUpdateChildren = false;
-  std::optional<ShadowNode::ListOfShared> newChildren;
 
   for (int i = 0; count > 0 && i < children.size(); i++) {
     const auto childFamily = &children[i]->getFamily();
@@ -392,27 +390,24 @@ ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
     }
   }
 
-  if (shouldUpdateChildren) {
-    newChildren = std::move(children);
-  }
+  const ShadowNodeFragment fragment{
+      ShadowNodeFragment::propsPlaceholder(),
+      shouldUpdateChildren
+          ? std::make_shared<ShadowNode::ListOfShared>(std::move(children))
+          : ShadowNodeFragment::childrenPlaceholder()};
 
   if (familiesToUpdate.contains(family)) {
-    return callback(shadowNode, newChildren);
+    return callback(shadowNode, fragment);
   }
 
-  return shadowNode.clone(
-      {ShadowNodeFragment::propsPlaceholder(),
-       newChildren
-           ? std::make_shared<ShadowNode::ListOfShared>(std::move(*newChildren))
-           : ShadowNodeFragment::childrenPlaceholder()});
+  return shadowNode.clone(fragment);
 }
 
 ShadowNode::Unshared ShadowNode::cloneMultiple(
     const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
     const std::function<Unshared(
         const ShadowNode& oldShadowNode,
-        const std::optional<ShadowNode::ListOfShared>& newChildren)>& callback)
-    const {
+        const ShadowNodeFragment& fragment)>& callback) const {
   std::unordered_map<const ShadowNodeFamily*, int> childrenCount;
 
   for (const auto& family : familiesToUpdate) {
@@ -439,7 +434,8 @@ ShadowNode::Unshared ShadowNode::cloneMultiple(
     return ShadowNode::Unshared{nullptr};
   }
 
-  return cloneMultipleRecursive(*this, familiesToUpdate, childrenCount, callback);
+  return cloneMultipleRecursive(
+      *this, familiesToUpdate, childrenCount, callback);
 }
 
 #pragma mark - DebugStringConvertible

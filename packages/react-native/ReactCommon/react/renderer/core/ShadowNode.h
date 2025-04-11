@@ -118,7 +118,7 @@ class ShadowNode : public Sealable,
       const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
       const std::function<Unshared(
           const ShadowNode& oldShadowNode,
-          const std::optional<ShadowNode::ListOfShared>& newChildren)>&
+          const ShadowNodeFragment& fragment)>&
           callback) const;
 
 #pragma mark - Getters
@@ -272,7 +272,7 @@ class ShadowNode : public Sealable,
       const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
       const std::function<Unshared(
           const ShadowNode& oldShadowNode,
-          const std::optional<ShadowNode::ListOfShared>& newChildren)>&
+          const ShadowNodeFragment& fragment)>&
           callback) const;
 
  protected:
