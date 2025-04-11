@@ -417,16 +417,20 @@ ShadowNode::Unshared ShadowNode::cloneMultiple(
 
     childrenCount[family] = 0;
 
-    auto ancestor = family;
-    while ((ancestor != nullptr) && ancestor != this->family_.get()) {
-      ancestor = ancestor->parent_.lock().get();
-      auto ancestorIt = childrenCount.find(ancestor);
+    auto ancestor = family->parent_.lock();
+    while ((ancestor != nullptr) && ancestor != this->family_) {
+      auto ancestorIt = childrenCount.find(ancestor.get());
       if (ancestorIt != childrenCount.end()) {
         ancestorIt->second++;
         break;
       }
-
-      childrenCount[ancestor] = 1;
+      childrenCount[ancestor.get()] = 1;
+      
+      ancestor = ancestor->parent_.lock();
+    }
+    
+    if (ancestor == this->family_){
+      childrenCount[ancestor.get()]++;
     }
   }
 
