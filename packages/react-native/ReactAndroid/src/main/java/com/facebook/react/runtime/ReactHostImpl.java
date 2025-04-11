@@ -59,7 +59,7 @@ import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.fabric.ReactSurface;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -972,24 +972,24 @@ public class ReactHostImpl implements ReactHost {
       log(method, "Schedule");
       if (ReactBuildConfig.DEBUG) {
         Assertions.assertCondition(
-            ReactNativeFeatureFlags.enableBridgelessArchitecture(),
+            ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture(),
             "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.");
 
         Assertions.assertCondition(
-            ReactNativeFeatureFlags.enableFabricRenderer(),
+            ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer(),
             "enableFabricRenderer FeatureFlag must be set to start ReactNative.");
 
         Assertions.assertCondition(
-            ReactNativeFeatureFlags.useTurboModules(),
+            ReactNativeNewArchitectureFeatureFlags.useTurboModules(),
             "useTurboModules FeatureFlag must be set to start ReactNative.");
       }
       if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
         Assertions.assertCondition(
-            !ReactNativeFeatureFlags.useFabricInterop(),
+            !ReactNativeNewArchitectureFeatureFlags.useFabricInterop(),
             "useFabricInterop FeatureFlag must be false when"
                 + " UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.");
         Assertions.assertCondition(
-            !ReactNativeFeatureFlags.useTurboModuleInterop(),
+            !ReactNativeNewArchitectureFeatureFlags.useTurboModuleInterop(),
             "useTurboModuleInterop FeatureFlag must be false when"
                 + " UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.");
       }
