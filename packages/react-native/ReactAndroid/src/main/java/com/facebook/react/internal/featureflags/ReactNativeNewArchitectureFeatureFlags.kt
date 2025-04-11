@@ -32,7 +32,7 @@ public object ReactNativeNewArchitectureFeatureFlags {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       Assertions.assertCondition(
           ReactNativeFeatureFlags.enableBridgelessArchitecture(),
-          "ReactNativeFeatureFlags.enableBridgelessArchitecture() should be set to true when Strict Mode is enabled")
+          "ReactNativeFeatureFlags.enableBridgelessArchitecture() should be set to TRUE when Strict Mode is enabled")
       return true
     }
     return ReactNativeFeatureFlags.enableBridgelessArchitecture()
@@ -43,7 +43,7 @@ public object ReactNativeNewArchitectureFeatureFlags {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       Assertions.assertCondition(
           ReactNativeFeatureFlags.enableFabricRenderer(),
-          "ReactNativeFeatureFlags.enableFabricRenderer() should be set to true when Strict Mode is enabled")
+          "ReactNativeFeatureFlags.enableFabricRenderer() should be set to TRUE when Strict Mode is enabled")
       return true
     }
     return ReactNativeFeatureFlags.enableFabricRenderer()
@@ -76,7 +76,7 @@ public object ReactNativeNewArchitectureFeatureFlags {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       Assertions.assertCondition(
           ReactNativeFeatureFlags.useTurboModules(),
-          "ReactNativeFeatureFlags.useTurboModules() should be set to FALSE when Strict Mode is enabled")
+          "ReactNativeFeatureFlags.useTurboModules() should be set to TRUE when Strict Mode is enabled")
       return true
     }
     return ReactNativeFeatureFlags.useTurboModules()
