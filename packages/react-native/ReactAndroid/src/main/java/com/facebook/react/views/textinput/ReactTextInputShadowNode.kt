@@ -18,7 +18,6 @@ import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.R
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ThemedReactContext
@@ -33,9 +32,8 @@ import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
 
-@VisibleForTesting
 @LegacyArchitecture
-public class ReactTextInputShadowNode
+internal class ReactTextInputShadowNode
 @JvmOverloads
 constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) :
     ReactBaseTextShadowNode(reactTextViewManagerCallback), YogaMeasureFunction {
@@ -45,14 +43,14 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
 
   // Represents the `text` property only, not possible nested content.
   @set:ReactProp(name = PROP_TEXT)
-  public var text: String? = null
+  var text: String? = null
     set(value) {
       field = value
       markUpdated()
     }
 
   @set:ReactProp(name = PROP_PLACEHOLDER)
-  public var placeholder: String? = null
+  var placeholder: String? = null
     set(value) {
       field = value
       markUpdated()
@@ -202,9 +200,9 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
     return EditText(context)
   }
 
-  public companion object {
-    @VisibleForTesting public const val PROP_TEXT: String = "text"
+  companion object {
+    const val PROP_TEXT: String = "text"
 
-    @VisibleForTesting public const val PROP_PLACEHOLDER: String = "placeholder"
+    const val PROP_PLACEHOLDER: String = "placeholder"
   }
 }
