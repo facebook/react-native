@@ -11,6 +11,7 @@
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "FabricMountingManager.h"
+#include "FocusOrderingHelper.h"
 
 #include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
@@ -193,6 +194,88 @@ void FabricUIManagerBinding::startSurface(
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
+}
+
+jint FabricUIManagerBinding::findNextFocusableElement(
+    jint parentTag,
+    jint focusedTag,
+    jint direction) {
+  ShadowNode::Shared nextNode;
+
+  std::optional<FocusDirection> focusDirection =
+      FocusOrderingHelper::resolveFocusDirection(direction);
+
+  if (!focusDirection.has_value()) {
+    return -1;
+  }
+
+  std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
+
+  ShadowNode::Shared parentShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
+  ShadowNode::Shared focusedShadowNode =
+      FocusOrderingHelper::findShadowNodeByTagRecursively(
+          parentShadowNode, focusedTag);
+
+  LayoutMetrics childLayoutMetrics = uimanager->getRelativeLayoutMetrics(
+      *focusedShadowNode, parentShadowNode.get(), {.includeTransform = true});
+
+  Rect sourceRect = childLayoutMetrics.frame;
+
+  /*
+   * Traverse the tree recursively to find the next focusable element in the
+   * given direction
+   */
+  std::optional<Rect> nextRect = std::nullopt;
+  FocusOrderingHelper::traverseAndUpdateNextFocusableElement(
+      parentShadowNode,
+      focusedShadowNode,
+      parentShadowNode,
+      focusDirection.value(),
+      *uimanager,
+      sourceRect,
+      nextRect,
+      nextNode);
+
+  if (nextNode == nullptr) {
+    return -1;
+  }
+
+  return nextNode->getTag();
+}
+
+jint FabricUIManagerBinding::findRelativeTopMostParent(
+    jint rootTag,
+    jint childTag) {
+  std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
+
+  ShadowNode::Shared childShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(childTag);
+  ShadowNode::Shared rootShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(rootTag);
+
+  if (childShadowNode == nullptr || rootShadowNode == nullptr) {
+    return -1;
+  }
+
+  ShadowNode::AncestorList ancestorList =
+      childShadowNode->getFamily().getAncestors(*rootShadowNode);
+
+  if (ancestorList.empty() || ancestorList.size() < 2) {
+    return -1;
+  }
+
+  // ignore the first ancestor as it is the rootShadowNode itself
+  for (auto it = std::next(ancestorList.begin()); it != ancestorList.end();
+       ++it) {
+    auto& ancestor = *it;
+    if (ancestor.first.get().getTraits().check(
+            ShadowNodeTraits::Trait::FormsStackingContext)) {
+      return ancestor.first.get().getTag();
+    }
+  }
+
+  return -1;
 }
 
 // Used by non-bridgeless+Fabric
@@ -667,6 +750,12 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "stopSurfaceWithSurfaceHandler",
           FabricUIManagerBinding::stopSurfaceWithSurfaceHandler),
+      makeNativeMethod(
+          "findNextFocusableElement",
+          FabricUIManagerBinding::findNextFocusableElement),
+      makeNativeMethod(
+          "findRelativeTopMostParent",
+          FabricUIManagerBinding::findRelativeTopMostParent),
   });
 }
 
