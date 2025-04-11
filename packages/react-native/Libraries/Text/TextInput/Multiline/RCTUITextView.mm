@@ -20,6 +20,7 @@
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
   NSArray<UIBarButtonItemGroup *> *_initialValueLeadingBarButtonGroups;
   NSArray<UIBarButtonItemGroup *> *_initialValueTrailingBarButtonGroups;
+  NSArray<NSString *> *_acceptDragAndDropTypes;
 }
 
 static UIFont *defaultPlaceholderFont(void)
@@ -101,6 +102,16 @@ static UIColor *defaultPlaceholderColor(void)
 }
 
 #pragma mark - Properties
+
+- (void)setAcceptDragAndDropTypes:(NSArray<NSString *> *)acceptDragAndDropTypes
+{
+  _acceptDragAndDropTypes = acceptDragAndDropTypes;
+}
+
+- (nullable NSArray<NSString *> *)acceptDragAndDropTypes
+{
+  return _acceptDragAndDropTypes;
+}
 
 - (void)setPlaceholder:(NSString *)placeholder
 {

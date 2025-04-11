@@ -2851,6 +2851,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 type TextInputBaseProps = $ReadOnly<{
+  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
   autoCapitalize?: ?AutoCapitalize,
   autoComplete?: ?(
     | \\"additional-name\\"
