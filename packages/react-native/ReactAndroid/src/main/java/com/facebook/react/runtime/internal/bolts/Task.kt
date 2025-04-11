@@ -297,12 +297,29 @@ public class Task<TResult> : TaskInterface<TResult> {
      * Invokes the callable using the given executor, returning a Task to represent the operation.
      */
     @JvmStatic
-    public fun <TResult> call(callable: Callable<TResult>, executor: Executor): Task<TResult> {
+    public fun <TResult> call(
+        callable: Callable<Task<TResult>>,
+        executor: Executor
+    ): Task<TResult> {
       val tcs = TaskCompletionSource<TResult>()
       try {
         executor.execute {
+          val continuation = Continuation { task: Task<TResult> ->
+            when {
+              task.isCancelled() -> tcs.setCancelled()
+              task.isFaulted() -> tcs.setError(task.getError())
+              else -> tcs.setResult(task.getResult())
+            }
+          }
           try {
-            tcs.setResult(callable.call())
+            val task = callable.call()
+            synchronized(task.lock) {
+              if (task.isCompleted()) {
+                continuation.then(task)
+              } else {
+                task.continuations.add(continuation)
+              }
+            }
           } catch (e: CancellationException) {
             tcs.setCancelled()
           } catch (e: Exception) {
