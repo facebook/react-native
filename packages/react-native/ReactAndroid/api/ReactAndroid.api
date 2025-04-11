@@ -1936,7 +1936,6 @@ public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate
 public final class com/facebook/react/devsupport/BridgeDevSupportManager : com/facebook/react/devsupport/DevSupportManagerBase {
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)V
 	public fun handleReloadJS ()V
-	public fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
 }
 
 public final class com/facebook/react/devsupport/BundleDownloader {
@@ -2125,7 +2124,6 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun hidePausedInDebuggerOverlay ()V
 	public fun hideRedboxDialog ()V
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
 	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun openDebugger ()V
@@ -2202,11 +2200,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevOpti
 	public abstract fun onOptionSelected ()V
 }
 
-public abstract interface class com/facebook/react/devsupport/interfaces/DevSplitBundleCallback {
-	public abstract fun onError (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public abstract fun onSuccess ()V
-}
-
 public abstract interface class com/facebook/react/devsupport/interfaces/DevSupportManager : com/facebook/react/bridge/JSExceptionHandler {
 	public abstract fun addCustomDevOption (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevOptionHandler;)V
 	public abstract fun createRootView (Ljava/lang/String;)Landroid/view/View;
@@ -2230,7 +2223,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun hidePausedInDebuggerOverlay ()V
 	public abstract fun hideRedboxDialog ()V
 	public abstract fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public abstract fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
 	public abstract fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public abstract fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
 	public abstract fun openDebugger ()V
