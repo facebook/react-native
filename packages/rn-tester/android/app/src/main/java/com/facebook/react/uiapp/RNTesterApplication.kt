@@ -10,6 +10,7 @@ package com.facebook.react.uiapp
 import android.app.Application
 import com.facebook.fbreact.specs.SampleLegacyModule
 import com.facebook.fbreact.specs.SampleTurboModule
+import com.facebook.fbreact.specs.ImagePickerAndroid
 import com.facebook.react.BaseReactPackage
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -64,6 +65,9 @@ internal class RNTesterApplication : Application(), ReactApplication {
                 if (SampleLegacyModule.NAME == name) {
                   return SampleLegacyModule(reactContext)
                 }
+                if (ImagePickerAndroid.NAME == name) {
+                  return ImagePickerAndroid(reactContext)
+                }
                 return null
               }
 
@@ -89,7 +93,15 @@ internal class RNTesterApplication : Application(), ReactApplication {
                                   canOverrideExistingModule = false,
                                   needsEagerInit = false,
                                   isCxxModule = false,
-                                  isTurboModule = false))
+                                  isTurboModule = false),
+                          ImagePickerAndroid.NAME to
+                              ReactModuleInfo(
+                                  ImagePickerAndroid.NAME,
+                                  "ImagePickerAndroid",
+                                  canOverrideExistingModule = false,
+                                  needsEagerInit = false,
+                                  isCxxModule = false,
+                                  isTurboModule = true))
                     } else {
                       emptyMap()
                     }
