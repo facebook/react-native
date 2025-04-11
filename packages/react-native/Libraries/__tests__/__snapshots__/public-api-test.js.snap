@@ -4369,7 +4369,7 @@ export type ImageBackgroundProps = $ReadOnly<{
   children?: React.Node,
   style?: ?ViewStyleProp,
   imageStyle?: ?ImageStyleProp,
-  imageRef?: RefSetter<ElementRef<ImageType>>,
+  imageRef?: React.RefSetter<React.ElementRef<ImageType>>,
 }>;
 "
 `;
