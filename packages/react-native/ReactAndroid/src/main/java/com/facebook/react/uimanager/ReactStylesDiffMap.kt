@@ -35,7 +35,7 @@ public class ReactStylesDiffMap(props: ReadableMap) {
   @JvmField
   public val mBackingMap: ReadableMap = props
 
-  public fun toMap(): Map<String, Any> = mBackingMap.toHashMap()
+  public fun toMap(): Map<String, Any?> = mBackingMap.toHashMap()
 
   public fun hasKey(name: String): Boolean = mBackingMap.hasKey(name)
 
