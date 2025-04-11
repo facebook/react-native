@@ -153,7 +153,7 @@ const RNTesterApp = ({
       // *  rntester://example/<moduleKey>
       // *  rntester://example/<moduleKey>/<exampleKey>
       const match =
-        /^rntester:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
+        /^rntester(-legacy)?:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
           url,
         );
       if (!match) {
@@ -163,8 +163,8 @@ const RNTesterApp = ({
         return;
       }
 
-      const rawModuleKey = match[1];
-      const exampleKey = match[2];
+      const rawModuleKey = match[2];
+      const exampleKey = match[3];
 
       // For tooling compatibility, allow all these variants for each module key:
       const validModuleKeys = [
