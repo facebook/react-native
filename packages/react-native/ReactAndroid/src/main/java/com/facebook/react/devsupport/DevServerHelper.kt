@@ -318,7 +318,9 @@ public class DevServerHelper(
         if (!response.isSuccessful || response.body() == null) {
           return null
         }
-        Okio.sink(outputFile).use { output -> response.body()?.source()?.buffer()?.readAll(output) }
+        Okio.sink(outputFile).use { output ->
+          Okio.buffer(response.body()?.source()!!).readAll(output)
+        }
         return outputFile
       }
     } catch (e: Exception) {
