@@ -6807,15 +6807,14 @@ public final class com/facebook/react/views/textinput/ReactTextInputLocalData {
 }
 
 public class com/facebook/react/views/textinput/ReactTextInputManager : com/facebook/react/uimanager/BaseViewManager {
+	public static final field Companion Lcom/facebook/react/views/textinput/ReactTextInputManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
-	public static final field TAG Ljava/lang/String;
-	protected field mReactTextViewManagerCallback Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
 	public fun <init> ()V
-	protected synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
+	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
 	protected fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/textinput/ReactEditText;)V
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactBaseTextShadowNode;
-	public fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactBaseTextShadowNode;
+	public final fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactBaseTextShadowNode;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/textinput/ReactEditText;
 	public fun getCommandsMap ()Ljava/util/Map;
@@ -6823,70 +6822,76 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getExportedViewConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
-	public fun getReactTextUpdate (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/common/mapbuffer/MapBuffer;)Ljava/lang/Object;
+	public final fun getReactTextUpdate (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/common/mapbuffer/MapBuffer;)Ljava/lang/Object;
+	protected final fun getReactTextViewManagerCallback ()Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
 	public fun getShadowNodeClass ()Ljava/lang/Class;
-	protected synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
+	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/textinput/ReactEditText;)V
 	public synthetic fun receiveCommand (Landroid/view/View;ILcom/facebook/react/bridge/ReadableArray;)V
 	public synthetic fun receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (Lcom/facebook/react/views/textinput/ReactEditText;ILcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setAllowFontScaling (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setAutoCapitalize (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/Dynamic;)V
-	public fun setAutoCorrect (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Boolean;)V
-	public fun setAutoFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setBorderColor (Lcom/facebook/react/views/textinput/ReactEditText;ILjava/lang/Integer;)V
-	public fun setBorderRadius (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
-	public fun setBorderStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setBorderWidth (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
-	public fun setCaretHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setContextMenuHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setCursorColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setDisableFullscreenUI (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setEditable (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setFontFamily (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setFontSize (Lcom/facebook/react/views/textinput/ReactEditText;F)V
-	public fun setFontStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setFontVariant (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setFontWeight (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setImportantForAutofill (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setIncludeFontPadding (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setInlineImageLeft (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setInlineImagePadding (Lcom/facebook/react/views/textinput/ReactEditText;I)V
-	public fun setKeyboardType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setLetterSpacing (Lcom/facebook/react/views/textinput/ReactEditText;F)V
-	public fun setLineHeight (Lcom/facebook/react/views/textinput/ReactEditText;I)V
-	public fun setMaxFontSizeMultiplier (Lcom/facebook/react/views/textinput/ReactEditText;F)V
-	public fun setMaxLength (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setMultiline (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setNumLines (Lcom/facebook/react/views/textinput/ReactEditText;I)V
-	public fun setOnContentSizeChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setOnKeyPress (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setOnScroll (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setOnSelectionChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setOverflow (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setAllowFontScaling (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setAutoCapitalize (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/Dynamic;)V
+	public final fun setAutoCorrect (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Boolean;)V
+	public final fun setAutoFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setBorderColor (Lcom/facebook/react/views/textinput/ReactEditText;ILjava/lang/Integer;)V
+	public final fun setBorderRadius (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
+	public final fun setBorderStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setBorderWidth (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
+	public final fun setCaretHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setContextMenuHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setCursorColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setDisableFullscreenUI (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setEditable (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setFontFamily (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setFontSize (Lcom/facebook/react/views/textinput/ReactEditText;F)V
+	public final fun setFontStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setFontVariant (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun setFontWeight (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setImportantForAutofill (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setIncludeFontPadding (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setInlineImageLeft (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setInlineImagePadding (Lcom/facebook/react/views/textinput/ReactEditText;I)V
+	public final fun setKeyboardType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setLetterSpacing (Lcom/facebook/react/views/textinput/ReactEditText;F)V
+	public final fun setLineHeight (Lcom/facebook/react/views/textinput/ReactEditText;I)V
+	public final fun setMaxFontSizeMultiplier (Lcom/facebook/react/views/textinput/ReactEditText;F)V
+	public final fun setMaxLength (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setMultiline (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setNumLines (Lcom/facebook/react/views/textinput/ReactEditText;I)V
+	public final fun setOnContentSizeChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setOnKeyPress (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setOnScroll (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setOnSelectionChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setOverflow (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
 	public fun setPadding (Lcom/facebook/react/views/textinput/ReactEditText;IIII)V
-	public fun setPlaceholder (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setPlaceholderTextColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setReturnKeyLabel (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setReturnKeyType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setSecureTextEntry (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setSelectTextOnFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setSelectionColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setSelectionHandleColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setSubmitBehavior (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setTextAlign (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setTextAlignVertical (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setTextContentType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setTextDecorationLine (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setUnderlineColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun showKeyboardOnFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setPlaceholder (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setPlaceholderTextColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	protected final fun setReactTextViewManagerCallback (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
+	public final fun setReturnKeyLabel (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setReturnKeyType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setSecureTextEntry (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setSelectTextOnFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setSelectionColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setSelectionHandleColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setSubmitBehavior (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setTextAlign (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setTextAlignVertical (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setTextContentType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setTextDecorationLine (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setUnderlineColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun showKeyboardOnFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
 	public synthetic fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateExtraData (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Object;)V
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
+}
+
+public final class com/facebook/react/views/textinput/ReactTextInputManager$Companion {
+	public final fun getTAG ()Ljava/lang/String;
 }
 
 public abstract interface class com/facebook/react/views/textinput/ScrollWatcher {
