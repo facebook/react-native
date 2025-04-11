@@ -4968,6 +4968,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 }
 
 public abstract interface annotation class com/facebook/react/uimanager/annotations/ReactProp : java/lang/annotation/Annotation {
+	public static final field Companion Lcom/facebook/react/uimanager/annotations/ReactProp$Companion;
 	public static final field USE_DEFAULT_TYPE Ljava/lang/String;
 	public abstract fun customType ()Ljava/lang/String;
 	public abstract fun defaultBoolean ()Z
@@ -4976,6 +4977,10 @@ public abstract interface annotation class com/facebook/react/uimanager/annotati
 	public abstract fun defaultInt ()I
 	public abstract fun defaultLong ()J
 	public abstract fun name ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/uimanager/annotations/ReactProp$Companion {
+	public static final field USE_DEFAULT_TYPE Ljava/lang/String;
 }
 
 public abstract interface annotation class com/facebook/react/uimanager/annotations/ReactPropGroup : java/lang/annotation/Annotation {
