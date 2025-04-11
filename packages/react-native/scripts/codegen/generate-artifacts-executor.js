@@ -1081,8 +1081,8 @@ function execute(projectRoot, targetPlatform, baseOutputPath, source) {
         platform,
       );
 
-      if (source === 'app') {
-        // These components are only required by apps, not by libraries
+      if (source === 'app' && platform !== 'android') {
+        // These components are only required by apps, not by libraries. They are also Apple specific.
         generateRCTThirdPartyComponents(libraries, outputPath);
         generateRCTModuleProviders(projectRoot, pkgJson, libraries, outputPath);
         generateCustomURLHandlers(libraries, outputPath);
