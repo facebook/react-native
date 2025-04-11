@@ -3238,9 +3238,9 @@ public abstract interface class com/facebook/react/modules/websocket/WebSocketMo
 	public abstract fun onMessage (Lokio/ByteString;Lcom/facebook/react/bridge/WritableMap;)V
 }
 
-public class com/facebook/react/packagerconnection/FileIoHandler : java/lang/Runnable {
+public final class com/facebook/react/packagerconnection/FileIoHandler : java/lang/Runnable {
 	public fun <init> ()V
-	public fun handlers ()Ljava/util/Map;
+	public final fun handlers ()Ljava/util/Map;
 	public fun run ()V
 }
 
