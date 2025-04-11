@@ -247,7 +247,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       ReactBaseTextShadowNode textShadowNode,
       @Nullable String text,
       boolean supportsInlineViews,
-      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
+      @Nullable NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
     Assertions.assertCondition(
         !supportsInlineViews || nativeViewHierarchyOptimizer != null,
         "nativeViewHierarchyOptimizer is required when inline views are supported");
@@ -296,6 +296,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
               Assertions.assertNotNull(inlineViews).get(placeholder.getReactTag());
 
           Assertions.assertNotNull(childNode);
+          Assertions.assertNotNull(nativeViewHierarchyOptimizer);
           nativeViewHierarchyOptimizer.handleForceViewToBeNonLayoutOnly(childNode);
 
           // The ReactTextView is responsible for laying out the inline views.
