@@ -5036,6 +5036,7 @@ public abstract class com/facebook/react/uimanager/events/Event {
 	public fun coalesce (Lcom/facebook/react/uimanager/events/Event;)Lcom/facebook/react/uimanager/events/Event;
 	public fun dispatch (Lcom/facebook/react/uimanager/events/RCTEventEmitter;)V
 	public fun dispatchModern (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
+	public final fun dispose ()V
 	protected fun experimental_isSynchronous ()Z
 	public fun getCoalescingKey ()S
 	public fun getEventAnimationDriverMatchSpec ()Lcom/facebook/react/uimanager/events/Event$EventAnimationDriverMatchSpec;
@@ -5044,11 +5045,12 @@ public abstract class com/facebook/react/uimanager/events/Event {
 	public abstract fun getEventName ()Ljava/lang/String;
 	public final fun getSurfaceId ()I
 	public final fun getTimestampMs ()J
-	public fun getUniqueID ()I
+	public final fun getUniqueID ()I
 	public final fun getViewTag ()I
-	protected fun init (I)V
-	protected fun init (II)V
-	protected fun init (IIJ)V
+	protected final fun init (I)V
+	protected final fun init (II)V
+	protected final fun init (IIJ)V
+	public final fun isInitialized ()Z
 	public fun onDispose ()V
 }
 

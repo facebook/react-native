@@ -124,7 +124,8 @@ internal object TouchesHelper {
   @JvmStatic
   public fun sendTouchEvent(eventEmitter: RCTModernEventEmitter, event: TouchEvent) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT, "TouchesHelper.sentTouchEventModern(" + event.eventName + ")")
+        Systrace.TRACE_TAG_REACT,
+        "TouchesHelper.sentTouchEventModern(" + event.getEventName() + ")")
     try {
       val type = event.getTouchEventType()
       val motionEvent = event.getMotionEvent()
@@ -176,11 +177,11 @@ internal object TouchesHelper {
         eventEmitter.receiveEvent(
             event.surfaceId,
             event.viewTag,
-            event.eventName,
+            event.getEventName(),
             event.canCoalesce(),
             0,
             eventData,
-            event.eventCategory)
+            event.getEventCategory())
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT)

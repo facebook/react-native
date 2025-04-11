@@ -515,7 +515,7 @@ public class NativeAnimatedNodesManager(
     var foundAtLeastOneDriver = false
     val matchSpec = event.eventAnimationDriverMatchSpec
     for (driver in eventDrivers) {
-      if (matchSpec.match(driver.viewTag, driver.eventName)) {
+      if (matchSpec != null && matchSpec.match(driver.viewTag, driver.eventName)) {
         foundAtLeastOneDriver = true
         stopAnimationsForNode(driver.valueNode)
         event.dispatchModern(driver)
