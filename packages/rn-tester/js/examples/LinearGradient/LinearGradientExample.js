@@ -153,7 +153,7 @@ exports.examples = [
           style={{
             experimental_backgroundImage: [
               {
-                type: 'linearGradient',
+                type: 'linear-gradient',
                 direction: 'to bottom',
                 colorStops: [
                   {color: 'purple', positions: ['0%']},
@@ -206,7 +206,7 @@ exports.examples = [
           style={{
             experimental_backgroundImage: [
               {
-                type: 'linearGradient',
+                type: 'linear-gradient',
                 direction: 'to bottom',
                 colorStops: [
                   {
