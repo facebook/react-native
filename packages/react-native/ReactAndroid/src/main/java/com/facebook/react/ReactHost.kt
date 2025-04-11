@@ -20,7 +20,7 @@ import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 
 /**
- * A ReactHost is an object that manages a single [ReactInstance]. A ReactHost can be constructed
+ * A ReactHost is an object that manages a single [com.facebook.react.runtime.ReactInstance]. A ReactHost can be constructed
  * without initializing the ReactInstance, and it will continue to exist after the instance is
  * destroyed.
  *

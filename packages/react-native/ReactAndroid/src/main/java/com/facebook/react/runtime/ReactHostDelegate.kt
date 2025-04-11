@@ -15,7 +15,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 
 /**
  * [ReactHostDelegate] is an interface that defines parameters required to initialize React Native.
- * This interface works in combination with [ReactHost]
+ * This interface works in combination with [com.facebook.react.ReactHost]
  */
 @ThreadSafe
 @UnstableReactNativeAPI

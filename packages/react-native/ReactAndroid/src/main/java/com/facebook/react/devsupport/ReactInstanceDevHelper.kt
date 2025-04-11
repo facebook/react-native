@@ -16,7 +16,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.interfaces.TaskInterface
 
 /**
- * Interface used by [DevSupportManager] for accessing some fields and methods of [ReactHost] for
+ * Interface used by [DevSupportManager] for accessing some fields and methods of [com.facebook.react.ReactHost] for
  * the purpose of displaying and handling developer menu options.
  */
 public interface ReactInstanceDevHelper {

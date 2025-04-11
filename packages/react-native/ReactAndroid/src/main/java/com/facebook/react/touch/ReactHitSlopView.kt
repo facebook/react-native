@@ -10,7 +10,7 @@ package com.facebook.react.touch
 import android.graphics.Rect
 
 /**
- * This interface should be implemented by all [View] subclasses that want to use the hitSlop prop
+ * This interface should be implemented by all [android.view.View] subclasses that want to use the hitSlop prop
  * to extend their touch areas.
  */
 public interface ReactHitSlopView {

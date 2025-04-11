@@ -117,7 +117,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
 
   /**
    * Get the [ReactHost] used by this app. By default, assumes [.getApplication] is an instance of
-   * [ReactApplication] and calls [ReactApplication.getReactHost]. This method assumes it is called
+   * [ReactApplication] and calls [ReactApplication.reactHost]. This method assumes it is called
    * in new architecture and returns null if not.
    */
   protected val reactHost: ReactHost?
