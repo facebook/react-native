@@ -9,21 +9,21 @@
  * @oncall react_native
  */
 
-import type {ViewProps} from '../../../Libraries/Components/View/ViewPropTypes';
+import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
 
-import View from '../../../Libraries/Components/View/View';
-import UIManager from '../../../Libraries/ReactNative/UIManager';
-import Platform from '../../../Libraries/Utilities/Platform';
+import View from '../../../../Libraries/Components/View/View';
+import UIManager from '../../../../Libraries/ReactNative/UIManager';
+import Platform from '../../../../Libraries/Utilities/Platform';
 import * as React from 'react';
 
 const exported: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...ViewProps
 ) = Platform.select({
-  ios: require('../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent')
+  ios: require('../../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent')
     .default,
   android: UIManager.hasViewManagerConfig('RCTSafeAreaView')
-    ? require('../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent')
+    ? require('../../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent')
         .default
     : View,
   default: View,
