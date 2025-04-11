@@ -2704,14 +2704,6 @@ public abstract interface class com/facebook/react/modules/common/ModuleDataClea
 	public abstract fun clearSensitiveData ()V
 }
 
-public class com/facebook/react/modules/core/ChoreographerCompat {
-	public fun <init> ()V
-}
-
-public abstract class com/facebook/react/modules/core/ChoreographerCompat$FrameCallback : android/view/Choreographer$FrameCallback {
-	public fun <init> ()V
-}
-
 public abstract interface class com/facebook/react/modules/core/DefaultHardwareBackBtnHandler {
 	public abstract fun invokeDefaultOnBackPressed ()V
 }
