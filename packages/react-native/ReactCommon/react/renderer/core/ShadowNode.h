@@ -109,13 +109,13 @@ class ShadowNode : public Sealable,
 
   /*
    * Clones the nodes (and the subtree containing all the nodes) by
-   * replacing the `oldShadowNode` for every `shadowNodeFamily` from `families`
+   * replacing the `oldShadowNode` for every `shadowNodeFamily` from `familiesToUpdate`
    * with a node that `callback` returns.
    *
    * Returns `nullptr` if the operation cannot be performed successfully.
    */
   Unshared cloneMultiple(
-      const std::unordered_set<const ShadowNodeFamily*>& families,
+      const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
       const std::function<Unshared(
           const ShadowNode& oldShadowNode,
           const std::optional<ShadowNode::ListOfShared>& newChildren)>&
@@ -268,7 +268,7 @@ class ShadowNode : public Sealable,
 
   Unshared cloneMultipleRecursive(
       const ShadowNode& shadowNode,
-      const std::unordered_set<const ShadowNodeFamily*>& families,
+      const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
       const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
       const std::function<Unshared(
           const ShadowNode& oldShadowNode,

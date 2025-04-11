@@ -370,7 +370,7 @@ ShadowNode::Unshared ShadowNode::cloneTree(
 
 ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
     const ShadowNode& shadowNode,
-    const std::unordered_set<const ShadowNodeFamily*>& families,
+    const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
     const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
     const std::function<Unshared(
         const ShadowNode& oldShadowNode,
@@ -388,7 +388,7 @@ ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
       count--;
       shouldUpdateChildren = true;
       children[i] = cloneMultipleRecursive(
-          *children[i], families, childrenCount, callback);
+          *children[i], familiesToUpdate, childrenCount, callback);
     }
   }
 
@@ -396,7 +396,7 @@ ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
     newChildren = std::move(children);
   }
 
-  if (families.contains(family)) {
+  if (familiesToUpdate.contains(family)) {
     return callback(shadowNode, newChildren);
   }
 
@@ -408,14 +408,14 @@ ShadowNode::Unshared ShadowNode::cloneMultipleRecursive(
 }
 
 ShadowNode::Unshared ShadowNode::cloneMultiple(
-    const std::unordered_set<const ShadowNodeFamily*>& families,
+    const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
     const std::function<Unshared(
         const ShadowNode& oldShadowNode,
         const std::optional<ShadowNode::ListOfShared>& newChildren)>& callback)
     const {
   std::unordered_map<const ShadowNodeFamily*, int> childrenCount;
 
-  for (const auto& family : families) {
+  for (const auto& family : familiesToUpdate) {
     if (childrenCount.contains(family)) {
       continue;
     }
@@ -439,7 +439,7 @@ ShadowNode::Unshared ShadowNode::cloneMultiple(
     return ShadowNode::Unshared{nullptr};
   }
 
-  return cloneMultipleRecursive(*this, families, childrenCount, callback);
+  return cloneMultipleRecursive(*this, familiesToUpdate, childrenCount, callback);
 }
 
 #pragma mark - DebugStringConvertible
