@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4da4c4feadaf11301733bbaa0c7fd3ee>>
+ * @generated SignedSource<<698f8a486eeea1daca9e0f74dcdc2140>>
  * @flow strict
  */
 
@@ -30,7 +30,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
-  avoidAnimatedRefInvalidation: Getter<boolean>,
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
@@ -105,11 +104,6 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
  */
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
-
-/**
- * Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.
- */
-export const avoidAnimatedRefInvalidation: Getter<boolean> = createJavaScriptFlagGetter('avoidAnimatedRefInvalidation', false);
 
 /**
  * Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.
