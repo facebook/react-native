@@ -95,7 +95,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
     ViewManagerDelegate<T> delegate = getOrCreateViewManagerDelegate();
-    Iterator<Map.Entry<String, Object>> iterator = props.mBackingMap.getEntryIterator();
+    Iterator<Map.Entry<String, Object>> iterator = props.backingMap.getEntryIterator();
     while (iterator.hasNext()) {
       Map.Entry<String, Object> entry = iterator.next();
       delegate.setProperty(viewToUpdate, entry.getKey(), entry.getValue());

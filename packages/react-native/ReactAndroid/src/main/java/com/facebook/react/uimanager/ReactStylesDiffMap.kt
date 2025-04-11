@@ -33,37 +33,37 @@ import com.facebook.react.bridge.ReadableMap
 public class ReactStylesDiffMap(props: ReadableMap) {
 
   @JvmField
-  public val mBackingMap: ReadableMap = props
+  internal val backingMap: ReadableMap = props
 
-  public fun toMap(): Map<String, Any?> = mBackingMap.toHashMap()
+  public fun toMap(): Map<String, Any?> = backingMap.toHashMap()
 
-  public fun hasKey(name: String): Boolean = mBackingMap.hasKey(name)
+  public fun hasKey(name: String): Boolean = backingMap.hasKey(name)
 
-  public fun isNull(name: String): Boolean = mBackingMap.isNull(name)
+  public fun isNull(name: String): Boolean = backingMap.isNull(name)
 
   public fun getBoolean(name: String, default: Boolean): Boolean {
-    return if (mBackingMap.isNull(name)) default else mBackingMap.getBoolean(name)
+    return if (backingMap.isNull(name)) default else backingMap.getBoolean(name)
   }
 
   public fun getDouble(name: String, default: Double): Double {
-    return if (mBackingMap.isNull(name)) default else mBackingMap.getDouble(name)
+    return if (backingMap.isNull(name)) default else backingMap.getDouble(name)
   }
 
   public fun getFloat(name: String, default: Float): Float {
-    return if (mBackingMap.isNull(name)) default else mBackingMap.getDouble(name).toFloat()
+    return if (backingMap.isNull(name)) default else backingMap.getDouble(name).toFloat()
   }
 
   public fun getInt(name: String, default: Int): Int {
-    return if (mBackingMap.isNull(name)) default else mBackingMap.getInt(name)
+    return if (backingMap.isNull(name)) default else backingMap.getInt(name)
   }
 
-  public fun getString(name: String): String? = mBackingMap.getString(name)
+  public fun getString(name: String): String? = backingMap.getString(name)
 
-  public fun getArray(name: String): ReadableArray? = mBackingMap.getArray(name)
+  public fun getArray(name: String): ReadableArray? = backingMap.getArray(name)
 
-  public fun getMap(name: String): ReadableMap? = mBackingMap.getMap(name)
+  public fun getMap(name: String): ReadableMap? = backingMap.getMap(name)
 
-  public fun getDynamic(name: String): Dynamic? = mBackingMap.getDynamic(name)
+  public fun getDynamic(name: String): Dynamic? = backingMap.getDynamic(name)
 
-  override fun toString(): String = "{ ${javaClass.simpleName}: $mBackingMap }"
+  override fun toString(): String = "{ ${javaClass.simpleName}: $backingMap }"
 }
