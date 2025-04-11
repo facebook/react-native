@@ -1773,6 +1773,64 @@ TEST_P(JSITest, ObjectCreateWithPrototype) {
   EXPECT_TRUE(child.getPrototype(rd).isNull());
 }
 
+TEST_P(JSITest, SetRuntimeData) {
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void setRuntimeData(const UUID& uuid, const std::shared_ptr<void>& data)
+        override {
+      Runtime::setRuntimeData(uuid, data);
+    }
+
+    std::shared_ptr<void> getRuntimeData(const UUID& uuid) override {
+      return Runtime::getRuntimeData(uuid);
+    }
+  };
+
+  RD rd1 = RD(rt);
+  UUID uuid1{0xe67ab3d6, 0x09a0, 0x11f0, 0xa641, 0x325096b39f47};
+  auto str = std::make_shared<std::string>("hello world");
+  rd1.setRuntimeData(uuid1, str);
+
+  UUID uuid2{0xa12f99fc, 0x09a2, 0x11f0, 0x84de, 0x325096b39f47};
+  auto obj = std::make_shared<Object>(rd1);
+  rd1.setRuntimeData(uuid2, obj);
+
+  auto storedStr =
+      std::static_pointer_cast<std::string>(rd1.getRuntimeData(uuid1));
+  auto storedObj = std::static_pointer_cast<Object>(rd1.getRuntimeData(uuid2));
+  EXPECT_EQ(storedStr, str);
+  EXPECT_EQ(storedObj, obj);
+
+  auto rt2 = factory();
+  RD* rd2 = new RD(*rt2);
+  UUID uuid3{0x16f55892, 0x1034, 0x11f0, 0x8f65, 0x325096b39f47};
+  auto obj2 = std::make_shared<Object>(*rd2);
+  rd2->setRuntimeData(uuid3, obj2);
+
+  auto storedObj2 =
+      std::static_pointer_cast<Object>(rd2->getRuntimeData(uuid3));
+  EXPECT_EQ(storedObj2, obj2);
+
+  // UUID1 is for some data in runtime rd1, not rd2
+  EXPECT_FALSE(rd2->getRuntimeData(uuid1));
+
+  // Verify that when runtime is deleted, its runtime data map gets removed from
+  // the global map. So nothing should be holding on to the stored data.
+  auto weakObj2 = std::weak_ptr<Object>(obj2);
+  obj2.reset();
+  storedObj2.reset();
+  delete rd2;
+  rt2.reset();
+  EXPECT_EQ(weakObj2.use_count(), 0);
+
+  // Only the second runtime was destroyed, so custom data from the first
+  // runtime should remain unaffected.
+  storedStr = std::static_pointer_cast<std::string>(rd1.getRuntimeData(uuid1));
+  EXPECT_EQ(storedStr, str);
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

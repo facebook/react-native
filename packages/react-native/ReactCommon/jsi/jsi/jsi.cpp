@@ -8,6 +8,8 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <map>
+#include <mutex>
 #include <stdexcept>
 
 #include <jsi/instrumentation.h>
@@ -17,6 +19,37 @@ namespace facebook {
 namespace jsi {
 
 namespace {
+
+/// A global map used to store custom runtime data for VMs that do not provide
+/// their own default implementation of setRuntimeData and getRuntimeData.
+struct RuntimeDataGlobal {
+  /// Mutex protecting the Runtime data map
+  std::mutex mutex_{};
+  /// Maps a runtime pointer to a map of its custom data. At destruction of the
+  /// runtime, its entry will be removed from the global map.
+  std::map<Runtime*, std::map<UUID, std::shared_ptr<void>>> dataMap_;
+};
+
+RuntimeDataGlobal& getRuntimeDataGlobal() {
+  static RuntimeDataGlobal runtimeData{};
+  return runtimeData;
+}
+
+/// A host object that, when destructed, will remove the runtime's custom data
+/// entry from the global map of custom datas.
+class RemoveRuntimeDataHostObject : public jsi::HostObject {
+ public:
+  explicit RemoveRuntimeDataHostObject(Runtime* runtime) : runtime_(runtime) {}
+
+  ~RemoveRuntimeDataHostObject() override {
+    auto& runtimeDataGlobal = getRuntimeDataGlobal();
+    std::lock_guard<std::mutex> lock(runtimeDataGlobal.mutex_);
+    runtimeDataGlobal.dataMap_.erase(runtime_);
+  }
+
+ private:
+  Runtime* runtime_;
+};
 
 // This is used for generating short exception strings.
 std::string kindToString(const Value& v, Runtime* rt = nullptr) {
@@ -351,6 +384,42 @@ Object Runtime::createObjectWithPrototype(const Value& prototype) {
                       .getPropertyAsObject(*this, "Object")
                       .getPropertyAsFunction(*this, "create");
   return createFn.call(*this, prototype).asObject(*this);
+}
+
+void Runtime::setRuntimeData(
+    const UUID& uuid,
+    const std::shared_ptr<void>& data) {
+  auto& runtimeDataGlobal = getRuntimeDataGlobal();
+  std::lock_guard<std::mutex> lock(runtimeDataGlobal.mutex_);
+  if (auto it = runtimeDataGlobal.dataMap_.find(this);
+      it != runtimeDataGlobal.dataMap_.end()) {
+    auto& map = it->second;
+    map.emplace(uuid, data);
+    return;
+  }
+  // The first time runtime data is added to the map, install a host object on
+  // the global object of the runtime. This host object is used to release the
+  // runtime's entry from the global custom data map when the runtime is
+  // destroyed.
+  Object ho = Object::createFromHostObject(
+      *this, std::make_shared<RemoveRuntimeDataHostObject>(this));
+  global().setProperty(*this, "_jsiRuntimeDataCleanUp", ho);
+  std::map<UUID, std::shared_ptr<void>> map;
+  map.emplace(uuid, data);
+  runtimeDataGlobal.dataMap_.emplace(this, std::move(map));
+}
+
+std::shared_ptr<void> Runtime::getRuntimeData(const UUID& uuid) {
+  auto& runtimeDataGlobal = getRuntimeDataGlobal();
+  std::lock_guard<std::mutex> lock(runtimeDataGlobal.mutex_);
+  if (auto runtimeMapIt = runtimeDataGlobal.dataMap_.find(this);
+      runtimeMapIt != runtimeDataGlobal.dataMap_.end()) {
+    if (auto customDataIt = runtimeMapIt->second.find(uuid);
+        customDataIt != runtimeMapIt->second.end()) {
+      return customDataIt->second;
+    }
+  }
+  return nullptr;
 }
 
 Pointer& Pointer::operator=(Pointer&& other) noexcept {

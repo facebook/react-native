@@ -393,6 +393,15 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain_.callAsConstructor(f, args, count);
   };
 
+  void setRuntimeData(const UUID& uuid, const std::shared_ptr<void>& data)
+      override {
+    return plain_.setRuntimeData(uuid, data);
+  }
+
+  std::shared_ptr<void> getRuntimeData(const UUID& uuid) override {
+    return plain_.getRuntimeData(uuid);
+  }
+
   // Private data for managing scopes.
   Runtime::ScopeState* pushScope() override {
     return plain_.pushScope();
@@ -956,6 +965,17 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     RD::setExternalMemoryPressure(obj, amount);
   };
+
+  void setRuntimeData(const UUID& uuid, const std::shared_ptr<void>& data)
+      override {
+    Around around{with_};
+    RD::setRuntimeData(uuid, data);
+  }
+
+  std::shared_ptr<void> getRuntimeData(const UUID& uuid) override {
+    Around around{with_};
+    return RD::getRuntimeData(uuid);
+  }
 
  private:
   // Wrap an RAII type around With& to guarantee after always happens.
