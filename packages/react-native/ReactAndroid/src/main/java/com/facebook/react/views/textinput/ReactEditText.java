@@ -30,6 +30,7 @@ import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.util.TypedValue;
 import android.view.ActionMode;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -80,6 +81,7 @@ import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -116,6 +118,7 @@ public class ReactEditText extends AppCompatEditText {
   protected boolean mContainsImages;
   private @Nullable String mSubmitBehavior = null;
   private boolean mDisableFullscreen;
+  private @Nullable List<String> mDragAndDropFilter = null;
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
@@ -526,6 +529,14 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setSubmitBehavior(@Nullable String submitBehavior) {
     mSubmitBehavior = submitBehavior;
+  }
+
+  public void setDragAndDropFilter(List<String> filter) {
+    mDragAndDropFilter = filter;
+  }
+
+  public void removeDragAndDropFilter() {
+    mDragAndDropFilter = null;
   }
 
   public void setDisableFullscreenUI(boolean disableFullscreenUI) {
@@ -1333,6 +1344,22 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     super.onDraw(canvas);
+  }
+
+  @Override
+  public boolean onDragEvent(DragEvent event) {
+    if (mDragAndDropFilter == null) {
+      return super.onDragEvent(event);
+    }
+    if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+      boolean shouldHandle =
+          mDragAndDropFilter.stream()
+              .anyMatch(filter -> event.getClipDescription().hasMimeType(filter));
+      if (!shouldHandle) {
+        return false;
+      }
+    }
+    return super.onDragEvent(event);
   }
 
   /**
