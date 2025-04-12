@@ -703,6 +703,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)_restoreTextSelection
 {
+  [self _restoreTextSelectionAndIgnoreCaretChange:NO];
+}
+
+- (void)_restoreTextSelectionAndIgnoreCaretChange:(BOOL)ignore
+{
   const auto &selection = static_cast<const TextInputProps &>(*_props).selection;
   if (!selection.has_value()) {
     return;
@@ -711,6 +716,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
                                                    offset:selection->start];
   auto end = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument offset:selection->end];
   auto range = [_backedTextInputView textRangeFromPosition:start toPosition:end];
+  if (ignore && range.empty) {
+    return;
+  }
   [_backedTextInputView setSelectedTextRange:range notifyDelegate:YES];
 }
 
@@ -736,7 +744,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
                               notifyDelegate:YES];
   [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
 
-  [self _restoreTextSelection];
+  // A zero-length selection range can cause the caret position to change on iOS,
+  // and we have already updated the caret position, so we can safely ignore caret changing in this place.
+  [self _restoreTextSelectionAndIgnoreCaretChange:YES];
   [self _updateTypingAttributes];
   _lastStringStateWasUpdatedWith = attributedString;
 }
