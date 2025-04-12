@@ -406,6 +406,19 @@ export type TextInputIOSProps = $ReadOnly<{
 
 export type TextInputAndroidProps = $ReadOnly<{
   /**
+   * When provided, the text input will only accept drag and drop events for the specified
+   * mime types. If null or not provided, the text input will accept all types of drag and drop
+   * events.
+   * Defaults to null.
+   *
+   * *NOTE*: This prop is experimental and its API may change in the future. Use at your own risk.
+   *
+   * @platform android
+   * @see https://developer.android.com/reference/android/content/ClipData for more information on MIME types
+   */
+  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
+
+  /**
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
    * from the color of the text selection box.
