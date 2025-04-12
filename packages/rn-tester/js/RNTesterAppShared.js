@@ -36,6 +36,7 @@ import {
   StyleSheet,
   View,
   useColorScheme,
+  useWindowDimensions,
 } from 'react-native';
 import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
@@ -75,7 +76,11 @@ const RNTesterApp = ({
     activeModuleExampleKey,
     screen,
     recentlyUsed,
+    hadDeepLink,
   } = state;
+
+  const {height, scale} = useWindowDimensions();
+  const isScreenTiny = height / scale < 400;
 
   const examplesList = React.useMemo(
     () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
@@ -265,16 +270,21 @@ const RNTesterApp = ({
   const activeExampleList =
     screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
 
+  // Hide chrome if we don't have much screen space and are showing UI for tests
+  const shouldHideChrome = isScreenTiny && hadDeepLink;
+
   return (
     <RNTesterThemeContext.Provider value={theme}>
-      <RNTTitleBar
-        title={title}
-        theme={theme}
-        documentationURL={activeModule?.documentationURL}>
-        {activeModule && BackButtonComponent ? (
-          <BackButtonComponent onBack={handleBackPress} />
-        ) : undefined}
-      </RNTTitleBar>
+      {!shouldHideChrome && (
+        <RNTTitleBar
+          title={title}
+          theme={theme}
+          documentationURL={activeModule?.documentationURL}>
+          {activeModule && BackButtonComponent ? (
+            <BackButtonComponent onBack={handleBackPress} />
+          ) : undefined}
+        </RNTTitleBar>
+      )}
       <View
         style={StyleSheet.compose(styles.container, {
           backgroundColor: theme.GroupedBackgroundColor,
@@ -292,13 +302,15 @@ const RNTesterApp = ({
           />
         )}
       </View>
-      <View style={styles.bottomNavbar}>
-        <RNTesterNavBar
-          screen={screen || Screens.COMPONENTS}
-          isExamplePageOpen={!!activeModule}
-          handleNavBarPress={handleNavBarPress}
-        />
-      </View>
+      {!shouldHideChrome && (
+        <View style={styles.bottomNavbar}>
+          <RNTesterNavBar
+            screen={screen || Screens.COMPONENTS}
+            isExamplePageOpen={!!activeModule}
+            handleNavBarPress={handleNavBarPress}
+          />
+        </View>
+      )}
       <ReportFullyDrawnView />
     </RNTesterThemeContext.Provider>
   );
