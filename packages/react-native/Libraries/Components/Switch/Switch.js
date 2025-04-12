@@ -213,7 +213,7 @@ const Switch: component(
         SwitchCommands.setValue(nativeSwitchRef.current, jsValue);
       }
     }
-  }, [value, native]);
+  }, [value, native.value]);
 
   if (Platform.OS === 'android') {
     const {onTintColor, tintColor, ...androidProps} = restProps;
