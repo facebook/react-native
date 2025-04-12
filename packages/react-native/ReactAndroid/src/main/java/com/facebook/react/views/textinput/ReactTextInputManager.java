@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.textinput;
 
-import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
-
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;
@@ -17,13 +15,11 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,14 +29,11 @@ import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
@@ -50,7 +43,6 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.StateWrapper;
@@ -65,7 +57,6 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
-import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactBaseTextShadowNode;
@@ -453,7 +444,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
   public void setOnSelectionChange(final ReactEditText view, boolean onSelectionChange) {
     if (onSelectionChange) {
-      view.setSelectionWatcher(new ReactSelectionWatcher(view));
+      view.setSelectionWatcher(new ReactTextSelectionWatcher(view));
     } else {
       view.setSelectionWatcher(null);
     }
@@ -467,7 +458,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "onContentSizeChange", defaultBoolean = false)
   public void setOnContentSizeChange(final ReactEditText view, boolean onContentSizeChange) {
     if (onContentSizeChange) {
-      view.setContentSizeWatcher(new ReactContentSizeWatcher(view));
+      view.setContentSizeWatcher(new ReactTextContentSizeWatcher(view));
     } else {
       view.setContentSizeWatcher(null);
     }
@@ -476,7 +467,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "onScroll", defaultBoolean = false)
   public void setOnScroll(final ReactEditText view, boolean onScroll) {
     if (onScroll) {
-      view.setScrollWatcher(new ReactScrollWatcher(view));
+      view.setScrollWatcher(new ReactTextScrollWatcher(view));
     } else {
       view.setScrollWatcher(null);
     }
@@ -1051,71 +1042,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setStagedInputType((view.getStagedInputType() & ~flagsToUnset) | flagsToSet);
   }
 
+  @Nullable
   private static EventDispatcher getEventDispatcher(
       ReactContext reactContext, ReactEditText editText) {
     return UIManagerHelper.getEventDispatcherForReactTag(reactContext, editText.getId());
-  }
-
-  private final class ReactTextInputTextWatcher implements TextWatcher {
-    private final ReactEditText mEditText;
-    private final EventDispatcher mEventDispatcher;
-    private final int mSurfaceId;
-    @Nullable private String mPreviousText;
-
-    public ReactTextInputTextWatcher(
-        final ReactContext reactContext, final ReactEditText editText) {
-      mEventDispatcher = getEventDispatcher(reactContext, editText);
-      mEditText = editText;
-      mPreviousText = null;
-      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-      // Incoming charSequence gets mutated before onTextChanged() is invoked
-      mPreviousText = s.toString();
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-      if (mEditText.mDisableTextDiffing) {
-        return;
-      }
-
-      // Rearranging the text (i.e. changing between singleline and multiline attributes) can
-      // also trigger onTextChanged, call the event in JS only when the text actually changed
-      if (count == 0 && before == 0) {
-        return;
-      }
-
-      Assertions.assertNotNull(mPreviousText);
-      String newText = s.toString().substring(start, start + count);
-      String oldText = mPreviousText.substring(start, start + before);
-      // Don't send same text changes
-      if (count == before && newText.equals(oldText)) {
-        return;
-      }
-
-      StateWrapper stateWrapper = mEditText.getStateWrapper();
-
-      if (stateWrapper != null) {
-        WritableMap newStateData = new WritableNativeMap();
-        newStateData.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-        newStateData.putInt("opaqueCacheId", mEditText.getId());
-        stateWrapper.updateState(newStateData);
-      }
-
-      // The event that contains the event counter and updates it must be sent first.
-      mEventDispatcher.dispatchEvent(
-          new ReactTextChangedEvent(
-              mSurfaceId,
-              mEditText.getId(),
-              s.toString(),
-              mEditText.incrementAndGetEventCounter()));
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {}
   }
 
   @Override
@@ -1186,130 +1116,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
           return true;
         });
-  }
-
-  private static class ReactContentSizeWatcher implements ContentSizeWatcher {
-    private final ReactEditText mEditText;
-    private final EventDispatcher mEventDispatcher;
-    private final int mSurfaceId;
-    private int mPreviousContentWidth = 0;
-    private int mPreviousContentHeight = 0;
-
-    public ReactContentSizeWatcher(ReactEditText editText) {
-      mEditText = editText;
-      ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = getEventDispatcher(reactContext, editText);
-      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
-    }
-
-    @Override
-    public void onLayout() {
-      if (mEventDispatcher == null) {
-        return;
-      }
-
-      int contentWidth = mEditText.getWidth();
-      int contentHeight = mEditText.getHeight();
-
-      // Use instead size of text content within EditText when available
-      if (mEditText.getLayout() != null) {
-        contentWidth =
-            mEditText.getCompoundPaddingLeft()
-                + mEditText.getLayout().getWidth()
-                + mEditText.getCompoundPaddingRight();
-        contentHeight =
-            mEditText.getCompoundPaddingTop()
-                + mEditText.getLayout().getHeight()
-                + mEditText.getCompoundPaddingBottom();
-      }
-
-      if (contentWidth != mPreviousContentWidth || contentHeight != mPreviousContentHeight) {
-        mPreviousContentHeight = contentHeight;
-        mPreviousContentWidth = contentWidth;
-
-        mEventDispatcher.dispatchEvent(
-            new ReactContentSizeChangedEvent(
-                mSurfaceId,
-                mEditText.getId(),
-                PixelUtil.toDIPFromPixel(contentWidth),
-                PixelUtil.toDIPFromPixel(contentHeight)));
-      }
-    }
-  }
-
-  private static class ReactSelectionWatcher implements SelectionWatcher {
-    private final ReactEditText mReactEditText;
-    private final EventDispatcher mEventDispatcher;
-    private final int mSurfaceId;
-    private int mPreviousSelectionStart;
-    private int mPreviousSelectionEnd;
-
-    public ReactSelectionWatcher(ReactEditText editText) {
-      mReactEditText = editText;
-      ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = getEventDispatcher(reactContext, editText);
-      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
-    }
-
-    @Override
-    public void onSelectionChanged(int start, int end) {
-      // Android will call us back for both the SELECTION_START span and SELECTION_END span in text
-      // To prevent double calling back into js we cache the result of the previous call and only
-      // forward it on if we have new values
-
-      // Apparently Android might call this with an end value that is less than the start value
-      // Lets normalize them. See https://github.com/facebook/react-native/issues/18579
-      int realStart = Math.min(start, end);
-      int realEnd = Math.max(start, end);
-
-      if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
-        mEventDispatcher.dispatchEvent(
-            new ReactTextInputSelectionEvent(
-                mSurfaceId, mReactEditText.getId(), realStart, realEnd));
-
-        mPreviousSelectionStart = realStart;
-        mPreviousSelectionEnd = realEnd;
-      }
-    }
-  }
-
-  private static class ReactScrollWatcher implements ScrollWatcher {
-    private final ReactEditText mReactEditText;
-    private final EventDispatcher mEventDispatcher;
-    private final int mSurfaceId;
-    private int mPreviousHorizontal;
-    private int mPreviousVert;
-
-    public ReactScrollWatcher(ReactEditText editText) {
-      mReactEditText = editText;
-      ReactContext reactContext = getReactContext(editText);
-      mEventDispatcher = getEventDispatcher(reactContext, editText);
-      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
-    }
-
-    @Override
-    public void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
-      if (mPreviousHorizontal != horiz || mPreviousVert != vert) {
-        ScrollEvent event =
-            ScrollEvent.obtain(
-                mSurfaceId,
-                mReactEditText.getId(),
-                ScrollEventType.SCROLL,
-                horiz,
-                vert,
-                0f, // can't get x velocity
-                0f, // can't get y velocity
-                0, // can't get content width
-                0, // can't get content height
-                mReactEditText.getWidth(),
-                mReactEditText.getHeight());
-
-        mEventDispatcher.dispatchEvent(event);
-
-        mPreviousHorizontal = horiz;
-        mPreviousVert = vert;
-      }
-    }
   }
 
   @Override
