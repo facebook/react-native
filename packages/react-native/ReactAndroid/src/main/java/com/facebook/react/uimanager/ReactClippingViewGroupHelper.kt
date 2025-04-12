@@ -1,0 +1,71 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+ package com.facebook.react.uimanager
+
+ import android.graphics.Rect
+ import android.view.View
+ import com.facebook.infer.annotation.Nullsafe
+ import javax.annotation.concurrent.NotThreadSafe
+ 
+ /**
+  * Provides implementation of common tasks for view and it's view manager supporting property
+  * [removeClippedSubviews].
+  */
+ @Nullsafe(Nullsafe.Mode.LOCAL)
+ @NotThreadSafe
+ public object ReactClippingViewGroupHelper {
+ 
+     public const val PROP_REMOVE_CLIPPED_SUBVIEWS: String = "removeClippedSubviews"
+ 
+     private val sHelperRect: Rect = Rect()
+ 
+     /**
+      * Can be used by view that support [removeClippedSubviews] property to calculate area that
+      * given [view] should be clipped to based on the clipping rectangle of it's parent in case when
+      * parent is also set to clip it's children.
+      *
+      * @param view view that we want to calculate clipping rect for
+      * @param outputRect where the calculated rectangle will be written
+      */
+     @JvmStatic
+     public fun calculateClippingRect(view: View, outputRect: Rect): Unit {
+         val parent = view.parent
+         when {
+             parent == null -> {
+                 outputRect.setEmpty()
+                 return
+             }
+             parent is ReactClippingViewGroup -> {
+                 if (parent.removeClippedSubviews) {
+                     parent.getClippingRect(sHelperRect)
+                     // Intersect the view with the parent's rectangle
+                     // This will result in the overlap with coordinates in the parent space
+                     if (
+                         !sHelperRect.intersect(
+                             view.left,
+                             view.top + view.translationY.toInt(),
+                             view.right,
+                             view.bottom + view.translationY.toInt()
+                         )
+                     ) {
+                         outputRect.setEmpty()
+                         return
+                     }
+                     // Now we move the coordinates to the View's coordinate space
+                     sHelperRect.offset(-view.left, -view.top)
+                     sHelperRect.offset(-view.translationX.toInt(), -view.translationY.toInt())
+                     sHelperRect.offset(view.scrollX, view.scrollY)
+                     outputRect.set(sHelperRect)
+                     return
+                 }
+             }
+         }
+         view.getDrawingRect(outputRect)
+     }
+ }
+ 
