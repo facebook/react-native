@@ -4063,11 +4063,6 @@ public abstract interface class com/facebook/react/uimanager/ReactRoot {
 	public abstract fun setShouldLogContentAppeared (Z)V
 }
 
-public final class com/facebook/react/uimanager/ReactRootViewTagGenerator {
-	public static final field INSTANCE Lcom/facebook/react/uimanager/ReactRootViewTagGenerator;
-	public static final fun getNextRootViewTag ()I
-}
-
 public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
 	public abstract fun addChildAt (Lcom/facebook/react/uimanager/ReactShadowNode;I)V
 	public abstract fun addNativeChildAt (Lcom/facebook/react/uimanager/ReactShadowNode;I)V
