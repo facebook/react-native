@@ -8,23 +8,21 @@
 package com.facebook.react.runtime
 
 import android.app.Activity
-import androidx.annotation.Nullable
-import com.facebook.infer.annotation.Nullsafe
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.infer.annotation.ThreadConfined.UI
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.LifecycleState
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
 internal class ReactLifecycleStateManager(
         private val bridgelessReactStateTracker: BridgelessReactStateTracker
 ) {
   private var state: LifecycleState = LifecycleState.BEFORE_CREATE
 
-  fun getLifecycleState(): LifecycleState = state
+  val lifecycleState: LifecycleState
+    get() = state
 
   @ThreadConfined(UI)
-  fun resumeReactContextIfHostResumed(currentContext: ReactContext, @Nullable activity: Activity?) {
+  fun resumeReactContextIfHostResumed(currentContext: ReactContext, activity: Activity?) {
     if (state == LifecycleState.RESUMED) {
       bridgelessReactStateTracker.enterState("ReactContext.onHostResume()")
       currentContext.onHostResume(activity)
@@ -32,7 +30,7 @@ internal class ReactLifecycleStateManager(
   }
 
   @ThreadConfined(UI)
-  fun moveToOnHostResume(@Nullable currentContext: ReactContext?, @Nullable activity: Activity?) {
+  fun moveToOnHostResume(currentContext: ReactContext?, activity: Activity?) {
     if (state == LifecycleState.RESUMED) return
 
     currentContext?.let {
@@ -43,7 +41,7 @@ internal class ReactLifecycleStateManager(
   }
 
   @ThreadConfined(UI)
-  fun moveToOnHostPause(@Nullable currentContext: ReactContext?, @Nullable activity: Activity?) {
+  fun moveToOnHostPause(currentContext: ReactContext?, activity: Activity?) {
     currentContext?.let {
       when (state) {
         LifecycleState.BEFORE_CREATE -> {
@@ -67,7 +65,7 @@ internal class ReactLifecycleStateManager(
   }
 
   @ThreadConfined(UI)
-  fun moveToOnHostDestroy(@Nullable currentContext: ReactContext?) {
+  fun moveToOnHostDestroy(currentContext: ReactContext?) {
     currentContext?.let {
       when (state) {
         LifecycleState.BEFORE_RESUME -> {
