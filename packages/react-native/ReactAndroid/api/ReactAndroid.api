@@ -5585,17 +5585,6 @@ public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager : co
 public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager$Companion {
 }
 
-public final class com/facebook/react/views/drawer/events/DrawerClosedEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerClosedEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (I)V
-	public fun <init> (II)V
-	public fun getEventName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/drawer/events/DrawerClosedEvent$Companion {
-}
-
 public final class com/facebook/react/views/drawer/events/DrawerOpenedEvent : com/facebook/react/uimanager/events/Event {
 	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerOpenedEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
