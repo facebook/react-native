@@ -7,7 +7,6 @@
 
 package com.facebook.react.modules.accessibilityinfo
 
-import android.annotation.TargetApi
 import android.content.ContentResolver
 import android.content.Context
 import android.database.ContentObserver
