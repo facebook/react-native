@@ -30,7 +30,6 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeAccessibilityInfoSpec.NAME)
 internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     NativeAccessibilityInfoSpec(context), LifecycleEventListener {
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactTouchExplorationStateChangeListener :
       AccessibilityManager.TouchExplorationStateChangeListener {
     override fun onTouchExplorationStateChanged(enabled: Boolean) {
@@ -41,7 +40,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   // Android can listen for accessibility service enable with `accessibilityStateChange`, but
   // `accessibilityState` conflicts with React Native props and confuses developers. Therefore, the
   // name `accessibilityServiceChange` is used here instead.
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactAccessibilityServiceChangeListener :
       AccessibilityManager.AccessibilityStateChangeListener {
     override fun onAccessibilityStateChanged(enabled: Boolean) {
@@ -101,7 +99,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     grayscaleModeEnabled = isGrayscaleEnabledValue
   }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isReduceMotionEnabledValue: Boolean
     get() {
       // Disabling animations in developer settings will set the animation scale to "0.0"
@@ -114,7 +111,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       return parsedValue == 0f
     }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isInvertColorsEnabledValue: Boolean
     get() {
       try {
@@ -125,7 +121,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       }
     }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isGrayscaleEnabledValue: Boolean
     get() {
       try {
@@ -140,7 +135,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       }
     }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isHighTextContrastEnabledValue: Boolean
     get() {
       return Settings.Secure.getInt(
@@ -243,7 +237,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onHostResume() {
     accessibilityManager?.addTouchExplorationStateChangeListener(
         touchExplorationStateChangeListener)
@@ -262,7 +255,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     updateAndSendGrayscaleModeChangeEvent()
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onHostPause() {
     accessibilityManager?.removeTouchExplorationStateChangeListener(
         touchExplorationStateChangeListener)
