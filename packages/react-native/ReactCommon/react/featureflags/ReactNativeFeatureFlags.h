@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb996be6cd68e1b349d3859a29250f28>>
+ * @generated SignedSource<<8a8bab1d7c0c64368b6c7684696d4908>>
  */
 
 /**
@@ -128,6 +128,11 @@ class ReactNativeFeatureFlags {
    * When enabled, LayoutAnimations API will animate state changes on iOS.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  RN_EXPORT static bool enableLineHeightCenteringOnIOS();
 
   /**
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.

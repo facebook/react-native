@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ddd0f342c565ed44f78263b074b4f969>>
+ * @generated SignedSource<<fb940de1292ebcf34f1200a94c121e0b>>
  */
 
 /**
@@ -58,6 +58,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
+
+  override fun enableLineHeightCenteringOnIOS(): Boolean = false
 
   override fun enableMainQueueModulesOnIOS(): Boolean = false
 
