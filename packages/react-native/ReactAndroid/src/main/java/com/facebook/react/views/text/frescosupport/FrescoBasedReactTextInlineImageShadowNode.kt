@@ -120,7 +120,7 @@
              if (name == null || name.isEmpty()) {
                  return null
              }
-             val formattedName = name.toLowerCase(Locale.getDefault()).replace("-", "_")
+             val formattedName = name.lowercase(Locale.getDefault()).replace("-", "_")
              val resId = context.resources.getIdentifier(formattedName, "drawable", context.packageName)
              return Uri.Builder()
                  .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
