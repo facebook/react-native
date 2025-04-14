@@ -41,7 +41,6 @@
                  if (parent.removeClippedSubviews) {
                      parent.getClippingRect(helperRect)
                      // Intersect the view with the parent's rectangle
-                     // This will result in the overlap with coordinates in the parent space
                      if (
                          !helperRect.intersect(
                              view.left,
@@ -53,7 +52,7 @@
                          outputRect.setEmpty()
                          return
                      }
-                     // Now we move the coordinates to the View's coordinate space
+                     // Move coordinates to View's coordinate space
                      helperRect.offset(-view.left, -view.top)
                      helperRect.offset(-view.translationX.toInt(), -view.translationY.toInt())
                      helperRect.offset(view.scrollX, view.scrollY)
