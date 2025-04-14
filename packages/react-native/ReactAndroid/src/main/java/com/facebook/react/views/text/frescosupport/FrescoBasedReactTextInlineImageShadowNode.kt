@@ -10,12 +10,10 @@
  import android.content.Context
  import android.content.res.Resources
  import android.net.Uri
- import androidx.annotation.Nullable
  import androidx.core.util.Preconditions
  import com.facebook.common.logging.FLog
  import com.facebook.common.util.UriUtil
  import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
- import com.facebook.infer.annotation.Nullsafe
  import com.facebook.react.bridge.Dynamic
  import com.facebook.react.bridge.ReadableArray
  import com.facebook.react.bridge.ReadableMap
@@ -30,22 +28,21 @@
  import java.util.Locale
  
  /** Shadow node that represents an inline image. Loading is done using Fresco. */
- @Nullsafe(Nullsafe.Mode.LOCAL)
  @LegacyArchitecture
  internal class FrescoBasedReactTextInlineImageShadowNode(
      private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>,
-     @Nullable private val callerContext: Any?
+     private val callerContext: Any?
  ) : ReactTextInlineImageShadowNode() {
  
-     @Nullable private var uri: Uri? = null
-     @Nullable private var headers: ReadableMap? = null
+     private var uri: Uri? = null
+     private var headers: ReadableMap? = null
      private var width = YogaConstants.UNDEFINED
-     @Nullable private var resizeMode: String? = null
+     private var resizeMode: String? = null
      private var height = YogaConstants.UNDEFINED
      private var tintColor = 0
  
      @ReactProp(name = "src")
-     public fun setSource(@Nullable sources: ReadableArray?) {
+     public fun setSource(sources: ReadableArray?) {
          val source =
              if (sources == null || sources.size() == 0 || sources.getType(0) != ReadableType.Map)
                  null
@@ -73,7 +70,7 @@
      }
  
      @ReactProp(name = "headers")
-     public fun setHeaders(@Nullable newHeaders: ReadableMap?) {
+     public fun setHeaders(newHeaders: ReadableMap?) {
          headers = newHeaders
      }
  
@@ -102,32 +99,15 @@
      }
  
      @ReactProp(name = ViewProps.RESIZE_MODE)
-     public fun setResizeMode(@Nullable newResizeMode: String?) {
+     public fun setResizeMode(newResizeMode: String?) {
          resizeMode = newResizeMode
      }
  
-     public fun getUri(): Uri? {
-         return uri
-     }
+     val getUri: Uri?
+         get() = uri
  
-     public fun getHeaders(): ReadableMap? {
-         return headers
-     }
- 
-     // TODO: t9053573 is tracking that this code should be shared
-     companion object {
-         public fun getResourceDrawableUri(context: Context, @Nullable name: String?): Uri? {
-             if (name == null || name.isEmpty()) {
-                 return null
-             }
-             val formattedName = name.lowercase(Locale.getDefault()).replace("-", "_")
-             val resId = context.resources.getIdentifier(formattedName, "drawable", context.packageName)
-             return Uri.Builder()
-                 .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-                 .path(resId.toString())
-                 .build()
-         }
-     }
+     val getHeaders: ReadableMap?
+         get() = headers
  
      override fun isVirtual(): Boolean {
          return true
@@ -142,19 +122,32 @@
              finalHeight,
              finalWidth,
              tintColor,
-             getUri(),
-             getHeaders(),
-             getDraweeControllerBuilder(),
-             getCallerContext(),
+             getUri,
+             getHeaders,
+             draweeControllerBuilder,
+             callerContext,
              resizeMode
          )
      }
  
-     public fun getDraweeControllerBuilder(): AbstractDraweeControllerBuilder<*, *, *, *> {
-         return draweeControllerBuilder
-     }
+     val getDraweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>
+         get() = draweeControllerBuilder
  
-     public fun getCallerContext(): Any? {
-         return callerContext
+     val getCallerContext: Any?
+         get() = callerContext
+     
+     // TODO: t9053573 is tracking that this code should be shared
+     companion object {
+         public fun getResourceDrawableUri(context: Context, name: String?): Uri? {
+             if (name == null || name.isEmpty()) {
+                 return null
+             }
+             val formattedName = name.lowercase(Locale.getDefault()).replace("-", "_")
+             val resId = context.resources.getIdentifier(formattedName, "drawable", context.packageName)
+             return Uri.Builder()
+                 .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                 .path(resId.toString())
+                 .build()
+         }
      }
  }
