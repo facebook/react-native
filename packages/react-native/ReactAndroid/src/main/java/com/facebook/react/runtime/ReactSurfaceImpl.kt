@@ -22,6 +22,7 @@ import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.fabric.SurfaceHandlerBinding
 import com.facebook.react.interfaces.TaskInterface
 import com.facebook.react.interfaces.fabric.ReactSurface
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.uimanager.events.EventDispatcher
@@ -75,7 +76,8 @@ internal constructor(
         0,
         doRTLSwap(context),
         isRTL(context),
-        displayMetrics.density)
+        displayMetrics.density,
+        getFontScale(context))
   }
 
   /**
@@ -176,7 +178,8 @@ internal constructor(
         offsetY,
         doRTLSwap(context),
         isRTL(context),
-        context.resources.displayMetrics.density)
+        context.resources.displayMetrics.density,
+        getFontScale(context))
   }
 
   internal val eventDispatcher: EventDispatcher?
@@ -202,6 +205,11 @@ internal constructor(
     }
 
     private fun isRTL(context: Context): Boolean = I18nUtil.instance.isRTL(context)
+
+    private fun getFontScale(context: Context): Float =
+        if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout())
+            context.getResources().getConfiguration().fontScale
+        else 1f
 
     private fun doRTLSwap(context: Context): Boolean =
         I18nUtil.instance.doLeftAndRightSwapInRTL(context)
