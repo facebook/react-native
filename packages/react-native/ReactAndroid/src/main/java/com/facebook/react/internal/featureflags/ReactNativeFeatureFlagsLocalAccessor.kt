@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ecc132d7b847c78ec8493df457b36a17>>
+ * @generated SignedSource<<a6659ebfbc50d35953af83010c6d84c6>>
  */
 
 /**
@@ -46,7 +46,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
-  private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
@@ -282,16 +281,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enablePropsUpdateReconciliationAndroid()
       accessedFeatureFlags.add("enablePropsUpdateReconciliationAndroid")
       enablePropsUpdateReconciliationAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableReportEventPaintTime(): Boolean {
-    var cached = enableReportEventPaintTimeCache
-    if (cached == null) {
-      cached = currentProvider.enableReportEventPaintTime()
-      accessedFeatureFlags.add("enableReportEventPaintTime")
-      enableReportEventPaintTimeCache = cached
     }
     return cached
   }

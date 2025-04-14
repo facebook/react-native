@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9fe9dd4de520ebddba05822ee2c77da>>
+ * @generated SignedSource<<da93245d5a9700e7729252be2b658f66>>
  */
 
 /**
@@ -54,7 +54,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableNativeCSSParsing();
   bool enableNewBackgroundAndBorderDrawables();
   bool enablePropsUpdateReconciliationAndroid();
-  bool enableReportEventPaintTime();
   bool enableSynchronousStateUpdates();
   bool enableViewCulling();
   bool enableViewRecycling();
@@ -84,7 +83,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 40> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -108,7 +107,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
-  std::atomic<std::optional<bool>> enableReportEventPaintTime_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;

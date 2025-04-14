@@ -6713,8 +6713,6 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enablePropsUpdateReconciliationAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableReportEventPaintTime(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableSynchronousStateUpdates(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableViewRecycling(
@@ -15805,7 +15803,6 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
-  bool enableReportEventPaintTime(jsi::Runtime& runtime);
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
   bool enableViewRecycling(jsi::Runtime& runtime);
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
