@@ -1,6 +1,6 @@
 # Feature Flags
 
-- [Main doc](../../../../../__docs__/README.md)
+[🏠 Home](../../../../../__docs__/README.md)
 
 This directory contains the flag definitions and codegen for the internal React
 Native feature flags system.

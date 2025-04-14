@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<30b78ef5870a09bb116e828555be6d60>>
+ * @generated SignedSource<<4d5e0be860021c94f7596fc08b455a5e>>
  */
 
 /**
@@ -103,10 +103,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableLongTaskAPI() override {
-    return false;
-  }
-
   bool enableMainQueueModulesOnIOS() override {
     return false;
   }
@@ -149,10 +145,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
-  }
-
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    return true;
   }
 
   bool fuseboxEnabledRelease() override {

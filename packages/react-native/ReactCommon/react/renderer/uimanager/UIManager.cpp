@@ -227,6 +227,13 @@ void UIManager::startSurface(
   auto surfaceId = shadowTree->getSurfaceId();
   shadowTreeRegistry_.add(std::move(shadowTree));
 
+  shadowTreeRegistry_.visit(
+      surfaceId, [delegate = delegate_](const ShadowTree& shadowTree) {
+        if (delegate != nullptr) {
+          delegate->uiManagerDidStartSurface(shadowTree);
+        }
+      });
+
   runtimeExecutor_([=](jsi::Runtime& runtime) {
     TraceSection s("UIManager::startSurface::onRuntime");
     AppRegistryBinding::startSurface(
@@ -664,12 +671,21 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
   }
 }
 
+void UIManager::setNativeAnimatedDelegate(
+    std::weak_ptr<UIManagerNativeAnimatedDelegate> delegate) {
+  nativeAnimatedDelegate_ = delegate;
+}
+
 void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
     shadowTreeRegistry_.enumerate([](const ShadowTree& shadowTree, bool&) {
       shadowTree.notifyDelegatesOfUpdates();
     });
+  }
+
+  if (auto nativeAnimatedDelegate = nativeAnimatedDelegate_.lock()) {
+    nativeAnimatedDelegate->runAnimationFrame();
   }
 }
 
@@ -694,6 +710,13 @@ void UIManager::removeEventListener(
     const std::shared_ptr<const EventListener>& listener) {
   if (delegate_ != nullptr) {
     delegate_->uiManagerShouldRemoveEventListener(listener);
+  }
+}
+
+void UIManager::setOnSurfaceStartCallback(
+    UIManagerDelegate::OnSurfaceStartCallback&& callback) {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerShouldSetOnSurfaceStartCallback(std::move(callback));
   }
 }
 

@@ -56,7 +56,13 @@ struct RawEvent {
      * Forces continuous type for the event. Regardless if continuous event
      * isn't ongoing.
      */
-    Continuous = 4
+    Continuous = 4,
+
+    /*
+     * Priority for events that can be processed in idle times or in the
+     * background.
+     */
+    Idle = 5,
   };
 
   RawEvent(

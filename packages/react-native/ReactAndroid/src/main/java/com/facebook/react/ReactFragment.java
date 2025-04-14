@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
@@ -81,7 +81,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     if (mainComponentName == null) {
       throw new IllegalStateException("Cannot loadApp if component name is null");
     }
-    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
       mReactDelegate =
           new ReactDelegate(getActivity(), getReactHost(), mainComponentName, launchOptions);
     } else {

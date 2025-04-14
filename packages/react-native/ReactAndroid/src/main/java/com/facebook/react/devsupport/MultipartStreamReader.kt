@@ -95,7 +95,6 @@ internal class MultipartStreamReader(
         val chunk = Buffer()
         content.skip(chunkStart)
         content.read(chunk, length)
-        // NULLSAFE_FIXME[Parameter Not Nullable]
         emitProgress(currentHeaders, chunk.size() - currentHeadersLength, true, listener)
         emitChunk(chunk, isCloseDelimiter, listener)
         currentHeaders = null

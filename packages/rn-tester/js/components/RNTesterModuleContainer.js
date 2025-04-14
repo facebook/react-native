@@ -15,7 +15,6 @@ import type {
 
 import {type RNTesterTheme, RNTesterThemeContext} from './RNTesterTheme';
 import RNTPressableRow from './RNTPressableRow';
-import RNTTestDetails from './RNTTestDetails';
 import * as React from 'react';
 import {Platform, ScrollView, StyleSheet, Text, View} from 'react-native';
 
@@ -80,12 +79,6 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
 
   return singleModule != null ? (
     <>
-      <RNTTestDetails
-        title={singleModule.title}
-        description={singleModule.description}
-        expect={singleModule.expect}
-        theme={theme}
-      />
       {singleModule.scrollable === true ? (
         <ScrollView style={styles.examplesContainer} testID="example-container">
           <singleModule.render />

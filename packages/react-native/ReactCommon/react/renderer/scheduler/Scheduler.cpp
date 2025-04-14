@@ -336,6 +336,13 @@ void Scheduler::uiManagerShouldRemoveEventListener(
   removeEventListener(listener);
 }
 
+void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {
+  std::shared_lock lock(onSurfaceStartCallbackMutex_);
+  if (onSurfaceStartCallback_) {
+    onSurfaceStartCallback_(shadowTree);
+  }
+}
+
 void Scheduler::reportMount(SurfaceId surfaceId) const {
   uiManager_->reportMount(surfaceId);
 }
@@ -360,6 +367,12 @@ void Scheduler::removeEventListener(
   if (eventDispatcher_->has_value()) {
     eventDispatcher_->value().removeListener(listener);
   }
+}
+
+void Scheduler::uiManagerShouldSetOnSurfaceStartCallback(
+    OnSurfaceStartCallback&& callback) {
+  std::shared_lock lock(onSurfaceStartCallbackMutex_);
+  onSurfaceStartCallback_ = std::move(callback);
 }
 
 } // namespace facebook::react

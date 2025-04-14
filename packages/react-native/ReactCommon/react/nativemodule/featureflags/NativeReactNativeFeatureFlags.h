@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b033aef3718808786a7e46d2e9c06d9e>>
+ * @generated SignedSource<<11405ae072b317c7196d26fa2ecb8816>>
  */
 
 /**
@@ -75,8 +75,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableLineHeightCenteringOnIOS(jsi::Runtime& runtime);
 
-  bool enableLongTaskAPI(jsi::Runtime& runtime);
-
   bool enableMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
@@ -98,8 +96,6 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 

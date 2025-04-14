@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fe803b16b13ab942259e7fbaf16c5dd1>>
+ * @generated SignedSource<<2b6940eed1777adf4bbb912b320c5ade>>
  */
 
 /**
@@ -102,10 +102,6 @@ bool ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS() {
   return getAccessor().enableLineHeightCenteringOnIOS();
 }
 
-bool ReactNativeFeatureFlags::enableLongTaskAPI() {
-  return getAccessor().enableLongTaskAPI();
-}
-
 bool ReactNativeFeatureFlags::enableMainQueueModulesOnIOS() {
   return getAccessor().enableMainQueueModulesOnIOS();
 }
@@ -148,10 +144,6 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {
-  return getAccessor().fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::fuseboxEnabledRelease() {

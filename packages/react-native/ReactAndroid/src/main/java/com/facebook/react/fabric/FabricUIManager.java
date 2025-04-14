@@ -64,6 +64,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -188,6 +189,8 @@ public class FabricUIManager
   private volatile boolean mDestroyed = false;
 
   private boolean mDriveCxxAnimations = false;
+
+  private boolean mDriveCxxNativeAnimated = ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
@@ -368,7 +371,7 @@ public class FabricUIManager
 
       ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
     }
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropEventEmitter interopEventEmitter = new InteropEventEmitter(mReactApplicationContext);
       mReactApplicationContext.internal_registerInteropModule(
           RCTEventEmitter.class, interopEventEmitter);
@@ -435,7 +438,7 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void addUIBlock(UIBlock block) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.addUIBlock(block);
     }
@@ -446,7 +449,7 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void prependUIBlock(UIBlock block) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.prependUIBlock(block);
     }
@@ -1074,7 +1077,7 @@ public class FabricUIManager
       final int reactTag,
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
       // overload of dispatchCommand. Otherwise, we use the string overload.
       // and the events won't be correctly dispatched.
@@ -1372,7 +1375,7 @@ public class FabricUIManager
       // There is a race condition here between getting/setting
       // `mDriveCxxAnimations` which shouldn't matter; it's safe to call
       // the mBinding method, unless mBinding has gone away.
-      if (mDriveCxxAnimations && mBinding != null) {
+      if ((mDriveCxxAnimations || mDriveCxxNativeAnimated) && mBinding != null) {
         mBinding.driveCxxAnimations();
       }
 

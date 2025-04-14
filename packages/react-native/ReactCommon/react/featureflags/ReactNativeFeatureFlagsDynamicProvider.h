@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5b41b1365908f773a79f1ae6576a43c7>>
+ * @generated SignedSource<<0d9abbb5ad3928df75728d688a59d7bf>>
  */
 
 /**
@@ -216,15 +216,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableLineHeightCenteringOnIOS();
   }
 
-  bool enableLongTaskAPI() override {
-    auto value = values_["enableLongTaskAPI"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableLongTaskAPI();
-  }
-
   bool enableMainQueueModulesOnIOS() override {
     auto value = values_["enableMainQueueModulesOnIOS"];
     if (!value.isNull()) {
@@ -322,15 +313,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMappingOfEventPrioritiesBetweenFabricAndReact();
-  }
-
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    auto value = values_["fixMountingCoordinatorReportedPendingTransactionsOnAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
   }
 
   bool fuseboxEnabledRelease() override {

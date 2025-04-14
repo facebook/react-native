@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<679bb1e5744b6b535e5fa000fc68b11a>>
+ * @generated SignedSource<<d88bae0699250b3692667672009790a6>>
  */
 
 /**
@@ -139,11 +139,6 @@ bool NativeReactNativeFeatureFlags::enableLineHeightCenteringOnIOS(
   return ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS();
 }
 
-bool NativeReactNativeFeatureFlags::enableLongTaskAPI(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableLongTaskAPI();
-}
-
 bool NativeReactNativeFeatureFlags::enableMainQueueModulesOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
@@ -197,11 +192,6 @@ bool NativeReactNativeFeatureFlags::enableViewRecyclingForView(
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(

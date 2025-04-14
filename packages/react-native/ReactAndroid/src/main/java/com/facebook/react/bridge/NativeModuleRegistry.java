@@ -84,14 +84,13 @@ public class NativeModuleRegistry {
 
   /* package */ void notifyJSInstanceDestroy() {
     mReactApplicationContext.assertOnNativeModulesQueueThread();
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "NativeModuleRegistry_notifyJSInstanceDestroy");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "NativeModuleRegistry_notifyJSInstanceDestroy");
     try {
       for (ModuleHolder module : mModules.values()) {
         module.destroy();
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -101,13 +100,13 @@ public class NativeModuleRegistry {
             + "native modules are explicitly not initialized on the UI thread.");
     ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_START);
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "NativeModuleRegistry_notifyJSInstanceInitialized");
+        Systrace.TRACE_TAG_REACT, "NativeModuleRegistry_notifyJSInstanceInitialized");
     try {
       for (ModuleHolder module : mModules.values()) {
         module.markInitializable();
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_END);
     }
   }

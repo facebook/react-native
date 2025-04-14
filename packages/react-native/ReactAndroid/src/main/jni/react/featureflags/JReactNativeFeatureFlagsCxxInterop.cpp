@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fbc59a7963dc4d9028be6292297c0112>>
+ * @generated SignedSource<<999715a93b98267575b6bd5a3cca70fc>>
  */
 
 /**
@@ -153,12 +153,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool enableLongTaskAPI() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLongTaskAPI");
-    return method(javaProvider_);
-  }
-
   bool enableMainQueueModulesOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMainQueueModulesOnIOS");
@@ -222,12 +216,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
-    return method(javaProvider_);
-  }
-
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMountingCoordinatorReportedPendingTransactionsOnAndroid");
     return method(javaProvider_);
   }
 
@@ -402,11 +390,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnIOS(
   return ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableLongTaskAPI();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
@@ -460,11 +443,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease(
@@ -616,9 +594,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableLineHeightCenteringOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnIOS),
       makeNativeMethod(
-        "enableLongTaskAPI",
-        JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI),
-      makeNativeMethod(
         "enableMainQueueModulesOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS),
       makeNativeMethod(
@@ -651,9 +626,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
-      makeNativeMethod(
-        "fixMountingCoordinatorReportedPendingTransactionsOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::fixMountingCoordinatorReportedPendingTransactionsOnAndroid),
       makeNativeMethod(
         "fuseboxEnabledRelease",
         JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease),

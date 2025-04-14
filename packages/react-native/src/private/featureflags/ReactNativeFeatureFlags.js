@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9dca6ffceaa6279a9472a8b41cec8ec>>
+ * @generated SignedSource<<b394197de3ea2b27ac0cd3972bf1a3ed>>
  * @flow strict
  */
 
@@ -30,7 +30,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
-  avoidAnimatedRefInvalidation: Getter<boolean>,
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
@@ -66,7 +65,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLineHeightCenteringOnIOS: Getter<boolean>,
-  enableLongTaskAPI: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
@@ -78,7 +76,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
-  fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   removeTurboModuleManagerDelegateMutex: Getter<boolean>,
@@ -107,11 +104,6 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
  */
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
-
-/**
- * Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.
- */
-export const avoidAnimatedRefInvalidation: Getter<boolean> = createJavaScriptFlagGetter('avoidAnimatedRefInvalidation', false);
 
 /**
  * Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.
@@ -239,10 +231,6 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  */
 export const enableLineHeightCenteringOnIOS: Getter<boolean> = createNativeFlagGetter('enableLineHeightCenteringOnIOS', false);
 /**
- * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
- */
-export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
-/**
  * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
  */
 export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
@@ -286,10 +274,6 @@ export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGette
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
-/**
- * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
- */
-export const fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMountingCoordinatorReportedPendingTransactionsOnAndroid', true);
 /**
  * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
  */

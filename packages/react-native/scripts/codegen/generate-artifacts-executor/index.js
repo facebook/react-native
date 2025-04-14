@@ -113,8 +113,8 @@ function execute(
         );
       }
 
-      if (source === 'app') {
-        // These components are only required by apps, not by libraries
+      if (source === 'app' && platform !== 'android') {
+        // These components are only required by apps, not by libraries and are Apple specific.
         generateRCTThirdPartyComponents(libraries, outputPath);
         generateRCTModuleProviders(projectRoot, pkgJson, libraries, outputPath);
         generateCustomURLHandlers(libraries, outputPath);
@@ -123,13 +123,13 @@ function execute(
           outputPath,
         );
         generateAppDependencyProvider(outputPath);
+        generateReactCodegenPodspec(
+          projectRoot,
+          pkgJson,
+          outputPath,
+          baseOutputPath,
+        );
       }
-      generateReactCodegenPodspec(
-        projectRoot,
-        pkgJson,
-        outputPath,
-        baseOutputPath,
-      );
 
       cleanupEmptyFilesAndFolders(outputPath);
     }

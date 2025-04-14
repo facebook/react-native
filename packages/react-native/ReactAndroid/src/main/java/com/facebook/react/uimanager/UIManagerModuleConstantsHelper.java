@@ -13,7 +13,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -138,8 +138,8 @@ public class UIManagerModuleConstantsHelper {
 
     Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
     if (viewManagerBubblingEvents != null) {
-      if (ReactNativeFeatureFlags.enableFabricRenderer()
-          && ReactNativeFeatureFlags.useFabricInterop()) {
+      if (ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer()
+          && ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
         // For Fabric, events needs to be fired with a "top" prefix.
         // For the sake of Fabric Interop, here we normalize events adding "top" in their
         // name if the user hasn't provided it.
@@ -155,8 +155,8 @@ public class UIManagerModuleConstantsHelper {
     Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
     validateDirectEventNames(viewManager.getName(), viewManagerDirectEvents);
     if (viewManagerDirectEvents != null) {
-      if (ReactNativeFeatureFlags.enableFabricRenderer()
-          && ReactNativeFeatureFlags.useFabricInterop()) {
+      if (ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer()
+          && ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
         // For Fabric, events needs to be fired with a "top" prefix.
         // For the sake of Fabric Interop, here we normalize events adding "top" in their
         // name if the user hasn't provided it.

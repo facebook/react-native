@@ -1,6 +1,6 @@
 # MutationObserver
 
-- [Main doc](../../../../../../../../__docs__/README.md)
+[🏠 Home](../../../../../../../../__docs__/README.md)
 
 This directory contains the C++ implementation of the
 [MutationObserver API](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)

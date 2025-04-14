@@ -485,8 +485,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       FLog.i(TAG, "onScrollChanged[%d] x %d y %d oldx %d oldy %d", getId(), x, y, oldX, oldY);
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.onScrollChanged");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactHorizontalScrollView.onScrollChanged");
     try {
       super.onScrollChanged(x, y, oldX, oldY);
 
@@ -502,7 +501,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             mOnScrollDispatchHelper.getYFlingVelocity());
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -778,8 +777,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return;
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.updateClippingRect");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactHorizontalScrollView.updateClippingRect");
     try {
       Assertions.assertNotNull(mClippingRect);
 
@@ -789,7 +787,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         ((ReactClippingViewGroup) contentView).updateClippingRect();
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 

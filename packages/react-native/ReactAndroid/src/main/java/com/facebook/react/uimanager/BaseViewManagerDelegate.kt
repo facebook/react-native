@@ -46,8 +46,7 @@ public abstract class BaseViewManagerDelegate<
           mViewManager.setAccessibilityValue(view, value as ReadableMap?)
 
       ViewProps.BACKGROUND_COLOR ->
-          mViewManager.setBackgroundColor(
-              view, if (value == null) 0 else ColorPropConverter.getColor(value, view.context))
+          mViewManager.setBackgroundColor(view, ColorPropConverter.getColor(value, view.context, 0))
 
       ViewProps.BORDER_RADIUS ->
           mViewManager.setBorderRadius(
@@ -78,8 +77,7 @@ public abstract class BaseViewManagerDelegate<
       ViewProps.MIX_BLEND_MODE -> mViewManager.setMixBlendMode(view, value as String?)
 
       ViewProps.SHADOW_COLOR ->
-          mViewManager.setShadowColor(
-              view, if (value == null) 0 else ColorPropConverter.getColor(value, view.context))
+          mViewManager.setShadowColor(view, ColorPropConverter.getColor(value, view.context, 0))
 
       ViewProps.IMPORTANT_FOR_ACCESSIBILITY ->
           mViewManager.setImportantForAccessibility(view, value as String?)

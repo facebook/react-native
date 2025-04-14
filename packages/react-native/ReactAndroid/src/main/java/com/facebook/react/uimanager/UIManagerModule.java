@@ -235,13 +235,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   private static Map<String, Object> createConstants(ViewManagerResolver viewManagerResolver) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
         .arg("Lazy", true)
         .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(viewManagerResolver);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
@@ -251,14 +251,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       @Nullable Map<String, Object> customBubblingEvents,
       @Nullable Map<String, Object> customDirectEvents) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
         .arg("Lazy", false)
         .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(
           viewManagers, customBubblingEvents, customDirectEvents);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
@@ -276,7 +276,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public static @Nullable WritableMap getConstantsForViewManager(
       ViewManager viewManager, Map<String, Object> customDirectEvents) {
     SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.getConstantsForViewManager")
+            Systrace.TRACE_TAG_REACT, "UIManagerModule.getConstantsForViewManager")
         .arg("ViewManager", viewManager.getName())
         .arg("Lazy", true)
         .flush();
@@ -289,7 +289,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       }
       return null;
     } finally {
-      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT).flush();
     }
   }
 
@@ -363,7 +363,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Override
   public <T extends View> int addRootView(final T rootView, WritableMap initialProps) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
 
@@ -376,7 +376,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
     return tag;
   }
 
@@ -673,7 +673,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     int batchId = mBatchId;
     mBatchId++;
 
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchCompleteUI")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "onBatchCompleteUI")
         .arg("BatchId", batchId)
         .flush();
     for (UIManagerModuleListener listener : mListeners) {
@@ -690,7 +690,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         mUIImplementation.dispatchViewUpdates(batchId);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 

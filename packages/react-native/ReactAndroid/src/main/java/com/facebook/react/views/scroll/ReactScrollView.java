@@ -404,7 +404,7 @@ public class ReactScrollView extends ScrollView
 
   @Override
   protected void onScrollChanged(int x, int y, int oldX, int oldY) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactScrollView.onScrollChanged");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactScrollView.onScrollChanged");
     try {
       super.onScrollChanged(x, y, oldX, oldY);
 
@@ -420,7 +420,7 @@ public class ReactScrollView extends ScrollView
             mOnScrollDispatchHelper.getYFlingVelocity());
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -532,8 +532,7 @@ public class ReactScrollView extends ScrollView
       return;
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactScrollView.updateClippingRect");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactScrollView.updateClippingRect");
     try {
       Assertions.assertNotNull(mClippingRect);
 
@@ -543,7 +542,7 @@ public class ReactScrollView extends ScrollView
         ((ReactClippingViewGroup) contentView).updateClippingRect();
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 

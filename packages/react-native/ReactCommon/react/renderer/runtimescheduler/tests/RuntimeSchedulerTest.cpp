@@ -35,10 +35,6 @@ class RuntimeSchedulerTestFeatureFlags
     return enableEventLoop_;
   }
 
-  bool enableLongTaskAPI() override {
-    return true;
-  }
-
  private:
   bool enableEventLoop_;
 };

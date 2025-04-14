@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 
 #include <cxxreact/CxxNativeModule.h>
+#include <cxxreact/SystraceSection.h>
 #include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 
@@ -214,7 +215,6 @@ MethodCallResult MethodInvoker::invoke(
       isSync_ ? "callJavaSyncHook" : "callJavaModuleMethod",
       "method",
       traceName_);
-
   if (params.size() != jsArgCount_) {
     throw std::invalid_argument(
         "expected " + std::to_string(jsArgCount_) + " arguments, got " +

@@ -44,13 +44,13 @@ internal class FabricEventDispatcher(
   private var isDispatchScheduled = false
   private val dispatchEventsRunnable = Runnable {
     isDispatchScheduled = false
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "BatchEventDispatchedListeners")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "BatchEventDispatchedListeners")
     try {
       for (listener in postEventDispatchListeners) {
         listener.onBatchEventDispatched()
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 
@@ -63,7 +63,7 @@ internal class FabricEventDispatcher(
     for (listener in listeners) {
       listener.onEventDispatch(event)
     }
-    if (event.experimental_isSynchronous()) {
+    if (event.internal_experimental_isSynchronous()) {
       dispatchSynchronous(event)
     } else {
       event.dispatchModern(eventEmitter)
@@ -75,8 +75,8 @@ internal class FabricEventDispatcher(
 
   private fun dispatchSynchronous(event: Event<*>) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "FabricEventDispatcher.dispatchSynchronous('" + event.eventName + "')")
+        Systrace.TRACE_TAG_REACT,
+        "FabricEventDispatcher.dispatchSynchronous('" + event.getEventName() + "')")
     try {
       val fabricUIManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
       @OptIn(UnstableReactNativeAPI::class)
@@ -84,10 +84,10 @@ internal class FabricEventDispatcher(
         (fabricUIManager as SynchronousEventReceiver).receiveEvent(
             event.surfaceId,
             event.viewTag,
-            event.eventName,
+            event.getEventName(),
             event.canCoalesce(),
-            event.eventData,
-            event.eventCategory,
+            event.internal_getEventData(),
+            event.internal_getEventCategory(),
             true)
       } else {
         ReactSoftExceptionLogger.logSoftException(
@@ -96,7 +96,7 @@ internal class FabricEventDispatcher(
                 "Fabric UIManager expected to implement SynchronousEventReceiver."))
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 
@@ -182,13 +182,13 @@ internal class FabricEventDispatcher(
         dispatchBatchedEvents()
       }
 
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "BatchEventDispatchedListeners")
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "BatchEventDispatchedListeners")
       try {
         for (listener in postEventDispatchListeners) {
           listener.onBatchEventDispatched()
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+        Systrace.endSection(Systrace.TRACE_TAG_REACT)
       }
     }
 

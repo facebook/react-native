@@ -6709,8 +6709,6 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableLayoutAnimationsOnIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableLongTaskAPI(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableNewBackgroundAndBorderDrawables(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enablePropsUpdateReconciliationAndroid(
@@ -6726,8 +6724,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fuseboxEnabledDebug(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -15807,7 +15803,6 @@ class NativeReactNativeFeatureFlags
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
-  bool enableLongTaskAPI(jsi::Runtime& runtime);
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
   bool enableReportEventPaintTime(jsi::Runtime& runtime);
@@ -15817,8 +15812,6 @@ class NativeReactNativeFeatureFlags
   bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(
       jsi::Runtime& runtime);
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
-      jsi::Runtime& runtime);
   bool fuseboxEnabledDebug(jsi::Runtime& runtime);
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
   bool initEagerTurboModulesOnNativeModulesQueueAndroid(jsi::Runtime& runtime);

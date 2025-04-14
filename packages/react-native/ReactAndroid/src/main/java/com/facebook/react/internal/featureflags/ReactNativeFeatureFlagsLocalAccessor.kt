@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1db4d0a5542650e2d206fc598ef97159>>
+ * @generated SignedSource<<f5c90e26fa022cb6281daf985a525ecd>>
  */
 
 /**
@@ -43,7 +43,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLineHeightCenteringOnIOSCache: Boolean? = null
-  private var enableLongTaskAPICache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
@@ -55,7 +54,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
-  private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
@@ -259,16 +257,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun enableLongTaskAPI(): Boolean {
-    var cached = enableLongTaskAPICache
-    if (cached == null) {
-      cached = currentProvider.enableLongTaskAPI()
-      accessedFeatureFlags.add("enableLongTaskAPI")
-      enableLongTaskAPICache = cached
-    }
-    return cached
-  }
-
   override fun enableMainQueueModulesOnIOS(): Boolean {
     var cached = enableMainQueueModulesOnIOSCache
     if (cached == null) {
@@ -375,16 +363,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fixMappingOfEventPrioritiesBetweenFabricAndReact()
       accessedFeatureFlags.add("fixMappingOfEventPrioritiesBetweenFabricAndReact")
       fixMappingOfEventPrioritiesBetweenFabricAndReactCache = cached
-    }
-    return cached
-  }
-
-  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean {
-    var cached = fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
-      accessedFeatureFlags.add("fixMountingCoordinatorReportedPendingTransactionsOnAndroid")
-      fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache = cached
     }
     return cached
   }

@@ -1,6 +1,6 @@
 # Microtasks
 
-- [Main doc](../../../../../../../__docs__/README.md)
+[🏠 Home](../../../../../../../__docs__/README.md)
 
 This directory contains the native module used to implement `queueMicrotask` in
 React Native, which schedules microtasks in the

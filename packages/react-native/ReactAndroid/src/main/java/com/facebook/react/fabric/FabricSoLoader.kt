@@ -20,11 +20,11 @@ internal object FabricSoLoader {
     if (didInit) {
       return
     }
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricSoLoader")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "FabricSoLoader")
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_START)
     SoLoader.loadLibrary("fabricjni")
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_END)
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+    Systrace.endSection(Systrace.TRACE_TAG_REACT)
     didInit = true
   }
 }

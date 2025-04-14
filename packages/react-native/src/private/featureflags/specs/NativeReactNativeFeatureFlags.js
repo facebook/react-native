@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<487cbcfcee94847590719f97275a4494>>
+ * @generated SignedSource<<5756efafd798f410292a58c24a25b146>>
  * @flow strict
  */
 
@@ -43,7 +43,6 @@ export interface Spec extends TurboModule {
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLineHeightCenteringOnIOS?: () => boolean;
-  +enableLongTaskAPI?: () => boolean;
   +enableMainQueueModulesOnIOS?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
   +enableNewBackgroundAndBorderDrawables?: () => boolean;
@@ -55,7 +54,6 @@ export interface Spec extends TurboModule {
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
-  +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +removeTurboModuleManagerDelegateMutex?: () => boolean;

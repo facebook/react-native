@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b00d2121b7844a73469d251e9f8c5a18>>
+ * @generated SignedSource<<fb940de1292ebcf34f1200a94c121e0b>>
  */
 
 /**
@@ -61,8 +61,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableLineHeightCenteringOnIOS(): Boolean = false
 
-  override fun enableLongTaskAPI(): Boolean = false
-
   override fun enableMainQueueModulesOnIOS(): Boolean = false
 
   override fun enableNativeCSSParsing(): Boolean = false
@@ -84,8 +82,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableViewRecyclingForView(): Boolean = true
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
-
-  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
