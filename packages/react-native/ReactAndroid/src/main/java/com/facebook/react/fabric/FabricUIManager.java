@@ -119,11 +119,11 @@ public class FabricUIManager
         long transactionEndDuration = commitPoint.getTransactionEndDuration();
         long batchExecutionDuration = commitPoint.getBatchExecutionDuration();
 
-        DevToolsReactPerfLogger.mStreamingCommitStats.add(commitDuration);
-        DevToolsReactPerfLogger.mStreamingLayoutStats.add(layoutDuration);
-        DevToolsReactPerfLogger.mStreamingDiffStats.add(diffDuration);
-        DevToolsReactPerfLogger.mStreamingTransactionEndStats.add(transactionEndDuration);
-        DevToolsReactPerfLogger.mStreamingBatchExecutionStats.add(batchExecutionDuration);
+        DevToolsReactPerfLogger.streamingCommitStats.add(commitDuration);
+        DevToolsReactPerfLogger.streamingLayoutStats.add(layoutDuration);
+        DevToolsReactPerfLogger.streamingDiffStats.add(diffDuration);
+        DevToolsReactPerfLogger.streamingTransactionEndStats.add(transactionEndDuration);
+        DevToolsReactPerfLogger.streamingBatchExecutionStats.add(batchExecutionDuration);
 
         FLog.i(
             TAG,
@@ -136,25 +136,25 @@ public class FabricUIManager
                 + " - Mounting: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n",
             commitPoint.getCommitNumber(),
             commitDuration,
-            DevToolsReactPerfLogger.mStreamingCommitStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingCommitStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingCommitStats.getMax(),
+            DevToolsReactPerfLogger.streamingCommitStats.getAverage(),
+            DevToolsReactPerfLogger.streamingCommitStats.getMedian(),
+            DevToolsReactPerfLogger.streamingCommitStats.getMax(),
             layoutDuration,
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getMax(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getAverage(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getMedian(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getMax(),
             diffDuration,
-            DevToolsReactPerfLogger.mStreamingDiffStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingDiffStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingDiffStats.getMax(),
+            DevToolsReactPerfLogger.streamingDiffStats.getAverage(),
+            DevToolsReactPerfLogger.streamingDiffStats.getMedian(),
+            DevToolsReactPerfLogger.streamingDiffStats.getMax(),
             transactionEndDuration,
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMax(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getAverage(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getMedian(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getMax(),
             batchExecutionDuration,
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMax());
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getAverage(),
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getMedian(),
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getMax());
       };
 
   static {

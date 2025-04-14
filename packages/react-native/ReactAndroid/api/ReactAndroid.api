@@ -2300,39 +2300,39 @@ public final class com/facebook/react/fabric/ComponentFactory {
 	public fun <init> ()V
 }
 
-public class com/facebook/react/fabric/DevToolsReactPerfLogger : com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
+public final class com/facebook/react/fabric/DevToolsReactPerfLogger : com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
 	public fun <init> ()V
-	public fun addDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
+	public final fun addDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
 	public fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
 	public fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
-	public fun removeDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
+	public final fun removeDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
 }
 
 public abstract interface class com/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener {
 	public abstract fun onFabricCommitEnd (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint;)V
 }
 
-public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint {
-	public fun getAffectedLayoutNodesCount ()I
-	public fun getAffectedLayoutNodesCountTime ()J
-	public fun getBatchExecutionDuration ()J
-	public fun getBatchExecutionEnd ()J
-	public fun getBatchExecutionStart ()J
-	public fun getCommitDuration ()J
-	public fun getCommitEnd ()J
-	public fun getCommitNumber ()J
-	public fun getCommitStart ()J
-	public fun getDiffDuration ()J
-	public fun getDiffEnd ()J
-	public fun getDiffStart ()J
-	public fun getFinishTransactionEnd ()J
-	public fun getFinishTransactionStart ()J
-	public fun getLayoutDuration ()J
-	public fun getLayoutEnd ()J
-	public fun getLayoutStart ()J
-	public fun getTransactionEndDuration ()J
-	public fun getUpdateUIMainThreadEnd ()J
-	public fun getUpdateUIMainThreadStart ()J
+public final class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint {
+	public final fun getAffectedLayoutNodesCount ()I
+	public final fun getAffectedLayoutNodesCountTime ()J
+	public final fun getBatchExecutionDuration ()J
+	public final fun getBatchExecutionEnd ()J
+	public final fun getBatchExecutionStart ()J
+	public final fun getCommitDuration ()J
+	public final fun getCommitEnd ()J
+	public final fun getCommitNumber ()J
+	public final fun getCommitStart ()J
+	public final fun getDiffDuration ()J
+	public final fun getDiffEnd ()J
+	public final fun getDiffStart ()J
+	public final fun getFinishTransactionEnd ()J
+	public final fun getFinishTransactionStart ()J
+	public final fun getLayoutDuration ()J
+	public final fun getLayoutEnd ()J
+	public final fun getLayoutStart ()J
+	public final fun getTransactionEndDuration ()J
+	public final fun getUpdateUIMainThreadEnd ()J
+	public final fun getUpdateUIMainThreadStart ()J
 	public fun toString ()Ljava/lang/String;
 }
 
