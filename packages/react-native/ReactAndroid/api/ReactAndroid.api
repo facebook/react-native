@@ -2961,19 +2961,6 @@ public final class com/facebook/react/modules/fresco/ReactNetworkImageRequest$Co
 	public static synthetic fun fromBuilderWithHeaders$default (Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest$Companion;Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/modules/fresco/ImageCacheControl;ILjava/lang/Object;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
 }
 
-public final class com/facebook/react/modules/i18nmanager/I18nManagerModule : com/facebook/fbreact/specs/NativeI18nManagerSpec {
-	public static final field Companion Lcom/facebook/react/modules/i18nmanager/I18nManagerModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun allowRTL (Z)V
-	public fun forceRTL (Z)V
-	public fun getTypedExportedConstants ()Ljava/util/Map;
-	public fun swapLeftAndRightInRTL (Z)V
-}
-
-public final class com/facebook/react/modules/i18nmanager/I18nManagerModule$Companion {
-}
-
 public final class com/facebook/react/modules/i18nmanager/I18nUtil {
 	public static final field Companion Lcom/facebook/react/modules/i18nmanager/I18nUtil$Companion;
 	public final fun allowRTL (Landroid/content/Context;Z)V
