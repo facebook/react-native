@@ -2723,12 +2723,6 @@ public class com/facebook/react/modules/core/HeadlessJsTaskSupportModule : com/f
 	public fun notifyTaskRetry (DLcom/facebook/react/bridge/Promise;)V
 }
 
-public abstract interface class com/facebook/react/modules/core/JSTimers : com/facebook/react/bridge/JavaScriptModule {
-	public abstract fun callIdleCallbacks (D)V
-	public abstract fun callTimers (Lcom/facebook/react/bridge/WritableArray;)V
-	public abstract fun emitTimeDriftWarning (Ljava/lang/String;)V
-}
-
 public abstract interface class com/facebook/react/modules/core/JavaScriptTimerExecutor {
 	public abstract fun callIdleCallbacks (D)V
 	public abstract fun callTimers (Lcom/facebook/react/bridge/WritableArray;)V
