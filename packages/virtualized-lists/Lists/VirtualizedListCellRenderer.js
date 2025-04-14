@@ -9,11 +9,12 @@
  */
 
 import type {CellRendererProps, ListRenderItem} from './VirtualizedListProps';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
   LayoutChangeEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import invariant from 'invariant';
@@ -29,7 +30,7 @@ export type Props<ItemT> = {
   cellKey: string,
   horizontal: ?boolean,
   index: number,
-  inversionStyle: ViewStyleProp,
+  inversionStyle: StyleProp<ViewStyle>,
   item: ItemT,
   onCellLayout?: (
     event: LayoutChangeEvent,
