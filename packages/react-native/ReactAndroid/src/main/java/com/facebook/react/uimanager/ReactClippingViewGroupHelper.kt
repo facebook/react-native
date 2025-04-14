@@ -9,20 +9,18 @@
 
  import android.graphics.Rect
  import android.view.View
- import com.facebook.infer.annotation.Nullsafe
  import javax.annotation.concurrent.NotThreadSafe
  
  /**
   * Provides implementation of common tasks for view and it's view manager supporting property
   * [removeClippedSubviews].
   */
- @Nullsafe(Nullsafe.Mode.LOCAL)
  @NotThreadSafe
  public object ReactClippingViewGroupHelper {
  
      public const val PROP_REMOVE_CLIPPED_SUBVIEWS: String = "removeClippedSubviews"
  
-     private val sHelperRect: Rect = Rect()
+     private val helperRect: Rect = Rect()
  
      /**
       * Can be used by view that support [removeClippedSubviews] property to calculate area that
@@ -34,19 +32,18 @@
       */
      @JvmStatic
      public fun calculateClippingRect(view: View, outputRect: Rect): Unit {
-         val parent = view.parent
-         when {
-             parent == null -> {
+         when (val parent = view.parent) {
+             null -> {
                  outputRect.setEmpty()
                  return
              }
-             parent is ReactClippingViewGroup -> {
+             is ReactClippingViewGroup -> {
                  if (parent.removeClippedSubviews) {
-                     parent.getClippingRect(sHelperRect)
+                     parent.getClippingRect(helperRect)
                      // Intersect the view with the parent's rectangle
                      // This will result in the overlap with coordinates in the parent space
                      if (
-                         !sHelperRect.intersect(
+                         !helperRect.intersect(
                              view.left,
                              view.top + view.translationY.toInt(),
                              view.right,
@@ -57,10 +54,10 @@
                          return
                      }
                      // Now we move the coordinates to the View's coordinate space
-                     sHelperRect.offset(-view.left, -view.top)
-                     sHelperRect.offset(-view.translationX.toInt(), -view.translationY.toInt())
-                     sHelperRect.offset(view.scrollX, view.scrollY)
-                     outputRect.set(sHelperRect)
+                     helperRect.offset(-view.left, -view.top)
+                     helperRect.offset(-view.translationX.toInt(), -view.translationY.toInt())
+                     helperRect.offset(view.scrollX, view.scrollY)
+                     outputRect.set(helperRect)
                      return
                  }
              }
