@@ -2989,25 +2989,6 @@ public final class com/facebook/react/modules/i18nmanager/I18nUtil$Companion {
 	public final fun getInstance ()Lcom/facebook/react/modules/i18nmanager/I18nUtil;
 }
 
-public final class com/facebook/react/modules/image/ImageLoaderModule : com/facebook/fbreact/specs/NativeImageLoaderAndroidSpec, com/facebook/react/bridge/LifecycleEventListener {
-	public static final field Companion Lcom/facebook/react/modules/image/ImageLoaderModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/imagepipeline/core/ImagePipeline;Lcom/facebook/react/views/image/ReactCallerContextFactory;)V
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/Object;)V
-	public fun abortRequest (D)V
-	public fun getSize (Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
-	public fun getSizeWithHeaders (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V
-	public fun onHostDestroy ()V
-	public fun onHostPause ()V
-	public fun onHostResume ()V
-	public fun prefetchImage (Ljava/lang/String;DLcom/facebook/react/bridge/Promise;)V
-	public fun queryCache (Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V
-}
-
-public final class com/facebook/react/modules/image/ImageLoaderModule$Companion {
-}
-
 public class com/facebook/react/modules/intent/IntentModule : com/facebook/fbreact/specs/NativeIntentAndroidSpec {
 	public static final field Companion Lcom/facebook/react/modules/intent/IntentModule$Companion;
 	public static final field NAME Ljava/lang/String;
