@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dea89e5c416215f9d56cf2410ca8beb4>>
+ * @generated SignedSource<<e18e064f0b4ac0217b49f0cf5a153e6b>>
  */
 
 /**
@@ -66,8 +66,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
-
-  @DoNotStrip public fun enableReportEventPaintTime(): Boolean
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 

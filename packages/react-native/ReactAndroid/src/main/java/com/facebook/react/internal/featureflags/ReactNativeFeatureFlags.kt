@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<96a5c093f30a802130565e680f22e5e9>>
+ * @generated SignedSource<<82fac57322d589b28e7fca321f82d5e6>>
  */
 
 /**
@@ -161,12 +161,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
-
-  /**
-   * Report paint time inside the Event Timing API implementation (PerformanceObserver).
-   */
-  @JvmStatic
-  public fun enableReportEventPaintTime(): Boolean = accessor.enableReportEventPaintTime()
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).

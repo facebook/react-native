@@ -343,8 +343,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
 void RuntimeScheduler_Modern::updateRendering() {
   TraceSection s("RuntimeScheduler::updateRendering");
 
-  if (eventTimingDelegate_ != nullptr &&
-      ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+  if (eventTimingDelegate_ != nullptr) {
     eventTimingDelegate_->dispatchPendingEventTimingEntries(
         surfaceIdsWithPendingRenderingUpdates_);
   }

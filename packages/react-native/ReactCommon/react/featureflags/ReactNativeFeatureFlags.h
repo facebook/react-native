@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb996be6cd68e1b349d3859a29250f28>>
+ * @generated SignedSource<<a14062b719f668080a6c64dd34d63c2d>>
  */
 
 /**
@@ -148,11 +148,6 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
    */
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
-
-  /**
-   * Report paint time inside the Event Timing API implementation (PerformanceObserver).
-   */
-  RN_EXPORT static bool enableReportEventPaintTime();
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
