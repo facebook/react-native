@@ -36,6 +36,12 @@ module.exports = {
       },
     },
     {
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      rules: {
+        '@react-native/no-deep-imports': 0,
+      },
+    },
+    {
       files: [
         './packages/react-native/**/*.{js,flow}',
         './packages/assets/registry.js',
