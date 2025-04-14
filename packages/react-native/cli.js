@@ -23,6 +23,15 @@ const deprecated = () => {
   );
 };
 
+function findCommunityCli(startDir = process.cwd()) {
+  // With isolated node_modules (eg pnpm), we won't be able to find
+  // `@react-native-community/cli` starting from the `react-native` directory.
+  // Instead, we should use the project root, which we assume to be the cwd.
+  const options = {paths: [startDir]};
+  const rncli = require.resolve('@react-native-community/cli', options);
+  return require(rncli);
+}
+
 function isMissingCliDependency(error) {
   return (
     error.code === 'MODULE_NOT_FOUND' &&
@@ -217,7 +226,7 @@ async function main() {
   }
 
   try {
-    return require('@react-native-community/cli').run(name);
+    return findCommunityCli().run(name);
   } catch (e) {
     if (isMissingCliDependency(e)) {
       warnWithExplicitDependency();
@@ -231,7 +240,7 @@ if (require.main === module) {
   main();
 } else {
   try {
-    cli = require('@react-native-community/cli');
+    cli = findCommunityCli();
   } catch (e) {
     // We silence @react-native-community/cli missing as it is no
     // longer a dependency

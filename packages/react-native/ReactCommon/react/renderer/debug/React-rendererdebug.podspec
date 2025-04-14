@@ -24,6 +24,7 @@ header_search_paths = [
     "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/DoubleConversion\"",
+    "\"$(PODS_ROOT)/fast_float/include\"",
     "\"$(PODS_ROOT)/fmt/include\""
 ]
 
@@ -55,8 +56,9 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../../.."
   end
 
-  s.dependency "RCT-Folly", folly_version
+  s.dependency "RCT-Folly"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float"
+  s.dependency "fmt"
   add_dependency(s, "React-debug")
 end

@@ -83,6 +83,7 @@ class NewArchitectureHelper
         header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
+            header_search_paths << "\"$(PODS_ROOT)/fast_float/include\""
             header_search_paths << "\"$(PODS_ROOT)/fmt/include\""
             ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"])
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))

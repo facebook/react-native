@@ -48,8 +48,7 @@ describe('FormData', function () {
       type: 'image/jpeg',
       name: 'photo.jpg',
       headers: {
-        'content-disposition':
-          'form-data; name="photo"; filename="photo.jpg"; filename*=utf-8\'\'photo.jpg',
+        'content-disposition': 'form-data; name="photo"; filename="photo.jpg"',
         'content-type': 'image/jpeg',
       },
       fieldName: 'photo',
@@ -70,7 +69,7 @@ describe('FormData', function () {
       name: '测试photo.jpg',
       headers: {
         'content-disposition':
-          'form-data; name="photo"; filename="测试photo.jpg"; filename*=utf-8\'\'%E6%B5%8B%E8%AF%95photo.jpg',
+          'form-data; name="photo"; filename="%E6%B5%8B%E8%AF%95photo.jpg"',
         'content-type': 'image/jpeg',
       },
       fieldName: 'photo',

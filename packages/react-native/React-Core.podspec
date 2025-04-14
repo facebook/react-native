@@ -21,7 +21,7 @@ folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
 socket_rocket_config = get_socket_rocket_config()
-socket_rocket_version = socket_rocket_config[:version] 
+socket_rocket_version = socket_rocket_config[:version]
 
 boost_compiler_flags = '-Wno-documentation'
 
@@ -49,6 +49,7 @@ header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
   "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/DoubleConversion",
+  "$(PODS_ROOT)/fast_float/include",
   "$(PODS_ROOT)/fmt/include",
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",

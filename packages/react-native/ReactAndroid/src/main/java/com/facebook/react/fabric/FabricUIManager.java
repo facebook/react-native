@@ -172,7 +172,7 @@ public class FabricUIManager
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
   private boolean mMountNotificationScheduled = false;
-  private final List<Integer> mMountedSurfaceIds = new ArrayList<>();
+  private List<Integer> mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
 
   @ThreadConfined(UI)
   @NonNull
@@ -1257,12 +1257,15 @@ public class FabricUIManager
 
       // Collect surface IDs for all the mount items
       for (MountItem mountItem : mountItems) {
-        if (mountItem != null && !mMountedSurfaceIds.contains(mountItem.getSurfaceId())) {
-          mMountedSurfaceIds.add(mountItem.getSurfaceId());
+        if (mountItem != null
+            && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
+          mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
         }
       }
 
-      if (!mMountNotificationScheduled && !mMountedSurfaceIds.isEmpty()) {
+      if (!mMountNotificationScheduled && !mSurfaceIdsWithPendingMountNotification.isEmpty()) {
+        mMountNotificationScheduled = true;
+
         // Notify mount when the effects are visible and prevent mount hooks to
         // delay paint.
         UiThreadUtil.getUiThreadHandler()
@@ -1272,17 +1275,19 @@ public class FabricUIManager
                   public void run() {
                     mMountNotificationScheduled = false;
 
+                    // Create a copy in case mount hooks trigger more mutations
+                    final List<Integer> surfaceIdsToReportMount =
+                        mSurfaceIdsWithPendingMountNotification;
+                    mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
+
                     final @Nullable Binding binding = mBinding;
                     if (binding == null || mDestroyed) {
-                      mMountedSurfaceIds.clear();
                       return;
                     }
 
-                    for (int surfaceId : mMountedSurfaceIds) {
+                    for (int surfaceId : surfaceIdsToReportMount) {
                       binding.reportMount(surfaceId);
                     }
-
-                    mMountedSurfaceIds.clear();
                   }
                 });
       }
