@@ -6709,6 +6709,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun maybeSetTextFromState (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun maybeUpdateTypeface ()V
 	public fun onAttachedToWindow ()V
+	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onCreateInputConnection (Landroid/view/inputmethod/EditorInfo;)Landroid/view/inputmethod/InputConnection;
 	public fun onDetachedFromWindow ()V
 	public fun onDraw (Landroid/graphics/Canvas;)V
