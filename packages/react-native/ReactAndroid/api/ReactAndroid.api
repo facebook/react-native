@@ -1649,13 +1649,6 @@ public final class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec$C
 	public final fun createDefault ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
 }
 
-public final class com/facebook/react/common/ClearableSynchronizedPool : androidx/core/util/Pools$Pool {
-	public fun <init> (I)V
-	public fun acquire ()Ljava/lang/Object;
-	public final fun clear ()V
-	public fun release (Ljava/lang/Object;)Z
-}
-
 public final class com/facebook/react/common/DebugServerException : java/lang/RuntimeException {
 	public static final field Companion Lcom/facebook/react/common/DebugServerException$Companion;
 	public fun <init> (Ljava/lang/String;)V
