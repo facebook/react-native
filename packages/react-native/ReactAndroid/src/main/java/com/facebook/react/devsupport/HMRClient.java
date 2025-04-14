@@ -26,8 +26,11 @@ public interface HMRClient extends JavaScriptModule {
    * @param host The host that the HMRClient should communicate with.
    * @param port The port that the HMRClient should communicate with on the host.
    * @param isEnabled Whether HMR is enabled initially.
+   * @param scheme The protocol that the HMRClient should communicate with on the host (defaults to
+   *     http).
    */
-  void setup(String platform, String bundleEntry, String host, int port, boolean isEnabled);
+  void setup(
+      String platform, String bundleEntry, String host, int port, boolean isEnabled, String scheme);
 
   /** Registers an additional JS bundle with HMRClient. */
   void registerBundle(String bundleUrl);

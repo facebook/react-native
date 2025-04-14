@@ -32,16 +32,17 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files         = "jsireact/*.{cpp,h}"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\"",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
   s.header_dir             = "jsireact"
 
-  s.dependency "React-cxxreact", version
-  s.dependency "React-jsi", version
-  s.dependency "React-perflogger", version
-  s.dependency "RCT-Folly", folly_version
+  s.dependency "React-cxxreact"
+  s.dependency "React-jsi"
+  s.dependency "React-perflogger"
+  s.dependency "RCT-Folly"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float"
+  s.dependency "fmt"
   s.dependency "glog"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 

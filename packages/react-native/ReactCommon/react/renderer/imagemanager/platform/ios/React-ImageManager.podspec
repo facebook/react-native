@@ -27,6 +27,7 @@ Pod::Spec.new do |s|
     "\"$(PODS_TARGET_SRCROOT)\"",
     "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/DoubleConversion\"",
+    "\"$(PODS_ROOT)/fast_float/include\"",
     "\"$(PODS_ROOT)/fmt/include\"",
   ].join(" ")
 

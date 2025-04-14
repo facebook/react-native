@@ -1,7 +1,7 @@
 {
   "name": "@react-native/test-renderer",
   "private": true,
-  "version": "0.76.7",
+  "version": "0.76.9",
   "description": "A Test rendering library for React Native",
   "license": "MIT",
   "devDependencies": {

@@ -68,21 +68,24 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RCT-Folly (2024.01.01.00):
+  - RCT-Folly (2024.10.14.00):
     - boost
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
-    - RCT-Folly/Default (= 2024.01.01.00)
-  - RCT-Folly/Default (2024.01.01.00):
+    - RCT-Folly/Default (= 2024.10.14.00)
+  - RCT-Folly/Default (2024.10.14.00):
     - boost
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
-  - RCT-Folly/Fabric (2024.01.01.00):
+  - RCT-Folly/Fabric (2024.10.14.00):
     - boost
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
   - RCTDeprecation (0.76.6)
   - RCTRequired (0.76.6)
@@ -361,7 +364,8 @@ PODS:
   - React-cxxreact (0.76.6):
     - boost
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly (= 2024.01.01.00)
     - React-callinvoker (= 0.76.6)
@@ -422,7 +426,8 @@ PODS:
     - Yoga
   - React-Fabric (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -457,7 +462,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/animations (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -477,7 +483,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/attributedstring (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -497,7 +504,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/componentregistry (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -517,7 +525,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/componentregistrynative (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -537,7 +546,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/components (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -560,7 +570,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/components/legacyviewmanagerinterop (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -580,7 +591,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/components/root (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -600,7 +612,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/components/view (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -621,7 +634,8 @@ PODS:
     - Yoga
   - React-Fabric/core (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -641,7 +655,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/dom (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -661,7 +676,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/imagemanager (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -681,7 +697,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/leakchecker (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -701,7 +718,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/mounting (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -721,7 +739,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/observers (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -742,7 +761,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/observers/events (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -762,7 +782,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/scheduler (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -784,7 +805,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/telemetry (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -804,7 +826,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/templateprocessor (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -824,7 +847,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/uimanager (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -846,7 +870,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-Fabric/uimanager/consistency (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -867,7 +892,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - React-FabricComponents (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -892,7 +918,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -924,7 +951,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/inputaccessory (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -947,7 +975,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/iostextinput (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -970,7 +999,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/modal (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -993,7 +1023,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/rncore (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -1016,7 +1047,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/safeareaview (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -1039,7 +1071,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/scrollview (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -1062,7 +1095,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/text (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -1085,7 +1119,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/textinput (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -1108,7 +1143,8 @@ PODS:
     - Yoga
   - React-FabricComponents/components/unimplementedview (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -1131,7 +1167,8 @@ PODS:
     - Yoga
   - React-FabricComponents/textlayoutmanager (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired
@@ -1154,7 +1191,8 @@ PODS:
     - Yoga
   - React-FabricImage (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - RCTRequired (= 0.76.6)
@@ -1194,7 +1232,8 @@ PODS:
     - Yoga
   - React-graphics (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly/Fabric (= 2024.01.01.00)
     - React-Core
@@ -1246,12 +1285,14 @@ PODS:
   - React-jsi (0.76.6):
     - boost
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly (= 2024.01.01.00)
   - React-jsiexecutor (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly (= 2024.01.01.00)
     - React-cxxreact (= 0.76.6)
@@ -1440,8 +1481,9 @@ PODS:
   - React-rendererconsistency (0.76.6)
   - React-rendererdebug (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
-    - RCT-Folly (= 2024.01.01.00)
+    - fast_float
+    - fmt
+    - RCT-Folly
     - React-debug
   - React-rncore (0.76.6)
   - React-RuntimeApple (0.76.6):
@@ -1535,7 +1577,8 @@ PODS:
     - ReactCommon
   - ReactCommon/turbomodule (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly (= 2024.01.01.00)
     - React-callinvoker (= 0.76.6)
@@ -1547,7 +1590,8 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.76.6)
   - ReactCommon/turbomodule/bridging (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly (= 2024.01.01.00)
     - React-callinvoker (= 0.76.6)
@@ -1557,7 +1601,8 @@ PODS:
     - React-perflogger (= 0.76.6)
   - ReactCommon/turbomodule/core (0.76.6):
     - DoubleConversion
-    - fmt (= 9.1.0)
+    - fast_float
+    - fmt
     - glog
     - RCT-Folly (= 2024.01.01.00)
     - React-callinvoker (= 0.76.6)
@@ -1595,6 +1640,7 @@ PODS:
 DEPENDENCIES:
   - boost (from `../react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - fast_float (from `../react-native/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../react-native/Libraries/FBLazyVector`)
   - fmt (from `../react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../react-native/third-party-podspecs/glog.podspec`)
@@ -1676,6 +1722,8 @@ EXTERNAL SOURCES:
     :podspec: "../react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
     :podspec: "../react-native/third-party-podspecs/DoubleConversion.podspec"
+  fast_float:
+    :podspec: "../react-native/third-party-podspecs/fast_float.podspec"
   FBLazyVector:
     :path: "../react-native/Libraries/FBLazyVector"
   fmt:

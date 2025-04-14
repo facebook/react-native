@@ -30,6 +30,7 @@ header_search_path = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
   "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fast_float/include\"",
   "\"$(PODS_ROOT)/fmt/include\"",
 ]
 
@@ -65,16 +66,17 @@ Pod::Spec.new do |s|
     s.module_name             = 'React_FabricImage'
   end
 
-  s.dependency folly_dep_name, folly_version
+  s.dependency folly_dep_name
 
-  s.dependency "React-jsiexecutor", version
-  s.dependency "RCTRequired", version
-  s.dependency "RCTTypeSafety", version
+  s.dependency "React-jsiexecutor"
+  s.dependency "RCTRequired"
+  s.dependency "RCTTypeSafety"
   s.dependency "React-jsi"
   s.dependency "React-logger"
   s.dependency "glog"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float"
+  s.dependency "fmt"
   s.dependency "React-ImageManager"
   s.dependency "React-utils"
   s.dependency "Yoga"

@@ -107,11 +107,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
       [_backedTextInputView.defaultTextAttributes mutableCopy];
 
-#if !TARGET_OS_MACCATALYST
-  RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
-  eventEmitterWrapper.eventEmitter = _eventEmitter;
-  defaultAttributes[RCTAttributedStringEventEmitterKey] = eventEmitterWrapper;
-#endif
+  defaultAttributes[RCTAttributedStringEventEmitterKey] = RCTWrapEventEmitter(_eventEmitter);
 
   _backedTextInputView.defaultTextAttributes = defaultAttributes;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@react-native/hermes-inspector-msggen",
-  "version": "0.76.7",
+  "version": "0.76.9",
   "private": true,
   "description": "Hermes Inspector Message Generator for React Native",
   "license": "MIT",
