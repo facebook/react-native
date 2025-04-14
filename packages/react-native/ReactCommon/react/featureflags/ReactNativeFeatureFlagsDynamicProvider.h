@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<68917b569a4984d1dec7633443364e6a>>
+ * @generated SignedSource<<db504bd26ce4d14c5e22b1c4f5fc94d4>>
  */
 
 /**
@@ -241,15 +241,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enablePropsUpdateReconciliationAndroid();
-  }
-
-  bool enableReportEventPaintTime() override {
-    auto value = values_["enableReportEventPaintTime"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableReportEventPaintTime();
   }
 
   bool enableSynchronousStateUpdates() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<09ae30066c2d29be9777dbcb7c0d923f>>
+ * @generated SignedSource<<591f49d5a0b5368ecceb5ab054f4c0a5>>
  */
 
 /**
@@ -94,9 +94,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enablePropsUpdateReconciliationAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableReportEventPaintTime(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableSynchronousStateUpdates(

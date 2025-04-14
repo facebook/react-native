@@ -27,7 +27,7 @@ semantics and APIs.
 > which contains additional context (e.g.: how this was introduced and what
 > React Native had before).
 
-## Usage
+## 🚀 Usage
 
 The event loop is an implementation detail so it is not used directly, but
 several APIs integrate deeply with it:
@@ -99,7 +99,7 @@ function Content(props) {
 }
 ```
 
-## Design
+## 📐 Design
 
 The conceptual model is **aligned with
 [the model on the Web](https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model)**
@@ -185,7 +185,7 @@ used in the new architecture).
 That class implements both the task scheduler that handles priorities and the
 processing of those tasks within the event loop.
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of this
 

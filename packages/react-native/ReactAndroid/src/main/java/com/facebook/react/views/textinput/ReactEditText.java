@@ -10,6 +10,7 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -51,6 +52,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -1077,6 +1079,16 @@ public class ReactEditText extends AppCompatEditText {
       for (TextInlineImageSpan span : spans) {
         span.onStartTemporaryDetach();
       }
+    }
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+      applyTextAttributes();
     }
   }
 
