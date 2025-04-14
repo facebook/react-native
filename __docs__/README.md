@@ -12,7 +12,7 @@ Native and contribute to it. **End users of React Native are meant to use the
 For details on how we approach technical documentation in this repository, see
 [GUIDELINES.md](./GUIDELINES.md).
 
-## Usage
+## 🚀 Usage
 
 This repository is not meant to be consumed directly by end users. Instead, it
 creates several packages that are published to the NPM registry for direct
@@ -30,11 +30,11 @@ JavaScript API.
 This repository provides the Android and iOS versions of React Native. Versions
 for other platforms are maintained in their own repositories.
 
-## Design
+## 📐 Design
 
 TODO: Explain the different components of React Native at a high level.
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of this
 

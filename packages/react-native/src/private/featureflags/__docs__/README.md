@@ -12,7 +12,7 @@ There are 2 types of feature flags:
   everywhere.
 - JS-only: they can only be accessed and customized from JavaScript.
 
-## Usage
+## 🚀 Usage
 
 ### Defining feature flags
 
@@ -188,7 +188,7 @@ If you need to consume this as structured data, you can print it as JSON using:
 yarn featureflags --print --json
 ```
 
-## Design
+## 📐 Design
 
 The architecture of this feature flags system can be described as follows:
 
@@ -210,7 +210,7 @@ The codegen uses a simple templating system based on JavaScript template strings
 to generate the files (see files ending with `-template.js` in the
 [`templates`](../../../../scripts/featureflags/templates/) directory),
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of this
 
