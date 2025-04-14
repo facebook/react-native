@@ -47,7 +47,7 @@ interact with React Native and observe what effects it has on a mock host
 platform. It exposes fine grained controls over scheduling, making it possible
 to test cases that are hard to reproduce manually.
 
-## Usage
+## 🚀 Usage
 
 > [!WARNING]
 >
@@ -194,7 +194,7 @@ has simple examples you can learn from.
 
 If you have any questions not answered here, please reach out to us.
 
-## Design
+## 📐 Design
 
 ![Diagram of the architecture of Fantom in React Native](./architecture.excalidraw.svg)
 
@@ -223,7 +223,7 @@ The runner then follows these steps:
 3. The runner receives the output from the Fantom CLI and reports the provided
    results back to Jest in the correct format.
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of this
 
