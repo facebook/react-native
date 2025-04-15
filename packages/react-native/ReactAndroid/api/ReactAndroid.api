@@ -2641,23 +2641,28 @@ public abstract interface class com/facebook/react/modules/appregistry/AppRegist
 	public abstract fun unmountApplicationComponentAtRootTag (I)V
 }
 
-public class com/facebook/react/modules/blob/BlobModule : com/facebook/fbreact/specs/NativeBlobModuleSpec {
+public final class com/facebook/react/modules/blob/BlobModule : com/facebook/fbreact/specs/NativeBlobModuleSpec {
+	public static final field Companion Lcom/facebook/react/modules/blob/BlobModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun addNetworkingHandler ()V
 	public fun addWebSocketHandler (D)V
 	public fun createFromParts (Lcom/facebook/react/bridge/ReadableArray;Ljava/lang/String;)V
-	public fun getLengthOfBlob (Ljava/lang/String;)J
+	public final fun getLengthOfBlob (Ljava/lang/String;)J
 	public fun getTypedExportedConstants ()Ljava/util/Map;
 	public fun initialize ()V
 	public fun release (Ljava/lang/String;)V
-	public fun remove (Ljava/lang/String;)V
+	public final fun remove (Ljava/lang/String;)V
 	public fun removeWebSocketHandler (D)V
-	public fun resolve (Landroid/net/Uri;)[B
-	public fun resolve (Lcom/facebook/react/bridge/ReadableMap;)[B
-	public fun resolve (Ljava/lang/String;II)[B
+	public final fun resolve (Landroid/net/Uri;)[B
+	public final fun resolve (Lcom/facebook/react/bridge/ReadableMap;)[B
+	public final fun resolve (Ljava/lang/String;II)[B
 	public fun sendOverSocket (Lcom/facebook/react/bridge/ReadableMap;D)V
-	public fun store ([B)Ljava/lang/String;
-	public fun store ([BLjava/lang/String;)V
+	public final fun store ([B)Ljava/lang/String;
+	public final fun store ([BLjava/lang/String;)V
+}
+
+public final class com/facebook/react/modules/blob/BlobModule$Companion {
 }
 
 public final class com/facebook/react/modules/blob/BlobProvider : android/content/ContentProvider {
