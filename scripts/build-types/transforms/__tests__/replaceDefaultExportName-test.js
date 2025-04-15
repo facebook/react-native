@@ -36,6 +36,7 @@ describe('replaceDefaultExportName', () => {
     const result = await translate(code, 'mock/path/to/module/Foo.js');
     expect(result).toMatchInlineSnapshot(`
       "declare const Foo_DEFAULT: typeof Foo;
+      declare type Foo_DEFAULT = typeof Foo_DEFAULT;
       export default Foo_DEFAULT;"
     `);
   });
