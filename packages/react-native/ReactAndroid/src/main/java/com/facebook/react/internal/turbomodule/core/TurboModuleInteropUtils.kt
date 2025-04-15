@@ -7,7 +7,6 @@
 
 package com.facebook.react.internal.turbomodule.core
 
-import com.facebook.infer.annotation.Assertions
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Dynamic
@@ -56,9 +55,9 @@ internal object TurboModuleInteropUtils {
         if (returnType != MutableMap::class.java) {
           throw ParsingException(moduleName, "getConstants must return a Map")
         }
-      } else if (annotation != null &&
-          (annotation.isBlockingSynchronousMethod && returnType == Void.TYPE ||
-              !annotation.isBlockingSynchronousMethod && returnType != Void.TYPE)) {
+      } else if ((annotation != null) &&
+          ((annotation.isBlockingSynchronousMethod && returnType == java.lang.Void.TYPE) ||
+              (!annotation.isBlockingSynchronousMethod && returnType != java.lang.Void.TYPE))) {
         throw ParsingException(
             moduleName,
             "TurboModule system assumes returnType == void iff the method is synchronous.")
@@ -77,8 +76,8 @@ internal object TurboModuleInteropUtils {
 
   private fun getMethodsFromModule(module: NativeModule): Array<Method> {
     var classForMethods: Class<out NativeModule> = module.javaClass
-    val superClass = classForMethods.superclass as Class<out NativeModule>
-    if (TurboModule::class.java.isAssignableFrom(superClass)) {
+    val superClass = classForMethods.superclass as? Class<out NativeModule>
+    if (superClass != null && TurboModule::class.java.isAssignableFrom(superClass)) {
       // For java module that is based on generated flow-type spec, inspect the
       // spec abstract class instead, which is the super class of the given java
       // module.
@@ -123,11 +122,11 @@ internal object TurboModuleInteropUtils {
       return "F"
     }
 
-    if (paramClass == Boolean::class.java ||
-        paramClass == Int::class.java ||
-        paramClass == Double::class.java ||
-        paramClass == Float::class.java ||
-        paramClass == String::class.java ||
+    if (paramClass == java.lang.Boolean::class.java ||
+        paramClass == java.lang.Integer::class.java ||
+        paramClass == java.lang.Double::class.java ||
+        paramClass == java.lang.Float::class.java ||
+        paramClass == java.lang.String::class.java ||
         paramClass == Callback::class.java ||
         paramClass == Promise::class.java ||
         paramClass == ReadableMap::class.java ||
@@ -147,31 +146,31 @@ internal object TurboModuleInteropUtils {
       methodName: String,
       returnClass: Class<*>
   ): String {
-    if (returnClass == Boolean::class.javaPrimitiveType) {
+    if (returnClass == java.lang.Boolean::class.javaPrimitiveType) {
       return "Z"
     }
 
-    if (returnClass == Int::class.javaPrimitiveType) {
+    if (returnClass == java.lang.Integer::class.javaPrimitiveType) {
       return "I"
     }
 
-    if (returnClass == Double::class.javaPrimitiveType) {
+    if (returnClass == java.lang.Double::class.javaPrimitiveType) {
       return "D"
     }
 
-    if (returnClass == Float::class.javaPrimitiveType) {
+    if (returnClass == java.lang.Float::class.javaPrimitiveType) {
       return "F"
     }
 
-    if (returnClass == Void.TYPE) {
+    if (returnClass == java.lang.Void.TYPE) {
       return "V"
     }
 
-    if (returnClass == Boolean::class.java ||
-        returnClass == Int::class.java ||
-        returnClass == Double::class.java ||
-        returnClass == Float::class.java ||
-        returnClass == String::class.java ||
+    if (returnClass == java.lang.Boolean::class.java ||
+        returnClass == java.lang.Integer::class.java ||
+        returnClass == java.lang.Double::class.java ||
+        returnClass == java.lang.Float::class.java ||
+        returnClass == java.lang.String::class.java ||
         returnClass == WritableMap::class.java ||
         returnClass == WritableArray::class.java ||
         returnClass == MutableMap::class.java) {
@@ -186,8 +185,8 @@ internal object TurboModuleInteropUtils {
 
   private fun convertClassToJniType(cls: Class<*>): String {
     val canonicalName = cls.canonicalName
-    Assertions.assertNotNull(canonicalName, "Class must have a canonical name")
-    return 'L'.toString() + canonicalName!!.replace('.', '/') + ';'
+    requireNotNull(canonicalName) { "Class must have a canonical name" }
+    return 'L'.toString() + canonicalName.replace('.', '/') + ';'
   }
 
   private fun getJsArgCount(
@@ -234,24 +233,25 @@ internal object TurboModuleInteropUtils {
       i += 1
     }
 
-    if (returnClass == Boolean::class.javaPrimitiveType || returnClass == Boolean::class.java) {
+    if (returnClass == java.lang.Boolean::class.javaPrimitiveType ||
+        returnClass == java.lang.Boolean::class.java) {
       return "BooleanKind"
     }
 
-    if (returnClass == Double::class.javaPrimitiveType ||
-        returnClass == Double::class.java ||
-        returnClass == Float::class.javaPrimitiveType ||
-        returnClass == Float::class.java ||
-        returnClass == Int::class.javaPrimitiveType ||
-        returnClass == Int::class.java) {
+    if (returnClass == java.lang.Double::class.javaPrimitiveType ||
+        returnClass == java.lang.Double::class.java ||
+        returnClass == java.lang.Float::class.javaPrimitiveType ||
+        returnClass == java.lang.Float::class.java ||
+        returnClass == java.lang.Integer::class.javaPrimitiveType ||
+        returnClass == java.lang.Integer::class.java) {
       return "NumberKind"
     }
 
-    if (returnClass == String::class.java) {
+    if (returnClass == java.lang.String::class.java) {
       return "StringKind"
     }
 
-    if (returnClass == Void.TYPE) {
+    if (returnClass == java.lang.Void.TYPE) {
       return "VoidKind"
     }
 
