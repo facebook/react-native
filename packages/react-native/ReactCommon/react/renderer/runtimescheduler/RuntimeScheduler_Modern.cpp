@@ -9,7 +9,7 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/TraceSection.h>
-#include <jsinspector-modern/tracing/EventLoopTaskReporter.h>
+#include <jsinspector-modern/tracing/EventLoopReporter.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/timing/primitives.h>
@@ -307,8 +307,8 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     Task& task,
     RuntimeSchedulerTimePoint taskStartTime) {
   TraceSection s("RuntimeScheduler::runEventLoopTick");
-  [[maybe_unused]] jsinspector_modern::tracing::EventLoopTaskReporter
-      performanceReporter;
+  jsinspector_modern::tracing::EventLoopReporter performanceReporter(
+      jsinspector_modern::tracing::EventLoopPhase::Task);
 
   ScopedShadowTreeRevisionLock revisionLock(
       shadowTreeRevisionConsistencyManager_);
@@ -395,11 +395,13 @@ void RuntimeScheduler_Modern::executeTask(
  */
 void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
     jsi::Runtime& runtime) {
-  TraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
-
   if (performingMicrotaskCheckpoint_) {
     return;
   }
+
+  TraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
+  jsinspector_modern::tracing::EventLoopReporter performanceReporter(
+      jsinspector_modern::tracing::EventLoopPhase::Microtasks);
 
   performingMicrotaskCheckpoint_ = true;
   OnScopeExit restoreFlag([&]() { performingMicrotaskCheckpoint_ = false; });
