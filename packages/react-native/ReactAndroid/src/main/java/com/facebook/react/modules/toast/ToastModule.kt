@@ -17,10 +17,10 @@ import com.facebook.react.module.annotations.ReactModule
 
 /** [NativeModule] that allows JS to show an Android Toast. */
 @ReactModule(name = NativeToastAndroidSpec.NAME)
-public class ToastModule(reactContext: ReactApplicationContext) :
+internal class ToastModule(reactContext: ReactApplicationContext) :
     NativeToastAndroidSpec(reactContext) {
 
-  public override fun getTypedExportedConstants(): Map<String, Any> =
+  override fun getTypedExportedConstants(): Map<String, Any> =
       mutableMapOf(
           DURATION_SHORT_KEY to Toast.LENGTH_SHORT,
           DURATION_LONG_KEY to Toast.LENGTH_LONG,
@@ -29,13 +29,13 @@ public class ToastModule(reactContext: ReactApplicationContext) :
           GRAVITY_CENTER to (Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL),
       )
 
-  public override fun show(message: String?, durationDouble: Double) {
+  override fun show(message: String?, durationDouble: Double) {
     val duration = durationDouble.toInt()
     UiThreadUtil.runOnUiThread(
         Runnable { Toast.makeText(getReactApplicationContext(), message, duration).show() })
   }
 
-  public override fun showWithGravity(
+  override fun showWithGravity(
       message: String?,
       durationDouble: Double,
       gravityDouble: Double
@@ -50,7 +50,7 @@ public class ToastModule(reactContext: ReactApplicationContext) :
         })
   }
 
-  public override fun showWithGravityAndOffset(
+  override fun showWithGravityAndOffset(
       message: String?,
       durationDouble: Double,
       gravityDouble: Double,
@@ -69,8 +69,8 @@ public class ToastModule(reactContext: ReactApplicationContext) :
         })
   }
 
-  public companion object {
-    public const val NAME: String = NativeToastAndroidSpec.NAME
+  companion object {
+    const val NAME: String = NativeToastAndroidSpec.NAME
     private const val DURATION_SHORT_KEY = "SHORT"
     private const val DURATION_LONG_KEY = "LONG"
     private const val GRAVITY_TOP_KEY = "TOP"
