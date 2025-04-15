@@ -4424,18 +4424,18 @@ public class com/facebook/react/uimanager/ThemedReactContext : com/facebook/reac
 	public fun removeLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
 }
 
-public class com/facebook/react/uimanager/TouchTargetHelper {
-	public fun <init> ()V
-	public static fun findTargetPathAndCoordinatesForTouch (FFLandroid/view/ViewGroup;[F)Ljava/util/List;
-	public static fun findTargetTagAndCoordinatesForTouch (FFLandroid/view/ViewGroup;[F[I)I
-	public static fun findTargetTagForTouch (FFLandroid/view/ViewGroup;)I
-	public static fun findTargetTagForTouch (FFLandroid/view/ViewGroup;[I)I
+public final class com/facebook/react/uimanager/TouchTargetHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/TouchTargetHelper;
+	public static final fun findTargetPathAndCoordinatesForTouch (FFLandroid/view/ViewGroup;[F)Ljava/util/List;
+	public static final fun findTargetTagAndCoordinatesForTouch (FFLandroid/view/ViewGroup;[F[I)I
+	public static final fun findTargetTagForTouch (FFLandroid/view/ViewGroup;)I
+	public static final fun findTargetTagForTouch (FFLandroid/view/ViewGroup;[I)I
 }
 
-public class com/facebook/react/uimanager/TouchTargetHelper$ViewTarget {
+public final class com/facebook/react/uimanager/TouchTargetHelper$ViewTarget {
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getView ()Landroid/view/View;
-	public fun getViewId ()I
+	public final fun getView ()Landroid/view/View;
+	public final fun getViewId ()I
 	public fun hashCode ()I
 }
 
