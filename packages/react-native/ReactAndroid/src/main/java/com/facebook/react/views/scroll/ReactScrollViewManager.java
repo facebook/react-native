@@ -297,7 +297,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     }
 
     // ScrollView always has one child - the scrollable area
-    int bottom = child.getHeight() + scrollView.getPaddingBottom();
+    int bottom = child.getHeight() - scrollView.getHeight() + scrollView.getPaddingBottom();
     scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(scrollView.getScrollX(), bottom);
