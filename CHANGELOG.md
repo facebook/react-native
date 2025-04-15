@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.79.1
+
+### Changed
+
+#### Android specific
+
+- **DevSupport:** Change `defaultJSExceptionHandler`'s type to  `JSExceptionHandler` on the `ReleaseDevSupportManager` ([9eb75d4bd5](https://github.com/facebook/react-native/commit/9eb75d4bd553bdc166118110d095b98bef811d4e) by [@alanjhughes](https://github.com/alanjhughes))
+
+#### iOS specific
+
+- **TextInput:** Typing into TextInput now will not cause the caret position to update to the beginning when a zero-length selection is set. ([7771317e5c](https://github.com/facebook/react-native/commit/7771317e5cf49bda65275ea1149160a45c607803) by [@ouchuan](https://github.com/ouchuan))
+
+### Fixed
+
+#### Android specific
+
+- **Codegen:** Do not generate Apple specific file for Android ([b2bacc4a9f](https://github.com/facebook/react-native/commit/b2bacc4a9f3b97a4f59126a229477d3c952b3f44) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### iOS specific
+
+- **Codegen:** Do not generate ReactCodegen.podspec for libraries ([f3c280442d](https://github.com/facebook/react-native/commit/f3c280442dc49e13b24baa2348f6b8c802045178) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.79.0
 
 ### Added
