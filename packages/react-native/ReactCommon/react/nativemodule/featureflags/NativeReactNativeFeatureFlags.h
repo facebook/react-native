@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aae70d9cf4ceedb0e43af15d2362fb7d>>
+ * @generated SignedSource<<5b653b410e1237979cf0c2e1a1bd3610>>
  */
 
 /**
@@ -100,6 +100,8 @@ class NativeReactNativeFeatureFlags
   bool removeTurboModuleManagerDelegateMutex(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
