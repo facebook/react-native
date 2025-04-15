@@ -81,7 +81,7 @@ public class AndroidInfoModule(reactContext: ReactApplicationContext) :
   }
 
   public companion object {
-    public const val NAME: String = "NativePlatformConstantsAndroidSpec.NAME"
+    public const val NAME: String = NativePlatformConstantsAndroidSpec.NAME
     private const val IS_TESTING = "IS_TESTING"
     private const val IS_DISABLE_ANIMATIONS = "IS_DISABLE_ANIMATIONS"
   }
