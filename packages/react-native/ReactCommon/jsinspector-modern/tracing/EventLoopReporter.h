@@ -11,20 +11,26 @@
 
 namespace facebook::react::jsinspector_modern::tracing {
 
-struct EventLoopTaskReporter {
+enum class EventLoopPhase {
+  Task,
+  Microtasks,
+};
+
+struct EventLoopReporter {
  public:
-  EventLoopTaskReporter();
+  explicit EventLoopReporter(EventLoopPhase phase);
 
-  EventLoopTaskReporter(const EventLoopTaskReporter&) = delete;
-  EventLoopTaskReporter(EventLoopTaskReporter&&) = delete;
-  EventLoopTaskReporter& operator=(const EventLoopTaskReporter&) = delete;
-  EventLoopTaskReporter& operator=(EventLoopTaskReporter&&) = delete;
+  EventLoopReporter(const EventLoopReporter&) = delete;
+  EventLoopReporter(EventLoopReporter&&) = delete;
+  EventLoopReporter& operator=(const EventLoopReporter&) = delete;
+  EventLoopReporter& operator=(EventLoopReporter&&) = delete;
 
-  ~EventLoopTaskReporter();
+  ~EventLoopReporter();
 
  private:
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
   std::chrono::steady_clock::time_point startTimestamp_;
+  EventLoopPhase phase_;
 #endif
 };
 

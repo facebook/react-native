@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "EventLoopTaskReporter.h"
+#include "EventLoopReporter.h"
 
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
 #include "PerformanceTracer.h"
@@ -25,24 +25,37 @@ inline uint64_t formatTimePointToUnixTimestamp(
 
 } // namespace
 
-EventLoopTaskReporter::EventLoopTaskReporter()
-    : startTimestamp_(std::chrono::steady_clock::now()) {}
+EventLoopReporter::EventLoopReporter(EventLoopPhase phase)
+    : startTimestamp_(std::chrono::steady_clock::now()), phase_(phase) {}
 
-EventLoopTaskReporter::~EventLoopTaskReporter() {
+EventLoopReporter::~EventLoopReporter() {
   PerformanceTracer& performanceTracer = PerformanceTracer::getInstance();
   if (performanceTracer.isTracing()) {
     auto end = std::chrono::steady_clock::now();
-    performanceTracer.reportEventLoopTask(
-        formatTimePointToUnixTimestamp(startTimestamp_),
-        formatTimePointToUnixTimestamp(end));
+    switch (phase_) {
+      case EventLoopPhase::Task:
+        performanceTracer.reportEventLoopTask(
+            formatTimePointToUnixTimestamp(startTimestamp_),
+            formatTimePointToUnixTimestamp(end));
+        break;
+
+      case EventLoopPhase::Microtasks:
+        performanceTracer.reportEventLoopMicrotasks(
+            formatTimePointToUnixTimestamp(startTimestamp_),
+            formatTimePointToUnixTimestamp(end));
+        break;
+
+      default:
+        break;
+    }
   }
 }
 
 #else
 
-EventLoopTaskReporter::EventLoopTaskReporter() {}
+EventLoopReporter::EventLoopReporter(EventLoopPhase phase) {}
 
-EventLoopTaskReporter::~EventLoopTaskReporter() {}
+EventLoopReporter::~EventLoopReporter() {}
 
 #endif
 
