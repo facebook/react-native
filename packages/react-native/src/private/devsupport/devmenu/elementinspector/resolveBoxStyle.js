@@ -11,7 +11,7 @@
 'use strict';
 
 const I18nManager =
-  require('../../../Libraries/ReactNative/I18nManager').default;
+  require('../../../../../Libraries/ReactNative/I18nManager').default;
 
 /**
  * Resolve a style property into its component parts.

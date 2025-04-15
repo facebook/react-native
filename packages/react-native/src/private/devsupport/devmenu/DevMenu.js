@@ -8,7 +8,7 @@
  * @format
  */
 
-import NativeDevMenu from '../specs_DEPRECATED/modules/NativeDevMenu';
+import NativeDevMenu from './specs/NativeDevMenu';
 
 /**
  * The DevMenu module exposes methods for interacting with the Dev Menu in development.

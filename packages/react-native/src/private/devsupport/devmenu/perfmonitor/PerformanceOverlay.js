@@ -12,11 +12,12 @@
 
 import * as React from 'react';
 
-const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
-const Text = require('../../../Libraries/Text/Text').default;
+const View = require('../../../../../Libraries/Components/View/View').default;
+const StyleSheet =
+  require('../../../../../Libraries/StyleSheet/StyleSheet').default;
+const Text = require('../../../../../Libraries/Text/Text').default;
 const PerformanceLogger =
-  require('../../../Libraries/Utilities/GlobalPerformanceLogger').default;
+  require('../../../../../Libraries/Utilities/GlobalPerformanceLogger').default;
 
 class PerformanceOverlay extends React.Component<{...}> {
   render(): React.Node {

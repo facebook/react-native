@@ -10,11 +10,11 @@
 
 'use strict';
 
-import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
+import type {ViewStyleProp} from '../../../../../Libraries/StyleSheet/StyleSheet';
 
 import * as React from 'react';
 
-const View = require('../../../Libraries/Components/View/View').default;
+const View = require('../../../../../Libraries/Components/View/View').default;
 
 type Props = $ReadOnly<{
   children: React.Node,

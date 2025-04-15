@@ -10,14 +10,15 @@
 
 'use strict';
 
-import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
-import type {____FlattenStyleProp_Internal} from '../../../Libraries/StyleSheet/StyleSheetTypes';
+import type {ViewStyleProp} from '../../../../../Libraries/StyleSheet/StyleSheet';
+import type {____FlattenStyleProp_Internal} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
 
 import * as React from 'react';
 
-const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
-const Text = require('../../../Libraries/Text/Text').default;
+const View = require('../../../../../Libraries/Components/View/View').default;
+const StyleSheet =
+  require('../../../../../Libraries/StyleSheet/StyleSheet').default;
+const Text = require('../../../../../Libraries/Text/Text').default;
 
 type Props = $ReadOnly<{
   style?: ?____FlattenStyleProp_Internal<ViewStyleProp>,
