@@ -2717,12 +2717,6 @@ public class com/facebook/react/modules/core/ExceptionsManagerModule : com/faceb
 	public fun reportSoftException (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V
 }
 
-public class com/facebook/react/modules/core/HeadlessJsTaskSupportModule : com/facebook/fbreact/specs/NativeHeadlessJsTaskSupportSpec {
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun notifyTaskFinished (D)V
-	public fun notifyTaskRetry (DLcom/facebook/react/bridge/Promise;)V
-}
-
 public abstract interface class com/facebook/react/modules/core/JSTimers : com/facebook/react/bridge/JavaScriptModule {
 	public abstract fun callIdleCallbacks (D)V
 	public abstract fun callTimers (Lcom/facebook/react/bridge/WritableArray;)V
