@@ -3987,10 +3987,10 @@ public abstract interface class com/facebook/react/uimanager/ReactClippingViewGr
 	public abstract fun updateClippingRect (Ljava/util/Set;)V
 }
 
-public class com/facebook/react/uimanager/ReactClippingViewGroupHelper {
+public final class com/facebook/react/uimanager/ReactClippingViewGroupHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/ReactClippingViewGroupHelper;
 	public static final field PROP_REMOVE_CLIPPED_SUBVIEWS Ljava/lang/String;
-	public fun <init> ()V
-	public static fun calculateClippingRect (Landroid/view/View;Landroid/graphics/Rect;)V
+	public static final fun calculateClippingRect (Landroid/view/View;Landroid/graphics/Rect;)V
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactCompoundView {
