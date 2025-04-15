@@ -66,7 +66,7 @@ export class Domain {
  * Globally bound object providing a hook for React DevTools runtime API calls
  * over CDP.
  *
- * @see {@link ./__docs__/FuseboxReactDevToolsDispatcher.excalidraw-embedded.png}
+ * @see {@link ./__docs__/FuseboxReactDevToolsDispatcher.excalidraw.svg}
  */
 class FuseboxReactDevToolsDispatcher {
   static #domainNameToDomainMap: Map<DomainName, Domain> = new Map();
