@@ -2712,11 +2712,16 @@ public abstract interface class com/facebook/react/modules/core/DeviceEventManag
 }
 
 public class com/facebook/react/modules/core/ExceptionsManagerModule : com/facebook/fbreact/specs/NativeExceptionsManagerSpec {
+	public static final field Companion Lcom/facebook/react/modules/core/ExceptionsManagerModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
 	public fun dismissRedbox ()V
 	public fun reportException (Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun reportFatalException (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V
 	public fun reportSoftException (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V
+}
+
+public final class com/facebook/react/modules/core/ExceptionsManagerModule$Companion {
 }
 
 public class com/facebook/react/modules/core/HeadlessJsTaskSupportModule : com/facebook/fbreact/specs/NativeHeadlessJsTaskSupportSpec {
@@ -2802,6 +2807,8 @@ public final class com/facebook/react/modules/core/TimingModule$Companion {
 }
 
 public final class com/facebook/react/modules/debug/DevSettingsModule : com/facebook/fbreact/specs/NativeDevSettingsSpec {
+	public static final field Companion Lcom/facebook/react/modules/debug/DevSettingsModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
 	public fun addListener (Ljava/lang/String;)V
 	public fun addMenuItem (Ljava/lang/String;)V
@@ -2814,6 +2821,9 @@ public final class com/facebook/react/modules/debug/DevSettingsModule : com/face
 	public fun setIsShakeToShowDevMenuEnabled (Z)V
 	public fun setProfilingEnabled (Z)V
 	public fun toggleElementInspector ()V
+}
+
+public final class com/facebook/react/modules/debug/DevSettingsModule$Companion {
 }
 
 public final class com/facebook/react/modules/debug/FpsDebugFrameCallback : android/view/Choreographer$FrameCallback {
@@ -2847,7 +2857,12 @@ public final class com/facebook/react/modules/debug/FpsDebugFrameCallback$FpsInf
 }
 
 public final class com/facebook/react/modules/debug/SourceCodeModule : com/facebook/fbreact/specs/NativeSourceCodeSpec {
+	public static final field Companion Lcom/facebook/react/modules/debug/SourceCodeModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
+}
+
+public final class com/facebook/react/modules/debug/SourceCodeModule$Companion {
 }
 
 public abstract interface class com/facebook/react/modules/debug/interfaces/DeveloperSettings {
@@ -3144,9 +3159,14 @@ public final class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 }
 
 public final class com/facebook/react/modules/systeminfo/AndroidInfoModule : com/facebook/fbreact/specs/NativePlatformConstantsAndroidSpec {
+	public static final field Companion Lcom/facebook/react/modules/systeminfo/AndroidInfoModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getAndroidID ()Ljava/lang/String;
 	public fun invalidate ()V
+}
+
+public final class com/facebook/react/modules/systeminfo/AndroidInfoModule$Companion {
 }
 
 public final class com/facebook/react/modules/systeminfo/ReactNativeVersion {
