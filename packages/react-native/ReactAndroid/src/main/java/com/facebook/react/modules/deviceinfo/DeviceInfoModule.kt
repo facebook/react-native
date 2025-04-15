@@ -73,4 +73,8 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     super.invalidate()
     reactApplicationContext?.removeLifecycleEventListener(this)
   }
+
+  public companion object {
+    public const val NAME: String = NativeDeviceInfoSpec.NAME
+  }
 }

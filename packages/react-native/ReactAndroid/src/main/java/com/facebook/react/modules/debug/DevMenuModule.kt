@@ -39,4 +39,8 @@ internal class DevMenuModule(
   override fun setHotLoadingEnabled(enabled: Boolean) {
     devSupportManager.setHotModuleReplacementEnabled(enabled)
   }
+
+  public companion object {
+    public const val NAME: String = NativeDevMenuSpec.NAME
+  }
 }
