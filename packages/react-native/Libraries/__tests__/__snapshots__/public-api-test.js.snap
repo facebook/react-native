@@ -1774,7 +1774,7 @@ type PressableBaseProps = $ReadOnly<{
   unstable_pressDelay?: ?number,
 }>;
 export type PressableProps = $ReadOnly<{
-  ...ViewProps,
+  ...Omit<ViewProps, \\"onMouseEnter\\" | \\"onMouseLeave\\">,
   ...PressableBaseProps,
 }>;
 declare export default component(
