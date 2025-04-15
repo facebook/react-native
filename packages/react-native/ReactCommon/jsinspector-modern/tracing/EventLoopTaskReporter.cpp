@@ -8,22 +8,13 @@
 #include "EventLoopTaskReporter.h"
 
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
+#include <react/timing/primitives.h>
 #include "PerformanceTracer.h"
 #endif
 
 namespace facebook::react::jsinspector_modern::tracing {
 
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
-namespace {
-
-inline uint64_t formatTimePointToUnixTimestamp(
-    std::chrono::steady_clock::time_point timestamp) {
-  return std::chrono::duration_cast<std::chrono::microseconds>(
-             timestamp.time_since_epoch())
-      .count();
-}
-
-} // namespace
 
 EventLoopTaskReporter::EventLoopTaskReporter()
     : startTimestamp_(std::chrono::steady_clock::now()) {}
@@ -33,8 +24,8 @@ EventLoopTaskReporter::~EventLoopTaskReporter() {
   if (performanceTracer.isTracing()) {
     auto end = std::chrono::steady_clock::now();
     performanceTracer.reportEventLoopTask(
-        formatTimePointToUnixTimestamp(startTimestamp_),
-        formatTimePointToUnixTimestamp(end));
+        chronoToTracingTimeStamp(startTimestamp_),
+        chronoToTracingTimeStamp(end));
   }
 }
 
