@@ -4320,19 +4320,19 @@ public final class com/facebook/react/uimanager/ReactStage$Companion {
 	public static final field SURFACE_DID_STOP I
 }
 
-public class com/facebook/react/uimanager/ReactStylesDiffMap {
+public final class com/facebook/react/uimanager/ReactStylesDiffMap {
 	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun getArray (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
-	public fun getBoolean (Ljava/lang/String;Z)Z
-	public fun getDouble (Ljava/lang/String;D)D
-	public fun getDynamic (Ljava/lang/String;)Lcom/facebook/react/bridge/Dynamic;
-	public fun getFloat (Ljava/lang/String;F)F
-	public fun getInt (Ljava/lang/String;I)I
-	public fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
-	public fun getString (Ljava/lang/String;)Ljava/lang/String;
-	public fun hasKey (Ljava/lang/String;)Z
-	public fun isNull (Ljava/lang/String;)Z
-	public fun toMap ()Ljava/util/Map;
+	public final fun getArray (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
+	public final fun getBoolean (Ljava/lang/String;Z)Z
+	public final fun getDouble (Ljava/lang/String;D)D
+	public final fun getDynamic (Ljava/lang/String;)Lcom/facebook/react/bridge/Dynamic;
+	public final fun getFloat (Ljava/lang/String;F)F
+	public final fun getInt (Ljava/lang/String;I)I
+	public final fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
+	public final fun getString (Ljava/lang/String;)Ljava/lang/String;
+	public final fun hasKey (Ljava/lang/String;)Z
+	public final fun isNull (Ljava/lang/String;)Z
+	public final fun toMap ()Ljava/util/Map;
 	public fun toString ()Ljava/lang/String;
 }
 
