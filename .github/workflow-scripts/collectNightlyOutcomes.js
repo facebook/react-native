@@ -12,7 +12,7 @@ const path = require('path');
 
 function readOutcomes() {
   const baseDir = '/tmp';
-  let outcomes = {};
+  let outcomes = [];
   fs.readdirSync(baseDir).forEach(file => {
     const fullPath = path.join(baseDir, file);
     if (fullPath.endsWith('outcome') && fs.statSync(fullPath).isDirectory) {
@@ -26,10 +26,11 @@ function readOutcomes() {
           console.log(
             `[${platform}] ${library} completed with status ${status}`,
           );
-          outcomes[library.trim()] = {
+          outcomes.push({
+            library: library.trim(),
             platform,
             status: status.trim(),
-          };
+          });
         }
       });
     } else if (fullPath.endsWith('outcome')) {
@@ -38,10 +39,11 @@ function readOutcomes() {
         .split(':');
       const platform = file.includes('android') ? 'Android' : 'iOS';
       console.log(`[${platform}] ${library} completed with status ${status}`);
-      outcomes[library.trim()] = {
+      outcomes.push({
+        library: library.trim(),
         platform,
         status: status.trim(),
-      };
+      });
     }
   });
   return outcomes;
@@ -50,10 +52,10 @@ function readOutcomes() {
 function printFailures(outcomes) {
   console.log('Printing failures...');
   let failures = 0;
-  Object.entries(outcomes).forEach(([library, value]) => {
-    if (value.status !== 'success') {
+  outcomes.forEach(entry => {
+    if (entry.status !== 'success') {
       console.log(
-        `❌ [${value.platform}] ${library} failed with status ${value.status}`,
+        `❌ [${entry.platform}] ${entry.library} failed with status ${entry.status}`,
       );
       failures++;
     }
