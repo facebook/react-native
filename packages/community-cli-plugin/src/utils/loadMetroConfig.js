@@ -115,6 +115,10 @@ This warning will be removed in future (https://github.com/facebook/metro/issues
     ...options,
   });
 
+  if (options.disableConfigOverride) {
+    return config;
+  }
+
   const overrideConfig = getOverrideConfig(ctx, config);
 
   return mergeConfig(config, overrideConfig);
