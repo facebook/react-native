@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION_ERROR") // Conflicting okhttp versions
+
 package com.facebook.react.modules.blob
 
 import android.net.Uri
