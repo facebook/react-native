@@ -6674,31 +6674,31 @@ public abstract interface class com/facebook/react/views/textinput/ContentSizeWa
 }
 
 public class com/facebook/react/views/textinput/ReactEditText : androidx/appcompat/widget/AppCompatEditText {
-	public static final field DEBUG_MODE Z
-	protected field mContainsImages Z
-	protected field mDisableTextDiffing Z
-	protected field mIsSettingTextFromJS Z
-	protected field mIsSettingTextFromState Z
-	protected field mNativeEventCount I
+	public static final field Companion Lcom/facebook/react/views/textinput/ReactEditText$Companion;
 	public fun <init> (Landroid/content/Context;)V
 	public fun addTextChangedListener (Landroid/text/TextWatcher;)V
-	protected fun applyTextAttributes ()V
-	public fun canUpdateWithEventCount (I)Z
+	protected final fun applyTextAttributes ()V
+	public final fun canUpdateWithEventCount (I)Z
 	public fun clearFocus ()V
-	protected fun finalize ()V
-	public fun getBorderColor (I)I
-	public fun getDisableFullscreenUI ()Z
-	public fun getReturnKeyType ()Ljava/lang/String;
-	public fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
-	public fun getSubmitBehavior ()Ljava/lang/String;
-	protected fun hideSoftKeyboard ()V
-	public fun incrementAndGetEventCounter ()I
+	protected final fun finalize ()V
+	public final fun getBorderColor (I)I
+	protected final fun getContainsImages ()Z
+	public final fun getDisableFullscreenUI ()Z
+	protected final fun getNativeEventCount ()I
+	public final fun getReturnKeyType ()Ljava/lang/String;
+	public final fun getStagedInputType ()I
+	public final fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
+	public final fun getSubmitBehavior ()Ljava/lang/String;
+	protected final fun hideSoftKeyboard ()V
+	public final fun incrementAndGetEventCounter ()I
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun isLayoutRequested ()Z
-	public fun maybeSetSelection (III)V
-	public fun maybeSetTextFromJS (Lcom/facebook/react/views/text/ReactTextUpdate;)V
-	public fun maybeSetTextFromState (Lcom/facebook/react/views/text/ReactTextUpdate;)V
-	public fun maybeUpdateTypeface ()V
+	protected final fun isSettingTextFromJS ()Z
+	protected final fun isSettingTextFromState ()Z
+	public final fun maybeSetSelection (III)V
+	public final fun maybeSetTextFromJS (Lcom/facebook/react/views/text/ReactTextUpdate;)V
+	public final fun maybeSetTextFromState (Lcom/facebook/react/views/text/ReactTextUpdate;)V
+	public final fun maybeUpdateTypeface ()V
 	public fun onAttachedToWindow ()V
 	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onCreateInputConnection (Landroid/view/inputmethod/EditorInfo;)Landroid/view/inputmethod/InputConnection;
@@ -6715,41 +6715,50 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun removeTextChangedListener (Landroid/text/TextWatcher;)V
 	public fun requestFocus (ILandroid/graphics/Rect;)Z
-	public fun requestFocusFromJS ()V
-	public fun setAllowFontScaling (Z)V
-	public fun setAutoFocus (Z)V
+	public final fun requestFocusFromJS ()V
+	public final fun setAllowFontScaling (Z)V
+	public final fun setAutoFocus (Z)V
 	public fun setBackgroundColor (I)V
-	public fun setBorderColor (ILjava/lang/Integer;)V
-	public fun setBorderRadius (F)V
-	public fun setBorderRadius (FI)V
-	public fun setBorderStyle (Ljava/lang/String;)V
-	public fun setBorderWidth (IF)V
-	public fun setContentSizeWatcher (Lcom/facebook/react/views/textinput/ContentSizeWatcher;)V
-	public fun setContextMenuHidden (Z)V
-	public fun setDisableFullscreenUI (Z)V
-	public fun setFontFamily (Ljava/lang/String;)V
+	public final fun setBorderColor (ILjava/lang/Integer;)V
+	public final fun setBorderRadius (F)V
+	public final fun setBorderRadius (FI)V
+	public final fun setBorderStyle (Ljava/lang/String;)V
+	public final fun setBorderWidth (IF)V
+	protected final fun setContainsImages (Z)V
+	public final fun setContentSizeWatcher (Lcom/facebook/react/views/textinput/ContentSizeWatcher;)V
+	public final fun setContextMenuHidden (Z)V
+	public final fun setDisableFullscreenUI (Z)V
+	public final fun setEventDispatcher (Lcom/facebook/react/uimanager/events/EventDispatcher;)V
+	public final fun setFontFamily (Ljava/lang/String;)V
 	public fun setFontFeatureSettings (Ljava/lang/String;)V
-	public fun setFontSize (F)V
-	public fun setFontStyle (Ljava/lang/String;)V
-	public fun setFontWeight (Ljava/lang/String;)V
+	public final fun setFontSize (F)V
+	public final fun setFontStyle (Ljava/lang/String;)V
+	public final fun setFontWeight (Ljava/lang/String;)V
 	public fun setInputType (I)V
-	public fun setLetterSpacingPt (F)V
+	public final fun setLetterSpacingPt (F)V
 	public fun setLineHeight (I)V
-	public fun setMaxFontSizeMultiplier (F)V
-	public fun setOnKeyPress (Z)V
-	public fun setOverflow (Ljava/lang/String;)V
-	public fun setPlaceholder (Ljava/lang/String;)V
-	public fun setReturnKeyType (Ljava/lang/String;)V
-	public fun setScrollWatcher (Lcom/facebook/react/views/textinput/ScrollWatcher;)V
-	public fun setSelectTextOnFocus (Z)V
+	public final fun setMaxFontSizeMultiplier (F)V
+	protected final fun setNativeEventCount (I)V
+	public final fun setOnKeyPress (Z)V
+	public final fun setOverflow (Ljava/lang/String;)V
+	public final fun setPlaceholder (Ljava/lang/String;)V
+	public final fun setReturnKeyType (Ljava/lang/String;)V
+	public final fun setScrollWatcher (Lcom/facebook/react/views/textinput/ScrollWatcher;)V
+	public final fun setSelectTextOnFocus (Z)V
 	public fun setSelection (II)V
-	public fun setSelectionWatcher (Lcom/facebook/react/views/textinput/SelectionWatcher;)V
-	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
-	public fun setSubmitBehavior (Ljava/lang/String;)V
-	public fun shouldBlurOnReturn ()Z
-	public fun shouldSubmitOnReturn ()Z
-	protected fun showSoftKeyboard ()Z
+	protected final fun setSettingTextFromJS (Z)V
+	protected final fun setSettingTextFromState (Z)V
+	public final fun setStagedInputType (I)V
+	public final fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
+	public final fun setSubmitBehavior (Ljava/lang/String;)V
+	public final fun shouldBlurOnReturn ()Z
+	public final fun shouldSubmitOnReturn ()Z
+	protected final fun showSoftKeyboard ()Z
 	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
+}
+
+public final class com/facebook/react/views/textinput/ReactEditText$Companion {
+	public final fun getDEBUG_MODE ()Z
 }
 
 public final class com/facebook/react/views/textinput/ReactTextInputLocalData {

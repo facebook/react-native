@@ -585,13 +585,13 @@ public open class ReactTextInputManager public constructor() :
   public fun setTextAlignVertical(view: ReactEditText, textAlignVertical: String?) {
     when (textAlignVertical) {
       null,
-      "auto" -> view.setGravityVertical(Gravity.NO_GRAVITY)
-      "top" -> view.setGravityVertical(Gravity.TOP)
-      "bottom" -> view.setGravityVertical(Gravity.BOTTOM)
-      "center" -> view.setGravityVertical(Gravity.CENTER_VERTICAL)
+      "auto" -> view.gravityVertical = Gravity.NO_GRAVITY
+      "top" -> view.gravityVertical = Gravity.TOP
+      "bottom" -> view.gravityVertical = Gravity.BOTTOM
+      "center" -> view.gravityVertical = Gravity.CENTER_VERTICAL
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid textAlignVertical: $textAlignVertical")
-        view.setGravityVertical(Gravity.NO_GRAVITY)
+        view.gravityVertical = Gravity.NO_GRAVITY
       }
     }
   }
