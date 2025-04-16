@@ -11,19 +11,15 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Point
-import android.view.FocusFinder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
-import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
-import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType
@@ -464,67 +460,6 @@ public object ReactScrollViewHelper {
         height / 2 // overY
         )
     return Point(scroller.finalX, scroller.finalY)
-  }
-
-  @JvmStatic
-  public fun findNextFocusableView(
-      host: ViewGroup,
-      focused: View,
-      @FocusRealDirection direction: Int,
-      horizontal: Boolean
-  ): View? {
-    val absDir = resolveAbsoluteDirection(direction, horizontal, host.getLayoutDirection())
-
-    /*
-     * Check if we can focus the next element in the absolute direction within the ScrollView this
-     * would mean the view is not clipped, if we can't, look into the shadow tree to find the next
-     * focusable element
-     */
-    val ff = FocusFinder.getInstance()
-    val result = ff.findNextFocus(host, focused, absDir)
-
-    if (result != null) {
-      return result
-    }
-
-    if (host !is ReactClippingViewGroup) {
-      return null
-    }
-
-    val uimanager =
-        UIManagerHelper.getUIManager(host.context as ReactContext, UIManagerType.FABRIC)
-            ?: return null
-
-    val nextFocusableViewId =
-        (uimanager as FabricUIManager).findNextFocusableElement(
-            host.getChildAt(0).id, focused.id, absDir) ?: return null
-
-    val nextFocusTopMostParentId =
-        uimanager.findRelativeTopMostParent(host.getChildAt(0).id, nextFocusableViewId)
-            ?: return null
-
-    host.updateClippingRect(setOf(nextFocusableViewId, nextFocusTopMostParentId))
-
-    return host.findViewById(nextFocusableViewId)
-  }
-
-  @JvmStatic
-  public fun resolveAbsoluteDirection(
-      @FocusRealDirection direction: Int,
-      horizontal: Boolean,
-      layoutDirection: Int
-  ): Int {
-    val rtl: Boolean = layoutDirection == View.LAYOUT_DIRECTION_RTL
-
-    return if (direction == View.FOCUS_FORWARD || direction == View.FOCUS_BACKWARD) {
-      if (horizontal) {
-        if ((direction == View.FOCUS_FORWARD) != rtl) View.FOCUS_RIGHT else View.FOCUS_LEFT
-      } else {
-        if (direction == View.FOCUS_FORWARD) View.FOCUS_DOWN else View.FOCUS_UP
-      }
-    } else {
-      direction
-    }
   }
 
   public interface ScrollListener {

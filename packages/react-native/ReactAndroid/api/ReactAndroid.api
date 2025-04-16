@@ -2343,8 +2343,6 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun findNextFocusableElement (III)Ljava/lang/Integer;
-	public fun findRelativeTopMostParent (II)Ljava/lang/Integer;
 	public fun getColor (I[Ljava/lang/String;)I
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getPerformanceCounters ()Ljava/util/Map;
@@ -3996,7 +3994,6 @@ public abstract interface class com/facebook/react/uimanager/ReactClippingViewGr
 	public abstract fun getRemoveClippedSubviews ()Z
 	public abstract fun setRemoveClippedSubviews (Z)V
 	public abstract fun updateClippingRect ()V
-	public abstract fun updateClippingRect (Ljava/util/Set;)V
 }
 
 public final class com/facebook/react/uimanager/ReactClippingViewGroupHelper {
@@ -5898,7 +5895,6 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun executeKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun flashScrollIndicators ()V
 	public fun fling (I)V
-	public fun focusSearch (Landroid/view/View;I)Landroid/view/View;
 	public fun getChildVisibleRect (Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;)Z
 	public fun getClippingRect (Landroid/graphics/Rect;)V
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
@@ -5961,7 +5957,6 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
 	public fun startFlingAnimator (II)V
 	public fun updateClippingRect ()V
-	public fun updateClippingRect (Ljava/util/Set;)V
 }
 
 public class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler {
@@ -6027,7 +6022,6 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun executeKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun flashScrollIndicators ()V
 	public fun fling (I)V
-	public fun focusSearch (Landroid/view/View;I)Landroid/view/View;
 	public fun getChildVisibleRect (Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;)Z
 	public fun getClippingRect (Landroid/graphics/Rect;)V
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
@@ -6091,7 +6085,6 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
 	public fun startFlingAnimator (II)V
 	public fun updateClippingRect ()V
-	public fun updateClippingRect (Ljava/util/Set;)V
 }
 
 public final class com/facebook/react/views/scroll/ReactScrollViewCommandHelper {
@@ -6149,7 +6142,6 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final fun emitScrollEvent (Landroid/view/ViewGroup;FF)V
 	public static final fun emitScrollMomentumBeginEvent (Landroid/view/ViewGroup;II)V
 	public static final fun emitScrollMomentumEndEvent (Landroid/view/ViewGroup;)V
-	public static final fun findNextFocusableView (Landroid/view/ViewGroup;Landroid/view/View;IZ)Landroid/view/View;
 	public static final fun forceUpdateState (Landroid/view/ViewGroup;)V
 	public static final fun getDefaultScrollAnimationDuration (Landroid/content/Context;)I
 	public static final fun getNextFlingStartValue (Landroid/view/ViewGroup;III)I
@@ -6159,7 +6151,6 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public final fun registerFlingAnimator (Landroid/view/ViewGroup;)V
 	public static final fun removeLayoutChangeListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$LayoutChangeListener;)V
 	public static final fun removeScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
-	public static final fun resolveAbsoluteDirection (IZI)I
 	public static final fun smoothScrollTo (Landroid/view/ViewGroup;II)V
 	public static final fun updateFabricScrollState (Landroid/view/ViewGroup;)V
 	public final fun updateFabricScrollState (Landroid/view/ViewGroup;II)V
@@ -6952,7 +6943,6 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun setRemoveClippedSubviews (Z)V
 	public fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun updateClippingRect ()V
-	public fun updateClippingRect (Ljava/util/Set;)V
 	public fun updateDrawingOrder ()V
 }
 
