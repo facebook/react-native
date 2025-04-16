@@ -6218,10 +6218,11 @@ public abstract interface class com/facebook/react/views/scroll/ReactScrollViewH
 }
 
 public class com/facebook/react/views/scroll/ReactScrollViewManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler {
+	public static final field Companion Lcom/facebook/react/views/scroll/ReactScrollViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/views/scroll/FpsListener;)V
-	public static fun createExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
+	public synthetic fun <init> (Lcom/facebook/react/views/scroll/FpsListener;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/scroll/ReactScrollView;
 	public fun flashScrollIndicators (Lcom/facebook/react/views/scroll/ReactScrollView;)V
@@ -6237,37 +6238,41 @@ public class com/facebook/react/views/scroll/ReactScrollViewManager : com/facebo
 	public synthetic fun scrollTo (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToCommandData;)V
 	public fun scrollToEnd (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
 	public synthetic fun scrollToEnd (Ljava/lang/Object;Lcom/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollToEndCommandData;)V
-	public fun setBorderColor (Lcom/facebook/react/views/scroll/ReactScrollView;ILjava/lang/Integer;)V
-	public fun setBorderRadius (Lcom/facebook/react/views/scroll/ReactScrollView;IF)V
-	public fun setBorderStyle (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
-	public fun setBorderWidth (Lcom/facebook/react/views/scroll/ReactScrollView;IF)V
-	public fun setBottomFillColor (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
-	public fun setContentOffset (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactScrollView;F)V
-	public fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setFadingEdgeLength (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
-	public fun setHorizontal (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setIsInvertedVirtualizedList (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun setNestedScrollEnabled (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setBorderColor (Lcom/facebook/react/views/scroll/ReactScrollView;ILjava/lang/Integer;)V
+	public final fun setBorderRadius (Lcom/facebook/react/views/scroll/ReactScrollView;IF)V
+	public final fun setBorderStyle (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
+	public final fun setBorderWidth (Lcom/facebook/react/views/scroll/ReactScrollView;IF)V
+	public final fun setBottomFillColor (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
+	public final fun setContentOffset (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactScrollView;F)V
+	public final fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setFadingEdgeLength (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
+	public final fun setHorizontal (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setIsInvertedVirtualizedList (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun setNestedScrollEnabled (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
 	public fun setOverScrollMode (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
-	public fun setOverflow (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
-	public fun setPagingEnabled (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setPersistentScrollbar (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setPointerEvents (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
-	public fun setRemoveClippedSubviews (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setScrollEnabled (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setScrollEventThrottle (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
-	public fun setScrollPerfTag (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
-	public fun setSendMomentumEvents (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setShowsVerticalScrollIndicator (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setSnapToAlignment (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
-	public fun setSnapToEnd (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public fun setSnapToInterval (Lcom/facebook/react/views/scroll/ReactScrollView;F)V
-	public fun setSnapToOffsets (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setSnapToStart (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setOverflow (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
+	public final fun setPagingEnabled (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setPersistentScrollbar (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setPointerEvents (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
+	public final fun setRemoveClippedSubviews (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setScrollEnabled (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setScrollEventThrottle (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
+	public final fun setScrollPerfTag (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
+	public final fun setSendMomentumEvents (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setShowsVerticalScrollIndicator (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setSnapToAlignment (Lcom/facebook/react/views/scroll/ReactScrollView;Ljava/lang/String;)V
+	public final fun setSnapToEnd (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
+	public final fun setSnapToInterval (Lcom/facebook/react/views/scroll/ReactScrollView;F)V
+	public final fun setSnapToOffsets (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun setSnapToStart (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
+}
+
+public final class com/facebook/react/views/scroll/ReactScrollViewManager$Companion {
+	public final fun createExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 }
 
 public final class com/facebook/react/views/scroll/ScrollEvent : com/facebook/react/uimanager/events/Event {
@@ -6996,4 +7001,3 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 
 public final class com/facebook/react/views/view/ReactViewManager$Companion {
 }
-

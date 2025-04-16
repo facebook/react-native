@@ -1111,7 +1111,7 @@ public class ReactScrollView extends ScrollView
     }
   }
 
-  public void setContentOffset(ReadableMap value) {
+  public void setContentOffset(@Nullable ReadableMap value) {
     // When contentOffset={{x:0,y:0}} with lazy load items, setContentOffset
     // is repeatedly called, causing an unexpected scroll to top behavior.
     // Avoid updating contentOffset if the value has not changed.
