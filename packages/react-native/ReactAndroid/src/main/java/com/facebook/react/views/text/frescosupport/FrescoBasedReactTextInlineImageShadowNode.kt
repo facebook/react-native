@@ -12,6 +12,7 @@ import android.net.Uri
 import com.facebook.common.logging.FLog
 import com.facebook.common.util.UriUtil
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
+import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -28,7 +29,7 @@ import java.util.Locale
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
 @LegacyArchitecture
 internal class FrescoBasedReactTextInlineImageShadowNode(
-    private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>,
+    private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, ImageRequest, *, *>,
     private val callerContext: Any?
 ) : ReactTextInlineImageShadowNode() {
 
@@ -121,8 +122,7 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
         resizeMode)
   }
 
-  public fun getDraweeControllerBuilder(): AbstractDraweeControllerBuilder<*, *, *, *> =
-      draweeControllerBuilder
+  public fun getDraweeControllerBuilder() = draweeControllerBuilder
 
   public fun getCallerContext(): Any? = callerContext
 

@@ -10,6 +10,7 @@ package com.facebook.react.views.text.frescosupport
 import android.view.View
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
+import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -24,7 +25,7 @@ internal class FrescoBasedReactTextInlineImageViewManager
 constructor(
     private val draweeControllerBuilder:
         @JvmSuppressWildcards
-        AbstractDraweeControllerBuilder<*, *, *, *>? =
+        AbstractDraweeControllerBuilder<*, ImageRequest, *, *>? =
         null,
     private val callerContext: Any? = null
 ) : BaseViewManager<View, FrescoBasedReactTextInlineImageShadowNode>() {
