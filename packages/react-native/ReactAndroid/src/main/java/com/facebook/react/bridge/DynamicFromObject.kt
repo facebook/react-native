@@ -12,55 +12,55 @@ import com.facebook.react.common.ReactConstants
 
 /** Implementation of Dynamic wrapping a ReadableArray.  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class DynamicFromObject(private val mObject: Any?) : Dynamic {
+public class DynamicFromObject(private val value: Any?) : Dynamic {
   override fun recycle() {
     // Noop - nothing to recycle since there is no pooling
   }
 
   override val isNull: Boolean
-    get() = mObject == null
+    get() = value == null
 
   override fun asBoolean(): Boolean {
-    if (mObject == null || mObject !is Boolean) {
+    if (value == null || value !is Boolean) {
       throw ClassCastException("Dynamic value from Object is not a boolean")
     }
-    return mObject
+    return value
   }
 
   override fun asDouble(): Double {
-    if (mObject == null || mObject !is Number) {
+    if (value == null || value !is Number) {
       throw ClassCastException("Dynamic value from Object is not a number")
     }
-    return mObject as Double
+    return value as Double
   }
 
   override fun asInt(): Int {
-    if (mObject == null || mObject !is Number) {
+    if (value == null || value !is Number) {
       throw ClassCastException("Dynamic value from Object is not a number")
     }
     // Numbers from JS are always Doubles
-    return (mObject as Double).toInt()
+    return (value as Double).toInt()
   }
 
   override fun asString(): String? {
-    if (mObject == null || mObject !is String) {
+    if (value == null || value !is String) {
       throw ClassCastException("Dynamic value from Object is not a string")
     }
-    return mObject
+    return value
   }
 
   override fun asArray(): ReadableArray? {
-    if (mObject == null || mObject !is ReadableArray) {
+    if (value == null || value !is ReadableArray) {
       throw ClassCastException("Dynamic value from Object is not a ReadableArray")
     }
-    return mObject
+    return value
   }
 
   override fun asMap(): ReadableMap? {
-    if (mObject == null || mObject !is ReadableMap) {
+    if (value == null || value !is ReadableMap) {
       throw ClassCastException("Dynamic value from Object is not a ReadableMap")
     }
-    return mObject
+    return value
   }
 
   override val type: ReadableType
@@ -68,25 +68,25 @@ public class DynamicFromObject(private val mObject: Any?) : Dynamic {
       if (isNull) {
         return ReadableType.Null
       }
-      if (mObject is Boolean) {
+      if (value is Boolean) {
         return ReadableType.Boolean
       }
-      if (mObject is Number) {
+      if (value is Number) {
         return ReadableType.Number
       }
-      if (mObject is String) {
+      if (value is String) {
         return ReadableType.String
       }
-      if (mObject is ReadableMap) {
+      if (value is ReadableMap) {
         return ReadableType.Map
       }
-      if (mObject is ReadableArray) {
+      if (value is ReadableArray) {
         return ReadableType.Array
       }
       FLog.e(
         ReactConstants.TAG,
         "Unmapped object type "
-          + (if (mObject == null) "<NULL object>" else mObject.javaClass.name)
+          + (if (value == null) "<NULL object>" else value.javaClass.name)
       )
       return ReadableType.Null
     }
