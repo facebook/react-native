@@ -62,7 +62,7 @@ public class TurboModuleManager(
 
     installJSIBindings(shouldEnableLegacyModuleInterop())
 
-    eagerInitModuleNames = delegate?.eagerInitModuleNames ?: emptyList()
+    eagerInitModuleNames = delegate?.getEagerInitModuleNames() ?: emptyList()
 
     val nullProvider: ModuleProvider = ModuleProvider { _: String -> null }
 
