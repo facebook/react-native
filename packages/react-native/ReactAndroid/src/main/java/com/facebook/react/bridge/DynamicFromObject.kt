@@ -1,26 +1,17 @@
-/*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 package com.facebook.react.bridge
 
-import androidx.annotation.Nullable
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.ReactConstants
 
-/** Implementation of Dynamic wrapping a ReadableArray. */
-class DynamicFromObject(@Nullable private var mObject: Any?) : Dynamic {
+public class DynamicFromObject(private var mObject: Any?) : Dynamic {
 
   override fun recycle() {
     // Noop - nothing to recycle since there is no pooling
   }
 
-  override fun isNull(): Boolean {
-    return mObject == null
-  }
+  override val isNull: Boolean
+    get() = mObject == null
+
 
   override fun asBoolean(): Boolean {
     if (mObject !is Boolean) {
@@ -40,8 +31,7 @@ class DynamicFromObject(@Nullable private var mObject: Any?) : Dynamic {
     if (mObject !is Number) {
       throw ClassCastException("Dynamic value from Object is not a number")
     }
-    // Numbers from JS are always Doubles
-    return (mObject as Double).toInt()
+    return (mObject as Number).toDouble().toInt()
   }
 
   override fun asString(): String {
@@ -65,9 +55,9 @@ class DynamicFromObject(@Nullable private var mObject: Any?) : Dynamic {
     return mObject as ReadableMap
   }
 
-  override fun getType(): ReadableType {
-    return when {
-      isNull() -> ReadableType.Null
+  override val type: ReadableType
+    get() = when {
+      isNull -> ReadableType.Null
       mObject is Boolean -> ReadableType.Boolean
       mObject is Number -> ReadableType.Number
       mObject is String -> ReadableType.String
@@ -76,10 +66,9 @@ class DynamicFromObject(@Nullable private var mObject: Any?) : Dynamic {
       else -> {
         FLog.e(
           ReactConstants.TAG,
-          "Unmapped object type " + (mObject?.javaClass?.name ?: "<NULL object>")
+          "Unmapped object type ${mObject?.javaClass?.name ?: "<NULL object>"}"
         )
         ReadableType.Null
       }
     }
-  }
 }
