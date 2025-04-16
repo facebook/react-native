@@ -7,24 +7,43 @@
 
 #include "TaskDispatchThread.h"
 
+#include <folly/portability/SysResource.h>
 #include <folly/system/ThreadName.h>
 #include <chrono>
 #include <future>
 #include <utility>
 
+#include <glog/logging.h>
+
 #ifdef ANDROID
 #include <fbjni/fbjni.h>
+#include <sys/syscall.h>
 #endif
 
 namespace facebook::react {
 
-TaskDispatchThread::TaskDispatchThread(std::string threadName) noexcept
+TaskDispatchThread::TaskDispatchThread(
+    std::string threadName,
+    int priorityOffset) noexcept
     : threadName_(std::move(threadName)) {
 #ifdef ANDROID
   // Attaches the thread to JVM just in case anything calls out to Java
   thread_ = std::thread([&]() {
-    facebook::jni::ThreadScope::WithClassLoader([&]() { loop(); });
+    facebook::jni::ThreadScope::WithClassLoader([&]() {
+      int result = setpriority(
+          PRIO_PROCESS,
+          static_cast<pid_t>(::syscall(SYS_gettid)),
+          priorityOffset);
+
+      if (result != 0) {
+        LOG(INFO) << " setCurrentThreadPriority failed with pri errno: "
+                  << errno;
+      }
+
+      loop();
+    });
   });
+
 #else
   thread_ = std::thread(&TaskDispatchThread::loop, this);
 #endif

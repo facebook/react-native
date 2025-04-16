@@ -25,6 +25,8 @@ constexpr char MessageQueueThreadFactoryKey[] = "MessageQueueThreadFactoryKey";
 class MessageQueueThreadImpl : public MessageQueueThread {
  public:
   MessageQueueThreadImpl() noexcept = default;
+  explicit MessageQueueThreadImpl(int priorityOffset) noexcept
+      : taskDispatchThread_("MessageQueue", priorityOffset) {}
 
   ~MessageQueueThreadImpl() noexcept override = default;
 

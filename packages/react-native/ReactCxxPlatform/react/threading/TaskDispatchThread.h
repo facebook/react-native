@@ -25,7 +25,10 @@ class TaskDispatchThread {
   using TaskFn = std::function<void()>;
   using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
-  TaskDispatchThread(std::string threadName = "") noexcept;
+  TaskDispatchThread(
+      std::string threadName = "",
+      int priorityOffset = 0) noexcept;
+
   ~TaskDispatchThread() noexcept;
 
   /** Return true if the current thread is the same as this looper's thread. */
