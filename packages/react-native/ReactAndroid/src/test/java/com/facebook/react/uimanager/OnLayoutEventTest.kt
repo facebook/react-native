@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager
 
 import com.facebook.react.common.SystemClock
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -23,6 +24,7 @@ class OnLayoutEventTest {
 
   @Before
   fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
     val ts = SystemClock.uptimeMillis()
     systemClock = mockStatic(SystemClock::class.java)
     systemClock.`when`<Long> { SystemClock.uptimeMillis() }.thenReturn(ts)
@@ -56,7 +58,7 @@ class OnLayoutEventTest {
   fun testGetEventName_shouldReturnCorrectEventName() {
     val event = OnLayoutEvent.obtain(1, 1, 10, 20, 100, 200)
 
-    assertThat(event.eventName).isEqualTo("topLayout")
+    assertThat(event.getEventName()).isEqualTo("topLayout")
   }
 
   @Test

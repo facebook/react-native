@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.common.logging.FLog;
@@ -61,6 +60,7 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -69,6 +69,7 @@ import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -232,7 +233,7 @@ public class ReactHostImpl implements ReactHost {
    */
   @Override
   public TaskInterface<Void> start() {
-    return Task.call(this::getOrCreateStartTask, mBGExecutor).continueWithTask(Task::getResult);
+    return Task.call(this::getOrCreateStartTask, mBGExecutor);
   }
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
@@ -489,36 +490,36 @@ public class ReactHostImpl implements ReactHost {
   public TaskInterface<Void> reload(String reason) {
     final String method = "reload()";
     return Task.call(
-            () -> {
-              Task<Void> reloadTask = null;
-              if (mDestroyTask != null) {
-                log(method, "Waiting for destroy to finish, before reloading React Native.");
-                reloadTask =
-                    mDestroyTask
-                        .continueWithTask(task -> getOrCreateReloadTask(reason), mBGExecutor)
-                        .makeVoid();
-              } else {
-                reloadTask = getOrCreateReloadTask(reason).makeVoid();
-              }
+        () -> {
+          Task<Void> reloadTask = null;
+          if (mDestroyTask != null) {
+            log(method, "Waiting for destroy to finish, before reloading React Native.");
+            reloadTask =
+                mDestroyTask
+                    .continueWithTask(task -> getOrCreateReloadTask(reason), mBGExecutor)
+                    .makeVoid();
+          } else {
+            reloadTask = getOrCreateReloadTask(reason).makeVoid();
+          }
 
-              return reloadTask.continueWithTask(
-                  task -> {
-                    if (task.isFaulted()) {
-                      final Exception ex = task.getError();
-                      if (mUseDevSupport) {
-                        mDevSupportManager.handleException(ex);
-                      } else {
-                        mReactHostDelegate.handleInstanceException(ex);
-                      }
-                      return getOrCreateDestroyTask("Reload failed", ex);
-                    }
+          return reloadTask.continueWithTask(
+              task -> {
+                if (task.isFaulted()) {
+                  final Exception ex = task.getError();
+                  Assertions.assertNotNull(ex, "Reload failed without an exception");
+                  if (mUseDevSupport) {
+                    mDevSupportManager.handleException(ex);
+                  } else {
+                    mReactHostDelegate.handleInstanceException(ex);
+                  }
+                  return getOrCreateDestroyTask("Reload failed", ex);
+                }
 
-                    return task;
-                  },
-                  mBGExecutor);
-            },
-            mBGExecutor)
-        .continueWithTask(Task::getResult);
+                return task;
+              },
+              mBGExecutor);
+        },
+        mBGExecutor);
   }
 
   @DoNotStrip
@@ -567,18 +568,15 @@ public class ReactHostImpl implements ReactHost {
    *     callback will run on a background thread.
    * @return A task that completes when React Native gets destroyed.
    */
-  @NonNull
   @Override
   public TaskInterface<Void> destroy(
-      @NonNull String reason,
-      @Nullable Exception ex,
-      @NonNull Function1<? super Boolean, Unit> onDestroyFinished) {
+      String reason, @Nullable Exception ex, Function1<? super Boolean, Unit> onDestroyFinished) {
     Task<Void> task = (Task<Void>) destroy(reason, ex);
     return task.continueWith(
         new Continuation<Void, Void>() {
           @Nullable
           @Override
-          public Void then(@NonNull Task<Void> task) throws Exception {
+          public Void then(Task<Void> task) throws Exception {
             boolean instanceDestroyedSuccessfully = task.isCompleted() && !task.isFaulted();
             onDestroyFinished.invoke(instanceDestroyedSuccessfully);
             return null;
@@ -604,19 +602,18 @@ public class ReactHostImpl implements ReactHost {
   public TaskInterface<Void> destroy(String reason, @Nullable Exception ex) {
     final String method = "destroy()";
     return Task.call(
-            () -> {
-              if (mReloadTask != null) {
-                log(
-                    method,
-                    "Reloading React Native. Waiting for reload to finish before destroying React"
-                        + " Native.");
-                return mReloadTask.continueWithTask(
-                    task -> getOrCreateDestroyTask(reason, ex), mBGExecutor);
-              }
-              return getOrCreateDestroyTask(reason, ex);
-            },
-            mBGExecutor)
-        .continueWithTask(Task::getResult);
+        () -> {
+          if (mReloadTask != null) {
+            log(
+                method,
+                "Reloading React Native. Waiting for reload to finish before destroying React"
+                    + " Native.");
+            return mReloadTask.continueWithTask(
+                task -> getOrCreateDestroyTask(reason, ex), mBGExecutor);
+          }
+          return getOrCreateDestroyTask(reason, ex);
+        },
+        mBGExecutor);
   }
 
   private MemoryPressureListener createMemoryPressureListener(ReactInstance reactInstance) {
@@ -828,6 +825,10 @@ public class ReactHostImpl implements ReactHost {
   public void onConfigurationChanged(Context updatedContext) {
     ReactContext currentReactContext = getCurrentReactContext();
     if (currentReactContext != null) {
+      if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+        DisplayMetricsHolder.initDisplayMetrics(currentReactContext);
+      }
+
       AppearanceModule appearanceModule =
           currentReactContext.getNativeModule(AppearanceModule.class);
 
@@ -952,12 +953,12 @@ public class ReactHostImpl implements ReactHost {
   }
 
   @Override
-  public void addBeforeDestroyListener(@NonNull Function0<Unit> onBeforeDestroy) {
+  public void addBeforeDestroyListener(Function0<Unit> onBeforeDestroy) {
     mBeforeDestroyListeners.add(onBeforeDestroy);
   }
 
   @Override
-  public void removeBeforeDestroyListener(@NonNull Function0<Unit> onBeforeDestroy) {
+  public void removeBeforeDestroyListener(Function0<Unit> onBeforeDestroy) {
     mBeforeDestroyListeners.remove(onBeforeDestroy);
   }
 
@@ -975,23 +976,33 @@ public class ReactHostImpl implements ReactHost {
       log(method, "Schedule");
       if (ReactBuildConfig.DEBUG) {
         Assertions.assertCondition(
-            ReactNativeFeatureFlags.enableBridgelessArchitecture(),
+            ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture(),
             "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.");
 
         Assertions.assertCondition(
-            ReactNativeFeatureFlags.enableFabricRenderer(),
+            ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer(),
             "enableFabricRenderer FeatureFlag must be set to start ReactNative.");
 
         Assertions.assertCondition(
-            ReactNativeFeatureFlags.useTurboModules(),
+            ReactNativeNewArchitectureFeatureFlags.useTurboModules(),
             "useTurboModules FeatureFlag must be set to start ReactNative.");
+      }
+      if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+        Assertions.assertCondition(
+            !ReactNativeNewArchitectureFeatureFlags.useFabricInterop(),
+            "useFabricInterop FeatureFlag must be false when"
+                + " UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.");
+        Assertions.assertCondition(
+            !ReactNativeNewArchitectureFeatureFlags.useTurboModuleInterop(),
+            "useTurboModuleInterop FeatureFlag must be false when"
+                + " UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.");
       }
       mStartTask =
           waitThenCallGetOrCreateReactInstanceTask()
               .continueWithTask(
                   (task) -> {
                     if (task.isFaulted()) {
-                      Exception ex = task.getError();
+                      Exception ex = Assertions.assertNotNull(task.getError());
                       if (mUseDevSupport) {
                         mDevSupportManager.handleException(ex);
                       } else {
@@ -999,9 +1010,8 @@ public class ReactHostImpl implements ReactHost {
                       }
                       // Wait for destroy to finish
                       return getOrCreateDestroyTask(
-                              "getOrCreateStartTask() failure: " + task.getError().getMessage(),
-                              task.getError())
-                          .continueWithTask(destroyTask -> Task.forError(task.getError()))
+                              "getOrCreateStartTask() failure: " + ex.getMessage(), ex)
+                          .continueWithTask(destroyTask -> Task.forError(ex))
                           .makeVoid();
                     }
                     return task.makeVoid();
@@ -1083,7 +1093,7 @@ public class ReactHostImpl implements ReactHost {
         .continueWith(
             task -> {
               if (task.isFaulted()) {
-                handleHostException(task.getError());
+                handleHostException(Assertions.assertNotNull(task.getError()));
               }
               return null;
             });
@@ -1105,8 +1115,7 @@ public class ReactHostImpl implements ReactHost {
    * destroying, will wait until destroy is finished, before creating.
    */
   private Task<ReactInstance> getOrCreateReactInstance() {
-    return Task.call(this::waitThenCallGetOrCreateReactInstanceTask, mBGExecutor)
-        .continueWithTask(Task::getResult);
+    return Task.call(this::waitThenCallGetOrCreateReactInstanceTask, mBGExecutor);
   }
 
   @ThreadConfined("ReactHost")
@@ -1175,7 +1184,8 @@ public class ReactHostImpl implements ReactHost {
               getJsBundleLoader()
                   .onSuccess(
                       task -> {
-                        final JSBundleLoader bundleLoader = task.getResult();
+                        final JSBundleLoader bundleLoader =
+                            Assertions.assertNotNull(task.getResult());
                         final BridgelessReactContext reactContext = getOrCreateReactContext();
                         final DevSupportManager devSupportManager = getDevSupportManager();
                         reactContext.setJSExceptionHandler(devSupportManager);
@@ -1225,9 +1235,10 @@ public class ReactHostImpl implements ReactHost {
 
           Continuation<CreationResult, ReactInstance> lifecycleUpdateTask =
               task -> {
-                final ReactInstance reactInstance = task.getResult().mInstance;
-                final ReactContext reactContext = task.getResult().mContext;
-                final boolean isReloading = task.getResult().mIsReloading;
+                CreationResult result = Assertions.assertNotNull(task.getResult());
+                final ReactInstance reactInstance = result.mInstance;
+                final ReactContext reactContext = result.mContext;
+                final boolean isReloading = result.mIsReloading;
                 final boolean isManagerResumed =
                     mReactLifecycleStateManager.getLifecycleState() == LifecycleState.RESUMED;
 
@@ -1273,7 +1284,8 @@ public class ReactHostImpl implements ReactHost {
 
           creationTask.onSuccess(lifecycleUpdateTask, mUIExecutor);
           return creationTask.onSuccess(
-              task -> task.getResult().mInstance, Task.IMMEDIATE_EXECUTOR);
+              task -> Assertions.assertNotNull(task.getResult()).mInstance,
+              Task.IMMEDIATE_EXECUTOR);
         });
   }
 
@@ -1285,7 +1297,7 @@ public class ReactHostImpl implements ReactHost {
       return isMetroRunning()
           .onSuccessTask(
               task -> {
-                boolean isMetroRunning = task.getResult();
+                boolean isMetroRunning = Assertions.assertNotNull(task.getResult());
                 if (isMetroRunning) {
                   // Since metro is running, fetch the JS bundle from the server
                   return loadJSBundleFromMetro();
@@ -1408,7 +1420,7 @@ public class ReactHostImpl implements ReactHost {
       final String stageLabel = "Stage: " + stage;
       final String reasonLabel = tag + " reason: " + reason;
       if (task.isFaulted()) {
-        final Exception ex = task.getError();
+        final Exception ex = Assertions.assertNotNull(task.getError());
         final String faultLabel = "Fault reason: " + ex.getMessage();
         raiseSoftException(
             method,
@@ -1584,7 +1596,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     if (task.isFaulted()) {
-                      Exception fault = task.getError();
+                      Exception fault = Assertions.assertNotNull(task.getError());
                       raiseSoftException(
                           method,
                           "Error during reload. ReactInstance task faulted. Fault reason: "
@@ -1757,7 +1769,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWith(
                   task -> {
                     if (task.isFaulted()) {
-                      Exception fault = task.getError();
+                      Exception fault = Assertions.assertNotNull(task.getError());
                       raiseSoftException(
                           method,
                           "React destruction failed. ReactInstance task faulted. Fault reason: "

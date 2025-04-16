@@ -727,10 +727,14 @@ describe('Fantom', () => {
         ReactNativeElement,
       );
 
+      expect(scrollViewElement.scrollTop).toBe(0);
+
       Fantom.scrollTo(scrollViewElement, {
         x: 0,
         y: 1,
       });
+
+      expect(scrollViewElement.scrollTop).toBe(1);
 
       expect(onScroll).toHaveBeenCalledTimes(1);
 

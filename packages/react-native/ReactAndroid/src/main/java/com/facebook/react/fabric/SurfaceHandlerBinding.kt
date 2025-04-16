@@ -41,7 +41,8 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
       offsetY: Int,
       doLeftAndRightSwapInRTL: Boolean,
       isRTL: Boolean,
-      pixelDensity: Float
+      pixelDensity: Float,
+      fontScale: Float
   ) {
     setLayoutConstraintsNative(
         LayoutMetricsConversions.getMinSize(widthMeasureSpec) / pixelDensity,
@@ -52,7 +53,8 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
         offsetY / pixelDensity,
         doLeftAndRightSwapInRTL,
         isRTL,
-        pixelDensity)
+        pixelDensity,
+        fontScale)
   }
 
   private external fun setLayoutConstraintsNative(
@@ -64,7 +66,8 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
       offsetY: Float,
       doLeftAndRightSwapInRTL: Boolean,
       isRTL: Boolean,
-      pixelDensity: Float
+      pixelDensity: Float,
+      fontScale: Float
   )
 
   external fun setProps(props: NativeMap?)

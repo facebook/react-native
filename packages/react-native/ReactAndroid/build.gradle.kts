@@ -45,7 +45,7 @@ extra["publishing_version"] = project.findProperty("VERSION_NAME")?.toString()!!
 // This is the version of CMake we're requesting to the Android SDK to use.
 // If missing it will be downloaded automatically. Only CMake versions shipped with the
 // Android SDK are supported (you can find them listed in the SDK Manager of Android Studio).
-val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
+val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.30.5"
 
 extra["cmake_version"] = cmakeVersion
 
@@ -522,6 +522,7 @@ android {
     buildConfigField("boolean", "UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
+    resValue("string", "react_native_dev_server_ip", "localhost")
 
     testApplicationId = "com.facebook.react.tests.gradle"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

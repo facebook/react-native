@@ -12,13 +12,14 @@ import com.facebook.react.uimanager.ReactShadowNodeImpl
 import com.facebook.react.uimanager.annotations.ReactProp
 
 /**
- * [ReactShadowNode] class for pure raw text node (aka `textContent` in terms of DOM). Raw text node
- * can only have simple string value without any attributes, properties or state.
+ * [com.facebook.react.uimanager.ReactShadowNode] class for pure raw text node (aka `textContent` in
+ * terms of DOM). Raw text node can only have simple string value without any attributes, properties
+ * or state.
  */
 @LegacyArchitecture
-public class ReactRawTextShadowNode : ReactShadowNodeImpl() {
+internal class ReactRawTextShadowNode : ReactShadowNodeImpl() {
   @set:ReactProp(name = "text")
-  public var text: String? = null
+  var text: String? = null
     set(value) {
       field = value
       markUpdated()

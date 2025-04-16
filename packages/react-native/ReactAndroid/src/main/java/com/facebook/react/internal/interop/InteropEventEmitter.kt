@@ -30,7 +30,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * to deliver events also when Fabric is turned on.
  */
 @LegacyArchitecture
-public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
+internal class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
 
   private var eventDispatcherOverride: EventDispatcher? = null
 
@@ -54,7 +54,7 @@ public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEv
   }
 
   @VisibleForTesting
-  public fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
+  fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
     this.eventDispatcherOverride = eventDispatcherOverride
   }
 

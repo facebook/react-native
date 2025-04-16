@@ -102,6 +102,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableShadowNodeOnNewArchitectureAndroid: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-04-07',
+        description:
+          'Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {
@@ -174,6 +185,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    enableFontScaleChangesUpdatingLayout: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-07',
+        description:
+          'Enables font scale changes updating layout for measurable nodes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
       metadata: {
@@ -208,16 +230,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'When enabled, LayoutAnimations API will animate state changes on iOS.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableLongTaskAPI: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -263,16 +275,6 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableReportEventPaintTime: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Report paint time inside the Event Timing API implementation (PerformanceObserver).',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -341,17 +343,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
-    },
-    fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-08-27',
-        description:
-          'Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
     },
     fuseboxEnabledRelease: {
       defaultValue: false,
@@ -501,17 +492,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-02-05',
         description:
           'Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    avoidAnimatedRefInvalidation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-03-12',
-        description:
-          'Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

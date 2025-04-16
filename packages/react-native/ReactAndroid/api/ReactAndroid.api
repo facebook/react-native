@@ -440,24 +440,17 @@ public abstract interface class com/facebook/react/ViewManagerOnDemandReactPacka
 }
 
 public abstract class com/facebook/react/animated/AnimatedNode {
-	public static final field Companion Lcom/facebook/react/animated/AnimatedNode$Companion;
-	public static final field DEFAULT_ANIMATED_NODE_CHILD_COUNT I
-	public static final field INITIAL_BFS_COLOR I
 	public fun <init> ()V
-	public final fun addChild (Lcom/facebook/react/animated/AnimatedNode;)V
-	public fun onAttachedToNode (Lcom/facebook/react/animated/AnimatedNode;)V
-	public fun onDetachedFromNode (Lcom/facebook/react/animated/AnimatedNode;)V
-	public abstract fun prettyPrint ()Ljava/lang/String;
-	public final fun prettyPrintWithChildren ()Ljava/lang/String;
-	public final fun removeChild (Lcom/facebook/react/animated/AnimatedNode;)V
-	public fun update ()V
 }
 
-public final class com/facebook/react/animated/AnimatedNode$Companion {
+public abstract interface class com/facebook/react/animated/AnimatedNodeValueListener {
+	public abstract fun onValueUpdate (D)V
 }
 
-public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
+public final class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
 	public static final field ANIMATED_MODULE_DEBUG Z
+	public static final field Companion Lcom/facebook/react/animated/NativeAnimatedModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun addAnimatedEventToView (DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun addListener (Ljava/lang/String;)V
@@ -473,7 +466,7 @@ public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbr
 	public fun extractAnimatedNodeOffset (D)V
 	public fun finishOperationBatch ()V
 	public fun flattenAnimatedNodeOffset (D)V
-	public fun getNodesManager ()Lcom/facebook/react/animated/NativeAnimatedNodesManager;
+	public final fun getNodesManager ()Lcom/facebook/react/animated/NativeAnimatedNodesManager;
 	public fun getValue (DLcom/facebook/react/bridge/Callback;)V
 	public fun initialize ()V
 	public fun invalidate ()V
@@ -492,37 +485,40 @@ public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbr
 	public fun stopAnimation (D)V
 	public fun stopListeningToAnimatedNodeValue (D)V
 	public fun updateAnimatedNodeConfig (DLcom/facebook/react/bridge/ReadableMap;)V
-	public fun userDrivenScrollEnded (I)V
+	public final fun userDrivenScrollEnded (I)V
 	public fun willDispatchViewUpdates (Lcom/facebook/react/bridge/UIManager;)V
 	public fun willMountItems (Lcom/facebook/react/bridge/UIManager;)V
 }
 
-public class com/facebook/react/animated/NativeAnimatedNodesManager : com/facebook/react/uimanager/events/EventDispatcherListener {
+public final class com/facebook/react/animated/NativeAnimatedModule$Companion {
+}
+
+public final class com/facebook/react/animated/NativeAnimatedNodesManager : com/facebook/react/uimanager/events/EventDispatcherListener {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun addAnimatedEventToView (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun connectAnimatedNodeToView (II)V
-	public fun connectAnimatedNodes (II)V
-	public fun createAnimatedNode (ILcom/facebook/react/bridge/ReadableMap;)V
-	public fun disconnectAnimatedNodeFromView (II)V
-	public fun disconnectAnimatedNodes (II)V
-	public fun dropAnimatedNode (I)V
-	public fun extractAnimatedNodeOffset (I)V
-	public fun flattenAnimatedNodeOffset (I)V
-	public fun getNodeById (I)Lcom/facebook/react/animated/AnimatedNode;
-	public fun getValue (ILcom/facebook/react/bridge/Callback;)V
-	public fun hasActiveAnimations ()Z
-	public fun initializeEventListenerForUIManagerType (I)V
+	public final fun addAnimatedEventToView (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
+	public final fun connectAnimatedNodeToView (II)V
+	public final fun connectAnimatedNodes (II)V
+	public final fun createAnimatedNode (ILcom/facebook/react/bridge/ReadableMap;)V
+	public final fun disconnectAnimatedNodeFromView (II)V
+	public final fun disconnectAnimatedNodes (II)V
+	public final fun dropAnimatedNode (I)V
+	public final fun extractAnimatedNodeOffset (I)V
+	public final fun flattenAnimatedNodeOffset (I)V
+	public final fun getNodeById (I)Lcom/facebook/react/animated/AnimatedNode;
+	public final fun getValue (ILcom/facebook/react/bridge/Callback;)V
+	public final fun hasActiveAnimations ()Z
+	public final fun initializeEventListenerForUIManagerType (I)V
 	public fun onEventDispatch (Lcom/facebook/react/uimanager/events/Event;)V
-	public fun removeAnimatedEventFromView (ILjava/lang/String;I)V
-	public fun restoreDefaultValues (I)V
-	public fun runUpdates (J)V
-	public fun setAnimatedNodeOffset (ID)V
-	public fun setAnimatedNodeValue (ID)V
-	public fun startAnimatingNode (IILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
-	public fun startListeningToAnimatedNodeValue (ILcom/facebook/react/animated/AnimatedNodeValueListener;)V
-	public fun stopAnimation (I)V
-	public fun stopListeningToAnimatedNodeValue (I)V
-	public fun updateAnimatedNodeConfig (ILcom/facebook/react/bridge/ReadableMap;)V
+	public final fun removeAnimatedEventFromView (ILjava/lang/String;I)V
+	public final fun restoreDefaultValues (I)V
+	public final fun runUpdates (J)V
+	public final fun setAnimatedNodeOffset (ID)V
+	public final fun setAnimatedNodeValue (ID)V
+	public final fun startAnimatingNode (IILcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
+	public final fun startListeningToAnimatedNodeValue (ILcom/facebook/react/animated/AnimatedNodeValueListener;)V
+	public final fun stopAnimation (I)V
+	public final fun stopListeningToAnimatedNodeValue (I)V
+	public final fun updateAnimatedNodeConfig (ILcom/facebook/react/bridge/ReadableMap;)V
 }
 
 public abstract interface class com/facebook/react/bridge/ActivityEventListener {
@@ -666,12 +662,12 @@ public class com/facebook/react/bridge/CatalystInstanceImpl$PendingJSCall {
 	public fun toString ()Ljava/lang/String;
 }
 
-public class com/facebook/react/bridge/ColorPropConverter {
-	public fun <init> ()V
-	public static fun getColor (Ljava/lang/Object;Landroid/content/Context;)Ljava/lang/Integer;
-	public static fun getColor (Ljava/lang/Object;Landroid/content/Context;I)Ljava/lang/Integer;
-	public static fun getColorInstance (Ljava/lang/Object;Landroid/content/Context;)Landroid/graphics/Color;
-	public static fun resolveResourcePath (Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Integer;
+public final class com/facebook/react/bridge/ColorPropConverter {
+	public static final field INSTANCE Lcom/facebook/react/bridge/ColorPropConverter;
+	public static final fun getColor (Ljava/lang/Object;Landroid/content/Context;)Ljava/lang/Integer;
+	public static final fun getColor (Ljava/lang/Object;Landroid/content/Context;I)I
+	public static final fun getColorInstance (Ljava/lang/Object;Landroid/content/Context;)Landroid/graphics/Color;
+	public static final fun resolveResourcePath (Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Integer;
 }
 
 public final class com/facebook/react/bridge/CxxCallbackImpl : com/facebook/jni/HybridClassBase, com/facebook/react/bridge/Callback {
@@ -798,12 +794,12 @@ public abstract interface class com/facebook/react/bridge/JSInstance {
 	public abstract fun invokeCallback (ILcom/facebook/react/bridge/NativeArrayInterface;)V
 }
 
-public class com/facebook/react/bridge/JSONArguments {
-	public fun <init> ()V
-	public static fun fromJSONArray (Lorg/json/JSONArray;)Lcom/facebook/react/bridge/ReadableArray;
-	public static fun fromJSONArrayString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
-	public static fun fromJSONObject (Lorg/json/JSONObject;)Lcom/facebook/react/bridge/ReadableMap;
-	public static fun fromJSONObjectString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
+public final class com/facebook/react/bridge/JSONArguments {
+	public static final field INSTANCE Lcom/facebook/react/bridge/JSONArguments;
+	public static final fun fromJSONArray (Lorg/json/JSONArray;)Lcom/facebook/react/bridge/ReadableArray;
+	public static final fun fromJSONArrayString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
+	public static final fun fromJSONObject (Lorg/json/JSONObject;)Lcom/facebook/react/bridge/ReadableMap;
+	public static final fun fromJSONObjectString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
 }
 
 public final class com/facebook/react/bridge/JavaOnlyArray : com/facebook/react/bridge/ReadableArray, com/facebook/react/bridge/WritableArray {
@@ -915,10 +911,10 @@ public final class com/facebook/react/bridge/JavaScriptModuleRegistry {
 	public fun getJavaScriptModule (Lcom/facebook/react/bridge/CatalystInstance;Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
 }
 
-public class com/facebook/react/bridge/JsonWriterHelper {
-	public fun <init> ()V
-	public static fun readableArrayValue (Landroid/util/JsonWriter;Lcom/facebook/react/bridge/ReadableArray;)V
-	public static fun value (Landroid/util/JsonWriter;Ljava/lang/Object;)V
+public final class com/facebook/react/bridge/JsonWriterHelper {
+	public static final field INSTANCE Lcom/facebook/react/bridge/JsonWriterHelper;
+	public static final fun readableArrayValue (Landroid/util/JsonWriter;Lcom/facebook/react/bridge/ReadableArray;)V
+	public static final fun value (Landroid/util/JsonWriter;Ljava/lang/Object;)V
 }
 
 public abstract interface class com/facebook/react/bridge/LifecycleEventListener {
@@ -1446,10 +1442,6 @@ public final class com/facebook/react/bridge/SoftAssertions {
 	public static final fun assertUnreachable (Ljava/lang/String;)V
 }
 
-public abstract interface class com/facebook/react/bridge/Systrace : com/facebook/react/bridge/JavaScriptModule {
-	public abstract fun setEnabled (Z)V
-}
-
 public abstract interface class com/facebook/react/bridge/UIManager : com/facebook/react/bridge/PerformanceCounter {
 	public abstract fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
 	public abstract fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
@@ -1476,15 +1468,15 @@ public abstract interface class com/facebook/react/bridge/UIManagerProvider {
 	public abstract fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
 
-public class com/facebook/react/bridge/UiThreadUtil {
-	public fun <init> ()V
-	public static fun assertNotOnUiThread ()V
-	public static fun assertOnUiThread ()V
-	public static fun getUiThreadHandler ()Landroid/os/Handler;
-	public static fun isOnUiThread ()Z
-	public static fun removeOnUiThread (Ljava/lang/Runnable;)V
-	public static fun runOnUiThread (Ljava/lang/Runnable;)Z
-	public static fun runOnUiThread (Ljava/lang/Runnable;J)Z
+public final class com/facebook/react/bridge/UiThreadUtil {
+	public static final field INSTANCE Lcom/facebook/react/bridge/UiThreadUtil;
+	public static final fun assertNotOnUiThread ()V
+	public static final fun assertOnUiThread ()V
+	public static final fun getUiThreadHandler ()Landroid/os/Handler;
+	public static final fun isOnUiThread ()Z
+	public static final fun removeOnUiThread (Ljava/lang/Runnable;)V
+	public static final fun runOnUiThread (Ljava/lang/Runnable;)Z
+	public static final fun runOnUiThread (Ljava/lang/Runnable;J)Z
 }
 
 public final class com/facebook/react/bridge/UnexpectedNativeTypeException : java/lang/RuntimeException {
@@ -1655,13 +1647,6 @@ public final class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec$B
 public final class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Companion {
 	public final fun builder ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
 	public final fun createDefault ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
-}
-
-public final class com/facebook/react/common/ClearableSynchronizedPool : androidx/core/util/Pools$Pool {
-	public fun <init> (I)V
-	public fun acquire ()Ljava/lang/Object;
-	public final fun clear ()V
-	public fun release (Ljava/lang/Object;)Z
 }
 
 public final class com/facebook/react/common/DebugServerException : java/lang/RuntimeException {
@@ -1944,21 +1929,30 @@ public final class com/facebook/react/defaults/DefaultTurboModuleManagerDelegate
 public final class com/facebook/react/devsupport/BridgeDevSupportManager : com/facebook/react/devsupport/DevSupportManagerBase {
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)V
 	public fun handleReloadJS ()V
-	public fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
 }
 
-public class com/facebook/react/devsupport/BundleDownloader {
+public final class com/facebook/react/devsupport/BundleDownloader {
+	public static final field Companion Lcom/facebook/react/devsupport/BundleDownloader$Companion;
 	public fun <init> (Lokhttp3/OkHttpClient;)V
-	public fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;)V
-	public fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;Lokhttp3/Request$Builder;)V
+	public final fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;)V
+	public final fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;Lokhttp3/Request$Builder;)V
+	public static synthetic fun downloadBundleFromURL$default (Lcom/facebook/react/devsupport/BundleDownloader;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;Lokhttp3/Request$Builder;ILjava/lang/Object;)V
 }
 
-public class com/facebook/react/devsupport/BundleDownloader$BundleInfo {
+public final class com/facebook/react/devsupport/BundleDownloader$BundleInfo {
+	public static final field Companion Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo$Companion;
 	public fun <init> ()V
-	public static fun fromJSONString (Ljava/lang/String;)Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;
-	public fun getFilesChangedCount ()I
-	public fun getUrl ()Ljava/lang/String;
-	public fun toJSONString ()Ljava/lang/String;
+	public static final fun fromJSONString (Ljava/lang/String;)Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;
+	public final fun getFilesChangedCount ()I
+	public final fun getUrl ()Ljava/lang/String;
+	public final fun toJSONString ()Ljava/lang/String;
+}
+
+public final class com/facebook/react/devsupport/BundleDownloader$BundleInfo$Companion {
+	public final fun fromJSONString (Ljava/lang/String;)Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;
+}
+
+public final class com/facebook/react/devsupport/BundleDownloader$Companion {
 }
 
 public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementation : com/facebook/react/devsupport/interfaces/DevLoadingViewManager {
@@ -1973,28 +1967,28 @@ public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementa
 	public final fun setDevLoadingEnabled (Z)V
 }
 
-public class com/facebook/react/devsupport/DevServerHelper {
+public final class com/facebook/react/devsupport/DevServerHelper {
 	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Landroid/content/Context;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
-	public fun closeInspectorConnection ()V
-	public fun closePackagerConnection ()V
-	public fun disableDebugger ()V
-	public fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;)V
-	public fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;Lokhttp3/Request$Builder;)V
-	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
-	public fun getDevServerBundleURL (Ljava/lang/String;)Ljava/lang/String;
-	public fun getDevServerSplitBundleURL (Ljava/lang/String;)Ljava/lang/String;
-	public fun getSourceMapUrl (Ljava/lang/String;)Ljava/lang/String;
-	public fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
-	public fun getWebsocketProxyURL ()Ljava/lang/String;
-	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
-	public fun openInspectorConnection ()V
-	public fun openPackagerConnection (Ljava/lang/String;Lcom/facebook/react/devsupport/DevServerHelper$PackagerCommandListener;)V
+	public final fun closeInspectorConnection ()V
+	public final fun closePackagerConnection ()V
+	public final fun disableDebugger ()V
+	public final fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;)V
+	public final fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;Lokhttp3/Request$Builder;)V
+	public static synthetic fun downloadBundleFromURL$default (Lcom/facebook/react/devsupport/DevServerHelper;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;Lokhttp3/Request$Builder;ILjava/lang/Object;)V
+	public final fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
+	public final fun getDevServerBundleURL (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getDevServerSplitBundleURL (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getSourceMapUrl (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getWebsocketProxyURL ()Ljava/lang/String;
+	public final fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
+	public final fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
+	public final fun openInspectorConnection ()V
+	public final fun openPackagerConnection (Ljava/lang/String;Lcom/facebook/react/devsupport/DevServerHelper$PackagerCommandListener;)V
 }
 
 public abstract interface class com/facebook/react/devsupport/DevServerHelper$PackagerCommandListener {
 	public abstract fun customCommandHandlers ()Ljava/util/Map;
-	public fun onCaptureHeapCommand (Lcom/facebook/react/packagerconnection/Responder;)V
 	public abstract fun onPackagerConnected ()V
 	public abstract fun onPackagerDevMenuCommand ()V
 	public abstract fun onPackagerDisconnected ()V
@@ -2002,35 +1996,35 @@ public abstract interface class com/facebook/react/devsupport/DevServerHelper$Pa
 }
 
 public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/facebook/react/devsupport/interfaces/DevSupportManager {
-	protected final field mReactInstanceDevHelper Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
+	public static final field Companion Lcom/facebook/react/devsupport/DevSupportManagerBase$Companion;
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)V
 	public fun addCustomDevOption (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevOptionHandler;)V
 	public fun createRootView (Ljava/lang/String;)Landroid/view/View;
 	public fun createSurfaceDelegate (Ljava/lang/String;)Lcom/facebook/react/common/SurfaceDelegate;
 	public fun destroyRootView (Landroid/view/View;)V
 	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
-	public fun fetchSplitBundleAndCreateBundleLoader (Ljava/lang/String;Lcom/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader;)V
-	protected fun getApplicationContext ()Landroid/content/Context;
+	public final fun fetchSplitBundleAndCreateBundleLoader (Ljava/lang/String;Lcom/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader;)V
+	protected final fun getApplicationContext ()Landroid/content/Context;
 	public fun getCurrentActivity ()Landroid/app/Activity;
-	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
-	public fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
-	public fun getDevServerHelper ()Lcom/facebook/react/devsupport/DevServerHelper;
-	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
-	public fun getDevSupportEnabled ()Z
+	public final fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public final fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
+	public final fun getDevServerHelper ()Lcom/facebook/react/devsupport/DevServerHelper;
+	public final fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
+	public final fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
-	public fun getJSAppBundleName ()Ljava/lang/String;
-	public fun getLastErrorCookie ()I
-	public fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public fun getLastErrorTitle ()Ljava/lang/String;
-	public fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
-	public fun getReactInstanceDevHelper ()Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
+	public final fun getJSAppBundleName ()Ljava/lang/String;
+	public final fun getLastErrorCookie ()I
+	public final fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public final fun getLastErrorTitle ()Ljava/lang/String;
+	public final fun getLastErrorType ()Lcom/facebook/react/devsupport/interfaces/ErrorType;
+	public final fun getReactInstanceDevHelper ()Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
 	public fun getRedBoxHandler ()Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;
 	public fun getSourceMapUrl ()Ljava/lang/String;
 	public fun getSourceUrl ()Ljava/lang/String;
 	protected abstract fun getUniqueTag ()Ljava/lang/String;
 	public fun handleException (Ljava/lang/Exception;)V
 	public fun hasUpToDateJSBundleInCache ()Z
-	protected fun hideDevLoadingView ()V
+	protected final fun hideDevLoadingView ()V
 	public fun hidePausedInDebuggerOverlay ()V
 	public fun hideRedboxDialog ()V
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
@@ -2042,11 +2036,16 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
 	public fun reloadSettings ()V
 	public fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
-	public fun setDevSupportEnabled (Z)V
+	public final fun setDevLoadingViewManager (Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)V
+	public final fun setDevSupportEnabled (Z)V
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
+	public final fun setLastErrorCookie (I)V
+	public final fun setLastErrorStack ([Lcom/facebook/react/devsupport/interfaces/StackFrame;)V
+	public final fun setLastErrorTitle (Ljava/lang/String;)V
+	public final fun setLastErrorType (Lcom/facebook/react/devsupport/interfaces/ErrorType;)V
 	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
-	protected fun showDevLoadingViewForRemoteJSEnabled ()V
+	protected final fun showDevLoadingViewForRemoteJSEnabled ()V
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -2059,6 +2058,9 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 public abstract interface class com/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader {
 	public abstract fun onError (Ljava/lang/String;Ljava/lang/Throwable;)V
 	public abstract fun onSuccess (Lcom/facebook/react/bridge/JSBundleLoader;)V
+}
+
+public final class com/facebook/react/devsupport/DevSupportManagerBase$Companion {
 }
 
 public abstract interface class com/facebook/react/devsupport/DevSupportManagerFactory {
@@ -2115,7 +2117,6 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun hidePausedInDebuggerOverlay ()V
 	public fun hideRedboxDialog ()V
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
 	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun openDebugger ()V
@@ -2137,12 +2138,13 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun toggleElementInspector ()V
 }
 
-public class com/facebook/react/devsupport/StackTraceHelper {
+public final class com/facebook/react/devsupport/StackTraceHelper {
 	public static final field COLUMN_KEY Ljava/lang/String;
 	public static final field COMPONENT_STACK_KEY Ljava/lang/String;
 	public static final field EXTRA_DATA_KEY Ljava/lang/String;
 	public static final field FILE_KEY Ljava/lang/String;
 	public static final field ID_KEY Ljava/lang/String;
+	public static final field INSTANCE Lcom/facebook/react/devsupport/StackTraceHelper;
 	public static final field IS_FATAL_KEY Ljava/lang/String;
 	public static final field LINE_NUMBER_KEY Ljava/lang/String;
 	public static final field MESSAGE_KEY Ljava/lang/String;
@@ -2150,17 +2152,17 @@ public class com/facebook/react/devsupport/StackTraceHelper {
 	public static final field NAME_KEY Ljava/lang/String;
 	public static final field ORIGINAL_MESSAGE_KEY Ljava/lang/String;
 	public static final field STACK_KEY Ljava/lang/String;
-	public fun <init> ()V
-	public static fun convertJavaStackTrace (Ljava/lang/Throwable;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertJsStackTrace (Lcom/facebook/react/bridge/ReadableArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertJsStackTrace (Ljava/lang/String;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertJsStackTrace (Lorg/json/JSONArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertProcessedError (Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedError;)Lcom/facebook/react/bridge/JavaOnlyMap;
-	public static fun formatFrameSource (Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
-	public static fun formatStackTrace (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
+	public static final fun convertJavaStackTrace (Ljava/lang/Throwable;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public static final fun convertJsStackTrace (Lcom/facebook/react/bridge/ReadableArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public final fun convertJsStackTrace (Ljava/lang/String;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public final fun convertJsStackTrace (Lorg/json/JSONArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
+	public final fun formatFrameSource (Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
+	public static final fun formatStackTrace (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
 }
 
-public class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl : com/facebook/react/devsupport/interfaces/StackFrame {
+public final class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl : com/facebook/react/devsupport/interfaces/StackFrame {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZ)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IIZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun getColumn ()I
 	public fun getFile ()Ljava/lang/String;
 	public fun getFileName ()Ljava/lang/String;
@@ -2191,11 +2193,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevOpti
 	public abstract fun onOptionSelected ()V
 }
 
-public abstract interface class com/facebook/react/devsupport/interfaces/DevSplitBundleCallback {
-	public abstract fun onError (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public abstract fun onSuccess ()V
-}
-
 public abstract interface class com/facebook/react/devsupport/interfaces/DevSupportManager : com/facebook/react/bridge/JSExceptionHandler {
 	public abstract fun addCustomDevOption (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevOptionHandler;)V
 	public abstract fun createRootView (Ljava/lang/String;)Landroid/view/View;
@@ -2219,7 +2216,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun hidePausedInDebuggerOverlay ()V
 	public abstract fun hideRedboxDialog ()V
 	public abstract fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public abstract fun loadSplitBundleFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevSplitBundleCallback;)V
 	public abstract fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public abstract fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
 	public abstract fun openDebugger ()V
@@ -2297,39 +2293,39 @@ public final class com/facebook/react/fabric/ComponentFactory {
 	public fun <init> ()V
 }
 
-public class com/facebook/react/fabric/DevToolsReactPerfLogger : com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
+public final class com/facebook/react/fabric/DevToolsReactPerfLogger : com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
 	public fun <init> ()V
-	public fun addDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
+	public final fun addDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
 	public fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
 	public fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
-	public fun removeDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
+	public final fun removeDevToolsReactPerfLoggerListener (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener;)V
 }
 
 public abstract interface class com/facebook/react/fabric/DevToolsReactPerfLogger$DevToolsReactPerfLoggerListener {
 	public abstract fun onFabricCommitEnd (Lcom/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint;)V
 }
 
-public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint {
-	public fun getAffectedLayoutNodesCount ()I
-	public fun getAffectedLayoutNodesCountTime ()J
-	public fun getBatchExecutionDuration ()J
-	public fun getBatchExecutionEnd ()J
-	public fun getBatchExecutionStart ()J
-	public fun getCommitDuration ()J
-	public fun getCommitEnd ()J
-	public fun getCommitNumber ()J
-	public fun getCommitStart ()J
-	public fun getDiffDuration ()J
-	public fun getDiffEnd ()J
-	public fun getDiffStart ()J
-	public fun getFinishTransactionEnd ()J
-	public fun getFinishTransactionStart ()J
-	public fun getLayoutDuration ()J
-	public fun getLayoutEnd ()J
-	public fun getLayoutStart ()J
-	public fun getTransactionEndDuration ()J
-	public fun getUpdateUIMainThreadEnd ()J
-	public fun getUpdateUIMainThreadStart ()J
+public final class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint {
+	public final fun getAffectedLayoutNodesCount ()I
+	public final fun getAffectedLayoutNodesCountTime ()J
+	public final fun getBatchExecutionDuration ()J
+	public final fun getBatchExecutionEnd ()J
+	public final fun getBatchExecutionStart ()J
+	public final fun getCommitDuration ()J
+	public final fun getCommitEnd ()J
+	public final fun getCommitNumber ()J
+	public final fun getCommitStart ()J
+	public final fun getDiffDuration ()J
+	public final fun getDiffEnd ()J
+	public final fun getDiffStart ()J
+	public final fun getFinishTransactionEnd ()J
+	public final fun getFinishTransactionStart ()J
+	public final fun getLayoutDuration ()J
+	public final fun getLayoutEnd ()J
+	public final fun getLayoutStart ()J
+	public final fun getTransactionEndDuration ()J
+	public final fun getUpdateUIMainThreadEnd ()J
+	public final fun getUpdateUIMainThreadStart ()J
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -2347,6 +2343,8 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public fun findNextFocusableElement (III)Ljava/lang/Integer;
+	public fun findRelativeTopMostParent (II)Ljava/lang/Integer;
 	public fun getColor (I[Ljava/lang/String;)I
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getPerformanceCounters ()Ljava/util/Map;
@@ -2386,18 +2384,17 @@ public final class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/f
 	public fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
 
-public class com/facebook/react/fabric/StateWrapperImpl : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/StateWrapper {
+public final class com/facebook/react/fabric/StateWrapperImpl : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/StateWrapper {
 	public fun destroyState ()V
 	public fun getStateData ()Lcom/facebook/react/bridge/ReadableNativeMap;
 	public fun getStateDataMapBuffer ()Lcom/facebook/react/common/mapbuffer/ReadableMapBuffer;
 	public fun toString ()Ljava/lang/String;
 	public fun updateState (Lcom/facebook/react/bridge/WritableMap;)V
-	public fun updateStateImpl (Lcom/facebook/react/bridge/NativeMap;)V
+	public final fun updateStateImpl (Lcom/facebook/react/bridge/NativeMap;)V
 }
 
-public final class com/facebook/react/fabric/events/EventBeatManager : com/facebook/react/uimanager/events/BatchEventDispatchedListener {
+public final class com/facebook/react/fabric/events/EventBeatManager : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/events/BatchEventDispatchedListener {
 	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun onBatchEventDispatched ()V
 }
 
@@ -2414,21 +2411,6 @@ public final class com/facebook/react/fabric/events/FabricEventEmitter : com/fac
 	public fun receiveEvent (IILjava/lang/String;ZILcom/facebook/react/bridge/WritableMap;I)V
 	public fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
 	public fun receiveTouches (Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
-}
-
-public abstract interface class com/facebook/react/fabric/mounting/LayoutMetricsConversions {
-	public static final field Companion Lcom/facebook/react/fabric/mounting/LayoutMetricsConversions$Companion;
-	public static fun getMaxSize (I)F
-	public static fun getMinSize (I)F
-	public static fun getYogaMeasureMode (FF)Lcom/facebook/yoga/YogaMeasureMode;
-	public static fun getYogaSize (FF)F
-}
-
-public final class com/facebook/react/fabric/mounting/LayoutMetricsConversions$Companion {
-	public final fun getMaxSize (I)F
-	public final fun getMinSize (I)F
-	public final fun getYogaMeasureMode (FF)Lcom/facebook/yoga/YogaMeasureMode;
-	public final fun getYogaSize (FF)F
 }
 
 public class com/facebook/react/fabric/mounting/MountItemDispatcher {
@@ -2659,23 +2641,28 @@ public abstract interface class com/facebook/react/modules/appregistry/AppRegist
 	public abstract fun unmountApplicationComponentAtRootTag (I)V
 }
 
-public class com/facebook/react/modules/blob/BlobModule : com/facebook/fbreact/specs/NativeBlobModuleSpec {
+public final class com/facebook/react/modules/blob/BlobModule : com/facebook/fbreact/specs/NativeBlobModuleSpec {
+	public static final field Companion Lcom/facebook/react/modules/blob/BlobModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun addNetworkingHandler ()V
 	public fun addWebSocketHandler (D)V
 	public fun createFromParts (Lcom/facebook/react/bridge/ReadableArray;Ljava/lang/String;)V
-	public fun getLengthOfBlob (Ljava/lang/String;)J
+	public final fun getLengthOfBlob (Ljava/lang/String;)J
 	public fun getTypedExportedConstants ()Ljava/util/Map;
 	public fun initialize ()V
 	public fun release (Ljava/lang/String;)V
-	public fun remove (Ljava/lang/String;)V
+	public final fun remove (Ljava/lang/String;)V
 	public fun removeWebSocketHandler (D)V
-	public fun resolve (Landroid/net/Uri;)[B
-	public fun resolve (Lcom/facebook/react/bridge/ReadableMap;)[B
-	public fun resolve (Ljava/lang/String;II)[B
+	public final fun resolve (Landroid/net/Uri;)[B
+	public final fun resolve (Lcom/facebook/react/bridge/ReadableMap;)[B
+	public final fun resolve (Ljava/lang/String;II)[B
 	public fun sendOverSocket (Lcom/facebook/react/bridge/ReadableMap;D)V
-	public fun store ([B)Ljava/lang/String;
-	public fun store ([BLjava/lang/String;)V
+	public final fun store ([B)Ljava/lang/String;
+	public final fun store ([BLjava/lang/String;)V
+}
+
+public final class com/facebook/react/modules/blob/BlobModule$Companion {
 }
 
 public final class com/facebook/react/modules/blob/BlobProvider : android/content/ContentProvider {
@@ -2689,10 +2676,15 @@ public final class com/facebook/react/modules/blob/BlobProvider : android/conten
 	public fun update (Landroid/net/Uri;Landroid/content/ContentValues;Ljava/lang/String;[Ljava/lang/String;)I
 }
 
-public class com/facebook/react/modules/blob/FileReaderModule : com/facebook/fbreact/specs/NativeFileReaderModuleSpec {
+public final class com/facebook/react/modules/blob/FileReaderModule : com/facebook/fbreact/specs/NativeFileReaderModuleSpec {
+	public static final field Companion Lcom/facebook/react/modules/blob/FileReaderModule$Companion;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun readAsDataURL (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V
 	public fun readAsText (Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
+}
+
+public final class com/facebook/react/modules/blob/FileReaderModule$Companion {
+	public final fun getNAME ()Ljava/lang/String;
 }
 
 public final class com/facebook/react/modules/common/ModuleDataCleaner {
@@ -2702,14 +2694,6 @@ public final class com/facebook/react/modules/common/ModuleDataCleaner {
 
 public abstract interface class com/facebook/react/modules/common/ModuleDataCleaner$Cleanable {
 	public abstract fun clearSensitiveData ()V
-}
-
-public class com/facebook/react/modules/core/ChoreographerCompat {
-	public fun <init> ()V
-}
-
-public abstract class com/facebook/react/modules/core/ChoreographerCompat$FrameCallback : android/view/Choreographer$FrameCallback {
-	public fun <init> ()V
 }
 
 public abstract interface class com/facebook/react/modules/core/DefaultHardwareBackBtnHandler {
@@ -2733,6 +2717,8 @@ public abstract interface class com/facebook/react/modules/core/DeviceEventManag
 }
 
 public class com/facebook/react/modules/core/ExceptionsManagerModule : com/facebook/fbreact/specs/NativeExceptionsManagerSpec {
+	public static final field Companion Lcom/facebook/react/modules/core/ExceptionsManagerModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
 	public fun dismissRedbox ()V
 	public fun reportException (Lcom/facebook/react/bridge/ReadableMap;)V
@@ -2740,16 +2726,13 @@ public class com/facebook/react/modules/core/ExceptionsManagerModule : com/faceb
 	public fun reportSoftException (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V
 }
 
+public final class com/facebook/react/modules/core/ExceptionsManagerModule$Companion {
+}
+
 public class com/facebook/react/modules/core/HeadlessJsTaskSupportModule : com/facebook/fbreact/specs/NativeHeadlessJsTaskSupportSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun notifyTaskFinished (D)V
 	public fun notifyTaskRetry (DLcom/facebook/react/bridge/Promise;)V
-}
-
-public abstract interface class com/facebook/react/modules/core/JSTimers : com/facebook/react/bridge/JavaScriptModule {
-	public abstract fun callIdleCallbacks (D)V
-	public abstract fun callTimers (Lcom/facebook/react/bridge/WritableArray;)V
-	public abstract fun emitTimeDriftWarning (Ljava/lang/String;)V
 }
 
 public abstract interface class com/facebook/react/modules/core/JavaScriptTimerExecutor {
@@ -2829,6 +2812,8 @@ public final class com/facebook/react/modules/core/TimingModule$Companion {
 }
 
 public final class com/facebook/react/modules/debug/DevSettingsModule : com/facebook/fbreact/specs/NativeDevSettingsSpec {
+	public static final field Companion Lcom/facebook/react/modules/debug/DevSettingsModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
 	public fun addListener (Ljava/lang/String;)V
 	public fun addMenuItem (Ljava/lang/String;)V
@@ -2841,6 +2826,9 @@ public final class com/facebook/react/modules/debug/DevSettingsModule : com/face
 	public fun setIsShakeToShowDevMenuEnabled (Z)V
 	public fun setProfilingEnabled (Z)V
 	public fun toggleElementInspector ()V
+}
+
+public final class com/facebook/react/modules/debug/DevSettingsModule$Companion {
 }
 
 public final class com/facebook/react/modules/debug/FpsDebugFrameCallback : android/view/Choreographer$FrameCallback {
@@ -2874,7 +2862,12 @@ public final class com/facebook/react/modules/debug/FpsDebugFrameCallback$FpsInf
 }
 
 public final class com/facebook/react/modules/debug/SourceCodeModule : com/facebook/fbreact/specs/NativeSourceCodeSpec {
+	public static final field Companion Lcom/facebook/react/modules/debug/SourceCodeModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
+}
+
+public final class com/facebook/react/modules/debug/SourceCodeModule$Companion {
 }
 
 public abstract interface class com/facebook/react/modules/debug/interfaces/DeveloperSettings {
@@ -2898,16 +2891,22 @@ public abstract interface class com/facebook/react/modules/debug/interfaces/Deve
 	public abstract fun setStartSamplingProfilerOnInit (Z)V
 }
 
-public class com/facebook/react/modules/dialog/AlertFragment : androidx/fragment/app/DialogFragment, android/content/DialogInterface$OnClickListener {
+public final class com/facebook/react/modules/dialog/AlertFragment : androidx/fragment/app/DialogFragment, android/content/DialogInterface$OnClickListener {
+	public static final field Companion Lcom/facebook/react/modules/dialog/AlertFragment$Companion;
 	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/modules/dialog/DialogModule$AlertFragmentListener;Landroid/os/Bundle;)V
-	public static fun createDialog (Landroid/content/Context;Landroid/os/Bundle;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/Dialog;
+	public static final fun createDialog (Landroid/content/Context;Landroid/os/Bundle;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/Dialog;
 	public fun onClick (Landroid/content/DialogInterface;I)V
 	public fun onCreateDialog (Landroid/os/Bundle;)Landroid/app/Dialog;
 	public fun onDismiss (Landroid/content/DialogInterface;)V
 }
 
-public class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbreact/specs/NativeDialogManagerAndroidSpec, com/facebook/react/bridge/LifecycleEventListener {
+public final class com/facebook/react/modules/dialog/AlertFragment$Companion {
+	public final fun createDialog (Landroid/content/Context;Landroid/os/Bundle;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/Dialog;
+}
+
+public final class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbreact/specs/NativeDialogManagerAndroidSpec, com/facebook/react/bridge/LifecycleEventListener {
+	public static final field Companion Lcom/facebook/react/modules/dialog/DialogModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getTypedExportedConstants ()Ljava/util/Map;
 	public fun initialize ()V
@@ -2916,6 +2915,9 @@ public class com/facebook/react/modules/dialog/DialogModule : com/facebook/fbrea
 	public fun onHostPause ()V
 	public fun onHostResume ()V
 	public fun showAlert (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
+}
+
+public final class com/facebook/react/modules/dialog/DialogModule$Companion {
 }
 
 public class com/facebook/react/modules/fresco/FrescoModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/modules/common/ModuleDataCleaner$Cleanable, com/facebook/react/turbomodule/core/interfaces/TurboModule {
@@ -2968,19 +2970,6 @@ public final class com/facebook/react/modules/fresco/ReactNetworkImageRequest$Co
 	public static synthetic fun fromBuilderWithHeaders$default (Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest$Companion;Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/modules/fresco/ImageCacheControl;ILjava/lang/Object;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
 }
 
-public final class com/facebook/react/modules/i18nmanager/I18nManagerModule : com/facebook/fbreact/specs/NativeI18nManagerSpec {
-	public static final field Companion Lcom/facebook/react/modules/i18nmanager/I18nManagerModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun allowRTL (Z)V
-	public fun forceRTL (Z)V
-	public fun getTypedExportedConstants ()Ljava/util/Map;
-	public fun swapLeftAndRightInRTL (Z)V
-}
-
-public final class com/facebook/react/modules/i18nmanager/I18nManagerModule$Companion {
-}
-
 public final class com/facebook/react/modules/i18nmanager/I18nUtil {
 	public static final field Companion Lcom/facebook/react/modules/i18nmanager/I18nUtil$Companion;
 	public final fun allowRTL (Landroid/content/Context;Z)V
@@ -2994,25 +2983,6 @@ public final class com/facebook/react/modules/i18nmanager/I18nUtil {
 public final class com/facebook/react/modules/i18nmanager/I18nUtil$Companion {
 	public final fun DEPRECATED$getInstance ()Lcom/facebook/react/modules/i18nmanager/I18nUtil;
 	public final fun getInstance ()Lcom/facebook/react/modules/i18nmanager/I18nUtil;
-}
-
-public final class com/facebook/react/modules/image/ImageLoaderModule : com/facebook/fbreact/specs/NativeImageLoaderAndroidSpec, com/facebook/react/bridge/LifecycleEventListener {
-	public static final field Companion Lcom/facebook/react/modules/image/ImageLoaderModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/imagepipeline/core/ImagePipeline;Lcom/facebook/react/views/image/ReactCallerContextFactory;)V
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/Object;)V
-	public fun abortRequest (D)V
-	public fun getSize (Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
-	public fun getSizeWithHeaders (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V
-	public fun onHostDestroy ()V
-	public fun onHostPause ()V
-	public fun onHostResume ()V
-	public fun prefetchImage (Ljava/lang/String;DLcom/facebook/react/bridge/Promise;)V
-	public fun queryCache (Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V
-}
-
-public final class com/facebook/react/modules/image/ImageLoaderModule$Companion {
 }
 
 public class com/facebook/react/modules/intent/IntentModule : com/facebook/fbreact/specs/NativeIntentAndroidSpec {
@@ -3054,25 +3024,31 @@ public abstract interface class com/facebook/react/modules/network/NetworkInterc
 }
 
 public final class com/facebook/react/modules/network/NetworkingModule : com/facebook/fbreact/specs/NativeNetworkingAndroidSpec {
+	public static final field Companion Lcom/facebook/react/modules/network/NetworkingModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/String;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/String;Lokhttp3/OkHttpClient;Ljava/util/List;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)V
-	public fun abortRequest (D)V
-	public fun addListener (Ljava/lang/String;)V
-	public fun addRequestBodyHandler (Lcom/facebook/react/modules/network/NetworkingModule$RequestBodyHandler;)V
-	public fun addResponseHandler (Lcom/facebook/react/modules/network/NetworkingModule$ResponseHandler;)V
-	public fun addUriHandler (Lcom/facebook/react/modules/network/NetworkingModule$UriHandler;)V
-	public fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
-	public fun initialize ()V
-	public fun invalidate ()V
-	public fun removeListeners (D)V
-	public fun removeRequestBodyHandler (Lcom/facebook/react/modules/network/NetworkingModule$RequestBodyHandler;)V
-	public fun removeResponseHandler (Lcom/facebook/react/modules/network/NetworkingModule$ResponseHandler;)V
-	public fun removeUriHandler (Lcom/facebook/react/modules/network/NetworkingModule$UriHandler;)V
-	public fun sendRequest (Ljava/lang/String;Ljava/lang/String;DLcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZ)V
-	public fun sendRequestInternal (Ljava/lang/String;Ljava/lang/String;ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZIZ)V
-	public static fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
+	public final fun abortRequest (D)V
+	public final fun addListener (Ljava/lang/String;)V
+	public final fun addRequestBodyHandler (Lcom/facebook/react/modules/network/NetworkingModule$RequestBodyHandler;)V
+	public final fun addResponseHandler (Lcom/facebook/react/modules/network/NetworkingModule$ResponseHandler;)V
+	public final fun addUriHandler (Lcom/facebook/react/modules/network/NetworkingModule$UriHandler;)V
+	public final fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
+	public final fun initialize ()V
+	public final fun invalidate ()V
+	public final fun removeListeners (D)V
+	public final fun removeRequestBodyHandler (Lcom/facebook/react/modules/network/NetworkingModule$RequestBodyHandler;)V
+	public final fun removeResponseHandler (Lcom/facebook/react/modules/network/NetworkingModule$ResponseHandler;)V
+	public final fun removeUriHandler (Lcom/facebook/react/modules/network/NetworkingModule$UriHandler;)V
+	public final fun sendRequest (Ljava/lang/String;Ljava/lang/String;DLcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZ)V
+	public final fun sendRequestInternal (Ljava/lang/String;Ljava/lang/String;ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZIZ)V
+	public static final fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
+}
+
+public final class com/facebook/react/modules/network/NetworkingModule$Companion {
+	public final fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
 }
 
 public abstract interface class com/facebook/react/modules/network/NetworkingModule$CustomClientBuilder : com/facebook/react/modules/network/CustomClientBuilder {
@@ -3184,12 +3160,18 @@ public final class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 	public static final fun getInspectorHostMetadata (Landroid/content/Context;)Ljava/util/Map;
 	public static final fun getServerHost (I)Ljava/lang/String;
 	public static final fun getServerHost (Landroid/content/Context;)Ljava/lang/String;
+	public static final fun getServerHost (Landroid/content/Context;I)Ljava/lang/String;
 }
 
 public final class com/facebook/react/modules/systeminfo/AndroidInfoModule : com/facebook/fbreact/specs/NativePlatformConstantsAndroidSpec {
+	public static final field Companion Lcom/facebook/react/modules/systeminfo/AndroidInfoModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getAndroidID ()Ljava/lang/String;
 	public fun invalidate ()V
+}
+
+public final class com/facebook/react/modules/systeminfo/AndroidInfoModule$Companion {
 }
 
 public final class com/facebook/react/modules/systeminfo/ReactNativeVersion {
@@ -3236,9 +3218,9 @@ public abstract interface class com/facebook/react/modules/websocket/WebSocketMo
 	public abstract fun onMessage (Lokio/ByteString;Lcom/facebook/react/bridge/WritableMap;)V
 }
 
-public class com/facebook/react/packagerconnection/FileIoHandler : java/lang/Runnable {
+public final class com/facebook/react/packagerconnection/FileIoHandler : java/lang/Runnable {
 	public fun <init> ()V
-	public fun handlers ()Ljava/util/Map;
+	public final fun handlers ()Ljava/util/Map;
 	public fun run ()V
 }
 
@@ -3270,15 +3252,15 @@ public class com/facebook/react/packagerconnection/PackagerConnectionSettings {
 
 public final class com/facebook/react/packagerconnection/ReconnectingWebSocket : okhttp3/WebSocketListener {
 	public fun <init> (Ljava/lang/String;Lcom/facebook/react/packagerconnection/ReconnectingWebSocket$MessageCallback;Lcom/facebook/react/packagerconnection/ReconnectingWebSocket$ConnectionCallback;)V
-	public fun closeQuietly ()V
-	public fun connect ()V
+	public final fun closeQuietly ()V
+	public final fun connect ()V
 	public fun onClosed (Lokhttp3/WebSocket;ILjava/lang/String;)V
 	public fun onFailure (Lokhttp3/WebSocket;Ljava/lang/Throwable;Lokhttp3/Response;)V
 	public fun onMessage (Lokhttp3/WebSocket;Ljava/lang/String;)V
 	public fun onMessage (Lokhttp3/WebSocket;Lokio/ByteString;)V
 	public fun onOpen (Lokhttp3/WebSocket;Lokhttp3/Response;)V
-	public fun sendMessage (Ljava/lang/String;)V
-	public fun sendMessage (Lokio/ByteString;)V
+	public final fun sendMessage (Ljava/lang/String;)V
+	public final fun sendMessage (Lokio/ByteString;)V
 }
 
 public abstract interface class com/facebook/react/packagerconnection/ReconnectingWebSocket$ConnectionCallback {
@@ -3296,12 +3278,6 @@ public abstract interface class com/facebook/react/packagerconnection/RequestHan
 	public abstract fun onRequest (Ljava/lang/Object;Lcom/facebook/react/packagerconnection/Responder;)V
 }
 
-public abstract class com/facebook/react/packagerconnection/RequestOnlyHandler : com/facebook/react/packagerconnection/RequestHandler {
-	public fun <init> ()V
-	public final fun onNotification (Ljava/lang/Object;)V
-	public abstract fun onRequest (Ljava/lang/Object;Lcom/facebook/react/packagerconnection/Responder;)V
-}
-
 public abstract interface class com/facebook/react/packagerconnection/Responder {
 	public abstract fun error (Ljava/lang/Object;)V
 	public abstract fun respond (Ljava/lang/Object;)V
@@ -3309,40 +3285,6 @@ public abstract interface class com/facebook/react/packagerconnection/Responder 
 
 public abstract class com/facebook/react/runtime/BindingsInstaller {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
-}
-
-public final class com/facebook/react/runtime/BridgelessCatalystInstance : com/facebook/react/bridge/CatalystInstance {
-	public fun <init> (Lcom/facebook/react/runtime/ReactHostImpl;)V
-	public fun addBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
-	public fun callFunction (Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/NativeArray;)V
-	public fun destroy ()V
-	public fun extendNativeModules (Lcom/facebook/react/bridge/NativeModuleRegistry;)V
-	public fun getFabricUIManager ()Lcom/facebook/react/bridge/UIManager;
-	public fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
-	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
-	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
-	public fun getNativeMethodCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder;
-	public fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getNativeModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getNativeModules ()Ljava/util/Collection;
-	public fun getReactQueueConfiguration ()Lcom/facebook/react/bridge/queue/ReactQueueConfiguration;
-	public fun getRuntimeExecutor ()Lcom/facebook/react/bridge/RuntimeExecutor;
-	public fun getRuntimeScheduler ()Lcom/facebook/react/bridge/RuntimeScheduler;
-	public fun getSourceURL ()Ljava/lang/String;
-	public fun handleMemoryPressure (I)V
-	public fun hasNativeModule (Ljava/lang/Class;)Z
-	public fun hasRunJSBundle ()Z
-	public fun invokeCallback (ILcom/facebook/react/bridge/NativeArrayInterface;)V
-	public fun isDestroyed ()Z
-	public fun loadScriptFromAssets (Landroid/content/res/AssetManager;Ljava/lang/String;Z)V
-	public fun loadScriptFromFile (Ljava/lang/String;Ljava/lang/String;Z)V
-	public fun loadSplitBundleFromFile (Ljava/lang/String;Ljava/lang/String;)V
-	public fun registerSegment (ILjava/lang/String;)V
-	public fun removeBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)V
-	public fun runJSBundle ()V
-	public fun setFabricUIManager (Lcom/facebook/react/bridge/UIManager;)V
-	public fun setSourceURLs (Ljava/lang/String;Ljava/lang/String;)V
-	public fun setTurboModuleRegistry (Lcom/facebook/react/internal/turbomodule/core/interfaces/TurboModuleRegistry;)V
 }
 
 public class com/facebook/react/runtime/CoreReactPackage$$ReactModuleInfoProvider : com/facebook/react/module/model/ReactModuleInfoProvider {
@@ -3391,12 +3333,12 @@ public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/React
 	public fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 }
 
-public class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/interfaces/fabric/ReactSurface {
+public final class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/interfaces/fabric/ReactSurface {
 	public fun <init> (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)V
-	public fun attach (Lcom/facebook/react/ReactHost;)V
-	public fun attachView (Lcom/facebook/react/runtime/ReactSurfaceView;)V
+	public final fun attach (Lcom/facebook/react/ReactHost;)V
+	public final fun attachView (Lcom/facebook/react/runtime/ReactSurfaceView;)V
 	public fun clear ()V
-	public static fun createWithView (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/runtime/ReactSurfaceImpl;
+	public static final fun createWithView (Landroid/content/Context;Ljava/lang/String;Landroid/os/Bundle;)Lcom/facebook/react/runtime/ReactSurfaceImpl;
 	public fun detach ()V
 	public fun getContext ()Landroid/content/Context;
 	public fun getModuleName ()Ljava/lang/String;
@@ -3406,7 +3348,7 @@ public class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/react/in
 	public fun prerender ()Lcom/facebook/react/interfaces/TaskInterface;
 	public fun start ()Lcom/facebook/react/interfaces/TaskInterface;
 	public fun stop ()Lcom/facebook/react/interfaces/TaskInterface;
-	public fun updateInitProps (Landroid/os/Bundle;)V
+	public final fun updateInitProps (Landroid/os/Bundle;)V
 }
 
 public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/react/ReactRootView {
@@ -3505,12 +3447,6 @@ public abstract interface class com/facebook/react/touch/ReactHitSlopView {
 
 public abstract interface class com/facebook/react/touch/ReactInterceptingViewGroup {
 	public abstract fun setOnInterceptTouchEventListener (Lcom/facebook/react/touch/OnInterceptTouchEventListener;)V
-}
-
-public final class com/facebook/react/turbomodule/core/CallInvokerHolderImpl : com/facebook/jni/HybridClassBase, com/facebook/react/turbomodule/core/interfaces/CallInvokerHolder {
-}
-
-public final class com/facebook/react/turbomodule/core/NativeMethodCallInvokerHolderImpl : com/facebook/jni/HybridClassBase, com/facebook/react/turbomodule/core/interfaces/NativeMethodCallInvokerHolder {
 }
 
 public final class com/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder {
@@ -4073,12 +4009,13 @@ public abstract interface class com/facebook/react/uimanager/ReactClippingViewGr
 	public abstract fun getRemoveClippedSubviews ()Z
 	public abstract fun setRemoveClippedSubviews (Z)V
 	public abstract fun updateClippingRect ()V
+	public abstract fun updateClippingRect (Ljava/util/Set;)V
 }
 
-public class com/facebook/react/uimanager/ReactClippingViewGroupHelper {
+public final class com/facebook/react/uimanager/ReactClippingViewGroupHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/ReactClippingViewGroupHelper;
 	public static final field PROP_REMOVE_CLIPPED_SUBVIEWS Ljava/lang/String;
-	public fun <init> ()V
-	public static fun calculateClippingRect (Landroid/view/View;Landroid/graphics/Rect;)V
+	public static final fun calculateClippingRect (Landroid/view/View;Landroid/graphics/Rect;)V
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactCompoundView {
@@ -4087,10 +4024,6 @@ public abstract interface class com/facebook/react/uimanager/ReactCompoundView {
 
 public abstract interface class com/facebook/react/uimanager/ReactCompoundViewGroup : com/facebook/react/uimanager/ReactCompoundView {
 	public abstract fun interceptsTouchEvent (FF)Z
-}
-
-public final class com/facebook/react/uimanager/ReactInvalidPropertyException : java/lang/RuntimeException {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactOverflowView {
@@ -4117,11 +4050,6 @@ public abstract interface class com/facebook/react/uimanager/ReactRoot {
 	public abstract fun runApplication ()V
 	public abstract fun setRootViewTag (I)V
 	public abstract fun setShouldLogContentAppeared (Z)V
-}
-
-public final class com/facebook/react/uimanager/ReactRootViewTagGenerator {
-	public static final field INSTANCE Lcom/facebook/react/uimanager/ReactRootViewTagGenerator;
-	public static final fun getNextRootViewTag ()I
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
@@ -4412,19 +4340,19 @@ public final class com/facebook/react/uimanager/ReactStage$Companion {
 	public static final field SURFACE_DID_STOP I
 }
 
-public class com/facebook/react/uimanager/ReactStylesDiffMap {
+public final class com/facebook/react/uimanager/ReactStylesDiffMap {
 	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun getArray (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
-	public fun getBoolean (Ljava/lang/String;Z)Z
-	public fun getDouble (Ljava/lang/String;D)D
-	public fun getDynamic (Ljava/lang/String;)Lcom/facebook/react/bridge/Dynamic;
-	public fun getFloat (Ljava/lang/String;F)F
-	public fun getInt (Ljava/lang/String;I)I
-	public fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
-	public fun getString (Ljava/lang/String;)Ljava/lang/String;
-	public fun hasKey (Ljava/lang/String;)Z
-	public fun isNull (Ljava/lang/String;)Z
-	public fun toMap ()Ljava/util/Map;
+	public final fun getArray (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
+	public final fun getBoolean (Ljava/lang/String;Z)Z
+	public final fun getDouble (Ljava/lang/String;D)D
+	public final fun getDynamic (Ljava/lang/String;)Lcom/facebook/react/bridge/Dynamic;
+	public final fun getFloat (Ljava/lang/String;F)F
+	public final fun getInt (Ljava/lang/String;I)I
+	public final fun getMap (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
+	public final fun getString (Ljava/lang/String;)Ljava/lang/String;
+	public final fun hasKey (Ljava/lang/String;)Z
+	public final fun isNull (Ljava/lang/String;)Z
+	public final fun toMap ()Ljava/util/Map;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -4521,26 +4449,26 @@ public class com/facebook/react/uimanager/ThemedReactContext : com/facebook/reac
 	public fun removeLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
 }
 
-public class com/facebook/react/uimanager/TouchTargetHelper {
-	public fun <init> ()V
-	public static fun findTargetPathAndCoordinatesForTouch (FFLandroid/view/ViewGroup;[F)Ljava/util/List;
-	public static fun findTargetTagAndCoordinatesForTouch (FFLandroid/view/ViewGroup;[F[I)I
-	public static fun findTargetTagForTouch (FFLandroid/view/ViewGroup;)I
-	public static fun findTargetTagForTouch (FFLandroid/view/ViewGroup;[I)I
+public final class com/facebook/react/uimanager/TouchTargetHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/TouchTargetHelper;
+	public static final fun findTargetPathAndCoordinatesForTouch (FFLandroid/view/ViewGroup;[F)Ljava/util/List;
+	public static final fun findTargetTagAndCoordinatesForTouch (FFLandroid/view/ViewGroup;[F[I)I
+	public static final fun findTargetTagForTouch (FFLandroid/view/ViewGroup;)I
+	public static final fun findTargetTagForTouch (FFLandroid/view/ViewGroup;[I)I
 }
 
-public class com/facebook/react/uimanager/TouchTargetHelper$ViewTarget {
+public final class com/facebook/react/uimanager/TouchTargetHelper$ViewTarget {
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getView ()Landroid/view/View;
-	public fun getViewId ()I
+	public final fun getView ()Landroid/view/View;
+	public final fun getViewId ()I
 	public fun hashCode ()I
 }
 
-public class com/facebook/react/uimanager/TransformHelper {
-	public fun <init> ()V
-	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[D)V
-	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;)V
-	public static fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;Z)V
+public final class com/facebook/react/uimanager/TransformHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/TransformHelper;
+	public static final fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[D)V
+	public static final fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;)V
+	public static final fun processTransform (Lcom/facebook/react/bridge/ReadableArray;[DFFLcom/facebook/react/bridge/ReadableArray;Z)V
 }
 
 public abstract interface class com/facebook/react/uimanager/UIBlock {
@@ -5024,6 +4952,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 }
 
 public abstract interface annotation class com/facebook/react/uimanager/annotations/ReactProp : java/lang/annotation/Annotation {
+	public static final field Companion Lcom/facebook/react/uimanager/annotations/ReactProp$Companion;
 	public static final field USE_DEFAULT_TYPE Ljava/lang/String;
 	public abstract fun customType ()Ljava/lang/String;
 	public abstract fun defaultBoolean ()Z
@@ -5034,7 +4963,12 @@ public abstract interface annotation class com/facebook/react/uimanager/annotati
 	public abstract fun name ()Ljava/lang/String;
 }
 
+public final class com/facebook/react/uimanager/annotations/ReactProp$Companion {
+	public static final field USE_DEFAULT_TYPE Ljava/lang/String;
+}
+
 public abstract interface annotation class com/facebook/react/uimanager/annotations/ReactPropGroup : java/lang/annotation/Annotation {
+	public static final field Companion Lcom/facebook/react/uimanager/annotations/ReactPropGroup$Companion;
 	public static final field USE_DEFAULT_TYPE Ljava/lang/String;
 	public abstract fun customType ()Ljava/lang/String;
 	public abstract fun defaultDouble ()D
@@ -5042,6 +4976,10 @@ public abstract interface annotation class com/facebook/react/uimanager/annotati
 	public abstract fun defaultInt ()I
 	public abstract fun defaultLong ()J
 	public abstract fun names ()[Ljava/lang/String;
+}
+
+public final class com/facebook/react/uimanager/annotations/ReactPropGroup$Companion {
+	public static final field USE_DEFAULT_TYPE Ljava/lang/String;
 }
 
 public abstract interface annotation class com/facebook/react/uimanager/annotations/ReactPropertyHolder : java/lang/annotation/Annotation {
@@ -5087,6 +5025,7 @@ public abstract class com/facebook/react/uimanager/events/Event {
 	public fun coalesce (Lcom/facebook/react/uimanager/events/Event;)Lcom/facebook/react/uimanager/events/Event;
 	public fun dispatch (Lcom/facebook/react/uimanager/events/RCTEventEmitter;)V
 	public fun dispatchModern (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
+	public final fun dispose ()V
 	protected fun experimental_isSynchronous ()Z
 	public fun getCoalescingKey ()S
 	public fun getEventAnimationDriverMatchSpec ()Lcom/facebook/react/uimanager/events/Event$EventAnimationDriverMatchSpec;
@@ -5095,33 +5034,17 @@ public abstract class com/facebook/react/uimanager/events/Event {
 	public abstract fun getEventName ()Ljava/lang/String;
 	public final fun getSurfaceId ()I
 	public final fun getTimestampMs ()J
-	public fun getUniqueID ()I
+	public final fun getUniqueID ()I
 	public final fun getViewTag ()I
-	protected fun init (I)V
-	protected fun init (II)V
-	protected fun init (IIJ)V
+	protected final fun init (I)V
+	protected final fun init (II)V
+	protected final fun init (IIJ)V
+	public final fun isInitialized ()Z
 	public fun onDispose ()V
 }
 
 public abstract interface class com/facebook/react/uimanager/events/Event$EventAnimationDriverMatchSpec {
 	public abstract fun match (ILjava/lang/String;)Z
-}
-
-public abstract interface annotation class com/facebook/react/uimanager/events/EventCategoryDef : java/lang/annotation/Annotation {
-	public static final field CONTINUOUS I
-	public static final field CONTINUOUS_END I
-	public static final field CONTINUOUS_START I
-	public static final field Companion Lcom/facebook/react/uimanager/events/EventCategoryDef$Companion;
-	public static final field DISCRETE I
-	public static final field UNSPECIFIED I
-}
-
-public final class com/facebook/react/uimanager/events/EventCategoryDef$Companion {
-	public static final field CONTINUOUS I
-	public static final field CONTINUOUS_END I
-	public static final field CONTINUOUS_START I
-	public static final field DISCRETE I
-	public static final field UNSPECIFIED I
 }
 
 public abstract interface class com/facebook/react/uimanager/events/EventDispatcher {
@@ -5150,10 +5073,6 @@ public class com/facebook/react/uimanager/events/EventDispatcherImpl : com/faceb
 
 public abstract interface class com/facebook/react/uimanager/events/EventDispatcherListener {
 	public abstract fun onEventDispatch (Lcom/facebook/react/uimanager/events/Event;)V
-}
-
-public abstract interface class com/facebook/react/uimanager/events/EventDispatcherProvider {
-	public abstract fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 }
 
 public final class com/facebook/react/uimanager/events/NativeGestureUtil {
@@ -5186,56 +5105,6 @@ public class com/facebook/react/uimanager/events/PointerEvent$PointerEventState 
 	public final fun getScreenCoordinatesByPointerId ()Ljava/util/Map;
 	public fun getSurfaceId ()I
 	public fun supportsHover (I)Z
-}
-
-public final class com/facebook/react/uimanager/events/PointerEventHelper {
-	public static final field CLICK Ljava/lang/String;
-	public static final field INSTANCE Lcom/facebook/react/uimanager/events/PointerEventHelper;
-	public static final field POINTER_CANCEL Ljava/lang/String;
-	public static final field POINTER_DOWN Ljava/lang/String;
-	public static final field POINTER_ENTER Ljava/lang/String;
-	public static final field POINTER_LEAVE Ljava/lang/String;
-	public static final field POINTER_MOVE Ljava/lang/String;
-	public static final field POINTER_OUT Ljava/lang/String;
-	public static final field POINTER_OVER Ljava/lang/String;
-	public static final field POINTER_TYPE_MOUSE Ljava/lang/String;
-	public static final field POINTER_TYPE_PEN Ljava/lang/String;
-	public static final field POINTER_TYPE_TOUCH Ljava/lang/String;
-	public static final field POINTER_TYPE_UNKNOWN Ljava/lang/String;
-	public static final field POINTER_UP Ljava/lang/String;
-	public static final fun getButtonChange (Ljava/lang/String;II)I
-	public static final fun getButtons (Ljava/lang/String;Ljava/lang/String;I)I
-	public static final fun getEventCategory (Ljava/lang/String;)I
-	public static final fun getPressure (ILjava/lang/String;)D
-	public static final fun getW3CPointerType (I)Ljava/lang/String;
-	public static final fun isBubblingEvent (Ljava/lang/String;)Z
-	public final fun isExitEvent (Ljava/lang/String;)Z
-	public static final fun isListening (Landroid/view/View;Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;)Z
-	public final fun supportsHover (Landroid/view/MotionEvent;)Z
-}
-
-public final class com/facebook/react/uimanager/events/PointerEventHelper$EVENT : java/lang/Enum {
-	public static final field CANCEL Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field CANCEL_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field CLICK Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field CLICK_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field DOWN Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field DOWN_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field ENTER Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field ENTER_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field LEAVE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field LEAVE_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field MOVE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field MOVE_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field OUT Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field OUT_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field OVER Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field OVER_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field UP Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static final field UP_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
-	public static fun values ()[Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
 }
 
 public abstract interface class com/facebook/react/uimanager/events/RCTEventEmitter : com/facebook/react/bridge/JavaScriptModule {
@@ -5297,13 +5166,13 @@ public final class com/facebook/react/uimanager/events/TouchEventType$Companion 
 	public final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
 }
 
-public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {
+public final class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {
 	public fun <init> ()V
-	public fun applyLayoutUpdate (Landroid/view/View;IIII)V
-	public fun deleteView (Landroid/view/View;Lcom/facebook/react/uimanager/layoutanimation/LayoutAnimationListener;)V
-	public fun initializeFromConfig (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
-	public fun reset ()V
-	public fun shouldAnimateLayout (Landroid/view/View;)Z
+	public final fun applyLayoutUpdate (Landroid/view/View;IIII)V
+	public final fun deleteView (Landroid/view/View;Lcom/facebook/react/uimanager/layoutanimation/LayoutAnimationListener;)V
+	public final fun initializeFromConfig (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
+	public final fun reset ()V
+	public final fun shouldAnimateLayout (Landroid/view/View;)Z
 }
 
 public abstract interface class com/facebook/react/uimanager/layoutanimation/LayoutAnimationListener {
@@ -5705,28 +5574,6 @@ public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager : co
 public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager$Companion {
 }
 
-public final class com/facebook/react/views/drawer/events/DrawerClosedEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerClosedEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (I)V
-	public fun <init> (II)V
-	public fun getEventName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/drawer/events/DrawerClosedEvent$Companion {
-}
-
-public final class com/facebook/react/views/drawer/events/DrawerOpenedEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerOpenedEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (I)V
-	public fun <init> (II)V
-	public fun getEventName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/drawer/events/DrawerOpenedEvent$Companion {
-}
-
 public final class com/facebook/react/views/drawer/events/DrawerSlideEvent : com/facebook/react/uimanager/events/Event {
 	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerSlideEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
@@ -6064,6 +5911,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun executeKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun flashScrollIndicators ()V
 	public fun fling (I)V
+	public fun focusSearch (Landroid/view/View;I)Landroid/view/View;
 	public fun getChildVisibleRect (Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;)Z
 	public fun getClippingRect (Landroid/graphics/Rect;)V
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
@@ -6126,6 +5974,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
 	public fun startFlingAnimator (II)V
 	public fun updateClippingRect ()V
+	public fun updateClippingRect (Ljava/util/Set;)V
 }
 
 public class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/views/scroll/ReactScrollViewCommandHelper$ScrollCommandHandler {
@@ -6186,6 +6035,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun executeKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun flashScrollIndicators ()V
 	public fun fling (I)V
+	public fun focusSearch (Landroid/view/View;I)Landroid/view/View;
 	public fun getChildVisibleRect (Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;)Z
 	public fun getClippingRect (Landroid/graphics/Rect;)V
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
@@ -6249,6 +6099,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
 	public fun startFlingAnimator (II)V
 	public fun updateClippingRect ()V
+	public fun updateClippingRect (Ljava/util/Set;)V
 }
 
 public final class com/facebook/react/views/scroll/ReactScrollViewCommandHelper {
@@ -6306,6 +6157,7 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final fun emitScrollEvent (Landroid/view/ViewGroup;FF)V
 	public static final fun emitScrollMomentumBeginEvent (Landroid/view/ViewGroup;II)V
 	public static final fun emitScrollMomentumEndEvent (Landroid/view/ViewGroup;)V
+	public static final fun findNextFocusableView (Landroid/view/ViewGroup;Landroid/view/View;IZ)Landroid/view/View;
 	public static final fun forceUpdateState (Landroid/view/ViewGroup;)V
 	public static final fun getDefaultScrollAnimationDuration (Landroid/content/Context;)I
 	public static final fun getNextFlingStartValue (Landroid/view/ViewGroup;III)I
@@ -6315,6 +6167,7 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public final fun registerFlingAnimator (Landroid/view/ViewGroup;)V
 	public static final fun removeLayoutChangeListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$LayoutChangeListener;)V
 	public static final fun removeScrollListener (Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener;)V
+	public static final fun resolveAbsoluteDirection (IZI)I
 	public static final fun smoothScrollTo (Landroid/view/ViewGroup;II)V
 	public static final fun updateFabricScrollState (Landroid/view/ViewGroup;)V
 	public final fun updateFabricScrollState (Landroid/view/ViewGroup;II)V
@@ -6553,26 +6406,6 @@ public final class com/facebook/react/views/text/ReactFontManager {
 
 public final class com/facebook/react/views/text/ReactFontManager$Companion {
 	public final fun getInstance ()Lcom/facebook/react/views/text/ReactFontManager;
-}
-
-public final class com/facebook/react/views/text/ReactRawTextManager : com/facebook/react/uimanager/ViewManager {
-	public static final field REACT_CLASS Ljava/lang/String;
-	public fun <init> ()V
-	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
-	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactRawTextShadowNode;
-	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/text/ReactTextView;
-	public fun getName ()Ljava/lang/String;
-	public fun getShadowNodeClass ()Ljava/lang/Class;
-	public fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
-}
-
-public final class com/facebook/react/views/text/ReactRawTextShadowNode : com/facebook/react/uimanager/ReactShadowNodeImpl {
-	public fun <init> ()V
-	public final fun getText ()Ljava/lang/String;
-	public fun isVirtual ()Z
-	public final fun setText (Ljava/lang/String;)V
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager : com/facebook/react/uimanager/BaseViewManager {
@@ -6861,27 +6694,6 @@ public class com/facebook/react/views/text/TextLayoutManager {
 	public static fun setCachedSpannableForTag (ILandroid/text/Spannable;)V
 }
 
-public final class com/facebook/react/views/text/TextTransform : java/lang/Enum {
-	public static final field CAPITALIZE Lcom/facebook/react/views/text/TextTransform;
-	public static final field Companion Lcom/facebook/react/views/text/TextTransform$Companion;
-	public static final field LOWERCASE Lcom/facebook/react/views/text/TextTransform;
-	public static final field NONE Lcom/facebook/react/views/text/TextTransform;
-	public static final field UNSET Lcom/facebook/react/views/text/TextTransform;
-	public static final field UPPERCASE Lcom/facebook/react/views/text/TextTransform;
-	public static final fun apply (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/text/TextTransform;
-	public static fun values ()[Lcom/facebook/react/views/text/TextTransform;
-}
-
-public final class com/facebook/react/views/text/TextTransform$Companion {
-	public final fun apply (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/text/TextTransformKt {
-	public static final fun applyTextTransform (Ljava/lang/String;Lcom/facebook/react/views/text/TextTransform;)Ljava/lang/String;
-}
-
 public abstract interface class com/facebook/react/views/textinput/ContentSizeWatcher {
 	public abstract fun onLayout ()V
 }
@@ -6913,6 +6725,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun maybeSetTextFromState (Lcom/facebook/react/views/text/ReactTextUpdate;)V
 	public fun maybeUpdateTypeface ()V
 	public fun onAttachedToWindow ()V
+	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onCreateInputConnection (Landroid/view/inputmethod/EditorInfo;)Landroid/view/inputmethod/InputConnection;
 	public fun onDetachedFromWindow ()V
 	public fun onDraw (Landroid/graphics/Canvas;)V
@@ -6970,15 +6783,14 @@ public final class com/facebook/react/views/textinput/ReactTextInputLocalData {
 }
 
 public class com/facebook/react/views/textinput/ReactTextInputManager : com/facebook/react/uimanager/BaseViewManager {
+	public static final field Companion Lcom/facebook/react/views/textinput/ReactTextInputManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
-	public static final field TAG Ljava/lang/String;
-	protected field mReactTextViewManagerCallback Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
 	public fun <init> ()V
-	protected synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
+	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
 	protected fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/textinput/ReactEditText;)V
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactBaseTextShadowNode;
-	public fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactBaseTextShadowNode;
+	public final fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactBaseTextShadowNode;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/textinput/ReactEditText;
 	public fun getCommandsMap ()Ljava/util/Map;
@@ -6986,70 +6798,76 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getExportedViewConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
-	public fun getReactTextUpdate (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/common/mapbuffer/MapBuffer;)Ljava/lang/Object;
+	public final fun getReactTextUpdate (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/common/mapbuffer/MapBuffer;)Ljava/lang/Object;
+	protected final fun getReactTextViewManagerCallback ()Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
 	public fun getShadowNodeClass ()Ljava/lang/Class;
-	protected synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
+	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/textinput/ReactEditText;)V
 	public synthetic fun receiveCommand (Landroid/view/View;ILcom/facebook/react/bridge/ReadableArray;)V
 	public synthetic fun receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (Lcom/facebook/react/views/textinput/ReactEditText;ILcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setAllowFontScaling (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setAutoCapitalize (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/Dynamic;)V
-	public fun setAutoCorrect (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Boolean;)V
-	public fun setAutoFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setBorderColor (Lcom/facebook/react/views/textinput/ReactEditText;ILjava/lang/Integer;)V
-	public fun setBorderRadius (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
-	public fun setBorderStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setBorderWidth (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
-	public fun setCaretHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setContextMenuHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setCursorColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setDisableFullscreenUI (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setEditable (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setFontFamily (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setFontSize (Lcom/facebook/react/views/textinput/ReactEditText;F)V
-	public fun setFontStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setFontVariant (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setFontWeight (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setImportantForAutofill (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setIncludeFontPadding (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setInlineImageLeft (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setInlineImagePadding (Lcom/facebook/react/views/textinput/ReactEditText;I)V
-	public fun setKeyboardType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setLetterSpacing (Lcom/facebook/react/views/textinput/ReactEditText;F)V
-	public fun setLineHeight (Lcom/facebook/react/views/textinput/ReactEditText;I)V
-	public fun setMaxFontSizeMultiplier (Lcom/facebook/react/views/textinput/ReactEditText;F)V
-	public fun setMaxLength (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setMultiline (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setNumLines (Lcom/facebook/react/views/textinput/ReactEditText;I)V
-	public fun setOnContentSizeChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setOnKeyPress (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setOnScroll (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setOnSelectionChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setOverflow (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setAllowFontScaling (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setAutoCapitalize (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/Dynamic;)V
+	public final fun setAutoCorrect (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Boolean;)V
+	public final fun setAutoFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setBorderColor (Lcom/facebook/react/views/textinput/ReactEditText;ILjava/lang/Integer;)V
+	public final fun setBorderRadius (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
+	public final fun setBorderStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setBorderWidth (Lcom/facebook/react/views/textinput/ReactEditText;IF)V
+	public final fun setCaretHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setContextMenuHidden (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setCursorColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setDisableFullscreenUI (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setEditable (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setFontFamily (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setFontSize (Lcom/facebook/react/views/textinput/ReactEditText;F)V
+	public final fun setFontStyle (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setFontVariant (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun setFontWeight (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setImportantForAutofill (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setIncludeFontPadding (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setInlineImageLeft (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setInlineImagePadding (Lcom/facebook/react/views/textinput/ReactEditText;I)V
+	public final fun setKeyboardType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setLetterSpacing (Lcom/facebook/react/views/textinput/ReactEditText;F)V
+	public final fun setLineHeight (Lcom/facebook/react/views/textinput/ReactEditText;I)V
+	public final fun setMaxFontSizeMultiplier (Lcom/facebook/react/views/textinput/ReactEditText;F)V
+	public final fun setMaxLength (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setMultiline (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setNumLines (Lcom/facebook/react/views/textinput/ReactEditText;I)V
+	public final fun setOnContentSizeChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setOnKeyPress (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setOnScroll (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setOnSelectionChange (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setOverflow (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
 	public fun setPadding (Lcom/facebook/react/views/textinput/ReactEditText;IIII)V
-	public fun setPlaceholder (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setPlaceholderTextColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setReturnKeyLabel (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setReturnKeyType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setSecureTextEntry (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setSelectTextOnFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
-	public fun setSelectionColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setSelectionHandleColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun setSubmitBehavior (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setTextAlign (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setTextAlignVertical (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setTextContentType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setTextDecorationLine (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
-	public fun setUnderlineColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
-	public fun showKeyboardOnFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setPlaceholder (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setPlaceholderTextColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	protected final fun setReactTextViewManagerCallback (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
+	public final fun setReturnKeyLabel (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setReturnKeyType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setSecureTextEntry (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setSelectTextOnFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
+	public final fun setSelectionColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setSelectionHandleColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun setSubmitBehavior (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setTextAlign (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setTextAlignVertical (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setTextContentType (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setTextDecorationLine (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;)V
+	public final fun setUnderlineColor (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Integer;)V
+	public final fun showKeyboardOnFocus (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
 	public synthetic fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateExtraData (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Object;)V
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
+}
+
+public final class com/facebook/react/views/textinput/ReactTextInputManager$Companion {
+	public final fun getTAG ()Ljava/lang/String;
 }
 
 public abstract interface class com/facebook/react/views/textinput/ScrollWatcher {
@@ -7137,6 +6955,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun setRemoveClippedSubviews (Z)V
 	public fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun updateClippingRect ()V
+	public fun updateClippingRect (Ljava/util/Set;)V
 	public fun updateDrawingOrder ()V
 }
 

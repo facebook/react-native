@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4eb990a0eb33d51b99016529b3a5ffd6>>
+ * @generated SignedSource<<aae70d9cf4ceedb0e43af15d2362fb7d>>
  */
 
 /**
@@ -47,6 +47,8 @@ class NativeReactNativeFeatureFlags
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
+  bool disableShadowNodeOnNewArchitectureAndroid(jsi::Runtime& runtime);
+
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
@@ -61,6 +63,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
 
+  bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
+
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableJSRuntimeGCOnMemoryPressureOnIOS(jsi::Runtime& runtime);
@@ -69,8 +73,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
-  bool enableLongTaskAPI(jsi::Runtime& runtime);
-
   bool enableMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
@@ -78,8 +80,6 @@ class NativeReactNativeFeatureFlags
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
-
-  bool enableReportEventPaintTime(jsi::Runtime& runtime);
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
@@ -92,8 +92,6 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 

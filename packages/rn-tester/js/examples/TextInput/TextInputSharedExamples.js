@@ -70,13 +70,6 @@ const styles = StyleSheet.create({
   focusedUncontrolled: {
     margin: -2,
   },
-  screenshotArea: {
-    position: 'absolute',
-    top: -5,
-    left: 120,
-    right: -5,
-    bottom: -5,
-  },
   wrappedText: {
     maxWidth: 300,
   },
@@ -781,8 +774,7 @@ function TextStylesContainer({examples}: TextStylesContainerProps) {
         onPress={() => setOffset((offset + 1) % MAX_CYCLES)}>
         Cycle {offset + 1}/{MAX_CYCLES}
       </RNTesterButton>
-      <View>
-        <View testID="styles-screenshot-area" style={styles.screenshotArea} />
+      <View testID="text-styles">
         {examples.map(({name, multiline, textStyles}) => (
           <WithLabel label={name} key={name}>
             {multiline ? (

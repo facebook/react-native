@@ -17,12 +17,13 @@ import type {
   Separators,
   VirtualizedListProps,
 } from './VirtualizedListProps';
-import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   LayoutChangeEvent,
   ScrollEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+  ScrollResponderType,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
@@ -769,7 +770,7 @@ class VirtualizedList extends StateSafePureComponent<
     stickyIndicesFromProps: Set<number>,
     first: number,
     last: number,
-    inversionStyle: ViewStyleProp,
+    inversionStyle: StyleProp<ViewStyle>,
   ) {
     const {
       CellRendererComponent,

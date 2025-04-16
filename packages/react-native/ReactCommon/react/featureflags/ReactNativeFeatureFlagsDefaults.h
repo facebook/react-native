@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50fd901c1ebdda0bfc77f9cf6753c2d8>>
+ * @generated SignedSource<<2ff9e2c1e9cc5c780777c0a80efcc74f>>
  */
 
 /**
@@ -47,6 +47,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableShadowNodeOnNewArchitectureAndroid() override {
+    return true;
+  }
+
   bool enableAccessibilityOrder() override {
     return false;
   }
@@ -75,6 +79,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableFontScaleChangesUpdatingLayout() override {
+    return false;
+  }
+
   bool enableIOSViewClipToPaddingBox() override {
     return false;
   }
@@ -91,10 +99,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool enableLongTaskAPI() override {
-    return false;
-  }
-
   bool enableMainQueueModulesOnIOS() override {
     return false;
   }
@@ -108,10 +112,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {
-    return false;
-  }
-
-  bool enableReportEventPaintTime() override {
     return false;
   }
 
@@ -137,10 +137,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
-  }
-
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    return true;
   }
 
   bool fuseboxEnabledRelease() override {

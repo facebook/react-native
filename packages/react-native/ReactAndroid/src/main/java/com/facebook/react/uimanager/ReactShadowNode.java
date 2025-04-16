@@ -396,5 +396,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   Integer getHeightMeasureSpec();
 
+  @Nullable
   Iterable<? extends ReactShadowNode> calculateLayoutOnChildren();
 }

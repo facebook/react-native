@@ -59,9 +59,7 @@ Scheduler::Scheduler(
   runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
       uiManager->getShadowTreeRevisionConsistencyManager());
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
-  }
+  runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
 
   auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
@@ -137,26 +135,22 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    uiManager->registerMountHook(*eventPerformanceLogger_);
-  }
+  uiManager->registerMountHook(*eventPerformanceLogger_);
 }
 
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    auto weakRuntimeScheduler =
-        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-            RuntimeSchedulerKey);
-    auto runtimeScheduler = weakRuntimeScheduler.has_value()
-        ? weakRuntimeScheduler.value().lock()
-        : nullptr;
+  auto weakRuntimeScheduler =
+      contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+          RuntimeSchedulerKey);
+  auto runtimeScheduler = weakRuntimeScheduler.has_value()
+      ? weakRuntimeScheduler.value().lock()
+      : nullptr;
 
-    if (runtimeScheduler) {
-      runtimeScheduler->setEventTimingDelegate(nullptr);
-    }
+  if (runtimeScheduler) {
+    runtimeScheduler->setEventTimingDelegate(nullptr);
   }
 
   for (auto& commitHook : commitHooks_) {
@@ -336,6 +330,13 @@ void Scheduler::uiManagerShouldRemoveEventListener(
   removeEventListener(listener);
 }
 
+void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {
+  std::shared_lock lock(onSurfaceStartCallbackMutex_);
+  if (onSurfaceStartCallback_) {
+    onSurfaceStartCallback_(shadowTree);
+  }
+}
+
 void Scheduler::reportMount(SurfaceId surfaceId) const {
   uiManager_->reportMount(surfaceId);
 }
@@ -360,6 +361,12 @@ void Scheduler::removeEventListener(
   if (eventDispatcher_->has_value()) {
     eventDispatcher_->value().removeListener(listener);
   }
+}
+
+void Scheduler::uiManagerShouldSetOnSurfaceStartCallback(
+    OnSurfaceStartCallback&& callback) {
+  std::shared_lock lock(onSurfaceStartCallbackMutex_);
+  onSurfaceStartCallback_ = std::move(callback);
 }
 
 } // namespace facebook::react

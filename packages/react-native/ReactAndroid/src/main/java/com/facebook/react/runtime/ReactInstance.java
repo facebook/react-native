@@ -43,7 +43,6 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.devsupport.StackTraceHelper;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
@@ -117,7 +116,7 @@ final class ReactInstance {
       @Nullable ReactHostInspectorTarget reactHostInspectorTarget) {
     mBridgelessReactContext = bridgelessReactContext;
 
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.initialize");
 
     /**
      * Prepare the ReactInstance by installing JSI bindings, initializing Fabric + TurboModules, and
@@ -149,9 +148,7 @@ final class ReactInstance {
     BindingsInstaller bindingsInstaller = delegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
-        BuildConfig.ENABLE_PERFETTO
-            || Systrace.isTracing(
-                Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
+        BuildConfig.ENABLE_PERFETTO || Systrace.isTracing(Systrace.TRACE_TAG_REACT);
 
     mHybridData =
         initHybrid(
@@ -168,8 +165,7 @@ final class ReactInstance {
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
 
     // Set up TurboModules
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initTurboModules");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.initialize#initTurboModules");
 
     List<ReactPackage> reactPackages = new ArrayList<>();
     reactPackages.add(
@@ -197,11 +193,10 @@ final class ReactInstance {
             getJSCallInvokerHolder(),
             getNativeMethodCallInvokerHolder());
 
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
 
     // Set up Fabric
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initFabric");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.initialize#initFabric");
 
     mViewManagerResolver =
         new BridgelessViewManagerResolver(reactPackages, mBridgelessReactContext);
@@ -285,8 +280,8 @@ final class ReactInstance {
     // Initialize the FabricUIManager
     mFabricUIManager.initialize();
 
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
   }
 
   private static Map<String, Object> createConstants(
@@ -294,14 +289,14 @@ final class ReactInstance {
       @Nullable Map<String, Object> customBubblingEvents,
       @Nullable Map<String, Object> customDirectEvents) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
         .arg("Lazy", false)
         .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(
           viewManagers, customBubblingEvents, customDirectEvents);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
@@ -309,7 +304,7 @@ final class ReactInstance {
   private static NativeMap getConstantsForViewManager(
       ViewManager viewManager, Map<String, Object> customDirectEvents) {
     SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.getConstantsForViewManager")
+            Systrace.TRACE_TAG_REACT, "ReactInstance.getConstantsForViewManager")
         .arg("ViewManager", viewManager.getName())
         .arg("Lazy", true)
         .flush();
@@ -319,7 +314,7 @@ final class ReactInstance {
               viewManager, null, null, null, customDirectEvents);
       return Arguments.makeNativeMap(viewManagerConstants);
     } finally {
-      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT).flush();
     }
   }
 
@@ -328,13 +323,12 @@ final class ReactInstance {
         .getNativeModulesQueueThread()
         .runOnQueue(
             () -> {
-              Systrace.beginSection(
-                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeEagerTurboModules");
+              Systrace.beginSection(Systrace.TRACE_TAG_REACT, "initializeEagerTurboModules");
               // Eagerly initialize TurboModules
               for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
                 mTurboModuleManager.getModule(moduleName);
               }
-              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+              Systrace.endSection(Systrace.TRACE_TAG_REACT);
             });
   }
 
@@ -358,7 +352,7 @@ final class ReactInstance {
 
     @Override
     public void reportJsException(ProcessedError error) {
-      JavaOnlyMap data = StackTraceHelper.convertProcessedError(error);
+      JavaOnlyMap data = ReactInstanceProcessedErrorConverter.convertProcessedError(error);
 
       try {
         NativeExceptionsManagerSpec exceptionsManager =
@@ -376,7 +370,7 @@ final class ReactInstance {
   }
 
   public void loadJSBundle(JSBundleLoader bundleLoader) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.loadJSBundle");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.loadJSBundle");
     bundleLoader.loadScript(
         new JSBundleLoaderDelegate() {
           @Override
@@ -403,7 +397,7 @@ final class ReactInstance {
             mBridgelessReactContext.setSourceURL(deviceURL);
           }
         });
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
   }
 
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
@@ -434,10 +428,10 @@ final class ReactInstance {
 
   @ThreadConfined("ReactHost")
   /* package */ void prerenderSurface(ReactSurfaceImpl surface) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.prerenderSurface");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.prerenderSurface");
     FLog.d(TAG, "call prerenderSurface with surface: " + surface.getModuleName());
     mFabricUIManager.startSurface(surface.getSurfaceHandler(), surface.getContext(), null);
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
   }
 
   /**
@@ -448,7 +442,7 @@ final class ReactInstance {
   @ThreadConfined("ReactHost")
   /* package */ void startSurface(ReactSurfaceImpl surface) {
     FLog.d(TAG, "startSurface() is called with surface: " + surface.getSurfaceID());
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.startSurface");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.startSurface");
 
     View view = surface.getView();
     if (view == null) {
@@ -473,7 +467,7 @@ final class ReactInstance {
     } else {
       mFabricUIManager.startSurface(surface.getSurfaceHandler(), surface.getContext(), view);
     }
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
   }
 
   @ThreadConfined("ReactHost")

@@ -11,7 +11,6 @@ import android.content.Context
 import com.facebook.debug.holder.PrinterHolder.printer
 import com.facebook.debug.tags.ReactDebugOverlayTags
 import com.facebook.infer.annotation.Assertions
-import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.bridge.UiThreadUtil
@@ -21,7 +20,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger.assertLegacyArchitecture
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
-import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
@@ -56,7 +54,7 @@ public class BridgeDevSupportManager(
     redBoxHandler: RedBoxHandler?,
     devBundleDownloadListener: DevBundleDownloadListener?,
     minNumShakes: Int,
-    customPackagerCommandHandlers: Map<String?, RequestHandler?>?,
+    customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
     devLoadingViewManager: DevLoadingViewManager?,
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
@@ -74,27 +72,8 @@ public class BridgeDevSupportManager(
         devLoadingViewManager,
         pausedInDebuggerOverlayManager) {
 
-  override fun getUniqueTag(): String = "Bridge"
-
-  override fun loadSplitBundleFromServer(bundlePath: String, callback: DevSplitBundleCallback) {
-    fetchSplitBundleAndCreateBundleLoader(
-        bundlePath,
-        object : CallbackWithBundleLoader {
-          override fun onSuccess(bundleLoader: JSBundleLoader) {
-            val context =
-                requireNotNull(currentReactContext) {
-                  "Failed to load split bundle from server due to DevSupportManager.currentReactContext being null"
-                }
-            bundleLoader.loadScript(context.catalystInstance)
-            context
-                .getJSModule(HMRClient::class.java)
-                .registerBundle(devServerHelper.getDevServerSplitBundleURL(bundlePath))
-            callback.onSuccess()
-          }
-
-          override fun onError(url: String, cause: Throwable) = callback.onError(url, cause)
-        })
-  }
+  override val uniqueTag: String
+    get() = "Bridge"
 
   override fun handleReloadJS() {
     UiThreadUtil.assertOnUiThread()

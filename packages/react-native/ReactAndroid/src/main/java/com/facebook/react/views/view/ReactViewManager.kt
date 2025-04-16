@@ -188,6 +188,10 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     when (hitSlop.type) {
       ReadableType.Map -> {
         val hitSlopMap = hitSlop.asMap()
+        if (hitSlopMap == null) {
+          view.setHitSlopRect(null)
+          return
+        }
         view.setHitSlopRect(
             Rect(
                 hitSlopMap.px("left"),

@@ -254,17 +254,6 @@ void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
   gTurboModuleEnableSyncVoidMethods = enabled;
 }
 
-static BOOL gBridgeModuleDisableBatchDidComplete = NO;
-BOOL RCTBridgeModuleBatchDidCompleteDisabled(void)
-{
-  return gBridgeModuleDisableBatchDidComplete;
-}
-
-void RCTDisableBridgeModuleBatchDidComplete(BOOL disabled)
-{
-  gBridgeModuleDisableBatchDidComplete = disabled;
-}
-
 BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
 BOOL RCTUIManagerDispatchAccessibilityManagerInitOntoMain(void)
 {

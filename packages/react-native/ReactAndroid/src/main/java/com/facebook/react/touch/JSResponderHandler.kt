@@ -12,13 +12,13 @@ import android.view.ViewGroup
 import android.view.ViewParent
 
 /**
- * This class coordinates JSResponder commands for [UIManager]. It should be set as
- * OnInterceptTouchEventListener for all newly created native views that implements [ ] and thanks
- * to the information whether JSResponder is set and to which view it will correctly coordinate the
- * return values of [OnInterceptTouchEventListener] such that touch events will be dispatched to the
- * view selected by JS gesture recognizer.
+ * This class coordinates JSResponder commands for [com.facebook.react.bridge.UIManager]. It should
+ * be set as OnInterceptTouchEventListener for all newly created native views that implements [ ]
+ * and thanks to the information whether JSResponder is set and to which view it will correctly
+ * coordinate the return values of [OnInterceptTouchEventListener] such that touch events will be
+ * dispatched to the view selected by JS gesture recognizer.
  *
- * Single [CatalystInstance] should reuse same instance of this class.
+ * Single [com.facebook.react.bridge.CatalystInstance] should reuse same instance of this class.
  */
 public class JSResponderHandler : OnInterceptTouchEventListener {
 

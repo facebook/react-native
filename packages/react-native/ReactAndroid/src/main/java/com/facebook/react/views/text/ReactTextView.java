@@ -32,6 +32,7 @@ import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
@@ -60,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactTextView extends AppCompatTextView implements ReactCompoundView {
 
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
@@ -70,7 +72,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   private boolean mContainsImages;
   private int mNumberOfLines;
-  private TextUtils.TruncateAt mEllipsizeLocation;
+  private @Nullable TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
   private float mFontSize;
   private float mMinimumFontSize;
@@ -81,7 +83,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mShouldAdjustSpannableFontSize;
   private Overflow mOverflow = Overflow.VISIBLE;
 
-  private Spannable mSpanned;
+  private @Nullable Spannable mSpanned;
 
   public ReactTextView(Context context) {
     super(context);
@@ -263,7 +265,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         // special casing the character truncation case.
         child.setVisibility(View.GONE);
         if (mNotifyOnInlineViewLayout) {
-          inlineViewInfoArray.add(inlineViewJson(View.GONE, start, -1, -1, -1, -1));
+          Assertions.assertNotNull(inlineViewInfoArray)
+              .add(inlineViewJson(View.GONE, start, -1, -1, -1, -1));
         }
       } else {
         int width = placeholder.getWidth();
@@ -342,9 +345,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         child.setVisibility(layoutVisibility);
         child.layout(layoutLeft, layoutTop, layoutRight, layoutBottom);
         if (mNotifyOnInlineViewLayout) {
-          inlineViewInfoArray.add(
-              inlineViewJson(
-                  layoutVisibility, start, layoutLeft, layoutTop, layoutRight, layoutBottom));
+          Assertions.assertNotNull(inlineViewInfoArray)
+              .add(
+                  inlineViewJson(
+                      layoutVisibility, start, layoutLeft, layoutTop, layoutRight, layoutBottom));
         }
       }
     }
@@ -361,7 +365,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             }
           });
       WritableArray inlineViewInfoArray2 = Arguments.createArray();
-      for (Object item : inlineViewInfoArray) {
+      for (Object item : Assertions.assertNotNull(inlineViewInfoArray)) {
         inlineViewInfoArray2.pushMap((WritableMap) item);
       }
 
@@ -376,10 +380,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   protected void onDraw(Canvas canvas) {
     try (SystraceSection s = new SystraceSection("ReactTextView.onDraw")) {
-      if (mAdjustsFontSizeToFit && getSpanned() != null && mShouldAdjustSpannableFontSize) {
+      Spannable spanned = getSpanned();
+      if (mAdjustsFontSizeToFit && spanned != null && mShouldAdjustSpannableFontSize) {
         mShouldAdjustSpannableFontSize = false;
         TextLayoutManager.adjustSpannableFontToFit(
-            getSpanned(),
+            spanned,
             getWidth(),
             YogaMeasureMode.EXACTLY,
             getHeight(),
@@ -394,7 +399,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             Layout.Alignment.ALIGN_NORMAL,
             (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? -1 : getJustificationMode(),
             getPaint());
-        setText(getSpanned());
+        setText(spanned);
       }
 
       if (mOverflow != Overflow.VISIBLE) {
@@ -687,7 +692,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     applyTextAttributes();
   }
 
-  public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
+  public void setEllipsizeLocation(@Nullable TextUtils.TruncateAt ellipsizeLocation) {
     mEllipsizeLocation = ellipsizeLocation;
   }
 
@@ -742,7 +747,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mShouldAdjustSpannableFontSize = true;
   }
 
-  public Spannable getSpanned() {
+  public @Nullable Spannable getSpanned() {
     return mSpanned;
   }
 

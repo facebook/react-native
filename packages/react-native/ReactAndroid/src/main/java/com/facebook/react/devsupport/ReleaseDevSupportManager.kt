@@ -17,7 +17,6 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.SurfaceDelegate
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
 import com.facebook.react.devsupport.interfaces.DevOptionHandler
-import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PackagerLocationCustomizer
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener
@@ -100,11 +99,6 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun reloadJSFromServer(bundleURL: String, callback: BundleLoadCallback): Unit =
       Unit
-
-  public override fun loadSplitBundleFromServer(
-      bundlePath: String,
-      callback: DevSplitBundleCallback
-  ): Unit = Unit
 
   public override fun isPackagerRunning(callback: PackagerStatusCallback) {
     callback.onPackagerStatusFetched(false)

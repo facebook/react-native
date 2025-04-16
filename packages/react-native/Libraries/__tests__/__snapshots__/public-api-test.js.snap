@@ -162,7 +162,7 @@ declare export default {
   get SectionList(): AnimatedSectionList,
   get Text(): AnimatedText,
   get View(): AnimatedView,
-  ...Animated,
+  ...typeof Animated,
 };
 "
 `;
@@ -191,25 +191,26 @@ export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
 export type { WithAnimatedValue } from \\"./createAnimatedComponent\\";
-declare export const add: $FlowFixMe;
-declare export const attachNativeEvent: $FlowFixMe;
-declare export const createAnimatedComponent: $FlowFixMe;
-declare export const decay: $FlowFixMe;
-declare export const delay: $FlowFixMe;
-declare export const diffClamp: $FlowFixMe;
-declare export const divide: $FlowFixMe;
-declare export const event: $FlowFixMe;
-declare export const forkEvent: $FlowFixMe;
-declare export const loop: $FlowFixMe;
-declare export const modulo: $FlowFixMe;
-declare export const multiply: $FlowFixMe;
-declare export const parallel: $FlowFixMe;
-declare export const sequence: $FlowFixMe;
-declare export const spring: $FlowFixMe;
-declare export const stagger: $FlowFixMe;
-declare export const subtract: $FlowFixMe;
-declare export const timing: $FlowFixMe;
-declare export const unforkEvent: $FlowFixMe;
+export type { AnimatedComponentType as AnimatedComponent } from \\"./createAnimatedComponent\\";
+declare export const add: typeof AnimatedImplementation.add;
+declare export const attachNativeEvent: typeof AnimatedImplementation.attachNativeEvent;
+declare export const createAnimatedComponent: typeof AnimatedImplementation.createAnimatedComponent;
+declare export const decay: typeof AnimatedImplementation.decay;
+declare export const delay: typeof AnimatedImplementation.delay;
+declare export const diffClamp: typeof AnimatedImplementation.diffClamp;
+declare export const divide: typeof AnimatedImplementation.divide;
+declare export const event: typeof AnimatedImplementation.event;
+declare export const forkEvent: typeof AnimatedImplementation.forkEvent;
+declare export const loop: typeof AnimatedImplementation.loop;
+declare export const modulo: typeof AnimatedImplementation.modulo;
+declare export const multiply: typeof AnimatedImplementation.multiply;
+declare export const parallel: typeof AnimatedImplementation.parallel;
+declare export const sequence: typeof AnimatedImplementation.sequence;
+declare export const spring: typeof AnimatedImplementation.spring;
+declare export const stagger: typeof AnimatedImplementation.stagger;
+declare export const subtract: typeof AnimatedImplementation.subtract;
+declare export const timing: typeof AnimatedImplementation.timing;
+declare export const unforkEvent: typeof AnimatedImplementation.unforkEvent;
 "
 `;
 
@@ -277,7 +278,7 @@ type LoopAnimationConfig = {
 };
 declare const loop: (
   animation: CompositeAnimation,
-  LoopAnimationConfig
+  $$PARAM_1$$?: LoopAnimationConfig
 ) => CompositeAnimation;
 declare function forkEvent(
   event: ?AnimatedEvent | ?Function,
@@ -302,31 +303,31 @@ type AnimatedNumeric =
   | AnimatedValue;
 export type { AnimatedNumeric as Numeric };
 declare export default {
-  Value: AnimatedValue,
-  ValueXY: AnimatedValueXY,
-  Color: AnimatedColor,
-  Interpolation: AnimatedInterpolation,
-  Node: AnimatedNode,
-  decay: decay,
-  timing: timing,
-  spring: spring,
-  add: add,
-  subtract: subtract,
-  divide: divide,
-  multiply: multiply,
-  modulo: modulo,
-  diffClamp: diffClamp,
-  delay: delay,
-  sequence: sequence,
-  parallel: parallel,
-  stagger: stagger,
-  loop: loop,
-  event: event,
-  createAnimatedComponent: createAnimatedComponent,
-  attachNativeEvent: attachNativeEvent,
-  forkEvent: forkEvent,
-  unforkEvent: unforkEvent,
-  Event: AnimatedEvent,
+  Value: typeof AnimatedValue,
+  ValueXY: typeof AnimatedValueXY,
+  Color: typeof AnimatedColor,
+  Interpolation: typeof AnimatedInterpolation,
+  Node: typeof AnimatedNode,
+  decay: typeof decay,
+  timing: typeof timing,
+  spring: typeof spring,
+  add: typeof add,
+  subtract: typeof subtract,
+  divide: typeof divide,
+  multiply: typeof multiply,
+  modulo: typeof modulo,
+  diffClamp: typeof diffClamp,
+  delay: typeof delay,
+  sequence: typeof sequence,
+  parallel: typeof parallel,
+  stagger: typeof stagger,
+  loop: typeof loop,
+  event: typeof event,
+  createAnimatedComponent: typeof createAnimatedComponent,
+  attachNativeEvent: typeof attachNativeEvent,
+  forkEvent: typeof forkEvent,
+  unforkEvent: typeof unforkEvent,
+  Event: typeof AnimatedEvent,
 };
 "
 `;
@@ -361,8 +362,8 @@ declare const EasingStatic: {
   sin(t: number): number,
   circle(t: number): number,
   exp(t: number): number,
-  elastic(bounciness: number): EasingFunction,
-  back(s: number): EasingFunction,
+  elastic(bounciness?: number): EasingFunction,
+  back(s?: number): EasingFunction,
   bounce(t: number): number,
   bezier(x1: number, y1: number, x2: number, y2: number): EasingFunction,
   in(easing: EasingFunction): EasingFunction,
@@ -1186,7 +1187,7 @@ declare export default typeof NativeModules;
 
 exports[`public API should not change unintentionally Libraries/Blob/Blob.js 1`] = `
 "declare class Blob {
-  constructor(parts: Array<Blob | string>, options?: BlobOptions): void;
+  constructor(parts?: Array<Blob | string>, options?: BlobOptions): void;
   set data(data: ?BlobData): void;
   get data(): BlobData;
   slice(start?: number, end?: number, contentType?: string): Blob;
@@ -1269,7 +1270,7 @@ declare class FileReader extends EventTarget {
   constructor(): void;
   readAsArrayBuffer(blob: ?Blob): void;
   readAsDataURL(blob: ?Blob): void;
-  readAsText(blob: ?Blob, encoding: string): void;
+  readAsText(blob: ?Blob, encoding?: string): void;
   abort(): void;
   get readyState(): ReadyState;
   get error(): ?Error;
@@ -1773,7 +1774,7 @@ type PressableBaseProps = $ReadOnly<{
   unstable_pressDelay?: ?number,
 }>;
 export type PressableProps = $ReadOnly<{
-  ...ViewProps,
+  ...Omit<ViewProps, \\"onMouseEnter\\" | \\"onMouseLeave\\">,
   ...PressableBaseProps,
 }>;
 declare export default component(
@@ -2020,10 +2021,7 @@ type StickyHeaderComponentType = component(
   >,
   ...ScrollViewStickyHeaderProps
 );
-export type ScrollViewProps = $ReadOnly<{
-  ...ViewProps,
-  ...ScrollViewPropsIOS,
-  ...ScrollViewPropsAndroid,
+type ScrollViewBaseProps = $ReadOnly<{
   contentContainerStyle?: ?ViewStyleProp,
   contentOffset?: ?PointProp,
   disableIntervalMomentum?: ?boolean,
@@ -2064,6 +2062,12 @@ export type ScrollViewProps = $ReadOnly<{
   children?: React.Node,
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
+}>;
+export type ScrollViewProps = $ReadOnly<{
+  ...ViewProps,
+  ...ScrollViewPropsIOS,
+  ...ScrollViewPropsAndroid,
+  ...ScrollViewBaseProps,
 }>;
 export type ScrollViewComponentStatics = $ReadOnly<{
   Context: typeof ScrollViewContext,
@@ -2409,7 +2413,7 @@ export type ReturnKeyType =
   | \\"yahoo\\";
 export type SubmitBehavior = \\"submit\\" | \\"blurAndSubmit\\" | \\"newline\\";
 export type NativeProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
+  ...Omit<ViewProps, \\"style\\">,
   autoComplete?: WithDefault<
     | \\"birthdate-day\\"
     | \\"birthdate-full\\"
@@ -2951,7 +2955,7 @@ type TextInputBaseProps = $ReadOnly<{
   value?: ?Stringish,
 }>;
 export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
+  ...Omit<ViewProps, \\"style\\">,
   ...TextInputIOSProps,
   ...TextInputAndroidProps,
   ...TextInputBaseProps,
@@ -3053,17 +3057,17 @@ declare function registerInput(textField: HostInstance): void;
 declare function unregisterInput(textField: HostInstance): void;
 declare function isTextInput(textField: HostInstance): boolean;
 declare const TextInputState: {
-  currentlyFocusedInput: currentlyFocusedInput,
-  focusInput: focusInput,
-  blurInput: blurInput,
-  currentlyFocusedField: currentlyFocusedField,
-  focusField: focusField,
-  blurField: blurField,
-  focusTextInput: focusTextInput,
-  blurTextInput: blurTextInput,
-  registerInput: registerInput,
-  unregisterInput: unregisterInput,
-  isTextInput: isTextInput,
+  currentlyFocusedInput: typeof currentlyFocusedInput,
+  focusInput: typeof focusInput,
+  blurInput: typeof blurInput,
+  currentlyFocusedField: typeof currentlyFocusedField,
+  focusField: typeof focusField,
+  blurField: typeof blurField,
+  focusTextInput: typeof focusTextInput,
+  blurTextInput: typeof blurTextInput,
+  registerInput: typeof registerInput,
+  unregisterInput: typeof unregisterInput,
+  isTextInput: typeof isTextInput,
 };
 declare export default typeof TextInputState;
 "
@@ -3139,7 +3143,7 @@ declare const addPoolingTo: <T>(
   ...
 };
 declare const PooledClass: {
-  addPoolingTo: addPoolingTo,
+  addPoolingTo: typeof addPoolingTo,
   oneArgumentPooler: Pooler,
   twoArgumentPooler: Pooler,
   threeArgumentPooler: Pooler,
@@ -3213,8 +3217,8 @@ declare const TouchableMixinImpl: {
   withoutDefaultFocusAndBlur: { ... },
 };
 declare const TouchableImpl: {
-  Mixin: TouchableMixinImpl,
-  renderDebugView: ({
+  Mixin: typeof TouchableMixinImpl,
+  renderDebugView: ($$PARAM_0$$: {
     color: ColorValue,
     hitSlop?: EdgeInsetsProp,
     ...
@@ -3236,7 +3240,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 }>;
 declare export default component(
   ref: React.RefSetter<mixed>,
-  ...props: $ReadOnly<$Diff<TouchableBounceProps, { hostRef: mixed }>>
+  ...props: $ReadOnly<Omit<TouchableBounceProps, \\"hostRef\\">>
 );
 "
 `;
@@ -3269,7 +3273,7 @@ export type TouchableHighlightProps = $ReadOnly<{
 }>;
 declare const TouchableHighlight: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
-  ...props: $ReadOnly<$Diff<TouchableHighlightProps, { +hostRef: mixed }>>
+  ...props: $ReadOnly<Omit<TouchableHighlightProps, \\"hostRef\\">>
 );
 declare export default typeof TouchableHighlight;
 "
@@ -3356,7 +3360,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 }>;
 type TouchableOpacityBaseProps = $ReadOnly<{
   activeOpacity?: ?number,
-  style?: ?ViewStyleProp,
+  style?: ?Animated.WithAnimatedValue<ViewStyleProp>,
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 }>;
 export type TouchableOpacityProps = $ReadOnly<{
@@ -3468,11 +3472,17 @@ exports[`public API should not change unintentionally Libraries/Components/View/
   collapsable: true,
   collapsableChildren: true,
   needsOffscreenAlphaCompositing: true,
-  style: ReactNativeStyleAttributes,
+  style: typeof ReactNativeStyleAttributes,
   role: true,
 };
-declare const RCTView: { ...UIView, removeClippedSubviews: true };
-declare const ReactNativeViewAttributes: { UIView: UIView, RCTView: RCTView };
+declare const RCTView: {
+  ...typeof UIView,
+  removeClippedSubviews: true,
+};
+declare const ReactNativeViewAttributes: {
+  UIView: typeof UIView,
+  RCTView: typeof RCTView,
+};
 declare export default typeof ReactNativeViewAttributes;
 "
 `;
@@ -3930,11 +3940,11 @@ declare function unstable_setExceptionDecorator(
 declare function handleException(e: mixed, isFatal: boolean): void;
 declare function installConsoleErrorReporter(): void;
 declare const ExceptionsManager: {
-  decoratedExtraDataKey: decoratedExtraDataKey,
-  handleException: handleException,
-  installConsoleErrorReporter: installConsoleErrorReporter,
-  SyntheticError: SyntheticError,
-  unstable_setExceptionDecorator: unstable_setExceptionDecorator,
+  decoratedExtraDataKey: typeof decoratedExtraDataKey,
+  handleException: typeof handleException,
+  installConsoleErrorReporter: typeof installConsoleErrorReporter,
+  SyntheticError: typeof SyntheticError,
+  unstable_setExceptionDecorator: typeof unstable_setExceptionDecorator,
 };
 declare export default typeof ExceptionsManager;
 "
@@ -3988,7 +3998,7 @@ exports[`public API should not change unintentionally Libraries/Core/ReactFiberE
   ...
 };
 declare const ReactFiberErrorDialog: {
-  showErrorDialog(CapturedError): boolean,
+  showErrorDialog($$PARAM_0$$: CapturedError): boolean,
 };
 declare export default typeof ReactFiberErrorDialog;
 "
@@ -4172,7 +4182,7 @@ exports[`public API should not change unintentionally Libraries/Image/AssetRegis
   registerAsset: (asset: PackagerAsset) => number,
   getAssetByID: (assetId: number) => PackagerAsset,
 };
-declare module.exports: AssetRegistry;
+declare module.exports: typeof AssetRegistry;
 "
 `;
 
@@ -4319,7 +4329,7 @@ export type ImagePropsAndroid = $ReadOnly<{
   resizeMultiplier?: ?number,
 }>;
 export type ImagePropsBase = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
+  ...Omit<ViewProps, \\"style\\">,
   accessible?: ?boolean,
   internal_analyticTag?: ?string,
   accessibilityLabel?: ?Stringish,
@@ -4365,7 +4375,7 @@ export type ImageBackgroundProps = $ReadOnly<{
   children?: React.Node,
   style?: ?ViewStyleProp,
   imageStyle?: ?ImageStyleProp,
-  imageRef?: RefSetter<ElementRef<ImageType>>,
+  imageRef?: React.RefSetter<React.ElementRef<ImageType>>,
 }>;
 "
 `;
@@ -4545,7 +4555,7 @@ declare export default typeof NativeImageStoreIOS;
 
 exports[`public API should not change unintentionally Libraries/Image/RelativeImageStub.js 1`] = `
 "declare const RelativeImageStub: number;
-declare module.exports: RelativeImageStub;
+declare module.exports: typeof RelativeImageStub;
 "
 `;
 
@@ -4667,7 +4677,7 @@ declare const JSEventLoopWatchdog: {
   getStats: () => Object,
   reset: () => void,
   addHandler: (handler: Handler) => void,
-  install: ({ thresholdMS: number, ... }) => void,
+  install: ($$PARAM_0$$: { thresholdMS: number, ... }) => void,
 };
 declare export default typeof JSEventLoopWatchdog;
 "
@@ -4751,7 +4761,7 @@ export type PromiseTask = {
 };
 export type Task = SimpleTask | PromiseTask | (() => void);
 declare class TaskQueue {
-  constructor({ onMoreTasks: () => void, ... }): void;
+  constructor($$PARAM_0$$: { onMoreTasks: () => void, ... }): void;
   enqueue(task: Task): void;
   enqueueTasks(tasks: Array<Task>): void;
   cancelTasks(tasksToCancel: Array<Task>): void;
@@ -4826,16 +4836,16 @@ declare const Presets: {
   spring: LayoutAnimationConfig,
 };
 declare const LayoutAnimation: {
-  configureNext: configureNext,
-  create: create,
+  configureNext: typeof configureNext,
+  create: typeof create,
   Types: LayoutAnimationTypes,
   Properties: LayoutAnimationProperties,
   checkConfig(...args: Array<mixed>): void,
-  Presets: Presets,
+  Presets: typeof Presets,
   easeInEaseOut: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   linear: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   spring: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
-  setEnabled: setEnabled,
+  setEnabled: typeof setEnabled,
 };
 declare export default typeof LayoutAnimation;
 "
@@ -4890,7 +4900,7 @@ declare export default typeof FillRateHelper;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FlatList.js 1`] = `
-"declare const VirtualizedList: $FlowFixMe;
+"declare const VirtualizedList: typeof VirtualizedLists.VirtualizedList;
 type RequiredProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
@@ -4971,7 +4981,7 @@ declare export default typeof FlatList;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionList.js 1`] = `
-"declare const VirtualizedSectionList: $FlowFixMe;
+"declare const VirtualizedSectionList: typeof VirtualizedLists.VirtualizedSectionList;
 type DefaultSectionT = {
   [key: string]: any,
 };
@@ -5011,8 +5021,10 @@ export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
 };
-declare export default class SectionList<ItemT, SectionT = DefaultSectionT>
-  extends React.PureComponent<SectionListProps<ItemT, SectionT>>
+declare export default class SectionList<
+  ItemT = any,
+  SectionT = DefaultSectionT,
+> extends React.PureComponent<SectionListProps<ItemT, SectionT>>
 {
   props: SectionListProps<ItemT, SectionT>;
   scrollToLocation(params: ScrollToLocationParamsType): void;
@@ -5370,7 +5382,7 @@ declare export default React.ComponentType<{}>;
 `;
 
 exports[`public API should not change unintentionally Libraries/LogBox/UI/AnsiHighlight.js 1`] = `
-"declare export default function Ansi({
+"declare export default function Ansi($$PARAM_0$$: {
   text: string,
   style: TextStyleProp,
   ...
@@ -5651,7 +5663,10 @@ export type ModalProps = {
 type ModalRefProps = $ReadOnly<{
   ref?: React.RefSetter<PublicModalInstance>,
 }>;
-declare function Wrapper({ ...ModalRefProps, ...ModalProps }): React.Node;
+declare function Wrapper($$PARAM_0$$: {
+  ...ModalRefProps,
+  ...ModalProps,
+}): React.Node;
 declare export default typeof Wrapper;
 "
 `;
@@ -5998,10 +6013,10 @@ declare export default typeof convertRequestBody;
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/fetch.js 1`] = `
-"declare export const fetch: $FlowFixMe;
-declare export const Headers: $FlowFixMe;
-declare export const Request: $FlowFixMe;
-declare export const Response: $FlowFixMe;
+"declare export const fetch: typeof global.fetch;
+declare export const Headers: typeof global.Headers;
+declare export const Request: typeof global.Request;
+declare export const Response: typeof global.Response;
 "
 `;
 
@@ -6368,7 +6383,7 @@ declare export default typeof AppContainer;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/AppContainer-dev.js 1`] = `
-"declare const AppContainer: (Props) => React.Node;
+"declare const AppContainer: ($$PARAM_0$$: Props) => React.Node;
 export type AppContainerRootViewRef = React.RefObject<React.ElementRef<
   typeof View,
 > | null>;
@@ -6383,7 +6398,7 @@ declare export default typeof AppContainer;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/AppContainer-prod.js 1`] = `
-"declare const AppContainer: (Props) => React.Node;
+"declare const AppContainer: ($$PARAM_0$$: Props) => React.Node;
 declare export default typeof AppContainer;
 "
 `;
@@ -6728,7 +6743,7 @@ declare export default typeof ReactNativeRuntimeDiagnostics;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/RendererImplementation.js 1`] = `
-"declare export function renderElement({
+"declare export function renderElement($$PARAM_0$$: {
   element: React.MixedElement,
   rootTag: number,
   useFabric: boolean,
@@ -7030,11 +7045,11 @@ declare const absoluteFill: {
   +top: 0,
 };
 declare export default {
-  hairlineWidth: hairlineWidth,
+  hairlineWidth: typeof hairlineWidth,
   absoluteFill: any,
-  absoluteFillObject: absoluteFill,
-  compose: composeStyles,
-  flatten: flatten,
+  absoluteFillObject: typeof absoluteFill,
+  compose: typeof composeStyles,
+  flatten: typeof flatten,
   setStyleAttributePreprocessor(
     property: string,
     process: (nextProp: mixed) => mixed
@@ -7079,8 +7094,7 @@ export type EdgeInsetsValue = {
   right: number,
   bottom: number,
 };
-export type DimensionValue = number | string | \\"auto\\" | AnimatedNode | null;
-export type AnimatableNumericValue = number | AnimatedNode;
+export type DimensionValue = number | string | \\"auto\\" | null;
 export type CursorValue = \\"auto\\" | \\"pointer\\";
 type ____LayoutStyle_Internal = $ReadOnly<{
   display?: \\"none\\" | \\"flex\\" | \\"contents\\",
@@ -7185,7 +7199,7 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
     width?: number,
     height?: number,
   }>,
-  shadowOpacity?: AnimatableNumericValue,
+  shadowOpacity?: number,
   shadowRadius?: number,
 }>;
 export type ____ShadowStyle_Internal = $ReadOnly<{
@@ -7256,32 +7270,32 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue | string,
-  borderBottomEndRadius?: AnimatableNumericValue | string,
-  borderBottomLeftRadius?: AnimatableNumericValue | string,
-  borderBottomRightRadius?: AnimatableNumericValue | string,
-  borderBottomStartRadius?: AnimatableNumericValue | string,
-  borderEndEndRadius?: AnimatableNumericValue | string,
-  borderEndStartRadius?: AnimatableNumericValue | string,
-  borderStartEndRadius?: AnimatableNumericValue | string,
-  borderStartStartRadius?: AnimatableNumericValue | string,
-  borderTopEndRadius?: AnimatableNumericValue | string,
-  borderTopLeftRadius?: AnimatableNumericValue | string,
-  borderTopRightRadius?: AnimatableNumericValue | string,
-  borderTopStartRadius?: AnimatableNumericValue | string,
+  borderRadius?: number | string,
+  borderBottomEndRadius?: number | string,
+  borderBottomLeftRadius?: number | string,
+  borderBottomRightRadius?: number | string,
+  borderBottomStartRadius?: number | string,
+  borderEndEndRadius?: number | string,
+  borderEndStartRadius?: number | string,
+  borderStartEndRadius?: number | string,
+  borderStartStartRadius?: number | string,
+  borderTopEndRadius?: number | string,
+  borderTopLeftRadius?: number | string,
+  borderTopRightRadius?: number | string,
+  borderTopStartRadius?: number | string,
   borderStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
-  borderWidth?: AnimatableNumericValue,
-  borderBottomWidth?: AnimatableNumericValue,
-  borderEndWidth?: AnimatableNumericValue,
-  borderLeftWidth?: AnimatableNumericValue,
-  borderRightWidth?: AnimatableNumericValue,
-  borderStartWidth?: AnimatableNumericValue,
-  borderTopWidth?: AnimatableNumericValue,
-  opacity?: AnimatableNumericValue,
+  borderWidth?: number,
+  borderBottomWidth?: number,
+  borderEndWidth?: number,
+  borderLeftWidth?: number,
+  borderRightWidth?: number,
+  borderStartWidth?: number,
+  borderTopWidth?: number,
+  opacity?: number,
   outlineColor?: ____ColorValue_Internal,
-  outlineOffset?: AnimatableNumericValue,
+  outlineOffset?: number,
   outlineStyle?: \\"solid\\" | \\"dotted\\" | \\"dashed\\",
-  outlineWidth?: AnimatableNumericValue,
+  outlineWidth?: number,
   elevation?: number,
   pointerEvents?: \\"auto\\" | \\"none\\" | \\"box-none\\" | \\"box-only\\",
   cursor?: CursorValue,
@@ -7454,9 +7468,8 @@ export type StyleProp<+T> =
 export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
-export type ____DangerouslyImpreciseAnimatedStyleProp_Internal = StyleProp<
-  Partial<AnimatedBaseProps<____DangerouslyImpreciseStyle_Internal>>,
->;
+export type ____DangerouslyImpreciseAnimatedStyleProp_Internal =
+  WithAnimatedValue<StyleProp<Partial<____DangerouslyImpreciseStyle_Internal>>>;
 export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
@@ -7492,11 +7505,14 @@ export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/flattenStyle.js 1`] = `
-"declare function flattenStyle<
+"type NonAnimatedNodeObject<TStyleProp> = TStyleProp extends AnimatedNode
+  ? empty
+  : TStyleProp;
+declare function flattenStyle<
   TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
 >(
   style: ?TStyleProp
-): ?____FlattenStyleProp_Internal<TStyleProp>;
+): ?NonAnimatedNodeObject<____FlattenStyleProp_Internal<TStyleProp>>;
 declare export default typeof flattenStyle;
 "
 `;
@@ -8582,7 +8598,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
 declare function deepDiffer(
   one: any,
   two: any,
-  maxDepthOrOptions: Options | number,
+  maxDepthOrOptions?: Options | number,
   maybeOptions?: Options
 ): boolean;
 declare export default typeof deepDiffer;
@@ -9368,7 +9384,7 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
 }
 declare export function getBoundingClientRect(
   element: ReadOnlyElement,
-  { includeTransform: boolean }
+  $$PARAM_1$$: { includeTransform: boolean }
 ): DOMRect;
 "
 `;

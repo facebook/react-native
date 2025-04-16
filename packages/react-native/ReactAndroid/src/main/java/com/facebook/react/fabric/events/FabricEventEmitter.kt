@@ -39,12 +39,11 @@ public class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTMod
       params: WritableMap?,
       @EventCategoryDef category: Int
   ) {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricEventEmitter.receiveEvent('$eventName')")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "FabricEventEmitter.receiveEvent('$eventName')")
     try {
       uiManager.receiveEvent(surfaceId, targetTag, eventName, canCoalesceEvent, params, category)
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 

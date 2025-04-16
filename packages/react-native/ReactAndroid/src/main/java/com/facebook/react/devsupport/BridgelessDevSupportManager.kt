@@ -8,12 +8,10 @@
 package com.facebook.react.devsupport
 
 import android.content.Context
-import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
-import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
@@ -71,34 +69,13 @@ internal class BridgelessDevSupportManager(
       devLoadingViewManager = null,
       pausedInDebuggerOverlayManager = null)
 
-  override fun getUniqueTag(): String = "Bridgeless"
-
-  override fun loadSplitBundleFromServer(bundlePath: String, callback: DevSplitBundleCallback) {
-    fetchSplitBundleAndCreateBundleLoader(
-        bundlePath,
-        object : CallbackWithBundleLoader {
-          override fun onSuccess(bundleLoader: JSBundleLoader) {
-            try {
-              mReactInstanceDevHelper.loadBundle(bundleLoader).waitForCompletion()
-              val bundleURL = devServerHelper.getDevServerSplitBundleURL(bundlePath)
-              val reactContext = mReactInstanceDevHelper.currentReactContext
-              reactContext?.getJSModule(HMRClient::class.java)?.registerBundle(bundleURL)
-              callback.onSuccess()
-            } catch (e: InterruptedException) {
-              Thread.currentThread().interrupt()
-              throw RuntimeException(
-                  "[BridgelessDevSupportManager]: Got interrupted while loading bundle", e)
-            }
-          }
-
-          override fun onError(url: String, cause: Throwable) = callback.onError(url, cause)
-        })
-  }
+  override val uniqueTag: String
+    get() = "Bridgeless"
 
   override fun handleReloadJS() {
     UiThreadUtil.assertOnUiThread()
     // dismiss redbox if exists
     hideRedboxDialog()
-    mReactInstanceDevHelper.reload("BridgelessDevSupportManager.handleReloadJS()")
+    reactInstanceDevHelper.reload("BridgelessDevSupportManager.handleReloadJS()")
   }
 }

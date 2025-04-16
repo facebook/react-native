@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableReportEventPaintTime:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';

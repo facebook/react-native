@@ -71,7 +71,7 @@ struct ConcreteTraceSection {
   explicit ConcreteTraceSection(
       const char* name,
       ConvertsToStringPiece&&... args)
-      : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...) {}
+      : m_section(TRACE_TAG_REACT, name, args...) {}
 
  private:
   fbsystrace::FbSystraceSection m_section;

@@ -9,8 +9,10 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** Implementation of Dynamic wrapping a ReadableArray. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class DynamicFromArray implements Dynamic {
   private static final Pools.SimplePool<DynamicFromArray> sPool = new Pools.SimplePool<>(10);
 
@@ -70,7 +72,7 @@ class DynamicFromArray implements Dynamic {
   }
 
   @Override
-  public String asString() {
+  public @Nullable String asString() {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
@@ -78,7 +80,7 @@ class DynamicFromArray implements Dynamic {
   }
 
   @Override
-  public ReadableArray asArray() {
+  public @Nullable ReadableArray asArray() {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }
@@ -86,7 +88,7 @@ class DynamicFromArray implements Dynamic {
   }
 
   @Override
-  public ReadableMap asMap() {
+  public @Nullable ReadableMap asMap() {
     if (mArray == null) {
       throw new IllegalStateException("This dynamic value has been recycled");
     }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<659516c334fc1c1a22fc0017ec4b634a>>
+ * @generated SignedSource<<e18e064f0b4ac0217b49f0cf5a153e6b>>
  */
 
 /**
@@ -33,6 +33,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
+  @DoNotStrip public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean
+
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
@@ -47,6 +49,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
+  @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
+
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
@@ -55,8 +59,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
 
-  @DoNotStrip public fun enableLongTaskAPI(): Boolean
-
   @DoNotStrip public fun enableMainQueueModulesOnIOS(): Boolean
 
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
@@ -64,8 +66,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
-
-  @DoNotStrip public fun enableReportEventPaintTime(): Boolean
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
@@ -78,8 +78,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
-
-  @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
