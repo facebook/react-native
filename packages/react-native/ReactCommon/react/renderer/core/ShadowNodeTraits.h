@@ -78,9 +78,6 @@ class ShadowNodeTraits {
 
     // Forces the node not to form a host view.
     ForceFlattenView = 1 << 11,
-
-    // Indicates if the node is keyboard focusable.
-    KeyboardFocusable = 1 << 12,
   };
 
   /*

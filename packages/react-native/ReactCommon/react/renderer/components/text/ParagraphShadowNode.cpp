@@ -26,22 +26,6 @@ using Content = ParagraphShadowNode::Content;
 
 const char ParagraphComponentName[] = "Paragraph";
 
-void ParagraphShadowNode::initialize() noexcept {
-#ifdef ANDROID
-  if (getConcreteProps().isSelectable) {
-    traits_.set(ShadowNodeTraits::Trait::KeyboardFocusable);
-  }
-#endif
-}
-
-ParagraphShadowNode::ParagraphShadowNode(
-    const ShadowNodeFragment& fragment,
-    const ShadowNodeFamily::Shared& family,
-    ShadowNodeTraits traits)
-    : ConcreteViewShadowNode(fragment, family, traits) {
-  initialize();
-}
-
 ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
@@ -65,7 +49,6 @@ ParagraphShadowNode::ParagraphShadowNode(
     // to stop Yoga from traversing it.
     cleanLayout();
   }
-  initialize();
 }
 
 const Content& ParagraphShadowNode::getContent(

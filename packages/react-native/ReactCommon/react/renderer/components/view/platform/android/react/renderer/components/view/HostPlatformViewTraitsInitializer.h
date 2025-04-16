@@ -24,8 +24,4 @@ inline bool formsView(const ViewProps& viewProps) {
       viewProps.renderToHardwareTextureAndroid;
 }
 
-inline bool isKeyboardFocusable(const ViewProps& viewProps) {
-  return (viewProps.focusable || viewProps.hasTVPreferredFocus);
-}
-
 } // namespace facebook::react::HostPlatformViewTraitsInitializer
