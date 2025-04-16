@@ -122,7 +122,7 @@ inline void fromRawValue(
     result = ReturnKeyType::Continue;
     return;
   }
-  abort();
+  result = ReturnKeyType::Default;
 }
 
 inline void fromRawValue(
