@@ -29,7 +29,7 @@ import com.facebook.react.views.view.setStatusBarVisibility
 
 /** [NativeModule] that allows changing the appearance of the status bar. */
 @ReactModule(name = NativeStatusBarManagerAndroidSpec.NAME)
-public class StatusBarModule(reactContext: ReactApplicationContext?) :
+internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     NativeStatusBarManagerAndroidSpec(reactContext) {
 
   @Suppress("DEPRECATION")
@@ -154,9 +154,9 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
         })
   }
 
-  public companion object {
+  companion object {
     private const val HEIGHT_KEY = "HEIGHT"
     private const val DEFAULT_BACKGROUND_COLOR_KEY = "DEFAULT_BACKGROUND_COLOR"
-    public const val NAME: String = NativeStatusBarManagerAndroidSpec.NAME
+    const val NAME: String = NativeStatusBarManagerAndroidSpec.NAME
   }
 }

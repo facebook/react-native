@@ -3135,19 +3135,6 @@ public final class com/facebook/react/modules/share/ShareModule : com/facebook/f
 public final class com/facebook/react/modules/share/ShareModule$Companion {
 }
 
-public final class com/facebook/react/modules/statusbar/StatusBarModule : com/facebook/fbreact/specs/NativeStatusBarManagerAndroidSpec {
-	public static final field Companion Lcom/facebook/react/modules/statusbar/StatusBarModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun setColor (DZ)V
-	public fun setHidden (Z)V
-	public fun setStyle (Ljava/lang/String;)V
-	public fun setTranslucent (Z)V
-}
-
-public final class com/facebook/react/modules/statusbar/StatusBarModule$Companion {
-}
-
 public final class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 	public static final field DEVICE_LOCALHOST Ljava/lang/String;
 	public static final field EMULATOR_LOCALHOST Ljava/lang/String;
