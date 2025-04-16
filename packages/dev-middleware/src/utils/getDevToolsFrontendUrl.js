@@ -21,8 +21,10 @@ export default function getDevToolsFrontendUrl(
   options?: $ReadOnly<{
     relative?: boolean,
     launchId?: string,
+    telemetryInfo?: string,
     /** Whether to use the modern `rn_fusebox.html` entry point. */
     useFuseboxEntryPoint?: boolean,
+    appId?: string,
   }>,
 ): string {
   const wsParam = getWsParam({
@@ -46,6 +48,12 @@ export default function getDevToolsFrontendUrl(
   }
   if (options?.launchId != null && options.launchId !== '') {
     searchParams.append('launchId', options.launchId);
+  }
+  if (options?.appId != null && options.appId !== '') {
+    searchParams.append('appId', options.appId);
+  }
+  if (options?.telemetryInfo != null && options.telemetryInfo !== '') {
+    searchParams.append('telemetryInfo', options.telemetryInfo);
   }
 
   return appUrl + '?' + searchParams.toString();
