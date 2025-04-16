@@ -6749,11 +6749,13 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Rend
   useFabric: boolean,
   useConcurrentRoot: boolean,
 }): void;
-declare export function findHostInstance_DEPRECATED<TElementType: ElementType>(
-  componentOrHandle: ?(ElementRef<TElementType> | number)
+declare export function findHostInstance_DEPRECATED<
+  TElementType: React.ElementType,
+>(
+  componentOrHandle: ?(React.ElementRef<TElementType> | number)
 ): ?HostInstance;
-declare export function findNodeHandle<TElementType: ElementType>(
-  componentOrHandle: ?(ElementRef<TElementType> | number)
+declare export function findNodeHandle<TElementType: React.ElementType>(
+  componentOrHandle: ?(React.ElementRef<TElementType> | number)
 ): ?number;
 declare export function dispatchCommand(
   handle: HostInstance,
