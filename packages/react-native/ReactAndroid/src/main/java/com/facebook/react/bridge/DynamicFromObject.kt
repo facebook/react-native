@@ -1,10 +1,18 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 package com.facebook.react.bridge
 
 import com.facebook.common.logging.FLog
+import com.facebook.infer.annotation.Nullsafe
 import com.facebook.react.common.ReactConstants
 
-public class DynamicFromObject(private var mObject: Any?) : Dynamic {
-
+/** Implementation of Dynamic wrapping a ReadableArray.  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
+public class DynamicFromObject(private val mObject: Any?) : Dynamic {
   override fun recycle() {
     // Noop - nothing to recycle since there is no pooling
   }
@@ -12,63 +20,74 @@ public class DynamicFromObject(private var mObject: Any?) : Dynamic {
   override val isNull: Boolean
     get() = mObject == null
 
-
   override fun asBoolean(): Boolean {
-    if (mObject !is Boolean) {
+    if (mObject == null || mObject !is Boolean) {
       throw ClassCastException("Dynamic value from Object is not a boolean")
     }
-    return mObject as Boolean
+    return mObject
   }
 
   override fun asDouble(): Double {
-    if (mObject !is Number) {
+    if (mObject == null || mObject !is Number) {
       throw ClassCastException("Dynamic value from Object is not a number")
     }
-    return (mObject as Number).toDouble()
+    return mObject as Double
   }
 
   override fun asInt(): Int {
-    if (mObject !is Number) {
+    if (mObject == null || mObject !is Number) {
       throw ClassCastException("Dynamic value from Object is not a number")
     }
-    return (mObject as Number).toDouble().toInt()
+    // Numbers from JS are always Doubles
+    return (mObject as Double).toInt()
   }
 
-  override fun asString(): String {
-    if (mObject !is String) {
+  override fun asString(): String? {
+    if (mObject == null || mObject !is String) {
       throw ClassCastException("Dynamic value from Object is not a string")
     }
-    return mObject as String
+    return mObject
   }
 
-  override fun asArray(): ReadableArray {
-    if (mObject !is ReadableArray) {
+  override fun asArray(): ReadableArray? {
+    if (mObject == null || mObject !is ReadableArray) {
       throw ClassCastException("Dynamic value from Object is not a ReadableArray")
     }
-    return mObject as ReadableArray
+    return mObject
   }
 
-  override fun asMap(): ReadableMap {
-    if (mObject !is ReadableMap) {
+  override fun asMap(): ReadableMap? {
+    if (mObject == null || mObject !is ReadableMap) {
       throw ClassCastException("Dynamic value from Object is not a ReadableMap")
     }
-    return mObject as ReadableMap
+    return mObject
   }
 
   override val type: ReadableType
-    get() = when {
-      isNull -> ReadableType.Null
-      mObject is Boolean -> ReadableType.Boolean
-      mObject is Number -> ReadableType.Number
-      mObject is String -> ReadableType.String
-      mObject is ReadableMap -> ReadableType.Map
-      mObject is ReadableArray -> ReadableType.Array
-      else -> {
-        FLog.e(
-          ReactConstants.TAG,
-          "Unmapped object type ${mObject?.javaClass?.name ?: "<NULL object>"}"
-        )
-        ReadableType.Null
+    get() {
+      if (isNull) {
+        return ReadableType.Null
       }
+      if (mObject is Boolean) {
+        return ReadableType.Boolean
+      }
+      if (mObject is Number) {
+        return ReadableType.Number
+      }
+      if (mObject is String) {
+        return ReadableType.String
+      }
+      if (mObject is ReadableMap) {
+        return ReadableType.Map
+      }
+      if (mObject is ReadableArray) {
+        return ReadableType.Array
+      }
+      FLog.e(
+        ReactConstants.TAG,
+        "Unmapped object type "
+          + (if (mObject == null) "<NULL object>" else mObject.javaClass.name)
+      )
+      return ReadableType.Null
     }
 }
