@@ -11,7 +11,6 @@
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "FabricMountingManager.h"
-#include "FocusOrderingHelper.h"
 
 #include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
@@ -194,54 +193,6 @@ void FabricUIManagerBinding::startSurface(
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
-}
-
-jint FabricUIManagerBinding::findNextFocusableElement(
-    jint parentTag,
-    jint focusedTag,
-    jint direction) {
-  ShadowNode::Shared nextNode;
-
-  std::optional<FocusDirection> focusDirection =
-      FocusOrderingHelper::resolveFocusDirection(direction);
-
-  if (!focusDirection.has_value()) {
-    return -1;
-  }
-
-  std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
-
-  ShadowNode::Shared parentShadowNode =
-      uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
-  ShadowNode::Shared focusedShadowNode =
-      FocusOrderingHelper::findShadowNodeByTagRecursively(
-          parentShadowNode, focusedTag);
-
-  LayoutMetrics childLayoutMetrics = uimanager->getRelativeLayoutMetrics(
-      *focusedShadowNode, parentShadowNode.get(), {.includeTransform = true});
-
-  Rect sourceRect = childLayoutMetrics.frame;
-
-  /*
-   * Traverse the tree recursively to find the next focusable element in the
-   * given direction
-   */
-  std::optional<Rect> nextRect = std::nullopt;
-  FocusOrderingHelper::traverseAndUpdateNextFocusableElement(
-      parentShadowNode,
-      focusedShadowNode,
-      parentShadowNode,
-      focusDirection.value(),
-      *uimanager,
-      sourceRect,
-      nextRect,
-      nextNode);
-
-  if (nextNode == nullptr) {
-    return -1;
-  }
-
-  return nextNode->getTag();
 }
 
 // Used by non-bridgeless+Fabric
@@ -716,9 +667,6 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "stopSurfaceWithSurfaceHandler",
           FabricUIManagerBinding::stopSurfaceWithSurfaceHandler),
-      makeNativeMethod(
-          "findNextFocusableElement",
-          FabricUIManagerBinding::findNextFocusableElement),
   });
 }
 
