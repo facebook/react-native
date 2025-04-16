@@ -3164,19 +3164,6 @@ public final class com/facebook/react/modules/systeminfo/ReactNativeVersion {
 	public static final field VERSION Ljava/util/Map;
 }
 
-public final class com/facebook/react/modules/toast/ToastModule : com/facebook/fbreact/specs/NativeToastAndroidSpec {
-	public static final field Companion Lcom/facebook/react/modules/toast/ToastModule$Companion;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun getTypedExportedConstants ()Ljava/util/Map;
-	public fun show (Ljava/lang/String;D)V
-	public fun showWithGravity (Ljava/lang/String;DD)V
-	public fun showWithGravityAndOffset (Ljava/lang/String;DDDD)V
-}
-
-public final class com/facebook/react/modules/toast/ToastModule$Companion {
-}
-
 public final class com/facebook/react/modules/websocket/WebSocketModule : com/facebook/fbreact/specs/NativeWebSocketModuleSpec {
 	public static final field Companion Lcom/facebook/react/modules/websocket/WebSocketModule$Companion;
 	public static final field NAME Ljava/lang/String;
