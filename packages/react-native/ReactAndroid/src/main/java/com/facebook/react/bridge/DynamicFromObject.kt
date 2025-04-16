@@ -21,46 +21,46 @@ public class DynamicFromObject(private val value: Any?) : Dynamic {
     get() = value == null
 
   override fun asBoolean(): Boolean {
-    if (value == null || value !is Boolean) {
-      throw ClassCastException("Dynamic value from Object is not a boolean")
+    if (value is Boolean) {
+      return value
     }
-    return value
+    throw ClassCastException("Dynamic value from Object is not a boolean")
   }
 
   override fun asDouble(): Double {
-    if (value == null || value !is Number) {
-      throw ClassCastException("Dynamic value from Object is not a number")
+    if (value is Number) {
+      return value as Double
     }
-    return value as Double
+    throw ClassCastException("Dynamic value from Object is not a number")
   }
 
   override fun asInt(): Int {
-    if (value == null || value !is Number) {
-      throw ClassCastException("Dynamic value from Object is not a number")
+    if (value is Number) {
+      // Numbers from JS are always Doubles
+      return (value as Double).toInt()
     }
-    // Numbers from JS are always Doubles
-    return (value as Double).toInt()
+    throw ClassCastException("Dynamic value from Object is not a number")
   }
 
   override fun asString(): String? {
-    if (value == null || value !is String) {
-      throw ClassCastException("Dynamic value from Object is not a string")
+    if (value is String) {
+      return value
     }
-    return value
+    throw ClassCastException("Dynamic value from Object is not a string")
   }
 
   override fun asArray(): ReadableArray? {
-    if (value == null || value !is ReadableArray) {
-      throw ClassCastException("Dynamic value from Object is not a ReadableArray")
+    if (value is ReadableArray) {
+      return value
     }
-    return value
+    throw ClassCastException("Dynamic value from Object is not a ReadableArray")
   }
 
   override fun asMap(): ReadableMap? {
-    if (value == null || value !is ReadableMap) {
-      throw ClassCastException("Dynamic value from Object is not a ReadableMap")
+    if (value is ReadableMap) {
+      return value
     }
-    return value
+    throw ClassCastException("Dynamic value from Object is not a ReadableMap")
   }
 
   override val type: ReadableType
