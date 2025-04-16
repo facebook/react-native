@@ -40,17 +40,50 @@ let package = Package(
         .reactDebug,
         .jsi,
         .reactPerfLogger,
-        .reactJsInspectorNetwork,
         .mapbuffer,
         .reactRendererDebug,
         .reactUtils,
         .reactRuntimeExecutor,
-        .logger
+        .logger,
+        .reactCxxReact,
         
-        /*.reactDebug, .jsi, .logger, .mapbuffer, .fbLazyVector, .rctDeprecation, .rctRequired, .yoga, .reactUtils, .reactFeatureFlags, .reactRuntimeExecutor, .reactOSCompat, .reactCallInvoker, .reactTiming, .reactRendererDebug, .reactRendererConsistency, .hermesPrebuilt, .reactJsiExecutor, .reactCxxReact, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactHermes, .reactJsiTooling, .reactPerformanceTimeline, .reactGraphics, .reactRendererCss, .reactJsErrorHandler, .reactImageManager, .reactImageManagerApple, .reactRCTImage, .reactCoreModules, .reactRCTAnimation, .reactRCTText, .reactRCTLinking*/]
+        .reactJsInspector,
+        .reactJsInspectorTracing,
+        .reactJsInspectorNetwork,
+        .reactHermes,
+        .hermesIncludes,
+        .reactPerformanceTimeline,
+        .reactRuntimeScheduler,
+        
+        .reactTurboModuleCore,
+        .reactTurboModuleBridging,
+        .reactJsErrorHandler,
+        
+        .reactGraphicsApple,
+        .reactGraphics,
+        .reactRendererCss,
+        
+        //.reactCoreModules
+        //.reactCore
+        
+        // Now we need React/Base files
+        //.reactNativeModulesApple
+        //.reactRuntime,
+        //.reactRuntimeApple
+        //.rctTypesafety,
+        //.reactCoreModules
+        //.reactCore
+        
+        //.reactCoreRCTWebsocket,
+        //.reactRCTImage
+        
+      ]
     ),
   ],
   targets: [
+    /**
+     Without any dependencies
+    */
     .reactNativeTarget(
       name: .fbLazyVector,
       dependencies: [],
@@ -101,15 +134,17 @@ let package = Package(
       name: .reactRendererConsistency,
       dependencies: [],
       path: "ReactCommon/react/renderer/consistency",
-      extraCSettings: [.headerSearchPath("./include/react/renderer/consistency"), .headerSearchPath("./include")],
-      extraCxxSettings: [.headerSearchPath("./include/react/renderer/consistency"), .headerSearchPath("./include")]
+      extraCSettings: [.headerSearchPath("./include/react/renderer/consistency")],
+      extraCxxSettings: [.headerSearchPath("./include/react/renderer/consistency")]
     ),
+    
+    /**
+     Depends on RN Thirdy Party deps only
+    */
     .reactNativeTarget(
       name: .reactDebug,
       dependencies: [.reactNativeDependencies],
-      path: "ReactCommon/react/debug",
-      extraCSettings: [.headerSearchPath("../include")],
-      extraCxxSettings: [.headerSearchPath("../include")]
+      path: "ReactCommon/react/debug"
     ),
     .reactNativeTarget(
       name: .jsi,
@@ -136,14 +171,10 @@ let package = Package(
       sources: ["reactperflogger"],
       publicHeadersPath: "."
     ),
-    .reactNativeTarget(
-      name: .reactJsInspectorNetwork,
-      dependencies: [.reactNativeDependencies],
-      path: "ReactCommon/jsinspector-modern/network",
-      extraExcludes: ["tests"],
-      extraCSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/jsinspector-modern/network")],
-      extraCxxSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/jsinspector-modern/network")]
-    ),
+    
+    /**
+     Multiple dependencies to targets defined above
+    */
     .reactNativeTarget(
       name: .logger,
       dependencies: [.reactNativeDependencies, .jsi],
@@ -156,17 +187,15 @@ let package = Package(
       dependencies: [.reactNativeDependencies, .reactDebug],
       path: "ReactCommon/react/renderer/mapbuffer",
       extraExcludes: ["tests/MapBufferTest.cpp"],
-      publicHeadersPath: ".",
-      extraCSettings: [.headerSearchPath("../../..")],
-      extraCxxSettings: [.headerSearchPath("../../..")]
+      publicHeadersPath: "."
     ),
     .reactNativeTarget(
       name: .reactUtils,
       dependencies: [.reactNativeDependencies, .reactDebug, .jsi],
       path: "ReactCommon/react/utils",
       extraExcludes: ["tests"],
-      extraCSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/react/utils")],
-      extraCxxSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/react/utils")],
+      extraCSettings: [.headerSearchPath("./include/react/utils")],
+      extraCxxSettings: [.headerSearchPath("./include/react/utils")],
       linkerSettings: [.linkedFramework("CoreFoundation")]
     ),
     .reactNativeTarget(
@@ -181,9 +210,41 @@ let package = Package(
       dependencies: [.reactDebug],
       path: "ReactCommon/react/renderer/debug",
       extraExcludes: ["tests"],
-      extraCSettings: [.headerSearchPath("./include/react/renderer/debug"), .headerSearchPath("./include")],
-      extraCxxSettings: [.headerSearchPath("./include/react/renderer/debug"), .headerSearchPath("./include")]
+      extraCSettings: [.headerSearchPath("./include/react/renderer/debug")],
+      extraCxxSettings: [.headerSearchPath("./include/react/renderer/debug")]
     ),
+    
+    /**
+      JSInspectors
+     */
+    .reactNativeTarget(
+      name: .reactJsInspector,
+      dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactRuntimeExecutor, .jsi, .hermesIncludes, .reactJsInspectorTracing, .reactJsInspectorNetwork],
+      path: "ReactCommon/jsinspector-modern",
+      extraExcludes: ["tracing", "network", "tests"],
+      extraCSettings: [.headerSearchPath("./include/jsinspector-modern"), .headerSearchPath("./include/jsinspector-modern/cdp")],
+      extraCxxSettings: [.headerSearchPath("./include/jsinspector-modern"), .headerSearchPath("./include/jsinspector-modern/cdp")]
+    ),
+    .reactNativeTarget(
+      name: .reactJsInspectorTracing,
+      dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactRuntimeExecutor, .jsi, .reactOSCompat],
+      path: "ReactCommon/jsinspector-modern/tracing",
+      extraExcludes: ["tests"],
+      extraCSettings: [.headerSearchPath("./include/jsinspector-modern/tracing")],
+      extraCxxSettings: [.headerSearchPath("./include/jsinspector-modern/tracing")]
+    ),
+    .reactNativeTarget(
+      name: .reactJsInspectorNetwork,
+      dependencies: [.reactNativeDependencies],
+      path: "ReactCommon/jsinspector-modern/network",
+      extraExcludes: ["tests"],
+      extraCSettings: [.headerSearchPath("./include/jsinspector-modern/network")],
+      extraCxxSettings: [.headerSearchPath("./include/jsinspector-modern/network")]
+    ),
+    
+    /**
+      CXX React
+     */
     .reactNativeTarget(
       name: .reactCxxReact,
       dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactRuntimeExecutor, .reactCallInvoker, .logger, .reactTiming, .reactDebug, .reactJsInspector],
@@ -193,6 +254,8 @@ let package = Package(
       extraCxxSettings: [.headerSearchPath("./include/cxxreact")]
     ),
     
+    
+    
     /* This target compiles the same sources as React-hermes and fails if we add it to the target list above.
      .reactNativeTarget(
       name: .reactJsiTracing,
@@ -200,29 +263,10 @@ let package = Package(
       path: "ReactCommon/hermes/executor",
       publicHeadersPath: "."
     ),*/
-    .reactNativeTarget(
-      name: .reactJsiExecutor,
-      dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .reactJsInspector, .hermesIncludes],
-      path: "ReactCommon/jsiexecutor",
-      publicHeadersPath: "."
-    ),
-   
-    .reactNativeTarget(
-      name: .reactJsInspector,
-      dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactRuntimeExecutor, .jsi, .hermesIncludes, .reactJsInspectorTracing, .reactJsInspectorNetwork],
-      path: "ReactCommon/jsinspector-modern",
-      extraExcludes: ["tracing", "network", "tests"],
-      extraCSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/jsinspector-modern")],
-      extraCxxSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/jsinspector-modern")]
-    ),
-    .reactNativeTarget(
-      name: .reactJsInspectorTracing,
-      dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactRuntimeExecutor, .jsi, .reactOSCompat],
-      path: "ReactCommon/jsinspector-modern/tracing",
-      extraExcludes: ["tests"],
-      extraCSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/jsinspector-modern/tracing")],
-      extraCxxSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/jsinspector-modern/tracing")]
-    ),
+    
+    /**
+     React Hermes
+     */
     .reactNativeTarget(
       name: .reactHermes,
       dependencies: [.reactNativeDependencies, .reactCxxReact, .reactJsiExecutor, .reactJsInspector, .reactJsInspectorTracing, .reactPerfLogger, .hermesIncludes, .hermesPrebuilt, .jsi, .reactRuntimeExecutor],
@@ -231,12 +275,26 @@ let package = Package(
       extraCSettings: [.headerSearchPath("./include/hermes/inspector-modern/chrome"), .headerSearchPath("./include/hermes/executor")],
       extraCxxSettings: [.headerSearchPath("./include/hermes/inspector-modern/chrome"), .headerSearchPath("./include/hermes/executor")]
     ),
+    
+    /**
+     JSI Executor, tooling
+     */
+    .reactNativeTarget(
+      name: .reactJsiExecutor,
+      dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .reactJsInspector, .hermesIncludes],
+      path: "ReactCommon/jsiexecutor",
+      publicHeadersPath: "."
+    ),
     .reactNativeTarget(
       name: .reactJsiTooling,
       dependencies: [.reactNativeDependencies, .reactJsInspector, .reactJsInspectorTracing, .reactCxxReact, .jsi],
       path: "ReactCommon/jsitooling",
       publicHeadersPath: "."
     ),
+    
+    /**
+     Performance timeline
+     */
     .reactNativeTarget(
       name: .reactPerformanceTimeline,
       dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactTiming, .reactJsInspectorTracing, .reactCxxReact, .reactPerfLogger],
@@ -245,77 +303,21 @@ let package = Package(
       extraCSettings: [.headerSearchPath("./include/react/performance/timeline")],
       extraCxxSettings: [.headerSearchPath("./include/react/performance/timeline")]
     ),
+    /**
+     Runtime scheduler
+     */
     .reactNativeTarget(
       name: .reactRuntimeScheduler,
       dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactTiming, .reactCxxReact, .reactPerfLogger, .reactPerformanceTimeline, .reactRendererConsistency, .reactUtils],
       path: "ReactCommon/react/renderer/runtimescheduler",
       extraExcludes: ["tests"],
-      extraCSettings: [.headerSearchPath("./include/react/renderer/runtimescheduler"), .headerSearchPath("./include")],
-      extraCxxSettings: [.headerSearchPath("./include/react/renderer/runtimescheduler"), .headerSearchPath("./include")]
+      extraCSettings: [.headerSearchPath("./include/react/renderer/runtimescheduler")],
+      extraCxxSettings: [.headerSearchPath("./include/react/renderer/runtimescheduler")]
     ),
-    .reactNativeTarget(
-      name: .rctTypesafety,
-      dependencies: [.reactNativeDependencies, .rctRequired],
-      path: "Libraries/Typesafety",
-      extraCSettings: [.headerSearchPath("./include/React"), .headerSearchPath("./include"), .headerSearchPath("../../React/include")],
-      extraCxxSettings: [.headerSearchPath("./include/React"), .headerSearchPath("./include"), .headerSearchPath("../../React/include")]
-    ),
-    .reactNativeTarget(
-      name: .reactGraphicsCommon,
-      dependencies: [.reactUtils],
-      path: "ReactCommon",
-      sources: ["react/renderer/graphics/dummy/dummy.c"],
-      publicHeadersPath: "."
-    ),
-    .reactNativeTarget(
-      name: .reactGraphicsApple,
-      dependencies: [.reactGraphicsCommon, .reactDebug, .jsi],
-      path: "ReactCommon/react/renderer/graphics/platform/ios",
-      publicHeadersPath: ".",
-      extraCSettings: [.headerSearchPath("../../../include")],
-      extraCxxSettings: [.headerSearchPath("../../../include")],
-      linkerSettings: [
-        .linkedFramework("UIKit"),
-        .linkedFramework("CoreGraphics")
-      ]
-    ),
-    .reactNativeTarget(
-      name: .reactGraphics,
-      dependencies: [.reactNativeDependencies, .jsi, .reactJsiExecutor, .reactRendererDebug, .reactUtils, .reactGraphicsApple, .reactGraphicsCommon],
-      path: "ReactCommon/react/renderer/graphics",
-      extraExcludes: ["dummy", "platform", "tests"],
-      publicHeadersPath: "."
-    ),
-    .reactNativeTarget(
-      name: .reactRendererCss,
-      dependencies: [.reactDebug, .reactUtils],
-      path: "ReactCommon",
-      extraExcludes: ["react/renderer/css/tests"],
-      sources: ["react/renderer/css"],
-      publicHeadersPath: "."
-    ),
-    .reactNativeTarget(
-      name: .reactImageManagerApple,
-      dependencies: [.reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug, .reactImageManager, .reactRCTImage, .reactCore],
-      path: "ReactCommon/react/renderer/imagemanager/platform/ios",
-      publicHeadersPath: "."
-    ),
-    .reactNativeTarget(
-      name: .reactImageManager,
-      dependencies: [.reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug],
-      path: "ReactCommon/react/renderer/imagemanager",
-      extraExcludes: ["platform", "tests"],
-      extraCSettings: [.headerSearchPath("./include/react/renderer/imagemanager"), .headerSearchPath("./include")],
-      extraCxxSettings: [.headerSearchPath("./include/react/renderer/imagemanager"), .headerSearchPath("./include")]
-    ),
-    .reactNativeTarget(
-      name: .reactJsErrorHandler,
-      dependencies: [.reactNativeDependencies, .jsi, .reactCxxReact, .reactFeatureFlags, .reactDebug, .reactTurboModuleBridging],
-      path: "ReactCommon/jserrorhandler",
-      extraExcludes: ["tests"],
-      extraCSettings: [.headerSearchPath("./include/jserrorhandler")],
-      extraCxxSettings: [.headerSearchPath("./include/jserrorhandler")]
-    ),
+  
+    /**
+      Turbomodule binding
+     */
     .reactNativeTarget(
       name: .reactTurboModuleBridging,
       dependencies: [.reactNativeDependencies, .reactCallInvoker, .reactPerfLogger, .reactCxxReact, .jsi, .logger],
@@ -324,20 +326,94 @@ let package = Package(
       extraCSettings: [.headerSearchPath("./include/react/bridging")],
       extraCxxSettings: [.headerSearchPath("./include/react/bridging")]
     ),
+  
+    /**
+     JS Error handler
+     */
+    .reactNativeTarget(
+      name: .reactJsErrorHandler,
+      dependencies: [.reactNativeDependencies, .jsi, .reactCxxReact, .reactFeatureFlags, .reactDebug, .reactTurboModuleBridging],
+      path: "ReactCommon/jserrorhandler",
+      extraExcludes: ["tests"],
+      extraCSettings: [.headerSearchPath("./include/jserrorhandler")],
+      extraCxxSettings: [.headerSearchPath("./include/jserrorhandler")]
+    ),
+    
+    /**
+     Graphics
+     */
+    .reactNativeTarget(
+      name: .reactGraphicsApple,
+      dependencies: [.reactDebug, .jsi, .reactUtils],
+      path: "ReactCommon/react/renderer/graphics/platform/ios",
+      publicHeadersPath: ".",
+      // TODO: We depend on files in ReactCommon/react/renderer/core without a target dependency
+      extraCSettings: [.headerSearchPath("../../include"), .headerSearchPath("../../../../../")],
+      extraCxxSettings: [.headerSearchPath("../../include"), .headerSearchPath("../../../../../")],
+      linkerSettings: [
+        .linkedFramework("UIKit"),
+        .linkedFramework("CoreGraphics")
+      ]
+    ),
+    .reactNativeTarget(
+      name: .reactGraphics,
+      dependencies: [.reactNativeDependencies, .jsi, .reactJsiExecutor, .reactRendererDebug, .reactUtils, .reactGraphicsApple],
+      path: "ReactCommon/react/renderer/graphics",
+      extraExcludes: ["platform", "tests"],
+      extraCSettings: [.headerSearchPath("include/react/renderer/graphics")],
+      extraCxxSettings: [.headerSearchPath("include/react/renderer/graphics")],
+    ),
+    
+    /**
+     Renderer CSS
+     */
+    .reactNativeTarget(
+      name: .reactRendererCss,
+      dependencies: [.reactDebug, .reactUtils],
+      path: "ReactCommon",
+      extraExcludes: ["react/renderer/css/tests"],
+      sources: ["react/renderer/css"],
+      publicHeadersPath: "."
+    ),
+    
+    /**
+     Turbo-modules core
+     */
     .reactNativeTarget(
       name: .reactTurboModuleCore,
-      dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCallInvoker, .reactCxxReact],
+      dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCallInvoker, .reactCxxReact, .reactTurboModuleBridging],
       path: "ReactCommon/react/nativemodule/core/ReactCommon",
       publicHeadersPath: ".",
-      extraCSettings: [.headerSearchPath("../../../bridging/include"), .headerSearchPath("../")],
-      extraCxxSettings: [.headerSearchPath("../../../bridging/include"), .headerSearchPath("../")]
+      extraCSettings: [.headerSearchPath("../")],
+      extraCxxSettings: [.headerSearchPath("../")]
     ),
+
+    /**
+     Typesafety
+     */
     .reactNativeTarget(
-      name: .reactCoreRCTWebsocket,
-      dependencies: [.yoga],
-      path: "Libraries/WebSocket",
-      extraExcludes: ["Wrapper/Example"]      
+      name: .rctTypesafety,
+      dependencies: [.reactNativeDependencies, .rctRequired],
+      path: "Libraries/Typesafety",
+      publicHeadersPath: "."
     ),
+    
+    /**
+     React Core
+     */
+    .reactNativeTarget(
+      name: .reactCore,
+      dependencies: [.reactCxxReact, .reactPerfLogger, .jsi, .reactJsiExecutor, .reactUtils, .reactFeatureFlags, .reactRuntimeScheduler, .yoga, .reactJsInspector, .reactJsiTooling, .rctDeprecation, .reactCoreRCTWebsocket, .reactRuntimeApple],
+      path: "React",
+      extraExcludes: ["Fabric", "FBReactNativeSpec", "CoreModules", "Tests", "Resources", "I18n", "Runtime"],
+      sources: [".", "Runtime/RCTHermesInstanceFactory.mm"],
+      extraCSettings: [.headerSearchPath("./include/React"), .headerSearchPath("./FBReactNativeSpec")],
+      extraCxxSettings: [.headerSearchPath("./include/React"), .headerSearchPath("./FBReactNativeSpec")]
+    ),
+    
+    /**
+     React Core modules
+     */
     .reactNativeTarget(
       name: .reactCoreModules,
       dependencies: [.rctTypesafety, .reactRCTImage, .jsi, .reactJsInspector, .reactJsInspectorTracing, .reactFBReactNativeSpec, .reactTurboModuleBridging, .reactNativeModulesApple],
@@ -346,21 +422,36 @@ let package = Package(
       extraCSettings: [.headerSearchPath("../../include/React")],
       extraCxxSettings: [.headerSearchPath("../../include/React")]
     ),
+
+    /**
+     RCT-WebSocket
+     */
     .reactNativeTarget(
-      name: .reactCore,
-      dependencies: [.reactCxxReact, .reactPerfLogger, .jsi, .reactJsiExecutor, .reactUtils, .reactFeatureFlags, .reactRuntimeScheduler, .yoga, .reactJsInspector, .reactJsiTooling, .rctDeprecation, .reactCoreRCTWebsocket, .reactRuntimeApple],
-      path: "React",
-      extraExcludes: ["Fabric", "FBReactNativeSpec", "CoreModules", "Tests", "Resources", "I18n", "Runtime"],
-      sources: [".", "Runtime/RCTHermesInstanceFactory.mm"],
-      extraCSettings: [.headerSearchPath("./include/React"), .headerSearchPath("./include"), .headerSearchPath("./FBReactNativeSpec")],
-      extraCxxSettings: [.headerSearchPath("./include/React"), .headerSearchPath("./include"), .headerSearchPath("./FBReactNativeSpec")]
+      name: .reactCoreRCTWebsocket,
+      dependencies: [.yoga],
+      path: "Libraries/WebSocket",
+      extraExcludes: ["Wrapper/Example"]
     ),
+  
+    /**
+     Image manager
+     */
     .reactNativeTarget(
-      name: .reactFBReactNativeSpec,
-      dependencies: [.jsi, .reactJsiExecutor, .rctRequired, .rctTypesafety, .reactCore],
-      path: "React/FBReactNativeSpec",
+      name: .reactImageManagerApple,
+      dependencies: [.reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug, .reactImageManager, .reactRCTImage, .reactCore],
+      path: "ReactCommon/react/renderer/imagemanager/platform/ios",
       publicHeadersPath: "."
     ),
+
+    .reactNativeTarget(
+      name: .reactImageManager,
+      dependencies: [.reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug],
+      path: "ReactCommon/react/renderer/imagemanager",
+      extraExcludes: ["platform", "tests"],
+      extraCSettings: [.headerSearchPath("./include/react/renderer/imagemanager"), .headerSearchPath("./include")],
+      extraCxxSettings: [.headerSearchPath("./include/react/renderer/imagemanager"), .headerSearchPath("./include")]
+    ),
+  
     .reactNativeTarget(
       name: .reactNativeModulesApple,
       dependencies: [.reactTurboModuleBridging, .reactCore, .reactCallInvoker, .reactCxxReact, .jsi, .reactFeatureFlags, .reactRuntimeExecutor, .reactJsInspector],
@@ -369,23 +460,17 @@ let package = Package(
       extraCSettings: [.headerSearchPath("../../")],
       extraCxxSettings: [.headerSearchPath("../../")]
     ),
-    .reactNativeTarget(
-      name: .reactFabric,
-      dependencies: [.reactJsiExecutor, .rctRequired, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactCore, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics],
-      path: "ReactCommon/react/renderer",
-      extraExcludes: ["animations/tests", "attributedstring/tests", "core/tests", "components/root/tests", "components/view/tests", "components/legacyviewmanagerinterop/tests", "components/dom/tests", "mounting/tests", "observers/events/tests", "templateprocessor/tests", "uimanager/tests", "telemetry/tests", "leakchecker/tests", "css", "debug", "graphics", "imagemanager", "mapbuffer", "consistency"],
-      sources: ["animations", "attributedstring", "core", "componentregistry", "components/root", "components/view", "components/legacyviewmanagerinterop", "components/dom", "scheduler", "imagemanager", "mounting", "observers/events", "templateprocessor", "renderer/telemetry", "uimanager/consistency", "uimanager", "leakchecker"],
-      publicHeadersPath: "./include"
-    ),
+  
     .reactNativeTarget(
       name: .reactRuntime,
       dependencies: [.jsi, .reactJsiExecutor, .reactCxxReact, .reactRuntimeExecutor, .jsi, .reactJsErrorHandler, .reactPerformanceTimeline, .reactUtils, .reactFeatureFlags, .reactJsInspector, .reactJsiTooling, .reactHermes, .reactRuntimeScheduler],
       path: "ReactCommon/react/runtime",
       extraExcludes: ["tests", "iostests", "platform"],
-      extraCSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/react/runtime")],
-      extraCxxSettings: [.headerSearchPath("./include"), .headerSearchPath("./include/react/runtime")]
+      extraCSettings: [.headerSearchPath("./include/react/runtime")],
+      extraCxxSettings: [.headerSearchPath("./include/react/runtime")]
     ),
-      .reactNativeTarget(
+    
+    .reactNativeTarget(
       name: .reactRuntimeApple,
       dependencies: [.jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime],
       path: "ReactCommon/react/runtime/platform/ios",
@@ -394,6 +479,31 @@ let package = Package(
       extraCSettings: [.headerSearchPath("../../../../../React/include")],
       extraCxxSettings: [.headerSearchPath("../../../../../React/include")]
     ),
+    
+    
+    /**
+     Fabric modules
+     */
+    .reactNativeTarget(
+      name: .reactFabric,
+      dependencies: [.reactJsiExecutor, .rctRequired, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactCore, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics],
+      path: "ReactCommon/react/renderer",
+      extraExcludes: ["animations/tests", "attributedstring/tests", "core/tests", "components/root/tests", "components/view/tests", "components/legacyviewmanagerinterop/tests", "components/dom/tests", "mounting/tests", "observers/events/tests", "templateprocessor/tests", "uimanager/tests", "telemetry/tests", "leakchecker/tests", "css", "debug", "graphics", "imagemanager", "mapbuffer", "consistency"],
+      sources: ["animations", "attributedstring", "core", "componentregistry", "components/root", "components/view", "components/legacyviewmanagerinterop", "components/dom", "scheduler", "imagemanager", "mounting", "observers/events", "templateprocessor", "renderer/telemetry", "uimanager/consistency", "uimanager", "leakchecker"]
+    ),
+    
+    /*
+     FBReactNativeSpec
+     TODO: Generate/run codegen
+     */
+    .reactNativeTarget(
+      name: .reactFBReactNativeSpec,
+      dependencies: [.jsi, .reactJsiExecutor, .rctRequired, .rctTypesafety, .reactCore],
+      path: "React/FBReactNativeSpec",
+      publicHeadersPath: "."
+    ),
+    
+    
     .reactNativeTarget(
       name: .reactRCTAnimation,
       dependencies: [.rctTypesafety, .jsi, .reactFeatureFlags],
@@ -419,13 +529,7 @@ let package = Package(
       path: "Libraries/LinkingIOS",
       publicHeadersPath: "."
     ),
-    /*
-     Empty target
-     .reactNativeTarget(
-      name: .reactRCTActionSheet,
-      dependencies: [],
-      path: "Libraries/ActionSheetIOS"
-    ),*/
+
     .binaryTarget(
       name: .reactNativeDependencies,
       path: "third-party/ReactNativeDependencies.xcframework"
@@ -487,7 +591,6 @@ extension String {
   static let rctTypesafety = "RCTTypesafety"
   static let reactGraphics = "React-graphics"
   static let reactGraphicsApple = "React-graphics-Apple"
-  static let reactGraphicsCommon = "React-graphics-Common"
   static let reactRendererCss = "React-renderercss"
   static let reactImageManager = "React-ImageManager"
   static let reactImageManagerApple = "React-ImageManagerApple"
