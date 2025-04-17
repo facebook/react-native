@@ -227,9 +227,4 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     // "none" case, default, and null type are equivalent.
     view.setLinkifyMask(0);
   }
-
-  @ReactProp(name = "onInlineViewLayout")
-  public void setNotifyOnInlineViewLayout(ReactTextView view, boolean notifyOnInlineViewLayout) {
-    view.setNotifyOnInlineViewLayout(notifyOnInlineViewLayout);
-  }
 }

@@ -6392,7 +6392,6 @@ public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager :
 	public fun setFontSize (Lcom/facebook/react/views/text/ReactTextView;F)V
 	public fun setIncludeFontPadding (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setLetterSpacing (Lcom/facebook/react/views/text/ReactTextView;F)V
-	public fun setNotifyOnInlineViewLayout (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setNumberOfLines (Lcom/facebook/react/views/text/ReactTextView;I)V
 	public fun setSelectable (Lcom/facebook/react/views/text/ReactTextView;Z)V
 	public fun setSelectionColor (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Integer;)V
@@ -6465,7 +6464,6 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun setLetterSpacing (F)V
 	public fun setLinkifyMask (I)V
 	public fun setMinimumFontSize (F)V
-	public fun setNotifyOnInlineViewLayout (Z)V
 	public fun setNumberOfLines (I)V
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setSpanned (Landroid/text/Spannable;)V
