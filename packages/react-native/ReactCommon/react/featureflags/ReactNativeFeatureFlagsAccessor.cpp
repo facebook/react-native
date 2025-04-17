@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ed39775341d5f6a93d8c5974309eb9b4>>
+ * @generated SignedSource<<6f18b18b4aa1ef98f94bf4f595a59363>>
  */
 
 /**
@@ -731,6 +731,24 @@ bool ReactNativeFeatureFlagsAccessor::useRawPropsJsiValue() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::useShadowNodeStateOnClone() {
+  auto flagValue = useShadowNodeStateOnClone_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(39, "useShadowNodeStateOnClone");
+
+    flagValue = currentProvider_->useShadowNodeStateOnClone();
+    useShadowNodeStateOnClone_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
   auto flagValue = useTurboModuleInterop_.load();
 
@@ -740,7 +758,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(39, "useTurboModuleInterop");
+    markFlagAsAccessed(40, "useTurboModuleInterop");
 
     flagValue = currentProvider_->useTurboModuleInterop();
     useTurboModuleInterop_ = flagValue;
@@ -758,7 +776,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(40, "useTurboModules");
+    markFlagAsAccessed(41, "useTurboModules");
 
     flagValue = currentProvider_->useTurboModules();
     useTurboModules_ = flagValue;

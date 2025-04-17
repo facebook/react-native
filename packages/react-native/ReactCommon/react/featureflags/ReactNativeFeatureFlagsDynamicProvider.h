@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d3e9124f38430340cbe5f13139c497f0>>
+ * @generated SignedSource<<f23c8066cc50499821cc75220acc3962>>
  */
 
 /**
@@ -394,6 +394,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useRawPropsJsiValue();
+  }
+
+  bool useShadowNodeStateOnClone() override {
+    auto value = values_["useShadowNodeStateOnClone"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useShadowNodeStateOnClone();
   }
 
   bool useTurboModuleInterop() override {

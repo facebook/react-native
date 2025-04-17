@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cadcd9dda2f6c4b0e76dce2c855989a8>>
+ * @generated SignedSource<<23e97cba20fdf4afc991cbae70c57b1f>>
  * @flow strict
  */
 
@@ -85,6 +85,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRawPropsJsiValue: Getter<boolean>,
+  useShadowNodeStateOnClone: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
 }>;
@@ -309,6 +310,10 @@ export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeF
  * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
  */
 export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', false);
+/**
+ * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
+ */
+export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', false);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */
