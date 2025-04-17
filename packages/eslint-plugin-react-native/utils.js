@@ -61,7 +61,7 @@ const publicAPIMapping = {
   'Libraries/Utilities/BackHandler': 'BackHandler',
   'Libraries/Components/Clipboard/Clipboard': 'Clipboard',
   'Libraries/Utilities/DeviceInfo': 'DeviceInfo',
-  'src/private/devmenu/DevMenu': 'DevMenu',
+  'src/private/devsupport/devmenu/DevMenu': 'DevMenu',
   'Libraries/Utilities/DevSettings': 'DevSettings',
   'Libraries/Utilities/Dimensions': 'Dimensions',
   'Libraries/Animated/Easing': 'Easing',

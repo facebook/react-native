@@ -10,25 +10,27 @@
 
 'use strict';
 
-import type {InspectedViewRef} from '../../../Libraries/ReactNative/AppContainer-dev';
+import type {InspectedViewRef} from '../../../../../Libraries/ReactNative/AppContainer-dev';
 import type {
   InspectorData,
   TouchedViewDataAtPoint,
-} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
-import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
-import type {ReactDevToolsAgent} from '../../../Libraries/Types/ReactDevToolsTypes';
+} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {ViewStyleProp} from '../../../../../Libraries/StyleSheet/StyleSheet';
+import type {ReactDevToolsAgent} from '../../../../../Libraries/Types/ReactDevToolsTypes';
 
-import SafeAreaView from '../components/safeareaview/SafeAreaView_INTERNAL_DO_NOT_USE';
+import SafeAreaView from '../../../components/safeareaview/SafeAreaView_INTERNAL_DO_NOT_USE';
 import * as React from 'react';
 
-const View = require('../../../Libraries/Components/View/View').default;
-const PressabilityDebug = require('../../../Libraries/Pressability/PressabilityDebug');
+const View = require('../../../../../Libraries/Components/View/View').default;
+const PressabilityDebug = require('../../../../../Libraries/Pressability/PressabilityDebug');
 const {
   findNodeHandle,
-} = require('../../../Libraries/ReactNative/RendererProxy');
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
-const Dimensions = require('../../../Libraries/Utilities/Dimensions').default;
-const Platform = require('../../../Libraries/Utilities/Platform').default;
+} = require('../../../../../Libraries/ReactNative/RendererProxy');
+const StyleSheet =
+  require('../../../../../Libraries/StyleSheet/StyleSheet').default;
+const Dimensions =
+  require('../../../../../Libraries/Utilities/Dimensions').default;
+const Platform = require('../../../../../Libraries/Utilities/Platform').default;
 const getInspectorDataForViewAtPoint =
   require('./getInspectorDataForViewAtPoint').default;
 const InspectorOverlay = require('./InspectorOverlay').default;

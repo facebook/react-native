@@ -8,7 +8,7 @@
  * @format
  */
 
-import Settings from '../../../Libraries/Settings/Settings';
+import Settings from '../../../../Libraries/Settings/Settings';
 
 const GLOBAL_HOOK_SETTINGS = 'ReactDevTools::HookSettings';
 
