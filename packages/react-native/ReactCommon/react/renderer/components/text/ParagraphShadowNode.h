@@ -29,8 +29,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
                                       ParagraphComponentName,
                                       ParagraphProps,
                                       ParagraphEventEmitter,
-                                      ParagraphState,
-                                      /* usesMapBufferForStateData */ true>,
+                                      ParagraphState>,
                                   public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;

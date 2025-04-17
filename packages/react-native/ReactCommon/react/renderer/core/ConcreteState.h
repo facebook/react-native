@@ -20,13 +20,20 @@
 
 namespace facebook::react {
 
+#ifdef ANDROID
+template <typename StateDataT>
+concept StateDataWithMapBuffer = requires(StateDataT stateData) {
+  { stateData.getMapBuffer() } -> std::same_as<MapBuffer>;
+};
+#endif
+
 /*
  * Concrete and only template implementation of State interface.
  * State wraps an arbitrary data type and provides an interface to initiate a
  * state update transaction. A data object does not need to be copyable but
  * needs to be moveable.
  */
-template <typename DataT, bool usesMapBufferForStateData = false>
+template <typename DataT>
 class ConcreteState : public State {
  public:
   using Shared = std::shared_ptr<const ConcreteState>;
@@ -106,7 +113,7 @@ class ConcreteState : public State {
   }
 
   MapBuffer getMapBuffer() const override {
-    if constexpr (usesMapBufferForStateData) {
+    if constexpr (StateDataWithMapBuffer<DataT>) {
       return getData().getMapBuffer();
     } else {
       return MapBufferBuilder::EMPTY();

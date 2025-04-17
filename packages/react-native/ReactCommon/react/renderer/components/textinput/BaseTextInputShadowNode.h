@@ -29,22 +29,19 @@ template <
     const char* concreteComponentName,
     typename ViewPropsT,
     typename ViewEventEmitterT,
-    typename StateDataT,
-    bool usesMapBufferForStateData = false>
+    typename StateDataT>
 class BaseTextInputShadowNode : public ConcreteViewShadowNode<
                                     concreteComponentName,
                                     ViewPropsT,
                                     ViewEventEmitterT,
-                                    StateDataT,
-                                    usesMapBufferForStateData>,
+                                    StateDataT>,
                                 public BaseTextShadowNode {
  public:
   using BaseShadowNode = ConcreteViewShadowNode<
       concreteComponentName,
       ViewPropsT,
       ViewEventEmitterT,
-      StateDataT,
-      usesMapBufferForStateData>;
+      StateDataT>;
 
   using BaseShadowNode::ConcreteViewShadowNode;
 
