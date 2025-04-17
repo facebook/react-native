@@ -186,7 +186,7 @@ constructor(private val fpsListener: FpsListener? = null) :
           "ReceiveCommand with an int commandId param is deprecated. Use the overload where commandId is a string.",
       ReplaceWith("receiveCommand(scrollView, commandId, args)"))
   override fun receiveCommand(scrollView: ReactScrollView, commandId: Int, args: ReadableArray?) {
-    receiveCommand<ReactScrollView>(this, scrollView, commandId, args)
+    receiveCommand(this, scrollView, commandId, args)
   }
 
   override fun receiveCommand(
