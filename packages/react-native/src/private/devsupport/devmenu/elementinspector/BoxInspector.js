@@ -13,14 +13,15 @@
 import type {
   TextStyleProp,
   ViewStyleProp,
-} from '../../../Libraries/StyleSheet/StyleSheet';
+} from '../../../../../Libraries/StyleSheet/StyleSheet';
 import type {InspectedElementFrame} from './Inspector';
 
 import * as React from 'react';
 
-const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
-const Text = require('../../../Libraries/Text/Text').default;
+const View = require('../../../../../Libraries/Components/View/View').default;
+const StyleSheet =
+  require('../../../../../Libraries/StyleSheet/StyleSheet').default;
+const Text = require('../../../../../Libraries/Text/Text').default;
 const resolveBoxStyle = require('./resolveBoxStyle').default;
 
 const blank = {

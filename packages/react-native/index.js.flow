@@ -248,7 +248,7 @@ export {default as DeviceEventEmitter} from './Libraries/EventEmitter/RCTDeviceE
 export type {DeviceInfoConstants} from './Libraries/Utilities/DeviceInfo';
 export {default as DeviceInfo} from './Libraries/Utilities/DeviceInfo';
 
-export {default as DevMenu} from './src/private/devmenu/DevMenu';
+export {default as DevMenu} from './src/private/devsupport/devmenu/DevMenu';
 export {default as DevSettings} from './Libraries/Utilities/DevSettings';
 
 export type {

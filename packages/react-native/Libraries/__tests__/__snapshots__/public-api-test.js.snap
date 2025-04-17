@@ -5784,7 +5784,7 @@ declare export function isIgnored(value: mixed): boolean;
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDevMenu.js 1`] = `
-"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeDevMenu\\";
+"export * from \\"../../../src/private/devsupport/devmenu/specs/NativeDevMenu\\";
 declare export default typeof NativeDevMenu;
 "
 `;
@@ -9070,7 +9070,7 @@ export { default as codegenNativeCommands } from \\"./Libraries/Utilities/codege
 export { default as DeviceEventEmitter } from \\"./Libraries/EventEmitter/RCTDeviceEventEmitter\\";
 export type { DeviceInfoConstants } from \\"./Libraries/Utilities/DeviceInfo\\";
 export { default as DeviceInfo } from \\"./Libraries/Utilities/DeviceInfo\\";
-export { default as DevMenu } from \\"./src/private/devmenu/DevMenu\\";
+export { default as DevMenu } from \\"./src/private/devsupport/devmenu/DevMenu\\";
 export { default as DevSettings } from \\"./Libraries/Utilities/DevSettings\\";
 export type {
   DimensionsPayload,

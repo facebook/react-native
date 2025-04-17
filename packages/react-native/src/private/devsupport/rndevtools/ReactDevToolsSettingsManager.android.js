@@ -8,7 +8,7 @@
  * @format
  */
 
-import NativeReactDevToolsSettingsManager from '../specs_DEPRECATED/modules/NativeReactDevToolsSettingsManager';
+import NativeReactDevToolsSettingsManager from './specs/NativeReactDevToolsSettingsManager';
 
 module.exports = {
   setGlobalHookSettings(settings: string) {

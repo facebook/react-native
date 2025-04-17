@@ -8,15 +8,15 @@
  * @flow
  */
 
-import type {InspectedViewRef} from '../../../Libraries/ReactNative/AppContainer-dev';
-import type {PointerEvent} from '../../../Libraries/Types/CoreEventTypes';
-import type {GestureResponderEvent} from '../../../Libraries/Types/CoreEventTypes';
-import type {ReactDevToolsAgent} from '../../../Libraries/Types/ReactDevToolsTypes';
+import type {InspectedViewRef} from '../../../../../Libraries/ReactNative/AppContainer-dev';
+import type {PointerEvent} from '../../../../../Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../../../../Libraries/Types/CoreEventTypes';
+import type {ReactDevToolsAgent} from '../../../../../Libraries/Types/ReactDevToolsTypes';
 import type {InspectedElement} from './Inspector';
 
-import View from '../../../Libraries/Components/View/View';
-import ReactNativeFeatureFlags from '../../../Libraries/ReactNative/ReactNativeFeatureFlags';
-import StyleSheet from '../../../Libraries/StyleSheet/StyleSheet';
+import View from '../../../../../Libraries/Components/View/View';
+import ReactNativeFeatureFlags from '../../../../../Libraries/ReactNative/ReactNativeFeatureFlags';
+import StyleSheet from '../../../../../Libraries/StyleSheet/StyleSheet';
 import ElementBox from './ElementBox';
 import * as React from 'react';
 

@@ -10,22 +10,23 @@
 
 'use strict';
 
-import type {InspectorData} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
-import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
+import type {InspectorData} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {ViewStyleProp} from '../../../../../Libraries/StyleSheet/StyleSheet';
 
 import * as React from 'react';
 
 const TouchableHighlight =
-  require('../../../Libraries/Components/Touchable/TouchableHighlight').default;
+  require('../../../../../Libraries/Components/Touchable/TouchableHighlight').default;
 const TouchableWithoutFeedback =
-  require('../../../Libraries/Components/Touchable/TouchableWithoutFeedback').default;
-const View = require('../../../Libraries/Components/View/View').default;
+  require('../../../../../Libraries/Components/Touchable/TouchableWithoutFeedback').default;
+const View = require('../../../../../Libraries/Components/View/View').default;
 const flattenStyle =
-  require('../../../Libraries/StyleSheet/flattenStyle').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
-const Text = require('../../../Libraries/Text/Text').default;
+  require('../../../../../Libraries/StyleSheet/flattenStyle').default;
+const StyleSheet =
+  require('../../../../../Libraries/StyleSheet/StyleSheet').default;
+const Text = require('../../../../../Libraries/Text/Text').default;
 const mapWithSeparator =
-  require('../../../Libraries/Utilities/mapWithSeparator').default;
+  require('../../../../../Libraries/Utilities/mapWithSeparator').default;
 const BoxInspector = require('./BoxInspector').default;
 const StyleInspector = require('./StyleInspector').default;
 
