@@ -5717,18 +5717,6 @@ public final class com/facebook/react/views/imagehelper/ImageSource$Companion {
 	public final fun getTransparentBitmapImageSource (Landroid/content/Context;)Lcom/facebook/react/views/imagehelper/ImageSource;
 }
 
-public final class com/facebook/react/views/imagehelper/MultiSourceHelper {
-	public static final field INSTANCE Lcom/facebook/react/views/imagehelper/MultiSourceHelper;
-	public static final fun getBestSourceForSize (IILjava/util/List;)Lcom/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult;
-	public static final fun getBestSourceForSize (IILjava/util/List;D)Lcom/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult;
-}
-
-public final class com/facebook/react/views/imagehelper/MultiSourceHelper$MultiSourceResult {
-	public final field bestResult Lcom/facebook/react/views/imagehelper/ImageSource;
-	public final field bestResultInCache Lcom/facebook/react/views/imagehelper/ImageSource;
-	public fun <init> (Lcom/facebook/react/views/imagehelper/ImageSource;Lcom/facebook/react/views/imagehelper/ImageSource;)V
-}
-
 public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper {
 	public static final field Companion Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper$Companion;
 	public final fun clear ()V

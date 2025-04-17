@@ -11,9 +11,9 @@ import com.facebook.imagepipeline.core.ImagePipelineFactory
 import com.facebook.react.modules.fresco.ImageCacheControl
 
 /** Helper class for dealing with multisource images. */
-public object MultiSourceHelper {
+internal object MultiSourceHelper {
   @JvmStatic
-  public fun getBestSourceForSize(
+  fun getBestSourceForSize(
       width: Int,
       height: Int,
       sources: List<ImageSource>
@@ -29,7 +29,7 @@ public object MultiSourceHelper {
    *   best source; this is useful if the image will be displayed bigger than the view (e.g. zoomed)
    */
   @JvmStatic
-  public fun getBestSourceForSize(
+  fun getBestSourceForSize(
       width: Int,
       height: Int,
       sources: List<ImageSource>,
@@ -78,16 +78,16 @@ public object MultiSourceHelper {
     return MultiSourceResult(best, bestCached)
   }
 
-  public class MultiSourceResult(
+  class MultiSourceResult(
       /**
        * Get the best result overall (closest in size to the view's size). Can be null if there were
        * no sources to choose from, or if there were more than 1 sources but width/height were 0.
        */
-      @JvmField public val bestResult: ImageSource?,
+      @JvmField val bestResult: ImageSource?,
       /**
        * Get the best result (closest in size to the view's size) that is also in cache. If this
        * would be the same as the source from [.getBestResult], this will return `null` instead.
        */
-      @JvmField public val bestResultInCache: ImageSource?
+      @JvmField val bestResultInCache: ImageSource?
   )
 }
