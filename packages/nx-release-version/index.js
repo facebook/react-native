@@ -3,7 +3,7 @@
 const { releaseVersionGenerator } = require('@nx/js/src/generators/release-version/release-version');
 const fs = require('node:fs');
 const path = require('node:path');
-const { spawnSync } = require('node:child_process');
+const { REPO_ROOT } = require('../../scripts/consts');
 
 async function runSetVersion() {
   const rnmPkgJson = require.resolve('react-native-macos/package.json');
@@ -14,8 +14,6 @@ async function runSetVersion() {
   const { version } = JSON.parse(manifest);
 
   await updateReactNativeArtifacts(version);
-
-  spawnSync('yarn', ['install', '--mode', 'update-lockfile']);
 
   return [
     path.join(
@@ -62,10 +60,6 @@ async function runSetVersion() {
       'Libraries',
       'Core',
       'ReactNativeVersion.js',
-    ),
-    path.join(
-      REPO_ROOT,
-      'yarn.lock',
     ),
   ];
 }
