@@ -50,7 +50,11 @@ export type {
   ImageSize,
   ImageSourcePropType,
 } from './Libraries/Image/Image';
-export type {ImageSource, ImageURISource} from './Libraries/Image/ImageSource';
+export type {
+  ImageRequireSource,
+  ImageSource,
+  ImageURISource,
+} from './Libraries/Image/ImageSource';
 export {default as Image} from './Libraries/Image/Image';
 export {default as ImageBackground} from './Libraries/Image/ImageBackground';
 
@@ -157,9 +161,12 @@ export type {TouchableWithoutFeedbackProps} from './Libraries/Components/Touchab
 export {default as TouchableWithoutFeedback} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 
 export type {
+  AccessibilityActionEvent,
   AccessibilityProps,
   AccessibilityRole,
   AccessibilityState,
+  AccessibilityValue,
+  Role,
 } from './Libraries/Components/View/ViewAccessibility';
 export type {
   GestureResponderHandlers,
