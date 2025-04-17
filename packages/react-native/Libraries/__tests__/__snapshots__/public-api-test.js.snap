@@ -2953,6 +2953,7 @@ type TextInputBaseProps = $ReadOnly<{
   submitBehavior?: ?SubmitBehavior,
   style?: ?TextStyleProp,
   value?: ?Stringish,
+  textAlign?: ?(\\"left\\" | \\"center\\" | \\"right\\"),
 }>;
 export type TextInputProps = $ReadOnly<{
   ...Omit<ViewProps, \\"style\\">,
@@ -4403,8 +4404,9 @@ exports[`public API should not change unintentionally Libraries/Image/ImageSourc
   +height?: ?number;
   +scale?: ?number;
 }
+export type ImageRequireSource = number;
 export type ImageSource =
-  | number
+  | ImageRequireSource
   | ImageURISource
   | $ReadOnlyArray<ImageURISource>;
 type ImageSourceProperties = {
@@ -8909,6 +8911,7 @@ export type {
   ImageSourcePropType,
 } from \\"./Libraries/Image/Image\\";
 export type {
+  ImageRequireSource,
   ImageSource,
   ImageURISource,
 } from \\"./Libraries/Image/ImageSource\\";
@@ -8998,9 +9001,12 @@ export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/
 export type { TouchableWithoutFeedbackProps } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export type {
+  AccessibilityActionEvent,
   AccessibilityProps,
   AccessibilityRole,
   AccessibilityState,
+  AccessibilityValue,
+  Role,
 } from \\"./Libraries/Components/View/ViewAccessibility\\";
 export type {
   GestureResponderHandlers,
