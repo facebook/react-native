@@ -10,13 +10,14 @@
 
 'use strict';
 
-import type {GestureResponderEvent} from '../../../Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../../../../Libraries/Types/CoreEventTypes';
 import type {InspectedElement} from './Inspector';
 
 import * as React from 'react';
 
-const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
+const View = require('../../../../../Libraries/Components/View/View').default;
+const StyleSheet =
+  require('../../../../../Libraries/StyleSheet/StyleSheet').default;
 const ElementBox = require('./ElementBox').default;
 
 type Props = $ReadOnly<{

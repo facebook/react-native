@@ -10,10 +10,10 @@
 
 'use strict';
 
-import typeof XMLHttpRequestT from '../../../Libraries/Network/XMLHttpRequest';
+import typeof XMLHttpRequestT from '../../../../../Libraries/Network/XMLHttpRequest';
 
 const XMLHttpRequest: XMLHttpRequestT =
-  require('../../../Libraries/Network/XMLHttpRequest').default;
+  require('../../../../../Libraries/Network/XMLHttpRequest').default;
 // $FlowFixMe[method-unbinding]
 const originalXHROpen = XMLHttpRequest.prototype.open;
 // $FlowFixMe[method-unbinding]

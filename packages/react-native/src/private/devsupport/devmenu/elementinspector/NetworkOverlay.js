@@ -10,20 +10,21 @@
 
 'use strict';
 
-import type XMLHttpRequest from '../../../Libraries/Network/XMLHttpRequest';
+import type XMLHttpRequest from '../../../../../Libraries/Network/XMLHttpRequest';
 import type {ListRenderItemInfo} from '@react-native/virtualized-lists';
 
-import ScrollView from '../../../Libraries/Components/ScrollView/ScrollView';
+import ScrollView from '../../../../../Libraries/Components/ScrollView/ScrollView';
 import * as React from 'react';
 
 const TouchableHighlight =
-  require('../../../Libraries/Components/Touchable/TouchableHighlight').default;
-const View = require('../../../Libraries/Components/View/View').default;
-const FlatList = require('../../../Libraries/Lists/FlatList').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
-const Text = require('../../../Libraries/Text/Text').default;
+  require('../../../../../Libraries/Components/Touchable/TouchableHighlight').default;
+const View = require('../../../../../Libraries/Components/View/View').default;
+const FlatList = require('../../../../../Libraries/Lists/FlatList').default;
+const StyleSheet =
+  require('../../../../../Libraries/StyleSheet/StyleSheet').default;
+const Text = require('../../../../../Libraries/Text/Text').default;
 const WebSocketInterceptor =
-  require('../../../Libraries/WebSocket/WebSocketInterceptor').default;
+  require('../../../../../Libraries/WebSocket/WebSocketInterceptor').default;
 const XHRInterceptor = require('./XHRInterceptor').default;
 
 const LISTVIEW_CELL_HEIGHT = 15;

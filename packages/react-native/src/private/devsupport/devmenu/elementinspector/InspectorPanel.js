@@ -12,19 +12,20 @@
 
 import type {ElementsHierarchy, InspectedElement} from './Inspector';
 
-import SafeAreaView from '../../../Libraries/Components/SafeAreaView/SafeAreaView';
+import SafeAreaView from '../../../../../Libraries/Components/SafeAreaView/SafeAreaView';
 import * as React from 'react';
 
 const ScrollView =
-  require('../../../Libraries/Components/ScrollView/ScrollView').default;
+  require('../../../../../Libraries/Components/ScrollView/ScrollView').default;
 const TouchableHighlight =
-  require('../../../Libraries/Components/Touchable/TouchableHighlight').default;
-const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
-const Text = require('../../../Libraries/Text/Text').default;
+  require('../../../../../Libraries/Components/Touchable/TouchableHighlight').default;
+const View = require('../../../../../Libraries/Components/View/View').default;
+const StyleSheet =
+  require('../../../../../Libraries/StyleSheet/StyleSheet').default;
+const Text = require('../../../../../Libraries/Text/Text').default;
+const PerformanceOverlay = require('../perfmonitor/PerformanceOverlay').default;
 const ElementProperties = require('./ElementProperties').default;
 const NetworkOverlay = require('./NetworkOverlay').default;
-const PerformanceOverlay = require('./PerformanceOverlay').default;
 
 type Props = $ReadOnly<{
   devtoolsIsOpen: boolean,

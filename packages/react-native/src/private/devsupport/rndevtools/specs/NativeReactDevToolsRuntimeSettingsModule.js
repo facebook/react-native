@@ -9,9 +9,9 @@
  * @oncall react_native
  */
 
-import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
+import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
 
-import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
+import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export type ReloadAndProfileConfig = {
   shouldReloadAndProfile: boolean,
