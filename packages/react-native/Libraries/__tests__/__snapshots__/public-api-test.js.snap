@@ -7227,14 +7227,54 @@ export type DropShadowValue = {
   standardDeviation?: number | string,
   color?: ____ColorValue_Internal,
 };
-export type GradientValue = {
-  type: \\"linearGradient\\",
+type LinearGradientValue = {
+  type: \\"linear-gradient\\",
   direction?: string,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
     positions?: $ReadOnlyArray<string>,
   }>,
 };
+type RadialExtent =
+  | \\"closest-corner\\"
+  | \\"closest-side\\"
+  | \\"farthest-corner\\"
+  | \\"farthest-side\\";
+export type RadialGradientPosition =
+  | {
+      top: number | string,
+      left: number | string,
+    }
+  | {
+      top: number | string,
+      right: number | string,
+    }
+  | {
+      bottom: number | string,
+      left: number | string,
+    }
+  | {
+      bottom: number | string,
+      right: number | string,
+    };
+export type RadialGradientShape = \\"circle\\" | \\"ellipse\\";
+export type RadialGradientSize =
+  | RadialExtent
+  | {
+      x: string | number,
+      y: string | number,
+    };
+type RadialGradientValue = {
+  type: \\"radial-gradient\\",
+  shape: RadialGradientShape,
+  size: RadialGradientSize,
+  position: RadialGradientPosition,
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    positions?: $ReadOnlyArray<string>,
+  }>,
+};
+export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
 export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
@@ -7306,7 +7346,7 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
   filter?: $ReadOnlyArray<FilterFunction> | string,
   mixBlendMode?: ____BlendMode_Internal,
-  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
+  experimental_backgroundImage?: $ReadOnlyArray<BackgroundImageValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
 }>;
 export type ____ViewStyle_InternalCore = $ReadOnly<{
@@ -7581,19 +7621,32 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "type LinearGradientDirection =
   | { type: \\"angle\\", value: number }
   | { type: \\"keyword\\", value: string };
-type ColorStopColor = ProcessedColorValue | null;
-type ColorStopPosition = number | string | null;
-type ParsedGradientValue = {
-  type: \\"linearGradient\\",
+type LinearGradientBackgroundImage = {
+  type: \\"linear-gradient\\",
   direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ColorStopColor,
     position: ColorStopPosition,
   }>,
 };
+type RadialGradientBackgroundImage = {
+  type: \\"radial-gradient\\",
+  shape: RadialGradientShape,
+  size: RadialGradientSize,
+  position: RadialGradientPosition,
+  colorStops: $ReadOnlyArray<{
+    color: ColorStopColor,
+    position: ColorStopPosition,
+  }>,
+};
+type ColorStopColor = ProcessedColorValue | null;
+type ColorStopPosition = number | string | null;
+type ParsedBackgroundImageValue =
+  | LinearGradientBackgroundImage
+  | RadialGradientBackgroundImage;
 declare export default function processBackgroundImage(
-  backgroundImage: ?($ReadOnlyArray<GradientValue> | string)
-): $ReadOnlyArray<ParsedGradientValue>;
+  backgroundImage: ?($ReadOnlyArray<BackgroundImageValue> | string)
+): $ReadOnlyArray<ParsedBackgroundImageValue>;
 "
 `;
 
