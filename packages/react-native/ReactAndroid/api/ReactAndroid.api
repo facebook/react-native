@@ -5004,6 +5004,7 @@ public abstract class com/facebook/react/uimanager/events/Event {
 	protected final fun init (I)V
 	protected final fun init (II)V
 	protected final fun init (IIJ)V
+	public final fun internal_getEventNameCompat ()Ljava/lang/String;
 	public final fun isInitialized ()Z
 	public fun onDispose ()V
 }

@@ -19,13 +19,13 @@ import com.facebook.react.uimanager.events.Event
  */
 @LegacyArchitecture
 internal class InteropEvent(
-    @get:JvmName("eventName") val eventName: String,
+    @get:JvmName("eventName") val interopEventName: String,
     @get:JvmName("eventData") val eventData: WritableMap?,
     surfaceId: Int,
     viewTag: Int
 ) : Event<InteropEvent>(surfaceId, viewTag) {
 
-  override fun getEventName(): String = eventName
+  override fun getEventName(): String = interopEventName
 
   override fun getEventData(): WritableMap? = eventData
 
