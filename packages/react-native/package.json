@@ -101,7 +101,6 @@
     "!**/__fixtures__/**",
     "!**/__flowtests__/**",
     "!**/__mocks__/**",
-    "!**/__test_fixtures__/**",
     "!**/__tests__/**",
     "!**/__typetests__/**"
   ],
