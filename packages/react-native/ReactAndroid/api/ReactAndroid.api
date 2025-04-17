@@ -5320,15 +5320,6 @@ public abstract interface class com/facebook/react/uimanager/util/ReactFindViewU
 	public abstract fun onViewFound (Landroid/view/View;)V
 }
 
-public final class com/facebook/react/util/JSStackTrace {
-	public static final field COLUMN_KEY Ljava/lang/String;
-	public static final field FILE_KEY Ljava/lang/String;
-	public static final field INSTANCE Lcom/facebook/react/util/JSStackTrace;
-	public static final field LINE_NUMBER_KEY Ljava/lang/String;
-	public static final field METHOD_NAME_KEY Ljava/lang/String;
-	public static final fun format (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)Ljava/lang/String;
-}
-
 public final class com/facebook/react/util/RNLog {
 	public static final field ADVICE I
 	public static final field ERROR I
