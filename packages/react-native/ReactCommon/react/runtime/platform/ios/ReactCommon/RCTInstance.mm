@@ -513,6 +513,19 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         // DevSettings module is needed by _loadScriptFromSource's callback so prior initialization is required
         RCTDevSettings *const devSettings =
             (RCTDevSettings *)[strongSelf->_turboModuleManager moduleForName:"DevSettings"];
+    
+        NSString *selectorName = @"setSource:";
+        SEL selector = NSSelectorFromString(selectorName);
+        auto respondingModules = [strongSelf->_turboModuleManager modulesRespondingToSelector:(selector)];
+        for(id bridgeModule in respondingModules) {
+          RCTSource *sourceCopy = [RCTSource new];
+          sourceCopy.url = source.url;
+          sourceCopy.length = source.length;
+          sourceCopy.data = [source.data copy];
+          sourceCopy.filesChangedCount = source.filesChangedCount;
+          [bridgeModule performSelector:selector withObject:sourceCopy];
+        }
+
         [strongSelf _loadScriptFromSource:source];
         // Set up hot module reloading in Dev only.
         [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];

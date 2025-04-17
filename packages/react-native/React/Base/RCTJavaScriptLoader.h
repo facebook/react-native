@@ -41,12 +41,12 @@ NS_ENUM(NSInteger){
 /**
  * URL of the source object.
  */
-@property (strong, nonatomic, readonly) NSURL *url;
+@property (strong, nonatomic, readwrite) NSURL *url;
 
 /**
  * JS source (or simply the binary header in the case of a RAM bundle).
  */
-@property (strong, nonatomic, readonly) NSData *data;
+@property (strong, nonatomic, readwrite) NSData *data;
 
 /**
  * Length of the entire JS bundle. Note that self.length != self.data.length in the case of certain bundle formats. For
@@ -56,7 +56,7 @@ NS_ENUM(NSInteger){
  *  - self.data.length is the length of the bundle header, i.e. sizeof(facebook::react::BundleHeader)
  *  - self.length is the length of the entire bundle file (header + contents)
  */
-@property (nonatomic, readonly) NSUInteger length;
+@property (nonatomic, readwrite) NSUInteger length;
 
 /**
  * Returns number of files changed when building this bundle:
@@ -65,7 +65,7 @@ NS_ENUM(NSInteger){
  *  - RCTSourceFilesChangedCountRebuiltFromScratch if the source was rebuilt from scratch by the bundler
  *  - Otherwise, the number of files changed when incrementally rebuilding the source
  */
-@property (nonatomic, readonly) NSInteger filesChangedCount;
+@property (nonatomic, readwrite) NSInteger filesChangedCount;
 
 @end
 

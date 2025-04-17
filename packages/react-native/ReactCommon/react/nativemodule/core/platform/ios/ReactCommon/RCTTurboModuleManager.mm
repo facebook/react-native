@@ -219,6 +219,17 @@ typedef struct {
   dispatch_queue_t _sharedModuleQueue;
 }
 
+- (NSMutableArray<id<RCTBridgeModule>> *)modulesRespondingToSelector:(SEL)selector{
+  id holders = [NSMutableArray new];
+  for(auto& [name, moduleHolder] : self->_moduleHolders){
+    id bridgeModule = moduleHolder.getModule();
+    if([moduleHolder.getModule() respondsToSelector:selector]) {
+      [holders addObject:bridgeModule];
+    }
+  }
+  return holders;
+}
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                    bridgeProxy:(RCTBridgeProxy *)bridgeProxy
          bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
