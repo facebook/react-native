@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a14062b719f668080a6c64dd34d63c2d>>
+ * @generated SignedSource<<aa1cc3b66b13bf529e06239c018ad515>>
  */
 
 /**
@@ -198,6 +198,11 @@ class ReactNativeFeatureFlags {
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
+
+  /**
+   * When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.
+   */
+  RN_EXPORT static bool updateRuntimeShadowNodeReferencesOnCommit();
 
   /**
    * In Bridgeless mode, use the always available javascript error reporting pipeline.
