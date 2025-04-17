@@ -48,7 +48,7 @@
     "@babel/preset-flow": "^7.24.7",
     "@definitelytyped/dtslint": "^0.0.127",
     "@jest/create-cache-key-function": "^29.6.3",
-    "@nx/js": "~20.0.0",
+    "@nx/js": "patch:@nx/js@npm%3A20.0.7#~/.yarn/patches/@nx-js-npm-20.0.7-30719000fd.patch",
     "@pkgjs/parseargs": "^0.11.0",
     "@react-native/metro-babel-transformer": "0.76.9",
     "@react-native/metro-config": "0.76.9",
