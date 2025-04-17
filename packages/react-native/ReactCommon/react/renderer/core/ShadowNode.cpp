@@ -112,7 +112,9 @@ ShadowNode::ShadowNode(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       state_(
           fragment.state ? fragment.state
-                         : sourceShadowNode.getMostRecentState()),
+                         : (ReactNativeFeatureFlags::useShadowNodeStateOnClone()
+                                ? sourceShadowNode.state_
+                                : sourceShadowNode.getMostRecentState())),
       orderIndex_(sourceShadowNode.orderIndex_),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
