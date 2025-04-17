@@ -153,7 +153,7 @@ internal class BackgroundDrawable(
     backgroundImageLayers?.let { layers ->
       var compositeShader: Shader? = null
       for (backgroundImageLayer in layers) {
-        val currentShader = backgroundImageLayer.getShader(bounds) ?: continue
+        val currentShader = backgroundImageLayer.getShader(bounds)
 
         compositeShader =
             if (compositeShader == null) {
