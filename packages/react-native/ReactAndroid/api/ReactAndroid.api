@@ -704,7 +704,7 @@ public abstract interface class com/facebook/react/bridge/Dynamic {
 	public abstract fun recycle ()V
 }
 
-public class com/facebook/react/bridge/DynamicFromObject : com/facebook/react/bridge/Dynamic {
+public final class com/facebook/react/bridge/DynamicFromObject : com/facebook/react/bridge/Dynamic {
 	public fun <init> (Ljava/lang/Object;)V
 	public fun asArray ()Lcom/facebook/react/bridge/ReadableArray;
 	public fun asBoolean ()Z
