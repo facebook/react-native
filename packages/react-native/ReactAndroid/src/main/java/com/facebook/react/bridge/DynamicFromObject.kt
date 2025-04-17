@@ -74,7 +74,7 @@ public class DynamicFromObject(private val value: Any?) : Dynamic {
         else -> {
           FLog.e(
             ReactConstants.TAG,
-            "Unmapped object type " + (if (value == null) "<NULL object>" else value.javaClass.name)
+            "Unmapped object type " + (value.javaClass.name)
           )
           ReadableType.Null
         }
