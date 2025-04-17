@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<112e542686afa5657898a450543ec5a9>>
+ * @generated SignedSource<<4f9df3bdf8c353ccbdfeea0f0d378e01>>
  */
 
 /**
@@ -52,6 +52,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
+  private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
@@ -345,6 +346,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.traceTurboModulePromiseRejectionsOnAndroid()
       traceTurboModulePromiseRejectionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean {
+    var cached = updateRuntimeShadowNodeReferencesOnCommitCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.updateRuntimeShadowNodeReferencesOnCommit()
+      updateRuntimeShadowNodeReferencesOnCommitCache = cached
     }
     return cached
   }
