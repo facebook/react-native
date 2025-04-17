@@ -945,10 +945,6 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
           i++ // eventName
           i++ // eventMapping
         }
-
-        else ->
-            throw IllegalArgumentException(
-                "Batch animation execution op: fetching viewTag: unknown op code")
       }
     }
 
@@ -1059,8 +1055,6 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
 
                 BatchExecutionOpCodes.OP_CODE_ADD_LISTENER,
                 BatchExecutionOpCodes.OP_CODE_REMOVE_LISTENERS -> i++
-                else ->
-                    throw IllegalArgumentException("Batch animation execution op: unknown op code")
               }
             }
           }
