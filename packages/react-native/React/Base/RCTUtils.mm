@@ -35,9 +35,15 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
 BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 
 // Whether the New Architecture is enabled or not
+static BOOL _newArchEnabled = false;
 BOOL RCTIsNewArchEnabled(void)
 {
-  return ((NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTNewArchEnabled"]).boolValue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSNumber *rctNewArchEnabled = (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTNewArchEnabled"];
+    _newArchEnabled = rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  });
+  return _newArchEnabled;
 }
 void RCTSetNewArchEnabled(BOOL enabled)
 {
@@ -46,9 +52,16 @@ void RCTSetNewArchEnabled(BOOL enabled)
   // whether the New Arch is enabled or not.
 }
 
+static BOOL _legacyWarningEnabled = true;
 BOOL RCTAreLegacyLogsEnabled(void)
 {
-  return ((NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"]).boolValue;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSNumber *rctNewArchEnabled =
+        (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"];
+    _legacyWarningEnabled = rctNewArchEnabled.boolValue;
+  });
+  return _legacyWarningEnabled;
 }
 
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
