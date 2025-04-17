@@ -3,10 +3,6 @@
   "version": "0.80.0-main",
   "description": "Virtualized lists for React Native.",
   "license": "MIT",
-  "exports": {
-    ".": "./index.js",
-    "./package.json": "./package.json"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/facebook/react-native.git",
@@ -23,6 +19,21 @@
   "engines": {
     "node": ">=18"
   },
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "Lists",
+    "README.md",
+    "Utilities",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ],
   "dependencies": {
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
