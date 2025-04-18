@@ -29,7 +29,7 @@
         "currentVersionResolverMetadata": {
           "tag": "v0.76-stable"
         },
-        "fallbackCurrentVersionResolver": "disk",
+        "fallbackCurrentVersionResolver": "disk"
       }
     }
   }
