@@ -98,6 +98,14 @@ const styles = StyleSheet.create({
   scrollView: {
     height: 50,
   },
+  boxSize: {
+    width: 50,
+    height: 50,
+  },
+  smallBoxSize: {
+    width: 25,
+    height: 25,
+  },
 });
 
 class AccessibilityExample extends React.Component<{}> {
@@ -1643,6 +1651,92 @@ function AccessibilityTextInputWithArialabelledByAttributeExample(): React.Node 
   );
 }
 
+function AccessibilityOrderExample(): React.Node {
+  return (
+    <>
+      <RNTesterText style={{marginBottom: 8}}>
+        accessibilityOrder=['e', 'ca', 'b', 'a', 'c', 'd']
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10}}
+        experimental_accessibilityOrder={['e', 'ca', 'b', 'a', 'c', 'd']}>
+        <View
+          nativeID="a"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}
+        />
+        <View
+          nativeID="b"
+          style={[{backgroundColor: 'orange'}, styles.boxSize]}>
+          <View
+            accessible={true}
+            nativeID="ba"
+            accessibilityLabel="ba"
+            style={[{backgroundColor: 'teal'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="bb"
+            accessibilityLabel="bb"
+            style={[{backgroundColor: 'ivory'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          accessible={true}
+          nativeID="c"
+          accessibilityLabel="c"
+          style={[{backgroundColor: 'indianred'}, styles.boxSize]}>
+          <View
+            accessible={true}
+            nativeID="ca"
+            accessibilityLabel="ca"
+            style={[{backgroundColor: 'lime'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="cb"
+            accessibilityLabel="cb"
+            style={[{backgroundColor: 'blueviolet'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          experimental_accessibilityOrder={['dc', 'da', 'db']}
+          nativeID="d"
+          style={{
+            backgroundColor: 'fuchsia',
+            ...styles.boxSize,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+          }}>
+          <View
+            accessible={true}
+            nativeID="da"
+            accessibilityLabel="da"
+            style={[{backgroundColor: 'black'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="db"
+            accessibilityLabel="db"
+            style={[{backgroundColor: 'lightslategray'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="dc"
+            accessibilityLabel="dc"
+            style={[{backgroundColor: 'khaki'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          accessible={true}
+          nativeID="e"
+          accessibilityLabel="e"
+          style={[{backgroundColor: 'deepskyblue'}, styles.boxSize]}
+        />
+      </View>
+    </>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -1738,6 +1832,12 @@ exports.examples = [
     title: 'TextInput with aria-labelledby attribute',
     render(): React.MixedElement {
       return <AccessibilityTextInputWithArialabelledByAttributeExample />;
+    },
+  },
+  {
+    title: 'accessibilityOrder',
+    render(): React.MixedElement {
+      return <AccessibilityOrderExample />;
     },
   },
 ];
