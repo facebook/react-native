@@ -27,6 +27,7 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -260,6 +261,52 @@ public class FabricUIManager
     Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
+  }
+
+  /**
+   * Find the next focusable element's id and position relative to the parent from the shadow tree
+   * based on the current focusable element and the direction.
+   *
+   * @return A NextFocusableNode object where the 'id' is the reactId/Tag of the next focusable
+   *     view, returns null if no view could be found
+   */
+  public @Nullable Integer findNextFocusableElement(
+      int parentTag, int focusedTag, @FocusRealDirection int direction) {
+    if (mBinding == null) {
+      return null;
+    }
+
+    int generalizedDirection;
+
+    switch (direction) {
+      case View.FOCUS_DOWN:
+        generalizedDirection = 0;
+        break;
+      case View.FOCUS_UP:
+        generalizedDirection = 1;
+        break;
+      case View.FOCUS_RIGHT:
+        generalizedDirection = 2;
+        break;
+      case View.FOCUS_LEFT:
+        generalizedDirection = 3;
+        break;
+      default:
+        return null;
+    }
+
+    int serializedNextFocusableNodeMetrics =
+        mBinding.findNextFocusableElement(parentTag, focusedTag, generalizedDirection);
+
+    if (serializedNextFocusableNodeMetrics == -1) {
+      return null;
+    }
+
+    return serializedNextFocusableNodeMetrics;
+  }
+
+  public @Nullable Integer findRelativeTopMostParent(int rootTag, int childTag) {
+    return mBinding != null ? mBinding.findRelativeTopMostParent(rootTag, childTag) : null;
   }
 
   @Override
