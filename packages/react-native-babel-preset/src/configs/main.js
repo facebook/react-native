@@ -13,12 +13,25 @@
 const passthroughSyntaxPlugins = require('../passthrough-syntax-plugins');
 const lazyImports = require('./lazy-imports');
 
+const EXCLUDED_FIRST_PARTY_PATHS = [
+  /[/\\]node_modules[/\\]/,
+  /[/\\]packages[/\\]react-native(?:-fantom)?[/\\]/,
+  /[/\\]packages[/\\]virtualized-lists[/\\]/,
+];
+
 function isTypeScriptSource(fileName) {
   return !!fileName && fileName.endsWith('.ts');
 }
 
 function isTSXSource(fileName) {
   return !!fileName && fileName.endsWith('.tsx');
+}
+
+function isFirstParty(fileName) {
+  return (
+    !!fileName &&
+    !EXCLUDED_FIRST_PARTY_PATHS.some(regex => regex.test(fileName))
+  );
 }
 
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
@@ -51,6 +64,8 @@ const getPreset = (src, options) => {
   const hasClass = isNull || src.indexOf('class') !== -1;
 
   const extraPlugins = [];
+  const firstPartyPlugins = [];
+
   if (!options.useTransformReactJSXExperimental) {
     extraPlugins.push([
       require('@babel/plugin-transform-react-jsx'),
@@ -171,6 +186,10 @@ const getPreset = (src, options) => {
     ]);
   }
 
+  if (options && options.dev && !options.disableDeepImportWarnings) {
+    firstPartyPlugins.push([require('../plugin-warn-on-deep-imports.js')]);
+  }
+
   if (options && options.dev && !options.useTransformReactJSXExperimental) {
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-source')]);
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-self')]);
@@ -239,6 +258,10 @@ const getPreset = (src, options) => {
             },
           ],
         ],
+      },
+      {
+        test: isFirstParty,
+        plugins: firstPartyPlugins,
       },
       {
         plugins: extraPlugins,
