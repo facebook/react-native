@@ -101,6 +101,18 @@ using namespace facebook::react;
       .onChange(SwitchEventEmitter::OnChange{.value = static_cast<bool>(sender.on)});
 }
 
+// UISwitch is the accessibility element not this view. If this is YES we block
+// accessibility on the switch itself
+- (BOOL)isAccessibilityElement
+{
+  return NO;
+}
+
+- (NSObject *)accessibilityElement
+{
+  return _switchView;
+}
+
 #pragma mark - Native Commands
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
