@@ -106,6 +106,9 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
   },
+  link: {
+    color: 'blue',
+  },
 });
 
 class AccessibilityExample extends React.Component<{}> {
@@ -1737,6 +1740,39 @@ function AccessibilityOrderExample(): React.Node {
   );
 }
 
+function TextLinkExample(): React.Node {
+  const handleLinkPress = (linkText: string) => {
+    Alert.alert('Link Clicked', `You clicked on the ${linkText} link!`);
+  };
+
+  return (
+    <View style={{gap: 10}}>
+      <RNTesterText>
+        We can focus{' '}
+        <RNTesterText
+          accessibilityRole="link"
+          onPress={() => handleLinkPress('first')}
+          style={styles.link}>
+          links
+        </RNTesterText>{' '}
+        in text, even if there are{' '}
+        <RNTesterText
+          accessibilityRole="link"
+          onPress={() => handleLinkPress('second')}
+          style={styles.link}>
+          multiple of them!
+        </RNTesterText>
+      </RNTesterText>
+      <RNTesterText
+        accessibilityRole="link"
+        onPress={() => handleLinkPress('thrid')}
+        style={styles.link}>
+        We can also focus text that are entirly links!
+      </RNTesterText>
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -1838,6 +1874,12 @@ exports.examples = [
     title: 'accessibilityOrder',
     render(): React.MixedElement {
       return <AccessibilityOrderExample />;
+    },
+  },
+  {
+    title: 'Links in text',
+    render(): React.MixedElement {
+      return <TextLinkExample />;
     },
   },
 ];
