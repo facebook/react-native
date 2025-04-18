@@ -79,8 +79,7 @@ const RNTesterApp = ({
     hadDeepLink,
   } = state;
 
-  const {height, scale} = useWindowDimensions();
-  const isScreenTiny = height / scale < 400;
+  const isScreenTiny = useWindowDimensions().height < 600;
 
   const examplesList = React.useMemo(
     () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),

@@ -85,7 +85,7 @@ export const RNTesterNavigationReducer = (
         activeModuleTitle: title,
         activeModuleExampleKey: null,
         screen,
-        hadDeepLink: true,
+        hadDeepLink: false,
       };
 
     case RNTesterNavigationActionsType.MODULE_CARD_PRESS:
@@ -94,6 +94,7 @@ export const RNTesterNavigationReducer = (
         activeModuleKey: key,
         activeModuleTitle: title,
         activeModuleExampleKey: null,
+        hadDeepLink: false,
         // $FlowFixMe[incompatible-return]
         recentlyUsed: getUpdatedRecentlyUsed({
           exampleType: exampleType,
@@ -105,6 +106,7 @@ export const RNTesterNavigationReducer = (
     case RNTesterNavigationActionsType.EXAMPLE_CARD_PRESS:
       return {
         ...state,
+        hadDeepLink: false,
         activeModuleExampleKey: key,
       };
 
