@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager.style
 
-import ColorStop
 import android.graphics.Color
 import android.util.DisplayMetrics
 import com.facebook.react.uimanager.DisplayMetricsHolder
