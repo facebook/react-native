@@ -3739,13 +3739,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native/oss-library-example@workspace:*, @react-native/oss-library-example@workspace:packages/react-native-test-library":
+"@react-native/oss-library-example@npm:0.76.10, @react-native/oss-library-example@workspace:packages/react-native-test-library":
   version: 0.0.0-use.local
   resolution: "@react-native/oss-library-example@workspace:packages/react-native-test-library"
   dependencies:
     "@babel/core": "npm:^7.25.2"
     "@react-native/babel-preset": "npm:0.76.9"
-    react-native-macos: "workspace:*"
+    react-native-macos: "npm:0.76.9"
   peerDependencies:
     react: "*"
     react-native-macos: "*"
@@ -3789,7 +3789,7 @@ __metadata:
     "@react-native-community/cli-platform-android": "npm:15.0.1"
     "@react-native-community/cli-platform-apple": "npm:15.0.1"
     "@react-native-community/cli-platform-ios": "npm:15.0.1"
-    "@react-native/oss-library-example": "workspace:*"
+    "@react-native/oss-library-example": "npm:0.76.10"
     "@react-native/popup-menu-android": "workspace:*"
     flow-enums-runtime: "npm:^0.0.6"
     invariant: "npm:^2.2.4"
@@ -12255,7 +12255,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-macos@workspace:*, react-native-macos@workspace:packages/react-native":
+"react-native-macos@npm:0.76.9, react-native-macos@workspace:packages/react-native":
   version: 0.0.0-use.local
   resolution: "react-native-macos@workspace:packages/react-native"
   dependencies:
