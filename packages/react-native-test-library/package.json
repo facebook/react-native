@@ -26,7 +26,7 @@
   ],
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@react-native/babel-preset": "0.80.0-main",
+    "@react-native/babel-preset": "workspace:*",
     "react-native": "1000.0.0"
   },
   "peerDependencies": {

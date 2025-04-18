@@ -23,9 +23,7 @@
   "engines": {
     "node": ">=18"
   },
-  "bin": {
-    "react-native": "cli.js"
-  },
+  "bin": "cli.js",
   "types": "types",
   "jest-junit": {
     "outputDirectory": "reports/junit",
@@ -119,13 +117,13 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.7.0",
-    "@react-native/assets-registry": "0.80.0-main",
-    "@react-native/codegen": "0.80.0-main",
-    "@react-native/community-cli-plugin": "0.80.0-main",
-    "@react-native/gradle-plugin": "0.80.0-main",
-    "@react-native/js-polyfills": "0.80.0-main",
-    "@react-native/normalize-colors": "0.80.0-main",
-    "@react-native/virtualized-lists": "0.80.0-main",
+    "@react-native/assets-registry": "workspace:*",
+    "@react-native/codegen": "workspace:*",
+    "@react-native/community-cli-plugin": "workspace:*",
+    "@react-native/gradle-plugin": "workspace:*",
+    "@react-native/js-polyfills": "workspace:*",
+    "@react-native/normalize-colors": "workspace:*",
+    "@react-native/virtualized-lists": "workspace:*",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",

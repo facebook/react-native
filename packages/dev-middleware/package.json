@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "@isaacs/ttlcache": "^1.4.1",
-    "@react-native/debugger-frontend": "0.80.0-main",
+    "@react-native/debugger-frontend": "workspace:*",
     "chrome-launcher": "^0.15.2",
     "chromium-edge-launcher": "^0.2.0",
     "connect": "^3.6.5",

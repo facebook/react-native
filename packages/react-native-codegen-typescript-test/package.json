@@ -19,18 +19,18 @@
     "prepare": "yarn run build"
   },
   "dependencies": {
-    "@react-native/codegen": "0.80.0-main"
+    "@react-native/codegen": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-async-to-generator": "^7.24.7",
     "@babel/plugin-transform-class-properties": "^7.25.4",
+    "@babel/plugin-transform-destructuring": "^7.24.8",
+    "@babel/plugin-transform-flow-strip-types": "^7.25.2",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.7",
     "@babel/plugin-transform-object-rest-spread": "^7.24.7",
     "@babel/plugin-transform-optional-chaining": "^7.24.8",
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-async-to-generator": "^7.24.7",
-    "@babel/plugin-transform-destructuring": "^7.24.8",
-    "@babel/plugin-transform-flow-strip-types": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@types/jest": "^29.5.3",
     "jest": "^29.7.0",
