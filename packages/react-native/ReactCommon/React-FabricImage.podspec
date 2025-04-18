@@ -52,6 +52,9 @@ Pod::Spec.new do |s|
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = './'
     s.module_name             = 'React_FabricImage'
+    header_search_path = header_search_path + [
+      "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/image/platform/cxx\"",
+    ]
   end
 
   s.dependency "React-jsiexecutor", version
@@ -70,6 +73,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-Fabric", :additional_framework_paths => [
+    "react/renderer/components/image/platform/cxx",
     "react/renderer/components/view/platform/cxx",
     "react/renderer/imagemanager/platform/ios"
   ])

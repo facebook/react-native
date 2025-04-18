@@ -11,7 +11,11 @@ include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 file(GLOB rrc_image_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(rrc_image OBJECT ${rrc_image_SRC})
 
-target_include_directories(rrc_image PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(rrc_image
+        PUBLIC
+          ${REACT_COMMON_DIR}
+          ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx/
+)
 
 target_link_libraries(rrc_image
         glog
