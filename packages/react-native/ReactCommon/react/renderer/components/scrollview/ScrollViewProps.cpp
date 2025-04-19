@@ -407,6 +407,7 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(pinchGestureEnabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollsToTop);
     RAW_SET_PROP_SWITCH_CASE_BASIC(showsHorizontalScrollIndicator);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(showsVerticalScrollIndicator);
     RAW_SET_PROP_SWITCH_CASE_BASIC(persistentScrollbar);
     RAW_SET_PROP_SWITCH_CASE_BASIC(horizontal);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEventThrottle);
