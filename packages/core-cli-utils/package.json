@@ -25,7 +25,5 @@
   },
   "files": [
     "dist"
-  ],
-  "dependencies": {},
-  "devDependencies": {}
+  ]
 }

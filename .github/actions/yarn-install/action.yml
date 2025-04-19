@@ -1,20 +1,17 @@
-name: yarn-install
+name: Yarn
+description: Runs `yarn install`
+inputs:
+  immutable:
+    description: Abort with an error exit code if the lockfile was to be modified
+    default: true
 runs:
   using: composite
   steps:
-    - name: Install dependencies
+    - name: Install npm dependencies
+      if: ${{ inputs.immutable == 'true' }}
+      run: yarn
       shell: bash
-      run: |
-        MAX_ATTEMPTS=2
-        ATTEMPT=0
-        WAIT_TIME=20
-        while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-            yarn install --non-interactive --frozen-lockfile && break
-            echo "yarn install failed. Retrying in $WAIT_TIME seconds..."
-            sleep $WAIT_TIME
-            ATTEMPT=$((ATTEMPT + 1))
-        done
-        if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-            echo "All attempts to invoke yarn install failed - Aborting the workflow"
-            exit 1
-        fi
+    - name: Install npm dependencies (ignore lockfile changes)
+      if: ${{ inputs.immutable != 'true' }}
+      run: yarn --no-immutable
+      shell: bash
