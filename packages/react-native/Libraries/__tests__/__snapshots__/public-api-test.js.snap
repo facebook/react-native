@@ -9082,6 +9082,7 @@ export type {
   VirtualizedSectionListProps,
 } from \\"./Libraries/Lists/VirtualizedSectionList\\";
 export { default as VirtualizedSectionList } from \\"./Libraries/Lists/VirtualizedSectionList\\";
+export * as NewAppScreen from \\"./Libraries/NewAppScreen\\";
 export { default as AccessibilityInfo } from \\"./Libraries/Components/AccessibilityInfo/AccessibilityInfo\\";
 export type {
   ActionSheetIOSOptions,
