@@ -275,7 +275,7 @@ android {
       externalNativeBuild {
         cmake {
           arguments(
-              "-DCMAKE_BUILD_TYPE=MinSizeRel",
+              "-DCMAKE_BUILD_TYPE=Release",
               // For release builds, we don't want to enable the Hermes Debugger.
               "-DHERMES_ENABLE_DEBUGGER=False")
         }
