@@ -166,5 +166,6 @@ fix_*.patch
 # [Experimental] Generated TS type definitions
 /packages/**/types_generated/
 
-# Yarn 
+# Yarn
+.yarn/cache
 .yarn/install-state.gz
