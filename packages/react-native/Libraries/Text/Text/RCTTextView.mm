@@ -77,6 +77,20 @@
   // Do nothing, as subviews are managed by `setTextStorage:` method
 }
 
+- (NSAttributedString *)attributedStringWithImage:(UIImage *)image {
+  NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+  attachment.image = image;
+
+  // Position the image vertically within the line using baseline offset
+  CGFloat baselineOffset = (self.font.ascender - self.font.descender) / 2;
+  attachment.bounds = CGRectMake(0, -baselineOffset, image.size.width, image.size.height);
+
+  NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@"\uFFFC"];
+  [attributedString addAttribute:NSAttachmentAttributeName value:attachment range:NSMakeRange(0, 1)];
+
+  return attributedString;
+}
+
 - (void)setTextStorage:(NSTextStorage *)textStorage
           contentFrame:(CGRect)contentFrame
        descendantViews:(NSArray<UIView *> *)descendantViews
@@ -84,13 +98,26 @@
   _textStorage = textStorage;
   _contentFrame = contentFrame;
 
-  // FIXME: Optimize this.
+  // Embed images into attributed text
+  for (UIView *view in descendantViews) {
+    if ([view isKindOfClass:[RCTImageView class]]) {
+      RCTImageView *imageView = (RCTImageView *)view;
+      UIImage *image = imageView.image;
+      if (image) {
+        NSAttributedString *imageAttributedString = [self attributedStringWithImage:image];
+        [_textStorage appendAttributedString:imageAttributedString];
+      }
+    }
+  }
+
+  // Remove old subviews
   for (UIView *view in _descendantViews) {
     [view removeFromSuperview];
   }
 
   _descendantViews = descendantViews;
 
+  // Add new subviews
   for (UIView *view in descendantViews) {
     [self addSubview:view];
   }
