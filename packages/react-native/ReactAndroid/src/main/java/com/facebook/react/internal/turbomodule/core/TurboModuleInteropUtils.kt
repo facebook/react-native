@@ -56,8 +56,8 @@ internal object TurboModuleInteropUtils {
           throw ParsingException(moduleName, "getConstants must return a Map")
         }
       } else if ((annotation != null) &&
-          ((annotation.isBlockingSynchronousMethod && returnType == java.lang.Void.TYPE) ||
-              (!annotation.isBlockingSynchronousMethod && returnType != java.lang.Void.TYPE))) {
+          ((annotation.isBlockingSynchronousMethod && returnType == Void.TYPE) ||
+              (!annotation.isBlockingSynchronousMethod && returnType != Void.TYPE))) {
         throw ParsingException(
             moduleName,
             "TurboModule system assumes returnType == void iff the method is synchronous.")
@@ -122,11 +122,11 @@ internal object TurboModuleInteropUtils {
       return "F"
     }
 
-    if (paramClass == java.lang.Boolean::class.java ||
-        paramClass == java.lang.Integer::class.java ||
-        paramClass == java.lang.Double::class.java ||
-        paramClass == java.lang.Float::class.java ||
-        paramClass == java.lang.String::class.java ||
+    if (paramClass == Boolean::class.javaObjectType ||
+        paramClass == Int::class.javaObjectType ||
+        paramClass == Double::class.javaObjectType ||
+        paramClass == Float::class.javaObjectType ||
+        paramClass == String::class.java ||
         paramClass == Callback::class.java ||
         paramClass == Promise::class.java ||
         paramClass == ReadableMap::class.java ||
@@ -146,31 +146,31 @@ internal object TurboModuleInteropUtils {
       methodName: String,
       returnClass: Class<*>
   ): String {
-    if (returnClass == java.lang.Boolean::class.javaPrimitiveType) {
+    if (returnClass == Boolean::class.javaPrimitiveType) {
       return "Z"
     }
 
-    if (returnClass == java.lang.Integer::class.javaPrimitiveType) {
+    if (returnClass == Int::class.javaPrimitiveType) {
       return "I"
     }
 
-    if (returnClass == java.lang.Double::class.javaPrimitiveType) {
+    if (returnClass == Double::class.javaPrimitiveType) {
       return "D"
     }
 
-    if (returnClass == java.lang.Float::class.javaPrimitiveType) {
+    if (returnClass == Float::class.javaPrimitiveType) {
       return "F"
     }
 
-    if (returnClass == java.lang.Void.TYPE) {
+    if (returnClass == Void.TYPE) {
       return "V"
     }
 
-    if (returnClass == java.lang.Boolean::class.java ||
-        returnClass == java.lang.Integer::class.java ||
-        returnClass == java.lang.Double::class.java ||
-        returnClass == java.lang.Float::class.java ||
-        returnClass == java.lang.String::class.java ||
+    if (returnClass == Boolean::class.javaObjectType ||
+        returnClass == Integer::class.javaObjectType ||
+        returnClass == Double::class.javaObjectType ||
+        returnClass == Float::class.javaObjectType ||
+        returnClass == String::class.java ||
         returnClass == WritableMap::class.java ||
         returnClass == WritableArray::class.java ||
         returnClass == MutableMap::class.java) {
@@ -238,20 +238,20 @@ internal object TurboModuleInteropUtils {
       return "BooleanKind"
     }
 
-    if (returnClass == java.lang.Double::class.javaPrimitiveType ||
-        returnClass == java.lang.Double::class.java ||
-        returnClass == java.lang.Float::class.javaPrimitiveType ||
-        returnClass == java.lang.Float::class.java ||
-        returnClass == java.lang.Integer::class.javaPrimitiveType ||
-        returnClass == java.lang.Integer::class.java) {
+    if (returnClass == Double::class.javaPrimitiveType ||
+        returnClass == Double::class.javaObjectType ||
+        returnClass == Float::class.javaPrimitiveType ||
+        returnClass == Float::class.javaObjectType ||
+        returnClass == Int::class.javaPrimitiveType ||
+        returnClass == Int::class.javaObjectType) {
       return "NumberKind"
     }
 
-    if (returnClass == java.lang.String::class.java) {
+    if (returnClass == String::class.java) {
       return "StringKind"
     }
 
-    if (returnClass == java.lang.Void.TYPE) {
+    if (returnClass == Void.TYPE) {
       return "VoidKind"
     }
 
