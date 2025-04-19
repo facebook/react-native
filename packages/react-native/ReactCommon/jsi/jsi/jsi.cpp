@@ -8,6 +8,8 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <map>
+#include <mutex>
 #include <stdexcept>
 
 #include <jsi/instrumentation.h>
@@ -17,6 +19,54 @@ namespace facebook {
 namespace jsi {
 
 namespace {
+
+/// A global map used to store custom runtime data for VMs that do not provide
+/// their own default implementation of setRuntimeData and getRuntimeData.
+struct RuntimeDataGlobal {
+  /// Mutex protecting the Runtime data map
+  std::mutex mutex_{};
+  /// Maps a runtime pointer to a map of its custom data. At destruction of the
+  /// runtime, its entry will be removed from the global map.
+  std::map<
+      Runtime*,
+      std::map<UUID, std::pair<const void*, void (*)(const void* data)>>>
+      dataMap_;
+};
+
+RuntimeDataGlobal& getRuntimeDataGlobal() {
+  static RuntimeDataGlobal runtimeData{};
+  return runtimeData;
+}
+
+/// A host object that, when destructed, will remove the runtime's custom data
+/// entry from the global map of custom datas.
+class RemoveRuntimeDataHostObject : public jsi::HostObject {
+ public:
+  explicit RemoveRuntimeDataHostObject(Runtime* runtime) : runtime_(runtime) {}
+
+  RemoveRuntimeDataHostObject(const RemoveRuntimeDataHostObject&) = default;
+  RemoveRuntimeDataHostObject(RemoveRuntimeDataHostObject&&) = default;
+  RemoveRuntimeDataHostObject& operator=(const RemoveRuntimeDataHostObject&) =
+      default;
+  RemoveRuntimeDataHostObject& operator=(RemoveRuntimeDataHostObject&&) =
+      default;
+
+  ~RemoveRuntimeDataHostObject() override {
+    auto& runtimeDataGlobal = getRuntimeDataGlobal();
+    std::lock_guard<std::mutex> lock(runtimeDataGlobal.mutex_);
+    if (auto runtimeMapIt = runtimeDataGlobal.dataMap_.find(runtime_);
+        runtimeMapIt != runtimeDataGlobal.dataMap_.end()) {
+      for (auto [_, entry] : runtimeMapIt->second) {
+        auto* deleter = entry.second;
+        deleter(entry.first);
+      }
+    }
+    runtimeDataGlobal.dataMap_.erase(runtime_);
+  }
+
+ private:
+  Runtime* runtime_;
+};
 
 // This is used for generating short exception strings.
 std::string kindToString(const Value& v, Runtime* rt = nullptr) {
@@ -351,6 +401,74 @@ Object Runtime::createObjectWithPrototype(const Value& prototype) {
                       .getPropertyAsObject(*this, "Object")
                       .getPropertyAsFunction(*this, "create");
   return createFn.call(*this, prototype).asObject(*this);
+}
+
+void Runtime::setRuntimeDataImpl(
+    const UUID& uuid,
+    const void* data,
+    void (*deleter)(const void* data)) {
+  auto& runtimeDataGlobal = getRuntimeDataGlobal();
+  std::lock_guard<std::mutex> lock(runtimeDataGlobal.mutex_);
+  if (auto it = runtimeDataGlobal.dataMap_.find(this);
+      it != runtimeDataGlobal.dataMap_.end()) {
+    auto& map = it->second;
+    if (auto entryIt = map.find(uuid); entryIt != map.end()) {
+      // Free the old data
+      auto oldData = entryIt->second.first;
+      auto oldDataDeleter = entryIt->second.second;
+      oldDataDeleter(oldData);
+    }
+    map[uuid] = {data, deleter};
+    return;
+  }
+  // The first time runtime data is added to the map, install a host object on
+  // the global object of the runtime. This host object is used to release the
+  // runtime's entry from the global custom data map when the runtime is
+  // destroyed.
+  Object ho = Object::createFromHostObject(
+      *this, std::make_shared<RemoveRuntimeDataHostObject>(this));
+  global().setProperty(*this, "_jsiRuntimeDataCleanUp", ho);
+  auto definePropertyFn = global()
+                              .getPropertyAsObject(*this, "Object")
+                              .getPropertyAsFunction(*this, "defineProperty");
+  auto desc = Object(*this);
+  desc.setProperty(*this, "configurable", Value(false));
+  desc.setProperty(*this, "enumerable", Value(false));
+  desc.setProperty(*this, "writable", Value(false));
+  definePropertyFn.call(*this, global(), "_jsiRuntimeDataCleanUp", desc);
+
+  // Create a custom data entry for this runtime
+  std::map<UUID, std::pair<const void*, void (*)(const void* data)>> map;
+  map[uuid] = {data, deleter};
+  runtimeDataGlobal.dataMap_[this] = map;
+}
+
+void Runtime::setRuntimeData(
+    const UUID& uuid,
+    const std::shared_ptr<void>& data) {
+  auto* dataPtr = new std::shared_ptr<void>(data);
+  setRuntimeDataImpl(uuid, dataPtr, [](const void* data) {
+    delete (const std::shared_ptr<void>*)data;
+  });
+}
+
+const void* Runtime::getRuntimeDataImpl(const UUID& uuid) {
+  auto& runtimeDataGlobal = getRuntimeDataGlobal();
+  std::lock_guard<std::mutex> lock(runtimeDataGlobal.mutex_);
+  if (auto runtimeMapIt = runtimeDataGlobal.dataMap_.find(this);
+      runtimeMapIt != runtimeDataGlobal.dataMap_.end()) {
+    if (auto customDataIt = runtimeMapIt->second.find(uuid);
+        customDataIt != runtimeMapIt->second.end()) {
+      return customDataIt->second.first;
+    }
+  }
+  return nullptr;
+}
+
+const std::shared_ptr<void>& Runtime::getRuntimeData(const UUID& uuid) {
+  static std::shared_ptr<void> empty;
+  auto data = (const std::shared_ptr<void>*)getRuntimeDataImpl(uuid);
+  return data ? *data : empty;
 }
 
 Pointer& Pointer::operator=(Pointer&& other) noexcept {
