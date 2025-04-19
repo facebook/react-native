@@ -12,5 +12,5 @@ import com.facebook.proguard.annotations.DoNotStripAny
 @DoNotStripAny
 internal interface ComponentNameResolver {
   /* returns a list of all the component names that are registered in React Native. */
-  val componentNames: Array<String>?
+  val componentNames: Array<String>
 }

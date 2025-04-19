@@ -674,7 +674,7 @@ public class ReactHostImpl implements ReactHost {
     if (reactInstance == null) {
       return null;
     }
-    return reactInstance.getUIManager();
+    return reactInstance.getFabricUIManager();
   }
 
   /* package */ <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
