@@ -14,10 +14,6 @@
 #include <folly/dynamic.h>
 #endif
 
-#if defined(__APPLE__) && TARGET_OS_IOS
-#include "ModalHostViewUtils.h"
-#endif
-
 namespace facebook::react {
 
 /*
@@ -26,13 +22,8 @@ namespace facebook::react {
 class ModalHostViewState final {
  public:
   using Shared = std::shared_ptr<const ModalHostViewState>;
-
-#if defined(__APPLE__) && TARGET_OS_IOS
-  ModalHostViewState() : screenSize(RCTModalHostViewScreenSize()) {
-#else
-  ModalHostViewState(){
-#endif
-  };
+  ModalHostViewState() = default;
+  ;
   ModalHostViewState(Size screenSize_) : screenSize(screenSize_){};
 
 #ifdef ANDROID
