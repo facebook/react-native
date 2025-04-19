@@ -102,6 +102,20 @@ export type VirtualizedSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
   ...Omit<VirtualizedListProps, 'data' | 'renderItem'>,
+  /**
+   * The accessibility role for the list. Can be 'list' or 'grid'.
+   * @platform android
+   */
+  accessibilityRole?: 'list' | 'grid',
+  /**
+   * Collection information for accessibility. Used when accessibilityRole is 'grid'.
+   * @platform android
+   */
+  accessibilityCollection?: {
+    rowCount: number,
+    columnCount: number,
+    hierarchical: boolean,
+  },
 };
 export type ScrollToLocationParamsType = {
   animated?: ?boolean,
@@ -163,6 +177,8 @@ class VirtualizedSectionList<
       renderSectionHeader,
       sections: _sections,
       stickySectionHeadersEnabled,
+      accessibilityRole,
+      accessibilityCollection,
       ...passThroughProps
     } = this.props;
 
@@ -202,6 +218,8 @@ class VirtualizedSectionList<
             : undefined
         }
         ref={this._captureRef}
+        accessibilityRole={accessibilityRole}
+        accessibilityCollection={accessibilityCollection}
       />
     );
   }

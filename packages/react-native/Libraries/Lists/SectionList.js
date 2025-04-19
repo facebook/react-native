@@ -238,6 +238,8 @@ export default class SectionList<
   render(): React.Node {
     const {
       stickySectionHeadersEnabled: _stickySectionHeadersEnabled,
+      accessibilityRole,
+      accessibilityCollection,
       ...restProps
     } = this.props;
     const stickySectionHeadersEnabled =
@@ -251,6 +253,8 @@ export default class SectionList<
         {...restProps}
         stickySectionHeadersEnabled={stickySectionHeadersEnabled}
         ref={this._captureRef}
+        accessibilityRole={accessibilityRole}
+        accessibilityCollection={accessibilityCollection}
         // $FlowFixMe[missing-local-annot]
         getItemCount={items => items.length}
         // $FlowFixMe[missing-local-annot]
