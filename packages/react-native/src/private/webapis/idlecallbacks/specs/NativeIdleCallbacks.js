@@ -25,8 +25,8 @@ export interface Spec extends TurboModule {
   +requestIdleCallback: (
     callback: (idleDeadline: IdleDeadline) => mixed,
     options?: RequestIdleCallbackOptions,
-  ) => mixed;
-  +cancelIdleCallback: (handle: mixed) => void;
+  ) => number;
+  +cancelIdleCallback: (handle: number) => void;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(
