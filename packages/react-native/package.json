@@ -130,7 +130,7 @@
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
     "babel-jest": "^29.7.0",
-    "babel-plugin-syntax-hermes-parser": "0.28.0",
+    "babel-plugin-syntax-hermes-parser": "0.28.1",
     "base64-js": "^1.5.1",
     "chalk": "^4.0.0",
     "commander": "^12.0.0",
