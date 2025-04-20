@@ -18,7 +18,7 @@ describe('Native Animated', () => {
   function importModules() {
     return {
       get Animated() {
-        return require('../../../../Libraries/Animated/Animated').default;
+        return require('@react-native/animated/Animated').default;
       },
       get NativeAnimatedHelper() {
         return require('../NativeAnimatedHelper').default;

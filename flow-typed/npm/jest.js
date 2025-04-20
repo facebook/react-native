@@ -12,7 +12,7 @@
 // Modifications are explained inline by comments beginning with `// MODIFIED`.
 
 // MODIFIED: Added ESLint suppression comment - no-unused-vars doesn't understand declaration files
-/* eslint-disable no-unused-vars */
+ 
 
 type JestMockFn<TArguments: $ReadOnlyArray<mixed>, TReturn> = {
   (...args: TArguments): TReturn,

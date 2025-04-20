@@ -8,13 +8,13 @@
  * @format
  */
 
-import type {InterpolationConfigType} from '../../../Libraries/Animated/nodes/AnimatedInterpolation';
+import type {InterpolationConfigType} from '@react-native/animated/nodes/AnimatedInterpolation';
 
 import {
   isSupportedInterpolationParam,
   isSupportedStyleProp,
   isSupportedTransformProp,
-} from '../../../Libraries/Animated/NativeAnimatedAllowlist';
+} from '@react-native/animated/NativeAnimatedAllowlist';
 
 export function validateInterpolation<OutputT: number | string>(
   config: InterpolationConfigType<OutputT>,

@@ -24,8 +24,7 @@ describe('useAnimatedProps', () => {
     return {
       // $FlowIgnore[unsafe-getters-setters]
       get AnimatedEvent() {
-        return require('../../../../Libraries/Animated/AnimatedEvent')
-          .AnimatedEvent;
+        return require('@react-native/animated/AnimatedEvent').AnimatedEvent;
       },
       // $FlowIgnore[unsafe-getters-setters]
       get createAnimatedPropsHook() {

@@ -8,17 +8,17 @@
  * @format
  */
 
-import type {AnimatedPropsAllowlist} from '../../../Libraries/Animated/nodes/AnimatedProps';
 import type {EventSubscription} from '../../../Libraries/EventEmitter/NativeEventEmitter';
+import type {AnimatedPropsAllowlist} from '@react-native/animated/nodes/AnimatedProps';
 
-import AnimatedNode from '../../../Libraries/Animated/nodes/AnimatedNode';
-import AnimatedProps from '../../../Libraries/Animated/nodes/AnimatedProps';
-import AnimatedValue from '../../../Libraries/Animated/nodes/AnimatedValue';
 import {isPublicInstance as isFabricPublicInstance} from '../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../../../Libraries/Utilities/useRefEffect';
 import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
 import {createAnimatedPropsMemoHook} from './createAnimatedPropsMemoHook';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
+import AnimatedNode from '@react-native/animated/nodes/AnimatedNode';
+import AnimatedProps from '@react-native/animated/nodes/AnimatedProps';
+import AnimatedValue from '@react-native/animated/nodes/AnimatedValue';
 import {
   useCallback,
   useEffect,

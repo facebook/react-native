@@ -9,12 +9,12 @@
  * @oncall react_native
  */
 
-import {AnimatedEvent} from '../../../../Libraries/Animated/AnimatedEvent';
-import AnimatedValue from '../../../../Libraries/Animated/nodes/AnimatedValue';
 import {
   areCompositeKeysEqual,
   createCompositeKeyForProps,
 } from '../createAnimatedPropsMemoHook';
+import {AnimatedEvent} from '@react-native/animated/AnimatedEvent';
+import AnimatedValue from '@react-native/animated/nodes/AnimatedValue';
 
 describe('createCompositeKeyForProps', () => {
   describe('with allowlist', () => {

@@ -10,11 +10,11 @@
 
 'use strict';
 
-import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 import type {
   ____DangerouslyImpreciseAnimatedStyleProp_Internal,
   ____FlattenStyleProp_Internal,
 } from './StyleSheetTypes';
+import type AnimatedNode from '@react-native/animated/nodes/AnimatedNode';
 
 type NonAnimatedNodeObject<TStyleProp> = TStyleProp extends AnimatedNode
   ? empty

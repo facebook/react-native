@@ -9,7 +9,7 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {Numeric} from 'react-native/Libraries/Animated/AnimatedImplementation';
+import type {Numeric} from '@react-native/animated/AnimatedImplementation';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import * as React from 'react';

@@ -212,7 +212,7 @@ export type {
 } from './Libraries/Alert/Alert';
 export {default as Alert} from './Libraries/Alert/Alert';
 
-export {default as Animated} from './Libraries/Animated/Animated';
+export {default as Animated} from '@react-native/animated/Animated';
 
 export * as Appearance from './Libraries/Utilities/Appearance';
 
@@ -262,8 +262,8 @@ export {default as Dimensions} from './Libraries/Utilities/Dimensions';
 export type {DynamicColorIOSTuple} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
 export {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
 
-export type {EasingFunction} from './Libraries/Animated/Easing';
-export {default as Easing} from './Libraries/Animated/Easing';
+export type {EasingFunction} from '@react-native/animated/Easing';
+export {default as Easing} from '@react-native/animated/Easing';
 
 export {findNodeHandle} from './Libraries/ReactNative/RendererProxy';
 
@@ -395,7 +395,7 @@ export {default as ToastAndroid} from './Libraries/Components/ToastAndroid/Toast
 export * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 export {default as UIManager} from './Libraries/ReactNative/UIManager';
 export {unstable_batchedUpdates} from './Libraries/ReactNative/RendererProxy';
-export {default as useAnimatedValue} from './Libraries/Animated/useAnimatedValue';
+export {default as useAnimatedValue} from '@react-native/animated/useAnimatedValue';
 export {default as useColorScheme} from './Libraries/Utilities/useColorScheme';
 export {default as useWindowDimensions} from './Libraries/Utilities/useWindowDimensions';
 export {default as UTFSequence} from './Libraries/UTFSequence';

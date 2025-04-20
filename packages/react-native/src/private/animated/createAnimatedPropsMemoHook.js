@@ -9,15 +9,15 @@
  * @oncall react_native
  */
 
-import type AnimatedProps from '../../../Libraries/Animated/nodes/AnimatedProps';
-import type {AnimatedPropsAllowlist} from '../../../Libraries/Animated/nodes/AnimatedProps';
-import type {AnimatedStyleAllowlist} from '../../../Libraries/Animated/nodes/AnimatedStyle';
+import type AnimatedProps from '@react-native/animated/nodes/AnimatedProps';
+import type {AnimatedPropsAllowlist} from '@react-native/animated/nodes/AnimatedProps';
+import type {AnimatedStyleAllowlist} from '@react-native/animated/nodes/AnimatedStyle';
 
-import {AnimatedEvent} from '../../../Libraries/Animated/AnimatedEvent';
-import AnimatedNode from '../../../Libraries/Animated/nodes/AnimatedNode';
-import {isPlainObject} from '../../../Libraries/Animated/nodes/AnimatedObject';
 import flattenStyle from '../../../Libraries/StyleSheet/flattenStyle';
 import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
+import {AnimatedEvent} from '@react-native/animated/AnimatedEvent';
+import AnimatedNode from '@react-native/animated/nodes/AnimatedNode';
+import {isPlainObject} from '@react-native/animated/nodes/AnimatedObject';
 import nullthrows from 'nullthrows';
 import {useInsertionEffect, useMemo, useRef, useState} from 'react';
 

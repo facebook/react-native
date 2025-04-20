@@ -1,0 +1,25 @@
+{
+    "name": "@react-native/animated",
+    "version": "0.80.0",
+    "description": "Fluid animations for React Native.",
+    "repository": {
+      "type": "git",
+      "url": "git@github.com:facebook/react-native.git",
+      "directory": "packages/animated"
+    },
+    "files": [
+      "Animated.js",
+      "AnimatedMock.js",
+      "AnimatedValue.js",
+      "Easing.js",
+      "createAnimatedComponent.js",
+      "useAnimatedValue.js",
+      "Animated.d.ts"   
+    ],
+    "license": "MIT",
+    "peerDependencies": {
+      "react-native": "*",
+      "react": "^19.0.0",
+      "react-test-renderer": "^19.0.0"
+    }
+  }

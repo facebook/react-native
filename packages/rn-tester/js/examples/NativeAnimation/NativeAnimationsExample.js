@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
+import type AnimatedValue from '@react-native/animated/nodes/AnimatedValue';
 
 import RNTesterSettingSwitchRow from '../../components/RNTesterSettingSwitchRow';
 import RNTesterText from '../../components/RNTesterText';

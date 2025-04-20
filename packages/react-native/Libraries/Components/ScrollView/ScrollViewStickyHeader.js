@@ -10,11 +10,11 @@
 
 import type {LayoutChangeEvent} from '../../Types/CoreEventTypes';
 
-import Animated from '../../Animated/Animated';
 import {isPublicInstance as isFabricPublicInstance} from '../../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
+import Animated from '@react-native/animated/Animated';
 import * as React from 'react';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 

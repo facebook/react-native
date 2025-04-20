@@ -88,7 +88,7 @@ async function _getActionRunsOnBranch() /*: Promise<WorkflowRuns> */ {
   }
 
   const body = await response
-    // eslint-disable-next-line func-call-spacing
+     
     .json /*::<WorkflowRuns>*/
     ();
   return body;
@@ -109,7 +109,7 @@ async function _getArtifacts(run_id /*: number */) /*: Promise<Artifacts> */ {
   }
 
   const body = await response
-    // eslint-disable-next-line func-call-spacing
+     
     .json /*::<Artifacts>*/
     ();
   return body;

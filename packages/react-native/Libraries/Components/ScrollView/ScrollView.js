@@ -31,7 +31,6 @@ import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
 } from '../../../src/private/components/scrollview/VScrollViewNativeComponents';
-import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import UIManager from '../../ReactNative/UIManager';
@@ -48,6 +47,7 @@ import processDecelerationRate from './processDecelerationRate';
 import Commands from './ScrollViewCommands';
 import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
+import AnimatedImplementation from '@react-native/animated/AnimatedImplementation';
 import invariant from 'invariant';
 import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';

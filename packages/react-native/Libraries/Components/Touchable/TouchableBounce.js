@@ -11,12 +11,12 @@
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 
-import Animated from '../../Animated/Animated';
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import Platform from '../../Utilities/Platform';
+import Animated from '@react-native/animated/Animated';
 import * as React from 'react';
 
 type TouchableBounceProps = $ReadOnly<{

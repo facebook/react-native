@@ -9,8 +9,8 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {CompositeAnimation} from 'react-native/Libraries/Animated/AnimatedMock';
-import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
+import type {CompositeAnimation} from '@react-native/animated/AnimatedMock';
+import type AnimatedValue from '@react-native/animated/nodes/AnimatedValue';
 
 import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';

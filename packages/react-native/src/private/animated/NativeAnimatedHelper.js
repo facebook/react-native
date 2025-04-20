@@ -8,23 +8,23 @@
  * @format
  */
 
-import type {EventConfig} from '../../../Libraries/Animated/AnimatedEvent';
+import type {EventSubscription} from '../../../Libraries/vendor/emitter/EventEmitter';
+import type {EventConfig} from '@react-native/animated/AnimatedEvent';
 import type {
   AnimationConfig,
   EndCallback,
-} from '../../../Libraries/Animated/animations/Animation';
+} from '@react-native/animated/animations/Animation';
 import type {
   AnimatedNodeConfig,
   EventMapping,
-} from '../../../Libraries/Animated/NativeAnimatedModule';
-import type {EventSubscription} from '../../../Libraries/vendor/emitter/EventEmitter';
+} from '@react-native/animated/NativeAnimatedModule';
 
-import NativeAnimatedNonTurboModule from '../../../Libraries/Animated/NativeAnimatedModule';
-import NativeAnimatedTurboModule from '../../../Libraries/Animated/NativeAnimatedTurboModule';
 import NativeEventEmitter from '../../../Libraries/EventEmitter/NativeEventEmitter';
 import RCTDeviceEventEmitter from '../../../Libraries/EventEmitter/RCTDeviceEventEmitter';
 import Platform from '../../../Libraries/Utilities/Platform';
 import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
+import NativeAnimatedNonTurboModule from '@react-native/animated/NativeAnimatedModule';
+import NativeAnimatedTurboModule from '@react-native/animated/NativeAnimatedTurboModule';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 

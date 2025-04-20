@@ -7,7 +7,7 @@
  * @format
  */
 
-import {Animated} from '../Animated/Animated';
+import {Animated} from '@react-native/animated/Animated';
 import {ImageResizeMode} from '../Image/ImageResizeMode';
 import {ColorValue} from './StyleSheet';
 

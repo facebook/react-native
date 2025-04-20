@@ -147,7 +147,7 @@ module.exports = {
   // Include any types exported in the Animated module together with its default export, so
   // you can references types such as Animated.Numeric
   get Animated() {
-    return require('./Libraries/Animated/Animated').default;
+    return require('@react-native/animated/Animated').default;
   },
   get Appearance() {
     return require('./Libraries/Utilities/Appearance');
@@ -196,7 +196,7 @@ module.exports = {
       .DynamicColorIOS;
   },
   get Easing() {
-    return require('./Libraries/Animated/Easing').default;
+    return require('@react-native/animated/Easing').default;
   },
   get findNodeHandle() {
     return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;
@@ -302,7 +302,7 @@ module.exports = {
       .unstable_batchedUpdates;
   },
   get useAnimatedValue() {
-    return require('./Libraries/Animated/useAnimatedValue').default;
+    return require('@react-native/animated/useAnimatedValue').default;
   },
   get useColorScheme() {
     return require('./Libraries/Utilities/useColorScheme').default;

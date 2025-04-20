@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
+import type AnimatedValue from '@react-native/animated/nodes/AnimatedValue';
 
 const React = require('react');
 const ReactNative = require('react-native');

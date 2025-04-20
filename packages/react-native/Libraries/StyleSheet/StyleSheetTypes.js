@@ -10,8 +10,6 @@
 
 'use strict';
 
-import type {WithAnimatedValue} from '../Animated/createAnimatedComponent';
-import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 import type {ImageResizeMode} from './../Image/ImageResizeMode';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
@@ -21,6 +19,8 @@ import type {
   ____ViewStyle_InternalOverrides,
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
+import type {WithAnimatedValue} from '@react-native/animated/createAnimatedComponent';
+import type AnimatedNode from '@react-native/animated/nodes/AnimatedNode';
 
 export type {____TransformStyle_Internal};
 

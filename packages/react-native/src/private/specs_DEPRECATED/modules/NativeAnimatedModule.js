@@ -10,8 +10,8 @@
 
 import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
-import shouldUseTurboAnimatedModule from '../../../../Libraries/Animated/shouldUseTurboAnimatedModule';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
+import shouldUseTurboAnimatedModule from '@react-native/animated/shouldUseTurboAnimatedModule';
 
 type EndResult = {finished: boolean, value?: number, ...};
 type EndCallback = (result: EndResult) => void;
