@@ -83,14 +83,20 @@ public object LegacyArchitectureLogger {
       name: String,
       logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
   ) {
-    when (logLevel) {
-      LegacyArchitectureLogLevel.ERROR -> {
-        throw AssertionException("$name $exceptionMessage")
-      }
-      LegacyArchitectureLogLevel.WARNING -> {
-        ReactSoftExceptionLogger.logSoftException(
-            ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS,
-            ReactNoCrashSoftException("$name $exceptionMessage"))
+    // Assert is being reported only in DEBUG mode to prevent over logging in production while we
+    // we are working on decoupling legacy / new architecture.
+    // Long term the assert will be executed in production and debug environments.
+    if (ReactBuildConfig.DEBUG) {
+      when (logLevel) {
+        LegacyArchitectureLogLevel.ERROR -> {
+          throw AssertionException("$name $exceptionMessage")
+        }
+
+        LegacyArchitectureLogLevel.WARNING -> {
+          ReactSoftExceptionLogger.logSoftException(
+              ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS,
+              ReactNoCrashSoftException("$name $exceptionMessage"))
+        }
       }
     }
   }
