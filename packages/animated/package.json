@@ -7,15 +7,6 @@
       "url": "git@github.com:facebook/react-native.git",
       "directory": "packages/animated"
     },
-    "files": [
-      "Animated.js",
-      "AnimatedMock.js",
-      "AnimatedValue.js",
-      "Easing.js",
-      "createAnimatedComponent.js",
-      "useAnimatedValue.js",
-      "Animated.d.ts"   
-    ],
     "license": "MIT",
     "peerDependencies": {
       "react-native": "*",
