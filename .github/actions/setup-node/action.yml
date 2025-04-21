@@ -8,6 +8,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: corepack enable
+      run: corepack enable
+      shell: bash
     - name: Setup node.js
       uses: actions/setup-node@v4
       with:
