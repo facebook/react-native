@@ -11,11 +11,11 @@ import PackageDescription
 let react = "React"
 
 let cxxRNDepHeaderSearchPath: (Int) -> CXXSetting = {
-  let prefix = (0..<$0).map { _ in "../" } .joined(separator: "")
+  let prefix = (0..<$0).map { _ in "../" }.joined(separator: "")
   return .headerSearchPath("\(prefix)third-party/ReactNativeDependencies.xcframework/Headers")
 }
 let cRNDepHeaderSearchPath: (Int) -> CSetting = {
-  let prefix = (0..<$0).map { _ in "../" } .joined(separator: "")
+  let prefix = (0..<$0).map { _ in "../" }.joined(separator: "")
   return .headerSearchPath("\(prefix)third-party/ReactNativeDependencies.xcframework/Headers")
 }
 
@@ -26,7 +26,7 @@ let package = Package(
       name: react,
       type: .dynamic,
       targets: [.reactDebug, .jsi, .logger, .mapbuffer]
-    ),
+    )
   ],
   targets: [
     .reactNativeTarget(
