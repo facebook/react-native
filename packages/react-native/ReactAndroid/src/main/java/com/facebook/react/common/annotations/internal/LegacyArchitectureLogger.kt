@@ -22,8 +22,6 @@ import com.facebook.react.common.build.ReactBuildConfig
  */
 public object LegacyArchitectureLogger {
 
-  private val tag: String = "LegacyArchitectureLogger"
-
   /**
    * Whether the OSS_LEGACY_WARNINGS_ENABLED should be enabled or not for OSS users. This is
    * controlled through the `legacyWarningsEnabled` property in the gradle.properties file.
