@@ -337,6 +337,95 @@ describe('VirtualizedList', () => {
     });
   });
 
+  it('empty component returns the original element if it is a React.Fragment', () => {
+    const listRef = React.createRef();
+    const fragment = (
+      <React.Fragment>
+        <div>Test</div>
+      </React.Fragment>
+    );
+
+    act(() => {
+      create(
+        <VirtualizedList
+          ref={listRef}
+          data={[]}
+          ListEmptyComponent={fragment}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+    });
+
+    const result = listRef.current._renderEmptyComponent(fragment, null);
+    expect(result).toBe(fragment);
+  });
+
+  it('empty component clones the element and adds onLayout and style props if not a Fragment', () => {
+    const listRef = React.createRef();
+    const element = <div>Test</div>;
+    const inversionStyle = {transform: [{scaleY: -1}]};
+
+    act(() => {
+      create(
+        <VirtualizedList
+          ref={listRef}
+          data={[]}
+          ListEmptyComponent={element}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+    });
+
+    const result = listRef.current._renderEmptyComponent(
+      element,
+      inversionStyle,
+    );
+
+    // The result should be a cloned element with additional props
+    expect(result).not.toBe(element);
+    expect(result.props).toEqual(
+      expect.objectContaining({
+        onLayout: expect.any(Function),
+        style: inversionStyle,
+      }),
+    );
+  });
+
+  it('empty component preserves original onLayout handler if present', () => {
+    const listRef = React.createRef();
+    const originalOnLayout = jest.fn();
+    const element = <div onLayout={originalOnLayout}>Test</div>;
+    const inversionStyle = {transform: [{scaleY: -1}]};
+
+    act(() => {
+      create(
+        <VirtualizedList
+          ref={listRef}
+          data={[]}
+          ListEmptyComponent={element}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+          renderItem={({item}) => <item value={item.key} />}
+        />,
+      );
+    });
+
+    const result = listRef.current._renderEmptyComponent(
+      element,
+      inversionStyle,
+    );
+
+    // Call the onLayout handler
+    result.props.onLayout({nativeEvent: {layout: {width: 100, height: 100}}});
+
+    // Both the original and the new onLayout should be called
+    expect(originalOnLayout).toHaveBeenCalled();
+  });
+
   it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', async () => {
     const ITEM_HEIGHT = 800;
     let data = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
