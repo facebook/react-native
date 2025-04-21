@@ -891,7 +891,11 @@ class VirtualizedList extends StateSafePureComponent<
     return key;
   }
 
-  _renderEmptyComponent(element, inversionStyle) {
+  _renderEmptyComponent(
+    element: ExactReactElement_DEPRECATED<any>,
+    inversionStyle: StyleProp<ViewStyle>,
+  ): React.Node {
+    // $FlowFixMe[prop-missing] React.Element internal inspection
     const isFragment = element.type === React.Fragment;
 
     if (isFragment) {
