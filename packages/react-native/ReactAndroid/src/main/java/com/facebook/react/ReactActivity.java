@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -23,6 +24,17 @@ public abstract class ReactActivity extends AppCompatActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private final ReactActivityDelegate mDelegate;
+
+  private final OnBackPressedCallback mBackPressedCallback =
+      new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+          if (!mDelegate.onBackPressed()) {
+            setEnabled(false);
+            getOnBackPressedDispatcher().onBackPressed();
+          }
+        }
+      };
 
   protected ReactActivity() {
     mDelegate = createReactActivityDelegate();
@@ -45,6 +57,7 @@ public abstract class ReactActivity extends AppCompatActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mDelegate.onCreate(savedInstanceState);
+    getOnBackPressedDispatcher().addCallback(this, mBackPressedCallback);
   }
 
   @Override
@@ -95,15 +108,8 @@ public abstract class ReactActivity extends AppCompatActivity
   }
 
   @Override
-  public void onBackPressed() {
-    if (!mDelegate.onBackPressed()) {
-      super.onBackPressed();
-    }
-  }
-
-  @Override
   public void invokeDefaultOnBackPressed() {
-    super.onBackPressed();
+    getOnBackPressedDispatcher().onBackPressed();
   }
 
   @Override
