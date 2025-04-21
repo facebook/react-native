@@ -407,8 +407,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Map contains the names (key) and types (value) of the ViewManager's props.
    */
   public Map<String, String> getNativeProps() {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
-        && ReactNativeFeatureFlags.disableShadowNodeOnNewArchitectureAndroid()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
       return ViewManagerPropertyUpdater.getNativeProps(getClass(), null);
     }
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
