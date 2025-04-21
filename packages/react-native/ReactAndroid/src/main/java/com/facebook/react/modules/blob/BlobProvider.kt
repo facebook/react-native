@@ -22,40 +22,28 @@ import java.util.concurrent.Executors
 public final class BlobProvider : ContentProvider() {
   private val executor: ExecutorService = Executors.newSingleThreadExecutor()
 
-  override fun onCreate(): Boolean {
-    return true
-  }
+  override fun onCreate(): Boolean = true
 
   override fun query(
     uri: Uri,
-    projection: Array<String>?,
-    selection: String?,
-    selectionArgs: Array<String>?,
+    projection: Array<String>,
+    selection: String,
+    selectionArgs: Array<String>,
     sortOrder: String?
-  ): Cursor? {
-    return null
-  }
+  ): Cursor? = null
 
-  override fun getType(uri: Uri): String? {
-    return null
-  }
+  override fun getType(uri: Uri): String? = null
 
-  override fun insert(uri: Uri, values: ContentValues?): Uri? {
-    return null
-  }
+  override fun insert(uri: Uri, values: ContentValues): Uri? = null
 
-  override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
-    return 0
-  }
+  override fun delete(uri: Uri, selection: String, selectionArgs: Array<String>): Int = 0
 
   override fun update(
     uri: Uri,
-    values: ContentValues?,
-    selection: String?,
-    selectionArgs: Array<String>?
-  ): Int {
-    return 0
-  }
+    values: ContentValues,
+    selection: String,
+    selectionArgs: Array<String>
+  ): Int = 0
 
   @Throws(FileNotFoundException::class)
   override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? {
@@ -64,7 +52,7 @@ public final class BlobProvider : ContentProvider() {
     }
 
     var blobModule: BlobModule? = null
-    val context = context!!.applicationContext
+    val context = context?.applicationContext ?: null
     if (context is ReactApplication) {
       val host = (context as ReactApplication).reactNativeHost
       val reactContext = host.reactInstanceManager.currentReactContext
@@ -121,7 +109,7 @@ public final class BlobProvider : ContentProvider() {
     return readSide
   }
 
-  public companion object {
+  private companion object {
     private const val PIPE_CAPACITY = 65536
   }
 }
