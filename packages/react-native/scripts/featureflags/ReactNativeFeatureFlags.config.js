@@ -257,7 +257,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableNewBackgroundAndBorderDrawables: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-09-24',
         description:
