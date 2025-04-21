@@ -21,9 +21,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockedStatic
-import org.mockito.Mockito.any
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -44,11 +44,11 @@ class ReactPropForShadowNodeSpecTest {
     yogaNodeFactory = mockStatic(YogaNodeFactory::class.java)
     yogaNodeFactory
         .`when`<YogaNode> { YogaNodeFactory.create(any()) }
-        .thenReturn(mock(YogaNode::class.java))
+        .thenReturn(mock<YogaNode>())
     yogaConfigFactory = mockStatic(YogaConfigFactory::class.java)
     yogaConfigFactory
         .`when`<YogaConfig> { YogaConfigFactory.create() }
-        .thenReturn(mock(YogaConfig::class.java))
+        .thenReturn(mock<YogaConfig>())
   }
 
   @After()
