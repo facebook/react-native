@@ -708,14 +708,19 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
 
   // Scheduling sync task.
   std::thread t1([this, &syncTaskExecutionCount, &signalTaskToSync]() {
+    signalTaskToSync.release();
     runtimeScheduler_->executeNowOnTheSameThread(
         [&syncTaskExecutionCount](jsi::Runtime& /*runtime*/) {
           syncTaskExecutionCount++;
         });
-    signalTaskToSync.release();
   });
 
   signalTaskToSync.acquire();
+
+  // Wait until both tasks (the work item and synchronous access request)
+  // are queued before proceeding with test assertions. Without this wait,
+  // the test would be flaky in a multithreaded environment.
+  stubQueue_->waitForTasks(2);
 
   // Normal priority task immediatelly yield in favour of the sync task.
   stubQueue_->tick();
