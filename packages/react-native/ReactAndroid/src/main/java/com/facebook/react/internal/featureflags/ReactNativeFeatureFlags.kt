@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<794bf258fbb453ea71a39c5459316a24>>
+ * @generated SignedSource<<8a0be46378bf8810ac52a44024bfd587>>
  */
 
 /**
@@ -59,12 +59,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
-
-  /**
-   * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
-   */
-  @JvmStatic
-  public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = accessor.disableShadowNodeOnNewArchitectureAndroid()
 
   /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.

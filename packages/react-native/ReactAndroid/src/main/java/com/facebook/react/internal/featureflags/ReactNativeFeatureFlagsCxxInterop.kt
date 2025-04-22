@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1f3845a6aad6babd4404adfb433f4b38>>
+ * @generated SignedSource<<f72540f3d9ad5f95ff3991e096a72c97>>
  */
 
 /**
@@ -37,8 +37,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun disableMainQueueSyncDispatchIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun disableShadowNodeOnNewArchitectureAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAccessibilityOrder(): Boolean
 
