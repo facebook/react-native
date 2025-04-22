@@ -1740,11 +1740,11 @@ function AccessibilityOrderExample(): React.Node {
   );
 }
 
-function TextLinkExample(): React.Node {
-  const handleLinkPress = (linkText: string) => {
-    Alert.alert('Link Clicked', `You clicked on the ${linkText} link!`);
-  };
+function handleLinkPress(linkText: string): void {
+  Alert.alert('Link Clicked', `You clicked on the ${linkText} link!`);
+}
 
+function TextLinkExample(): React.Node {
   return (
     <View style={{gap: 10}}>
       <RNTesterText>
@@ -1769,6 +1769,42 @@ function TextLinkExample(): React.Node {
         style={styles.link}>
         We can also focus text that are entirly links!
       </RNTesterText>
+    </View>
+  );
+}
+
+function LabelCooptingExample(): React.Node {
+  return (
+    <View style={{gap: 10}} experimental_accessibilityOrder={['a', 'b', 'c']}>
+      <View
+        accessible={true}
+        nativeID="a"
+        style={{
+          backgroundColor: 'lightseagreen',
+          padding: 10,
+          borderRadius: 5,
+        }}>
+        <RNTesterText>
+          This View is accessible and it will coopt this text. This text is not
+          accessible because it got coopted!
+        </RNTesterText>
+      </View>
+      <View
+        accessible={true}
+        nativeID="b"
+        style={{backgroundColor: 'lightcoral', padding: 10, borderRadius: 5}}>
+        <RNTesterText nativeID="c">
+          This View is accessible and it will coopt this text. This text is not
+          accessible because it got coopted! But it's{' '}
+          <RNTesterText
+            accessibilityRole="link"
+            onPress={() => handleLinkPress('first')}
+            style={styles.link}>
+            links
+          </RNTesterText>{' '}
+          are!
+        </RNTesterText>
+      </View>
     </View>
   );
 }
@@ -1880,6 +1916,12 @@ exports.examples = [
     title: 'Links in text',
     render(): React.MixedElement {
       return <TextLinkExample />;
+    },
+  },
+  {
+    title: 'Label coopting',
+    render(): React.MixedElement {
+      return <LabelCooptingExample />;
     },
   },
 ];
