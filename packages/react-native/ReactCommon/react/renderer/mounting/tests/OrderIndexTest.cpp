@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <algorithm>
 #include <memory>
 
 #include <gtest/gtest.h>
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
@@ -23,9 +24,24 @@
 
 namespace facebook::react {
 
-class OrderIndexTest : public ::testing::Test {
+class OrderIndexTestFeatureFlags : public ReactNativeFeatureFlagsDefaults {
+ public:
+  explicit OrderIndexTestFeatureFlags(
+      bool enableFixForParentTagDuringReparenting)
+      : enableFixForParentTagDuringReparenting_(
+            enableFixForParentTagDuringReparenting) {}
+
+  bool enableFixForParentTagDuringReparenting() override {
+    return enableFixForParentTagDuringReparenting_;
+  }
+
+ private:
+  bool enableFixForParentTagDuringReparenting_;
+};
+
+class OrderIndexTest : public testing::TestWithParam<bool> {
  protected:
-  ComponentBuilder builder_;
+  std::unique_ptr<ComponentBuilder> builder_;
   std::shared_ptr<RootShadowNode> rootShadowNode_;
   std::shared_ptr<ViewShadowNode> nodeA_;
   std::shared_ptr<ViewShadowNode> nodeB_;
@@ -35,7 +51,13 @@ class OrderIndexTest : public ::testing::Test {
   std::shared_ptr<RootShadowNode> currentRootShadowNode_;
   StubViewTree currentStubViewTree_;
 
-  OrderIndexTest() : builder_(simpleComponentBuilder()) {
+  void SetUp() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
+    ReactNativeFeatureFlags::override(
+        std::make_unique<OrderIndexTestFeatureFlags>(GetParam()));
+
+    builder_ = std::make_unique<ComponentBuilder>(simpleComponentBuilder());
+
     auto element = Element<RootShadowNode>()
                        .reference(rootShadowNode_)
                        .tag(1)
@@ -46,7 +68,7 @@ class OrderIndexTest : public ::testing::Test {
                            Element<ViewShadowNode>().tag(5).reference(nodeD_),
                        });
 
-    builder_.build(element);
+    builder_->build(element);
 
     mutateViewShadowNodeProps_(nodeA_, [](ViewProps& props) {
       auto& yogaStyle = props.yogaStyle;
@@ -75,6 +97,10 @@ class OrderIndexTest : public ::testing::Test {
         buildStubViewTreeWithoutUsingDifferentiator(*currentRootShadowNode_);
   }
 
+  void TearDown() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
+  }
+
   void mutateViewShadowNodeProps_(
       const std::shared_ptr<ViewShadowNode>& node,
       std::function<void(ViewProps& props)> callback) {
@@ -101,7 +127,7 @@ class OrderIndexTest : public ::testing::Test {
   }
 };
 
-TEST_F(OrderIndexTest, defaultOrderIsDocumentOrder) {
+TEST_P(OrderIndexTest, defaultOrderIsDocumentOrder) {
   testViewTree_([this](const StubViewTree& viewTree) {
     EXPECT_EQ(viewTree.size(), 5);
     EXPECT_EQ(viewTree.getRootStubView().children.size(), 4);
@@ -113,7 +139,7 @@ TEST_F(OrderIndexTest, defaultOrderIsDocumentOrder) {
   });
 }
 
-TEST_F(OrderIndexTest, basicZIndex) {
+TEST_P(OrderIndexTest, basicZIndex) {
   mutateViewShadowNodeProps_(
       nodeA_, [](ViewProps& props) { props.zIndex = 5; });
   mutateViewShadowNodeProps_(
@@ -134,7 +160,7 @@ TEST_F(OrderIndexTest, basicZIndex) {
   });
 }
 
-TEST_F(OrderIndexTest, negativeZIndex) {
+TEST_P(OrderIndexTest, negativeZIndex) {
   mutateViewShadowNodeProps_(
       nodeA_, [](ViewProps& props) { props.zIndex = 5; });
   mutateViewShadowNodeProps_(
@@ -155,7 +181,7 @@ TEST_F(OrderIndexTest, negativeZIndex) {
   });
 }
 
-TEST_F(OrderIndexTest, zeroZIndex) {
+TEST_P(OrderIndexTest, zeroZIndex) {
   mutateViewShadowNodeProps_(
       nodeC_, [](ViewProps& props) { props.zIndex = 0; });
   mutateViewShadowNodeProps_(
@@ -172,7 +198,7 @@ TEST_F(OrderIndexTest, zeroZIndex) {
   });
 }
 
-TEST_F(OrderIndexTest, staticBehindNonStatic) {
+TEST_P(OrderIndexTest, staticBehindNonStatic) {
   mutateViewShadowNodeProps_(nodeB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     yogaStyle.setPositionType(yoga::PositionType::Static);
@@ -195,7 +221,7 @@ TEST_F(OrderIndexTest, staticBehindNonStatic) {
   });
 }
 
-TEST_F(OrderIndexTest, zIndexStaticBehindNonStatic) {
+TEST_P(OrderIndexTest, zIndexStaticBehindNonStatic) {
   mutateViewShadowNodeProps_(
       nodeB_, [](ViewProps& props) { props.zIndex = 5; });
   mutateViewShadowNodeProps_(
@@ -217,7 +243,7 @@ TEST_F(OrderIndexTest, zIndexStaticBehindNonStatic) {
   });
 }
 
-TEST_F(OrderIndexTest, staticDoesNotGetZIndex) {
+TEST_P(OrderIndexTest, staticDoesNotGetZIndex) {
   mutateViewShadowNodeProps_(nodeB_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
     yogaStyle.setPositionType(yoga::PositionType::Static);
@@ -241,4 +267,10 @@ TEST_F(OrderIndexTest, staticDoesNotGetZIndex) {
     EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, nodeC_->getTag());
   });
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    enableFixForParentTagDuringReparenting,
+    OrderIndexTest,
+    testing::Values(false, true));
+
 } // namespace facebook::react
