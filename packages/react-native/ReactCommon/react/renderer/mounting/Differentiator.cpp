@@ -663,8 +663,6 @@ static void calculateShadowViewMutationsFlattener(
         // Case 1: child mode is the same as parent.
         // This is a flatten-flatten, or unflatten-unflatten.
         if (childReparentMode == reparentMode) {
-          // TODO(T217775046): Find a test case for this branch of view
-          // flattening + culling.
           calculateShadowViewMutationsFlattener(
               scope,
               childReparentMode,
@@ -679,8 +677,8 @@ static void calculateShadowViewMutationsFlattener(
                    : parentTag),
               subVisitedNewMap,
               subVisitedOldMap,
-              adjustedOldCullingContext,
-              adjustedNewCullingContext);
+              oldCullingContext,
+              newCullingContext);
         } else {
           // Get flattened nodes from either new or old tree
           // TODO(T217775046): Find a test case for this branch of view
