@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableFixForParentTagDuringReparenting:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
@@ -227,4 +228,67 @@ describe('ViewFlattening', () => {
       'Insert {type: "View", parentNativeID: "J", index: 1, nativeID: "B"}',
     ]);
   });
+});
+
+test('parent-child switching from unflattened-flattened to flattened-unflattened', () => {
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(
+      <View
+        style={{
+          marginTop: 100,
+          opacity: 0,
+        }}>
+        <View
+          style={{
+            marginTop: 50,
+          }}>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, backgroundColor: 'red'}}
+          />
+        </View>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  // force view to be flattened.
+  Fantom.runTask(() => {
+    root.render(
+      <View
+        style={{
+          marginTop: 100,
+        }}>
+        <View
+          style={{
+            marginTop: 50,
+            opacity: 0,
+          }}>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, backgroundColor: 'red'}}
+          />
+        </View>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "View", nativeID: "child"}',
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Delete {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
 });

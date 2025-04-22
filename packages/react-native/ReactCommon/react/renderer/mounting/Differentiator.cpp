@@ -740,22 +740,29 @@ static void calculateShadowViewMutationsFlattener(
             // Unflatten old list into new tree
             // TODO(T217775046): Find a test case for this branch of view
             // flattening + culling.
+            auto parentTagForUpdateWhenFlattened =
+                ReactNativeFeatureFlags::
+                    enableFixForParentTagDuringReparenting()
+                ? parentTagForUpdate
+                : oldTreeNodePair.shadowView.tag;
             calculateShadowViewMutationsFlattener(
                 scope,
-                ReparentMode::Unflatten,
+                /* reparentMode */ ReparentMode::Unflatten,
                 mutationContainer,
+                /* parentTag */
                 (reparentMode == ReparentMode::Flatten
                      ? parentTag
                      : newTreeNodePair.shadowView.tag),
-                unvisitedRecursiveChildPairs,
-                newTreeNodePair,
+                /* unvisitedOtherNodes */ unvisitedRecursiveChildPairs,
+                /* node */ newTreeNodePair,
+                /* parentTagForUpdate */
                 (reparentMode == ReparentMode::Flatten
-                     ? oldTreeNodePair.shadowView.tag
+                     ? parentTagForUpdateWhenFlattened
                      : parentTag),
-                subVisitedNewMap,
-                subVisitedOldMap,
-                adjustedOldCullingContext,
-                adjustedNewCullingContext);
+                /* parentSubVisitedOtherNewNodes */ subVisitedNewMap,
+                /* parentSubVisitedOtherOldNodes */ subVisitedOldMap,
+                /* oldCullingContext */ adjustedOldCullingContext,
+                /* newCullingContext */ adjustedNewCullingContext);
 
             // If old nodes were not visited, we know that we can delete them
             // now. They will be removed from the hierarchy by the outermost
