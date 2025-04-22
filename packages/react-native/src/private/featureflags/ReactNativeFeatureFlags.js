@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95280f033ae8492b6fdf610d0d94fff6>>
+ * @generated SignedSource<<e25a2aa9952304c70d9abd8d7e8f9f76>>
  * @flow strict
  */
 
@@ -55,6 +55,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
+  enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
@@ -190,6 +191,10 @@ export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGet
  * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
  */
 export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGetter('enableCppPropsIteratorSetter', false);
+/**
+ * This enables the fabric implementation of focus search so that we can focus clipped elements
+ */
+export const enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean> = createNativeFlagGetter('enableCustomFocusSearchOnClippedElementsAndroid', true);
 /**
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */

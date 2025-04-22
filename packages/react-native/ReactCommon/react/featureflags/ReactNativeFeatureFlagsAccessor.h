@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4338d98b457f8f70a9f8bbe8ab245ce8>>
+ * @generated SignedSource<<775dea42ec82d31964c9614d86b3e107>>
  */
 
 /**
@@ -41,6 +41,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableAccumulatedUpdatesInRawPropsAndroid();
   bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
+  bool enableCustomFocusSearchOnClippedElementsAndroid();
   bool enableEagerRootViewAttachment();
   bool enableFabricLogs();
   bool enableFabricRenderer();
@@ -85,7 +86,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -96,6 +97,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
+  std::atomic<std::optional<bool>> enableCustomFocusSearchOnClippedElementsAndroid_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;

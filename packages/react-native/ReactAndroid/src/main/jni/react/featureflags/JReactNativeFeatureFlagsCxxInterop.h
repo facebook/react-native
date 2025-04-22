@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e0ca5927c65c857463973df1f34f4b9d>>
+ * @generated SignedSource<<cc0e7eb2a209d3efa8acc0db64ead5e7>>
  */
 
 /**
@@ -55,6 +55,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableCppPropsIteratorSetter(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableCustomFocusSearchOnClippedElementsAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableEagerRootViewAttachment(
