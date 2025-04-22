@@ -26,6 +26,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 // Color
 @property (nonatomic, strong, nullable) UIColor *foregroundColor;
 @property (nonatomic, strong, nullable) UIColor *backgroundColor;
+@property (nonatomic, copy, nullable) NSArray *gradientColors;
 @property (nonatomic, assign) CGFloat opacity;
 // Font
 @property (nonatomic, copy, nullable) NSString *fontFamily;

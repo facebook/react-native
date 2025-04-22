@@ -46,6 +46,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   // Color
   _foregroundColor = textAttributes->_foregroundColor ?: _foregroundColor;
   _backgroundColor = textAttributes->_backgroundColor ?: _backgroundColor;
+  _gradientColors = textAttributes->_gradientColors ?: _gradientColors;
   _opacity =
       !isnan(textAttributes->_opacity) ? (isnan(_opacity) ? 1.0 : _opacity) * textAttributes->_opacity : _opacity;
 
@@ -293,6 +294,34 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 - (UIColor *)effectiveForegroundColor
 {
   UIColor *effectiveForegroundColor = _foregroundColor ?: [UIColor blackColor];
+
+  if (_gradientColors != nil) {
+      NSMutableArray *cgColors = [NSMutableArray array];
+      for (NSNumber *rawColor in _gradientColors) {
+          if (rawColor != nil) {
+              UIColor *color = [RCTConvert UIColor:@((0xFF << 24) | [rawColor integerValue])];
+              [cgColors addObject:(id)color.CGColor];
+          }
+      }
+      
+      if([cgColors count] > 0) {
+          CAGradientLayer *gradient = [CAGradientLayer layer];
+          // this pattern width corresponds roughly to desktop's pattern width
+          int patternWidth = 100;
+          CGFloat height = _lineHeight * self.effectiveFontSizeMultiplier;
+          gradient.frame = CGRectMake(0, 0, patternWidth, height);
+          gradient.colors = cgColors;
+          gradient.startPoint = CGPointMake(0.0, 0.5);
+          gradient.endPoint = CGPointMake(1.0, 0.5);
+
+          UIGraphicsBeginImageContextWithOptions(gradient.frame.size, NO, 0.0);
+          [gradient renderInContext:UIGraphicsGetCurrentContext()];
+          UIImage *gradientImage = UIGraphicsGetImageFromCurrentImageContext();
+          UIGraphicsEndImageContext();
+
+          effectiveForegroundColor = [UIColor colorWithPatternImage:gradientImage];
+      }
+  }
 
   if (!isnan(_opacity)) {
     effectiveForegroundColor =

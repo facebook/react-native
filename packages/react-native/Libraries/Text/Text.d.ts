@@ -218,6 +218,11 @@ export interface TextProps
   pressRetentionOffset?:
     | {top: number; left: number; bottom: number; right: number}
     | undefined;
+  
+  /**
+   * Adds a horizontal gradient using the int based color values.
+   */
+  gradientColors?: number[] | undefined;
 }
 
 /**
