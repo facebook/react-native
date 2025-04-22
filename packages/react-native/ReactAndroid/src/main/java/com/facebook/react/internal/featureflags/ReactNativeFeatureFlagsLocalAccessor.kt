@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5ea02b7c6aa699b226b7c44e52d8e484>>
+ * @generated SignedSource<<a80e0caafa18fc7ce4f889f7f9cc4373>>
  */
 
 /**
@@ -33,7 +33,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
-  private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
@@ -154,16 +153,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableCppPropsIteratorSetter()
       accessedFeatureFlags.add("enableCppPropsIteratorSetter")
       enableCppPropsIteratorSetterCache = cached
-    }
-    return cached
-  }
-
-  override fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean {
-    var cached = enableCustomFocusSearchOnClippedElementsAndroidCache
-    if (cached == null) {
-      cached = currentProvider.enableCustomFocusSearchOnClippedElementsAndroid()
-      accessedFeatureFlags.add("enableCustomFocusSearchOnClippedElementsAndroid")
-      enableCustomFocusSearchOnClippedElementsAndroidCache = cached
     }
     return cached
   }

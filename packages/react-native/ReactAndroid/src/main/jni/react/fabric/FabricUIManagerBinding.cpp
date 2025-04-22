@@ -253,11 +253,9 @@ jint FabricUIManagerBinding::findNextFocusableElement(
   return nextNode->getTag();
 }
 
-jintArray FabricUIManagerBinding::getRelativeAncestorList(
+jint FabricUIManagerBinding::findRelativeTopMostParent(
     jint rootTag,
     jint childTag) {
-  JNIEnv* env = jni::Environment::current();
-
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
   ShadowNode::Shared childShadowNode =
@@ -266,33 +264,27 @@ jintArray FabricUIManagerBinding::getRelativeAncestorList(
       uimanager->findShadowNodeByTag_DEPRECATED(rootTag);
 
   if (childShadowNode == nullptr || rootShadowNode == nullptr) {
-    return nullptr;
+    return -1;
   }
 
   ShadowNode::AncestorList ancestorList =
       childShadowNode->getFamily().getAncestors(*rootShadowNode);
 
   if (ancestorList.empty() || ancestorList.size() < 2) {
-    return nullptr;
+    return -1;
   }
 
   // ignore the first ancestor as it is the rootShadowNode itself
-  std::vector<int> ancestorTags;
   for (auto it = std::next(ancestorList.begin()); it != ancestorList.end();
        ++it) {
     auto& ancestor = *it;
     if (ancestor.first.get().getTraits().check(
             ShadowNodeTraits::Trait::FormsStackingContext)) {
-      ancestorTags.push_back(ancestor.first.get().getTag());
+      return ancestor.first.get().getTag();
     }
   }
 
-  jintArray result = env->NewIntArray(static_cast<jint>(ancestorTags.size()));
-
-  env->SetIntArrayRegion(
-      result, 0, static_cast<jint>(ancestorTags.size()), ancestorTags.data());
-
-  return result;
+  return -1;
 }
 
 // Used by non-bridgeless+Fabric
@@ -771,8 +763,8 @@ void FabricUIManagerBinding::registerNatives() {
           "findNextFocusableElement",
           FabricUIManagerBinding::findNextFocusableElement),
       makeNativeMethod(
-          "getRelativeAncestorList",
-          FabricUIManagerBinding::getRelativeAncestorList),
+          "findRelativeTopMostParent",
+          FabricUIManagerBinding::findRelativeTopMostParent),
   });
 }
 

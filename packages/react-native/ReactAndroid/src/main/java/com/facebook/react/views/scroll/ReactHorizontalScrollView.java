@@ -41,7 +41,6 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -777,12 +776,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
-    if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
-      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, true);
+    @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, true);
 
-      if (nextfocusableView != null) {
-        return nextfocusableView;
-      }
+    if (nextfocusableView != null) {
+      return nextfocusableView;
     }
 
     return super.focusSearch(focused, direction);

@@ -135,7 +135,7 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   jint
   findNextFocusableElement(jint parentTag, jint focusedTag, jint direction);
 
-  jintArray getRelativeAncestorList(jint rootTag, jint childTag);
+  jint findRelativeTopMostParent(jint rootTag, jint childTag);
 
   void uninstallFabricUIManager();
 

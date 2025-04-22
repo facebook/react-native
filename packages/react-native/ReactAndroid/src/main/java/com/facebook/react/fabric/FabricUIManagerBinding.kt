@@ -57,7 +57,7 @@ internal class FabricUIManagerBinding : HybridClassBase() {
 
   external fun findNextFocusableElement(parentTag: Int, focusedTag: Int, direction: Int): Int
 
-  external fun getRelativeAncestorList(rootTag: Int, childTag: Int): IntArray
+  external fun findRelativeTopMostParent(rootTag: Int, childTag: Int): Int
 
   external fun stopSurface(surfaceId: Int)
 
