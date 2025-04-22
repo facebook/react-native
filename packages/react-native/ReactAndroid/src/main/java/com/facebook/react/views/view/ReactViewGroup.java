@@ -507,9 +507,6 @@ public class ReactViewGroup extends ViewGroup
     Animation animation = child.getAnimation();
     boolean isAnimating = animation != null && !animation.hasEnded();
     boolean shouldSkipView = excludedViewsSet != null && excludedViewsSet.contains(child.getId());
-    if (excludedViewsSet != null) {
-      needUpdateClippingRecursive = true;
-    }
     // We don't want to clip a view that is currently focused at that might break focus navigation
     if (!intersects
         && !isViewClipped(child, idx)
@@ -521,7 +518,7 @@ public class ReactViewGroup extends ViewGroup
       // therefore invalidation is not necessary.
       removeViewInLayout(child);
       needUpdateClippingRecursive = true;
-    } else if (shouldSkipView || (intersects && isViewClipped(child, idx))) {
+    } else if ((shouldSkipView || intersects) && isViewClipped(child, idx)) {
       int adjustedIdx = idx - clippedSoFar;
       Assertions.assertCondition(adjustedIdx >= 0);
       setViewClipped(child, false);

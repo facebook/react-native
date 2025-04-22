@@ -305,8 +305,8 @@ public class FabricUIManager
     return serializedNextFocusableNodeMetrics;
   }
 
-  public @Nullable Integer findRelativeTopMostParent(int rootTag, int childTag) {
-    return mBinding != null ? mBinding.findRelativeTopMostParent(rootTag, childTag) : null;
+  public @Nullable int[] getRelativeAncestorList(int rootTag, int childTag) {
+    return mBinding != null ? mBinding.getRelativeAncestorList(rootTag, childTag) : null;
   }
 
   @Override

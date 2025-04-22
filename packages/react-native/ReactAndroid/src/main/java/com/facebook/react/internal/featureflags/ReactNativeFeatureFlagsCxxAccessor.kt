@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e462e70ca55296d1651678a7243508f>>
+ * @generated SignedSource<<2ebb741f6b7d8e293ee112ca68dac748>>
  */
 
 /**
@@ -29,6 +29,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
+  private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
@@ -139,6 +140,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableCppPropsIteratorSetter()
       enableCppPropsIteratorSetterCache = cached
+    }
+    return cached
+  }
+
+  override fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean {
+    var cached = enableCustomFocusSearchOnClippedElementsAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableCustomFocusSearchOnClippedElementsAndroid()
+      enableCustomFocusSearchOnClippedElementsAndroidCache = cached
     }
     return cached
   }

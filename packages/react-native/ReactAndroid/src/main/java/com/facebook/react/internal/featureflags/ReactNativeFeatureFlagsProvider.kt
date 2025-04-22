@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f3f828ba38e2b88b94a30234c46da607>>
+ * @generated SignedSource<<f11813bd6beb2a198df81975e9f69fea>>
  */
 
 /**
@@ -40,6 +40,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
+
+  @DoNotStrip public fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean
 
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 

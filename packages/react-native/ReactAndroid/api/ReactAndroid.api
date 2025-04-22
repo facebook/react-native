@@ -2344,10 +2344,10 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun dispatchCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun findNextFocusableElement (III)Ljava/lang/Integer;
-	public fun findRelativeTopMostParent (II)Ljava/lang/Integer;
 	public fun getColor (I[Ljava/lang/String;)I
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getPerformanceCounters ()Ljava/util/Map;
+	public fun getRelativeAncestorList (II)[I
 	public fun getThemeData (I[F)Z
 	public fun initialize ()V
 	public fun invalidate ()V

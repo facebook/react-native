@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2453ef4a88dff4e0151b7bce52ee9d04>>
+ * @generated SignedSource<<e3aaea4b1560ddfec08edd0e32827b9c>>
  * @flow strict
  */
 
@@ -33,6 +33,7 @@ export interface Spec extends TurboModule {
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
+  +enableCustomFocusSearchOnClippedElementsAndroid?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
