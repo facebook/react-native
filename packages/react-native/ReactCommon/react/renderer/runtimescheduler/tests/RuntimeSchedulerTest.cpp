@@ -708,11 +708,11 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
 
   // Scheduling sync task.
   std::thread t1([this, &syncTaskExecutionCount, &signalTaskToSync]() {
-    signalTaskToSync.release();
     runtimeScheduler_->executeNowOnTheSameThread(
         [&syncTaskExecutionCount](jsi::Runtime& /*runtime*/) {
           syncTaskExecutionCount++;
         });
+    signalTaskToSync.release();
   });
 
   signalTaskToSync.acquire();
