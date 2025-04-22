@@ -12,7 +12,6 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import com.facebook.infer.annotation.Nullsafe
 import com.facebook.react.ReactApplication
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -30,7 +29,7 @@ public final class BlobProvider : ContentProvider() {
     selection: String?,
     selectionArgs: Array<String>?,
     sortOrder: String?
-  ): Cursor? = null;
+  ): Cursor? = null
 
   override fun getType(uri: Uri): String? = null
 
@@ -55,8 +54,9 @@ public final class BlobProvider : ContentProvider() {
     val context = context?.applicationContext ?: null
     if (context is ReactApplication) {
       val host = (context as ReactApplication).reactNativeHost
-      val reactContext = host.reactInstanceManager.currentReactContext
-        ?: throw RuntimeException("No ReactContext associated with BlobProvider")
+      val reactContext =
+        host.reactInstanceManager.currentReactContext
+          ?: throw RuntimeException("No ReactContext associated with BlobProvider")
       blobModule = reactContext.getNativeModule(BlobModule::class.java)
     }
 
@@ -64,8 +64,9 @@ public final class BlobProvider : ContentProvider() {
       throw RuntimeException("No blob module associated with BlobProvider")
     }
 
-    val data = blobModule.resolve(uri)
-      ?: throw FileNotFoundException("Cannot open $uri, blob not found.")
+    val data =
+      blobModule.resolve(uri)
+        ?: throw FileNotFoundException("Cannot open $uri, blob not found.")
 
     val pipe: Array<ParcelFileDescriptor>
     try {
@@ -92,17 +93,15 @@ public final class BlobProvider : ContentProvider() {
       // Writing from a separate thread allows us to return the read side descriptor
       // immediately so that both writer and reader can work concurrently.
       // Reading from the pipe empties the buffer and allows the next chunks to be written.
-      val writer =
-        Runnable {
-          try {
-            ParcelFileDescriptor.AutoCloseOutputStream(writeSide)
-              .use { outputStream ->
-                outputStream.write(data)
-              }
-          } catch (exception: IOException) {
-            // no-op
+      val writer = Runnable {
+        try {
+          ParcelFileDescriptor.AutoCloseOutputStream(writeSide).use { outputStream ->
+            outputStream.write(data)
           }
+        } catch (exception: IOException) {
+          // no-op
         }
+      }
       executor.submit(writer)
     }
 
