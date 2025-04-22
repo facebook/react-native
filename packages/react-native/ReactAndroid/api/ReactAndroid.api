@@ -6374,23 +6374,23 @@ public final class com/facebook/react/views/text/ReactFontManager$Companion {
 
 public abstract class com/facebook/react/views/text/ReactTextAnchorViewManager : com/facebook/react/uimanager/BaseViewManager {
 	public fun <init> ()V
-	public fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
-	public fun setAdjustFontSizeToFit (Lcom/facebook/react/views/text/ReactTextView;Z)V
-	public fun setAndroidHyphenationFrequency (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
-	public fun setBorderColor (Lcom/facebook/react/views/text/ReactTextView;ILjava/lang/Integer;)V
-	public fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;IF)V
-	public fun setBorderStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
-	public fun setBorderWidth (Lcom/facebook/react/views/text/ReactTextView;IF)V
-	public fun setDataDetectorType (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
-	public fun setDisabled (Lcom/facebook/react/views/text/ReactTextView;Z)V
-	public fun setEllipsizeMode (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
-	public fun setFontSize (Lcom/facebook/react/views/text/ReactTextView;F)V
-	public fun setIncludeFontPadding (Lcom/facebook/react/views/text/ReactTextView;Z)V
-	public fun setLetterSpacing (Lcom/facebook/react/views/text/ReactTextView;F)V
-	public fun setNumberOfLines (Lcom/facebook/react/views/text/ReactTextView;I)V
-	public fun setSelectable (Lcom/facebook/react/views/text/ReactTextView;Z)V
-	public fun setSelectionColor (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Integer;)V
-	public fun setTextAlignVertical (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public final fun setAccessible (Lcom/facebook/react/views/text/ReactTextView;Z)V
+	public final fun setAdjustFontSizeToFit (Lcom/facebook/react/views/text/ReactTextView;Z)V
+	public final fun setAndroidHyphenationFrequency (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public final fun setBorderColor (Lcom/facebook/react/views/text/ReactTextView;ILjava/lang/Integer;)V
+	public final fun setBorderRadius (Lcom/facebook/react/views/text/ReactTextView;IF)V
+	public final fun setBorderStyle (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public final fun setBorderWidth (Lcom/facebook/react/views/text/ReactTextView;IF)V
+	public final fun setDataDetectorType (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public final fun setDisabled (Lcom/facebook/react/views/text/ReactTextView;Z)V
+	public final fun setEllipsizeMode (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public final fun setFontSize (Lcom/facebook/react/views/text/ReactTextView;F)V
+	public final fun setIncludeFontPadding (Lcom/facebook/react/views/text/ReactTextView;Z)V
+	public final fun setLetterSpacing (Lcom/facebook/react/views/text/ReactTextView;F)V
+	public final fun setNumberOfLines (Lcom/facebook/react/views/text/ReactTextView;I)V
+	public final fun setSelectable (Lcom/facebook/react/views/text/ReactTextView;Z)V
+	public final fun setSelectionColor (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Integer;)V
+	public final fun setTextAlignVertical (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 }
 
 public class com/facebook/react/views/text/ReactTextShadowNode : com/facebook/react/views/text/ReactBaseTextShadowNode {
