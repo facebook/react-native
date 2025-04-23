@@ -770,6 +770,22 @@ public open class ReactTextInputManager public constructor() :
     view.returnKeyType = returnKeyType
   }
 
+  @ReactProp(name = "acceptDragAndDropTypes")
+  public fun setAcceptDragAndDropTypes(
+      view: ReactEditText,
+      acceptDragAndDropTypes: ReadableArray?
+  ) {
+    if (acceptDragAndDropTypes == null) {
+      view.dragAndDropFilter = null
+    } else {
+      val acceptedTypes = mutableListOf<String>()
+      for (i in 0 until acceptDragAndDropTypes.size()) {
+        acceptDragAndDropTypes.getString(i)?.also(acceptedTypes::add)
+      }
+      view.dragAndDropFilter = acceptedTypes
+    }
+  }
+
   @ReactProp(name = "disableFullscreenUI", defaultBoolean = false)
   public fun setDisableFullscreenUI(view: ReactEditText, disableFullscreenUI: Boolean) {
     view.disableFullscreenUI = disableFullscreenUI
