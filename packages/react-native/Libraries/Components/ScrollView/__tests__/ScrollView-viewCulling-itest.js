@@ -1468,3 +1468,95 @@ test('flattening and deleting a subtree that is partially culled', () => {
     'Delete {type: "View", nativeID: "child"}',
   ]);
 });
+
+test('parent-child switching from unflattened-flattened to flattened-unflattened and grandchild is culled', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+  // First render unflattened view container with flattened child that has a culled grandchild.
+  Fantom.runTask(() => {
+    root.render(
+      <ScrollView
+        style={{height: 100, width: 100}}
+        contentOffset={{x: 0, y: 60}}>
+        <View
+          style={{
+            marginTop: 100,
+            opacity: 0,
+          }}>
+          <View
+            style={{
+              marginTop: 50,
+            }}>
+            <View
+              nativeID={'grandchild'}
+              style={{height: 10, width: 10, marginTop: 11}}
+            />
+          </View>
+        </View>
+      </ScrollView>,
+    );
+  });
+
+  // Note that `grandchild` is not mounted.
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  let maybeNode = null;
+
+  // Now change unflattened view container to flattened and change its child to be unflattened.
+  Fantom.runTask(() => {
+    root.render(
+      <ScrollView
+        style={{height: 100, width: 100}}
+        ref={node => {
+          maybeNode = node;
+        }}
+        contentOffset={{x: 0, y: 60}}>
+        <View
+          style={{
+            marginTop: 100,
+          }}>
+          <View
+            style={{
+              marginTop: 50,
+              opacity: 0,
+            }}>
+            <View
+              nativeID={'grandchild'}
+              style={{height: 10, width: 10, marginTop: 11}}
+            />
+          </View>
+        </View>
+      </ScrollView>,
+    );
+  });
+
+  // Note that `grandchild` is not mounted.
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Delete {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+  ]);
+
+  const element = ensureInstance(maybeNode, ReactNativeElement);
+
+  // Scroll to reveal grandchild.
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 70,
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "grandchild"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "grandchild"}',
+  ]);
+});
