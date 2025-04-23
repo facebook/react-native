@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95280f033ae8492b6fdf610d0d94fff6>>
+ * @generated SignedSource<<387d9eb8d5226806b0d305fd5df7347f>>
  * @flow strict
  */
 
@@ -51,6 +51,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
+  disableShadowNodeOnNewArchitectureAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -174,6 +175,10 @@ export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlag
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
+/**
+ * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
+ */
+export const disableShadowNodeOnNewArchitectureAndroid: Getter<boolean> = createNativeFlagGetter('disableShadowNodeOnNewArchitectureAndroid', true);
 /**
  * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
  */

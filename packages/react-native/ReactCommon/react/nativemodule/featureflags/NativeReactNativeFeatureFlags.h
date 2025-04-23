@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5bd90040747e90e28f36243cf6c473d0>>
+ * @generated SignedSource<<ef88b6b0dae3713d8d518a0a9a08e8c1>>
  */
 
 /**
@@ -46,6 +46,8 @@ class NativeReactNativeFeatureFlags
   bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
+
+  bool disableShadowNodeOnNewArchitectureAndroid(jsi::Runtime& runtime);
 
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
