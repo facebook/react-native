@@ -720,7 +720,7 @@ public class ReactViewGroup extends ViewGroup
             public void run() {
               if (!child.isShown()) {
                 ReactSoftExceptionLogger.logSoftException(
-                    TAG,
+                    ReactSoftExceptionLogger.Categories.CLIPPING_PROHIBITED_VIEW,
                     new ReactNoCrashSoftException(
                         "Child view has been added to Parent view in which it is clipped and not"
                             + " visible. This is not legal for this particular child view. Child: ["
