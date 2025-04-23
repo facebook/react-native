@@ -29,7 +29,7 @@ steps:
 
   - script: |
       echo "//registry.npmjs.org/:_authToken=$(npmAuthToken)" > ~/.npmrc
-      yarn nx release publish --excludeTaskDependencies
+      yarn nx release publish --tag ${{ parameters['publishTag'] }} --excludeTaskDependencies 
     displayName: Publish packages
     condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
 
