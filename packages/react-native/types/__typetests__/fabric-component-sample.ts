@@ -43,7 +43,7 @@ export type SampleViewType = NativeComponentType<NativeProps>;
 
 interface NativeCommands {
   changeBackgroundColor: (
-    viewRef: React.ElementRef<SampleViewType>,
+    viewRef: React.ComponentRef<SampleViewType>,
     color: string,
   ) => void;
 }
