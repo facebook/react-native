@@ -675,6 +675,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         ref={(ref: $FlowFixMe)}
         {...otherProps}
         {...eventHandlers}
+        acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
