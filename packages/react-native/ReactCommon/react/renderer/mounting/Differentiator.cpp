@@ -854,8 +854,6 @@ static void calculateShadowViewMutationsFlattener(
 
       if (!treeChildPair.flattened) {
         ViewNodePairScope innerScope{};
-        // TODO(T217775046): Find a test case for this branch of view
-        // flattening + culling.
         calculateShadowViewMutations(
             innerScope,
             mutationContainer.destructiveDownwardMutations,
