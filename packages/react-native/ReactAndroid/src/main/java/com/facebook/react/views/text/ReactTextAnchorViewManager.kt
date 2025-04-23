@@ -167,7 +167,7 @@ internal abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?>
               "borderBottomColor"],
       customType = "Color")
   public fun setBorderColor(view: ReactTextView, index: Int, color: Int?) {
-    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color)
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.values()[index], color)
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
