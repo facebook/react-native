@@ -12,9 +12,11 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {View} from 'react-native';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('ViewFlattening', () => {
   /**
@@ -291,4 +293,78 @@ test('parent-child switching from unflattened-flattened to flattened-unflattened
     'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
     'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
+});
+
+describe('reconciliation of setNativeProps and React commit', () => {
+  it('props set by setNativeProps must not be overriden by React commit', () => {
+    const root = Fantom.createRoot();
+    let maybeNode;
+
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={node => {
+            maybeNode = node;
+          }}
+          nativeID="first native id"
+          testID="first test id"
+        />,
+      );
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID', 'testID'],
+        })
+        .toJSX(),
+    ).toEqual(
+      <rn-view nativeID={'first native id'} testID={'first test id'} />,
+    );
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    Fantom.runTask(() => {
+      // Calling `setNativeProps` forces bug https://github.com/facebook/react-native/issues/47476 to manifest.
+      // The bug is about a collision between `setNativeProps` and `props` and how they must be applied in the correct order.
+      // When a prop is set via regular React commit, it must be respected by `setNativeProps` and vice versa.
+      // Learn more https://github.com/facebook/react-native/pull/47669.
+      element.setNativeProps({testID: 'second test id'});
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID', 'testID'],
+        })
+        .toJSX(),
+    ).toEqual(
+      <rn-view nativeID={'first native id'} testID={'second test id'} />,
+    );
+
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={node => {
+            maybeNode = node;
+          }}
+          nativeID="second native id"
+          // testID was changed by `setNativeProps` and React does not know about it.
+          // Therefore, it will treat testID as unchanged.
+          // Fabric must correctly reconcile the changes coming from React and `setNativeProps`.
+          testID="first test id"
+        />,
+      );
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID', 'testID'],
+        })
+        .toJSX(),
+    ).toEqual(
+      <rn-view nativeID={'second native id'} testID={'second test id'} />,
+    );
+  });
 });
