@@ -174,8 +174,9 @@ def use_react_native! (
     pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
     pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
     pod 'fast_float', :podspec => "#{prefix}/third-party-podspecs/fast_float.podspec"
-    pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
+    pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec", :modular_headers => true
     pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
+    pod 'SocketRocket', "~> #{Helpers::Constants::socket_rocket_config[:version]}", :modular_headers => true
   else
     pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
   end
