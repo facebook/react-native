@@ -11,13 +11,9 @@ import android.text.Layout
 import android.text.TextUtils
 import android.text.util.Linkify
 import android.view.Gravity
-import android.view.View
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
-import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderRadius
-import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderStyle
-import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderWidth
+import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
@@ -31,15 +27,15 @@ import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHighlight
 
 /**
- * Abstract class for anchor `<Text>`-ish spannable views, such as [TextView] or [EditText].
+ * Previously a superclass of multiple text view managers. Now only used by [ReactTextViewManager].
  *
  * This is a "shadowing" view manager, which means that the [NativeViewHierarchyManager] will NOT
  * manage children of native [TextView] instances instantiated by this manager. Instead we
  * use @{link ReactBaseTextShadowNode} hierarchy to calculate a [Spannable] text represented the
  * whole text subtree.
  */
-public abstract class ReactTextAnchorViewManager<T : View?, C : ReactBaseTextShadowNode?> :
-    BaseViewManager<T, C>() {
+internal abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
+    BaseViewManager<ReactTextView, C>() {
 
   @ReactProp(name = "accessible")
   public fun setAccessible(view: ReactTextView, accessible: Boolean) {
@@ -130,20 +126,20 @@ public abstract class ReactTextAnchorViewManager<T : View?, C : ReactBaseTextSha
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
       defaultFloat = Float.NaN)
-  public fun setBorderRadius(view: ReactTextView?, index: Int, borderRadius: Float) {
+  public fun setBorderRadius(view: ReactTextView, index: Int, borderRadius: Float) {
     val radius =
         if (java.lang.Float.isNaN(borderRadius)) {
           null
         } else {
           LengthPercentage(borderRadius, LengthPercentageType.POINT)
         }
-    setBorderRadius(checkNotNull(view), BorderRadiusProp.entries[index], radius)
+    BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius)
   }
 
   @ReactProp(name = "borderStyle")
-  public fun setBorderStyle(view: ReactTextView?, borderStyle: String?) {
+  public fun setBorderStyle(view: ReactTextView, borderStyle: String?) {
     val parsedBorderStyle = if (borderStyle == null) null else fromString(borderStyle)
-    setBorderStyle(checkNotNull(view), parsedBorderStyle)
+    BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle)
   }
 
   @ReactPropGroup(
@@ -157,8 +153,8 @@ public abstract class ReactTextAnchorViewManager<T : View?, C : ReactBaseTextSha
               ViewProps.BORDER_START_WIDTH,
               ViewProps.BORDER_END_WIDTH],
       defaultFloat = Float.NaN)
-  public fun setBorderWidth(view: ReactTextView?, index: Int, width: Float) {
-    setBorderWidth(checkNotNull(view), LogicalEdge.entries[index], width)
+  public fun setBorderWidth(view: ReactTextView, index: Int, width: Float) {
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
 
   @ReactPropGroup(
@@ -170,8 +166,8 @@ public abstract class ReactTextAnchorViewManager<T : View?, C : ReactBaseTextSha
               "borderTopColor",
               "borderBottomColor"],
       customType = "Color")
-  public fun setBorderColor(view: ReactTextView?, index: Int, color: Int?) {
-    setBorderColor(checkNotNull(view), LogicalEdge.ALL, color)
+  public fun setBorderColor(view: ReactTextView, index: Int, color: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color)
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)

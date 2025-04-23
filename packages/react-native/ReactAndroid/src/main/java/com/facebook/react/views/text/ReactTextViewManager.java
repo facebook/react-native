@@ -38,8 +38,7 @@ import java.util.Map;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
-public class ReactTextViewManager
-    extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
+public class ReactTextViewManager extends ReactTextAnchorViewManager<ReactTextShadowNode>
     implements IViewManagerWithChildren {
 
   private static final String TAG = "ReactTextViewManager";
