@@ -29,7 +29,10 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
 
 using namespace facebook::react;
 
-@interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
+@interface RCTTextInputComponentView () <
+    RCTBackedTextInputDelegate,
+    RCTTextInputViewProtocol,
+    UIDropInteractionDelegate>
 @end
 
 static NSSet<NSNumber *> *returnKeyTypesSet;
@@ -305,6 +308,19 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   if (newTextInputProps.disableKeyboardShortcuts != oldTextInputProps.disableKeyboardShortcuts) {
     _backedTextInputView.disableKeyboardShortcuts = newTextInputProps.disableKeyboardShortcuts;
+  }
+
+  if (newTextInputProps.acceptDragAndDropTypes != oldTextInputProps.acceptDragAndDropTypes) {
+    if (!newTextInputProps.acceptDragAndDropTypes.has_value()) {
+      _backedTextInputView.acceptDragAndDropTypes = nil;
+    } else {
+      auto &vector = newTextInputProps.acceptDragAndDropTypes.value();
+      NSMutableArray<NSString *> *array = [NSMutableArray arrayWithCapacity:vector.size()];
+      for (const std::string &str : vector) {
+        [array addObject:[NSString stringWithUTF8String:str.c_str()]];
+      }
+      _backedTextInputView.acceptDragAndDropTypes = array;
+    }
   }
 
   [super updateProps:props oldProps:oldProps];
