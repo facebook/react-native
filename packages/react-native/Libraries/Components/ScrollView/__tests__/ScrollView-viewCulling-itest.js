@@ -1398,3 +1398,73 @@ test('unflattening and creating a subtree that is partially culled', () => {
     'Insert {type: "View", parentNativeID: "child", index: 0, nativeID: "grandchild"}',
   ]);
 });
+
+test('flattening and deleting a subtree that is partially culled', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+  // First render with a unflattened view container that is visible and a subtree that is partially culled.
+  Fantom.runTask(() => {
+    root.render(
+      <ScrollView
+        style={{height: 100, width: 100}}
+        contentOffset={{x: 0, y: 111}}>
+        <View style={{marginTop: 200, opacity: 0.5}}>
+          <View
+            nativeID="child"
+            style={{
+              marginTop: 10,
+              height: 10,
+              width: 10,
+            }}>
+            <View
+              nativeID="grandchild"
+              style={{
+                marginTop: 5,
+                height: 5,
+                width: 5,
+              }}
+            />
+          </View>
+        </View>
+      </ScrollView>,
+    );
+  });
+
+  // All views are mounted, except for the grandchild.
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  // Now change opacity to the default to flatten the container and delete container's subtree.
+  Fantom.runTask(() => {
+    root.render(
+      <ScrollView
+        style={{height: 100, width: 100}}
+        contentOffset={{x: 0, y: 111}}>
+        <View
+          style={{
+            marginTop: 200,
+          }}
+        />
+      </ScrollView>,
+    );
+  });
+
+  // Note that the grandchild is not deleted because it was not previously mounted.
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+    'Update {type: "View", nativeID: (N/A)}',
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Delete {type: "View", nativeID: (N/A)}',
+    'Delete {type: "View", nativeID: "child"}',
+  ]);
+});
