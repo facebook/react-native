@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c3b70d43d96674bcd908c8e595df321e>>
+ * @generated SignedSource<<dd91fc4fb2a254412ea8e0ad5821ca08>>
  */
 
 /**
@@ -63,6 +63,11 @@ class ReactNativeFeatureFlags {
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
+   * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
+   */
+  RN_EXPORT static bool disableShadowNodeOnNewArchitectureAndroid();
 
   /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.

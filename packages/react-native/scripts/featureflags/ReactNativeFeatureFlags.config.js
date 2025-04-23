@@ -102,6 +102,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableShadowNodeOnNewArchitectureAndroid: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-04-07',
+        description:
+          'Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {
