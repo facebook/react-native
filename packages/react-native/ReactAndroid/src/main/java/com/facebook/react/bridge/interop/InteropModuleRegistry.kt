@@ -26,14 +26,10 @@ internal class InteropModuleRegistry {
 
   private val supportedModules = mutableMapOf<Class<*>, Any?>()
 
-  fun <T : JavaScriptModule?> shouldReturnInteropModule(requestedModule: Class<T>): Boolean {
-    return checkReactFeatureFlagsConditions() && supportedModules.containsKey(requestedModule)
-  }
-
   fun <T : JavaScriptModule?> getInteropModule(requestedModule: Class<T>): T? {
     return if (checkReactFeatureFlagsConditions()) {
       @Suppress("UNCHECKED_CAST")
-      supportedModules[requestedModule] as? T?
+      supportedModules[requestedModule] as? T
     } else {
       null
     }

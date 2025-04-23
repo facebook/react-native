@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This provides an implementation of the public CatalystInstance instance. It is public because it
- * is built by XReactInstanceManager which is in a different package.
+ * is built by ReactInstanceManager which is in a different package.
  */
 @DoNotStrip
 @LegacyArchitecture
