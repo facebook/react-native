@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<794bf258fbb453ea71a39c5459316a24>>
+ * @generated SignedSource<<a482d8bfae45b34898278328a0eb20c0>>
  */
 
 /**
@@ -61,12 +61,6 @@ public object ReactNativeFeatureFlags {
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
 
   /**
-   * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
-   */
-  @JvmStatic
-  public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = accessor.disableShadowNodeOnNewArchitectureAndroid()
-
-  /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
    */
   @JvmStatic
@@ -107,6 +101,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
+
+  /**
+   * This feature flag enables a fix for reparenting fix in differentiator
+   */
+  @JvmStatic
+  public fun enableFixForParentTagDuringReparenting(): Boolean = accessor.enableFixForParentTagDuringReparenting()
 
   /**
    * Enables font scale changes updating layout for measurable nodes.

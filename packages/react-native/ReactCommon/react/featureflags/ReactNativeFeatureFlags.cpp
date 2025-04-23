@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55680628f0480fce8c955fbde539ae47>>
+ * @generated SignedSource<<5ee10cdf8f5e3695ce4f73373291935e>>
  */
 
 /**
@@ -46,10 +46,6 @@ bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
 }
 
-bool ReactNativeFeatureFlags::disableShadowNodeOnNewArchitectureAndroid() {
-  return getAccessor().disableShadowNodeOnNewArchitectureAndroid();
-}
-
 bool ReactNativeFeatureFlags::enableAccessibilityOrder() {
   return getAccessor().enableAccessibilityOrder();
 }
@@ -76,6 +72,10 @@ bool ReactNativeFeatureFlags::enableFabricLogs() {
 
 bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
+}
+
+bool ReactNativeFeatureFlags::enableFixForParentTagDuringReparenting() {
+  return getAccessor().enableFixForParentTagDuringReparenting();
 }
 
 bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<23e97cba20fdf4afc991cbae70c57b1f>>
+ * @generated SignedSource<<95280f033ae8492b6fdf610d0d94fff6>>
  * @flow strict
  */
 
@@ -51,7 +51,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
-  disableShadowNodeOnNewArchitectureAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -59,6 +58,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
+  enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
@@ -175,10 +175,6 @@ export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlag
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
 /**
- * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
- */
-export const disableShadowNodeOnNewArchitectureAndroid: Getter<boolean> = createNativeFlagGetter('disableShadowNodeOnNewArchitectureAndroid', true);
-/**
  * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
  */
 export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter('enableAccessibilityOrder', false);
@@ -206,6 +202,10 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
  * Enables the use of the Fabric renderer in the whole app.
  */
 export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
+/**
+ * This feature flag enables a fix for reparenting fix in differentiator
+ */
+export const enableFixForParentTagDuringReparenting: Getter<boolean> = createNativeFlagGetter('enableFixForParentTagDuringReparenting', false);
 /**
  * Enables font scale changes updating layout for measurable nodes.
  */
@@ -237,7 +237,7 @@ export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('e
 /**
  * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
  */
-export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', false);
+export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', true);
 /**
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */

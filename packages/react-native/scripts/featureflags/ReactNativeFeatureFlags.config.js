@@ -102,17 +102,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableShadowNodeOnNewArchitectureAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-04-07',
-        description:
-          'Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {
@@ -184,6 +173,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    enableFixForParentTagDuringReparenting: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-22',
+        description:
+          'This feature flag enables a fix for reparenting fix in differentiator',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: false,
@@ -257,7 +257,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableNewBackgroundAndBorderDrawables: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-09-24',
         description:

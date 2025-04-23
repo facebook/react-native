@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<377c3de6bcd7de45efa0d58e0de94fb1>>
+ * @generated SignedSource<<2eb8786fbcf716f02200770bba667f48>>
  */
 
 /**
@@ -47,10 +47,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool disableShadowNodeOnNewArchitectureAndroid() override {
-    return true;
-  }
-
   bool enableAccessibilityOrder() override {
     return false;
   }
@@ -76,6 +72,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFabricRenderer() override {
+    return false;
+  }
+
+  bool enableFixForParentTagDuringReparenting() override {
     return false;
   }
 
@@ -108,7 +108,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableNewBackgroundAndBorderDrawables() override {
-    return false;
+    return true;
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {

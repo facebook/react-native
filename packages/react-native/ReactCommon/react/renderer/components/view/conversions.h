@@ -1251,7 +1251,7 @@ inline void fromRawValue(
         }
       }
 
-      if (colorStops.empty()) {
+      if (!colorStops.empty()) {
         linearGradient.colorStops = colorStops;
       }
 
@@ -1328,7 +1328,7 @@ inline void fromRawValue(
         }
       }
 
-      if (colorStops.empty()) {
+      if (!colorStops.empty()) {
         radialGradient.colorStops = colorStops;
       }
 
