@@ -367,4 +367,61 @@ describe('reconciliation of setNativeProps and React commit', () => {
       <rn-view nativeID={'second native id'} testID={'second test id'} />,
     );
   });
+
+  it('allows React commit to override value set by setNativeProps', () => {
+    const root = Fantom.createRoot();
+    let maybeNode;
+
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={node => {
+            maybeNode = node;
+          }}
+          nativeID="first native id"
+        />,
+      );
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID'],
+        })
+        .toJSX(),
+    ).toEqual(<rn-view nativeID={'first native id'} />);
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    Fantom.runTask(() => {
+      element.setNativeProps({nativeID: 'second native id'});
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID'],
+        })
+        .toJSX(),
+    ).toEqual(<rn-view nativeID={'second native id'} />);
+
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={node => {
+            maybeNode = node;
+          }}
+          nativeID="third native id"
+        />,
+      );
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID'],
+        })
+        .toJSX(),
+    ).toEqual(<rn-view nativeID={'third native id'} />);
+  });
 });
