@@ -5546,18 +5546,6 @@ public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager : co
 public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager$Companion {
 }
 
-public final class com/facebook/react/views/drawer/events/DrawerSlideEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerSlideEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (IF)V
-	public fun <init> (IIF)V
-	public fun getEventName ()Ljava/lang/String;
-	public final fun getOffset ()F
-}
-
-public final class com/facebook/react/views/drawer/events/DrawerSlideEvent$Companion {
-}
-
 public final class com/facebook/react/views/drawer/events/DrawerStateChangedEvent : com/facebook/react/uimanager/events/Event {
 	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerStateChangedEvent$Companion;
 	public static final field EVENT_NAME Ljava/lang/String;
