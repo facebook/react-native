@@ -19,10 +19,6 @@
   "engines": {
     "node": ">=18"
   },
-  "exports": {
-    ".": "./index.js",
-    "./package.json": "./package.json"
-  },
   "files": [
     "index.js",
     "index.d.ts",
