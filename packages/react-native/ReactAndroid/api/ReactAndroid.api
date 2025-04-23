@@ -1320,6 +1320,7 @@ public final class com/facebook/react/bridge/ReactSoftExceptionLogger {
 }
 
 public final class com/facebook/react/bridge/ReactSoftExceptionLogger$Categories {
+	public static final field CLIPPING_PROHIBITED_VIEW Ljava/lang/String;
 	public static final field INSTANCE Lcom/facebook/react/bridge/ReactSoftExceptionLogger$Categories;
 	public static final field RVG_IS_VIEW_CLIPPED Ljava/lang/String;
 	public static final field RVG_ON_VIEW_REMOVED Ljava/lang/String;
