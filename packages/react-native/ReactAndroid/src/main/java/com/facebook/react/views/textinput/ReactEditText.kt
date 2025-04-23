@@ -28,6 +28,7 @@ import android.text.method.KeyListener
 import android.text.method.QwertyKeyListener
 import android.util.TypedValue
 import android.view.ActionMode
+import android.view.DragEvent
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.Menu
@@ -121,6 +122,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   public var stagedInputType: Int
   protected var containsImages: Boolean = false
   public var submitBehavior: String? = null
+  public var dragAndDropFilter: List<String>? = null
 
   private var disableFullscreen: Boolean
   private var selectionWatcher: SelectionWatcher? = null
@@ -1190,6 +1192,17 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     super.onDraw(canvas)
+  }
+
+  public override fun onDragEvent(event: DragEvent): Boolean {
+    val dragFilter = dragAndDropFilter
+    if (dragFilter != null && event.action == DragEvent.ACTION_DRAG_STARTED) {
+      val shouldHandle = dragFilter.any { filter -> event.clipDescription.hasMimeType(filter) }
+      if (!shouldHandle) {
+        return false
+      }
+    }
+    return super.onDragEvent(event)
   }
 
   /**
