@@ -9,7 +9,6 @@
 
 #import <UserNotifications/UserNotifications.h>
 
-#import <RCTAppDelegate+Protected.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
@@ -24,6 +23,13 @@
 #import <RNTMyNativeViewComponentView.h>
 #endif
 
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+#define USE_OSS_CODEGEN 1
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
+#else
+#define USE_OSS_CODEGEN 0
+#endif
+
 static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
@@ -33,19 +39,21 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  self.moduleName = @"RNTesterApp";
-  // You can add your custom initial props in the dictionary below.
-  // They will be passed down to the ViewController used by React Native.
-  self.initialProps = [self prepareInitialProps];
+  self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self];
+#if USE_OSS_CODEGEN
+  self.dependencyProvider = [RCTAppDependencyProvider new];
+#endif
+
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+
+  [self.reactNativeFactory startReactNativeWithModuleName:@"RNTesterApp"
+                                                 inWindow:self.window
+                                        initialProperties:[self prepareInitialProps]
+                                            launchOptions:launchOptions];
 
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
 
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  [super applicationDidEnterBackground:application];
+  return YES;
 }
 
 - (NSDictionary *)prepareInitialProps
@@ -70,13 +78,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
   return [RCTLinkingManager application:app openURL:url options:options];
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback
-{
-  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge] onProgress:onProgress onComplete:loadCallback];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
@@ -149,7 +150,14 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-  return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
+  NSMutableDictionary *dict = [super thirdPartyFabricComponents].mutableCopy;
+  if (!dict[@"RNTMyNativeView"]) {
+    dict[@"RNTMyNativeView"] = NSClassFromString(@"RNTMyNativeViewComponentView");
+  }
+  if (!dict[@"SampleNativeComponent"]) {
+    dict[@"SampleNativeComponent"] = NSClassFromString(@"RCTSampleNativeComponentComponentView");
+  }
+  return dict;
 }
 #endif
 

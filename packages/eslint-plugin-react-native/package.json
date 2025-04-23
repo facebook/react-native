@@ -1,6 +1,6 @@
 {
   "name": "@react-native/eslint-plugin",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "description": "ESLint rules for @react-native/eslint-config",
   "license": "MIT",
   "repository": {
@@ -16,8 +16,12 @@
     "react-native"
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
+  "main": "index.js",
+  "devDependencies": {
+    "babel-plugin-syntax-hermes-parser": "0.28.1",
+    "hermes-eslint": "0.28.1"
+  },
   "engines": {
     "node": ">=18"
-  },
-  "main": "index.js"
+  }
 }

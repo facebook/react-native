@@ -8,10 +8,16 @@
 package com.facebook.react.uimanager
 
 import com.facebook.react.common.ClearableSynchronizedPool
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.yoga.YogaNode
 
 /** Static holder for a recycling pool of YogaNodes. */
+@LegacyArchitecture
 internal object YogaNodePool {
+  init {
+    LegacyArchitectureLogger.assertLegacyArchitecture("YogaNodePool")
+  }
 
   private val pool: ClearableSynchronizedPool<YogaNode> by
       lazy(LazyThreadSafetyMode.SYNCHRONIZED) { ClearableSynchronizedPool(1024) }

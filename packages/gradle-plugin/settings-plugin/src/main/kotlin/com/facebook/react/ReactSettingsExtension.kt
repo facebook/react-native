@@ -13,8 +13,8 @@ import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.min
 import org.gradle.api.GradleException
 import org.gradle.api.file.FileCollection
 import org.gradle.api.initialization.Settings
@@ -57,15 +57,17 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
 
     val updateConfig =
         object : GenerateConfig {
-          private val pb =
-              ProcessBuilder(command)
-                  .directory(workingDirectory)
-                  .redirectOutput(ProcessBuilder.Redirect.to(outputFile))
-                  .redirectError(ProcessBuilder.Redirect.INHERIT)
+          override fun command(): List<String> = command
 
-          override fun command(): List<String> = pb.command()
-
-          override fun start(): Process = pb.start()
+          override fun execute(): Int {
+            val execResult =
+                settings.providers.exec { exec ->
+                  exec.commandLine(command)
+                  exec.workingDir = workingDirectory
+                }
+            outputFile.writeText(execResult.standardOutput.asText.get())
+            return execResult.result.get().exitValue
+          }
         }
 
     checkAndUpdateCache(updateConfig, outputFile, outputFolder, lockFiles)
@@ -103,7 +105,7 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
   internal interface GenerateConfig {
     fun command(): List<String>
 
-    fun start(): Process
+    fun execute(): Int
   }
 
   companion object {
@@ -147,22 +149,24 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
         lockFiles: FileCollection,
     ) {
       if (isCacheDirty(cacheJsonConfig, cacheFolder, lockFiles)) {
-        val process = updateJsonConfig.start()
-
-        val finished = process.waitFor(5, TimeUnit.MINUTES)
-        if (!finished || (process.exitValue() != 0)) {
-          val command = updateJsonConfig.command().joinToString(" ")
-          val prefixCommand = "ERROR: autolinkLibrariesFromCommand: process $command"
-          val message =
-              if (!finished) "$prefixCommand timed out"
-              else "$prefixCommand exited with error code: ${process.exitValue()}"
+        val exitValue = updateJsonConfig.execute()
+        if (exitValue != 0) {
+          val prefixCommand =
+              "ERROR: autolinkLibrariesFromCommand: process ${updateJsonConfig.command().joinToString(" ")}"
+          val message = "$prefixCommand exited with error code: $exitValue"
           val logger = Logging.getLogger("ReactSettingsExtension")
           logger.error(message)
           if (cacheJsonConfig.length() != 0L) {
-            logger.error(cacheJsonConfig.readText().substring(0, 1024))
+            logger.error(
+                cacheJsonConfig
+                    .readText()
+                    .substring(0, min(1024, cacheJsonConfig.length().toInt())))
           }
           cacheJsonConfig.delete()
           throw GradleException(message)
+        } else {
+          // If cache was dirty, we executed the command and we need to update the lockfiles sha.
+          checkAndUpdateLockfiles(lockFiles, cacheFolder)
         }
       }
     }

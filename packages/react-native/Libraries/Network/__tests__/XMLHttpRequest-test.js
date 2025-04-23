@@ -12,9 +12,10 @@
 
 const createPerformanceLogger =
   require('../../Utilities/createPerformanceLogger').default;
-const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
-const Platform = require('../../Utilities/Platform');
-const XMLHttpRequest = require('../XMLHttpRequest');
+const GlobalPerformanceLogger =
+  require('../../Utilities/GlobalPerformanceLogger').default;
+const Platform = require('../../Utilities/Platform').default;
+const XMLHttpRequest = require('../XMLHttpRequest').default;
 
 jest.unmock('../../Utilities/Platform');
 jest.mock('../../Utilities/GlobalPerformanceLogger');
@@ -25,9 +26,9 @@ function setRequestId(id) {
   }
   requestId = id;
 }
-jest
-  .dontMock('event-target-shim')
-  .setMock('../../BatchedBridge/NativeModules', {
+jest.setMock('../../BatchedBridge/NativeModules', {
+  __esModule: true,
+  default: {
     Networking: {
       addListener: function () {},
       removeListeners: function () {},
@@ -44,7 +45,8 @@ jest
         return {};
       },
     },
-  });
+  },
+});
 
 describe('XMLHttpRequest', function () {
   let xhr;

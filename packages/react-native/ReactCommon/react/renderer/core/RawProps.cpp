@@ -7,106 +7,12 @@
 
 #include "RawProps.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
 
 namespace facebook::react {
-
-namespace {
-inline bool isYogaStyleProp(const std::string& prop) {
-  const static std::unordered_set<std::string> yogaStylePropNames = {
-      {"direction",
-       "flexDirection",
-       "justifyContent",
-       "alignContent",
-       "alignItems",
-       "alignSelf",
-       "position",
-       "flexWrap",
-       "display",
-       "flex",
-       "flexGrow",
-       "flexShrink",
-       "flexBasis",
-       "margin",
-       "padding",
-       "rowGap",
-       "columnGap",
-       "gap",
-       // TODO: T163711275 also filter out width/height when SVG no longer read
-       // them from RawProps
-       "minWidth",
-       "maxWidth",
-       "minHeight",
-       "maxHeight",
-       "aspectRatio",
-
-       // edges
-       "left",
-       "right",
-       "top",
-       "bottom",
-       "start",
-       "end",
-
-       // variants of inset
-       "inset",
-       "insetStart",
-       "insetEnd",
-       "insetInline",
-       "insetInlineStart",
-       "insetInlineEnd",
-       "insetBlock",
-       "insetBlockEnd",
-       "insetBlockStart",
-       "insetVertical",
-       "insetHorizontal",
-       "insetTop",
-       "insetBottom",
-       "insetLeft",
-       "insetRight",
-
-       // variants of margin
-       "marginStart",
-       "marginEnd",
-       "marginInline",
-       "marginInlineStart",
-       "marginInlineEnd",
-       "marginBlock",
-       "marginBlockStart",
-       "marginBlockEnd",
-       "marginVertical",
-       "marginHorizontal",
-       "marginTop",
-       "marginBottom",
-       "marginLeft",
-       "marginRight",
-
-       // variants of padding
-       "paddingStart",
-       "paddingEnd",
-       "paddingInline",
-       "paddingInlineStart",
-       "paddingInlineEnd",
-       "paddingBlock",
-       "paddingBlockStart",
-       "paddingBlockEnd",
-       "paddingVertical",
-       "paddingHorizontal",
-       "paddingTop",
-       "paddingBottom",
-       "paddingLeft",
-       "paddingRight"}};
-
-  return yogaStylePropNames.find(prop) != yogaStylePropNames.end();
-}
-} // namespace
-
-RawProps::RawProps() {
-  mode_ = Mode::Empty;
-}
 
 /*
  * Creates an object with given `runtime` and `value`.
@@ -146,19 +52,6 @@ RawProps::RawProps(const RawProps& other) noexcept {
   } else if (mode_ == Mode::Dynamic) {
     dynamic_ = other.dynamic_;
   }
-  ignoreYogaStyleProps_ = other.ignoreYogaStyleProps_;
-}
-
-RawProps& RawProps::operator=(const RawProps& other) noexcept {
-  mode_ = other.mode_;
-  if (mode_ == Mode::JSI) {
-    runtime_ = other.runtime_;
-    value_ = jsi::Value(*runtime_, other.value_);
-  } else if (mode_ == Mode::Dynamic) {
-    dynamic_ = other.dynamic_;
-  }
-  ignoreYogaStyleProps_ = other.ignoreYogaStyleProps_;
-  return *this;
 }
 
 void RawProps::parse(const RawPropsParser& parser) noexcept {
@@ -172,20 +65,38 @@ void RawProps::parse(const RawPropsParser& parser) noexcept {
  * The support for explicit conversion to `folly::dynamic` is deprecated and
  * will be removed as soon Android implementation does not need it.
  */
-RawProps::operator folly::dynamic() const noexcept {
+RawProps::operator folly::dynamic() const {
+  return toDynamic();
+}
+
+/*
+ * Deprecated. Do not use.
+ * The support for explicit conversion to `folly::dynamic` is deprecated and
+ * will be removed as soon Android implementation does not need it.
+ */
+folly::dynamic RawProps::toDynamic(
+    const std::function<bool(const std::string&)>& filterObjectKeys) const {
   switch (mode_) {
     case Mode::Empty:
       return folly::dynamic::object();
-    case Mode::JSI:
-      return jsi::dynamicFromValue(
-          *runtime_, value_, ignoreYogaStyleProps_ ? isYogaStyleProp : nullptr);
+    case Mode::JSI: {
+      if (filterObjectKeys != nullptr) {
+        // We need to filter props
+        return jsi::dynamicFromValue(
+            *runtime_, value_, [&](const std::string& key) {
+              if (filterObjectKeys) {
+                return filterObjectKeys(key);
+              }
+              return false;
+            });
+      } else {
+        // We don't need to filter, just include all props by default
+        return jsi::dynamicFromValue(*runtime_, value_, nullptr);
+      }
+    }
     case Mode::Dynamic:
       return dynamic_;
   }
-}
-
-void RawProps::filterYogaStylePropsInDynamicConversion() noexcept {
-  ignoreYogaStyleProps_ = true;
 }
 
 /*

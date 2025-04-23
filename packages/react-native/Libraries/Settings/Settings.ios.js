@@ -78,4 +78,4 @@ RCTDeviceEventEmitter.addListener(
   Settings._sendObservations.bind(Settings),
 );
 
-module.exports = Settings;
+export default Settings;

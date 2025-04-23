@@ -16,27 +16,6 @@
 
 using namespace facebook::react;
 
-@implementation RCTWeakEventEmitterWrapper {
-  std::weak_ptr<const EventEmitter> _weakEventEmitter;
-}
-
-- (void)setEventEmitter:(SharedEventEmitter)eventEmitter
-{
-  _weakEventEmitter = eventEmitter;
-}
-
-- (SharedEventEmitter)eventEmitter
-{
-  return _weakEventEmitter.lock();
-}
-
-- (void)dealloc
-{
-  _weakEventEmitter.reset();
-}
-
-@end
-
 inline static UIFontWeight RCTUIFontWeightFromInteger(NSInteger fontWeight)
 {
   assert(fontWeight > 50);
@@ -117,6 +96,7 @@ inline static CGFloat RCTBaseSizeForDynamicTypeRamp(const DynamicTypeRamp &dynam
 inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const TextAttributes &textAttributes)
 {
   if (textAttributes.allowFontScaling.value_or(true)) {
+    CGFloat fontSizeMultiplier = !isnan(textAttributes.fontSizeMultiplier) ? textAttributes.fontSizeMultiplier : 1.0;
     if (textAttributes.dynamicTypeRamp.has_value()) {
       DynamicTypeRamp dynamicTypeRamp = textAttributes.dynamicTypeRamp.value();
       UIFontMetrics *fontMetrics =
@@ -124,10 +104,11 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
       // Using a specific font size reduces rounding errors from -scaledValueForValue:
       CGFloat requestedSize =
           isnan(textAttributes.fontSize) ? RCTBaseSizeForDynamicTypeRamp(dynamicTypeRamp) : textAttributes.fontSize;
-      return [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
-    } else {
-      return textAttributes.fontSizeMultiplier;
+      fontSizeMultiplier = [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
     }
+    CGFloat maxFontSizeMultiplier =
+        !isnan(textAttributes.maxFontSizeMultiplier) ? textAttributes.maxFontSizeMultiplier : 0.0;
+    return maxFontSizeMultiplier >= 1.0 ? fminf(maxFontSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
   } else {
     return 1.0;
   }
@@ -178,7 +159,8 @@ inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextA
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(const TextAttributes &textAttributes)
+NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
+    const TextAttributes &textAttributes)
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
 
@@ -284,8 +266,12 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
     auto textShadowOffset = textAttributes.textShadowOffset.value();
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = CGSize{textShadowOffset.width, textShadowOffset.height};
-    shadow.shadowBlurRadius = textAttributes.textShadowRadius;
-    shadow.shadowColor = RCTUIColorFromSharedColor(textAttributes.textShadowColor);
+    if (!isnan(textAttributes.textShadowRadius)) {
+      shadow.shadowBlurRadius = textAttributes.textShadowRadius;
+    }
+    if (textAttributes.textShadowColor) {
+      shadow.shadowColor = RCTUIColorFromSharedColor(textAttributes.textShadowColor);
+    }
     attributes[NSShadowAttributeName] = shadow;
   }
 
@@ -302,7 +288,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
     attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithUTF8String:roleStr.c_str()];
   }
 
-  return [attributes copy];
+  return attributes;
 }
 
 void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
@@ -385,8 +371,7 @@ static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFro
   auto nsAttributedStringFragment = RCTNSAttributedStringFragmentFromFragment(fragment, placeholderImage);
 
   if (fragment.parentShadowView.componentHandle) {
-    RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
-    eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
+    auto eventEmitterWrapper = RCTWrapEventEmitter(fragment.parentShadowView.eventEmitter);
 
     NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
         @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
@@ -465,4 +450,148 @@ NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTrans
     default:
       return string;
   }
+}
+
+static BOOL RCTIsParagraphStyleEffectivelySame(
+    NSParagraphStyle *style1,
+    NSParagraphStyle *style2,
+    const TextAttributes &baseTextAttributes)
+{
+  if (style1 == nil || style2 == nil) {
+    return style1 == nil && style2 == nil;
+  }
+
+  // The NSParagraphStyle included as part of typingAttributes may eventually resolve "natural" directions to
+  // physical direction, so we should compare resolved directions
+  auto naturalAlignment =
+      baseTextAttributes.layoutDirection.value_or(LayoutDirection::LeftToRight) == LayoutDirection::LeftToRight
+      ? NSTextAlignmentLeft
+      : NSTextAlignmentRight;
+
+  NSWritingDirection naturalBaseWritingDirection = baseTextAttributes.baseWritingDirection.has_value()
+      ? RCTNSWritingDirectionFromWritingDirection(baseTextAttributes.baseWritingDirection.value())
+      : [NSParagraphStyle defaultWritingDirectionForLanguage:nil];
+
+  if (style1.alignment == NSTextAlignmentNatural || style1.baseWritingDirection == NSWritingDirectionNatural) {
+    NSMutableParagraphStyle *mutableStyle1 = [style1 mutableCopy];
+    style1 = mutableStyle1;
+
+    if (mutableStyle1.alignment == NSTextAlignmentNatural) {
+      mutableStyle1.alignment = naturalAlignment;
+    }
+
+    if (mutableStyle1.baseWritingDirection == NSWritingDirectionNatural) {
+      mutableStyle1.baseWritingDirection = naturalBaseWritingDirection;
+    }
+  }
+
+  if (style2.alignment == NSTextAlignmentNatural || style2.baseWritingDirection == NSWritingDirectionNatural) {
+    NSMutableParagraphStyle *mutableStyle2 = [style2 mutableCopy];
+    style2 = mutableStyle2;
+
+    if (mutableStyle2.alignment == NSTextAlignmentNatural) {
+      mutableStyle2.alignment = naturalAlignment;
+    }
+
+    if (mutableStyle2.baseWritingDirection == NSWritingDirectionNatural) {
+      mutableStyle2.baseWritingDirection = naturalBaseWritingDirection;
+    }
+  }
+
+  return [style1 isEqual:style2];
+}
+
+static BOOL RCTIsAttributeEffectivelySame(
+    NSAttributedStringKey attributeKey,
+    NSDictionary<NSAttributedStringKey, id> *attributes1,
+    NSDictionary<NSAttributedStringKey, id> *attributes2,
+    NSDictionary<NSAttributedStringKey, id> *insensitiveAttributes,
+    const TextAttributes &baseTextAttributes)
+{
+  id attribute1 = attributes1[attributeKey] ?: insensitiveAttributes[attributeKey];
+  id attribute2 = attributes2[attributeKey] ?: insensitiveAttributes[attributeKey];
+
+  // Normalize attributes which can inexact but still effectively the same
+  if ([attributeKey isEqualToString:NSParagraphStyleAttributeName]) {
+    return RCTIsParagraphStyleEffectivelySame(attribute1, attribute2, baseTextAttributes);
+  }
+
+  // Otherwise rely on built-in comparison
+  return [attribute1 isEqual:attribute2];
+}
+
+BOOL RCTIsAttributedStringEffectivelySame(
+    NSAttributedString *text1,
+    NSAttributedString *text2,
+    NSDictionary<NSAttributedStringKey, id> *insensitiveAttributes,
+    const TextAttributes &baseTextAttributes)
+{
+  if (![text1.string isEqualToString:text2.string]) {
+    return NO;
+  }
+
+  // We check that for every fragment in the old string
+  // 1. The new string's fragment overlapping the first spans the same characters
+  // 2. The attributes of each matching fragment are the same, ignoring those which match insensitive attibutes
+  __block BOOL areAttributesSame = YES;
+  [text1 enumerateAttributesInRange:NSMakeRange(0, text1.length)
+                            options:0
+                         usingBlock:^(
+                             NSDictionary<NSAttributedStringKey, id> *text1Attributes,
+                             NSRange text1Range,
+                             BOOL *text1Stop) {
+                           [text2 enumerateAttributesInRange:text1Range
+                                                     options:0
+                                                  usingBlock:^(
+                                                      NSDictionary<NSAttributedStringKey, id> *text2Attributes,
+                                                      NSRange text2Range,
+                                                      BOOL *text2Stop) {
+                                                    if (!NSEqualRanges(text1Range, text2Range)) {
+                                                      areAttributesSame = NO;
+                                                      *text1Stop = YES;
+                                                      *text2Stop = YES;
+                                                      return;
+                                                    }
+
+                                                    // Compare every attribute in text1 to the corresponding attribute
+                                                    // in text2, or the set of insensitive attributes if not present
+                                                    for (NSAttributedStringKey key in text1Attributes) {
+                                                      if (!RCTIsAttributeEffectivelySame(
+                                                              key,
+                                                              text1Attributes,
+                                                              text2Attributes,
+                                                              insensitiveAttributes,
+                                                              baseTextAttributes)) {
+                                                        areAttributesSame = NO;
+                                                        *text1Stop = YES;
+                                                        *text2Stop = YES;
+                                                        return;
+                                                      }
+                                                    }
+
+                                                    for (NSAttributedStringKey key in text2Attributes) {
+                                                      // We have already compared this attribute if it is present in
+                                                      // both
+                                                      if (text1Attributes[key] != nil) {
+                                                        continue;
+                                                      }
+
+                                                      // But we still need to compare attributes if it is only present
+                                                      // in text 2, to compare against insensitive attributes
+                                                      if (!RCTIsAttributeEffectivelySame(
+                                                              key,
+                                                              text1Attributes,
+                                                              text2Attributes,
+                                                              insensitiveAttributes,
+                                                              baseTextAttributes)) {
+                                                        areAttributesSame = NO;
+                                                        *text1Stop = YES;
+                                                        *text2Stop = YES;
+                                                        return;
+                                                      }
+                                                    }
+                                                  }];
+                         }];
+
+  return areAttributesSame;
 }

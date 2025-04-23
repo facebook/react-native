@@ -14,13 +14,13 @@ import androidx.annotation.UiThread
  * DispatchIntCommandMountItem}, we can delete this interface too. It provides a set of common
  * operations to simplify generic operations on all types of ViewCommands.
  */
-public abstract class DispatchCommandMountItem : MountItem {
+internal abstract class DispatchCommandMountItem : MountItem {
   private var numRetries: Int = 0
 
   @UiThread
-  public fun incrementRetries() {
+  fun incrementRetries() {
     numRetries++
   }
 
-  @UiThread public fun getRetries(): Int = numRetries
+  @UiThread fun getRetries(): Int = numRetries
 }

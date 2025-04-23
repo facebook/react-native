@@ -37,6 +37,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 - (TextMeasurement)measureNSAttributedString:(NSAttributedString *)attributedString
                          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                               layoutContext:(TextLayoutContext)layoutContext
                            layoutConstraints:(LayoutConstraints)layoutConstraints
 {
   if (attributedString.length == 0) {
@@ -47,20 +48,21 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   }
 
   CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
-
   NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
                                                                   paragraphAttributes:paragraphAttributes
                                                                                  size:maximumSize];
 
-  return [self _measureTextStorage:textStorage];
+  return [self _measureTextStorage:textStorage paragraphAttributes:paragraphAttributes layoutContext:layoutContext];
 }
 
 - (TextMeasurement)measureAttributedString:(AttributedString)attributedString
                        paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                             layoutContext:(TextLayoutContext)layoutContext
                          layoutConstraints:(LayoutConstraints)layoutConstraints
 {
   return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
                      paragraphAttributes:paragraphAttributes
+                           layoutContext:layoutContext
                        layoutConstraints:layoutConstraints];
 }
 
@@ -203,27 +205,15 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
 
-                                            if (ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS()) {
-                                              CGFloat baseline =
-                                                  [layoutManager locationForGlyphAtIndex:range.location].y;
-                                              auto line = LineMeasurement{
-                                                  std::string([renderedString UTF8String]),
-                                                  rect,
-                                                  overallRect.size.height - baseline,
-                                                  font.capHeight,
-                                                  baseline,
-                                                  font.xHeight};
-                                              blockParagraphLines->push_back(line);
-                                            } else {
-                                              auto line = LineMeasurement{
-                                                  std::string([renderedString UTF8String]),
-                                                  rect,
-                                                  -font.descender,
-                                                  font.capHeight,
-                                                  font.ascender,
-                                                  font.xHeight};
-                                              blockParagraphLines->push_back(line);
-                                            }
+                                            CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
+                                            auto line = LineMeasurement{
+                                                std::string([renderedString UTF8String]),
+                                                rect,
+                                                overallRect.size.height - baseline,
+                                                font.capHeight,
+                                                baseline,
+                                                font.xHeight};
+                                            blockParagraphLines->push_back(line);
                                           }];
   return paragraphLines;
 }
@@ -280,11 +270,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   // after (fraction == 1.0) the last character, then the attribute is valid.
   if (textStorage.length > 0 && (fraction > 0 || characterIndex > 0) &&
       (fraction < 1 || characterIndex < textStorage.length - 1)) {
-    RCTWeakEventEmitterWrapper *eventEmitterWrapper =
-        (RCTWeakEventEmitterWrapper *)[textStorage attribute:RCTAttributedStringEventEmitterKey
-                                                     atIndex:characterIndex
-                                              effectiveRange:NULL];
-    return eventEmitterWrapper.eventEmitter;
+    NSData *eventEmitterWrapper = (NSData *)[textStorage attribute:RCTAttributedStringEventEmitterKey
+                                                           atIndex:characterIndex
+                                                    effectiveRange:NULL];
+    return RCTUnwrapEventEmitter(eventEmitterWrapper);
   }
 
   return nil;
@@ -342,14 +331,64 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 }
 
 - (TextMeasurement)_measureTextStorage:(NSTextStorage *)textStorage
+                   paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                         layoutContext:(TextLayoutContext)layoutContext
 {
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  __block BOOL textDidWrap = NO;
+  __block NSUInteger linesEnumerated = 0;
+  __block CGFloat enumeratedLinesHeight = 0;
+  [layoutManager
+      enumerateLineFragmentsForGlyphRange:glyphRange
+                               usingBlock:^(
+                                   CGRect overallRect,
+                                   CGRect usedRect,
+                                   NSTextContainer *_Nonnull usedTextContainer,
+                                   NSRange lineGlyphRange,
+                                   BOOL *_Nonnull stop) {
+                                 NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange
+                                                                           actualGlyphRange:nil];
+                                 NSUInteger lastCharacterIndex = range.location + range.length - 1;
+                                 BOOL endsWithNewLine =
+                                     [textStorage.string characterAtIndex:lastCharacterIndex] == '\n';
+                                 if (!endsWithNewLine && textStorage.string.length > lastCharacterIndex + 1) {
+                                   textDidWrap = YES;
+                                 }
+                                 if (linesEnumerated++ < paragraphAttributes.maximumNumberOfLines) {
+                                   enumeratedLinesHeight = usedRect.origin.y + usedRect.size.height;
+                                 }
+                                 if (textDidWrap &&
+                                     (paragraphAttributes.maximumNumberOfLines == 0 ||
+                                      linesEnumerated >= paragraphAttributes.maximumNumberOfLines)) {
+                                   *stop = YES;
+                                 }
+                               }];
+
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
 
-  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
+  if (textDidWrap) {
+    size.width = textContainer.size.width;
+  }
+
+  if (paragraphAttributes.maximumNumberOfLines != 0) {
+    // If maximumNumberOfLines is set, we cannot rely on setting it on the NSTextContainer
+    // due to an edge case where it returns wrong height:
+    // When maximumNumberOfLines is set to N and the N+1 line is empty, the measured height
+    // is N+1 lines (incorrect). Adding any characted to the N+1 line, making it non-empty
+    // casuses the measured height to be N lines (correct).
+    if (linesEnumerated < paragraphAttributes.maximumNumberOfLines) {
+      enumeratedLinesHeight += layoutManager.extraLineFragmentUsedRect.size.height;
+    }
+    size.height = enumeratedLinesHeight;
+  }
+
+  size = (CGSize){
+      ceil(size.width * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor,
+      ceil(size.height * layoutContext.pointScaleFactor) / layoutContext.pointScaleFactor};
 
   __block auto attachments = TextMeasurement::Attachments{};
 
@@ -362,28 +401,27 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                   return;
                 }
 
-                CGSize attachmentSize = attachment.bounds.size;
-                CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
+                NSRange attachmentGlyphRange = [layoutManager glyphRangeForCharacterRange:range
+                                                                     actualCharacterRange:NULL];
+                NSRange truncatedRange =
+                    [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:attachmentGlyphRange.location];
+                if (truncatedRange.location != NSNotFound && attachmentGlyphRange.location >= truncatedRange.location) {
+                  attachments.push_back(TextMeasurement::Attachment{.isClipped = true});
+                } else {
+                  CGSize attachmentSize = attachment.bounds.size;
+                  CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
 
-                CGRect frame;
-                if (ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS()) {
+                  CGRect frame;
                   CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
 
                   frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
-                } else {
-                  UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
 
-                  frame = {
-                      {glyphRect.origin.x,
-                       glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
-                      attachmentSize};
+                  auto rect = facebook::react::Rect{
+                      facebook::react::Point{frame.origin.x, frame.origin.y},
+                      facebook::react::Size{frame.size.width, frame.size.height}};
+
+                  attachments.push_back(TextMeasurement::Attachment{.frame = rect, .isClipped = false});
                 }
-
-                auto rect = facebook::react::Rect{
-                    facebook::react::Point{frame.origin.x, frame.origin.y},
-                    facebook::react::Size{frame.size.width, frame.size.height}};
-
-                attachments.push_back(TextMeasurement::Attachment{rect, false});
               }];
 
   return TextMeasurement{{size.width, size.height}, attachments};

@@ -39,4 +39,4 @@ const SceneTracker = {
   },
 };
 
-module.exports = SceneTracker;
+export default SceneTracker;

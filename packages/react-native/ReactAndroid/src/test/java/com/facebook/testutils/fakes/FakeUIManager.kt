@@ -17,6 +17,7 @@ import com.facebook.react.bridge.UIManagerListener
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.interop.UIBlockViewResolver
+import com.facebook.react.uimanager.events.EventDispatcher
 
 @OptIn(UnstableReactNativeAPI::class)
 class FakeUIManager : UIManager, UIBlockViewResolver {
@@ -29,7 +30,7 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
   }
 
   @Deprecated("")
-  override fun <T : View?> addRootView(rootView: T, initialProps: WritableMap?): Int {
+  override fun <T : View> addRootView(rootView: T, initialProps: WritableMap?): Int {
     error("Not yet implemented")
   }
 
@@ -65,11 +66,10 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     error("Not yet implemented")
   }
 
-  override fun <T : Any?> getEventDispatcher(): T {
-    error("Not yet implemented")
-  }
+  override val eventDispatcher: EventDispatcher
+    get() = TODO("Not yet implemented")
 
-  override fun synchronouslyUpdateViewOnUIThread(reactTag: Int, props: ReadableMap?) {
+  override fun synchronouslyUpdateViewOnUIThread(reactTag: Int, props: ReadableMap) {
     error("Not yet implemented")
   }
 
@@ -77,11 +77,11 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     error("Not yet implemented")
   }
 
-  override fun addUIManagerEventListener(listener: UIManagerListener?) {
+  override fun addUIManagerEventListener(listener: UIManagerListener) {
     error("Not yet implemented")
   }
 
-  override fun removeUIManagerEventListener(listener: UIManagerListener?) {
+  override fun removeUIManagerEventListener(listener: UIManagerListener) {
     error("Not yet implemented")
   }
 

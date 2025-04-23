@@ -9,12 +9,11 @@
 
 #include "AndroidTextInputEventEmitter.h"
 #include "AndroidTextInputProps.h"
-#include "AndroidTextInputState.h"
-
-#include <react/renderer/components/view/ConcreteViewShadowNode.h>
-#include <react/utils/ContextContainer.h>
 
 #include <react/renderer/attributedstring/AttributedString.h>
+#include <react/renderer/components/textinput/TextInputState.h>
+#include <react/renderer/components/view/ConcreteViewShadowNode.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
 
@@ -23,72 +22,68 @@ extern const char AndroidTextInputComponentName[];
 /*
  * `ShadowNode` for <AndroidTextInput> component.
  */
-class AndroidTextInputShadowNode final
-    : public ConcreteViewShadowNode<
-          AndroidTextInputComponentName,
-          AndroidTextInputProps,
-          AndroidTextInputEventEmitter,
-          AndroidTextInputState,
-          /* usesMapBufferForStateData */ true> {
+class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
+                                             AndroidTextInputComponentName,
+                                             AndroidTextInputProps,
+                                             AndroidTextInputEventEmitter,
+                                             TextInputState> {
  public:
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
     traits.set(ShadowNodeTraits::Trait::BaselineYogaNode);
     return traits;
   }
 
-  using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  AndroidTextInputShadowNode(
-      const ShadowNode& sourceShadowNode,
-      const ShadowNodeFragment& fragment);
-
-  void setContextContainer(ContextContainer* contextContainer);
-
-  /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString() const;
-  AttributedString getPlaceholderAttributedString() const;
-
   /*
    * Associates a shared TextLayoutManager with the node.
-   * `ParagraphShadowNode` uses the manager to measure text content
-   * and construct `ParagraphState` objects.
+   * `TextInputShadowNode` uses the manager to measure text content
+   * and construct `TextInputState` objects.
    */
-  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
+  void setTextLayoutManager(
+      std::shared_ptr<const TextLayoutManager> textLayoutManager);
 
-#pragma mark - LayoutableShadowNode
-
+ protected:
   Size measureContent(
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
+
   void layout(LayoutContext layoutContext) override;
 
   Float baseline(const LayoutContext& layoutContext, Size size) const override;
 
- private:
-  ContextContainer* contextContainer_{};
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
-  /**
-   * Get the most up-to-date attributed string for measurement and State.
+  /*
+   * Determines the constraints to use while measure the underlying text
    */
-  AttributedString getMostRecentAttributedString() const;
+  LayoutConstraints getTextConstraints(
+      const LayoutConstraints& layoutConstraints) const;
 
+ private:
   /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateStateIfNeeded();
-
-  SharedTextLayoutManager textLayoutManager_;
+  void updateStateIfNeeded(const LayoutContext& layoutContext);
 
   /*
-   * Cached attributed string that represents the content of the subtree started
-   * from the node.
+   * Returns a `AttributedString` which represents text content of the node.
    */
-  mutable std::optional<AttributedString> cachedAttributedString_{};
+  AttributedString getAttributedString(
+      const LayoutContext& layoutContext) const;
+
+  /**
+   * Get the most up-to-date attributed string for measurement and State.
+   */
+  AttributedString getMostRecentAttributedString(
+      const LayoutContext& layoutContext) const;
+
+  AttributedString getPlaceholderAttributedString(
+      const LayoutContext& layoutContext) const;
 };
 
 } // namespace facebook::react

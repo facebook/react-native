@@ -78,7 +78,6 @@ RCT_EXPORT_METHOD(removeOverlays : (nonnull NSNumber *)reactTag)
 - (UIView *)view
 {
   RNTLegacyView *view = [[RNTLegacyView alloc] init];
-  view.backgroundColor = UIColor.redColor;
   return view;
 }
 

@@ -20,7 +20,7 @@ import com.facebook.soloader.ExternalSoMapping
  */
 public object OpenSourceMergedSoMapping : ExternalSoMapping {
 
-  override public fun mapLibName(input: String): String =
+  public override fun mapLibName(input: String): String =
       when (input) {
         "fabricjni",
         "jsinspector",
@@ -30,6 +30,7 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
         "react_newarchdefaults",
         "reactnativeblob",
         "reactnativejni",
+        "reactnativejni_common",
         "rninstance",
         "turbomodulejsijni",
         "uimanagerjni",
@@ -49,7 +50,7 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
         else -> input
       }
 
-  override public fun invokeJniOnload(libraryName: String): Unit {
+  public override fun invokeJniOnload(libraryName: String): Unit {
     when (libraryName) {
       "fabricjni" -> libfabricjni_so()
       "hermes_executor" -> libhermes_executor_so()
@@ -68,6 +69,7 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
       "reactnative" -> libreactnative_so()
       "reactnativeblob" -> libreactnativeblob_so()
       "reactnativejni" -> libreactnativejni_so()
+      "reactnativejni_common" -> libreactnativejni_common_so()
       "rninstance" -> librninstance_so()
       "turbomodulejsijni" -> libturbomodulejsijni_so()
       "uimanagerjni" -> libuimanagerjni_so()
@@ -108,6 +110,8 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
   public external fun libreactnativeblob_so(): Int
 
   public external fun libreactnativejni_so(): Int
+
+  public external fun libreactnativejni_common_so(): Int
 
   public external fun librninstance_so(): Int
 

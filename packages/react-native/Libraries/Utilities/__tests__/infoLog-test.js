@@ -11,7 +11,7 @@
 'use strict';
 
 describe('infoLog', () => {
-  const infoLog = require('../infoLog');
+  const infoLog = require('../infoLog').default;
 
   it('logs messages to the console', () => {
     console.log = jest.fn();

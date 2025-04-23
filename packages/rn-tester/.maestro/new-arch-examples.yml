@@ -1,0 +1,35 @@
+appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
+---
+- launchApp
+- assertVisible: "Components"
+- scrollUntilVisible:
+    element:
+      id: "New Architecture Examples"
+    direction: DOWN
+    speed: 40
+- tapOn:
+    id: "New Architecture Examples"
+- assertVisible: "HSBA: h: 0, s: 0, b: 0, a: 0"
+- assertVisible: "Constants From Interop Layer: 3.14"
+- tapOn: "Change Background"
+- assertVisible:
+    text: "HSBA: h: 0, s: 1, b: 1, a: 255"
+- assertVisible:
+    text: "> Interop Layer Measurements <"
+- assertVisible:
+    text: "measure x: 0, y: 0, width: 0, height: 0"
+- tapOn: "Console.log Measure"
+- assertNotVisible:
+    text: "measure x: 0, y: 0, width: 0, height: 0"
+- assertNotVisible:
+    text: "InWindow x: 0, y: 0, width: 0, height: 0"
+- assertNotVisible:
+    text: "InLayout x: 0, y: 0, width: 0, height: 0"
+- assertVisible: "Legacy Style Event Fired 0 times"
+- tapOn:
+    text: "Fire Legacy Style Event"
+    repeat: 10
+- assertVisible: "Legacy Style Event Fired 10 times"
+- assertVisible: "Opacity: 1.0"
+- tapOn: "Set Opacity"
+- assertVisible: "Opacity: 0.8"

@@ -25,7 +25,9 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -46,7 +48,13 @@ import java.util.Map;
  * <p>TODO(7135923): Pooling of operation objects TODO(5694019): Consider a better data structure
  * for operations queue to save on allocations
  */
+@LegacyArchitecture
 public class UIViewOperationQueue {
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "UIViewOperationQueue", LegacyArchitectureLogLevel.WARNING);
+  }
 
   public static final int DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS = 8;
   private static final String TAG = UIViewOperationQueue.class.getSimpleName();
@@ -136,12 +144,12 @@ public class UIViewOperationQueue {
       mWidth = width;
       mHeight = height;
       mLayoutDirection = layoutDirection;
-      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT, "updateLayout", mTag);
     }
 
     @Override
     public void execute() {
-      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT, "updateLayout", mTag);
       mNativeViewHierarchyManager.updateLayout(
           mParentTag, mTag, mX, mY, mWidth, mHeight, mLayoutDirection);
     }
@@ -162,12 +170,12 @@ public class UIViewOperationQueue {
       mThemedContext = themedContext;
       mClassName = className;
       mInitialProps = initialProps;
-      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT, "createView", mTag);
     }
 
     @Override
     public void execute() {
-      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT, "createView", mTag);
       mNativeViewHierarchyManager.createView(mThemedContext, mTag, mClassName, mInitialProps);
     }
   }
@@ -609,6 +617,8 @@ public class UIViewOperationQueue {
     return mNativeViewHierarchyManager;
   }
 
+  // NOTE: When converted to Kotlin this method should be `internal` due to
+  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
   public void setViewHierarchyUpdateDebugListener(
       @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
     mViewHierarchyUpdateDebugListener = listener;
@@ -786,7 +796,7 @@ public class UIViewOperationQueue {
   public void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIViewOperationQueue.dispatchViewUpdates")
+            Systrace.TRACE_TAG_REACT, "UIViewOperationQueue.dispatchViewUpdates")
         .arg("batchId", batchId)
         .flush();
     try {
@@ -829,7 +839,7 @@ public class UIViewOperationQueue {
           new Runnable() {
             @Override
             public void run() {
-              SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
+              SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "DispatchUI")
                   .arg("BatchId", batchId)
                   .flush();
               try {
@@ -890,22 +900,22 @@ public class UIViewOperationQueue {
                   mThreadCpuTime = nativeModulesThreadCpuTime;
 
                   Systrace.beginAsyncSection(
-                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      Systrace.TRACE_TAG_REACT,
                       "delayBeforeDispatchViewUpdates",
                       0,
                       mProfiledBatchCommitStartTime * 1000000);
                   Systrace.endAsyncSection(
-                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      Systrace.TRACE_TAG_REACT,
                       "delayBeforeDispatchViewUpdates",
                       0,
                       mProfiledBatchDispatchViewUpdatesTime * 1000000);
                   Systrace.beginAsyncSection(
-                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      Systrace.TRACE_TAG_REACT,
                       "delayBeforeBatchRunStart",
                       0,
                       mProfiledBatchDispatchViewUpdatesTime * 1000000);
                   Systrace.endAsyncSection(
-                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      Systrace.TRACE_TAG_REACT,
                       "delayBeforeBatchRunStart",
                       0,
                       mProfiledBatchRunStartTime * 1000000);
@@ -921,17 +931,16 @@ public class UIViewOperationQueue {
                 mIsInIllegalUIState = true;
                 throw e;
               } finally {
-                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+                Systrace.endSection(Systrace.TRACE_TAG_REACT);
               }
             }
           };
 
-      SystraceMessage.beginSection(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "acquiring mDispatchRunnablesLock")
+      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "acquiring mDispatchRunnablesLock")
           .arg("batchId", batchId)
           .flush();
       synchronized (mDispatchRunnablesLock) {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(Systrace.TRACE_TAG_REACT);
         mDispatchUIRunnables.add(runOperations);
       }
 
@@ -950,16 +959,14 @@ public class UIViewOperationQueue {
             });
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
   /* package */ void resumeFrameCallback() {
     mIsDispatchUIFrameCallbackEnqueued = true;
-    if (!ReactNativeFeatureFlags.enableFabricRendererExclusively()) {
-      ReactChoreographer.getInstance()
-          .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
-    }
+    ReactChoreographer.getInstance()
+        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
   }
 
   /* package */ void pauseFrameCallback() {
@@ -998,11 +1005,8 @@ public class UIViewOperationQueue {
       mIsProfilingNextBatch = false;
 
       Systrace.beginAsyncSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "batchedExecutionTime",
-          0,
-          batchedExecutionStartTime * 1000000);
-      Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "batchedExecutionTime", 0);
+          Systrace.TRACE_TAG_REACT, "batchedExecutionTime", 0, batchedExecutionStartTime * 1000000);
+      Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT, "batchedExecutionTime", 0);
     }
     mNonBatchedExecutionTotalTime = 0;
   }
@@ -1042,11 +1046,11 @@ public class UIViewOperationQueue {
         return;
       }
 
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "dispatchNonBatchedUIOperations");
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "dispatchNonBatchedUIOperations");
       try {
         dispatchPendingNonBatchedOperations(frameTimeNanos);
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(Systrace.TRACE_TAG_REACT);
       }
 
       flushPendingBatches();

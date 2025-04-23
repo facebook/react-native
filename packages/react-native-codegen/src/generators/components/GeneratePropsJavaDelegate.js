@@ -55,7 +55,7 @@ package ${packageName};
 
 ${imports}
 
-public class ${className}<T extends ${extendClasses}, U extends BaseViewManagerInterface<T> & ${interfaceClassName}<T>> extends BaseViewManagerDelegate<T, U> {
+public class ${className}<T extends ${extendClasses}, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ${interfaceClassName}<T>> extends BaseViewManagerDelegate<T, U> {
   public ${className}(U viewManager) {
     super(viewManager);
   }
@@ -272,7 +272,8 @@ function getDelegateImports(component: ComponentShape) {
   }
   imports.add('import androidx.annotation.Nullable;');
   imports.add('import com.facebook.react.uimanager.BaseViewManagerDelegate;');
-  imports.add('import com.facebook.react.uimanager.BaseViewManagerInterface;');
+  imports.add('import com.facebook.react.uimanager.BaseViewManager;');
+  imports.add('import com.facebook.react.uimanager.LayoutShadowNode;');
 
   return imports;
 }

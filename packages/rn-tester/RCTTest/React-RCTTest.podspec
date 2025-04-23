@@ -16,10 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
 Pod::Spec.new do |s|
   s.name                   = "React-RCTTest"
   s.version                = version
@@ -28,7 +24,7 @@ Pod::Spec.new do |s|
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
-  s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
+  s.compiler_flags         = '-Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "**/*.{h,m,mm}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
@@ -37,12 +33,12 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                              "USE_HEADERMAP" => "YES",
                              "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-                             "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\""
                            }
 
-  s.dependency "RCT-Folly", folly_version
   s.dependency "React-Core", version
   s.dependency "React-CoreModules", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
+
+  add_rn_third_party_dependencies(s)
 end

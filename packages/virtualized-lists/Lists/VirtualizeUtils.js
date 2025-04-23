@@ -10,9 +10,10 @@
 
 'use strict';
 
-import type ListMetricsAggregator, {
-  CellMetricProps,
-} from './ListMetricsAggregator';
+import type ListMetricsAggregator from './ListMetricsAggregator';
+import type {CellMetricProps} from './ListMetricsAggregator';
+
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 /**
  * Used to find the indices of the frames that overlap the given offsets. Useful for finding the
@@ -176,10 +177,20 @@ export function computeWindowedRenderLimits(
       break;
     }
     const maxNewCells = newCellCount >= maxToRenderPerBatch;
-    const firstWillAddMore = first <= prev.first || first > prev.last;
+
+    let firstWillAddMore;
+    let lastWillAddMore;
+
+    if (ReactNativeFeatureFlags.fixVirtualizeListCollapseWindowSize()) {
+      firstWillAddMore = first <= prev.first;
+      lastWillAddMore = last >= prev.last;
+    } else {
+      firstWillAddMore = first <= prev.first || first > prev.last;
+      lastWillAddMore = last >= prev.last || last < prev.first;
+    }
+
     const firstShouldIncrement =
       first > overscanFirst && (!maxNewCells || !firstWillAddMore);
-    const lastWillAddMore = last >= prev.last || last < prev.first;
     const lastShouldIncrement =
       last < overscanLast && (!maxNewCells || !lastWillAddMore);
     if (maxNewCells && !firstShouldIncrement && !lastShouldIncrement) {

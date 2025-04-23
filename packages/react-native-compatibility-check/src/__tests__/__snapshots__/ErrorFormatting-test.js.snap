@@ -1,0 +1,782 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`codegen formattedSummarizeDiffSet allows a diff from native-component-with-command/NativeComponent to native-component-with-command/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {},
+  "status": "ok",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet allows a diff from native-component-with-props-default-change/NativeComponent to native-component-with-props/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {},
+  "status": "ok",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet allows a diff from native-module-before-after-types/NativeModuleBeforeAfterTypes to native-module-before-after-types-removed/NativeModuleBeforeAfterTypes 1`] = `
+Object {
+  "incompatibilityReport": Object {},
+  "status": "ok",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet allows a diff from native-module-get-constants-added-optional-constant/NativeModule to native-module-get-constants/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {},
+  "status": "ok",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet allows a diff from native-module-with-enum-from-native/NativeModule to native-module-with-enum-from-native-changes/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {},
+  "status": "ok",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet allows a diff from native-module-with-union-changes/NativeModule to native-module-with-union/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {},
+  "status": "ok",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-component-with-command/NativeComponent to native-component-with-command-extra-arg/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeComponent": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeComponent: Object contained a property with a type mismatch
+  -- methodInt: has conflicting type changes
+      --new: (a: int, b: string)=>void
+      --old: (a: int)=>void
+      Function types have differing length of arguments
+          --new: (a: int, b: string)=>void
+          --old: (a: int)=>void",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-component-with-command-all-basic-types/NativeComponent to native-component-with-command-all-basic-types-arrays/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeComponent": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeComponent: Object contained a property with a type mismatch
+  -- methodInt: has conflicting type changes
+      --new: (a: Array<int>)=>void
+      --old: (a: int)=>void
+      Parameter at index 0 did not match
+          --new: (a: Array<int>)=>void
+          --old: (a: int)=>void
+          Type annotations are not the same.
+              --new: Array<int>
+              --old: int",
+        },
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeComponent: Object contained a property with a type mismatch
+  -- methodString: has conflicting type changes
+      --new: (a: Array<string>)=>void
+      --old: (a: string)=>void
+      Parameter at index 0 did not match
+          --new: (a: Array<string>)=>void
+          --old: (a: string)=>void
+          Type annotations are not the same.
+              --new: Array<string>
+              --old: string",
+        },
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeComponent: Object contained a property with a type mismatch
+  -- methodBool: has conflicting type changes
+      --new: (a: Array<boolean>)=>void
+      --old: (a: boolean)=>void
+      Parameter at index 0 did not match
+          --new: (a: Array<boolean>)=>void
+          --old: (a: boolean)=>void
+          Type annotations are not the same.
+              --new: Array<boolean>
+              --old: boolean",
+        },
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeComponent: Object contained a property with a type mismatch
+  -- methodFloat: has conflicting type changes
+      --new: (a: Array<float>)=>void
+      --old: (a: float)=>void
+      Parameter at index 0 did not match
+          --new: (a: Array<float>)=>void
+          --old: (a: float)=>void
+          Type annotations are not the same.
+              --new: Array<float>
+              --old: float",
+        },
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeComponent: Object contained a property with a type mismatch
+  -- methodDouble: has conflicting type changes
+      --new: (a: Array<double>)=>void
+      --old: (a: double)=>void
+      Parameter at index 0 did not match
+          --new: (a: Array<double>)=>void
+          --old: (a: double)=>void
+          Type annotations are not the same.
+              --new: Array<double>
+              --old: double",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-component-with-command-changed/NativeComponent to native-component-with-command/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeComponent": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeComponent: Object contained a property with a type mismatch
+  -- methodInt: has conflicting type changes
+      --new: (a: int)=>void
+      --old: (a: string)=>void
+      Parameter at index 0 did not match
+          --new: (a: int)=>void
+          --old: (a: string)=>void
+          Type annotations are not the same.
+              --new: int
+              --old: string",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-component-with-props-added-required-prop/NativeComponent to native-component-with-props/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeComponent": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "removedProps",
+          "message": "NativeComponent: Object removed required properties expected by native
+  -- width",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-component-with-props-array-union/NativeComponent to native-component-with-props-array-union-added/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeComponent": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "addedUnionCases",
+          "message": "NativeComponent.sizes: Union added items, but native will not expect/support them
+  -- position 2 huge",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-component-with-props-changes/NativeComponent to native-component-with-props/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeComponent": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeComponent: Object contained a property with a type mismatch
+  -- text: has conflicting type changes
+      --new: string
+      --old: int
+      Type annotations are not the same.
+          --new: string
+          --old: int",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-component-with-props-union/NativeComponent to native-component-with-props-union-added/NativeComponent 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeComponent": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "addedUnionCases",
+          "message": "NativeComponent.size: Union added items, but native will not expect/support them
+  -- position 1 huge",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-before-after-types-removed/NativeModuleBeforeAfterTypes to native-module-before-after-types/NativeModuleBeforeAfterTypes 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModuleBeforeAfterTypes": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "addedProps",
+          "message": "NativeModuleTest: Object added required properties, which native will not provide
+  -- afterMismatchGeneric
+  -- booleanType
+  -- exampleFunction
+  -- simpleArray
+  -- simpleArrayChange
+  -- simpleFunction
+  -- simpleFunction2
+  -- simpleFunction3
+  -- simpleFunction4
+  -- simpleUnion
+  -- simpleUnion2
+  -- simpleUnion3
+  -- simpleUnion4
+  -- simpleUnionLonger
+  -- stringType",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-before-after-types-type-changed/NativeModuleBeforeAfterTypes to native-module-before-after-types/NativeModuleBeforeAfterTypes 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModuleBeforeAfterTypes": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- simpleArrayChange: has conflicting type changes
+      --new: (a: Array<number>)=>void
+      --old: (a: Array<string>)=>void
+      Parameter at index 0 did not match
+          --new: (a: Array<number>)=>void
+          --old: (a: Array<string>)=>void
+          Type annotations are not the same.
+              --new: number
+              --old: string",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-changed/NativeModule to native-module/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- getConstants: has conflicting type changes
+      --new: ()=>{exampleConstant: number}
+      --old: ()=>{exampleConstant: string}
+      Function return types do not match
+          --new: ()=>{exampleConstant: number}
+          --old: ()=>{exampleConstant: string}
+          Object contained a property with a type mismatch
+              -- exampleConstant: has conflicting type changes
+                  --new: number
+                  --old: string
+                  Type annotations are not the same.
+                      --new: number
+                      --old: string",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-nested/NativeModule to native-module-nested-optional/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "optionalProps",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Property made optional, but native requires it
+  -- a2",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-nested-alias-changed/NativeModule to native-module-nested-alias/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- exampleFunction: has conflicting type changes
+      --new: (a: ()=>Promise<string>, b: number)=>void
+      --old: (a: ()=>Promise<number>, b: number)=>void
+      Parameter at index 0 did not match
+          --new: (a: ()=>Promise<string>, b: number)=>void
+          --old: (a: ()=>Promise<number>, b: number)=>void
+          Function return types do not match
+              --new: ()=>Promise<string>
+              --old: ()=>Promise<number>
+              Type annotations are not the same.
+                  --new: string
+                  --old: number",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-nested-changed/NativeModule to native-module-nested/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "removedProps",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Object removed required properties expected by native
+  -- a3",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-nested-changed/NativeModule to native-module-nested-optional/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "optionalProps",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Property made optional, but native requires it
+  -- a2",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-nested-optional/NativeModule to native-module-nested-nullable/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "nullableOfNonNull",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Type made nullable, but native requires it
+  --new: ?{a1: string, a2?: number, a3: string}
+  --old: {a1: string, a2?: number, a3: string}",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-dictionary-changed/NativeModule to native-module-with-dictionary/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- exampleFunction: has conflicting type changes
+      --new: (a: {[string]: number, b: number)=>void
+      --old: (a: {[string]: string, b: number)=>void
+      Parameter at index 0 did not match
+          --new: (a: {[string]: number, b: number)=>void
+          --old: (a: {[string]: string, b: number)=>void
+          Type annotations are not the same.
+              --new: number
+              --old: string",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-enum/NativeModule to native-module-with-enum-changes/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "addedEnumCases",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Enum added items, but native will not expect/support them
+  -- Member D",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-enum-from-native-changes/NativeModule to native-module-with-enum-from-native/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "removedEnumCases",
+          "message": "NativeModuleTest.getConstants.exampleConstant: Enum removed items, but native may still provide them
+  -- Member D",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-enum-from-native-type-changes/NativeModule to native-module-with-enum-from-native/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- getConstants: has conflicting type changes
+      --new: ()=>{exampleConstant: Enum<number>}
+      --old: ()=>{exampleConstant: Enum<string>}
+      Function return types do not match
+          --new: ()=>{exampleConstant: Enum<number>}
+          --old: ()=>{exampleConstant: Enum<string>}
+          Object contained a property with a type mismatch
+              -- exampleConstant: has conflicting type changes
+                  --new: Enum<number>
+                  --old: Enum<string>
+                  EnumDeclaration member types are not the same
+                      --new: Enum<number>
+                      --old: Enum<string>",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-enum-from-native-value-changes/NativeModule to native-module-with-enum-from-native/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- getConstants: has conflicting type changes
+      --new: ()=>{exampleConstant: Enum<number>}
+      --old: ()=>{exampleConstant: Enum<number>}
+      Function return types do not match
+          --new: ()=>{exampleConstant: Enum<number>}
+          --old: ()=>{exampleConstant: Enum<number>}
+          Object contained a property with a type mismatch
+              -- exampleConstant: has conflicting type changes
+                  --new: Enum<number>
+                  --old: Enum<number>
+                  Enum types do not match
+                      --new: Enum<number> {A = 1, B = 2, C = 3}
+                      --old: Enum<number> {A = 1, B = 13, C = 3}
+                      Enum contained a member with a type mismatch
+                          -- Member B: has conflicting changes
+                              --new: 2
+                              --old: 13
+                              Numeric literals are not equal
+                                  --new: 2
+                                  --old: 13",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-enum-type-changes/NativeModule to native-module-with-enum/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- exampleFunction: has conflicting type changes
+      --new: (a: Enum<number>, b: number)=>void
+      --old: (a: Enum<string>, b: number)=>void
+      Parameter at index 0 did not match
+          --new: (a: Enum<number>, b: number)=>void
+          --old: (a: Enum<string>, b: number)=>void
+          EnumDeclaration member types are not the same
+              --new: Enum<number>
+              --old: Enum<string>",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-enum-value-changes/NativeModule to native-module-with-enum/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- exampleFunction: has conflicting type changes
+      --new: (a: Enum<number>, b: number)=>void
+      --old: (a: Enum<number>, b: number)=>void
+      Parameter at index 0 did not match
+          --new: (a: Enum<number>, b: number)=>void
+          --old: (a: Enum<number>, b: number)=>void
+          Enum types do not match
+              --new: Enum<number> {A = 1, B = 2, C = 3}
+              --old: Enum<number> {A = 1, B = 13, C = 3}
+              Enum contained a member with a type mismatch
+                  -- Member B: has conflicting changes
+                      --new: 2
+                      --old: 13
+                      Numeric literals are not equal
+                          --new: 2
+                          --old: 13",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-eventemitter-changes/NativeModule to native-module-with-eventemitter/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained properties with type mismatches
+  -- onChange: has conflicting type changes
+      --new: EventEmitter<ObjectStruct>
+      --old: EventEmitter<Array<ObjectStruct>>
+      EventEmitter eventTypes are not equivalent
+          --new: EventEmitter<ObjectStruct>
+          --old: EventEmitter<Array<ObjectStruct>>
+          Type annotations are not the same.
+              --new: {a: number, b: string, c?: ?string}
+              --old: Array<ObjectStruct>
+  -- onClick: has conflicting type changes
+      --new: EventEmitter<string>
+      --old: EventEmitter<number>
+      EventEmitter eventTypes are not equivalent
+          --new: EventEmitter<string>
+          --old: EventEmitter<number>
+          Type annotations are not the same.
+              --new: string
+              --old: number
+  -- onPress: has conflicting type changes
+      --new: EventEmitter<void>
+      --old: EventEmitter<string>
+      EventEmitter eventTypes are not equivalent
+          --new: EventEmitter<void>
+          --old: EventEmitter<string>
+          Type annotations are not the same.
+              --new: void
+              --old: string
+  -- onSubmit: has conflicting type changes
+      --new: EventEmitter<Array<ObjectStruct>>
+      --old: EventEmitter<ObjectStruct>
+      EventEmitter eventTypes are not equivalent
+          --new: EventEmitter<Array<ObjectStruct>>
+          --old: EventEmitter<ObjectStruct>
+          Type annotations are not the same.
+              --new: Array<ObjectStruct>
+              --old: {a: number, b: string, c?: ?string}",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-optional-argument/NativeModule to native-module/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- exampleFunction: has conflicting type changes
+      --new: (a: string, b: number)=>void
+      --old: (a: string, b: number, c?: number)=>void
+      Function types have differing length of arguments
+          --new: (a: string, b: number)=>void
+          --old: (a: string, b: number, c?: number)=>void",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-union/NativeModule to native-module-with-union-changes/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "addedUnionCases",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Union added items, but native will not expect/support them
+  -- position 3 d",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-union-confusing-string-literals/NativeModule to native-module-with-union/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "addedUnionCases",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Union added items, but native will not expect/support them
+  -- position 1 b
+  -- position 2 c",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-union-from-native-changes/NativeModule to native-module-with-union-from-native/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "removedUnionCases",
+          "message": "NativeModuleTest.getConstants.exampleConstant: Union removed items, but native may still provide them
+  -- position 3 d",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;
+
+exports[`codegen formattedSummarizeDiffSet reports a diff from native-module-with-union-type-changes/NativeModule to native-module-with-union/NativeModule 1`] = `
+Object {
+  "incompatibilityReport": Object {
+    "NativeModule": Object {
+      "framework": "ReactNative",
+      "incompatibleSpecs": Array [
+        Object {
+          "errorCode": "incompatibleTypes",
+          "message": "NativeModuleTest: Object contained a property with a type mismatch
+  -- exampleFunction: has conflicting type changes
+      --new: (a: (a | b | c), b: number)=>void
+      --old: (a: Union<number>, b: number)=>void
+      Parameter at index 0 did not match
+          --new: (a: (a | b | c), b: number)=>void
+          --old: (a: Union<number>, b: number)=>void
+          Type annotations are not the same.
+              --new: (a | b | c)
+              --old: Union<number>",
+        },
+      ],
+    },
+  },
+  "status": "incompatible",
+}
+`;

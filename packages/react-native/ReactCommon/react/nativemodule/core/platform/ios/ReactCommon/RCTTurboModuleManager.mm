@@ -32,6 +32,7 @@
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 using namespace facebook;
 using namespace facebook::react;
@@ -338,8 +339,7 @@ typedef struct {
   /**
    * Step 2: Look for platform-specific modules.
    */
-  id<RCTBridgeModule> module =
-      !RCTTurboModuleInteropEnabled() || [self _isTurboModule:moduleName] ? [self _provideObjCModule:moduleName] : nil;
+  id<RCTModuleProvider> module = [self _moduleProviderForName:moduleName];
 
   TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
 
@@ -349,31 +349,28 @@ typedef struct {
     return nullptr;
   }
 
-  Class moduleClass = [module class];
-
+  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker = nullptr;
   dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
-  if (methodQueue == nil) {
-    RCTLogError(@"TurboModule \"%@\" was not associated with a method queue.", moduleClass);
-  }
+  if (methodQueue) {
+    /**
+     * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
+     */
+    nativeMethodCallInvoker = std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
 
-  /**
-   * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
-   */
-  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
-      std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
-
-  /**
-   * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
-   * This helps the bridge fire onBatchComplete as readily as it should.
-   */
-  if ([_bridge respondsToSelector:@selector(decorateNativeMethodCallInvoker:)]) {
-    nativeMethodCallInvoker = [_bridge decorateNativeMethodCallInvoker:nativeMethodCallInvoker];
+    /**
+     * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
+     * This helps the bridge fire onBatchComplete as readily as it should.
+     */
+    if ([_bridge respondsToSelector:@selector(decorateNativeMethodCallInvoker:)]) {
+      nativeMethodCallInvoker = [_bridge decorateNativeMethodCallInvoker:nativeMethodCallInvoker];
+    }
   }
 
   /**
    * Step 2d: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
    * wraps CxxModule.
    */
+  Class moduleClass = [module class];
   if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
     // Use TurboCxxModule compat class to wrap the CxxModule instance.
     // This is only for migration convenience, despite less performant.
@@ -391,7 +388,7 @@ typedef struct {
   if ([module respondsToSelector:@selector(getTurboModule:)]) {
     ObjCTurboModule::InitParams params = {
         .moduleName = moduleName,
-        .instance = module,
+        .instance = (id<RCTBridgeModule>)module,
         .jsInvoker = _jsInvoker,
         .nativeMethodCallInvoker = nativeMethodCallInvoker,
         .isSyncModule = methodQueue == RCTJSThread,
@@ -404,7 +401,10 @@ typedef struct {
     }
     _turboModuleCache.insert({moduleName, turboModule});
 
-    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
+    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:callInvoker:)]) {
+      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime callInvoker:_jsInvoker];
+    } else if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
+      // Old API without CallInvoker (deprecated)
       [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime];
     }
     return turboModule;
@@ -425,7 +425,8 @@ typedef struct {
   TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
 
   // Create platform-specific native module object
-  id<RCTBridgeModule> module = [self _isLegacyModule:moduleName] ? [self _provideObjCModule:moduleName] : nil;
+  id<RCTBridgeModule> module =
+      [self _isLegacyModule:moduleName] ? [self _provideObjCModule:moduleName moduleProvider:nil] : nil;
 
   TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
 
@@ -470,33 +471,47 @@ typedef struct {
   return turboModule;
 }
 
+#pragma mark - Private Methods
+
 - (BOOL)_isTurboModule:(const char *)moduleName
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return NO;
-  }
-
   Class moduleClass = [self _getModuleClassFromName:moduleName];
   return moduleClass != nil && (isTurboModuleClass(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
 }
 
 - (BOOL)_isLegacyModule:(const char *)moduleName
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return YES;
-  }
-
   Class moduleClass = [self _getModuleClassFromName:moduleName];
   return [self _isLegacyModuleClass:moduleClass];
 }
 
 - (BOOL)_isLegacyModuleClass:(Class)moduleClass
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return YES;
+  return moduleClass != nil && (!isTurboModuleClass(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
+}
+
+- (id<RCTModuleProvider>)_moduleProviderForName:(const char *)moduleName
+{
+  id<RCTModuleProvider> moduleProvider = nil;
+  if ([_delegate respondsToSelector:@selector(getModuleProvider:)]) {
+    moduleProvider = [_delegate getModuleProvider:moduleName];
   }
 
-  return moduleClass != nil && (!isTurboModuleClass(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  if (RCTTurboModuleInteropEnabled() && ![self _isTurboModule:moduleName] && !moduleProvider) {
+    return nil;
+  }
+
+  if (moduleProvider) {
+    if ([moduleProvider conformsToProtocol:@protocol(RCTTurboModule)]) {
+      // moduleProvider is also a TM, we need to initialize objectiveC properties, like the dispatch queue
+      return (id<RCTModuleProvider>)[self _provideObjCModule:moduleName moduleProvider:moduleProvider];
+    }
+    // module is Cxx module
+    return moduleProvider;
+  }
+
+  // No module provider, the Module is registered without Codegen
+  return (id<RCTModuleProvider>)[self _provideObjCModule:moduleName moduleProvider:nil];
 }
 
 - (ModuleHolder *)_getOrCreateModuleHolder:(const char *)moduleName
@@ -508,7 +523,6 @@ typedef struct {
 
   return &_moduleHolders[moduleName];
 }
-
 /**
  * Given a name for a NativeModule, return an ObjC object which is the instance
  * of that NativeModule ObjC class. If no NativeModule exist with the provided name,
@@ -517,7 +531,7 @@ typedef struct {
  * Note: All NativeModule instances are cached, which means they're all long-lived
  * (for now).
  */
-- (id<RCTBridgeModule>)_provideObjCModule:(const char *)moduleName
+- (id<RCTBridgeModule>)_provideObjCModule:(const char *)moduleName moduleProvider:(id<RCTModuleProvider>)moduleProvider
 {
   if (strncmp("RCT", moduleName, 3) == 0) {
     moduleName = [[[NSString stringWithUTF8String:moduleName] substringFromIndex:3] UTF8String];
@@ -530,7 +544,10 @@ typedef struct {
   }
 
   TurboModulePerfLogger::moduleCreateStart(moduleName, moduleHolder->getModuleId());
-  id<RCTBridgeModule> module = [self _provideObjCModule:moduleName moduleHolder:moduleHolder shouldPerfLog:YES];
+  id<RCTBridgeModule> module = [self _provideObjCModule:moduleName
+                                           moduleHolder:moduleHolder
+                                          shouldPerfLog:YES
+                                         moduleProvider:moduleProvider];
 
   if (module) {
     TurboModulePerfLogger::moduleCreateEnd(moduleName, moduleHolder->getModuleId());
@@ -544,6 +561,7 @@ typedef struct {
 - (id<RCTBridgeModule>)_provideObjCModule:(const char *)moduleName
                              moduleHolder:(ModuleHolder *)moduleHolder
                             shouldPerfLog:(BOOL)shouldPerfLog
+                           moduleProvider:(id<RCTModuleProvider>)moduleProvider
 {
   bool shouldCreateModule = false;
 
@@ -567,7 +585,7 @@ typedef struct {
     /**
      * Step 2a: Resolve platform-specific class.
      */
-    Class moduleClass = [self _getModuleClassFromName:moduleName];
+    Class moduleClass = moduleProvider ? [moduleProvider class] : [self _getModuleClassFromName:moduleName];
 
     __block id<RCTBridgeModule> module = nil;
 
@@ -583,7 +601,11 @@ typedef struct {
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
-        RCTUnsafeExecuteOnMainQueueSync(work);
+        NSString *message = [NSString
+            stringWithFormat:
+                @"Lazily setting up TurboModule \"%s\" on the main queue. This could deadlock react native, if it happens during sync rendering. Please fix this by avoiding lazy main queue setup.",
+                moduleName];
+        RCTUnsafeExecuteOnMainQueueSyncWithError(work, message);
       } else {
         work();
       }
@@ -595,7 +617,6 @@ typedef struct {
       moduleHolder->setModule(module);
       moduleHolder->endCreatingModule();
     }
-
     moduleHolder->cv().notify_all();
 
     return module;
@@ -806,7 +827,9 @@ typedef struct {
   }
 
   Class moduleClass = nil;
-  {
+  if (ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex()) {
+    moduleClass = [_delegate getModuleClassFromName:moduleName];
+  } else {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
     moduleClass = [_delegate getModuleClassFromName:moduleName];
   }
@@ -845,7 +868,9 @@ typedef struct {
   }
 
   id<RCTBridgeModule> module = nil;
-  {
+  if (ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex()) {
+    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
+  } else {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
     module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
   }
@@ -978,7 +1003,7 @@ typedef struct {
     return nil;
   }
 
-  id<RCTBridgeModule> module = [self _provideObjCModule:moduleName];
+  id<RCTBridgeModule> module = [self _provideObjCModule:moduleName moduleProvider:nil];
 
   if (warnOnLookupFailure && !module) {
     RCTLogError(@"Unable to find module for %@", [NSString stringWithUTF8String:moduleName]);
@@ -1044,7 +1069,8 @@ typedef struct {
      */
     id<RCTBridgeModule> module = [self _provideObjCModule:moduleName.c_str()
                                              moduleHolder:moduleHolder
-                                            shouldPerfLog:NO];
+                                            shouldPerfLog:NO
+                                           moduleProvider:nil];
 
     if ([module respondsToSelector:@selector(invalidate)]) {
       dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);

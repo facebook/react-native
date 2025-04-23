@@ -7,6 +7,8 @@
 
 package com.facebook.react.modules.core
 
+import android.app.Activity
+
 /**
  * Interface used to denote activities that can forward permission requests and call
  * [PermissionListener] with the permission request results.

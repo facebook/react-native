@@ -244,4 +244,4 @@ class FillRateHelper {
   }
 }
 
-module.exports = FillRateHelper;
+export default FillRateHelper;

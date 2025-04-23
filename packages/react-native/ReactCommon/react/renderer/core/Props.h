@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
-
 #include <react/renderer/core/PropsMacros.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
@@ -17,6 +15,7 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 
 #ifdef ANDROID
+#include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
@@ -33,8 +32,15 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   Props(
       const PropsParserContext& context,
       const Props& sourceProps,
-      const RawProps& rawProps);
+      const RawProps& rawProps,
+      const std::function<bool(const std::string&)>& filterObjectKeys =
+          nullptr);
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  virtual ~Props() override = default;
+#else
   virtual ~Props() = default;
+#endif
 
   Props(const Props& other) = delete;
   Props& operator=(const Props& other) = delete;
@@ -66,12 +72,26 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 
 #endif
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+#pragma mark - DebugStringConvertible (Partial)
+
+  SharedDebugStringConvertibleList getDebugProps() const override;
+
+#endif
+
  protected:
   /** Initialize member variables of Props instance */
   void initialize(
       const PropsParserContext& context,
       const Props& sourceProps,
-      const RawProps& rawProps);
+      const RawProps& rawProps,
+      /**
+       * Filter object keys to be excluded when converting the RawProps to
+       * folly::dynamic (android only)
+       */
+      const std::function<bool(const std::string&)>& filterObjectKeys =
+          nullptr);
 };
 
 } // namespace facebook::react

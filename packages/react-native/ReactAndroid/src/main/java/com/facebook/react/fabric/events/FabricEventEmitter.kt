@@ -13,52 +13,47 @@ import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.EventCategoryDef
 import com.facebook.react.uimanager.events.RCTModernEventEmitter
-import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.systrace.Systrace
 
 public class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTModernEventEmitter {
-  public override fun receiveEvent(reactTag: Int, eventName: String, params: WritableMap?): Unit {
-    receiveEvent(ViewUtil.NO_SURFACE_ID, reactTag, eventName, params)
+  @Deprecated("Deprecated in Java")
+  public override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?): Unit {
+    receiveEvent(ViewUtil.NO_SURFACE_ID, targetTag, eventName, params)
   }
 
   public override fun receiveEvent(
       surfaceId: Int,
-      reactTag: Int,
+      targetTag: Int,
       eventName: String,
       params: WritableMap?
   ) {
-    receiveEvent(surfaceId, reactTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
+    receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
   }
 
   public override fun receiveEvent(
       surfaceId: Int,
-      reactTag: Int,
+      targetTag: Int,
       eventName: String,
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
       params: WritableMap?,
       @EventCategoryDef category: Int
   ) {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricEventEmitter.receiveEvent('$eventName')")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "FabricEventEmitter.receiveEvent('$eventName')")
     try {
-      uiManager.receiveEvent(surfaceId, reactTag, eventName, canCoalesceEvent, params, category)
+      uiManager.receiveEvent(surfaceId, targetTag, eventName, canCoalesceEvent, params, category)
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 
   /** Touches are dispatched by [.receiveTouches] */
+  @Deprecated("Deprecated in Java")
   public override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
       changedIndices: WritableArray
   ): Unit {
-    throw UnsupportedOperationException("EventEmitter#receiveTouches is not supported by Fabric")
-  }
-
-  public override fun receiveTouches(event: TouchEvent): Unit {
-    // Calls are expected to go via TouchesHelper
     throw UnsupportedOperationException("EventEmitter#receiveTouches is not supported by Fabric")
   }
 }

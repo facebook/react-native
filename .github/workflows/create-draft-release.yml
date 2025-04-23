@@ -1,0 +1,29 @@
+name: Create Draft Release
+
+on:
+  workflow_call:
+
+jobs:
+  create-draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Configure Git
+        shell: bash
+        run: |
+          git config --local user.email "bot@reactnative.dev"
+          git config --local user.name "React Native Bot"
+      - name: Create draft release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {createDraftRelease} = require('./.github/workflow-scripts/createDraftRelease.js');
+            const version = ${{ github.ref_name }}';
+            const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
+            await createDraftRelease(version, isLatest(), '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}');

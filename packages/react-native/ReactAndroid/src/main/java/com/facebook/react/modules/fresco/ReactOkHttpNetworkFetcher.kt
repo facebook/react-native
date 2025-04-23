@@ -12,6 +12,7 @@ import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher
 import com.facebook.imagepipeline.producers.NetworkFetcher
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.modules.network.OkHttpCompat
+import java.util.concurrent.TimeUnit
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -35,22 +36,35 @@ internal class ReactOkHttpNetworkFetcher(private val okHttpClient: OkHttpClient)
     fetchState.submitTime = SystemClock.elapsedRealtime()
     val uri = fetchState.uri
     var requestHeaders: Map<String, String>? = null
+    val cacheControlBuilder = CacheControl.Builder()
     if (fetchState.context.imageRequest is ReactNetworkImageRequest) {
       val networkImageRequest = fetchState.context.imageRequest as ReactNetworkImageRequest
       requestHeaders = getHeaders(networkImageRequest.headers)
+      when (networkImageRequest.cacheControl) {
+        ImageCacheControl.RELOAD -> {
+          cacheControlBuilder.noStore().noCache()
+        }
+        ImageCacheControl.FORCE_CACHE -> {
+          cacheControlBuilder.maxStale(Integer.MAX_VALUE, TimeUnit.SECONDS)
+        }
+        ImageCacheControl.ONLY_IF_CACHED -> {
+          cacheControlBuilder.onlyIfCached().maxStale(Integer.MAX_VALUE, TimeUnit.SECONDS)
+        }
+        ImageCacheControl.DEFAULT -> {
+          cacheControlBuilder.noStore()
+        }
+      }
+    } else {
+      cacheControlBuilder.noStore()
     }
     val headers = OkHttpCompat.getHeadersFromMap(requestHeaders)
     val request =
         Request.Builder()
-            .cacheControl(CacheControl.Builder().noStore().build())
-            .url(uri.toString())
             .headers(headers)
+            .cacheControl(cacheControlBuilder.build())
+            .url(uri.toString())
             .get()
             .build()
     fetchWithRequest(fetchState, callback, request)
-  }
-
-  private companion object {
-    private const val TAG = "ReactOkHttpNetworkFetcher"
   }
 }

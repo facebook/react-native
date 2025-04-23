@@ -31,6 +31,16 @@ using RuntimeExecutor =
  * Use this method when the caller needs to *be blocked* by executing the
  * `callback` and requires that the callback will be executed on the same
  * thread.
+ * Example order of events (when not a sync call in runtimeExecutor callback):
+ * - [UI thread] Lock all mutexes at start
+ * - [UI thread] mutex1.lock before callback
+ * - [JS thread] Set runtimePtr in runtimeExecutor callback
+ * - [JS thread] mutex1.unlock in runtimeExecutor callback
+ * - [UI thread] Call callback
+ * - [JS thread] mutex2.lock in runtimeExecutor callback
+ * - [UI thread] mutex2.unlock after callback
+ * - [UI thread] mutex3.lock after callback
+ * - [JS thread] mutex3.unlock in runtimeExecutor callback
  */
 inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,

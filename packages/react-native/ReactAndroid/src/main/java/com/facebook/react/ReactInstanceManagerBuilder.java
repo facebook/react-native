@@ -8,7 +8,6 @@
 package com.facebook.react;
 
 import static com.facebook.react.ReactInstanceManager.initializeSoLoaderIfNecessary;
-import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
 
 import android.app.Activity;
 import android.app.Application;
@@ -25,7 +24,9 @@ import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
-import com.facebook.react.common.annotations.StableReactNativeAPI;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -37,14 +38,20 @@ import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.jscexecutor.JSCExecutor;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /** Builder class for {@link ReactInstanceManager} */
-@StableReactNativeAPI
+@LegacyArchitecture
 public class ReactInstanceManagerBuilder {
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "ReactInstanceManagerBuilder", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private static final String TAG = ReactInstanceManagerBuilder.class.getSimpleName();
 
@@ -339,7 +346,7 @@ public class ReactInstanceManagerBuilder {
     // We use the name of the device and the app for debugging & metrics
     //noinspection ConstantConditions
     String appName = mApplication.getPackageName();
-    String deviceName = getFriendlyDeviceName();
+    String deviceName = AndroidInfoHelpers.getFriendlyDeviceName();
 
     return new ReactInstanceManager(
         mApplication,

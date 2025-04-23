@@ -5,15 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// TODO T207169925: Migrate CatalystInstance to Reacthost and remove the Suppress("DEPRECATION")
+// annotation
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager
 
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.touch.JSResponderHandler
 import com.facebook.react.uimanager.annotations.ReactProp
 import org.assertj.core.api.Assertions
@@ -52,6 +56,7 @@ class SimpleViewPropertyTest {
 
   @Before
   fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
     context = BridgeReactContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
     context.initializeWithInstance(catalystInstanceMock)
@@ -72,17 +77,6 @@ class SimpleViewPropertyTest {
     Assertions.assertThat(view.alpha).isEqualTo(0.31f, Assertions.offset(1e-5f))
     manager.updateProperties(view, buildStyles("opacity", null))
     Assertions.assertThat(view.alpha).isEqualTo(1.0f)
-  }
-
-  @Test
-  fun testBackgroundColor() {
-    val view = manager.createView(viewTag, themedContext, buildStyles(), null, JSResponderHandler())
-    manager.updateProperties(view, buildStyles())
-    Assertions.assertThat(view.background).isEqualTo(null)
-    manager.updateProperties(view, buildStyles("backgroundColor", 12))
-    Assertions.assertThat((view.background as ColorDrawable).color).isEqualTo(12)
-    manager.updateProperties(view, buildStyles("backgroundColor", null))
-    Assertions.assertThat((view.background as ColorDrawable).color).isEqualTo(0)
   }
 
   @Test

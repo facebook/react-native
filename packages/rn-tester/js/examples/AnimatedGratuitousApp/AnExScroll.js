@@ -10,15 +10,15 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import React from 'react';
+import {
   Animated,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   View,
-} = require('react-native');
+} from 'react-native';
 
 class AnExScroll extends React.Component<$FlowFixMeProps, any> {
   state: any = {scrollX: new Animated.Value(0)};
@@ -118,4 +118,4 @@ const BUNNY_PIC = {
   uri: 'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xaf1/t39.1997-6/851564_531111380292237_1898871086_n.png',
 };
 
-module.exports = AnExScroll;
+export default AnExScroll;

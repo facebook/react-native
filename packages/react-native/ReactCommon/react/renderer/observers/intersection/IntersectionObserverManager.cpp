@@ -7,7 +7,7 @@
 
 #include "IntersectionObserverManager.h"
 #include <cxxreact/JSExecutor.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <utility>
 #include "IntersectionObserver.h"
 
@@ -19,8 +19,9 @@ void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
     const ShadowNode::Shared& shadowNode,
     std::vector<Float> thresholds,
+    std::optional<std::vector<Float>> rootThresholds,
     const UIManager& uiManager) {
-  SystraceSection s("IntersectionObserverManager::observe");
+  TraceSection s("IntersectionObserverManager::observe");
 
   auto surfaceId = shadowNode->getSurfaceId();
 
@@ -34,7 +35,10 @@ void IntersectionObserverManager::observe(
 
     auto& observers = observersBySurfaceId_[surfaceId];
     observers.emplace_back(IntersectionObserver{
-        intersectionObserverId, shadowNode, std::move(thresholds)});
+        intersectionObserverId,
+        shadowNode,
+        std::move(thresholds),
+        std::move(rootThresholds)});
     observer = &observers.back();
   }
 
@@ -43,7 +47,7 @@ void IntersectionObserverManager::observe(
   // (like on the Web) and we'd send the initial notification there, but as
   // we don't have it we have to run this check once and manually dispatch.
   auto& shadowTreeRegistry = uiManager.getShadowTreeRegistry();
-  MountingCoordinator::Shared mountingCoordinator = nullptr;
+  std::shared_ptr<const MountingCoordinator> mountingCoordinator = nullptr;
   RootShadowNode::Shared rootShadowNode = nullptr;
   shadowTreeRegistry.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     mountingCoordinator = shadowTree.getMountingCoordinator();
@@ -74,7 +78,7 @@ void IntersectionObserverManager::observe(
 void IntersectionObserverManager::unobserve(
     IntersectionObserverObserverId intersectionObserverId,
     const ShadowNode& shadowNode) {
-  SystraceSection s("IntersectionObserverManager::unobserve");
+  TraceSection s("IntersectionObserverManager::unobserve");
 
   {
     std::unique_lock lock(observersMutex_);
@@ -123,7 +127,7 @@ void IntersectionObserverManager::unobserve(
 void IntersectionObserverManager::connect(
     UIManager& uiManager,
     std::function<void()> notifyIntersectionObserversCallback) {
-  SystraceSection s("IntersectionObserverManager::connect");
+  TraceSection s("IntersectionObserverManager::connect");
   notifyIntersectionObserversCallback_ =
       std::move(notifyIntersectionObserversCallback);
 
@@ -137,7 +141,7 @@ void IntersectionObserverManager::connect(
 }
 
 void IntersectionObserverManager::disconnect(UIManager& uiManager) {
-  SystraceSection s("IntersectionObserverManager::disconnect");
+  TraceSection s("IntersectionObserverManager::disconnect");
 
   // Fail-safe in case the caller doesn't guarantee consistency.
   if (!mountHookRegistered_) {
@@ -181,8 +185,7 @@ void IntersectionObserverManager::updateIntersectionObservations(
     SurfaceId surfaceId,
     const RootShadowNode* rootShadowNode,
     double time) {
-  SystraceSection s(
-      "IntersectionObserverManager::updateIntersectionObservations");
+  TraceSection s("IntersectionObserverManager::updateIntersectionObservations");
 
   std::vector<IntersectionObserverEntry> entries;
 
@@ -244,7 +247,7 @@ void IntersectionObserverManager::notifyObserversIfNecessary() {
 }
 
 void IntersectionObserverManager::notifyObservers() {
-  SystraceSection s("IntersectionObserverManager::notifyObservers");
+  TraceSection s("IntersectionObserverManager::notifyObservers");
   notifyIntersectionObserversCallback_();
 }
 

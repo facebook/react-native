@@ -12,11 +12,11 @@ import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   children?: React.Node,
   title?: ?string,
   description?: ?string,
-|}>;
+}>;
 
 const RNTesterBlock = ({description, title, children}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);

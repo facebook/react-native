@@ -10,9 +10,9 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {ArrayLike} from './ArrayLikeUtils';
+import type {ArrayLike} from '../../utils/ArrayLikeUtils';
 
-import {createValueIterator} from './ArrayLikeUtils';
+import {createValueIterator} from '../../utils/ArrayLikeUtils';
 
 // IMPORTANT: The type definition for this module is defined in `HTMLCollection.js.flow`
 // because Flow only supports indexers in classes in declaration files.

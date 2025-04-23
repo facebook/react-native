@@ -10,6 +10,7 @@
 #import <React/RCTConvert.h>
 
 typedef UIFont * (^RCTFontHandler)(CGFloat fontSize, NSString *fontWeightDescription);
+typedef CGFloat RCTFontWeight;
 
 /**
  * React Native will use the System font for rendering by default. If you want to
@@ -19,6 +20,7 @@ typedef UIFont * (^RCTFontHandler)(CGFloat fontSize, NSString *fontWeightDescrip
  */
 RCT_EXTERN void RCTSetDefaultFontHandler(RCTFontHandler handler);
 RCT_EXTERN BOOL RCTHasFontHandlerSet(void);
+RCT_EXTERN RCTFontWeight RCTGetFontWeight(UIFont *font);
 
 @interface RCTFont : NSObject
 

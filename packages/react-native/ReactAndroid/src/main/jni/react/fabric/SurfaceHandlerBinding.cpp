@@ -19,28 +19,8 @@ void SurfaceHandlerBinding::setDisplayMode(jint mode) {
   surfaceHandler_.setDisplayMode(static_cast<DisplayMode>(mode));
 }
 
-void SurfaceHandlerBinding::start() {
-  std::unique_lock lock(lifecycleMutex_);
-
-  if (surfaceHandler_.getStatus() != SurfaceHandler::Status::Running) {
-    surfaceHandler_.start();
-  }
-}
-
-void SurfaceHandlerBinding::stop() {
-  std::unique_lock lock(lifecycleMutex_);
-
-  if (surfaceHandler_.getStatus() == SurfaceHandler::Status::Running) {
-    surfaceHandler_.stop();
-  }
-}
-
 jint SurfaceHandlerBinding::getSurfaceId() {
   return surfaceHandler_.getSurfaceId();
-}
-
-void SurfaceHandlerBinding::setSurfaceId(jint surfaceId) {
-  surfaceHandler_.setSurfaceId(surfaceId);
 }
 
 jboolean SurfaceHandlerBinding::isRunning() {
@@ -51,12 +31,11 @@ jni::local_ref<jstring> SurfaceHandlerBinding::getModuleName() {
   return jni::make_jstring(surfaceHandler_.getModuleName());
 }
 
-jni::local_ref<SurfaceHandlerBinding::jhybriddata>
-SurfaceHandlerBinding::initHybrid(
-    jni::alias_ref<jclass>,
+void SurfaceHandlerBinding::initHybrid(
+    jni::alias_ref<jhybridobject> jobj,
     jint surfaceId,
     jni::alias_ref<jstring> moduleName) {
-  return makeCxxInstance(surfaceId, moduleName->toStdString());
+  return setCxxInstance(jobj, surfaceId, moduleName->toStdString());
 }
 
 void SurfaceHandlerBinding::setLayoutConstraints(
@@ -68,7 +47,8 @@ void SurfaceHandlerBinding::setLayoutConstraints(
     jfloat offsetY,
     jboolean doLeftAndRightSwapInRTL,
     jboolean isRTL,
-    jfloat pixelDensity) {
+    jfloat pixelDensity,
+    jfloat fontScale) {
   LayoutConstraints constraints = {};
   constraints.minimumSize = {minWidth, minHeight};
   constraints.maximumSize = {maxWidth, maxHeight};
@@ -79,12 +59,14 @@ void SurfaceHandlerBinding::setLayoutConstraints(
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   context.pointScaleFactor = pixelDensity;
   context.viewportOffset = {offsetX, offsetY};
+  context.fontSizeMultiplier = fontScale;
 
   surfaceHandler_.constraintLayout(constraints, context);
 }
 
 void SurfaceHandlerBinding::setProps(NativeMap* props) {
-  surfaceHandler_.setProps(props->consume());
+  surfaceHandler_.setProps(
+      props != nullptr ? props->consume() : folly::dynamic::object());
 }
 
 const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
@@ -94,21 +76,14 @@ const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
 void SurfaceHandlerBinding::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", SurfaceHandlerBinding::initHybrid),
-      makeNativeMethod(
-          "getSurfaceIdNative", SurfaceHandlerBinding::getSurfaceId),
-      makeNativeMethod(
-          "setSurfaceIdNative", SurfaceHandlerBinding::setSurfaceId),
-      makeNativeMethod("isRunningNative", SurfaceHandlerBinding::isRunning),
-      makeNativeMethod(
-          "getModuleNameNative", SurfaceHandlerBinding::getModuleName),
-      makeNativeMethod("startNative", SurfaceHandlerBinding::start),
-      makeNativeMethod("stopNative", SurfaceHandlerBinding::stop),
+      makeNativeMethod("_getSurfaceId", SurfaceHandlerBinding::getSurfaceId),
+      makeNativeMethod("_isRunning", SurfaceHandlerBinding::isRunning),
+      makeNativeMethod("_getModuleName", SurfaceHandlerBinding::getModuleName),
       makeNativeMethod(
           "setLayoutConstraintsNative",
           SurfaceHandlerBinding::setLayoutConstraints),
-      makeNativeMethod("setPropsNative", SurfaceHandlerBinding::setProps),
-      makeNativeMethod(
-          "setDisplayModeNative", SurfaceHandlerBinding::setDisplayMode),
+      makeNativeMethod("setProps", SurfaceHandlerBinding::setProps),
+      makeNativeMethod("setDisplayMode", SurfaceHandlerBinding::setDisplayMode),
   });
 }
 

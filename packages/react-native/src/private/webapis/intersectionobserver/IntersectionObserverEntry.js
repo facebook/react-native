@@ -13,7 +13,7 @@
 import type ReactNativeElement from '../dom/nodes/ReactNativeElement';
 import type {NativeIntersectionObserverEntry} from './specs/NativeIntersectionObserver';
 
-import DOMRectReadOnly from '../dom/geometry/DOMRectReadOnly';
+import DOMRectReadOnly from '../geometry/DOMRectReadOnly';
 
 /**
  * The [`IntersectionObserverEntry`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry)
@@ -69,6 +69,32 @@ export default class IntersectionObserverEntry {
     const ratio =
       (intersectionRect.width * intersectionRect.height) /
       (boundingClientRect.width * boundingClientRect.height);
+
+    // Prevent rounding errors from making this value greater than 1.
+    return Math.min(ratio, 1);
+  }
+
+  /**
+   * Returns the ratio of the `intersectionRect` to the `boundingRootRect`.
+   */
+  get rnRootIntersectionRatio(): number {
+    const intersectionRect = this.intersectionRect;
+
+    const rootRect = this._nativeEntry.rootRect;
+    const boundingRootRect = new DOMRectReadOnly(
+      rootRect[0],
+      rootRect[1],
+      rootRect[2],
+      rootRect[3],
+    );
+
+    if (boundingRootRect.width === 0 || boundingRootRect.height === 0) {
+      return 0;
+    }
+
+    const ratio =
+      (intersectionRect.width * intersectionRect.height) /
+      (boundingRootRect.width * boundingRootRect.height);
 
     // Prevent rounding errors from making this value greater than 1.
     return Math.min(ratio, 1);

@@ -6,12 +6,14 @@
  */
 
 #include "HostTarget.h"
-#include "CdpJson.h"
 #include "HostAgent.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
 #include "SessionState.h"
+
+#include <jsinspector-modern/InspectorFlags.h>
+#include <jsinspector-modern/cdp/CdpJson.h>
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
@@ -232,7 +234,25 @@ bool HostTargetController::decrementPauseOverlayCounter() {
   return true;
 }
 
-folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
+namespace {
+
+struct StaticHostTargetMetadata {
+  std::optional<bool> isProfilingBuild;
+  std::optional<bool> networkInspectionEnabled;
+};
+
+StaticHostTargetMetadata getStaticHostMetadata() {
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+
+  return {
+      .isProfilingBuild = inspectorFlags.getIsProfilingBuild(),
+      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled()};
+}
+
+} // namespace
+
+folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
+  auto staticMetadata = getStaticHostMetadata();
   folly::dynamic result = folly::dynamic::object;
 
   if (metadata.appDisplayName) {
@@ -252,6 +272,14 @@ folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
   }
   if (metadata.reactNativeVersion) {
     result["reactNativeVersion"] = metadata.reactNativeVersion.value();
+  }
+  if (staticMetadata.isProfilingBuild) {
+    result["unstable_isProfilingBuild"] =
+        staticMetadata.isProfilingBuild.value();
+  }
+  if (staticMetadata.networkInspectionEnabled) {
+    result["unstable_networkInspectionEnabled"] =
+        staticMetadata.networkInspectionEnabled.value();
   }
 
   return result;

@@ -12,7 +12,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.jstasks.HeadlessJsTaskContext
 import com.facebook.react.module.annotations.ReactModule
 
 /** Native module for JS timer execution. Timers fire on frame boundaries. */
@@ -23,11 +22,6 @@ public class TimingModule(
 ) : com.facebook.fbreact.specs.NativeTimingSpec(reactContext), JavaScriptTimerExecutor {
   private val javaTimerManager: JavaTimerManager =
       JavaTimerManager(reactContext, this, ReactChoreographer.getInstance(), devSupportManager)
-
-  override fun initialize() {
-    HeadlessJsTaskContext.getInstance(getReactApplicationContext())
-        .addTaskEventListener(javaTimerManager)
-  }
 
   override fun createTimer(
       callbackIDDouble: Double,
@@ -68,8 +62,6 @@ public class TimingModule(
   }
 
   override fun invalidate() {
-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
-    headlessJsTaskContext.removeTaskEventListener(javaTimerManager)
     javaTimerManager.onInstanceDestroy()
   }
 

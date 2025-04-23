@@ -27,14 +27,26 @@ typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 
 @protocol RCTHostDelegate <NSObject>
 
+- (void)hostDidStart:(RCTHost *)host;
+
+@optional
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup;
+
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback;
+
+// TODO(T205780509): Remove this api in react native v0.78
+// The bridgeless js error handling api will just call into exceptionsmanager directly
 - (void)host:(RCTHost *)host
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
+           originalMessage:(NSString *_Nullable)originalMessage
+                      name:(NSString *_Nullable)name
+            componentStack:(NSString *_Nullable)componentStack
                exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal;
-
-- (void)hostDidStart:(RCTHost *)host;
-
+                   isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData __attribute__((deprecated));
 @end
 
 @protocol RCTHostRuntimeDelegate <NSObject>
@@ -58,6 +70,9 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                     launchOptions:(nullable NSDictionary *)launchOptions __deprecated;
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 

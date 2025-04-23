@@ -11,8 +11,8 @@
 'use strict';
 
 const {create} = require('../../../../jest/renderer');
-const Text = require('../../../Text/Text');
-const TouchableOpacity = require('../TouchableOpacity');
+const Text = require('../../../Text/Text').default;
+const TouchableOpacity = require('../TouchableOpacity').default;
 const React = require('react');
 
 describe('TouchableOpacity', () => {

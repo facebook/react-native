@@ -24,6 +24,7 @@ const numberOfMaxWorkers = argv.maxWorkers || 1;
 let exitCode;
 
 const JEST_BINARY = argv.jestBinary || './node_modules/.bin/jest';
+const FLOW_BINARY = argv.flowBinary;
 const YARN_BINARY = argv.yarnBinary || 'yarn';
 
 function describe(message) {
@@ -34,7 +35,7 @@ try {
   echo('Executing JavaScript tests');
 
   describe('Test: feature flags codegen');
-  if (exec(`${YARN_BINARY} run featureflags-check`).code) {
+  if (exec(`${YARN_BINARY} run featureflags --verify-unchanged`).code) {
     echo('Failed to run featureflags check.');
     exitCode = 1;
     throw Error(exitCode);
@@ -47,8 +48,19 @@ try {
     throw Error(exitCode);
   }
 
+  describe('Test: No JS build artifacts');
+  if (exec(`${YARN_BINARY} run build --check`).code) {
+    echo('Failed, there are build artifacts in this commit.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
   describe('Test: Flow check');
-  if (exec(`${YARN_BINARY} run flow-check`).code) {
+  const flowCommand =
+    FLOW_BINARY == null
+      ? `${YARN_BINARY} run flow-check`
+      : `${FLOW_BINARY} check`;
+  if (exec(flowCommand).code) {
     echo('Failed to run flow.');
     exitCode = 1;
     throw Error(exitCode);

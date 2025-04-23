@@ -12,18 +12,19 @@
 
 import processBoxShadow from '../StyleSheet/processBoxShadow';
 
-const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-const resolveAssetSource = require('../Image/resolveAssetSource');
+const ReactNativeStyleAttributes =
+  require('../Components/View/ReactNativeStyleAttributes').default;
+const resolveAssetSource = require('../Image/resolveAssetSource').default;
 const processBackgroundImage =
   require('../StyleSheet/processBackgroundImage').default;
 const processColor = require('../StyleSheet/processColor').default;
-const processColorArray = require('../StyleSheet/processColorArray');
+const processColorArray = require('../StyleSheet/processColorArray').default;
 const processFilter = require('../StyleSheet/processFilter').default;
-const insetsDiffer = require('../Utilities/differ/insetsDiffer');
-const matricesDiffer = require('../Utilities/differ/matricesDiffer');
-const pointsDiffer = require('../Utilities/differ/pointsDiffer');
-const sizesDiffer = require('../Utilities/differ/sizesDiffer');
-const UIManager = require('./UIManager');
+const insetsDiffer = require('../Utilities/differ/insetsDiffer').default;
+const matricesDiffer = require('../Utilities/differ/matricesDiffer').default;
+const pointsDiffer = require('../Utilities/differ/pointsDiffer').default;
+const sizesDiffer = require('../Utilities/differ/sizesDiffer').default;
+const UIManager = require('./UIManager').default;
 const nullthrows = require('nullthrows');
 
 function getNativeComponentAttributes(uiViewClassName: string): any {
@@ -209,4 +210,4 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
   return null;
 }
 
-module.exports = getNativeComponentAttributes;
+export default getNativeComponentAttributes;

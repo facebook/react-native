@@ -1,7 +1,7 @@
 {
   "name": "@react-native/bots",
   "description": "React Native Bots",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "private": true,
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@rnx-kit/rn-changelog-generator": "^0.4.0",
-    "danger": "^11.2.1",
+    "danger": "^13.0.4",
     "lodash.includes": "^4.3.0",
     "minimatch": "^3.0.4"
   }

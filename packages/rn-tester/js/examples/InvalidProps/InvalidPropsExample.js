@@ -10,8 +10,9 @@
 
 'use strict';
 
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 
 export const title = 'Invalid Props';
 export const category = 'Other';
@@ -51,8 +52,8 @@ export const examples = [
             <View
               // $FlowFixMe[incompatible-type]
               style={{flexDirection}}>
-              <Text>⬇️</Text>
-              <Text>⬇️</Text>
+              <RNTesterText>⬇️</RNTesterText>
+              <RNTesterText>⬇️</RNTesterText>
             </View>
           )}
         </Comparison>
@@ -67,13 +68,11 @@ export const examples = [
           actual={['no-such-variant', 'small-caps-12345']}
           expected={undefined}>
           {fontVariant => (
-            <Text
-              style={
-                // $FlowFixMe[incompatible-type]
-                {fontVariant}
-              }>
+            <RNTesterText
+              // $FlowFixMe[incompatible-type]
+              style={{fontVariant}}>
               The quick brown fox jumps over the lazy dog.
-            </Text>
+            </RNTesterText>
           )}
         </Comparison>
       );
@@ -151,9 +150,9 @@ function Comparison<ExpectedT, ActualT>({
 }): React.Node {
   return (
     <>
-      <Text style={{fontWeight: 'bold'}}>Actual</Text>
+      <RNTesterText style={{fontWeight: 'bold'}}>Actual</RNTesterText>
       {children(actual)}
-      <Text style={{fontWeight: 'bold'}}>Expected</Text>
+      <RNTesterText style={{fontWeight: 'bold'}}>Expected</RNTesterText>
       {children(expected)}
     </>
   );

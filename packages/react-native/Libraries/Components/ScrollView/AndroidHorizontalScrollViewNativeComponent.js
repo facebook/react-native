@@ -8,10 +8,8 @@
  * @format
  */
 
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../src/private/types/HostComponent';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
@@ -31,7 +29,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     pagingEnabled: true,
     persistentScrollbar: true,
     horizontal: true,
-    enableSyncOnScroll: true,
     scrollEnabled: true,
     scrollEventThrottle: true,
     scrollPerfTag: true,

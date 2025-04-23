@@ -11,8 +11,8 @@
 'use strict';
 
 import type {
-  ArrayTypeAnnotation,
   BooleanTypeAnnotation,
+  ComponentArrayTypeAnnotation,
   DoubleTypeAnnotation,
   FloatTypeAnnotation,
   Int32TypeAnnotation,
@@ -80,6 +80,7 @@ export type PojoTypeAnnotation =
         | DoubleTypeAnnotation
         | FloatTypeAnnotation
         | Int32TypeAnnotation
+        | MixedTypeAnnotation
         | $ReadOnly<{
             type: 'StringEnumTypeAnnotation',
             default: string,
@@ -111,7 +112,7 @@ class PojoCollector {
       }
       case 'ArrayTypeAnnotation': {
         const arrayTypeAnnotation = typeAnnotation;
-        const elementType: $PropertyType<ArrayTypeAnnotation, 'elementType'> =
+        const elementType: ComponentArrayTypeAnnotation['elementType'] =
           arrayTypeAnnotation.elementType;
 
         const pojoElementType = (() => {

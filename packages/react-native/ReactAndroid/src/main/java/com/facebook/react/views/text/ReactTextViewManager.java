@@ -13,14 +13,15 @@ import android.text.Spannable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.internal.SystraceSection;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -35,6 +36,7 @@ import java.util.Map;
  * Concrete class for {@link ReactTextAnchorViewManager} which represents view managers of anchor
  * {@code <Text>} nodes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
 public class ReactTextViewManager
     extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
@@ -58,7 +60,9 @@ public class ReactTextViewManager
 
   public ReactTextViewManager(@Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     mReactTextViewManagerCallback = reactTextViewManagerCallback;
-    setupViewRecycling();
+    if (ReactNativeFeatureFlags.enableViewRecyclingForText()) {
+      setupViewRecycling();
+    }
   }
 
   @Override
@@ -72,12 +76,18 @@ public class ReactTextViewManager
       // Defaults from ReactTextAnchorViewManager
       setSelectionColor(preparedView, null);
     }
-    return view;
+    return preparedView;
   }
 
   @Override
   public String getName() {
     return REACT_CLASS;
+  }
+
+  @Override
+  protected void updateViewAccessibility(@NonNull ReactTextView view) {
+    ReactTextViewAccessibilityDelegate.Companion.setDelegate(
+        view, view.isFocusable(), view.getImportantForAccessibility());
   }
 
   @Override
@@ -99,14 +109,13 @@ public class ReactTextViewManager
       // delegate so that these can be picked up by the accessibility system.
       ReactClickableSpan[] clickableSpans =
           spannable.getSpans(0, update.getText().length(), ReactClickableSpan.class);
-
-      if (clickableSpans.length > 0) {
-        view.setTag(
-            R.id.accessibility_links,
-            new ReactAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
-        ReactAccessibilityDelegate.resetDelegate(
-            view, view.isFocusable(), view.getImportantForAccessibility());
-      }
+      view.setTag(
+          R.id.accessibility_links,
+          clickableSpans.length > 0
+              ? new ReactTextViewAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable)
+              : null);
+      ReactTextViewAccessibilityDelegate.Companion.resetDelegate(
+          view, view.isFocusable(), view.getImportantForAccessibility());
     }
   }
 
@@ -136,7 +145,7 @@ public class ReactTextViewManager
   }
 
   @Override
-  public Object updateState(
+  public @Nullable Object updateState(
       ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     try (SystraceSection s = new SystraceSection("ReactTextViewManager.updateState")) {
       MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
@@ -192,9 +201,7 @@ public class ReactTextViewManager
     Map<String, Object> eventTypeConstants =
         baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
     eventTypeConstants.putAll(
-        MapBuilder.of(
-            "topTextLayout", MapBuilder.of("registrationName", "onTextLayout"),
-            "topInlineViewLayout", MapBuilder.of("registrationName", "onInlineViewLayout")));
+        MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout")));
     return eventTypeConstants;
   }
 

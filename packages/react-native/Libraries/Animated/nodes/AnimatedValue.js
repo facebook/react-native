@@ -8,19 +8,22 @@
  * @format
  */
 
-'use strict';
-
-import type Animation, {EndCallback} from '../animations/Animation';
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type Animation from '../animations/Animation';
+import type {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
-import InteractionManager from '../../Interaction/InteractionManager';
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
+import InteractionManager from '../../Interaction/InteractionManager';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedValueConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 
@@ -83,6 +86,9 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  * See https://reactnative.dev/docs/animatedvalue
  */
 export default class AnimatedValue extends AnimatedWithChildren {
+  #listenerCount: number;
+  #updateSubscription: ?EventSubscription;
+
   _value: number;
   _startingValue: number;
   _offset: number;
@@ -90,10 +96,14 @@ export default class AnimatedValue extends AnimatedWithChildren {
   _tracking: ?AnimatedTracking;
 
   constructor(value: number, config?: ?AnimatedValueConfig) {
-    super();
+    super(config);
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
+
+    this.#listenerCount = 0;
+    this.#updateSubscription = null;
+
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
@@ -114,6 +124,67 @@ export default class AnimatedValue extends AnimatedWithChildren {
 
   __getValue(): number {
     return this._value + this._offset;
+  }
+
+  __makeNative(platformConfig: ?PlatformConfig): void {
+    super.__makeNative(platformConfig);
+    if (this.#listenerCount > 0) {
+      this.#ensureUpdateSubscriptionExists();
+    }
+  }
+
+  addListener(callback: (value: any) => mixed): string {
+    const id = super.addListener(callback);
+    this.#listenerCount++;
+    if (this.__isNative) {
+      this.#ensureUpdateSubscriptionExists();
+    }
+    return id;
+  }
+
+  removeListener(id: string): void {
+    super.removeListener(id);
+    this.#listenerCount--;
+    if (this.__isNative && this.#listenerCount === 0) {
+      this.#updateSubscription?.remove();
+    }
+  }
+
+  removeAllListeners(): void {
+    super.removeAllListeners();
+    this.#listenerCount = 0;
+    if (this.__isNative) {
+      this.#updateSubscription?.remove();
+    }
+  }
+
+  #ensureUpdateSubscriptionExists(): void {
+    if (this.#updateSubscription != null) {
+      return;
+    }
+    const nativeTag = this.__getNativeTag();
+    NativeAnimatedAPI.startListeningToAnimatedNodeValue(nativeTag);
+    const subscription: EventSubscription =
+      NativeAnimatedHelper.nativeEventEmitter.addListener(
+        'onAnimatedValueUpdate',
+        data => {
+          if (data.tag === nativeTag) {
+            this.__onAnimatedValueUpdateReceived(data.value);
+          }
+        },
+      );
+
+    this.#updateSubscription = {
+      remove: () => {
+        // Only this function assigns to `this.#updateSubscription`.
+        if (this.#updateSubscription == null) {
+          return;
+        }
+        this.#updateSubscription = null;
+        subscription.remove();
+        NativeAnimatedAPI.stopListeningToAnimatedNodeValue(nativeTag);
+      },
+    };
   }
 
   /**
@@ -298,6 +369,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
       type: 'value',
       value: this._value,
       offset: this._offset,
+      debugID: this.__getDebugID(),
     };
   }
 }

@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import * as MutationObserverExample from './MutationObserverExample';
 import * as VisualCompletionExample from './VisualCompletionExample/VisualCompletionExample';
 
@@ -18,8 +20,9 @@ export const documentationURL =
   'https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver';
 export const description = 'API to detect mutations in React Native nodes.';
 export const showIndividualExamples = true;
-export const examples = [MutationObserverExample];
+export const examples: Array<RNTesterModuleExample> = [MutationObserverExample];
 
+// $FlowExpectedError[cannot-resolve-name]
 if (typeof IntersectionObserver !== 'undefined') {
   examples.push(VisualCompletionExample);
 }

@@ -19,7 +19,7 @@ namespace facebook::react {
 enum class DisplayType {
   None = 0,
   Flex = 1,
-  Inline = 2,
+  Contents = 2,
 };
 
 enum class PositionType {

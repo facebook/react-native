@@ -153,7 +153,7 @@ void dynamicFromValueShallow(
 folly::dynamic dynamicFromValue(
     Runtime& runtime,
     const Value& valueInput,
-    std::function<bool(const std::string&)> filterObjectKeys) {
+    const std::function<bool(const std::string&)>& filterObjectKeys) {
   std::vector<FromValue> stack;
   folly::dynamic ret;
 

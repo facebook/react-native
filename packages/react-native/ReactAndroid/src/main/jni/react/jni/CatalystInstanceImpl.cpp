@@ -21,7 +21,6 @@
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RAMBundleRegistry.h>
 #include <cxxreact/RecoverableError.h>
-#include <fb/log.h>
 #include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>

@@ -8,8 +8,9 @@
  * @flow strict-local
  */
 
+import RNTesterText from './RNTesterText';
 import * as React from 'react';
-import {StyleSheet, Switch, Text, View} from 'react-native';
+import {StyleSheet, Switch, View} from 'react-native';
 
 type Props = {
   label: string,
@@ -34,7 +35,7 @@ const RNTesterSettingSwitchRow = ({
 }: Props): React.Node => {
   return (
     <View style={styles.row}>
-      <Text>{label}</Text>
+      <RNTesterText>{label}</RNTesterText>
       <Switch value={active} onValueChange={active ? onDisable : onEnable} />
     </View>
   );

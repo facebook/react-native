@@ -13,10 +13,11 @@ type SuccessResult<Props: {...} | void = {}> = {
   ...Props,
 };
 
-type ErrorResult<ErrorT = mixed> = {
+type ErrorResult<ErrorT = mixed, Props: {...} | void = {}> = {
   status: 'error',
   error: ErrorT,
   prefersFuseboxFrontend?: ?boolean,
+  ...Props,
 };
 
 type CodedErrorResult<ErrorCode: string> = {
@@ -25,11 +26,15 @@ type CodedErrorResult<ErrorCode: string> = {
   errorDetails?: string,
 };
 
-type DebuggerSessionIDs = {
-  appId: string,
-  deviceName: string,
-  deviceId: string,
+export type DebuggerSessionIDs = {
+  appId: string | null,
+  deviceName: string | null,
+  deviceId: string | null,
   pageId: string | null,
+};
+
+export type ConnectionUptime = {
+  connectionUptime: number,
 };
 
 export type ReportableEvent =
@@ -38,10 +43,9 @@ export type ReportableEvent =
       launchType: 'launch' | 'redirect',
       ...
         | SuccessResult<{
-            appId: string | null,
-            deviceId: string | null,
-            resolvedTargetDescription: string,
+            targetDescription: string,
             prefersFuseboxFrontend: boolean,
+            ...DebuggerSessionIDs,
           }>
         | ErrorResult<mixed>
         | CodedErrorResult<'NO_APPS_FOUND'>,
@@ -53,7 +57,7 @@ export type ReportableEvent =
             ...DebuggerSessionIDs,
             frontendUserAgent: string | null,
           }>
-        | ErrorResult<mixed>,
+        | ErrorResult<mixed, DebuggerSessionIDs>,
     }
   | {
       type: 'debugger_command',
@@ -64,6 +68,7 @@ export type ReportableEvent =
       responseOrigin: 'proxy' | 'device',
       timeSinceStart: number | null,
       ...DebuggerSessionIDs,
+      ...ConnectionUptime,
       frontendUserAgent: string | null,
       prefersFuseboxFrontend: boolean | null,
       ...
@@ -77,12 +82,55 @@ export type ReportableEvent =
           >,
     }
   | {
+      type: 'profiling_target_registered',
+      status: 'success',
+      ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'fusebox_console_notice',
+    }
+  | {
+      type: 'no_debug_pages_for_device',
+      ...DebuggerSessionIDs,
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',
       message: string,
       error: string,
       errorStack: string,
+      ...ConnectionUptime,
+      ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'debugger_high_ping' | 'device_high_ping',
+      duration: number,
+      timeSinceLastCommunication: number | null,
+      ...ConnectionUptime,
+      ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'debugger_timeout' | 'device_timeout',
+      duration: number,
+      timeSinceLastCommunication: number | null,
+      ...ConnectionUptime,
+      ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'debugger_connection_closed' | 'device_connection_closed',
+      code: number,
+      reason: string,
+      timeSinceLastCommunication: number | null,
+      ...ConnectionUptime,
+      ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'high_event_loop_delay',
+      eventLoopUtilization: number,
+      maxEventLoopDelayPercent: number,
+      duration: number,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     };
 

@@ -16,11 +16,11 @@ import * as LogBoxData from './Data/LogBoxData';
 import LogBoxInspector from './UI/LogBoxInspector';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   logs: $ReadOnlyArray<LogBoxLog>,
   selectedLogIndex: number,
   isDisabled?: ?boolean,
-|}>;
+}>;
 
 export class _LogBoxInspectorContainer extends React.Component<Props> {
   render(): React.Node {
@@ -65,4 +65,4 @@ export class _LogBoxInspectorContainer extends React.Component<Props> {
 
 export default (LogBoxData.withSubscription(
   _LogBoxInspectorContainer,
-): React.AbstractComponent<{||}>);
+): React.ComponentType<{}>);

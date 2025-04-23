@@ -7,17 +7,21 @@
 
 package com.facebook.react.uimanager
 
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.MatrixMathHelper.MatrixDecompositionContext
 import kotlin.math.cos
 import kotlin.math.sin
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 /** Test for [MatrixMathHelper] */
-@RunWith(RobolectricTestRunner::class)
 class MatrixMathHelperTest {
+
+  @Before
+  fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
+  }
 
   @Test
   fun testDecomposing4x4MatrixToProduceAccurateZaxisAngles() {

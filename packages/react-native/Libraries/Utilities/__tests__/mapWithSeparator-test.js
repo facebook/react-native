@@ -11,7 +11,7 @@
 'use strict';
 
 describe('mapWithSeparator', () => {
-  const mapWithSeparator = require('../mapWithSeparator');
+  const mapWithSeparator = require('../mapWithSeparator').default;
 
   it('mapWithSeparator returns expected results', () => {
     const array = [1, 2, 3];

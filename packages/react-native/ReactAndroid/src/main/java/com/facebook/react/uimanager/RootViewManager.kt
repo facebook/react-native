@@ -11,14 +11,14 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 
 /** View manager for ReactRootView components. */
-public class RootViewManager : ViewGroupManager<ViewGroup>() {
+internal class RootViewManager : ViewGroupManager<ViewGroup>() {
 
-  override public fun getName(): String = REACT_CLASS
+  override fun getName(): String = REACT_CLASS
 
-  override protected fun createViewInstance(reactContext: ThemedReactContext): ViewGroup =
+  override fun createViewInstance(reactContext: ThemedReactContext): ViewGroup =
       FrameLayout(reactContext)
 
-  public companion object {
-    public const val REACT_CLASS: String = "RootView"
+  companion object {
+    const val REACT_CLASS: String = "RootView"
   }
 }

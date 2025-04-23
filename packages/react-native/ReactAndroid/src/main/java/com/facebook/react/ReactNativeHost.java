@@ -19,6 +19,9 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
@@ -34,7 +37,13 @@ import java.util.List;
     message =
         "This class will be replaced by com.facebook.react.ReactHost in the new architecture of"
             + " React Native.")
+@LegacyArchitecture
 public abstract class ReactNativeHost {
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "ReactNativeHost", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private final Application mApplication;
   private @Nullable ReactInstanceManager mReactInstanceManager;

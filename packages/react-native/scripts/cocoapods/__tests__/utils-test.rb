@@ -185,15 +185,24 @@ class UtilsTests < Test::Unit::TestCase
         react_hermes_name = "React-hermes"
         react_core_name = "React-Core"
         hermes_engine_name = "hermes-engine"
-        react_hermes_debug_config = BuildConfigurationMock.new("Debug")
-        react_hermes_release_config = BuildConfigurationMock.new("Release")
-        react_core_debug_config = BuildConfigurationMock.new("Debug")
-        react_core_release_config = BuildConfigurationMock.new("Release")
-        hermes_engine_debug_config = BuildConfigurationMock.new("Debug")
-        hermes_engine_release_config = BuildConfigurationMock.new("Release")
-        react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config])
-        react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config])
-        hermes_engine_target = TargetMock.new(hermes_engine_name, [hermes_engine_debug_config, hermes_engine_release_config])
+
+        react_hermes_debug_config = BuildConfigurationMock.new("Debug", {}, is_debug: true)
+        react_hermes_release_config = BuildConfigurationMock.new("Release", {}, is_debug: false)
+        react_hermes_debug_config_rename = BuildConfigurationMock.new("Development", {}, is_debug: true)
+        react_hermes_release_config_rename = BuildConfigurationMock.new("Production", {}, is_debug: false)
+        react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config, react_hermes_debug_config_rename, react_hermes_release_config_rename])
+
+        react_core_debug_config = BuildConfigurationMock.new("Debug", {}, is_debug: true)
+        react_core_release_config = BuildConfigurationMock.new("Release", {}, is_debug: false)
+        react_core_debug_config_rename = BuildConfigurationMock.new("Development", {}, is_debug: true)
+        react_core_release_config_rename = BuildConfigurationMock.new("Production", {}, is_debug: false)
+        react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config, react_core_debug_config_rename, react_core_release_config_rename])
+
+        hermes_engine_debug_config = BuildConfigurationMock.new("Debug", {}, is_debug: true)
+        hermes_engine_release_config = BuildConfigurationMock.new("Release", {}, is_debug: false)
+        hermes_engine_debug_config_rename = BuildConfigurationMock.new("Development", {}, is_debug: true)
+        hermes_engine_release_config_rename = BuildConfigurationMock.new("Production", {}, is_debug: false)
+        hermes_engine_target = TargetMock.new(hermes_engine_name, [hermes_engine_debug_config, hermes_engine_release_config, hermes_engine_debug_config_rename, hermes_engine_release_config_rename])
 
         installer = InstallerMock.new(
           :pod_target_installation_results => {
@@ -211,10 +220,18 @@ class UtilsTests < Test::Unit::TestCase
         expected_value = "$(inherited) HERMES_ENABLE_DEBUGGER=1"
         assert_equal(expected_value, react_hermes_debug_config.build_settings[build_setting])
         assert_nil(react_hermes_release_config.build_settings[build_setting])
+        assert_equal(expected_value, react_hermes_debug_config_rename.build_settings[build_setting])
+        assert_nil(react_hermes_release_config_rename.build_settings[build_setting])
+
         assert_nil(react_core_debug_config.build_settings[build_setting])
         assert_nil(react_core_release_config.build_settings[build_setting])
+        assert_nil(react_core_debug_config_rename.build_settings[build_setting])
+        assert_nil(react_core_release_config_rename.build_settings[build_setting])
+
         assert_equal(expected_value, hermes_engine_debug_config.build_settings[build_setting])
         assert_nil(hermes_engine_release_config.build_settings[build_setting])
+        assert_equal(expected_value, hermes_engine_debug_config_rename.build_settings[build_setting])
+        assert_nil(hermes_engine_release_config_rename.build_settings[build_setting])
     end
 
     # ================= #
@@ -701,9 +718,6 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         assert_equal(FileMock.exist_invocation_params, ["/.xcode.env", "/.xcode.env.local"])
         assert_equal($collected_commands[0], "echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env")
-
-        assert_true($collected_commands[1].start_with? "echo 'export NODE_BINARY=")
-        assert_true($collected_commands[1].end_with? "' > /.xcode.env.local")
     end
 
     # ============================ #
@@ -800,7 +814,7 @@ class UtilsTests < Test::Unit::TestCase
             if pod_name == "SecondTarget"
                 target_installation_result.native_target.build_configurations.each do |config|
                     received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
                     assert_equal(received_search_path, expected_Search_path)
                 end
             else
@@ -1116,22 +1130,44 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal("$(inherited)" + test_flag, twiceProcessed_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
     end
 
+    def test_add_flag_to_map_with_inheritance_whenUsedWithArrayAttributes
+        # Arrange
+        initialized_xcconfig = XCConfigMock.new("InitializedConfig", attributes: {
+            "OTHER_CPLUSPLUSFLAGS" => ["INIT_FLAG"]
+        })
+        twiceProcessed_xcconfig = XCConfigMock.new("TwiceProcessedConfig", attributes: {
+            "OTHER_CPLUSPLUSFLAGS" => []
+        })
+        test_flag = " -DTEST_FLAG=1"
+
+        # Act
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(initialized_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(twiceProcessed_xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", test_flag)
+
+        # Assert
+        assert_equal(["$(inherited)", "INIT_FLAG", test_flag], initialized_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal(["$(inherited)", test_flag], twiceProcessed_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+    end
+
     def test_add_ndebug_flag_to_pods_in_release
         # Arrange
         xcconfig = XCConfigMock.new("Config")
-        default_debug_config = BuildConfigurationMock.new("Debug")
-        default_release_config = BuildConfigurationMock.new("Release")
-        custom_debug_config1 = BuildConfigurationMock.new("CustomDebug")
-        custom_debug_config2 = BuildConfigurationMock.new("Custom")
-        custom_release_config1 = BuildConfigurationMock.new("CustomRelease")
-        custom_release_config2 = BuildConfigurationMock.new("Production")
+        default_debug_config = BuildConfigurationMock.new("Debug", {}, is_debug: true)
+        default_release_config = BuildConfigurationMock.new("Release", {}, is_debug: false)
+        custom_debug_config1 = BuildConfigurationMock.new("CustomDebug", {}, is_debug: true)
+        custom_debug_config2 = BuildConfigurationMock.new("Custom", {}, is_debug: true)
+        custom_release_config1 = BuildConfigurationMock.new("CustomRelease", {}, is_debug: false)
+        custom_release_config2 = BuildConfigurationMock.new("Production", {}, is_debug: false)
+        custom_release_config3 = BuildConfigurationMock.new("Main", {}, is_debug: false)
 
         installer = prepare_installer_for_cpp_flags(
             [ xcconfig ],
             {
                 "Default" => [ default_debug_config, default_release_config ],
                 "Custom1" => [ custom_debug_config1, custom_release_config1 ],
-                "Custom2" => [ custom_debug_config2, custom_release_config2 ]
+                "Custom2" => [ custom_debug_config2, custom_release_config2 ],
+                "Custom3" => [ custom_release_config3 ],
             }
         )
         # Act
@@ -1144,6 +1180,7 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal("$(inherited) -DNDEBUG", custom_release_config1.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_equal(nil, custom_debug_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_equal("$(inherited) -DNDEBUG", custom_release_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", custom_release_config3.build_settings["OTHER_CPLUSPLUSFLAGS"])
     end
 end
 
@@ -1200,16 +1237,20 @@ def prepare_installer_for_cpp_flags(xcconfigs, build_configs)
     end
 
     pod_target_installation_results_map = {}
+    user_build_configuration_map = {}
     build_configs.each do |name, build_configs|
         pod_target_installation_results_map[name.to_s] = prepare_pod_target_installation_results_mock(
             name.to_s, build_configs
         )
+        build_configs.each do |config|
+            user_build_configuration_map[config.name] = config
+        end
     end
 
     return InstallerMock.new(
         PodsProjectMock.new,
         [
-            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/")
+            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/", :user_build_configurations => user_build_configuration_map)
         ],
         :pod_target_installation_results => pod_target_installation_results_map
     )

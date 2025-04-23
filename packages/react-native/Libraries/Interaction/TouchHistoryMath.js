@@ -5,8 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
+// $FlowFixMe[definition-cycle]
+// $FlowFixMe[recursive-definition]
 const TouchHistoryMath = {
   /**
    * This code is optimized and not intended to look beautiful. This allows
@@ -25,11 +28,11 @@ const TouchHistoryMath = {
    * @return {number} value of centroid in specified dimension.
    */
   centroidDimension: function (
-    touchHistory,
-    touchesChangedAfter,
-    isXAxis,
-    ofCurrent,
-  ) {
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+    isXAxis: boolean,
+    ofCurrent: boolean,
+  ): number {
     const touchBank = touchHistory.touchBank;
     let total = 0;
     let count = 0;
@@ -82,9 +85,9 @@ const TouchHistoryMath = {
   },
 
   currentCentroidXOfTouchesChangedAfter: function (
-    touchHistory,
-    touchesChangedAfter,
-  ) {
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ): number {
     return TouchHistoryMath.centroidDimension(
       touchHistory,
       touchesChangedAfter,
@@ -94,9 +97,9 @@ const TouchHistoryMath = {
   },
 
   currentCentroidYOfTouchesChangedAfter: function (
-    touchHistory,
-    touchesChangedAfter,
-  ) {
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ): number {
     return TouchHistoryMath.centroidDimension(
       touchHistory,
       touchesChangedAfter,
@@ -106,9 +109,9 @@ const TouchHistoryMath = {
   },
 
   previousCentroidXOfTouchesChangedAfter: function (
-    touchHistory,
-    touchesChangedAfter,
-  ) {
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ): number {
     return TouchHistoryMath.centroidDimension(
       touchHistory,
       touchesChangedAfter,
@@ -118,9 +121,9 @@ const TouchHistoryMath = {
   },
 
   previousCentroidYOfTouchesChangedAfter: function (
-    touchHistory,
-    touchesChangedAfter,
-  ) {
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ): number {
     return TouchHistoryMath.centroidDimension(
       touchHistory,
       touchesChangedAfter,
@@ -129,7 +132,7 @@ const TouchHistoryMath = {
     );
   },
 
-  currentCentroidX: function (touchHistory) {
+  currentCentroidX: function (touchHistory: TouchHistoryMath): number {
     return TouchHistoryMath.centroidDimension(
       touchHistory,
       0, // touchesChangedAfter
@@ -138,7 +141,7 @@ const TouchHistoryMath = {
     );
   },
 
-  currentCentroidY: function (touchHistory) {
+  currentCentroidY: function (touchHistory: TouchHistoryMath): number {
     return TouchHistoryMath.centroidDimension(
       touchHistory,
       0, // touchesChangedAfter
@@ -148,6 +151,32 @@ const TouchHistoryMath = {
   },
 
   noCentroid: -1,
+} as {
+  centroidDimension: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+    isXAxis: boolean,
+    ofCurrent: boolean,
+  ) => number,
+  currentCentroidXOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ) => number,
+  currentCentroidYOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ) => number,
+  previousCentroidXOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ) => number,
+  previousCentroidYOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ) => number,
+  currentCentroidX: (touchHistory: TouchHistoryMath) => number,
+  currentCentroidY: (touchHistory: TouchHistoryMath) => number,
+  noCentroid: number,
 };
 
-module.exports = TouchHistoryMath;
+export default TouchHistoryMath;

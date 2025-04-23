@@ -1,6 +1,6 @@
 {
   "name": "helloworld",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "private": true,
   "scripts": {
     "bootstrap": "node ./cli.js bootstrap",
@@ -12,24 +12,23 @@
     "test": "jest"
   },
   "dependencies": {
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
+    "react": "19.0.0",
     "react-native": "1000.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
-    "@react-native/babel-preset": "0.77.0-main",
-    "@react-native/core-cli-utils": "0.77.0-main",
-    "@react-native/eslint-config": "0.77.0-main",
-    "@react-native/metro-config": "0.77.0-main",
-    "babel-jest": "^29.6.3",
+    "@react-native/babel-preset": "0.80.0-main",
+    "@react-native/core-cli-utils": "0.80.0-main",
+    "@react-native/eslint-config": "0.80.0-main",
+    "@react-native/metro-config": "0.80.0-main",
     "chalk": "^4.1.2",
     "commander": "^12.0.0",
     "eslint": "^8.19.0",
-    "jest": "^29.6.3",
+    "jest": "^29.7.0",
     "listr2": "^8.2.1",
-    "react-test-renderer": "19.0.0-rc-fb9a90fa48-20240614",
+    "react-test-renderer": "19.0.0",
     "rxjs": "^7.8.1"
   },
   "engines": {

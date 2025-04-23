@@ -21,7 +21,7 @@ const {
   updatePackageJson,
 } = require('../utils/monorepo');
 const {updateReactNativeArtifacts} = require('./set-rn-artifacts-version');
-const {parseArgs} = require('@pkgjs/parseargs');
+const {parseArgs} = require('util');
 
 const config = {
   allowPositionals: true,

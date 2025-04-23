@@ -59,7 +59,7 @@ function expandDirectoriesIntoFiles(
         return [file];
       }
       const filePattern = path.sep === '\\' ? file.replace(/\\/g, '/') : file;
-      return glob.sync(`${filePattern}/**/*.{js,ts,tsx}`, {
+      return glob.sync(`${filePattern}/**/*{,.fb}.{js,ts,tsx}`, {
         nodir: true,
         // TODO: This will remove the need of slash substitution above for Windows,
         // but it requires glob@v9+; with the package currenlty relying on
@@ -96,7 +96,7 @@ function combineSchemasInFileListAndWriteToFile(
   exclude: ?RegExp,
 ): void {
   const combined = combineSchemasInFileList(fileList, platform, exclude);
-  const formattedSchema = JSON.stringify(combined, null, 2);
+  const formattedSchema = JSON.stringify(combined);
   fs.writeFileSync(outfile, formattedSchema);
 }
 

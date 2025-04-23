@@ -5,10 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// TODO T207169925: Migrate CatalystInstance to Reacthost and remove the Suppress("DEPRECATION")
+// annotation
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.image
 
 import android.graphics.Color
 import android.util.DisplayMetrics
+import com.facebook.common.logging.FLog
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.react.bridge.Arguments
@@ -19,7 +24,8 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.common.ReactConstants
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.ThemedReactContext
@@ -34,17 +40,15 @@ import org.junit.runner.RunWith
 import org.mockito.MockedStatic
 import org.mockito.Mockito.any
 import org.mockito.Mockito.anyString
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
+import org.mockito.Mockito.never
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/**
- * Verify that [ScalingUtils] properties are being applied correctly by [ReactImageManager].
- *
- * TODO T195191609: The border rendering tests rely on introspecting Fresco tree, which is no longer
- * relevant when "useNewReactImageViewBackgroundDrawing" is enabled. These should be replaced by
- * screenshot tests over the existing RNTester examples.
- */
+/** Verify that [ScalingUtils] properties are being applied correctly by [ReactImageManager]. */
 @RunWith(RobolectricTestRunner::class)
 class ReactImagePropertyTest {
 
@@ -53,7 +57,7 @@ class ReactImagePropertyTest {
   private lateinit var themeContext: ThemedReactContext
   private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var rnLog: MockedStatic<RNLog>
-  private lateinit var featureFlags: MockedStatic<ReactNativeFeatureFlags>
+  private lateinit var flogMock: MockedStatic<FLog>
 
   @Before
   fun setup() {
@@ -64,11 +68,7 @@ class ReactImagePropertyTest {
     rnLog = mockStatic(RNLog::class.java)
     rnLog.`when`<Boolean> { RNLog.w(any(), anyString()) }.thenAnswer {}
 
-    // Avoid trying to load ReactNativeFeatureFlags JNI library
-    featureFlags = mockStatic(ReactNativeFeatureFlags::class.java)
-    featureFlags
-        .`when`<Boolean> { ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing() }
-        .thenAnswer { false }
+    flogMock = mockStatic(FLog::class.java)
 
     SoLoader.setInTestMode()
     context = BridgeReactContext(RuntimeEnvironment.getApplication())
@@ -77,6 +77,8 @@ class ReactImagePropertyTest {
     themeContext = ThemedReactContext(context, context, null, -1)
     Fresco.initialize(context)
     DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
+
+    ReactNativeFeatureFlagsForTests.setUp()
   }
 
   @After
@@ -84,53 +86,11 @@ class ReactImagePropertyTest {
     DisplayMetricsHolder.setWindowDisplayMetrics(null)
     arguments.close()
     rnLog.close()
-    featureFlags.close()
+    flogMock.close()
   }
 
   private fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
     return ReactStylesDiffMap(JavaOnlyMap.of(*keysAndValues))
-  }
-
-  @Test
-  fun testBorderColor() {
-    val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(themeContext)
-    viewManager.updateProperties(
-        view,
-        buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))))
-    viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 0, 255, 255)))
-    var borderColor = view.hierarchy.roundingParams!!.borderColor
-    assertThat(Color.alpha(borderColor)).isEqualTo(0)
-    assertThat(Color.red(borderColor)).isEqualTo(0)
-    assertThat(Color.green(borderColor)).isEqualTo(255)
-    assertThat(Color.blue(borderColor)).isEqualTo(255)
-    viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 255, 50, 128)))
-    borderColor = view.hierarchy.roundingParams!!.borderColor
-    assertThat(Color.alpha(borderColor)).isEqualTo(0)
-    assertThat(Color.red(borderColor)).isEqualTo(255)
-    assertThat(Color.green(borderColor)).isEqualTo(50)
-    assertThat(Color.blue(borderColor)).isEqualTo(128)
-    viewManager.updateProperties(view, buildStyles("borderColor", null))
-    borderColor = view.hierarchy.roundingParams!!.borderColor
-    assertThat(Color.alpha(borderColor)).isEqualTo(0)
-    assertThat(Color.red(borderColor)).isEqualTo(0)
-    assertThat(Color.green(borderColor)).isEqualTo(0)
-    assertThat(Color.blue(borderColor)).isEqualTo(0)
-  }
-
-  @Test
-  fun testRoundedCorners() {
-    val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(themeContext)
-    viewManager.updateProperties(
-        view,
-        buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))))
-
-    // We can't easily verify if rounded corner was honored or not, this tests simply verifies
-    // we're not crashing..
-    viewManager.updateProperties(view, buildStyles("borderRadius", 10.0))
-    viewManager.updateProperties(view, buildStyles("borderRadius", 0.0))
-    viewManager.updateProperties(view, buildStyles("borderRadius", null))
   }
 
   @Test
@@ -139,6 +99,20 @@ class ReactImagePropertyTest {
     val view = viewManager.createViewInstance(themeContext)
     viewManager.setAccessible(view, true)
     assertThat(view.isFocusable).isTrue()
+  }
+
+  @Test
+  fun testOverlayColor() {
+    val viewManager = ReactImageManager()
+    val mockView = mock(ReactImageView::class.java)
+
+    viewManager.setOverlayColor(mockView, null)
+    verify(mockView).setOverlayColor(Color.TRANSPARENT)
+    reset(mockView)
+
+    viewManager.setOverlayColor(mockView, Color.argb(50, 0, 0, 255))
+    verify(mockView).setOverlayColor(Color.argb(50, 0, 0, 255))
+    reset(mockView)
   }
 
   @Test
@@ -168,5 +142,96 @@ class ReactImagePropertyTest {
     view.maybeUpdateView()
     assertThat(ImageSource.getTransparentBitmapImageSource(view.context))
         .isEqualTo(view.imageSource)
+  }
+
+  @Test
+  fun testResizeMode() {
+    val viewManager = ReactImageManager()
+    val mockView = mock(ReactImageView::class.java)
+
+    viewManager.setResizeMode(mockView, null)
+    verify(mockView).setScaleType(ScalingUtils.ScaleType.CENTER_CROP)
+    reset(mockView)
+
+    viewManager.setResizeMode(mockView, "cover")
+    verify(mockView).setScaleType(ScalingUtils.ScaleType.CENTER_CROP)
+    reset(mockView)
+
+    viewManager.setResizeMode(mockView, "contain")
+    verify(mockView).setScaleType(ScalingUtils.ScaleType.FIT_CENTER)
+    reset(mockView)
+
+    viewManager.setResizeMode(mockView, "stretch")
+    verify(mockView).setScaleType(ScalingUtils.ScaleType.FIT_XY)
+    reset(mockView)
+
+    viewManager.setResizeMode(mockView, "repeat")
+    verify(mockView).setScaleType(ScaleTypeStartInside.INSTANCE)
+    reset(mockView)
+
+    viewManager.setResizeMode(mockView, "center")
+    verify(mockView).setScaleType(ScalingUtils.ScaleType.CENTER_INSIDE)
+    reset(mockView)
+
+    viewManager.setResizeMode(mockView, "invalid")
+    verify(mockView).setScaleType(ScalingUtils.ScaleType.CENTER_CROP)
+  }
+
+  @Test
+  fun testResizeMethod() {
+    val viewManager = ReactImageManager()
+    val mockView = mock(ReactImageView::class.java)
+
+    viewManager.setResizeMethod(mockView, null)
+    verify(mockView).setResizeMethod(ImageResizeMethod.AUTO)
+    reset(mockView)
+
+    viewManager.setResizeMethod(mockView, "auto")
+    verify(mockView).setResizeMethod(ImageResizeMethod.AUTO)
+    reset(mockView)
+
+    viewManager.setResizeMethod(mockView, "resize")
+    verify(mockView).setResizeMethod(ImageResizeMethod.RESIZE)
+    reset(mockView)
+
+    viewManager.setResizeMethod(mockView, "scale")
+    verify(mockView).setResizeMethod(ImageResizeMethod.SCALE)
+    reset(mockView)
+
+    viewManager.setResizeMethod(mockView, "none")
+    verify(mockView).setResizeMethod(ImageResizeMethod.NONE)
+    reset(mockView)
+
+    viewManager.setResizeMethod(mockView, "invalid")
+    verify(mockView).setResizeMethod(ImageResizeMethod.AUTO)
+    flogMock.verify { FLog.w(ReactConstants.TAG, "Invalid resize method: 'invalid'") }
+  }
+
+  @Test
+  fun testResizeMultiplier() {
+    val viewManager = ReactImageManager()
+    val mockView = mock(ReactImageView::class.java)
+
+    viewManager.setResizeMultiplier(mockView, 0.01f)
+    verify(mockView).setResizeMultiplier(0.01f)
+    reset(mockView)
+
+    viewManager.setResizeMultiplier(mockView, 0.009f)
+    verify(mockView).setResizeMultiplier(0.009f)
+    flogMock.verify { FLog.w(ReactConstants.TAG, "Invalid resize multiplier: '0.009'") }
+  }
+
+  @Test
+  fun testHeaders() {
+    val viewManager = ReactImageManager()
+    val mockView = mock(ReactImageView::class.java)
+
+    viewManager.setHeaders(mockView, null)
+    verify(mockView, never()).setHeaders(any())
+
+    val headers = JavaOnlyMap()
+    headers.putString("key", "value")
+    viewManager.setHeaders(mockView, headers)
+    verify(mockView).setHeaders(headers)
   }
 }

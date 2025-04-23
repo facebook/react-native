@@ -24,6 +24,7 @@ exports[`LogBoxInspectorFooter should render no buttons and a message for syntax
     }
   >
     <Text
+      id="logbox_dismissable_text"
       style={
         Object {
           "color": "rgba(255, 255, 255, 0.6)",
@@ -61,10 +62,12 @@ exports[`LogBoxInspectorFooter should render two buttons for error 1`] = `
   }
 >
   <LogBoxInspectorFooterButton
+    id="logbox_footer_button_dismiss"
     onPress={[Function]}
     text="Dismiss"
   />
   <LogBoxInspectorFooterButton
+    id="logbox_footer_button_minimize"
     onPress={[Function]}
     text="Minimize"
   />
@@ -88,10 +91,12 @@ exports[`LogBoxInspectorFooter should render two buttons for fatal 1`] = `
   }
 >
   <LogBoxInspectorFooterButton
+    id="logbox_footer_button_dismiss"
     onPress={[Function]}
     text="Dismiss"
   />
   <LogBoxInspectorFooterButton
+    id="logbox_footer_button_minimize"
     onPress={[Function]}
     text="Minimize"
   />
@@ -115,10 +120,12 @@ exports[`LogBoxInspectorFooter should render two buttons for warning 1`] = `
   }
 >
   <LogBoxInspectorFooterButton
+    id="logbox_footer_button_dismiss"
     onPress={[Function]}
     text="Dismiss"
   />
   <LogBoxInspectorFooterButton
+    id="logbox_footer_button_minimize"
     onPress={[Function]}
     text="Minimize"
   />

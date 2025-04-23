@@ -8,6 +8,7 @@
 package com.facebook.react.uiapp.component
 
 import android.graphics.Color
+import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.SimpleViewManager
@@ -66,6 +67,10 @@ internal class MyNativeViewManager :
     val values = mutableListOf<Int>()
     value?.toArrayList()?.forEach { values.add((it as Double).toInt()) }
     view.emitOnArrayChangedEvent(values)
+  }
+
+  override fun setBackgroundColor(view: MyNativeView, @ColorInt backgroundColor: Int) {
+    view.setBackgroundColor(backgroundColor)
   }
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> =

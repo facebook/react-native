@@ -1,0 +1,48 @@
+appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
+---
+- launchApp
+- assertVisible: "Components"
+- scrollUntilVisible:
+    element:
+      id: "Pressable"
+    direction: DOWN
+    speed: 40
+- tapOn:
+    id: "Pressable"
+- assertVisible:
+    text: "Change content based on Press"
+- assertVisible:
+    text: "Change style based on Press"
+- tapOn:
+    id: "one_press_me_button"
+- assertVisible:
+    text: "onPress"
+- tapOn:
+    id: "one_press_me_button"
+- assertVisible:
+    text: "2x onPress"
+- scrollUntilVisible:
+    element:
+      id: "pressable_feedback_events"
+    direction: DOWN
+    speed: 10
+    visibilityPercentage: 100
+- tapOn:
+    id: "pressable_feedback_events_button"
+- scrollUntilVisible:
+    element:
+      text: "pressIn"
+    direction: DOWN
+    speed: 10
+- assertVisible:
+    text: "press"
+- assertVisible:
+    text: "pressOut"
+- longPressOn:
+    id: "pressable_feedback_events_button"
+- assertVisible:
+    text: "pressIn"
+- assertVisible:
+    text: "longPress"
+- assertVisible:
+    text: "pressOut"

@@ -14,13 +14,9 @@
 #include <memory>
 #include <random>
 
-#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs/stubs.h>
-
-#include <react/renderer/components/root/RootComponentDescriptor.h>
-#include <react/renderer/components/view/ViewComponentDescriptor.h>
 
 #include "Entropy.h"
 
@@ -245,8 +241,6 @@ static inline ShadowNode::Unshared messWithYogaStyles(
   }
 
   ContextContainer contextContainer;
-  contextContainer.insert(
-      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
 
   PropsParserContext parserContext{-1, contextContainer};
 

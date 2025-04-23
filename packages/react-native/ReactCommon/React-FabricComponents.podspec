@@ -16,24 +16,14 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
-folly_dep_name = 'RCT-Folly/Fabric'
-boost_compiler_flags = '-Wno-documentation'
 react_native_path = ".."
 
 Pod::Spec.new do |s|
 
   header_search_path = [
-    "\"$(PODS_ROOT)/boost\"",
     "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
-    "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
-    "\"$(PODS_ROOT)/DoubleConversion\"",
-    "\"$(PODS_ROOT)/fmt/include\"",
   ]
 
   if ENV['USE_FRAMEWORKS']
@@ -64,17 +54,12 @@ Pod::Spec.new do |s|
     s.module_name             = 'React_FabricComponents'
   end
 
-  s.dependency folly_dep_name, folly_version
-
   s.dependency "React-jsiexecutor"
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-jsi"
   s.dependency "React-logger"
-  s.dependency "glog"
-  s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-featureflags"
@@ -89,42 +74,30 @@ Pod::Spec.new do |s|
     "react/renderer/components/view/platform/cxx",
     "react/renderer/imagemanager/platform/ios"
   ])
-  add_dependency(s, "ReactCodegen", :additional_framework_paths => ["build/generated/ios"])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   s.subspec "components" do |ss|
 
     ss.subspec "inputaccessory" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/inputaccessory/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/inputaccessory/tests"
       sss.header_dir           = "react/renderer/components/inputaccessory"
     end
 
     ss.subspec "modal" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/modal/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/modal/tests"
       sss.header_dir           = "react/renderer/components/modal"
     end
 
     ss.subspec "rncore" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/rncore"
     end
 
     ss.subspec "safeareaview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/safeareaview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/safeareaview/tests"
       sss.header_dir           = "react/renderer/components/safeareaview"
@@ -132,17 +105,12 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "scrollview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/scrollview/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/scrollview/tests"
+      sss.source_files         = "react/renderer/components/scrollview/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/scrollview"
 
     end
 
     ss.subspec "text" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/text/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/text/tests"
       sss.header_dir           = "react/renderer/components/text"
@@ -150,24 +118,19 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "iostextinput" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
+      sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}",
+                                 "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
 
     end
 
     ss.subspec "textinput" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/textinput"
 
     end
 
     ss.subspec "unimplementedview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/unimplementedview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/unimplementedview/tests"
       sss.header_dir           = "react/renderer/components/unimplementedview"
@@ -176,9 +139,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "textlayoutmanager" do |ss|
-    ss.dependency             folly_dep_name, folly_version
     ss.dependency             "React-Fabric"
-    ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/textlayoutmanager/platform/ios/**/*.{m,mm,cpp,h}",
                               "react/renderer/textlayoutmanager/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/textlayoutmanager/tests",
@@ -191,6 +152,7 @@ Pod::Spec.new do |s|
     {
       :name => '[RN]Check rncore',
       :execution_position => :before_compile,
+      :always_out_of_date => '1',
       :script => <<-EOS
 echo "Checking whether Codegen has run..."
 rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"

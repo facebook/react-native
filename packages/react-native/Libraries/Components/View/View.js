@@ -23,10 +23,10 @@ export type Props = ViewProps;
  *
  * @see https://reactnative.dev/docs/view
  */
-const View: React.AbstractComponent<
-  ViewProps,
-  React.ElementRef<typeof ViewNativeComponent>,
-> = React.forwardRef(
+const View: component(
+  ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
+  ...props: ViewProps
+) = React.forwardRef(
   (
     {
       accessibilityElementsHidden,
@@ -61,38 +61,35 @@ const View: React.AbstractComponent<
     const _accessibilityLabelledBy =
       ariaLabelledBy?.split(/\s*,\s*/g) ?? accessibilityLabelledBy;
 
-    let _accessibilityState;
-    if (
+    const _accessibilityState =
       accessibilityState != null ||
       ariaBusy != null ||
       ariaChecked != null ||
       ariaDisabled != null ||
       ariaExpanded != null ||
       ariaSelected != null
-    ) {
-      _accessibilityState = {
-        busy: ariaBusy ?? accessibilityState?.busy,
-        checked: ariaChecked ?? accessibilityState?.checked,
-        disabled: ariaDisabled ?? accessibilityState?.disabled,
-        expanded: ariaExpanded ?? accessibilityState?.expanded,
-        selected: ariaSelected ?? accessibilityState?.selected,
-      };
-    }
-    let _accessibilityValue;
-    if (
+        ? {
+            busy: ariaBusy ?? accessibilityState?.busy,
+            checked: ariaChecked ?? accessibilityState?.checked,
+            disabled: ariaDisabled ?? accessibilityState?.disabled,
+            expanded: ariaExpanded ?? accessibilityState?.expanded,
+            selected: ariaSelected ?? accessibilityState?.selected,
+          }
+        : undefined;
+
+    const _accessibilityValue =
       accessibilityValue != null ||
       ariaValueMax != null ||
       ariaValueMin != null ||
       ariaValueNow != null ||
       ariaValueText != null
-    ) {
-      _accessibilityValue = {
-        max: ariaValueMax ?? accessibilityValue?.max,
-        min: ariaValueMin ?? accessibilityValue?.min,
-        now: ariaValueNow ?? accessibilityValue?.now,
-        text: ariaValueText ?? accessibilityValue?.text,
-      };
-    }
+        ? {
+            max: ariaValueMax ?? accessibilityValue?.max,
+            min: ariaValueMin ?? accessibilityValue?.min,
+            now: ariaValueNow ?? accessibilityValue?.now,
+            text: ariaValueText ?? accessibilityValue?.text,
+          }
+        : undefined;
 
     const actualView = (
       <ViewNativeComponent
@@ -130,4 +127,4 @@ const View: React.AbstractComponent<
 
 View.displayName = 'View';
 
-module.exports = View;
+export default View;

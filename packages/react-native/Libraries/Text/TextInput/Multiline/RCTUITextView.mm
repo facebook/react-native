@@ -18,6 +18,8 @@
   UITextView *_detachedTextView;
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
+  NSArray<UIBarButtonItemGroup *> *_initialValueLeadingBarButtonGroups;
+  NSArray<UIBarButtonItemGroup *> *_initialValueTrailingBarButtonGroups;
 }
 
 static UIFont *defaultPlaceholderFont(void)
@@ -52,6 +54,8 @@ static UIColor *defaultPlaceholderColor(void)
     self.textContainer.lineFragmentPadding = 0;
     self.scrollsToTop = NO;
     self.scrollEnabled = YES;
+    _initialValueLeadingBarButtonGroups = nil;
+    _initialValueTrailingBarButtonGroups = nil;
   }
 
   return self;
@@ -130,6 +134,28 @@ static UIColor *defaultPlaceholderColor(void)
 {
   _textWasPasted = NO;
   [self _invalidatePlaceholderVisibility];
+}
+
+- (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
+{
+#if TARGET_OS_IOS
+  // Initialize the initial values only once
+  if (_initialValueLeadingBarButtonGroups == nil) {
+    // Capture initial values of leading and trailing button groups
+    _initialValueLeadingBarButtonGroups = self.inputAssistantItem.leadingBarButtonGroups;
+    _initialValueTrailingBarButtonGroups = self.inputAssistantItem.trailingBarButtonGroups;
+  }
+
+  if (disableKeyboardShortcuts) {
+    self.inputAssistantItem.leadingBarButtonGroups = @[];
+    self.inputAssistantItem.trailingBarButtonGroups = @[];
+  } else {
+    // Restore the initial values
+    self.inputAssistantItem.leadingBarButtonGroups = _initialValueLeadingBarButtonGroups;
+    self.inputAssistantItem.trailingBarButtonGroups = _initialValueTrailingBarButtonGroups;
+  }
+  _disableKeyboardShortcuts = disableKeyboardShortcuts;
+#endif
 }
 
 #pragma mark - Overrides

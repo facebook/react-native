@@ -23,9 +23,6 @@ describe('Native Animated', () => {
       get NativeAnimatedHelper() {
         return require('../NativeAnimatedHelper').default;
       },
-      get ReactNativeFeatureFlags() {
-        return require('../../featureflags/ReactNativeFeatureFlags');
-      },
     };
   }
 
@@ -34,14 +31,17 @@ describe('Native Animated', () => {
     jest
       .clearAllMocks()
       .mock('../../../../Libraries/BatchedBridge/NativeModules', () => ({
-        NativeAnimatedModule: {},
-        PlatformConstants: {
-          getConstants() {
-            return {};
+        __esModule: true,
+        default: {
+          NativeAnimatedModule: {},
+          PlatformConstants: {
+            getConstants() {
+              return {};
+            },
           },
         },
       }))
-      .mock('../../specs/modules/NativeAnimatedModule')
+      .mock('../../specs_DEPRECATED/modules/NativeAnimatedModule')
       .mock('../../../../Libraries/EventEmitter/NativeEventEmitter')
       // findNodeHandle is imported from RendererProxy so mock that whole module.
       .setMock('../../../../Libraries/ReactNative/RendererProxy', {
@@ -49,7 +49,7 @@ describe('Native Animated', () => {
       });
 
     NativeAnimatedModule =
-      require('../../specs/modules/NativeAnimatedModule').default;
+      require('../../specs_DEPRECATED/modules/NativeAnimatedModule').default;
     Object.assign(NativeAnimatedModule, {
       getValue: jest.fn(),
       addAnimatedEventToView: jest.fn(),
@@ -151,7 +151,7 @@ describe('Native Animated', () => {
       const tag = opacity.__getNativeTag();
 
       await unmount(root);
-
+      jest.runAllTicks();
       expect(NativeAnimatedModule.getValue).toBeCalledWith(
         tag,
         expect.any(Function),
@@ -175,7 +175,7 @@ describe('Native Animated', () => {
       const tag = opacity.__getNativeTag();
 
       await unmount(root);
-
+      jest.runAllTicks();
       expect(NativeAnimatedModule.getValue).toBeCalledWith(
         tag,
         expect.any(Function),
@@ -404,7 +404,7 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.dropAnimatedNode).not.toHaveBeenCalled();
 
       await unmount(root);
-
+      jest.runAllTicks();
       expect(
         NativeAnimatedModule.disconnectAnimatedNodes,
       ).toHaveBeenCalledTimes(2);
@@ -1359,9 +1359,6 @@ describe('Native Animated', () => {
 
   describe('Animated Components', () => {
     it('preserves current values on update and unmount', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => true});
-
       const {Animated} = importModules();
 
       const opacity = new Animated.Value(0);
@@ -1379,9 +1376,6 @@ describe('Native Animated', () => {
     });
 
     it('restores defaults when receiving new animated values', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => true});
-
       const {Animated} = importModules();
 
       const opacityA = new Animated.Value(0);
@@ -1393,35 +1387,13 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
 
       await update(root, <Animated.View style={{opacity: opacityB}} />);
+      jest.runAllTicks();
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
         1,
       );
 
       await unmount(root);
-      // Make sure it doesn't get called on unmount.
-      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
-        1,
-      );
-    });
-
-    it('should restore default values on prop updates only', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => false});
-
-      const {Animated} = importModules();
-
-      const opacity = new Animated.Value(0);
-      opacity.__makeNative();
-
-      const root = await create(<Animated.View style={{opacity}} />);
-      expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
-
-      await update(root, <Animated.View style={{opacity}} />);
-      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledWith(
-        expect.any(Number),
-      );
-
-      await unmount(root);
+      jest.runAllTicks();
       // Make sure it doesn't get called on unmount.
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
         1,
@@ -1446,6 +1418,7 @@ describe('Native Animated', () => {
       );
 
       await unmount(root);
+      jest.runAllTicks();
       expect(
         NativeAnimatedModule.disconnectAnimatedNodeFromView,
       ).toBeCalledWith(propsTag, 1);

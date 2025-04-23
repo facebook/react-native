@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import androidx.annotation.Nullable;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
@@ -44,6 +45,7 @@ import com.facebook.yoga.YogaWrap;
  * separately native children (e.g. {@link #getNativeChildCount()}). See {@link
  * NativeViewHierarchyOptimizer} for more information.
  */
+@LegacyArchitecture
 public interface ReactShadowNode<T extends ReactShadowNode> {
 
   /**
@@ -394,5 +396,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   Integer getHeightMeasureSpec();
 
+  @Nullable
   Iterable<? extends ReactShadowNode> calculateLayoutOnChildren();
 }

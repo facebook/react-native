@@ -18,4 +18,4 @@ const SoundManager = {
   },
 };
 
-module.exports = SoundManager;
+export default SoundManager;

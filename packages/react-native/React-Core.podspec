@@ -16,17 +16,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
-socket_rocket_config = get_socket_rocket_config()
-socket_rocket_version = socket_rocket_config[:version] 
-
-boost_compiler_flags = '-Wno-documentation'
-
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 use_hermes_flag = use_hermes ? "-DUSE_HERMES=1" : ""
+use_third_party_jsc_flag = ENV['USE_THIRD_PARTY_JSC'] == '1' ? "-DUSE_THIRD_PARTY_JSC=1" : ""
 
 header_subspecs = {
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
@@ -47,10 +39,6 @@ frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\"" if
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
-  "$(PODS_ROOT)/boost",
-  "$(PODS_ROOT)/DoubleConversion",
-  "$(PODS_ROOT)/fmt/include",
-  "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
 ].concat(use_hermes ? [
@@ -68,9 +56,9 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + ' ' + use_hermes_flag
+  s.compiler_flags         = use_hermes_flag + ' ' + use_third_party_jsc_flag
   s.header_dir             = "React"
-  s.framework              = "JavaScriptCore"
+  s.weak_framework         = "JavaScriptCore"
   s.pod_target_xcconfig    = {
                                "HEADER_SEARCH_PATHS" => header_search_paths,
                                "DEFINES_MODULE" => "YES",
@@ -90,12 +78,16 @@ Pod::Spec.new do |s|
       "React/FBReactNativeSpec/**/*",
       "React/Tests/**/*",
       "React/Inspector/**/*",
+      "React/Runtime/**/*",
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory
     if use_hermes
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
+    elsif ENV['USE_THIRD_PARTY_JSC'] == '1'
+      exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
+
     ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
   end
@@ -123,27 +115,22 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.dependency "RCT-Folly", folly_version
   s.dependency "React-cxxreact"
   s.dependency "React-perflogger"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
   s.dependency "React-featureflags"
-  s.dependency "SocketRocket", socket_rocket_version
   s.dependency "React-runtimescheduler"
   s.dependency "Yoga"
-  s.dependency "glog"
 
   s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
 
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "RCTDeprecation")
 
-  if use_hermes
-    s.dependency 'React-hermes'
-    s.dependency 'hermes-engine'
-  else
-    s.dependency 'React-jsc'
-  end
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 end

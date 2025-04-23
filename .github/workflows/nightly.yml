@@ -67,7 +67,7 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
-        slice: [macosx, iphoneos, iphonesimulator, catalyst, xros, xrsimulator]
+        slice: [macosx, iphoneos, iphonesimulator, appletvos, appletvsimulator, catalyst, xros, xrsimulator]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -99,6 +99,10 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
+
+  prebuild_apple_dependencies:
+    uses: ./.github/workflows/prebuild-ios.yml
+    secrets: inherit
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -153,6 +157,7 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu
@@ -164,13 +169,14 @@ jobs:
         build_hermesc_linux,
         build_hermesc_windows,
         build_android,
+        prebuild_apple_dependencies,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
+        # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -182,9 +188,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build and Publish NPM PAckage
+      - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gha-npm-token: ${{ env.GHA_NPM_TOKEN }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}

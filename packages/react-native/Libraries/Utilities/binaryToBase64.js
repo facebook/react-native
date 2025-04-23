@@ -28,4 +28,4 @@ function binaryToBase64(data: ArrayBuffer | $ArrayBufferView): string {
   return base64.fromByteArray(new Uint8Array(buffer, byteOffset, byteLength));
 }
 
-module.exports = binaryToBase64;
+export default binaryToBase64;

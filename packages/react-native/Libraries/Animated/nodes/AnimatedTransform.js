@@ -11,9 +11,10 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
-import {validateTransform} from '../../../src/private/animated/NativeAnimatedValidation';
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
+import {validateTransform} from '../../../src/private/animated/NativeAnimatedValidation';
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
@@ -70,8 +71,9 @@ export default class AnimatedTransform extends AnimatedWithChildren {
   constructor(
     nodes: $ReadOnlyArray<AnimatedNode>,
     transforms: $ReadOnlyArray<Transform<>>,
+    config?: ?AnimatedNodeConfig,
   ) {
-    super();
+    super(config);
     this.#nodes = nodes;
     this._transforms = transforms;
   }
@@ -115,6 +117,7 @@ export default class AnimatedTransform extends AnimatedWithChildren {
       const node = nodes[ii];
       node.__addChild(this);
     }
+    super.__attach();
   }
 
   __detach(): void {
@@ -160,6 +163,7 @@ export default class AnimatedTransform extends AnimatedWithChildren {
     return {
       type: 'transform',
       transforms: transformsConfig,
+      debugID: this.__getDebugID(),
     };
   }
 }

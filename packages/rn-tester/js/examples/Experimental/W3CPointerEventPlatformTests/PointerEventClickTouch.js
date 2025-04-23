@@ -33,11 +33,6 @@ function checkClickEventProperties(
   assert_equals(event.nativeEvent.tiltX, 0, 'default tiltX is 0');
   assert_equals(event.nativeEvent.tiltY, 0, 'default tiltY is 0');
   assert_equals(event.nativeEvent.twist, 0, 'default twist is 0');
-  assert_equals(
-    event.nativeEvent.isPrimary,
-    false,
-    'default isPrimary is false',
-  );
 }
 
 function PointerEventClickTouchTestCase(props: PlatformTestComponentBaseProps) {

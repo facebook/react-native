@@ -11,7 +11,7 @@
 
 'use strict';
 
-const parseHermesStack = require('../parseHermesStack');
+const parseHermesStack = require('../parseHermesStack').default;
 
 describe('parseHermesStack', () => {
   test('bytecode location', () => {

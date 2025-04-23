@@ -23,9 +23,8 @@ WritableNativeArray::WritableNativeArray(folly::dynamic&& val)
   }
 }
 
-local_ref<WritableNativeArray::jhybriddata> WritableNativeArray::initHybrid(
-    alias_ref<jclass>) {
-  return makeCxxInstance();
+void WritableNativeArray::initHybrid(alias_ref<jhybridobject> jobj) {
+  setCxxInstance(jobj);
 }
 
 void WritableNativeArray::pushNull() {
@@ -48,8 +47,13 @@ void WritableNativeArray::pushInt(jint value) {
   array_.push_back(value);
 }
 
+void WritableNativeArray::pushLong(jlong value) {
+  throwIfConsumed();
+  array_.push_back(value);
+}
+
 void WritableNativeArray::pushString(jstring value) {
-  if (value == NULL) {
+  if (value == nullptr) {
     pushNull();
     return;
   }
@@ -58,7 +62,7 @@ void WritableNativeArray::pushString(jstring value) {
 }
 
 void WritableNativeArray::pushNativeArray(ReadableNativeArray* otherArray) {
-  if (otherArray == NULL) {
+  if (otherArray == nullptr) {
     pushNull();
     return;
   }
@@ -67,7 +71,7 @@ void WritableNativeArray::pushNativeArray(ReadableNativeArray* otherArray) {
 }
 
 void WritableNativeArray::pushNativeMap(ReadableNativeMap* map) {
-  if (map == NULL) {
+  if (map == nullptr) {
     pushNull();
     return;
   }
@@ -82,6 +86,7 @@ void WritableNativeArray::registerNatives() {
       makeNativeMethod("pushBoolean", WritableNativeArray::pushBoolean),
       makeNativeMethod("pushDouble", WritableNativeArray::pushDouble),
       makeNativeMethod("pushInt", WritableNativeArray::pushInt),
+      makeNativeMethod("pushLong", WritableNativeArray::pushLong),
       makeNativeMethod("pushString", WritableNativeArray::pushString),
       makeNativeMethod("pushNativeArray", WritableNativeArray::pushNativeArray),
       makeNativeMethod("pushNativeMap", WritableNativeArray::pushNativeMap),

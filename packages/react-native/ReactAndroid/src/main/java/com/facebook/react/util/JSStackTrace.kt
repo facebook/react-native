@@ -24,7 +24,7 @@ public object JSStackTrace {
   public fun format(message: String, stack: ReadableArray): String {
     val stringBuilder = StringBuilder(message).append(", stack:\n")
     for (i in 0 until stack.size()) {
-      val frame = stack.getMap(i)
+      val frame = stack.getMap(i) ?: continue
       stringBuilder.append(frame.getString(METHOD_NAME_KEY)).append("@").append(parseFileId(frame))
       if (frame.hasKey(LINE_NUMBER_KEY) &&
           !frame.isNull(LINE_NUMBER_KEY) &&

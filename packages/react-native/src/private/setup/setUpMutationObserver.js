@@ -23,4 +23,9 @@ export default function setUpMutationObserver() {
     'MutationObserver',
     () => require('../webapis/mutationobserver/MutationObserver').default,
   );
+
+  polyfillGlobal(
+    'MutationRecord',
+    () => require('../webapis/mutationobserver/MutationRecord').default,
+  );
 }

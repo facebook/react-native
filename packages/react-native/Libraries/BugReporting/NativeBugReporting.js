@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeBugReporting';
-import NativeBugReporting from '../../src/private/specs/modules/NativeBugReporting';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeBugReporting';
+import NativeBugReporting from '../../src/private/specs_DEPRECATED/modules/NativeBugReporting';
 export default NativeBugReporting;

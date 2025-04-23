@@ -10,11 +10,9 @@
 
 'use strict';
 
+import type {HostComponent} from '../../src/private/types/HostComponent';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../Renderer/shims/ReactNativeTypes';
+import type {PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 import type {ImageResizeMode} from './ImageResizeMode';
 

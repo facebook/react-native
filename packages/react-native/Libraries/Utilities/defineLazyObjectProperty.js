@@ -63,4 +63,4 @@ function defineLazyObjectProperty<T>(
   });
 }
 
-module.exports = defineLazyObjectProperty;
+export default defineLazyObjectProperty;

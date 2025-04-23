@@ -8,8 +8,14 @@
 #pragma once
 
 #import <UIKit/UIKit.h>
-#import <react/renderer/graphics/HostPlatformColor.h>
 #import <vector>
+
+namespace facebook {
+namespace react {
+struct ColorComponents;
+struct Color;
+} // namespace react
+} // namespace facebook
 
 facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(
     std::vector<std::string>& semanticItems);

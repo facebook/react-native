@@ -16,47 +16,48 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
+header_search_paths = []
 
-use_frameworks = ENV['USE_FRAMEWORKS'] != nil
+if ENV['USE_FRAMEWORKS']
+  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/..\""
+end
 
 header_dir = 'jsinspector-modern'
 module_name = "jsinspector_modern"
+
 Pod::Spec.new do |s|
   s.name                   = "React-jsinspector"
   s.version                = version
-  s.summary                = "-"  # TODO
+  s.summary                = "React Native subsystem for modern debugging over the Chrome DevTools Protocol (CDP)"
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h,def}"
-  s.header_dir             = 'jsinspector-modern'
-  s.compiler_flags         = folly_compiler_flags
+  s.source_files           = "*.{cpp,h}"
+  s.header_dir             = header_dir
   s.pod_target_xcconfig    = {
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fmt/include\"",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "DEFINES_MODULE" => "YES"
-  }.merge!(use_frameworks ? {
+  }.merge!(ENV['USE_FRAMEWORKS'] ? {
     "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
   } : {})
 
-  if use_frameworks
+  if ENV['USE_FRAMEWORKS']
     s.module_name = module_name
   end
 
-  s.dependency "glog"
-  s.dependency "RCT-Folly", folly_version
   s.dependency "React-featureflags"
-  s.dependency "DoubleConversion"
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-jsi"
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
+  add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
+  add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-perflogger", version
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
   end
 
+  add_rn_third_party_dependencies(s)
 end

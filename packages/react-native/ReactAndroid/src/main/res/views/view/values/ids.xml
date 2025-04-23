@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- tag used to store state of ReactViewGroup subview clipping -->
+  <item type="id" name="view_clipped"/>
+</resources>

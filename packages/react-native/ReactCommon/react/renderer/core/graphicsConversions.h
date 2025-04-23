@@ -7,12 +7,14 @@
 
 #pragma once
 
+#include <array>
 #include <unordered_map>
 
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
@@ -44,11 +46,16 @@ inline folly::dynamic toDynamic(const SharedColor& color) {
 
 inline std::string toString(const SharedColor& value) {
   ColorComponents components = colorComponentsFromColor(value);
-  auto ratio = 255.f;
-  return "rgba(" + folly::to<std::string>(round(components.red * ratio)) +
-      ", " + folly::to<std::string>(round(components.green * ratio)) + ", " +
-      folly::to<std::string>(round(components.blue * ratio)) + ", " +
-      folly::to<std::string>(round(components.alpha * ratio)) + ")";
+  std::array<char, 255> buffer{};
+  std::snprintf(
+      buffer.data(),
+      buffer.size(),
+      "rgba(%.0f, %.0f, %.0f, %.0f)",
+      components.red * 255.f,
+      components.green * 255.f,
+      components.blue * 255.f,
+      components.alpha * 255.f);
+  return buffer.data();
 }
 
 #pragma mark - Geometry
@@ -208,14 +215,14 @@ inline void fromRawValue(
   LOG(ERROR) << "Unsupported CornerInsets type";
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 inline std::string toString(const Point& point) {
-  return "{" + folly::to<std::string>(point.x) + ", " +
-      folly::to<std::string>(point.y) + "}";
+  return "{" + toString(point.x) + ", " + toString(point.y) + "}";
 }
 
 inline std::string toString(const Size& size) {
-  return "{" + folly::to<std::string>(size.width) + ", " +
-      folly::to<std::string>(size.height) + "}";
+  return "{" + toString(size.width) + ", " + toString(size.height) + "}";
 }
 
 inline std::string toString(const Rect& rect) {
@@ -223,17 +230,18 @@ inline std::string toString(const Rect& rect) {
 }
 
 inline std::string toString(const EdgeInsets& edgeInsets) {
-  return "{" + folly::to<std::string>(edgeInsets.left) + ", " +
-      folly::to<std::string>(edgeInsets.top) + ", " +
-      folly::to<std::string>(edgeInsets.right) + ", " +
-      folly::to<std::string>(edgeInsets.bottom) + "}";
+  return "{" + toString(edgeInsets.left) + ", " + toString(edgeInsets.top) +
+      ", " + toString(edgeInsets.right) + ", " + toString(edgeInsets.bottom) +
+      "}";
 }
 
 inline std::string toString(const CornerInsets& cornerInsets) {
-  return "{" + folly::to<std::string>(cornerInsets.topLeft) + ", " +
-      folly::to<std::string>(cornerInsets.topRight) + ", " +
-      folly::to<std::string>(cornerInsets.bottomLeft) + ", " +
-      folly::to<std::string>(cornerInsets.bottomRight) + "}";
+  return "{" + toString(cornerInsets.topLeft) + ", " +
+      toString(cornerInsets.topRight) + ", " +
+      toString(cornerInsets.bottomLeft) + ", " +
+      toString(cornerInsets.bottomRight) + "}";
 }
+
+#endif
 
 } // namespace facebook::react

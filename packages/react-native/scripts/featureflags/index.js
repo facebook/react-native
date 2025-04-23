@@ -8,7 +8,32 @@
  */
 
 if (require.main === module) {
-  require('../../../../scripts/build/babel-register').registerForMonorepo();
-  const update = require('./update').default;
-  update(process.argv.includes('--verify-unchanged'));
+  require('../../../../scripts/babel-register').registerForMonorepo();
+
+  let command;
+
+  if (process.argv.includes('--update')) {
+    command = 'update';
+  } else if (process.argv.includes('--verify-unchanged')) {
+    command = 'verify-unchanged';
+  } else if (process.argv.includes('--print')) {
+    command = 'print';
+  }
+
+  switch (command) {
+    case 'update':
+      require('./update').default(false);
+      break;
+    case 'verify-unchanged':
+      require('./update').default(true);
+      break;
+    case 'print':
+      require('./print').default(process.argv.includes('--json'));
+      break;
+    default:
+      console.error(
+        'Usage: node featureflags.js [--update|--verify-unchanged|--print]',
+      );
+      process.exit(1);
+  }
 }

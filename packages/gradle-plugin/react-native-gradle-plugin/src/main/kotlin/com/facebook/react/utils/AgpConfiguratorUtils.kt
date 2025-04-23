@@ -10,9 +10,12 @@ package com.facebook.react.utils
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.facebook.react.ReactExtension
+import com.facebook.react.utils.ProjectUtils.areLegacyWarningsEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
+import java.net.Inet4Address
+import java.net.NetworkInterface
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import org.gradle.api.Action
@@ -33,6 +36,8 @@ internal object AgpConfiguratorUtils {
                 "IS_NEW_ARCHITECTURE_ENABLED",
                 project.isNewArchEnabled(extension).toString())
             ext.defaultConfig.buildConfigField(
+                "boolean", "LEGACY_WARNINGS_ENABLED", project.areLegacyWarningsEnabled().toString())
+            ext.defaultConfig.buildConfigField(
                 "boolean", "IS_HERMES_ENABLED", project.isHermesEnabled.toString())
           }
         }
@@ -50,13 +55,14 @@ internal object AgpConfiguratorUtils {
     }
   }
 
-  fun configureDevPorts(project: Project) {
+  fun configureDevServerLocation(project: Project) {
     val devServerPort =
         project.properties["reactNativeDevServerPort"]?.toString() ?: DEFAULT_DEV_SERVER_PORT
 
     val action =
         Action<AppliedPlugin> {
           project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+            ext.defaultConfig.resValue("string", "react_native_dev_server_ip", getHostIpAddress())
             ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
           }
         }
@@ -104,3 +110,12 @@ fun getPackageNameFromManifest(manifest: File): String? {
     return null
   }
 }
+
+internal fun getHostIpAddress(): String =
+    NetworkInterface.getNetworkInterfaces()
+        .asSequence()
+        .filter { it.isUp && !it.isLoopback }
+        .flatMap { it.inetAddresses.asSequence() }
+        .filter { it is Inet4Address && !it.isLoopbackAddress }
+        .map { it.hostAddress }
+        .firstOrNull() ?: "localhost"

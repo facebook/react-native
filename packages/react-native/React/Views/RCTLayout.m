@@ -87,6 +87,9 @@ CGFloat RCTCoreGraphicsFloatFromYogaValue(YGValue value, CGFloat baseFloatValue)
       return RCTCoreGraphicsFloatFromYogaFloat(value.value) * baseFloatValue;
     case YGUnitAuto:
     case YGUnitUndefined:
+    case YGUnitMaxContent:
+    case YGUnitFitContent:
+    case YGUnitStretch:
       return baseFloatValue;
   }
 }
@@ -131,6 +134,9 @@ RCTDisplayType RCTReactDisplayTypeFromYogaDisplayType(YGDisplay displayType)
     case YGDisplayFlex:
       return RCTDisplayTypeFlex;
     case YGDisplayNone:
+      return RCTDisplayTypeNone;
+    case YGDisplayContents:
+      RCTAssert(NO, @"YGDisplayContents cannot be converted to RCTDisplayType value.");
       return RCTDisplayTypeNone;
   }
 }

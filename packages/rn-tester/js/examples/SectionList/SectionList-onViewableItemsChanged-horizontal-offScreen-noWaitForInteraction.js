@@ -9,7 +9,6 @@
  */
 
 import {SectionList_BaseOnViewableItemsChanged} from './SectionList-BaseOnViewableItemsChanged';
-
 import * as React from 'react';
 
 export default {

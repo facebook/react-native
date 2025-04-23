@@ -5,8 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
-'use strict';
+// NOTE: This file supports backwards compatibility of subpath (deep) imports
+// from 'react-native' with platform-specific extensions. It can be deleted
+// once we remove the "./*" mapping from package.json "exports".
 
-module.exports = require('../UnimplementedViews/UnimplementedView');
+import DrawerLayoutAndroid from './DrawerLayoutAndroid';
+
+export default DrawerLayoutAndroid;

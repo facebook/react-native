@@ -45,7 +45,9 @@ internal class ObjectAnimatedNode(
         ReadableType.String -> result.pushString(source.getString(i))
         ReadableType.Map -> {
           val map = source.getMap(i)
-          if (map.hasKey(NODE_TAG_KEY) && map.getType(NODE_TAG_KEY) == ReadableType.Number) {
+          if (map != null &&
+              map.hasKey(NODE_TAG_KEY) &&
+              map.getType(NODE_TAG_KEY) == ReadableType.Number) {
             val node = nativeAnimatedNodesManager.getNodeById(map.getInt(NODE_TAG_KEY))
             requireNotNull(node) { "Mapped value node does not exist" }
             if (node is ValueAnimatedNode) {

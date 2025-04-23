@@ -21,6 +21,7 @@ class JSEngineTests < Test::Unit::TestCase
 
     def teardown
         ENV['HERMES_ENGINE_TARBALL_PATH'] = nil
+        ENV['USE_THIRD_PARTY_JSC'] = nil
         Open3.reset()
         Pod::Config.reset()
         Pod::UI.reset()
@@ -57,6 +58,19 @@ class JSEngineTests < Test::Unit::TestCase
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
         assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsc")
         assert_equal($podInvocation["React-jsc/Fabric"][:path], "../../ReactCommon/jsc")
+    end
+
+    def test_setupJsc_installsPodsWithThirdPartyJSC
+        # Arrange
+        ENV['USE_THIRD_PARTY_JSC'] = '1'
+        fabric_enabled = false
+
+        # Act
+        setup_jsc!(:react_native_path => @react_native_path, :fabric_enabled => fabric_enabled)
+
+        # Assert
+        assert_equal($podInvocationCount, 1)
+        assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
     end
 
     # ================== #

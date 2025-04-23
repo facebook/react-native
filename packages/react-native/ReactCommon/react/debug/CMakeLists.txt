@@ -6,14 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
-
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_debug_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_debug OBJECT ${react_debug_SRC})
@@ -22,6 +15,8 @@ target_include_directories(react_debug PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_debug log folly_runtime)
 
+target_compile_reactnative_options(react_debug PRIVATE "Fabric")
+target_compile_options(react_debug PRIVATE -Wpedantic)
 if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
         target_compile_options(react_debug PUBLIC -DNDEBUG)
 endif()

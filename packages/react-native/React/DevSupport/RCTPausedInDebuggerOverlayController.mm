@@ -54,9 +54,11 @@
   ]];
 
   UIButton *resumeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  [resumeButton setImage:[UIImage systemImageNamed:@"forward.frame.fill"] forState:UIControlStateNormal];
+  UIImage *image = [UIImage systemImageNamed:@"forward.frame.fill"];
+  [resumeButton setImage:image forState:UIControlStateNormal];
+  [resumeButton setImage:image forState:UIControlStateDisabled];
   resumeButton.tintColor = [UIColor colorWithRed:0.37 green:0.37 blue:0.37 alpha:1];
-  resumeButton.adjustsImageWhenDisabled = NO;
+
   resumeButton.enabled = NO;
   [NSLayoutConstraint activateConstraints:@[
     [resumeButton.widthAnchor constraintEqualToConstant:48],

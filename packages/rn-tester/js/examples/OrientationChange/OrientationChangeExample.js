@@ -8,53 +8,43 @@
  * @flow
  */
 
-import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {useEffect, useState} from 'react';
+import {DeviceEventEmitter, View} from 'react-native';
 
-const React = require('react');
-const {DeviceEventEmitter, Text, View} = require('react-native');
-
-class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
-  _orientationSubscription: EventSubscription;
-
-  state:
-    | any
-    | {
-        currentOrientation: string,
-        isLandscape: boolean,
-        orientationDegrees: number,
-      } = {
+const OrientationChangeExample = (): React.Node => {
+  const [state, setState] = useState({
     currentOrientation: '',
     orientationDegrees: 0,
     isLandscape: false,
-  };
+  });
 
-  componentDidMount() {
-    this._orientationSubscription = DeviceEventEmitter.addListener(
+  useEffect(() => {
+    const onOrientationChange = (orientation: Object) => {
+      setState({
+        currentOrientation: orientation.name,
+        orientationDegrees: orientation.rotationDegrees,
+        isLandscape: orientation.isLandscape,
+      });
+    };
+
+    const orientationSubscription = DeviceEventEmitter.addListener(
       'namedOrientationDidChange',
-      this._onOrientationChange,
+      onOrientationChange,
     );
-  }
 
-  componentWillUnmount() {
-    this._orientationSubscription.remove();
-  }
+    return () => {
+      orientationSubscription.remove();
+    };
+  }, []);
 
-  _onOrientationChange = (orientation: Object) => {
-    this.setState({
-      currentOrientation: orientation.name,
-      orientationDegrees: orientation.rotationDegrees,
-      isLandscape: orientation.isLandscape,
-    });
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <Text>{JSON.stringify(this.state)}</Text>
-      </View>
-    );
-  }
-}
+  return (
+    <View>
+      <RNTesterText>{JSON.stringify(state)}</RNTesterText>
+    </View>
+  );
+};
 
 exports.title = 'OrientationChangeExample';
 exports.category = 'Basic';

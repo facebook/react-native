@@ -10,15 +10,15 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {
   Platform,
   StyleSheet,
-  Text,
   TouchableHighlight,
   Vibration,
   View,
-} = require('react-native');
+} from 'react-native';
 
 exports.framework = 'React';
 exports.title = 'Vibration';
@@ -53,7 +53,7 @@ exports.examples = [
     render(): React.Node {
       return (
         <View style={styles.wrapper}>
-          <Text>{patternDescription}</Text>
+          <RNTesterText>{patternDescription}</RNTesterText>
         </View>
       );
     },
@@ -66,7 +66,7 @@ exports.examples = [
           style={styles.wrapper}
           onPress={() => Vibration.vibrate()}>
           <View style={styles.button}>
-            <Text>Vibrate</Text>
+            <RNTesterText style={styles.buttonText}>Vibrate</RNTesterText>
           </View>
         </TouchableHighlight>
       );
@@ -80,7 +80,7 @@ exports.examples = [
           style={styles.wrapper}
           onPress={() => Vibration.vibrate(pattern)}>
           <View style={styles.button}>
-            <Text>Vibrate once</Text>
+            <RNTesterText style={styles.buttonText}>Vibrate once</RNTesterText>
           </View>
         </TouchableHighlight>
       );
@@ -94,7 +94,9 @@ exports.examples = [
           style={styles.wrapper}
           onPress={() => Vibration.vibrate(pattern, true)}>
           <View style={styles.button}>
-            <Text>Vibrate until cancel</Text>
+            <RNTesterText style={styles.buttonText}>
+              Vibrate until cancel
+            </RNTesterText>
           </View>
         </TouchableHighlight>
       );
@@ -108,7 +110,7 @@ exports.examples = [
           style={styles.wrapper}
           onPress={() => Vibration.cancel()}>
           <View style={styles.button}>
-            <Text>Cancel</Text>
+            <RNTesterText style={styles.buttonText}>Cancel</RNTesterText>
           </View>
         </TouchableHighlight>
       );
@@ -124,5 +126,8 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#eeeeee',
     padding: 10,
+  },
+  buttonText: {
+    color: 'black',
   },
 });

@@ -16,12 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
 header_search_paths = [
-    "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
     "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
 ]
@@ -36,7 +31,6 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "**/*.{cpp,h,mm}"
-  s.compiler_flags         = folly_compiler_flags
   s.header_dir             = "react/utils"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -48,15 +42,10 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../.."
   end
 
-  s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi", version
-  s.dependency "glog"
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   add_dependency(s, "React-debug")
 end

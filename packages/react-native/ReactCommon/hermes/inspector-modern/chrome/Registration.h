@@ -15,10 +15,7 @@
 #include <hermes/hermes.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 
-namespace facebook {
-namespace hermes {
-namespace inspector_modern {
-namespace chrome {
+namespace facebook::hermes::inspector_modern::chrome {
 
 using DebugSessionToken = int;
 
@@ -39,9 +36,6 @@ extern DebugSessionToken enableDebugging(
  */
 extern void disableDebugging(DebugSessionToken session);
 
-} // namespace chrome
-} // namespace inspector_modern
-} // namespace hermes
-} // namespace facebook
+} // namespace facebook::hermes::inspector_modern::chrome
 
 #endif // HERMES_ENABLE_DEBUGGER

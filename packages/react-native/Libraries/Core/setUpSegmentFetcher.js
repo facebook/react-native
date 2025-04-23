@@ -42,6 +42,7 @@ function __fetchSegment(
         const error = new Error(errorObject.message);
         (error: any).code = errorObject.code; // flowlint-line unclear-type: off
         callback(error);
+        return;
       }
 
       callback(null);

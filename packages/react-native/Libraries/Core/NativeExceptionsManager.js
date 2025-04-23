@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeExceptionsManager';
-import NativeExceptionsManager from '../../src/private/specs/modules/NativeExceptionsManager';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeExceptionsManager';
+import NativeExceptionsManager from '../../src/private/specs_DEPRECATED/modules/NativeExceptionsManager';
 export default NativeExceptionsManager;

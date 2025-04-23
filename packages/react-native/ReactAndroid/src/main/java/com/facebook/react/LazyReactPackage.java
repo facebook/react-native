@@ -7,14 +7,18 @@
 
 package com.facebook.react;
 
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
@@ -26,8 +30,15 @@ import java.util.List;
 import java.util.Map;
 
 /** React package supporting lazy creation of native modules. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated(since = "This class is deprecated, please use BaseReactPackage instead.")
+@LegacyArchitecture
 public abstract class LazyReactPackage implements ReactPackage {
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "LazyReactPackage", LegacyArchitectureLogLevel.WARNING);
+  }
 
   /**
    * We return an iterable
@@ -94,13 +105,13 @@ public abstract class LazyReactPackage implements ReactPackage {
     List<NativeModule> modules = new ArrayList<>();
     for (ModuleSpec holder : getNativeModules(reactContext)) {
       NativeModule nativeModule;
-      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createNativeModule").flush();
+      SystraceMessage.beginSection(TRACE_TAG_REACT, "createNativeModule").flush();
       ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_START, holder.getName());
       try {
         nativeModule = holder.getProvider().get();
       } finally {
         ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
-        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+        SystraceMessage.endSection(TRACE_TAG_REACT).flush();
       }
       modules.add(nativeModule);
     }

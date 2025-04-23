@@ -26,7 +26,6 @@ struct ShadowNodeFragment {
   const Props::Shared& props = propsPlaceholder();
   const ShadowNode::SharedListOfShared& children = childrenPlaceholder();
   const State::Shared& state = statePlaceholder();
-  const ShadowNodeTraits traits = {};
   const bool runtimeShadowNodeReference = true;
 
   /*

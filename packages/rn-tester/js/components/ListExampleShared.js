@@ -10,8 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import RNTesterText from './RNTesterText';
+import React from 'react';
+import {
   ActivityIndicator,
   Animated,
   Image,
@@ -22,7 +23,7 @@ const {
   TextInput,
   TouchableHighlight,
   View,
-} = require('react-native');
+} from 'react-native';
 
 export type Item = {
   title: string,
@@ -70,6 +71,7 @@ class ItemComponent extends React.PureComponent<{
   onShowUnderlay?: () => void,
   onHideUnderlay?: () => void,
   textSelectable?: ?boolean,
+  testID?: ?string,
   ...
 }> {
   _onPress = () => {
@@ -93,6 +95,7 @@ class ItemComponent extends React.PureComponent<{
           ]}>
           {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
+            testID={this.props.testID}
             style={styles.text}
             selectable={textSelectable}
             numberOfLines={horizontal || fixedHeight ? 3 : undefined}>
@@ -238,7 +241,7 @@ function getItemLayout(
   data: any,
   index: number,
   horizontal?: boolean,
-): {|index: number, length: number, offset: number|} {
+): {index: number, length: number, offset: number} {
   const [length, separator, header] = horizontal
     ? [HORIZ_WIDTH, 0, HEADER.width]
     : [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER.height];
@@ -254,14 +257,16 @@ function renderSmallSwitchOption(
   label: string,
   value: boolean,
   setValue: boolean => void,
+  testID?: string,
 ): null | React.Node {
   if (Platform.isTV) {
     return null;
   }
   return (
     <View style={styles.option}>
-      <Text>{label}:</Text>
+      <RNTesterText>{label}:</RNTesterText>
       <Switch
+        testID={testID}
         style={styles.smallSwitch}
         value={value}
         onValueChange={setValue}

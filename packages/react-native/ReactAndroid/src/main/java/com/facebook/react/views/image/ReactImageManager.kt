@@ -9,19 +9,16 @@ package com.facebook.react.views.image
 
 import android.graphics.Color
 import android.graphics.PorterDuff
-import androidx.annotation.ColorInt
 import com.facebook.common.logging.FLog
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
-import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewProps
@@ -127,8 +124,7 @@ public constructor(
     }
   }
 
-  // In JS this is Image.props.defaultSource
-  @ReactProp(name = "defaultSrc")
+  @ReactProp(name = "defaultSource")
   public fun setDefaultSource(view: ReactImageView, source: String?) {
     view.setDefaultSource(source)
   }
@@ -141,15 +137,7 @@ public constructor(
 
   @ReactProp(name = "borderColor", customType = "Color")
   public fun setBorderColor(view: ReactImageView, borderColor: Int?) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, borderColor)
-    } else {
-      if (borderColor == null) {
-        view.setBorderColor(Color.TRANSPARENT)
-      } else {
-        view.setBorderColor(borderColor)
-      }
-    }
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, borderColor)
   }
 
   @ReactProp(name = "overlayColor", customType = "Color")
@@ -163,11 +151,7 @@ public constructor(
 
   @ReactProp(name = "borderWidth")
   public fun setBorderWidth(view: ReactImageView, borderWidth: Float) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.ALL, borderWidth)
-    } else {
-      view.setBorderWidth(borderWidth)
-    }
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.ALL, borderWidth)
   }
 
   @ReactPropGroup(
@@ -180,24 +164,10 @@ public constructor(
               ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
       defaultFloat = Float.NaN)
   public fun setBorderRadius(view: ReactImageView, index: Int, borderRadius: Float) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      val radius =
-          if (borderRadius.isNaN()) null
-          else LengthPercentage(borderRadius, LengthPercentageType.POINT)
-      BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius)
-    } else {
-      val convertedBorderRadius =
-          if (!borderRadius.isNaN()) {
-            borderRadius.dpToPx()
-          } else {
-            borderRadius
-          }
-      if (index == 0) {
-        view.setBorderRadius(convertedBorderRadius)
-      } else {
-        view.setBorderRadius(convertedBorderRadius, index - 1)
-      }
-    }
+    val radius =
+        if (borderRadius.isNaN()) null
+        else LengthPercentage(borderRadius, LengthPercentageType.POINT)
+    BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius)
   }
 
   @ReactProp(name = ViewProps.RESIZE_MODE)
@@ -211,9 +181,9 @@ public constructor(
     when (resizeMethod) {
       null,
       "auto" -> view.setResizeMethod(ImageResizeMethod.AUTO)
-
       "resize" -> view.setResizeMethod(ImageResizeMethod.RESIZE)
       "scale" -> view.setResizeMethod(ImageResizeMethod.SCALE)
+      "none" -> view.setResizeMethod(ImageResizeMethod.NONE)
       else -> {
         view.setResizeMethod(ImageResizeMethod.AUTO)
         FLog.w(ReactConstants.TAG, "Invalid resize method: '$resizeMethod'")
@@ -257,24 +227,6 @@ public constructor(
   public fun setHeaders(view: ReactImageView, headers: ReadableMap?) {
     if (headers != null) {
       view.setHeaders(headers)
-    }
-  }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public fun setBoxShadow(view: ReactImageView, shadows: ReadableArray?): Unit {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBoxShadow(view, shadows)
-    }
-  }
-
-  public override fun setBackgroundColor(
-      view: ReactImageView,
-      @ColorInt backgroundColor: Int
-  ): Unit {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor)
-    } else {
-      super.setBackgroundColor(view, backgroundColor)
     }
   }
 

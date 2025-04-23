@@ -12,14 +12,11 @@ import {RNTesterThemeContext} from '../../../components/RNTesterTheme';
 import * as React from 'react';
 import {StyleSheet, Switch, Text, View} from 'react-native';
 
-type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
+type ViewStyleProp = React.ElementConfig<typeof View>['style'];
 
 type Props = {
   value: boolean,
-  onValueChange: $ElementType<
-    React.ElementConfig<typeof Switch>,
-    'onValueChange',
-  >,
+  onValueChange: React.ElementConfig<typeof Switch>['onValueChange'],
   style?: ?ViewStyleProp,
 };
 

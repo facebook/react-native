@@ -13,14 +13,15 @@ import type {
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
-  LayoutEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+  LayoutChangeEvent,
+  ScrollViewProps,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import * as React from 'react';
-import {typeof ScrollView} from 'react-native';
 
 export type Item = any;
 
@@ -31,7 +32,7 @@ export type Separators = {
   ...
 };
 
-export type RenderItemProps<ItemT> = {
+export type ListRenderItemInfo<ItemT> = {
   item: ItemT,
   index: number,
   separators: Separators,
@@ -44,15 +45,15 @@ export type CellRendererProps<ItemT> = $ReadOnly<{
   index: number,
   item: ItemT,
   onFocusCapture?: (event: FocusEvent) => void,
-  onLayout?: (event: LayoutEvent) => void,
-  style: ViewStyleProp,
+  onLayout?: (event: LayoutChangeEvent) => void,
+  style: StyleProp<ViewStyle>,
 }>;
 
-export type RenderItemType<ItemT> = (
-  info: RenderItemProps<ItemT>,
+export type ListRenderItem<ItemT> = (
+  info: ListRenderItemInfo<ItemT>,
 ) => React.Node;
 
-type RequiredProps = {|
+type RequiredProps = {
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -66,9 +67,9 @@ type RequiredProps = {|
    * Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
-|};
-type OptionalProps = {|
-  renderItem?: ?RenderItemType<Item>,
+};
+type OptionalProps = {
+  renderItem?: ?ListRenderItem<Item>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -155,42 +156,30 @@ type OptionalProps = {|
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  ListItemComponent?: ?(
-    | React.ComponentType<any>
-    | ExactReactElement_DEPRECATED<any>
-  ),
+  ListItemComponent?: ?(React.ComponentType<any> | React.MixedElement),
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListEmptyComponent?: ?(
-    | React.ComponentType<any>
-    | ExactReactElement_DEPRECATED<any>
-  ),
+  ListEmptyComponent?: ?(React.ComponentType<any> | React.MixedElement),
   /**
    * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListFooterComponent?: ?(
-    | React.ComponentType<any>
-    | ExactReactElement_DEPRECATED<any>
-  ),
+  ListFooterComponent?: ?(React.ComponentType<any> | React.MixedElement),
   /**
    * Styling for internal View for ListFooterComponent
    */
-  ListFooterComponentStyle?: ViewStyleProp,
+  ListFooterComponentStyle?: StyleProp<ViewStyle>,
   /**
    * Rendered at the top of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListHeaderComponent?: ?(
-    | React.ComponentType<any>
-    | ExactReactElement_DEPRECATED<any>
-  ),
+  ListHeaderComponent?: ?(React.ComponentType<any> | React.MixedElement),
   /**
    * Styling for internal View for ListHeaderComponent
    */
-  ListHeaderComponentStyle?: ViewStyleProp,
+  ListHeaderComponentStyle?: StyleProp<ViewStyle>,
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness may suffer because rendering content may
@@ -256,7 +245,7 @@ type OptionalProps = {|
    * <RefreshControl> component built internally. The onRefresh and refreshing
    * props are also ignored. Only works for vertical VirtualizedList.
    */
-  refreshControl?: ?ExactReactElement_DEPRECATED<any>,
+  refreshControl?: ?React.MixedElement,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -270,7 +259,7 @@ type OptionalProps = {|
   /**
    * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
    */
-  renderScrollComponent?: (props: Object) => ExactReactElement_DEPRECATED<any>,
+  renderScrollComponent?: (props: ScrollViewProps) => React.MixedElement,
   /**
    * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
@@ -293,17 +282,13 @@ type OptionalProps = {|
    * chance that fast scrolling may reveal momentary blank areas of unrendered content.
    */
   windowSize?: ?number,
-  /**
-   * The legacy implementation is no longer supported.
-   */
-  legacyImplementation?: empty,
-|};
+};
 
-export type Props = {|
-  ...React.ElementConfig<ScrollView>,
+export type VirtualizedListProps = {
+  ...ScrollViewProps,
   ...RequiredProps,
   ...OptionalProps,
-|};
+};
 
 /**
  * Default Props Helper Functions

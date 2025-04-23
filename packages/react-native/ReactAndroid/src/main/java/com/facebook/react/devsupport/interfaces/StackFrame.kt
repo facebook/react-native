@@ -20,7 +20,7 @@ public interface StackFrame {
   public val file: String?
 
   /** Get the name of the method this frame points to. */
-  public val method: String?
+  public val method: String
 
   /** Get the line number this frame points to in the file returned by [.getFile]. */
   public val line: Int
@@ -40,5 +40,5 @@ public interface StackFrame {
   public val isCollapsed: Boolean
 
   /** Convert the stack frame to a JSON representation. */
-  public fun toJSON(): JSONObject?
+  public fun toJSON(): JSONObject
 }

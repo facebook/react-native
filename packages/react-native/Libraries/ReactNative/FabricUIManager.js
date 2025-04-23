@@ -4,18 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
 import type {
-  InternalInstanceHandle,
-  LayoutAnimationConfig,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
+} from '../../src/private/types/HostInstance';
+import type {NativeElementReference} from '../../src/private/webapis/dom/nodes/specs/NativeDOM';
+import type {
+  InternalInstanceHandle,
+  LayoutAnimationConfig,
   Node,
 } from '../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../Types/RootTagTypes';
@@ -40,14 +43,17 @@ export interface Spec {
   +appendChild: (parentNode: Node, child: Node) => Node;
   +appendChildToSet: (childSet: NodeSet, child: Node) => void;
   +completeRoot: (rootTag: RootTag, childSet: NodeSet) => void;
-  +measure: (node: Node, callback: MeasureOnSuccessCallback) => void;
+  +measure: (
+    node: Node | NativeElementReference,
+    callback: MeasureOnSuccessCallback,
+  ) => void;
   +measureInWindow: (
-    node: Node,
+    node: Node | NativeElementReference,
     callback: MeasureInWindowOnSuccessCallback,
   ) => void;
   +measureLayout: (
-    node: Node,
-    relativeNode: Node,
+    node: Node | NativeElementReference,
+    relativeNode: Node | NativeElementReference,
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void;
@@ -58,7 +64,10 @@ export interface Spec {
   ) => void;
   +sendAccessibilityEvent: (node: Node, eventType: string) => void;
   +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node;
-  +setNativeProps: (node: Node, newProps: NodeProps) => void;
+  +setNativeProps: (
+    node: Node | NativeElementReference,
+    newProps: NodeProps,
+  ) => void;
   +dispatchCommand: (
     node: Node,
     commandName: string,
@@ -70,9 +79,12 @@ export interface Spec {
     locationY: number,
     callback: (instanceHandle: ?InternalInstanceHandle) => void,
   ) => void;
-  +compareDocumentPosition: (node: Node, otherNode: Node) => number;
+  +compareDocumentPosition: (
+    node: Node | NativeElementReference,
+    otherNode: Node | NativeElementReference,
+  ) => number;
   +getBoundingClientRect: (
-    node: Node,
+    node: Node | NativeElementReference,
     includeTransform: boolean,
   ) => ?[
     /* x: */ number,

@@ -68,6 +68,7 @@ local.properties
 *.iml
 /packages/react-native/android/*
 !/packages/react-native/android/README.md
+.kotlin/
 
 # Node
 node_modules
@@ -124,7 +125,7 @@ vendor/
 !/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
 # @react-native/codegen
-/packages/react-native/React/FBReactNativeSpec/FBReactNativeSpec
+/packages/react-native/React/FBReactNativeSpec/
 /packages/react-native-codegen/lib
 /packages/react-native-codegen/tmp/
 /packages/react-native/ReactCommon/react/renderer/components/rncore/
@@ -140,6 +141,11 @@ vendor/
 /packages/react-native/sdks/hermesc
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
+# iOS prebuilds
+/packages/react-native/third-party/
+fix_*.patch
+*.xcframework
+
 # Visual Studio Code (config dir - if present, this merges user defined
 # workspace settings on top of react-native.code-workspace)
 /.vscode
@@ -153,5 +159,9 @@ vendor/
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
 
-# CircleCI
-.circleci/generated_config.yml
+# Jest Integration
+/packages/react-native-fantom/build/
+/packages/react-native-fantom/tester/build/
+
+# [Experimental] Generated TS type definitions
+/packages/**/types_generated/

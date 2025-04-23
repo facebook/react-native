@@ -14,11 +14,11 @@ import Text from '../../Text/Text';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   heading: string,
   children: React.Node,
   action?: ?React.Node,
-|}>;
+}>;
 
 function LogBoxInspectorSection(props: Props): React.Node {
   return (

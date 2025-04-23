@@ -10,7 +10,7 @@
 
 import typeof * as SystraceModule from './Systrace';
 
-const TRACE_TAG_REACT_APPS = 1 << 17; // eslint-disable-line no-bitwise
+const TRACE_TAG_REACT = 1 << 13; // eslint-disable-line no-bitwise
 
 let _asyncCookie = 0;
 
@@ -32,7 +32,7 @@ type EventArgs = ?{[string]: string};
  */
 export function isEnabled(): boolean {
   return global.nativeTraceIsTracing
-    ? global.nativeTraceIsTracing(TRACE_TAG_REACT_APPS)
+    ? global.nativeTraceIsTracing(TRACE_TAG_REACT)
     : Boolean(global.__RCTProfileIsProfiling);
 }
 
@@ -52,7 +52,7 @@ export function beginEvent(eventName: EventName, args?: EventArgs): void {
   if (isEnabled()) {
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
-    global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, eventNameString, args);
+    global.nativeTraceBeginSection(TRACE_TAG_REACT, eventNameString, args);
   }
 }
 
@@ -61,7 +61,7 @@ export function beginEvent(eventName: EventName, args?: EventArgs): void {
  */
 export function endEvent(args?: EventArgs): void {
   if (isEnabled()) {
-    global.nativeTraceEndSection(TRACE_TAG_REACT_APPS, args);
+    global.nativeTraceEndSection(TRACE_TAG_REACT, args);
   }
 }
 
@@ -80,7 +80,7 @@ export function beginAsyncEvent(
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
     global.nativeTraceBeginAsyncSection(
-      TRACE_TAG_REACT_APPS,
+      TRACE_TAG_REACT,
       eventNameString,
       cookie,
       args,
@@ -102,7 +102,7 @@ export function endAsyncEvent(
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
     global.nativeTraceEndAsyncSection(
-      TRACE_TAG_REACT_APPS,
+      TRACE_TAG_REACT,
       eventNameString,
       cookie,
       args,
@@ -118,7 +118,7 @@ export function counterEvent(eventName: EventName, value: number): void {
     const eventNameString =
       typeof eventName === 'function' ? eventName() : eventName;
     global.nativeTraceCounter &&
-      global.nativeTraceCounter(TRACE_TAG_REACT_APPS, eventNameString, value);
+      global.nativeTraceCounter(TRACE_TAG_REACT, eventNameString, value);
   }
 }
 

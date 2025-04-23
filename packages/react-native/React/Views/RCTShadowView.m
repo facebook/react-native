@@ -63,6 +63,9 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 #define RCT_SET_YGVALUE(ygvalue, setter, ...)      \
   switch (ygvalue.unit) {                          \
     case YGUnitAuto:                               \
+    case YGUnitMaxContent:                         \
+    case YGUnitFitContent:                         \
+    case YGUnitStretch:                            \
     case YGUnitUndefined:                          \
       setter(__VA_ARGS__, YGUndefined);            \
       break;                                       \
@@ -88,6 +91,35 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
     case YGUnitPercent:                            \
       setter##Percent(__VA_ARGS__, ygvalue.value); \
       break;                                       \
+    case YGUnitMaxContent:                         \
+    case YGUnitFitContent:                         \
+    case YGUnitStretch:                            \
+      break;                                       \
+  }
+
+#define RCT_SET_YGVALUE_AUTO_INTRINSIC(ygvalue, setter, ...) \
+  switch (ygvalue.unit) {                                    \
+    case YGUnitAuto:                                         \
+      setter##Auto(__VA_ARGS__);                             \
+      break;                                                 \
+    case YGUnitMaxContent:                                   \
+      setter##MaxContent(__VA_ARGS__);                       \
+      break;                                                 \
+    case YGUnitFitContent:                                   \
+      setter##FitContent(__VA_ARGS__);                       \
+      break;                                                 \
+    case YGUnitStretch:                                      \
+      setter##Stretch(__VA_ARGS__);                          \
+      break;                                                 \
+    case YGUnitUndefined:                                    \
+      setter(__VA_ARGS__, YGUndefined);                      \
+      break;                                                 \
+    case YGUnitPoint:                                        \
+      setter(__VA_ARGS__, ygvalue.value);                    \
+      break;                                                 \
+    case YGUnitPercent:                                      \
+      setter##Percent(__VA_ARGS__, ygvalue.value);           \
+      break;                                                 \
   }
 
 static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node)
@@ -483,14 +515,14 @@ RCT_BORDER_PROPERTY(Start, START)
 RCT_BORDER_PROPERTY(End, END)
 
 // Dimensions
-#define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)            \
-  -(void)set##setProp : (YGValue)value                               \
-  {                                                                  \
-    RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSet##cssProp, _yogaNode); \
-  }                                                                  \
-  -(YGValue)getProp                                                  \
-  {                                                                  \
-    return YGNodeStyleGet##cssProp(_yogaNode);                       \
+#define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)                      \
+  -(void)set##setProp : (YGValue)value                                         \
+  {                                                                            \
+    RCT_SET_YGVALUE_AUTO_INTRINSIC(value, YGNodeStyleSet##cssProp, _yogaNode); \
+  }                                                                            \
+  -(YGValue)getProp                                                            \
+  {                                                                            \
+    return YGNodeStyleGet##cssProp(_yogaNode);                                 \
   }
 
 #define RCT_MIN_MAX_DIMENSION_PROPERTY(setProp, getProp, cssProp) \
@@ -634,7 +666,7 @@ RCTShadowViewMeasure(YGNodeConstRef node, float width, YGMeasureMode widthMode, 
 
 - (void)setFlexBasis:(YGValue)value
 {
-  RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSetFlexBasis, _yogaNode);
+  RCT_SET_YGVALUE_AUTO_INTRINSIC(value, YGNodeStyleSetFlexBasis, _yogaNode);
 }
 
 - (YGValue)flexBasis
@@ -642,19 +674,19 @@ RCTShadowViewMeasure(YGNodeConstRef node, float width, YGMeasureMode widthMode, 
   return YGNodeStyleGetFlexBasis(_yogaNode);
 }
 
-#define RCT_GAP_PROPERTY(setProp, getProp, cssProp, type, gap) \
-  -(void)set##setProp : (type)value                            \
-  {                                                            \
-    YGNodeStyleSet##cssProp(_yogaNode, gap, value);            \
-  }                                                            \
-  -(type)getProp                                               \
-  {                                                            \
-    return YGNodeStyleGet##cssProp(_yogaNode, gap);            \
+#define RCT_GAP_PROPERTY(setProp, getProp, cssProp, gutter)       \
+  -(void)set##setProp : (YGValue)value                            \
+  {                                                               \
+    RCT_SET_YGVALUE(value, YGNodeStyleSetGap, _yogaNode, gutter); \
+  }                                                               \
+  -(YGValue)getProp                                               \
+  {                                                               \
+    return YGNodeStyleGet##cssProp(_yogaNode, gutter);            \
   }
 
-RCT_GAP_PROPERTY(RowGap, rowGap, Gap, float, YGGutterRow);
-RCT_GAP_PROPERTY(ColumnGap, columnGap, Gap, float, YGGutterColumn);
-RCT_GAP_PROPERTY(Gap, gap, Gap, float, YGGutterAll);
+RCT_GAP_PROPERTY(RowGap, rowGap, Gap, YGGutterRow);
+RCT_GAP_PROPERTY(ColumnGap, columnGap, Gap, YGGutterColumn);
+RCT_GAP_PROPERTY(Gap, gap, Gap, YGGutterAll);
 
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
   -(void)set##setProp : (type)value                         \

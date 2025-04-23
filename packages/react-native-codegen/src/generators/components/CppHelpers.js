@@ -61,7 +61,7 @@ function getCppArrayTypeForAnnotation(
     case 'Int32TypeAnnotation':
     case 'MixedTypeAnnotation':
       return `std::vector<${getCppTypeForAnnotation(typeElement.type)}>`;
-    case 'StringEnumTypeAnnotation':
+    case 'StringLiteralUnionTypeAnnotation':
     case 'ObjectTypeAnnotation':
       if (!structParts) {
         throw new Error(

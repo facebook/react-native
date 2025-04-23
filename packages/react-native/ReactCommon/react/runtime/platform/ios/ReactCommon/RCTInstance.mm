@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/NSDataBigString.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Inspector.h>
@@ -25,18 +26,19 @@
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTFollyConvert.h>
-#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTSurfacePresenter.h>
+#import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -83,6 +85,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
   NSDictionary *_launchOptions;
+  void (^_waitUntilModuleSetupComplete)();
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
@@ -119,15 +122,34 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       [_bridgeModuleDecorator.callableJSModules
           setBridgelessJSModuleMethodInvoker:^(
               NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
-            // TODO: Make RCTInstance call onComplete
             [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
+            if (onComplete) {
+              [weakSelf
+                  callFunctionOnBufferedRuntimeExecutor:[onComplete](facebook::jsi::Runtime &_) { onComplete(); }];
+            }
           }];
     }
     _launchOptions = launchOptions;
 
+    if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(_handleMemoryWarning)
+                                                   name:UIApplicationDidReceiveMemoryWarningNotification
+                                                 object:nil];
+    }
+
     [self _start];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidReceiveMemoryWarningNotification
+                                                  object:nil];
+  }
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
@@ -142,8 +164,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   std::lock_guard<std::mutex> lock(_invalidationMutex);
   _valid = false;
-  if (self->_reactInstance) {
-    self->_reactInstance->unregisterFromInspector();
+  if (_reactInstance) {
+    _reactInstance->unregisterFromInspector();
   }
   [_surfacePresenter suspend];
   [_jsThreadManager dispatchToJSThread:^{
@@ -180,22 +202,19 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (Class)getModuleClassFromName:(const char *)name
 {
-  if ([_appTMMDelegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-    return [_appTMMDelegate getModuleClassFromName:name];
-  }
-
-  return nil;
+  return [_appTMMDelegate getModuleClassFromName:name];
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  if ([_appTMMDelegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
-    [self _attachBridgelessAPIsToModule:module];
-    return module;
+  id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
+
+  if (!module) {
+    module = [moduleClass new];
   }
 
-  return nil;
+  [self _attachBridgelessAPIsToModule:module];
+  return module;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
@@ -206,6 +225,23 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 
   return nullptr;
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(extraModulesForBridge:)]) {
+    return [_appTMMDelegate extraModulesForBridge:nil];
+  }
+
+  return @[];
+}
+
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(getModuleProvider:)]) {
+    return [_appTMMDelegate getModuleProvider:name];
+  }
+  return nil;
 }
 
 #pragma mark - Private
@@ -221,7 +257,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto onJsError = [=](const JsErrorHandler::ParsedError &error) { [weakSelf _handleJSError:error]; };
+  auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ProcessedError &error) {
+    [weakSelf _handleJSError:error withRuntime:runtime];
+  };
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
@@ -277,6 +315,38 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
 
+  if (ReactNativeFeatureFlags::enableMainQueueModulesOnIOS()) {
+    /**
+     * Some native modules need to capture uikit objects on the main thread.
+     * Start initializing those modules on the main queue here. The JavaScript thread
+     * will wait until this module init finishes, before executing the js bundle.
+     */
+    NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
+
+    std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
+    std::shared_ptr<std::condition_variable> cv = std::make_shared<std::condition_variable>();
+    std::shared_ptr<bool> isReady = std::make_shared<bool>(false);
+
+    _waitUntilModuleSetupComplete = ^{
+      std::unique_lock<std::mutex> lock(*mutex);
+      cv->wait(lock, [isReady] { return *isReady; });
+    };
+
+    // TODO(T218039767): Integrate perf logging into main queue module init
+    RCTExecuteOnMainQueue(^{
+      for (NSString *moduleName in modulesRequiringMainQueueSetup) {
+        [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
+      }
+
+      RCTScreenSize();
+      RCTScreenScale();
+
+      std::lock_guard<std::mutex> lock(*mutex);
+      *isReady = true;
+      cv->notify_all();
+    });
+  }
+
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
 
@@ -289,7 +359,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       "RCTEventDispatcher",
       facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTEventDispatcher"]));
   contextContainer->insert("RCTBridgeModuleDecorator", facebook::react::wrapManagedObject(_bridgeModuleDecorator));
-  contextContainer->insert("RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
+  contextContainer->insert(RuntimeSchedulerKey, std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
   contextContainer->insert("RCTBridgeProxy", facebook::react::wrapManagedObject(bridgeProxy));
 
   _surfacePresenter = [[RCTSurfacePresenter alloc]
@@ -325,7 +395,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
 
-    if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    if (ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
 
@@ -416,7 +486,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #endif
 
   __weak __typeof(self) weakSelf = self;
-  [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+  [_delegate loadBundleAtURL:sourceURL
       onProgress:^(RCTLoadingProgress *progressData) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
@@ -447,7 +517,28 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         // Set up hot module reloading in Dev only.
         [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
         [devSettings setupHMRClientWithBundleURL:sourceURL];
+#if RCT_DEV
+        [strongSelf _logOldArchitectureWarnings];
+#endif
       }];
+}
+
+- (void)_logOldArchitectureWarnings
+{
+  if (!RCTAreLegacyLogsEnabled()) {
+    return;
+  }
+
+  NSArray<NSString *> *modulesInOldArchMode = [getModulesLoadedWithOldArch() copy];
+  if (modulesInOldArchMode.count > 0) {
+    NSMutableString *moduleList = [NSMutableString new];
+    for (NSString *moduleName in modulesInOldArchMode) {
+      [moduleList appendFormat:@"- %@\n", moduleName];
+    }
+    RCTLogWarn(
+        @"The following modules have been registered using a RCT_EXPORT_MODULE. That's a Legacy Architecture API. Please migrate to the new approach as described in the https://reactnative.dev/docs/next/turbo-native-modules-introduction#register-the-native-module-in-your-app website or open a PR in the library repository:\n%@",
+        moduleList);
+  }
 }
 
 - (void)_loadScriptFromSource:(RCTSource *)source
@@ -459,27 +550,80 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   auto script = std::make_unique<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
-  _reactInstance->loadScript(std::move(script), url);
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
+
+  auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
+    if (waitUntilModuleSetupComplete) {
+      waitUntilModuleSetupComplete();
+    }
+  };
+  auto afterLoad = [](jsi::Runtime &_) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
+  };
+  _reactInstance->loadScript(std::move(script), url, beforeLoad, afterLoad);
 }
 
-- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error
+- (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime
 {
-  NSString *message = [NSString stringWithCString:error.message.c_str() encoding:[NSString defaultCStringEncoding]];
-  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.frames) {
-    [stack addObject:@{
-      @"file" : [NSString stringWithCString:frame.fileName.c_str() encoding:[NSString defaultCStringEncoding]],
-      @"methodName" : [NSString stringWithCString:frame.methodName.c_str() encoding:[NSString defaultCStringEncoding]],
-      @"lineNumber" : [NSNumber numberWithInt:frame.lineNumber],
-      @"column" : [NSNumber numberWithInt:frame.columnNumber],
-    }];
+  NSMutableDictionary<NSString *, id> *errorData = [NSMutableDictionary new];
+  errorData[@"message"] = @(error.message.c_str());
+  if (error.originalMessage) {
+    errorData[@"originalMessage"] = @(error.originalMessage->c_str());
   }
-  [_delegate instance:self
-      didReceiveJSErrorStack:stack
-                     message:message
-                 exceptionId:error.exceptionId
-                     isFatal:error.isFatal];
+  if (error.name) {
+    errorData[@"name"] = @(error.name->c_str());
+  }
+  if (error.componentStack) {
+    errorData[@"componentStack"] = @(error.componentStack->c_str());
+  }
+
+  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
+  for (const JsErrorHandler::ProcessedError::StackFrame &frame : error.stack) {
+    NSMutableDictionary<NSString *, id> *stackFrame = [NSMutableDictionary new];
+    if (frame.file) {
+      stackFrame[@"file"] = @(frame.file->c_str());
+    }
+    stackFrame[@"methodName"] = @(frame.methodName.c_str());
+    if (frame.lineNumber) {
+      stackFrame[@"lineNumber"] = @(*frame.lineNumber);
+    }
+    if (frame.column) {
+      stackFrame[@"column"] = @(*frame.column);
+    }
+    [stack addObject:stackFrame];
+  }
+
+  errorData[@"stack"] = stack;
+  errorData[@"id"] = @(error.id);
+  errorData[@"isFatal"] = @(error.isFatal);
+
+  id extraData =
+      TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsi::Value(runtime, error.extraData), nullptr);
+  if (extraData) {
+    errorData[@"extraData"] = extraData;
+  }
+
+  if (![_delegate instance:self
+          didReceiveJSErrorStack:errorData[@"stack"]
+                         message:errorData[@"message"]
+                 originalMessage:errorData[@"originalMessage"]
+                            name:errorData[@"name"]
+                  componentStack:errorData[@"componentStack"]
+                     exceptionId:error.id
+                         isFatal:[errorData[@"isFatal"] boolValue]
+                       extraData:errorData[@"extraData"]]) {
+    JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
+    id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
+    [exceptionsManager reportException:jsErrorData];
+  }
+}
+
+- (void)_handleMemoryWarning
+{
+  if (_valid) {
+    // Memory Pressure Unloading Level 15 represents TRIM_MEMORY_RUNNING_CRITICAL.
+    static constexpr int unloadLevel = 15;
+    _reactInstance->handleMemoryPressureJs(unloadLevel);
+  }
 }
 
 @end

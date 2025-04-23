@@ -28,12 +28,10 @@ export default class AnimatedWithChildren extends AnimatedNode {
       const children = this._children;
       let length = children.length;
       if (length > 0) {
-        const nativeTag = this.__getNativeTag();
-
         for (let ii = 0; ii < length; ii++) {
           const child = children[ii];
           child.__makeNative(platformConfig);
-          connectAnimatedNodes(nativeTag, child.__getNativeTag());
+          connectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
         }
       }
     }

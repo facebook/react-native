@@ -4,18 +4,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  */
 
-import type {
-  InternalInstanceHandle as InstanceHandle,
-  Node as ShadowNode,
-} from '../../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {RootTag} from '../../../../../../Libraries/ReactNative/RootTag';
+import type {Node as ShadowNode} from '../../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {TurboModule} from '../../../../../../Libraries/TurboModule/RCTExport';
+import type {InstanceHandle} from '../internals/NodeInternals';
 
 import * as TurboModuleRegistry from '../../../../../../Libraries/TurboModule/TurboModuleRegistry';
 import nullthrows from 'nullthrows';
+
+export opaque type NativeElementReference = ShadowNode;
+export opaque type NativeTextReference = ShadowNode;
+
+export type NativeNodeReference =
+  | NativeElementReference
+  | NativeTextReference
+  | RootTag;
 
 export type MeasureInWindowOnSuccessCallback = (
   x: number,
@@ -41,78 +48,108 @@ export type MeasureLayoutOnSuccessCallback = (
 ) => void;
 
 export interface Spec extends TurboModule {
-  +getParentNode: (
-    shadowNode: mixed /* ShadowNode */,
-  ) => mixed /* ?InstanceHandle */;
-
-  +getChildNodes: (
-    shadowNode: mixed /* ShadowNode */,
-  ) => $ReadOnlyArray<mixed> /* $ReadOnlyArray<InstanceHandle> */;
-
-  +isConnected: (shadowNode: mixed /* ShadowNode */) => boolean;
+  /*
+   * Methods from the `Node` interface (for `ReadOnlyNode`).
+   */
 
   +compareDocumentPosition: (
-    shadowNode: mixed /* ShadowNode */,
-    otherShadowNode: mixed /* ShadowNode */,
+    nativeNodeReference: mixed /* NativeNodeReference */,
+    otherNativeNodeReference: mixed /* NativeNodeReference */,
   ) => number;
 
-  +getTextContent: (shadowNode: mixed /* ShadowNode */) => string;
+  +getChildNodes: (
+    nativeNodeReference: mixed /* NativeNodeReference */,
+  ) => $ReadOnlyArray<mixed> /* $ReadOnlyArray<InstanceHandle> */;
+
+  +getParentNode: (
+    nativeNodeReference: mixed /* NativeNodeReference */,
+  ) => mixed /* ?InstanceHandle */;
+
+  +isConnected: (
+    nativeNodeReference: mixed /* NativeNodeReference */,
+  ) => boolean;
+
+  /*
+   * Methods from the `Element` interface (for `ReactNativeElement`).
+   */
+
+  +getBorderWidth: (
+    nativeElementReference: mixed /* NativeElementReference */,
+  ) => $ReadOnlyArray<number> /* [topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
 
   +getBoundingClientRect: (
-    shadowNode: mixed /* ShadowNode */,
+    nativeElementReference: mixed /* NativeElementReference */,
     includeTransform: boolean,
   ) => $ReadOnlyArray<number> /* [x: number, y: number, width: number, height: number] */;
 
-  +getOffset: (
-    shadowNode: mixed /* ShadowNode */,
-  ) => $ReadOnlyArray<mixed> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
+  +getInnerSize: (
+    nativeElementReference: mixed /* NativeElementReference */,
+  ) => $ReadOnlyArray<number> /* [width: number, height: number] */;
 
   +getScrollPosition: (
-    shadowNode: mixed /* ShadowNode */,
+    nativeElementReference: mixed /* NativeElementReference */,
   ) => $ReadOnlyArray<number> /* [scrollLeft: number, scrollTop: number] */;
 
   +getScrollSize: (
-    shadowNode: mixed /* ShadowNode */,
+    nativeElementReference: mixed /* NativeElementReference */,
   ) => $ReadOnlyArray<number> /* [scrollWidth: number, scrollHeight: number] */;
 
-  +getInnerSize: (
-    shadowNode: mixed /* ShadowNode */,
-  ) => $ReadOnlyArray<number> /* [width: number, height: number] */;
+  +getTagName: (
+    nativeElementReference: mixed /* NativeElementReference */,
+  ) => string;
 
-  +getBorderWidth: (
-    shadowNode: mixed /* ShadowNode */,
-  ) => $ReadOnlyArray<number> /* [topWidth: number, rightWidth: number, bottomWidth: number, leftWidth: number] */;
-
-  +getTagName: (shadowNode: mixed /* ShadowNode */) => string;
+  +getTextContent: (
+    nativeElementReference: mixed /* NativeElementReference */,
+  ) => string;
 
   +hasPointerCapture: (
-    shadowNode: mixed /* ShadowNode */,
+    nativeElementReference: mixed /* NativeElementReference */,
     pointerId: number,
   ) => boolean;
 
-  +setPointerCapture: (
-    shadowNode: mixed /* ShadowNode */,
-    pointerId: number,
-  ) => void;
-
   +releasePointerCapture: (
-    shadowNode: mixed /* ShadowNode */,
+    nativeElementReference: mixed /* NativeElementReference */,
     pointerId: number,
   ) => void;
 
-  /**
-   * Legacy layout APIs
+  +setPointerCapture: (
+    nativeElementReference: mixed /* NativeElementReference */,
+    pointerId: number,
+  ) => void;
+
+  /*
+   * Methods from the `HTMLElement` interface (for `ReactNativeElement`).
    */
 
-  +measure: (shadowNode: mixed, callback: MeasureOnSuccessCallback) => void;
+  +getOffset: (
+    nativeElementReference: mixed /* NativeElementReference */,
+  ) => $ReadOnlyArray<mixed> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
+
+  /*
+   * Special methods to handle the root node.
+   */
+
+  +linkRootNode?: (
+    rootTag: number /* RootTag */,
+    instanceHandle: mixed /* InstanceHandle */,
+  ) => mixed /* ?NativeElementReference */;
+
+  /**
+   * Legacy layout APIs (for `ReactNativeElement`).
+   */
+
+  +measure: (
+    nativeElementReference: mixed,
+    callback: MeasureOnSuccessCallback,
+  ) => void;
 
   +measureInWindow: (
-    shadowNode: mixed,
+    nativeElementReference: mixed,
     callback: MeasureInWindowOnSuccessCallback,
   ) => void;
 
   +measureLayout: (
-    shadowNode: mixed,
+    nativeElementReference: mixed,
     relativeNode: mixed,
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
@@ -124,34 +161,9 @@ const RawNativeDOM = (TurboModuleRegistry.get<Spec>('NativeDOMCxx'): ?Spec);
 // This is the actual interface of this module, but the native module codegen
 // isn't expressive enough yet.
 export interface RefinedSpec {
-  /**
-   * This is a React Native implementation of `Node.prototype.parentNode`
-   * (see https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode).
-   *
-   * If a version of the given shadow node is present in the current revision of
-   * an active shadow tree, it returns the instance handle of its parent.
-   * Otherwise, it returns `null`.
+  /*
+   * Methods from the `Node` interface (for `ReadOnlyNode`).
    */
-  +getParentNode: (shadowNode: ShadowNode) => ?InstanceHandle;
-
-  /**
-   * This is a React Native implementation of `Node.prototype.childNodes`
-   * (see https://developer.mozilla.org/en-US/docs/Web/API/Node/childNodes).
-   *
-   * If a version of the given shadow node is present in the current revision
-   * of an active shadow tree, it returns an array of instance handles of its
-   * children. Otherwise, it returns an empty array.
-   */
-  +getChildNodes: (shadowNode: ShadowNode) => $ReadOnlyArray<InstanceHandle>;
-
-  /**
-   * This is a React Native implementation of `Node.prototype.isConnected`
-   * (see https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected).
-   *
-   * Indicates whether a version of the given shadow node is present in the
-   * current revision of an active shadow tree.
-   */
-  +isConnected: (shadowNode: ShadowNode) => boolean;
 
   /**
    * This is a React Native implementation of `Node.prototype.compareDocumentPosition`
@@ -162,23 +174,67 @@ export interface RefinedSpec {
    * it just indicates they are disconnected.
    */
   +compareDocumentPosition: (
-    shadowNode: ShadowNode,
-    otherShadowNode: ShadowNode,
+    nativeNodeReference: NativeNodeReference,
+    otherNativeNodeReference: NativeNodeReference,
   ) => number;
 
   /**
-   * This is a React Native implementation of `Element.prototype.textContent`
-   * (see https://developer.mozilla.org/en-US/docs/Web/API/Element/textContent).
+   * This is a React Native implementation of `Node.prototype.childNodes`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Node/childNodes).
+   *
+   * If a version of the given shadow node is present in the current revision
+   * of an active shadow tree, it returns an array of instance handles of its
+   * children. Otherwise, it returns an empty array.
+   */
+  +getChildNodes: (
+    nativeNodeReference: NativeNodeReference,
+  ) => $ReadOnlyArray<InstanceHandle>;
+
+  /**
+   * This is a React Native implementation of `Node.prototype.parentNode`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode).
+   *
+   * If a version of the given shadow node is present in the current revision of
+   * an active shadow tree, it returns the instance handle of its parent.
+   * Otherwise, it returns `null`.
+   */
+  +getParentNode: (nativeNodeReference: NativeNodeReference) => ?InstanceHandle;
+
+  /**
+   * This is a React Native implementation of `Node.prototype.isConnected`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected).
+   *
+   * Indicates whether a version of the given shadow node is present in the
+   * current revision of an active shadow tree.
+   */
+  +isConnected: (nativeNodeReference: NativeNodeReference) => boolean;
+
+  /*
+   * Methods from the `Element` interface (for `ReactNativeElement`).
+   */
+
+  /**
+   * This is a method to access the border size of a shadow node, to implement
+   * these methods:
+   *   - `Element.prototype.clientLeft`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/clientLeft.
+   *   - `Element.prototype.clientTop`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/clientTop.
    *
    * It uses the version of the shadow node that is present in the current
-   * revision of the shadow tree.
-   * If the version is present, is traverses all its children in DFS and
-   * concatenates all the text contents. Otherwise, it returns an empty string.
-   *
-   * This is also used to access the text content of text nodes, which does not
-   * need any traversal.
+   * revision of the shadow tree. If the node is not present, it is not
+   * displayed (because any of its ancestors or itself have 'display: none'), or
+   * it has an inline display, it returns `undefined`. Otherwise, it returns its
+   * border size.
    */
-  +getTextContent: (shadowNode: ShadowNode) => string;
+  +getBorderWidth: (
+    nativeElementReference: NativeElementReference,
+  ) => $ReadOnly<
+    [
+      /* topWidth: */ number,
+      /* rightWidth: */ number,
+      /* bottomWidth: */ number,
+      /* leftWidth: */ number,
+    ],
+  >;
 
   /**
    * This is a React Native implementation of `Element.prototype.getBoundingClientRect`
@@ -192,7 +248,7 @@ export interface RefinedSpec {
    * and [`offsetHeight`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight).
    */
   +getBoundingClientRect: (
-    shadowNode: ShadowNode,
+    nativeElementReference: NativeElementReference,
     includeTransform: boolean,
   ) => $ReadOnly<
     [
@@ -202,6 +258,88 @@ export interface RefinedSpec {
       /* height: */ number,
     ],
   >;
+
+  /**
+   * This is a method to access the inner size of a shadow node, to implement
+   * these methods:
+   *   - `Element.prototype.clientWidth`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/clientWidth.
+   *   - `Element.prototype.clientHeight`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/clientHeight.
+   *
+   * It uses the version of the shadow node that is present in the current
+   * revision of the shadow tree. If the node is not present, it is not
+   * displayed (because any of its ancestors or itself have 'display: none'), or
+   * it has an inline display, it returns `undefined`. Otherwise, it returns its
+   * inner size.
+   */
+  +getInnerSize: (
+    nativeElementReference: NativeElementReference,
+  ) => $ReadOnly<[/* width: */ number, /* height: */ number]>;
+
+  /**
+   * This is a method to access scroll information for a shadow node, to
+   * implement these methods:
+   *   - `Element.prototype.scrollLeft`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft.
+   *   - `Element.prototype.scrollTop`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTop.
+   *
+   * It uses the version of the shadow node that is present in the current
+   * revision of the shadow tree. If the node is not present or is not displayed
+   * (because any of its ancestors or itself have 'display: none'), it returns
+   * `undefined`. Otherwise, it returns the scroll position.
+   */
+  +getScrollPosition: (
+    nativeElementReference: NativeElementReference,
+  ) => $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>;
+
+  /**
+   *
+   * This is a method to access the scroll information of a shadow node, to
+   * implement these methods:
+   *   - `Element.prototype.scrollWidth`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollWidth.
+   *   - `Element.prototype.scrollHeight`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight.
+   *
+   * It uses the version of the shadow node that is present in the current
+   * revision of the shadow tree. If the node is not present or is not displayed
+   * (because any of its ancestors or itself have 'display: none'), it returns
+   * `undefined`. Otherwise, it returns the scroll size.
+   */
+  +getScrollSize: (
+    nativeElementReference: NativeElementReference,
+  ) => $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>;
+
+  /**
+   * This is a method to access the normalized tag name of a shadow node, to
+   * implement `Element.prototype.tagName` (see https://developer.mozilla.org/en-US/docs/Web/API/Element/tagName).
+   */
+  +getTagName: (nativeElementReference: NativeElementReference) => string;
+
+  /**
+   * This is a React Native implementation of `Element.prototype.textContent`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Element/textContent).
+   *
+   * It uses the version of the shadow node that is present in the current
+   * revision of the shadow tree.
+   * If the version is present, is traverses all its children in DFS and
+   * concatenates all the text contents. Otherwise, it returns an empty string.
+   *
+   * This is also used to access the text content of text nodes, which does not
+   * need any traversal.
+   */
+  +getTextContent: (nativeNodeReference: NativeNodeReference) => string;
+
+  +hasPointerCapture: (
+    nativeElementReference: NativeElementReference,
+    pointerId: number,
+  ) => boolean;
+
+  +releasePointerCapture: (
+    nativeElementReference: NativeElementReference,
+    pointerId: number,
+  ) => void;
+
+  +setPointerCapture: (
+    nativeElementReference: NativeElementReference,
+    pointerId: number,
+  ) => void;
 
   /**
    * This is a method to access the offset information for a shadow node, to
@@ -218,7 +356,7 @@ export interface RefinedSpec {
    * parent.
    */
   +getOffset: (
-    shadowNode: ShadowNode,
+    nativeElementReference: NativeElementReference,
   ) => $ReadOnly<
     [
       /* offsetParent: */ ?InstanceHandle,
@@ -227,148 +365,103 @@ export interface RefinedSpec {
     ],
   >;
 
+  /*
+   * Special methods to handle the root node.
+   */
+
   /**
-   * This is a method to access scroll information for a shadow node, to
-   * implement these methods:
-   *   - `Element.prototype.scrollLeft`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft.
-   *   - `Element.prototype.scrollTop`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTop.
+   * In React Native, surfaces that represent trees (similar to a `Document` on
+   * Web) are created in native first, and then populated from JavaScript.
    *
-   * It uses the version of the shadow node that is present in the current
-   * revision of the shadow tree. If the node is not present or is not displayed
-   * (because any of its ancestors or itself have 'display: none'), it returns
-   * `undefined`. Otherwise, it returns the scroll position.
-   */
-  +getScrollPosition: (
-    shadowNode: ShadowNode,
-  ) => $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>;
-
-  /**
+   * Because React does not create this special node, we need a way to link
+   * the JavaScript instance with that node, which is what this method allows.
    *
-   * This is a method to access the scroll information of a shadow node, to
-   * implement these methods:
-   *   - `Element.prototype.scrollWidth`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollWidth.
-   *   - `Element.prototype.scrollHeight`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight.
+   * It also allows the implementation of `Node.prototype.ownerDocument` and
+   * `Node.prototype.getRootNode`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Node/ownerDocument and
+   * https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode).
    *
-   * It uses the version of the shadow node that is present in the current
-   * revision of the shadow tree. If the node is not present or is not displayed
-   * (because any of its ancestors or itself have 'display: none'), it returns
-   * `undefined`. Otherwise, it returns the scroll size.
+   * Returns a shadow node representing the root node if it is still mounted.
    */
-  +getScrollSize: (
-    shadowNode: ShadowNode,
-  ) => $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>;
-
-  /**
-   * This is a method to access the inner size of a shadow node, to implement
-   * these methods:
-   *   - `Element.prototype.clientWidth`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/clientWidth.
-   *   - `Element.prototype.clientHeight`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/clientHeight.
-   *
-   * It uses the version of the shadow node that is present in the current
-   * revision of the shadow tree. If the node is not present, it is not
-   * displayed (because any of its ancestors or itself have 'display: none'), or
-   * it has an inline display, it returns `undefined`. Otherwise, it returns its
-   * inner size.
-   */
-  +getInnerSize: (
-    shadowNode: ShadowNode,
-  ) => $ReadOnly<[/* width: */ number, /* height: */ number]>;
-
-  /**
-   * This is a method to access the border size of a shadow node, to implement
-   * these methods:
-   *   - `Element.prototype.clientLeft`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/clientLeft.
-   *   - `Element.prototype.clientTop`: see https://developer.mozilla.org/en-US/docs/Web/API/Element/clientTop.
-   *
-   * It uses the version of the shadow node that is present in the current
-   * revision of the shadow tree. If the node is not present, it is not
-   * displayed (because any of its ancestors or itself have 'display: none'), or
-   * it has an inline display, it returns `undefined`. Otherwise, it returns its
-   * border size.
-   */
-  +getBorderWidth: (
-    shadowNode: ShadowNode,
-  ) => $ReadOnly<
-    [
-      /* topWidth: */ number,
-      /* rightWidth: */ number,
-      /* bottomWidth: */ number,
-      /* leftWidth: */ number,
-    ],
-  >;
-
-  /**
-   * This is a method to access the normalized tag name of a shadow node, to
-   * implement `Element.prototype.tagName` (see https://developer.mozilla.org/en-US/docs/Web/API/Element/tagName).
-   */
-  +getTagName: (shadowNode: ShadowNode) => string;
-
-  /**
-   * Pointer Capture APIs
-   */
-
-  +hasPointerCapture: (shadowNode: ShadowNode, pointerId: number) => boolean;
-
-  +setPointerCapture: (shadowNode: ShadowNode, pointerId: number) => void;
-
-  +releasePointerCapture: (shadowNode: ShadowNode, pointerId: number) => void;
+  +linkRootNode: (
+    rootTag: RootTag,
+    instanceHandle: InstanceHandle,
+  ) => ?NativeElementReference;
 
   /**
    * Legacy layout APIs
    */
 
   +measure: (
-    shadowNode: ShadowNode,
+    nativeElementReference: NativeElementReference,
     callback: MeasureOnSuccessCallback,
   ) => void;
 
   +measureInWindow: (
-    shadowNode: ShadowNode,
+    nativeElementReference: NativeElementReference,
     callback: MeasureInWindowOnSuccessCallback,
   ) => void;
 
   +measureLayout: (
-    shadowNode: ShadowNode,
-    relativeNode: ShadowNode,
+    nativeElementReference: NativeElementReference,
+    relativeNode: NativeElementReference,
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void;
 }
 
 const NativeDOM: RefinedSpec = {
-  getParentNode(shadowNode) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getParentNode(
-      shadowNode,
-    ): ?InstanceHandle);
-  },
+  /*
+   * Methods from the `Node` interface (for `ReadOnlyNode`).
+   */
 
-  getChildNodes(shadowNode) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getChildNodes(
-      shadowNode,
-    ): $ReadOnlyArray<InstanceHandle>);
-  },
-
-  isConnected(shadowNode) {
-    return nullthrows(RawNativeDOM).isConnected(shadowNode);
-  },
-
-  compareDocumentPosition(shadowNode, otherShadowNode) {
+  compareDocumentPosition(nativeNodeReference, otherNativeNodeReference) {
     return nullthrows(RawNativeDOM).compareDocumentPosition(
-      shadowNode,
-      otherShadowNode,
+      nativeNodeReference,
+      otherNativeNodeReference,
     );
   },
 
-  getTextContent(shadowNode) {
-    return nullthrows(RawNativeDOM).getTextContent(shadowNode);
+  getChildNodes(nativeNodeReference) {
+    // $FlowExpectedError[incompatible-cast]
+    return (nullthrows(RawNativeDOM).getChildNodes(
+      nativeNodeReference,
+    ): $ReadOnlyArray<InstanceHandle>);
   },
 
-  getBoundingClientRect(shadowNode, includeTransform: boolean) {
+  getParentNode(nativeNodeReference) {
+    // $FlowExpectedError[incompatible-cast]
+    return (nullthrows(RawNativeDOM).getParentNode(
+      nativeNodeReference,
+    ): ?InstanceHandle);
+  },
+
+  isConnected(nativeNodeReference) {
+    return nullthrows(RawNativeDOM).isConnected(nativeNodeReference);
+  },
+
+  /*
+   * Methods from the `Element` interface (for `ReactNativeElement`).
+   */
+
+  getBorderWidth(nativeNodeReference) {
+    // $FlowExpectedError[incompatible-cast]
+    return (nullthrows(RawNativeDOM).getBorderWidth(
+      nativeNodeReference,
+    ): $ReadOnly<
+      [
+        /* topWidth: */ number,
+        /* rightWidth: */ number,
+        /* bottomWidth: */ number,
+        /* leftWidth: */ number,
+      ],
+    >);
+  },
+
+  getBoundingClientRect(nativeNodeReference, includeTransform: boolean) {
     // $FlowExpectedError[incompatible-cast]
     return (nullthrows(RawNativeDOM).getBoundingClientRect(
-      shadowNode,
+      nativeNodeReference,
       includeTransform,
     ): $ReadOnly<
       [
@@ -380,9 +473,63 @@ const NativeDOM: RefinedSpec = {
     >);
   },
 
-  getOffset(shadowNode) {
+  getInnerSize(nativeNodeReference) {
     // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getOffset(shadowNode): $ReadOnly<
+    return (nullthrows(RawNativeDOM).getInnerSize(
+      nativeNodeReference,
+    ): $ReadOnly<[/* width: */ number, /* height: */ number]>);
+  },
+
+  getScrollPosition(nativeNodeReference) {
+    // $FlowExpectedError[incompatible-cast]
+    return (nullthrows(RawNativeDOM).getScrollPosition(
+      nativeNodeReference,
+    ): $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>);
+  },
+
+  getScrollSize(nativeNodeReference) {
+    // $FlowExpectedError[incompatible-cast]
+    return (nullthrows(RawNativeDOM).getScrollSize(
+      nativeNodeReference,
+    ): $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>);
+  },
+
+  getTagName(nativeNodeReference) {
+    return nullthrows(RawNativeDOM).getTagName(nativeNodeReference);
+  },
+
+  getTextContent(nativeNodeReference) {
+    return nullthrows(RawNativeDOM).getTextContent(nativeNodeReference);
+  },
+
+  hasPointerCapture(nativeNodeReference, pointerId) {
+    return nullthrows(RawNativeDOM).hasPointerCapture(
+      nativeNodeReference,
+      pointerId,
+    );
+  },
+
+  releasePointerCapture(nativeNodeReference, pointerId) {
+    return nullthrows(RawNativeDOM).releasePointerCapture(
+      nativeNodeReference,
+      pointerId,
+    );
+  },
+
+  setPointerCapture(nativeNodeReference, pointerId) {
+    return nullthrows(RawNativeDOM).setPointerCapture(
+      nativeNodeReference,
+      pointerId,
+    );
+  },
+
+  /*
+   * Methods from the `HTMLElement` interface (for `ReactNativeElement`).
+   */
+
+  getOffset(nativeNodeReference) {
+    // $FlowExpectedError[incompatible-cast]
+    return (nullthrows(RawNativeDOM).getOffset(nativeNodeReference): $ReadOnly<
       [
         /* offsetParent: */ ?InstanceHandle,
         /* top: */ number,
@@ -391,73 +538,37 @@ const NativeDOM: RefinedSpec = {
     >);
   },
 
-  getScrollPosition(shadowNode) {
+  /*
+   * Special methods to handle the root node.
+   */
+
+  linkRootNode(rootTag, instanceHandle) {
     // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getScrollPosition(shadowNode): $ReadOnly<
-      [/* scrollLeft: */ number, /* scrollTop: */ number],
-    >);
-  },
-
-  getScrollSize(shadowNode) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getScrollSize(shadowNode): $ReadOnly<
-      [/* scrollWidth: */ number, /* scrollHeight: */ number],
-    >);
-  },
-
-  getInnerSize(shadowNode) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getInnerSize(shadowNode): $ReadOnly<
-      [/* width: */ number, /* height: */ number],
-    >);
-  },
-
-  getBorderWidth(shadowNode) {
-    // $FlowExpectedError[incompatible-cast]
-    return (nullthrows(RawNativeDOM).getBorderWidth(shadowNode): $ReadOnly<
-      [
-        /* topWidth: */ number,
-        /* rightWidth: */ number,
-        /* bottomWidth: */ number,
-        /* leftWidth: */ number,
-      ],
-    >);
-  },
-
-  getTagName(shadowNode) {
-    return nullthrows(RawNativeDOM).getTagName(shadowNode);
-  },
-
-  hasPointerCapture(shadowNode, pointerId) {
-    return nullthrows(RawNativeDOM).hasPointerCapture(shadowNode, pointerId);
-  },
-
-  setPointerCapture(shadowNode, pointerId) {
-    return nullthrows(RawNativeDOM).setPointerCapture(shadowNode, pointerId);
-  },
-
-  releasePointerCapture(shadowNode, pointerId) {
-    return nullthrows(RawNativeDOM).releasePointerCapture(
-      shadowNode,
-      pointerId,
-    );
+    return (nullthrows(RawNativeDOM?.linkRootNode)(
+      // $FlowExpectedError[incompatible-call]
+      rootTag,
+      instanceHandle,
+    ): ?NativeElementReference);
   },
 
   /**
    * Legacy layout APIs
    */
 
-  measure(shadowNode, callback) {
-    return nullthrows(RawNativeDOM).measure(shadowNode, callback);
+  measure(nativeNodeReference, callback) {
+    return nullthrows(RawNativeDOM).measure(nativeNodeReference, callback);
   },
 
-  measureInWindow(shadowNode, callback) {
-    return nullthrows(RawNativeDOM).measureInWindow(shadowNode, callback);
+  measureInWindow(nativeNodeReference, callback) {
+    return nullthrows(RawNativeDOM).measureInWindow(
+      nativeNodeReference,
+      callback,
+    );
   },
 
-  measureLayout(shadowNode, relativeNode, onFail, onSuccess) {
+  measureLayout(nativeNodeReference, relativeNode, onFail, onSuccess) {
     return nullthrows(RawNativeDOM).measureLayout(
-      shadowNode,
+      nativeNodeReference,
       relativeNode,
       onFail,
       onSuccess,

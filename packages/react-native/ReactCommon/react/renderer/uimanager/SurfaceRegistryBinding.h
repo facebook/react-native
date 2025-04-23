@@ -7,44 +7,7 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
-#include <jsi/jsi.h>
-#include <react/renderer/core/ReactPrimitives.h>
+#warning \
+    "The SurfaceRegistryBinding.h header has been renamed to AppRegistryBinding.h"
 
-namespace facebook::react {
-
-class SurfaceRegistryBinding final {
- public:
-  SurfaceRegistryBinding() = delete;
-
-  /*
-   * Starts React Native Surface with given id, moduleName, and props.
-   * Thread synchronization must be enforced externally.
-   */
-  static void startSurface(
-      jsi::Runtime& runtime,
-      SurfaceId surfaceId,
-      const std::string& moduleName,
-      const folly::dynamic& initialProps,
-      DisplayMode displayMode);
-
-  /*
-   * Updates the React Native Surface identified with surfaceId and moduleName
-   * with the given props.
-   * Thread synchronization must be enforced externally.
-   */
-  static void setSurfaceProps(
-      jsi::Runtime& runtime,
-      SurfaceId surfaceId,
-      const std::string& moduleName,
-      const folly::dynamic& initialProps,
-      DisplayMode displayMode);
-
-  /*
-   * Stops React Native Surface with given id.
-   * Thread synchronization must be enforced externally.
-   */
-  static void stopSurface(jsi::Runtime& runtime, SurfaceId surfaceId);
-};
-
-} // namespace facebook::react
+#include <react/renderer/uimanager/AppRegistryBinding.h>

@@ -540,9 +540,9 @@ function unforkEvent(
   }
 }
 
-const event = function (
+const event = function <T>(
   argMapping: $ReadOnlyArray<?Mapping>,
-  config: EventConfig,
+  config: EventConfig<T>,
 ): any {
   const animatedEvent = new AnimatedEvent(argMapping, config);
   if (animatedEvent.__isNative) {

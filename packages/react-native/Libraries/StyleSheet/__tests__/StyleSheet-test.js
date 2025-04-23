@@ -8,7 +8,9 @@
  * @oncall react_native
  */
 
-import {setStyleAttributePreprocessor} from '../StyleSheet';
+import StyleSheet from '../StyleSheet';
+
+const setStyleAttributePreprocessor = StyleSheet.setStyleAttributePreprocessor;
 
 describe(setStyleAttributePreprocessor, () => {
   const originalConsoleWarn = console.warn;

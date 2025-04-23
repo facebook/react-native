@@ -15,12 +15,12 @@ const ReactNative = require('react-native');
 const {StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 
-type State = {|
+type State = {
   count: number,
   done: boolean,
-|};
+};
 
 type ImmediateID = Object;
 

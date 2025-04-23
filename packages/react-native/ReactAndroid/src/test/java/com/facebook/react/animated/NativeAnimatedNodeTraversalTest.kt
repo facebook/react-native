@@ -86,7 +86,7 @@ class NativeAnimatedNodeTraversalTest {
 
     uiManagerMock = mock(UIManagerModule::class.java)
     eventDispatcherMock = mock(EventDispatcher::class.java)
-    whenever(uiManagerMock.getEventDispatcher()).thenAnswer { eventDispatcherMock }
+    whenever(uiManagerMock.eventDispatcher).thenAnswer { eventDispatcherMock }
     whenever(uiManagerMock.constants).thenAnswer {
       mapOf("customDirectEventTypes" to emptyMap<Any, Any>())
     }
@@ -280,7 +280,7 @@ class NativeAnimatedNodeTraversalTest {
   }
 
   private fun performSpringAnimationTestWithConfig(
-      config: JavaOnlyMap?,
+      config: JavaOnlyMap,
       testForCriticallyDamped: Boolean
   ) {
     createSimpleAnimatedViewWithOpacity()
@@ -899,21 +899,21 @@ class NativeAnimatedNodeTraversalTest {
     verifyNoMoreInteractions(uiManagerMock)
   }
 
-  private fun createScrollEvent(tag: Int, value: Double): Event<Event<*>> {
-    return object : Event<Event<*>>(tag) {
+  private class TestScrollEvent(private val tag: Int, private val value: Double) :
+      Event<TestScrollEvent>(tag) {
 
-      override fun getEventName(): String {
-        return "topScroll"
-      }
+    override fun getEventName(): String {
+      return "topScroll"
+    }
 
-      @Override
-      @Deprecated("Deprecated in Java")
-      override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-        rctEventEmitter.receiveEvent(
-            tag, "topScroll", JavaOnlyMap.of("contentOffset", JavaOnlyMap.of("y", value)))
-      }
+    @Deprecated("Deprecated in Java")
+    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
+      rctEventEmitter.receiveEvent(
+          tag, "topScroll", JavaOnlyMap.of("contentOffset", JavaOnlyMap.of("y", value)))
     }
   }
+
+  private fun createScrollEvent(tag: Int, value: Double): Event<*> = TestScrollEvent(tag, value)
 
   @Test
   fun testNativeAnimatedEventDoUpdate() {

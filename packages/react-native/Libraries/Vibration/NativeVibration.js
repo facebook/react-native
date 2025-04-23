@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeVibration';
-import NativeVibration from '../../src/private/specs/modules/NativeVibration';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeVibration';
+import NativeVibration from '../../src/private/specs_DEPRECATED/modules/NativeVibration';
 export default NativeVibration;

@@ -32,6 +32,8 @@ class JCxxInspectorPackagerConnectionWebSocketDelegate
 
   void didReceiveMessage(const std::string& message);
 
+  void didOpen();
+
   void didClose();
 
   static void registerNatives();

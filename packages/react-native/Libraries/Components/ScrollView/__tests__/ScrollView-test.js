@@ -12,10 +12,10 @@
 'use strict';
 
 const {create, unmount, update} = require('../../../../jest/renderer');
-const Text = require('../../../Text/Text');
+const Text = require('../../../Text/Text').default;
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
-const View = require('../../View/View');
-const ScrollView = require('../ScrollView');
+const View = require('../../View/View').default;
+const ScrollView = require('../ScrollView').default;
 const React = require('react');
 
 describe('ScrollView', () => {

@@ -14,7 +14,7 @@ import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-export default function EventfulView(props: {|
+export default function EventfulView(props: {
   name: string,
   emitByDefault?: boolean,
   onLeave?: boolean,
@@ -35,7 +35,7 @@ export default function EventfulView(props: {|
   onCancelCapture?: boolean,
   log: string => void,
   ...ViewProps,
-|}): React.Node {
+}): React.Node {
   const ref = React.useRef<?React.ElementRef<typeof View>>();
   React.useEffect(() => {
     // $FlowFixMe[prop-missing] Using private property

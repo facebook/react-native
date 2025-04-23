@@ -31,7 +31,7 @@ RCT_EXPORT_METHOD(readAsText
                   : (RCTPromiseRejectBlock)reject)
 {
   RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
-  dispatch_async([blobManager executionQueue], ^{
+  dispatch_async(blobManager.methodQueue, ^{
     NSData *data = [blobManager resolve:blob];
 
     if (data == nil) {
@@ -62,7 +62,7 @@ RCT_EXPORT_METHOD(readAsDataURL
                   : (RCTPromiseRejectBlock)reject)
 {
   RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
-  dispatch_async([blobManager executionQueue], ^{
+  dispatch_async(blobManager.methodQueue, ^{
     NSData *data = [blobManager resolve:blob];
 
     if (data == nil) {
@@ -72,9 +72,10 @@ RCT_EXPORT_METHOD(readAsDataURL
           nil);
     } else {
       NSString *type = [RCTConvert NSString:blob[@"type"]];
-      NSString *text = [NSString stringWithFormat:@"data:%@;base64,%@",
-                                                  type != nil && [type length] > 0 ? type : @"application/octet-stream",
-                                                  [data base64EncodedStringWithOptions:0]];
+      NSString *text = [NSString
+          stringWithFormat:@"data:%@;base64,%@",
+                           ![type isEqual:[NSNull null]] && [type length] > 0 ? type : @"application/octet-stream",
+                           [data base64EncodedStringWithOptions:0]];
 
       resolve(text);
     }

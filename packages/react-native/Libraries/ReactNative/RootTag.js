@@ -12,7 +12,7 @@ import * as React from 'react';
 
 export opaque type RootTag = number;
 
-export const RootTagContext: React$Context<RootTag> =
+export const RootTagContext: React.Context<RootTag> =
   React.createContext<RootTag>(0);
 
 if (__DEV__) {

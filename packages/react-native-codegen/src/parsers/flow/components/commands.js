@@ -13,8 +13,10 @@
 import type {
   CommandParamTypeAnnotation,
   CommandTypeAnnotation,
+  ComponentCommandArrayTypeAnnotation,
   NamedShape,
 } from '../../../CodegenSchema.js';
+import type {Parser} from '../../parser';
 import type {TypeDeclarationMap} from '../../utils';
 
 const {getValueFromTypes} = require('../utils.js');
@@ -25,6 +27,7 @@ type EventTypeAST = Object;
 function buildCommandSchema(
   property: EventTypeAST,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnly<{
   name: string,
   optional: boolean,
@@ -64,7 +67,7 @@ function buildCommandSchema(
     const paramValue = getValueFromTypes(param.typeAnnotation, types);
     const type =
       paramValue.type === 'GenericTypeAnnotation'
-        ? paramValue.id.name
+        ? parser.getTypeAnnotationName(paramValue)
         : paramValue.type;
     let returnType: CommandParamTypeAnnotation;
 
@@ -109,23 +112,23 @@ function buildCommandSchema(
         }
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: {
-            // TODO: T172453752 support complex type annotation for array element
-            type: paramValue.typeParameters.params[0].type,
-          },
+          elementType: getCommandArrayElementTypeType(
+            paramValue.typeParameters.params[0],
+            parser,
+          ),
         };
         break;
       case 'ArrayTypeAnnotation':
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: {
-            // TODO: T172453752 support complex type annotation for array element
-            type: paramValue.elementType.type,
-          },
+          elementType: getCommandArrayElementTypeType(
+            paramValue.elementType,
+            parser,
+          ),
         };
         break;
       default:
-        (type: empty);
+        (type: mixed);
         throw new Error(
           `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
         );
@@ -151,13 +154,80 @@ function buildCommandSchema(
   };
 }
 
+type Allowed = ComponentCommandArrayTypeAnnotation['elementType'];
+
+function getCommandArrayElementTypeType(
+  inputType: mixed,
+  parser: Parser,
+): Allowed {
+  // TODO: T172453752 support more complex type annotation for array element
+  if (typeof inputType !== 'object') {
+    throw new Error('Expected an object');
+  }
+
+  const type = inputType?.type;
+
+  if (inputType == null || typeof type !== 'string') {
+    throw new Error('Command array element type must be a string');
+  }
+
+  switch (type) {
+    case 'BooleanTypeAnnotation':
+      return {
+        type: 'BooleanTypeAnnotation',
+      };
+    case 'StringTypeAnnotation':
+      return {
+        type: 'StringTypeAnnotation',
+      };
+    case 'GenericTypeAnnotation':
+      const name =
+        typeof inputType.id === 'object'
+          ? parser.getTypeAnnotationName(inputType)
+          : null;
+
+      if (typeof name !== 'string') {
+        throw new Error(
+          'Expected GenericTypeAnnotation AST name to be a string',
+        );
+      }
+
+      switch (name) {
+        case 'Int32':
+          return {
+            type: 'Int32TypeAnnotation',
+          };
+        case 'Float':
+          return {
+            type: 'FloatTypeAnnotation',
+          };
+        case 'Double':
+          return {
+            type: 'DoubleTypeAnnotation',
+          };
+        default:
+          // This is not a great solution. This generally means its a type alias to another type
+          // like an object or union. Ideally we'd encode that in the schema so the compat-check can
+          // validate those deeper objects for breaking changes and the generators can do something smarter.
+          // As of now, the generators just create ReadableMap or (const NSArray *) which are untyped
+          return {
+            type: 'MixedTypeAnnotation',
+          };
+      }
+
+    default:
+      throw new Error(`Unsupported array element type ${type}`);
+  }
+}
+
 function getCommands(
   commandTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
     .filter(property => property.type === 'ObjectTypeProperty')
-    .map(property => buildCommandSchema(property, types))
+    .map(property => buildCommandSchema(property, types, parser))
     .filter(Boolean);
 }
 

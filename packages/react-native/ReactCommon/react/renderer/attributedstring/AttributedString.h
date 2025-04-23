@@ -51,7 +51,6 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     bool isContentEqual(const Fragment& rhs) const;
 
     bool operator==(const Fragment& rhs) const;
-    bool operator!=(const Fragment& rhs) const;
   };
 
   class Range {
@@ -65,15 +64,14 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   /*
    * Appends and prepends a `fragment` to the string.
    */
-  void appendFragment(const Fragment& fragment);
-  void prependFragment(const Fragment& fragment);
+  void appendFragment(Fragment&& fragment);
+  void prependFragment(Fragment&& fragment);
 
   /*
-   * Appends and prepends an `attributedString` (all its fragments) to
-   * the string.
+   * Sets attributes which would apply to hypothetical text not included in the
+   * AttributedString.
    */
-  void appendAttributedString(const AttributedString& attributedString);
-  void prependAttributedString(const AttributedString& attributedString);
+  void setBaseTextAttributes(const TextAttributes& defaultAttributes);
 
   /*
    * Returns a read-only reference to a list of fragments.
@@ -90,6 +88,8 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    */
   std::string getString() const;
 
+  const TextAttributes& getBaseTextAttributes() const;
+
   /*
    * Returns `true` if the string is empty (has no any fragments).
    */
@@ -103,7 +103,6 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   bool isContentEqual(const AttributedString& rhs) const;
 
   bool operator==(const AttributedString& rhs) const;
-  bool operator!=(const AttributedString& rhs) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -113,6 +112,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
 
  private:
   Fragments fragments_;
+  TextAttributes baseAttributes_;
 };
 
 } // namespace facebook::react
@@ -125,7 +125,7 @@ struct hash<facebook::react::AttributedString::Fragment> {
     return facebook::react::hash_combine(
         fragment.string,
         fragment.textAttributes,
-        fragment.parentShadowView,
+        fragment.parentShadowView.tag,
         fragment.parentShadowView.layoutMetrics);
   }
 };
@@ -136,6 +136,8 @@ struct hash<facebook::react::AttributedString> {
       const facebook::react::AttributedString& attributedString) const {
     auto seed = size_t{0};
 
+    facebook::react::hash_combine(
+        seed, attributedString.getBaseTextAttributes());
     for (const auto& fragment : attributedString.getFragments()) {
       facebook::react::hash_combine(seed, fragment);
     }

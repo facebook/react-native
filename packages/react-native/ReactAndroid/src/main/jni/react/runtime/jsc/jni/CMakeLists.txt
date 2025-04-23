@@ -6,9 +6,9 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fvisibility=hidden -fexceptions -frtti)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB jscinstance_SRC CONFIGURE_DEPENDS "*.cpp")
 
@@ -22,3 +22,5 @@ target_link_libraries(jscinstance
         fbjni
         reactnative
 )
+target_compile_reactnative_options(jscinstance PRIVATE)
+target_compile_options(jscinstance PRIVATE -fvisibility=hidden)

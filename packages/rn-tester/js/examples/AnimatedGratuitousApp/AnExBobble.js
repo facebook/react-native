@@ -10,8 +10,8 @@
 
 'use strict';
 
-const React = require('react');
-const {Animated, PanResponder, StyleSheet, View} = require('react-native');
+import React from 'react';
+import {Animated, PanResponder, StyleSheet, View} from 'react-native';
 
 const NUM_BOBBLES = 5;
 const RAD_EACH = Math.PI / 2 / (NUM_BOBBLES - 2);
@@ -169,4 +169,4 @@ const BOBBLE_IMGS = [
   'https://scontent-sea1-1.xx.fbcdn.net/hphotos-xaf1/t39.1997-6/851562_575284782557566_1188781517_n.png',
 ];
 
-module.exports = AnExBobble;
+export default AnExBobble;

@@ -22,6 +22,7 @@
 #import "RCTCxxInspectorPackagerConnection.h"
 #import "RCTCxxInspectorPackagerConnectionDelegate.h"
 #import "RCTCxxInspectorWebSocketAdapter.h"
+#import "RCTInspectorUtils.h"
 
 using namespace facebook::react::jsinspector_modern;
 @interface RCTCxxInspectorPackagerConnection () {
@@ -36,8 +37,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (instancetype)initWithURL:(NSURL *)url
 {
   if (self = [super init]) {
+    auto metadata = [RCTInspectorUtils getHostMetadata];
     _cxxImpl = std::make_unique<InspectorPackagerConnection>(
         [url absoluteString].UTF8String,
+        metadata.deviceName.UTF8String,
         [[NSBundle mainBundle] bundleIdentifier].UTF8String,
         std::make_unique<RCTCxxInspectorPackagerConnectionDelegate>());
   }

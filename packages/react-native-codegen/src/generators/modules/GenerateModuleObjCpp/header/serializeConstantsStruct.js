@@ -94,7 +94,13 @@ function toObjCType(
       }
     case 'StringTypeAnnotation':
       return 'NSString *';
+    case 'StringLiteralTypeAnnotation':
+      return 'NSString *';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'NSString *';
     case 'NumberTypeAnnotation':
+      return wrapCxxOptional('double', isRequired);
+    case 'NumberLiteralTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'FloatTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
@@ -173,7 +179,13 @@ function toObjCValue(
       }
     case 'StringTypeAnnotation':
       return value;
+    case 'StringLiteralTypeAnnotation':
+      return value;
+    case 'StringLiteralUnionTypeAnnotation':
+      return value;
     case 'NumberTypeAnnotation':
+      return wrapPrimitive('double');
+    case 'NumberLiteralTypeAnnotation':
       return wrapPrimitive('double');
     case 'FloatTypeAnnotation':
       return wrapPrimitive('double');

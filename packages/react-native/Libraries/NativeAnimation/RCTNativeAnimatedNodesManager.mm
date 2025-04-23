@@ -57,7 +57,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 }
 
 - (instancetype)initWithBridge:(nullable RCTBridge *)bridge
-              surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
+              surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
   if ((self = [super init])) {
     _bridge = bridge;

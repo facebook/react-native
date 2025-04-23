@@ -13,6 +13,7 @@ import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
+import warnOnce from '../Utilities/warnOnce';
 import AppContainer from './AppContainer';
 import DisplayMode, {type DisplayModeType} from './DisplayMode';
 import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
@@ -23,10 +24,12 @@ import * as React from 'react';
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 import '../Utilities/BackHandler';
 
-type ActivityType = React.AbstractComponent<{
-  mode: 'visible' | 'hidden',
-  children: React.Node,
-}>;
+type ActivityType = component(
+  ...{
+    mode: 'visible' | 'hidden',
+    children: React.Node,
+  }
+);
 
 export default function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,
@@ -39,7 +42,6 @@ export default function renderApplication<Props: Object>(
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
-  useConcurrentRoot?: boolean,
   useOffscreen?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
@@ -85,12 +87,12 @@ export default function renderApplication<Props: Object>(
   }
 
   // We want to have concurrentRoot always enabled when you're on Fabric.
-  const useConcurrentRootOverride = fabric;
+  const useConcurrentRoot = Boolean(fabric);
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra(
     'usedReactConcurrentRoot',
-    useConcurrentRootOverride ? '1' : '0',
+    useConcurrentRoot ? '1' : '0',
   );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
   performanceLogger.setExtra(
@@ -101,7 +103,15 @@ export default function renderApplication<Props: Object>(
     element: renderable,
     rootTag,
     useFabric: Boolean(fabric),
-    useConcurrentRoot: Boolean(useConcurrentRootOverride),
+    useConcurrentRoot,
   });
+
+  const newArchitecture = !!fabric;
+  if (!newArchitecture) {
+    warnOnce(
+      '[OSS][OldArchDeprecatedWarning]',
+      'The app is running using the Legacy Architecture. The Legacy Architecture is deprecated and will be removed in a future version of React Native. Please consider migrating to the New Architecture. For more information, please see https://reactnative.dev/blog/2024/10/23/the-new-architecture-is-here',
+    );
+  }
   performanceLogger.stopTimespan('renderApplication_React_render');
 }

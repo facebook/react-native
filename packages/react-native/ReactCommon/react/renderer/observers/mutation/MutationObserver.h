@@ -27,6 +27,18 @@ class MutationObserver {
  public:
   MutationObserver(MutationObserverId intersectionObserverId);
 
+  // delete copy constructor
+  MutationObserver(const MutationObserver&) = delete;
+
+  // delete copy assignment
+  MutationObserver& operator=(const MutationObserver&) = delete;
+
+  // allow move constructor
+  MutationObserver(MutationObserver&&) = default;
+
+  // allow move assignment
+  MutationObserver& operator=(MutationObserver&&) = default;
+
   void observe(ShadowNode::Shared targetShadowNode, bool observeSubtree);
   void unobserve(const ShadowNode& targetShadowNode);
 
@@ -53,12 +65,11 @@ class MutationObserver {
       SetOfShadowNodePointers& processedNodes) const;
 
   void recordMutationsInSubtrees(
-      ShadowNode::Shared targetShadowNode,
-      const ShadowNode& oldNode,
-      const ShadowNode& newNode,
+      const ShadowNode::Shared& oldNode,
+      const ShadowNode::Shared& newNode,
       bool observeSubtree,
       std::vector<MutationRecord>& recordedMutations,
-      SetOfShadowNodePointers processedNodes) const;
+      SetOfShadowNodePointers& processedNodes) const;
 };
 
 } // namespace facebook::react

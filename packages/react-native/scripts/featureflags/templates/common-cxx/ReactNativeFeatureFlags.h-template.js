@@ -30,6 +30,8 @@ ${DO_NOT_MODIFY_COMMENT}
 #include <react/featureflags/ReactNativeFeatureFlagsAccessor.h>
 #include <react/featureflags/ReactNativeFeatureFlagsProvider.h>
 #include <memory>
+#include <optional>
+#include <string>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -49,7 +51,7 @@ ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `  /**
-   * ${flagConfig.description}
+   * ${flagConfig.metadata.description}
    */
   RN_EXPORT static ${getCxxTypeFromDefaultValue(flagConfig.defaultValue)} ${flagName}();`,
   )
@@ -90,9 +92,24 @@ ${Object.entries(definitions.common)
    */
   RN_EXPORT static void dangerouslyReset();
 
+  /**
+   * This is a combination of \`dangerouslyReset\` and \`override\` that reduces
+   * the likeliness of a race condition between the two calls.
+   *
+   * This is **dangerous** because it can introduce consistency issues that will
+   * be much harder to debug. For example, it could hide the fact that feature
+   * flags are read before you set the values you want to use everywhere. It
+   * could also cause a workflow to suddenly have different feature flags for
+   * behaviors that were configured with different values before.
+   *
+   * Please see the documentation of \`dangerouslyReset\` for additional details.
+   */
+  RN_EXPORT static std::optional<std::string> dangerouslyForceOverride(
+      std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
+
  private:
   ReactNativeFeatureFlags() = delete;
-  static ReactNativeFeatureFlagsAccessor& getAccessor(bool reset = false);
+  static ReactNativeFeatureFlagsAccessor& getAccessor();
 };
 
 } // namespace facebook::react

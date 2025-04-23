@@ -10,124 +10,68 @@
 
 'use strict';
 
-import type {
-  GestureState,
-  PanResponderInstance,
-} from 'react-native/Libraries/Interaction/PanResponder';
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-const {PanResponder, StyleSheet, View} = require('react-native');
+import * as React from 'react';
+import {useMemo, useRef, useState} from 'react';
+import {PanResponder, StyleSheet, View} from 'react-native';
 
 const CIRCLE_SIZE = 80;
 
-type Props = $ReadOnly<{||}>;
-type State = {|
-  left: number,
-  top: number,
-  pressed: boolean,
-|};
-
-class PanResponderExample extends React.Component<Props, State> {
-  _previousLeft: number = 20;
-  _previousTop: number = 84;
-  circle: ?React.ElementRef<typeof View> = null;
-
-  state: State = {
-    left: 20,
-    top: 84,
-    pressed: false,
-  };
-
-  _handleStartShouldSetPanResponder = (
-    event: PressEvent,
-    gestureState: GestureState,
-  ): boolean => {
-    // Should we become active when the user presses down on the circle?
-    return true;
-  };
-
-  _handleMoveShouldSetPanResponder = (
-    event: PressEvent,
-    gestureState: GestureState,
-  ): boolean => {
-    // Should we become active when the user moves a touch over the circle?
-    return true;
-  };
-
-  _handlePanResponderGrant = (
-    event: PressEvent,
-    gestureState: GestureState,
-  ) => {
-    this.setState({
-      pressed: true,
-    });
-  };
-
-  _handlePanResponderMove = (event: PressEvent, gestureState: GestureState) => {
-    this.setState({
-      left: this._previousLeft + gestureState.dx,
-      top: this._previousTop + gestureState.dy,
-    });
-  };
-
-  _handlePanResponderEnd = (event: PressEvent, gestureState: GestureState) => {
-    this.setState({
-      pressed: false,
-    });
-    this._previousLeft += gestureState.dx;
-    this._previousTop += gestureState.dy;
-  };
-
-  _panResponder: PanResponderInstance = PanResponder.create({
-    onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
-    onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
-    onPanResponderGrant: this._handlePanResponderGrant,
-    onPanResponderMove: this._handlePanResponderMove,
-    onPanResponderRelease: this._handlePanResponderEnd,
-    onPanResponderTerminate: this._handlePanResponderEnd,
-  });
-
-  render(): React.Node {
-    return (
-      <RNTesterPage noScroll={true} title="Basic gesture handling">
-        <View style={styles.container}>
-          <View
-            ref={circle => {
-              this.circle = circle;
-            }}
-            style={[
-              styles.circle,
-              {
-                transform: [
-                  {translateX: this.state.left},
-                  {translateY: this.state.top},
-                ],
-                backgroundColor: this.state.pressed ? 'blue' : 'green',
-              },
-            ]}
-            {...this._panResponder.panHandlers}
-          />
-        </View>
-      </RNTesterPage>
-    );
-  }
+function PanResponderExample() {
+  const [position, setPosition] = useState({left: 20, top: 84});
+  const [pressed, setPressed] = useState(false);
+  const circleRef = useRef<?React.ElementRef<typeof View>>(null);
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: () => {
+          setPressed(true);
+        },
+        onPanResponderMove: (evt, gestureState) => {
+          setPosition({
+            left: position.left + gestureState.dx,
+            top: position.top + gestureState.dy,
+          });
+        },
+        onPanResponderRelease: () => {
+          setPressed(false);
+        },
+      }),
+    [position],
+  );
+  return (
+    <View style={styles.container}>
+      <View
+        ref={circleRef}
+        style={[
+          styles.circle,
+          {
+            transform: [
+              {translateX: position.left},
+              {translateY: position.top},
+            ],
+            backgroundColor: pressed ? 'blue' : 'green',
+          },
+        ]}
+        {...panResponder.panHandlers}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    height: 500,
+  },
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
-    backgroundColor: 'green',
     borderRadius: CIRCLE_SIZE / 2,
     position: 'absolute',
     left: 0,
     top: 0,
-  },
-  container: {
-    flex: 1,
-    height: 500,
   },
 });
 
@@ -139,6 +83,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Basic gesture handling',
+    description: 'Press and drag circle around',
     render(): React.MixedElement {
       return <PanResponderExample />;
     },

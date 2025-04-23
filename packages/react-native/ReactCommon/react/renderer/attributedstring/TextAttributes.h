@@ -51,6 +51,7 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<FontStyle> fontStyle{};
   std::optional<FontVariant> fontVariant{};
   std::optional<bool> allowFontScaling{};
+  Float maxFontSizeMultiplier{std::numeric_limits<Float>::quiet_NaN()};
   std::optional<DynamicTypeRamp> dynamicTypeRamp{};
   Float letterSpacing{std::numeric_limits<Float>::quiet_NaN()};
   std::optional<TextTransform> textTransform{};
@@ -94,7 +95,6 @@ class TextAttributes : public DebugStringConvertible {
 #pragma mark - Operators
 
   bool operator==(const TextAttributes& rhs) const;
-  bool operator!=(const TextAttributes& rhs) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -117,6 +117,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.opacity,
         textAttributes.fontFamily,
         textAttributes.fontSize,
+        textAttributes.maxFontSizeMultiplier,
         textAttributes.fontSizeMultiplier,
         textAttributes.fontWeight,
         textAttributes.fontStyle,
@@ -140,7 +141,8 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.isPressable,
         textAttributes.layoutDirection,
         textAttributes.accessibilityRole,
-        textAttributes.role);
+        textAttributes.role,
+        textAttributes.textAlignVertical);
   }
 };
 } // namespace std

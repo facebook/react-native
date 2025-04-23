@@ -25,11 +25,11 @@ import kotlin.math.sin
 internal object FilterHelper {
 
   @JvmStatic
-  public fun parseFilters(filters: ReadableArray?): RenderEffect? {
+  fun parseFilters(filters: ReadableArray?): RenderEffect? {
     filters ?: return null
     var chainedEffects: RenderEffect? = null
     for (i in 0 until filters.size()) {
-      val filter = filters.getMap(i).entryIterator.next()
+      val filter = checkNotNull(filters.getMap(i)).entryIterator.next()
       val filterName = filter.key
 
       chainedEffects =
@@ -53,12 +53,12 @@ internal object FilterHelper {
   }
 
   @JvmStatic
-  public fun parseColorMatrixFilters(filters: ReadableArray?): ColorMatrixColorFilter? {
+  fun parseColorMatrixFilters(filters: ReadableArray?): ColorMatrixColorFilter? {
     filters ?: return null
     // New ColorMatrix objects represent the identity matrix
     val resultColorMatrix = ColorMatrix()
     for (i in 0 until filters.size()) {
-      val filter = filters.getMap(i).entryIterator.next()
+      val filter = checkNotNull(filters.getMap(i)).entryIterator.next()
       val filterName = filter.key
       val amount = (filter.value as Double).toFloat()
 
@@ -82,13 +82,13 @@ internal object FilterHelper {
   }
 
   @JvmStatic
-  public fun isOnlyColorMatrixFilters(filters: ReadableArray?): Boolean {
+  fun isOnlyColorMatrixFilters(filters: ReadableArray?): Boolean {
     if (filters == null || filters.size() == 0) {
       return false
     }
 
     for (i in 0 until filters.size()) {
-      val filter = filters.getMap(i).entryIterator.next()
+      val filter = filters.getMap(i)!!.entryIterator.next()
       val filterName = filter.key
       if (filterName == "blur" || filterName == "dropShadow") {
         return false
@@ -98,7 +98,7 @@ internal object FilterHelper {
   }
 
   // https://www.w3.org/TR/filter-effects-1/#blurEquivalent
-  public fun createBlurEffect(sigma: Float, chainedEffects: RenderEffect? = null): RenderEffect? {
+  fun createBlurEffect(sigma: Float, chainedEffects: RenderEffect? = null): RenderEffect? {
     if (sigma <= 0.5) {
       return null
     }
@@ -112,10 +112,7 @@ internal object FilterHelper {
   }
 
   // https://www.w3.org/TR/filter-effects-1/#brightnessEquivalent
-  public fun createBrightnessEffect(
-      amount: Float,
-      chainedEffects: RenderEffect? = null
-  ): RenderEffect {
+  fun createBrightnessEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
     return createColorMatrixEffect(createBrightnessColorMatrix(amount), chainedEffects)
   }
 
@@ -126,15 +123,12 @@ internal object FilterHelper {
   }
 
   // https://www.w3.org/TR/filter-effects-1/#opacityEquivalent
-  public fun createOpacityEffect(
-      amount: Float,
-      chainedEffects: RenderEffect? = null
-  ): RenderEffect {
+  fun createOpacityEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
     return createColorMatrixEffect(createOpacityColorMatrix(amount), chainedEffects)
   }
 
   // https://www.w3.org/TR/filter-effects-1/#dropshadowEquivalent
-  public fun createDropShadowEffect(
+  fun createDropShadowEffect(
       offsetX: Float,
       offsetY: Float,
       blurRadius: Float,
@@ -176,7 +170,7 @@ internal object FilterHelper {
     return RenderEffect.createBlendModeEffect(blurEffect, identity, BlendMode.SRC_OVER)
   }
 
-  public fun parseAndCreateDropShadowEffect(
+  fun parseAndCreateDropShadowEffect(
       filterValues: ReadableMap,
       chainedEffects: RenderEffect? = null
   ): RenderEffect {
@@ -191,17 +185,14 @@ internal object FilterHelper {
     return createDropShadowEffect(offsetX, offsetY, radius, color, chainedEffects)
   }
 
-  public fun createOpacityColorMatrix(amount: Float): ColorMatrix {
+  fun createOpacityColorMatrix(amount: Float): ColorMatrix {
     val matrix = ColorMatrix()
     matrix.setScale(1f, 1f, 1f, amount)
     return matrix
   }
 
   // https://www.w3.org/TR/filter-effects-1/#contrastEquivalent
-  public fun createContrastEffect(
-      amount: Float,
-      chainedEffects: RenderEffect? = null
-  ): RenderEffect {
+  fun createContrastEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
     return createColorMatrixEffect(createContrastColorMatrix(amount), chainedEffects)
   }
 
@@ -234,10 +225,7 @@ internal object FilterHelper {
   }
 
   // https://www.w3.org/TR/filter-effects-1/#grayscaleEquivalent
-  public fun createGrayscaleEffect(
-      amount: Float,
-      chainedEffects: RenderEffect? = null
-  ): RenderEffect {
+  fun createGrayscaleEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
     return createColorMatrixEffect(createGrayscaleColorMatrix(amount), chainedEffects)
   }
 
@@ -268,7 +256,7 @@ internal object FilterHelper {
   }
 
   // https://www.w3.org/TR/filter-effects-1/#sepiaEquivalent
-  public fun createSepiaEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
+  fun createSepiaEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
     return createColorMatrixEffect(createSepiaColorMatrix(amount), chainedEffects)
   }
 
@@ -299,10 +287,7 @@ internal object FilterHelper {
   }
 
   // https://www.w3.org/TR/filter-effects-1/#saturateEquivalent
-  public fun createSaturateEffect(
-      amount: Float,
-      chainedEffects: RenderEffect? = null
-  ): RenderEffect {
+  fun createSaturateEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
     return createColorMatrixEffect(createSaturateColorMatrix(amount), chainedEffects)
   }
 
@@ -313,10 +298,7 @@ internal object FilterHelper {
   }
 
   // https://www.w3.org/TR/filter-effects-1/#huerotateEquivalent
-  public fun createHueRotateEffect(
-      amount: Float,
-      chainedEffects: RenderEffect? = null
-  ): RenderEffect {
+  fun createHueRotateEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
     return createColorMatrixEffect(createHueRotateColorMatrix(amount), chainedEffects)
   }
 
@@ -349,7 +331,7 @@ internal object FilterHelper {
   }
 
   // https://www.w3.org/TR/filter-effects-1/#invertEquivalent
-  public fun createInvertEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
+  fun createInvertEffect(amount: Float, chainedEffects: RenderEffect? = null): RenderEffect {
     return createColorMatrixEffect(createInvertColorMatrix(amount), chainedEffects)
   }
 
@@ -394,8 +376,9 @@ internal object FilterHelper {
   internal fun sigmaToRadius(sigma: Float): Float {
     // Android takes blur amount as a radius while web takes a sigma. This value
     // is used under the hood to convert between them on Android
-    // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/libs/hwui/jni/RenderEffect.cpp
+    // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/libs/hwui/utils/Blur.cpp;l=34
     val sigmaToRadiusRatio = 0.57_735f
-    return (PixelUtil.toPixelFromDIP(sigma) - 0.5f) / sigmaToRadiusRatio
+    val pxSigma = PixelUtil.toPixelFromDIP(sigma)
+    return if (pxSigma > 0.5f) (pxSigma - 0.5f) / sigmaToRadiusRatio else 0f
   }
 }

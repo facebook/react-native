@@ -8,13 +8,16 @@
 package com.facebook.react;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
-import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
+import static com.facebook.react.uimanager.BlendModeHelper.needsIsolatedLayer;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import android.content.Context;
+import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Insets;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -65,6 +68,7 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -110,7 +114,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastHeight = 0;
   private int mLastOffsetX = Integer.MIN_VALUE;
   private int mLastOffsetY = Integer.MIN_VALUE;
-  private @UIManagerType int mUIManagerType = DEFAULT;
+  private @UIManagerType int mUIManagerType = LEGACY;
   private final AtomicInteger mState = new AtomicInteger(STATE_STOPPED);
 
   public ReactRootView(Context context) {
@@ -135,7 +139,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.onMeasure");
+    Systrace.beginSection(TRACE_TAG_REACT, "ReactRootView.onMeasure");
     ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ON_MEASURE_START);
     try {
       boolean measureSpecsUpdated =
@@ -187,7 +191,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     } finally {
       ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ON_MEASURE_END);
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
     }
   }
 
@@ -288,6 +292,30 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       // This will be removed in the future.
       handleException(e);
     }
+  }
+
+  @Override
+  protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+
+    BlendMode mixBlendMode = null;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        && ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC
+        && needsIsolatedLayer(this)) {
+      mixBlendMode = (BlendMode) child.getTag(R.id.mix_blend_mode);
+      if (mixBlendMode != null) {
+        Paint p = new Paint();
+        p.setBlendMode(mixBlendMode);
+        canvas.saveLayer(0, 0, getWidth(), getHeight(), p);
+      }
+    }
+
+    boolean result = super.drawChild(canvas, child, drawingTime);
+
+    if (mixBlendMode != null) {
+      canvas.restore();
+    }
+
+    return result;
   }
 
   @Override
@@ -461,7 +489,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       ReactInstanceManager reactInstanceManager,
       String moduleName,
       @Nullable Bundle initialProperties) {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "startReactApplication");
+    Systrace.beginSection(TRACE_TAG_REACT, "startReactApplication");
     try {
       UiThreadUtil.assertOnUiThread();
 
@@ -488,7 +516,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         attachToReactInstanceManager();
       }
     } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
     }
   }
 
@@ -654,7 +682,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
    */
   @Override
   public void runApplication() {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
+    Systrace.beginSection(TRACE_TAG_REACT, "ReactRootView.runApplication");
     try {
       if (!hasActiveReactInstance() || !isViewAttachedToReactInstance()) {
         return;
@@ -683,7 +711,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
     } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
     }
   }
 
@@ -717,7 +745,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   private void attachToReactInstanceManager() {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachToReactInstanceManager");
+    Systrace.beginSection(TRACE_TAG_REACT, "attachToReactInstanceManager");
     ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_START);
 
     // React Native requires that the RootView id be managed entirely by React Native, and will
@@ -750,7 +778,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     } finally {
       ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_END);
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
     }
   }
 
@@ -789,7 +817,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   public void setIsFabric(boolean isFabric) {
-    mUIManagerType = isFabric ? FABRIC : DEFAULT;
+    mUIManagerType = isFabric ? FABRIC : LEGACY;
   }
 
   @Override

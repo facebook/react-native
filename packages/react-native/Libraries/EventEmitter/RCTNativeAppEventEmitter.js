@@ -15,4 +15,4 @@ import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
  * adding all event listeners directly to RCTNativeAppEventEmitter.
  */
 const RCTNativeAppEventEmitter = RCTDeviceEventEmitter;
-module.exports = RCTNativeAppEventEmitter;
+export default RCTNativeAppEventEmitter;

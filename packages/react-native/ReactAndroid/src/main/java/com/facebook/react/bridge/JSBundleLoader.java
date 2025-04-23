@@ -8,10 +8,12 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.DebugServerException;
 import java.util.Objects;
 
 /** A class that stores JS bundle information and allows a {@link JSBundleLoaderDelegate}. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class JSBundleLoader {
 
   /**
@@ -88,21 +90,6 @@ public abstract class JSBundleLoader {
           throw DebugServerException.makeGeneric(
               sourceURL, Objects.toString(e.getMessage(), ""), e);
         }
-      }
-    };
-  }
-
-  /**
-   * This loader is used when proxy debugging is enabled. In that case there is no point in fetching
-   * the bundle from device as remote executor will have to do it anyway.
-   */
-  public static JSBundleLoader createRemoteDebuggerBundleLoader(
-      final String proxySourceURL, final String realSourceURL) {
-    return new JSBundleLoader() {
-      @Override
-      public String loadScript(JSBundleLoaderDelegate delegate) {
-        delegate.setSourceURLs(realSourceURL, proxySourceURL);
-        return realSourceURL;
       }
     };
   }

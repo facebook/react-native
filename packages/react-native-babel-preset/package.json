@@ -1,8 +1,7 @@
 {
   "name": "@react-native/babel-preset",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "description": "Babel preset for React Native applications",
-  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/facebook/react-native.git"
@@ -13,25 +12,30 @@
     "react-native"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "README.md",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ],
   "dependencies": {
     "@babel/core": "^7.25.2",
-    "@babel/plugin-transform-async-generator-functions": "^7.25.4",
-    "@babel/plugin-transform-class-properties": "^7.25.4",
     "@babel/plugin-proposal-export-default-from": "^7.24.7",
-    "@babel/plugin-transform-logical-assignment-operators": "^7.24.7",
-    "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.7",
-    "@babel/plugin-transform-numeric-separator": "^7.24.7",
-    "@babel/plugin-transform-object-rest-spread": "^7.24.7",
-    "@babel/plugin-transform-optional-catch-binding": "^7.24.7",
-    "@babel/plugin-transform-optional-chaining": "^7.24.8",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-syntax-export-default-from": "^7.24.7",
-    "@babel/plugin-syntax-flow": "^7.24.7",
     "@babel/plugin-syntax-nullish-coalescing-operator": "^7.8.3",
     "@babel/plugin-syntax-optional-chaining": "^7.8.3",
     "@babel/plugin-transform-arrow-functions": "^7.24.7",
+    "@babel/plugin-transform-async-generator-functions": "^7.25.4",
     "@babel/plugin-transform-async-to-generator": "^7.24.7",
     "@babel/plugin-transform-block-scoping": "^7.25.0",
+    "@babel/plugin-transform-class-properties": "^7.25.4",
     "@babel/plugin-transform-classes": "^7.25.4",
     "@babel/plugin-transform-computed-properties": "^7.24.7",
     "@babel/plugin-transform-destructuring": "^7.24.8",
@@ -39,8 +43,14 @@
     "@babel/plugin-transform-for-of": "^7.24.7",
     "@babel/plugin-transform-function-name": "^7.25.1",
     "@babel/plugin-transform-literals": "^7.25.2",
+    "@babel/plugin-transform-logical-assignment-operators": "^7.24.7",
     "@babel/plugin-transform-modules-commonjs": "^7.24.8",
     "@babel/plugin-transform-named-capturing-groups-regex": "^7.24.7",
+    "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.7",
+    "@babel/plugin-transform-numeric-separator": "^7.24.7",
+    "@babel/plugin-transform-object-rest-spread": "^7.24.7",
+    "@babel/plugin-transform-optional-catch-binding": "^7.24.7",
+    "@babel/plugin-transform-optional-chaining": "^7.24.8",
     "@babel/plugin-transform-parameters": "^7.24.7",
     "@babel/plugin-transform-private-methods": "^7.24.7",
     "@babel/plugin-transform-private-property-in-object": "^7.24.7",
@@ -56,14 +66,12 @@
     "@babel/plugin-transform-typescript": "^7.25.2",
     "@babel/plugin-transform-unicode-regex": "^7.24.7",
     "@babel/template": "^7.25.0",
-    "@react-native/babel-plugin-codegen": "0.77.0-main",
+    "@react-native/babel-plugin-codegen": "0.80.0-main",
+    "babel-plugin-syntax-hermes-parser": "0.28.1",
     "babel-plugin-transform-flow-enums": "^0.0.2",
     "react-refresh": "^0.14.0"
   },
   "peerDependencies": {
     "@babel/core": "*"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }

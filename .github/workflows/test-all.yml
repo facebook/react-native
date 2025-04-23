@@ -2,6 +2,11 @@ name: Test All
 
 on:
   workflow_dispatch:
+    inputs:
+      run-e2e-tests:
+        description: Whether to run E2E tests or not
+        type: boolean
+        default: false
   pull_request:
   push:
     branches:
@@ -29,6 +34,8 @@ jobs:
             echo "Setting release type to dry-run"
             echo "RELEASE_TYPE=dry-run" >> $GITHUB_OUTPUT
           fi
+
+          echo "Should I run E2E tests? ${{ inputs.run-e2e-tests }}"
 
   prepare_hermes_workspace:
     runs-on: ubuntu-latest
@@ -76,7 +83,7 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
-        slice: [macosx, iphoneos, iphonesimulator, catalyst, xros, xrsimulator]
+        slice: [macosx, iphoneos, iphonesimulator, appletvos, appletvsimulator, catalyst, xros, xrsimulator]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -109,10 +116,14 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
 
+  prebuild_apple_dependencies:
+    uses: ./.github/workflows/prebuild-ios.yml
+    secrets: inherit
+
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-13
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -129,7 +140,7 @@ jobs:
   test_ios_rntester_dynamic_frameworks:
     runs-on: macos-13
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -150,9 +161,9 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   test_ios_rntester:
-    runs-on: macos-13
+    runs-on: macos-13-large
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -162,6 +173,14 @@ jobs:
       matrix:
         jsengine: [Hermes, JSC]
         architecture: [NewArch, OldArch]
+        flavor: [Debug, Release]
+        exclude: # We don't want to test the Old Arch in Release for E2E
+          - jsengine: Hermes
+            architecture: OldArch
+            flavor: Release
+          - jsengine: JSC
+            architecture: OldArch
+            flavor: Release
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -174,12 +193,13 @@ jobs:
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_rntester:
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
-    runs-on: macos-13
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+    runs-on: macos-13-large
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+      [test_ios_rntester]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -189,31 +209,30 @@ jobs:
       matrix:
         jsengine: [Hermes, JSC]
         architecture: [NewArch]
+        flavor: [Debug, Release]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run it
-        uses: ./.github/actions/test-ios-rntester
+      - name: Download App
+        uses: actions/download-artifact@v4
         with:
-          jsengine: ${{ matrix.jsengine }}
-          architecture: ${{ matrix.architecture }}
-          run-unit-tests: "false"
-          use-frameworks: StaticLibraries
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          run-e2e-tests: "true"
+          name: RNTesterApp-${{ matrix.architecture }}-${{ matrix.jsengine }}-${{ matrix.flavor }}
+          path: /tmp/RNTesterBuild/RNTester.app
+      - name: Check downloaded folder content
+        run: ls -lR /tmp/RNTesterBuild
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
-          app-path: "/tmp/RNTesterBuild/Build/Products/Release-iphonesimulator/RNTester.app"
+          app-path: "/tmp/RNTesterBuild/RNTester.app"
           app-id: com.meta.RNTester.localDevelopment
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro/
+          flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_templateapp:
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
-    runs-on: macos-13
-    needs: build_npm_package
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+    runs-on: macos-13-large
+    needs: [build_npm_package, prebuild_apple_dependencies]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -222,6 +241,8 @@ jobs:
       fail-fast: false
       matrix:
         jsengine: [Hermes, JSC]
+        flavor: [Debug, Release]
+        architecture: [OldArch, NewArch]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -230,7 +251,7 @@ jobs:
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Setup ruby
         uses: ruby/setup-ruby@v1.170.0
         with:
@@ -238,7 +259,7 @@ jobs:
       - name: Download Hermes
         uses: actions/download-artifact@v4
         with:
-          name: hermes-darwin-bin-Release
+          name: hermes-darwin-bin-${{matrix.flavor}}
           path: /tmp/react-native-tmp
       - name: Download React Native Package
         uses: actions/download-artifact@v4
@@ -247,6 +268,14 @@ jobs:
           path: /tmp/react-native-tmp
       - name: Print /tmp folder
         run: ls -lR /tmp/react-native-tmp
+      - name: Download ReactNativeDependencies
+        uses: actions/download-artifact@v4
+        with:
+          name: ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+          path: /tmp/third-party
+      - name: Print third-party folder
+        shell: bash
+        run: ls -lR /tmp/third-party
       - name: Prepare artifacts
         run: |
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
@@ -255,29 +284,46 @@ jobs:
           HERMES_PATH=$(find /tmp/react-native-tmp -type f -name "*.tar.gz")
           echo "Hermes path is $HERMES_PATH"
 
-          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch ${{ github.ref_name }} --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
+          # For stable branches, we want to use the stable branch of the template
+          # In all the other cases, we want to use "main"
+          BRANCH=${{ github.ref_name }}
+          if ! [[ $BRANCH == *-stable* ]]; then
+            BRANCH=main
+          fi
+
+          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch $BRANCH --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
 
           cd /tmp/RNTestProject/ios
           bundle install
-          HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH bundle exec pod install
+          NEW_ARCH_ENABLED=1
+          if [[ ${{ matrix.architecture }} == "OldArch" ]]; then
+            echo "Disable the New Architecture"
+            NEW_ARCH_ENABLED=0
+          fi
 
-          set -o pipefail && xcodebuild \
+          export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+          HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
+
+          xcodebuild \
             -scheme "RNTestProject" \
             -workspace RNTestProject.xcworkspace \
-            -configuration "Release" \
+            -configuration "${{ matrix.flavor }}" \
             -sdk "iphonesimulator" \
             -destination "generic/platform=iOS Simulator" \
-            -derivedDataPath "/tmp/RNTestProject" | xcbeautify
+            -derivedDataPath "/tmp/RNTestProject"
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
-          app-path: "/tmp/RNTestProject/Build/Products/Release-iphonesimulator/RNTestProject.app"
+          app-path: "/tmp/RNTestProject/Build/Products/${{ matrix.flavor }}-iphonesimulator/RNTestProject.app"
           app-id: org.reactjs.native.example.RNTestProject
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
+          flavor: ${{ matrix.flavor }}
+          working-directory: /tmp/RNTestProject
+          architecture: ${{ matrix.architecture }}
 
   test_e2e_android_templateapp:
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: 4-core-ubuntu
     needs: build_npm_package
     continue-on-error: true
@@ -285,13 +331,15 @@ jobs:
       fail-fast: false
       matrix:
         jsengine: [Hermes, JSC]
+        flavor: [debug, release]
+        architecture: [OldArch, NewArch]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
@@ -310,6 +358,7 @@ jobs:
       - name: Print /tmp folder
         run: ls -lR /tmp/react-native-tmp
       - name: Prepare artifacts
+        id: prepare-artifacts
         run: |
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
           echo "React Native tgs is $REACT_NATIVE_PKG"
@@ -317,23 +366,45 @@ jobs:
           MAVEN_LOCAL=/tmp/react-native-tmp/maven-local
           echo "Maven local path is $MAVEN_LOCAL"
 
-          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch ${{ github.ref_name }} --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
+          # For stable branches, we want to use the stable branch of the template
+          # In all the other cases, we want to use "main"
+          BRANCH=${{ github.ref_name }}
+          if ! [[ $BRANCH == *-stable* ]]; then
+            BRANCH=main
+          fi
+          node ./scripts/e2e/init-project-e2e.js --projectName RNTestProject --currentBranch $BRANCH  --directory /tmp/RNTestProject --pathToLocalReactNative $REACT_NATIVE_PKG
 
           echo "Feed maven local to gradle.properties"
           cd /tmp/RNTestProject
           echo "react.internal.mavenLocalRepo=$MAVEN_LOCAL" >> android/gradle.properties
 
+          if [[ ${{matrix.architecture}} == "OldArch" ]]; then
+            echo "Disabling the New Architecture"
+            sed -i 's/newArchEnabled=true/newArchEnabled=false/' android/gradle.properties
+          fi
+
+          if [[ ${{matrix.jsengine}} == "JSC" ]]; then
+            echo "Using JSC instead of Hermes"
+            sed -i 's/hermesEnabled=true/hermesEnabled=false/' android/gradle.properties
+          fi
+
           # Build
           cd android
-          ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86
+          CAPITALIZED_FLAVOR=$(echo "${{ matrix.flavor }}" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
+          ./gradlew assemble$CAPITALIZED_FLAVOR --no-daemon -PreactNativeArchitectures=x86
+
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
+        timeout-minutes: 60
         with:
-          app-path: /tmp/RNTestProject/android/app/build/outputs/apk/release/app-release.apk
+          app-path: /tmp/RNTestProject/android/app/build/outputs/apk/${{ matrix.flavor }}/app-${{ matrix.flavor }}.apk
           app-id: com.rntestproject
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
           install-java: 'false'
+          flavor: ${{ matrix.flavor }}
+          working-directory: /tmp/RNTestProject
+          architecture: ${{ matrix.architecture }}
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -386,37 +457,41 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
-          run-e2e-tests: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
+          run-e2e-tests: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   test_e2e_android_rntester:
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') }}
-    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+    runs-on: 4-core-ubuntu
     needs: [build_android]
     strategy:
       fail-fast: false
       matrix:
         jsengine: [hermes, jsc]
+        flavor: [debug, release]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Install node dependencies
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
-          name: rntester-${{ matrix.jsengine }}-release
-          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+          name: rntester-${{ matrix.jsengine }}-${{ matrix.flavor }}
+          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Print folder structure
-        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
+        timeout-minutes: 60
         with:
-          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/release/app-${{ matrix.jsengine }}-x86-release.apk
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/app-${{ matrix.jsengine }}-x86-${{ matrix.flavor }}.apk
           app-id: com.facebook.react.uiapp
           jsengine: ${{ matrix.jsengine }}
-          maestro-flow: ./packages/rn-tester/.maestro/
+          maestro-flow: ./packages/rn-tester/.maestro
+          flavor: ${{ matrix.flavor }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu
@@ -428,6 +503,7 @@ jobs:
         build_hermesc_linux,
         build_hermesc_windows,
         build_android,
+        prebuild_apple_dependencies,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
@@ -444,6 +520,7 @@ jobs:
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   test_android_helloworld:
     runs-on: 4-core-ubuntu
@@ -482,8 +559,10 @@ jobs:
           path: /tmp/maven-local
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run yarn install
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application
         shell: bash
         run: node ./scripts/e2e/init-project-e2e.js --useHelloWorld --pathToLocalReactNative "$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)"
@@ -511,7 +590,7 @@ jobs:
 
   test_ios_helloworld_with_ruby_3_2_0:
     runs-on: macos-13
-    needs: [prepare_hermes_workspace, build_hermes_macos] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     env:
       PROJECT_NAME: iOSTemplateProject
       HERMES_WS_DIR: /tmp/hermes
@@ -529,7 +608,7 @@ jobs:
 
   test_ios_helloworld:
     runs-on: macos-13
-    needs: [prepare_hermes_workspace, build_hermes_macos] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -560,7 +639,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["20", "18"]
+        node-version: ["22", "20", "18"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

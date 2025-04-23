@@ -6,19 +6,16 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
+
 file(GLOB bridgeless_SRC "*.cpp")
 
 add_library(bridgeless
         OBJECT
         ${bridgeless_SRC}
 )
-target_compile_options(
-        bridgeless
-        PRIVATE
-        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
-        -std=c++20
-        -fexceptions
-)
+target_compile_reactnative_options(bridgeless PRIVATE)
+target_compile_options(bridgeless PRIVATE $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>)
 target_include_directories(bridgeless PUBLIC .)
 
 target_link_libraries(
@@ -27,8 +24,8 @@ target_link_libraries(
         fabricjni
         react_featureflagsjni
         turbomodulejsijni
-        fb
         jsi
+        jsitooling
         jsireact
         react_utils
         jsinspector

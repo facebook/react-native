@@ -18,16 +18,14 @@ import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.DisplayMetricsHolder
-import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.events.EventDispatcher
+import com.facebook.react.uimanager.events.FabricEventDispatcher
 import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import com.facebook.react.uimanager.events.TouchEventType
-import com.facebook.testutils.fakes.FakeBatchEventDispatchedListener
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -37,11 +35,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.*
 import org.mockito.MockedStatic
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
-import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -462,7 +459,7 @@ class TouchEventDispatchTest {
                       buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))))
 
   private lateinit var eventDispatcher: EventDispatcher
-  private lateinit var uiManager: FabricUIManager
+  private lateinit var eventEmitter: FabricEventEmitter
   private lateinit var arguments: MockedStatic<Arguments>
   private var reactChoreographerOriginal: ReactChoreographer? = null
 
@@ -479,19 +476,13 @@ class TouchEventDispatchTest {
     metrics.density = 1f
     DisplayMetricsHolder.setWindowDisplayMetrics(metrics)
 
-    // We use a real FabricUIManager here as it's harder to mock with both static and non-static
-    // methods.
     val reactContext = ReactTestHelper.createCatalystContextForTest()
-    val viewManagerRegistry = ViewManagerRegistry(emptyList())
-    val batchEventDispatchedListener = FakeBatchEventDispatchedListener()
-    uiManager =
-        spy(FabricUIManager(reactContext, viewManagerRegistry, batchEventDispatchedListener))
-    uiManager.initialize()
 
-    eventDispatcher = uiManager.getEventDispatcher()
+    eventEmitter = mock()
+    eventDispatcher = FabricEventDispatcher(reactContext, eventEmitter)
 
     // Ignore scheduled choreographer work
-    val reactChoreographerMock = mock(ReactChoreographer::class.java)
+    val reactChoreographerMock: ReactChoreographer = mock()
     reactChoreographerOriginal = ReactChoreographer.overrideInstanceForTest(reactChoreographerMock)
   }
 
@@ -507,8 +498,9 @@ class TouchEventDispatchTest {
       eventDispatcher.dispatchEvent(event)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
-    verify(uiManager, times(4))
-        .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
+    verify(eventEmitter, times(4))
+        .receiveEvent(
+            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
     assertThat(startMoveEndExpectedSequence).isEqualTo(argument.allValues)
   }
 
@@ -518,8 +510,9 @@ class TouchEventDispatchTest {
       eventDispatcher.dispatchEvent(event)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
-    verify(uiManager, times(6))
-        .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
+    verify(eventEmitter, times(6))
+        .receiveEvent(
+            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
     assertThat(startMoveCancelExpectedSequence).isEqualTo(argument.allValues)
   }
 
@@ -529,8 +522,9 @@ class TouchEventDispatchTest {
       eventDispatcher.dispatchEvent(event)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
-    verify(uiManager, times(6))
-        .receiveEvent(anyInt(), anyInt(), anyString(), anyBoolean(), argument.capture(), anyInt())
+    verify(eventEmitter, times(6))
+        .receiveEvent(
+            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt())
     assertThat(startPointerMoveUpExpectedSequence).isEqualTo(argument.allValues)
   }
 

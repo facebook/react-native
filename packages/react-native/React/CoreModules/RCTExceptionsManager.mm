@@ -83,6 +83,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
+// TODO(T205456329): This method is deprecated in favour of reportException. Delete in v0.77
 RCT_EXPORT_METHOD(reportSoftException
                   : (NSString *)message stack
                   : (NSArray<NSDictionary *> *)stack exceptionId
@@ -91,6 +92,7 @@ RCT_EXPORT_METHOD(reportSoftException
   [self reportSoft:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
+// TODO(T205456329): This method is deprecated in favour of reportException. Delete in v0.77
 RCT_EXPORT_METHOD(reportFatalException
                   : (NSString *)message stack
                   : (NSArray<NSDictionary *> *)stack exceptionId
@@ -99,40 +101,28 @@ RCT_EXPORT_METHOD(reportFatalException
   [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
-RCT_EXPORT_METHOD(updateExceptionMessage
-                  : (NSString *)message stack
-                  : (NSArray<NSDictionary *> *)stack exceptionId
-                  : (double)exceptionId)
-{
-  if (RCTRedBoxGetEnabled()) {
-    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
-    [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
-  }
-
-  if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
-    [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
-  }
-}
-
-// Deprecated.  Use reportFatalException directly instead.
-RCT_EXPORT_METHOD(reportUnhandledException : (NSString *)message stack : (NSArray<NSDictionary *> *)stack)
-{
-  [self reportFatalException:message stack:stack exceptionId:-1];
-}
-
 RCT_EXPORT_METHOD(dismissRedbox) {}
 
 RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData &)data)
 {
-  NSString *message = data.message();
-  double exceptionId = data.id_();
+  NSMutableDictionary<NSString *, id> *mutableErrorData = [NSMutableDictionary new];
+  mutableErrorData[@"message"] = data.message();
+  if (data.originalMessage()) {
+    mutableErrorData[@"originalMessage"] = data.originalMessage();
+  }
+  if (data.name()) {
+    mutableErrorData[@"name"] = data.name();
+  }
+  if (data.componentStack()) {
+    mutableErrorData[@"componentStack"] = data.componentStack();
+  }
 
   // Reserialize data.stack() into an array of untyped dictionaries.
   // TODO: (moti) T53588496 Replace `(NSArray<NSDictionary *> *)stack` in
   // reportFatalException etc with a typed interface.
-  NSMutableArray<NSDictionary *> *stackArray = [NSMutableArray<NSDictionary *> new];
+  NSMutableArray<NSDictionary<NSString *, id> *> *stackArray = [NSMutableArray<NSDictionary<NSString *, id> *> new];
   for (auto frame : data.stack()) {
-    NSMutableDictionary *frameDict = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, id> *frameDict = [NSMutableDictionary new];
     if (frame.column().has_value()) {
       frameDict[@"column"] = @(frame.column().value());
     }
@@ -147,13 +137,28 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
     [stackArray addObject:frameDict];
   }
 
-  NSDictionary *extraData = (NSDictionary *)data.extraData();
-  NSString *extraDataAsJSON = RCTJSONStringify(extraData, NULL);
+  mutableErrorData[@"stack"] = stackArray;
+  mutableErrorData[@"id"] = @(data.id_());
+  mutableErrorData[@"isFatal"] = @(data.isFatal());
 
-  if (data.isFatal()) {
-    [self reportFatal:message stack:stackArray exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
+  if (data.extraData()) {
+    mutableErrorData[@"extraData"] = data.extraData();
+  }
+
+  NSDictionary<NSString *, id> *errorData = mutableErrorData;
+  if ([_delegate respondsToSelector:@selector(decorateJSExceptionData:)]) {
+    errorData = [_delegate decorateJSExceptionData:errorData];
+  }
+
+  NSString *extraDataAsJSON = RCTJSONStringify(errorData[@"extraData"], NULL);
+  NSString *message = errorData[@"message"];
+  NSArray<NSDictionary<NSString *, id> *> *stack = errorData[@"stack"];
+  double exceptionId = [errorData[@"id"] doubleValue];
+
+  if ([errorData[@"isFatal"] boolValue]) {
+    [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
   } else {
-    [self reportSoft:message stack:stackArray exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
+    [self reportSoft:message stack:stack exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
   }
 }
 

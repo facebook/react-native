@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.scroll
 
+import android.os.SystemClock
 import androidx.core.util.Pools.SynchronizedPool
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.Arguments
@@ -27,7 +28,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
   private var scrollViewWidth = 0
   private var scrollViewHeight = 0
   private var scrollEventType: ScrollEventType? = null
-  private var experimental_isSynchronous = false
+  private var timestamp: Long = 0
 
   override fun onDispose() {
     try {
@@ -51,9 +52,10 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
       contentHeight: Int,
       scrollViewWidth: Int,
       scrollViewHeight: Int,
-      experimental_isSynchronous: Boolean,
   ) {
-    super.init(surfaceId, viewTag)
+    val timestampMs = SystemClock.uptimeMillis()
+    super.init(surfaceId, viewTag, timestampMs)
+
     this.scrollEventType = scrollEventType
     this.scrollX = scrollX
     this.scrollY = scrollY
@@ -63,17 +65,13 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     this.contentHeight = contentHeight
     this.scrollViewWidth = scrollViewWidth
     this.scrollViewHeight = scrollViewHeight
-    this.experimental_isSynchronous = experimental_isSynchronous
+    this.timestamp = timestampMs
   }
 
   override fun getEventName(): String =
       ScrollEventType.getJSEventName(Assertions.assertNotNull(scrollEventType))
 
   override fun canCoalesce(): Boolean = scrollEventType == ScrollEventType.SCROLL
-
-  override fun experimental_isSynchronous(): Boolean {
-    return experimental_isSynchronous
-  }
 
   override fun getEventData(): WritableMap {
     val contentInset = Arguments.createMap()
@@ -100,6 +98,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     event.putMap("layoutMeasurement", layoutMeasurement)
     event.putMap("velocity", velocity)
     event.putInt("target", viewTag)
+    event.putDouble("timestamp", timestamp.toDouble())
     event.putBoolean("responderIgnoreScroll", true)
     return event
   }
@@ -121,7 +120,6 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
         contentHeight: Int,
         scrollViewWidth: Int,
         scrollViewHeight: Int,
-        experimental_isSynchronous: Boolean,
     ): ScrollEvent =
         (EVENTS_POOL.acquire() ?: ScrollEvent()).apply {
           init(
@@ -135,8 +133,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
               contentWidth,
               contentHeight,
               scrollViewWidth,
-              scrollViewHeight,
-              experimental_isSynchronous)
+              scrollViewHeight)
         }
 
     @Deprecated(
@@ -168,7 +165,6 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
             contentHeight,
             scrollViewWidth,
             scrollViewHeight,
-            false,
         )
   }
 }

@@ -17,10 +17,12 @@ namespace facebook::react {
 IntersectionObserver::IntersectionObserver(
     IntersectionObserverObserverId intersectionObserverId,
     ShadowNode::Shared targetShadowNode,
-    std::vector<Float> thresholds)
+    std::vector<Float> thresholds,
+    std::optional<std::vector<Float>> rootThresholds)
     : intersectionObserverId_(intersectionObserverId),
       targetShadowNode_(std::move(targetShadowNode)),
-      thresholds_(std::move(thresholds)) {}
+      thresholds_(std::move(thresholds)),
+      rootThresholds_(std::move(rootThresholds)) {}
 
 static Rect getRootBoundingRect(
     const LayoutableShadowNode& layoutableRootShadowNode) {
@@ -85,6 +87,18 @@ static Rect computeIntersection(
   return Rect::intersect(rootBoundingRect, clippedTargetBoundingRect);
 }
 
+static Float getHighestThresholdCrossed(
+    Float intersectionRatio,
+    const std::vector<Float>& thresholds) {
+  Float highestThreshold = -1.0f;
+  for (auto threshold : thresholds) {
+    if (intersectionRatio >= threshold) {
+      highestThreshold = threshold;
+    }
+  }
+  return highestThreshold;
+}
+
 // Partially equivalent to
 // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
 std::optional<IntersectionObserverEntry>
@@ -121,12 +135,28 @@ IntersectionObserver::updateIntersectionObservation(
       : intersectionRectArea / targetBoundingRectArea;
 
   if (intersectionRatio == 0) {
-    return setNotIntersectingState(rootBoundingRect, targetBoundingRect, time);
+    return setNotIntersectingState(
+        rootBoundingRect, targetBoundingRect, intersectionRect, time);
   }
 
-  auto highestThresholdCrossed = getHighestThresholdCrossed(intersectionRatio);
-  if (highestThresholdCrossed == -1) {
-    return setNotIntersectingState(rootBoundingRect, targetBoundingRect, time);
+  auto highestThresholdCrossed =
+      getHighestThresholdCrossed(intersectionRatio, thresholds_);
+
+  auto highestRootThresholdCrossed = -1.0f;
+  if (rootThresholds_.has_value()) {
+    Float rootBoundingRectArea =
+        rootBoundingRect.size.width * rootBoundingRect.size.height;
+    Float rootThresholdIntersectionRatio = rootBoundingRectArea == 0
+        ? 0
+        : intersectionRectArea / rootBoundingRectArea;
+    highestRootThresholdCrossed = getHighestThresholdCrossed(
+        rootThresholdIntersectionRatio, rootThresholds_.value());
+  }
+
+  if (highestThresholdCrossed == -1.0f &&
+      highestRootThresholdCrossed == -1.0f) {
+    return setNotIntersectingState(
+        rootBoundingRect, targetBoundingRect, intersectionRect, time);
   }
 
   return setIntersectingState(
@@ -134,24 +164,14 @@ IntersectionObserver::updateIntersectionObservation(
       targetBoundingRect,
       intersectionRect,
       highestThresholdCrossed,
+      highestRootThresholdCrossed,
       time);
 }
 
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservationForSurfaceUnmount(
     double time) {
-  return setNotIntersectingState(Rect{}, Rect{}, time);
-}
-
-Float IntersectionObserver::getHighestThresholdCrossed(
-    Float intersectionRatio) {
-  Float highestThreshold = -1;
-  for (auto threshold : thresholds_) {
-    if (intersectionRatio >= threshold) {
-      highestThreshold = threshold;
-    }
-  }
-  return highestThreshold;
+  return setNotIntersectingState(Rect{}, Rect{}, Rect{}, time);
 }
 
 std::optional<IntersectionObserverEntry>
@@ -160,8 +180,10 @@ IntersectionObserver::setIntersectingState(
     const Rect& targetBoundingRect,
     const Rect& intersectionRect,
     Float threshold,
+    Float rootThreshold,
     double time) {
-  auto newState = IntersectionObserverState::Intersecting(threshold);
+  auto newState =
+      IntersectionObserverState::Intersecting(threshold, rootThreshold);
 
   if (state_ != newState) {
     state_ = newState;
@@ -184,6 +206,7 @@ std::optional<IntersectionObserverEntry>
 IntersectionObserver::setNotIntersectingState(
     const Rect& rootBoundingRect,
     const Rect& targetBoundingRect,
+    const Rect& intersectionRect,
     double time) {
   if (state_ != IntersectionObserverState::NotIntersecting()) {
     state_ = IntersectionObserverState::NotIntersecting();
@@ -192,7 +215,7 @@ IntersectionObserver::setNotIntersectingState(
         targetShadowNode_,
         targetBoundingRect,
         rootBoundingRect,
-        std::nullopt,
+        intersectionRect,
         false,
         time,
     };

@@ -21,7 +21,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 import java.io.FileDescriptor
 import java.io.PrintWriter
 
-class RNTesterActivity : ReactActivity() {
+internal class RNTesterActivity : ReactActivity() {
   class RNTesterActivityDelegate(val activity: ReactActivity, mainComponentName: String) :
       DefaultReactActivityDelegate(activity, mainComponentName, fabricEnabled) {
     private val PARAM_ROUTE = "route"
@@ -45,6 +45,9 @@ class RNTesterActivity : ReactActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    fullyDrawnReporter.addReporter()
+
     // set background color so it will show below transparent system bars on forced edge-to-edge
     this.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
     // register insets listener to update margins on the ReactRootView to avoid overlap w/ system

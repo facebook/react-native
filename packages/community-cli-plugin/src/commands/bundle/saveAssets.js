@@ -11,16 +11,17 @@
 
 import type {AssetData} from 'metro/src/Assets';
 
-import {logger} from '../../utils/logger';
 import {
   cleanAssetCatalog,
   getImageSet,
   isCatalogAsset,
   writeImageSet,
 } from './assetCatalogIOS';
+import createKeepFileAsync from './createKeepFileAsync';
 import filterPlatformAssetScales from './filterPlatformAssetScales';
 import getAssetDestPathAndroid from './getAssetDestPathAndroid';
 import getAssetDestPathIOS from './getAssetDestPathIOS';
+import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
@@ -35,7 +36,7 @@ async function saveAssets(
   assetCatalogDest?: string,
 ): Promise<void> {
   if (assetsDest == null) {
-    logger.warn('Assets destination folder is not set, skipping...');
+    console.warn('Warning: Assets destination folder is not set, skipping...');
     return;
   }
 
@@ -64,13 +65,13 @@ async function saveAssets(
     // remove unused scales from the optimized bundle.
     const catalogDir = path.join(assetCatalogDest, 'RNAssets.xcassets');
     if (!fs.existsSync(catalogDir)) {
-      logger.error(
-        `Could not find asset catalog 'RNAssets.xcassets' in ${assetCatalogDest}. Make sure to create it if it does not exist.`,
+      console.error(
+        `${chalk.red('error')}: Could not find asset catalog 'RNAssets.xcassets' in ${assetCatalogDest}. Make sure to create it if it does not exist.`,
       );
       return;
     }
 
-    logger.info('Adding images to asset catalog', catalogDir);
+    console.info('Adding images to asset catalog', catalogDir);
     cleanAssetCatalog(catalogDir);
     for (const asset of assets) {
       if (isCatalogAsset(asset)) {
@@ -84,9 +85,12 @@ async function saveAssets(
         addAssetToCopy(asset);
       }
     }
-    logger.info('Done adding images to asset catalog');
+    console.info('Done adding images to asset catalog');
   } else {
     assets.forEach(addAssetToCopy);
+  }
+  if (platform === 'android') {
+    await createKeepFileAsync(assets, assetsDest);
   }
 
   return copyAll(filesToCopy);
@@ -98,7 +102,7 @@ function copyAll(filesToCopy: CopiedFiles) {
     return Promise.resolve();
   }
 
-  logger.info(`Copying ${queue.length} asset files`);
+  console.info(`Copying ${queue.length} asset files`);
   return new Promise<void>((resolve, reject) => {
     const copyNext = (error?: Error) => {
       if (error) {
@@ -106,7 +110,7 @@ function copyAll(filesToCopy: CopiedFiles) {
         return;
       }
       if (queue.length === 0) {
-        logger.info('Done copying assets');
+        console.info('Done copying assets');
         resolve();
       } else {
         // queue.length === 0 is checked in previous branch, so this is string

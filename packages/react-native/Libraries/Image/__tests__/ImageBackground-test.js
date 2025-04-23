@@ -12,7 +12,7 @@
 'use strict';
 
 const render = require('../../../jest/renderer');
-const ImageBackground = require('../ImageBackground');
+const ImageBackground = require('../ImageBackground').default;
 const React = require('react');
 
 describe('ImageBackground', () => {

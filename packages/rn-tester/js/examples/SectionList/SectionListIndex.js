@@ -11,7 +11,6 @@
 'use strict';
 
 import ContentInset from './SectionList-contentInset';
-import Scrollable from './SectionList-scrollable';
 import inverted from './SectionList-inverted';
 import onEndReached from './SectionList-onEndReached';
 import onViewableItemsChanged from './SectionList-onViewableItemsChanged';
@@ -21,6 +20,7 @@ import onViewableItemsChanged_horizontal_waitForInteraction from './SectionList-
 import onViewableItemsChanged_noWaitForInteraction from './SectionList-onViewableItemsChanged-noWaitForInteraction';
 import onViewableItemsChanged_offScreen_noWaitForInteraction from './SectionList-onViewableItemsChanged-offScreen-noWaitForInteraction';
 import onViewableItemsChanged_waitForInteraction from './SectionList-onViewableItemsChanged-waitForInteraction';
+import Scrollable from './SectionList-scrollable';
 import stickyHeadersEnabled from './SectionList-stickyHeadersEnabled';
 import withSeparators from './SectionList-withSeparators';
 

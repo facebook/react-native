@@ -10,7 +10,7 @@
 
 'use strict';
 
-const UIManager = require('../../ReactNative/UIManager');
+const UIManager = require('../../ReactNative/UIManager').default;
 const codegenNativeComponent = require('../codegenNativeComponent').default;
 
 // We need to unmock requireNativeComponent since it's under test.
@@ -18,10 +18,10 @@ const codegenNativeComponent = require('../codegenNativeComponent').default;
 // so that we don't run into issues populating the registry with the same
 // component names.
 jest.unmock('../../ReactNative/requireNativeComponent');
-jest.mock(
-  '../../Renderer/shims/createReactNativeComponentClass',
-  () => componentName => componentName,
-);
+jest.mock('../../Renderer/shims/createReactNativeComponentClass', () => ({
+  __esModule: true,
+  default: componentName => componentName,
+}));
 jest
   .spyOn(UIManager, 'hasViewManagerConfig')
   .mockImplementation(componentName =>

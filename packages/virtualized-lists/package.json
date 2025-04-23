@@ -1,6 +1,6 @@
 {
   "name": "@react-native/virtualized-lists",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "description": "Virtualized lists for React Native.",
   "license": "MIT",
   "repository": {
@@ -19,15 +19,30 @@
   "engines": {
     "node": ">=18"
   },
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "Lists",
+    "README.md",
+    "Utilities",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ],
   "dependencies": {
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "react-test-renderer": "19.0.0-rc-fb9a90fa48-20240614"
+    "react-test-renderer": "19.0.0"
   },
   "peerDependencies": {
-    "@types/react": "^18.2.6",
+    "@types/react": "^19.0.0",
     "react": "*",
     "react-native": "*"
   },

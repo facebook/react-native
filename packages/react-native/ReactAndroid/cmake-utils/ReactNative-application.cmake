@@ -22,6 +22,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/folly-flags.cmake)
 # We configured the REACT_COMMON_DIR variable as it's commonly used to reference
 # shared C++ code in other targets.
 set(REACT_COMMON_DIR ${REACT_ANDROID_DIR}/../ReactCommon)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
@@ -30,14 +31,35 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-set(BUILD_DIR ${PROJECT_BUILD_DIR})
-if(CMAKE_HOST_WIN32)
-        string(REPLACE "\\" "/" BUILD_DIR ${BUILD_DIR})
+# If the user toolchain supports IPO, we enable it for the app build
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_SUPPORT)
+if (IPO_SUPPORT)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-file(GLOB input_SRC CONFIGURE_DEPENDS
-        *.cpp
-        ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
+set(BUILD_DIR ${PROJECT_BUILD_DIR})
+file(TO_CMAKE_PATH "${BUILD_DIR}" BUILD_DIR)
+file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
+
+if (PROJECT_ROOT_DIR)
+# This empty `if` is just to silence a CMake warning and make sure the `PROJECT_ROOT_DIR`
+# variable is defined if user need to access it.
+endif ()
+
+file(GLOB override_cpp_SRC CONFIGURE_DEPENDS *.cpp)
+# We check if the user is providing a custom OnLoad.cpp file. If so, we pick that
+# for compilation. Otherwise we fallback to using the `default-app-setup/OnLoad.cpp` 
+# file instead.
+if(override_cpp_SRC)
+        file(GLOB input_SRC CONFIGURE_DEPENDS
+                *.cpp
+                ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
+else()
+        file(GLOB input_SRC CONFIGURE_DEPENDS
+                ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp
+                ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
+endif()
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
 
@@ -46,21 +68,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni)
 
-target_compile_options(${CMAKE_PROJECT_NAME}
-        PRIVATE
-                -Wall
-                -Werror
-                # We suppress cpp #error and #warning to don't fail the build
-                # due to use migrating away from
-                # #include <react/renderer/graphics/conversions.h>
-                # This can be removed for React Native 0.73
-                -Wno-error=cpp
-                -fexceptions
-                -frtti
-                -std=c++20
-                -DLOG_TAG=\"ReactNative\"
-                -DFOLLY_NO_CONFIG=1
-)
+target_compile_reactnative_options(${CMAKE_PROJECT_NAME} PRIVATE "ReactNative")
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)

@@ -14,7 +14,7 @@
 
 #include "JsArgumentHelpers.h"
 #include "MessageQueueThread.h"
-#include "SystraceSection.h"
+#include "TraceSection.h"
 
 #include <logger/react_native_log.h>
 
@@ -47,9 +47,12 @@ namespace {
 CxxModule::Callback convertCallback(
     std::function<void(folly::dynamic)> callback) {
   return [callback = std::move(callback)](std::vector<folly::dynamic> args) {
-    callback(folly::dynamic(
-        std::make_move_iterator(args.begin()),
-        std::make_move_iterator(args.end())));
+    // after unpinning folly, can use folly::dynamic::array_range
+    folly::dynamic obj = folly::dynamic::array;
+    for (auto& arg : args) {
+      obj.push_back(std::move(arg));
+    }
+    callback(std::move(obj));
   };
 }
 
@@ -65,12 +68,8 @@ void CxxNativeModule::emitWarnIfWarnOnUsage(
     const std::string& method_name,
     const std::string& module_name) {
   if (shouldWarnOnUse_) {
-    std::string message = folly::to<std::string>(
-        "Calling ",
-        method_name,
-        " on Cxx NativeModule (name = \"",
-        module_name,
-        "\").");
+    std::string message = "Calling " + method_name +
+        " on Cxx NativeModule (name = \"" + module_name + "\").";
     react_native_log_warn(message.c_str());
   }
 }
@@ -81,12 +80,9 @@ std::string CxxNativeModule::getName() {
 
 std::string CxxNativeModule::getSyncMethodName(unsigned int reactMethodId) {
   if (reactMethodId >= methods_.size()) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "methodId ",
-        reactMethodId,
-        " out of range [0..",
-        methods_.size(),
-        "]"));
+    throw std::invalid_argument(
+        "methodId " + std::to_string(reactMethodId) + " out of range [0.." +
+        std::to_string(methods_.size()) + "]");
   }
   return methods_[reactMethodId].name;
 }
@@ -122,16 +118,14 @@ void CxxNativeModule::invoke(
     folly::dynamic&& params,
     int callId) {
   if (reactMethodId >= methods_.size()) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "methodId ",
-        reactMethodId,
-        " out of range [0..",
-        methods_.size(),
-        "]"));
+    throw std::invalid_argument(
+        "methodId " + std::to_string(reactMethodId) + " out of range [0.." +
+        std::to_string(methods_.size()) + "]");
   }
   if (!params.isArray()) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "method parameters should be array, but are ", params.typeName()));
+    throw std::invalid_argument(
+        std::string("Method parameters should be array, but are ") +
+        params.typeName());
   }
 
   CxxModule::Callback first;
@@ -140,19 +134,17 @@ void CxxNativeModule::invoke(
   const auto& method = methods_[reactMethodId];
 
   if (!method.func) {
-    throw std::runtime_error(folly::to<std::string>(
-        "Method ", method.name, " is synchronous but invoked asynchronously"));
+    throw std::runtime_error(
+        "Method " + method.name + " is synchronous but invoked asynchronously");
   }
 
   emitWarnIfWarnOnUsage(method.name, getName());
 
   if (params.size() < method.callbacks) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "Expected ",
-        method.callbacks,
-        " callbacks, but only ",
-        params.size(),
-        " parameters provided"));
+    throw std::invalid_argument(
+        "Expected " + std::to_string(method.callbacks) +
+        " callbacks, but only " + std::to_string(params.size()) +
+        " parameters provided");
   }
 
   if (method.callbacks == 1) {
@@ -185,7 +177,7 @@ void CxxNativeModule::invoke(
   // mhorowitz #7128529: convert C++ exceptions to Java
 
   const auto& moduleName = name_;
-  SystraceSection s(
+  TraceSection s(
       "CxxMethodCallQueue", "module", moduleName, "method", method.name);
   messageQueueThread_->runOnQueue([method,
                                    moduleName,
@@ -195,12 +187,12 @@ void CxxNativeModule::invoke(
                                    callId]() {
 #ifdef WITH_FBSYSTRACE
     if (callId != -1) {
-      fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+      fbsystrace_end_async_flow(TRACE_TAG_REACT, "native", callId);
     }
 #else
     (void)(callId);
 #endif
-    SystraceSection s(
+    TraceSection s(
         "CxxMethodCallDispatch", "module", moduleName, "method", method.name);
     try {
       method.func(std::move(params), first, second);
@@ -226,15 +218,16 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
     unsigned int hookId,
     folly::dynamic&& args) {
   if (hookId >= methods_.size()) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "methodId ", hookId, " out of range [0..", methods_.size(), "]"));
+    throw std::invalid_argument(
+        "methodId " + std::to_string(hookId) + " out of range [0.." +
+        std::to_string(methods_.size()) + "]");
   }
 
   const auto& method = methods_[hookId];
 
   if (!method.syncFunc) {
-    throw std::runtime_error(folly::to<std::string>(
-        "Method ", method.name, " is asynchronous but invoked synchronously"));
+    throw std::runtime_error(
+        "Method " + method.name + " is asynchronous but invoked synchronously");
   }
 
   emitWarnIfWarnOnUsage(method.name, getName());

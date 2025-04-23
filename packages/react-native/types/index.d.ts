@@ -51,7 +51,7 @@
 //                 Mateusz Wit <https://github.com/MateWW>
 //                 Saad Najmi <https://github.com/saadnajmi>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// Minimum TypeScript Version: 4.8
+// Minimum TypeScript Version: 4.9
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -68,7 +68,7 @@
 /// <reference path="modules/BatchedBridge.d.ts" />
 /// <reference path="modules/Codegen.d.ts" />
 /// <reference path="modules/Devtools.d.ts" />
-/// <reference path="modules/globals.d.ts" />
+/// <reference types="../src/types/globals.d.ts" />
 /// <reference path="modules/LaunchScreen.d.ts" />
 
 export * from '../Libraries/ActionSheetIOS/ActionSheetIOS';
@@ -84,6 +84,7 @@ export * from '../Libraries/Components/Clipboard/Clipboard';
 export * from '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 export * from '../Libraries/Components/Keyboard/Keyboard';
 export * from '../Libraries/Components/Keyboard/KeyboardAvoidingView';
+export * from '../Libraries/Components/LayoutConformance/LayoutConformance';
 export * from '../Libraries/Components/Pressable/Pressable';
 export * from '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 export * from '../Libraries/Components/RefreshControl/RefreshControl';
@@ -104,7 +105,6 @@ export * from '../Libraries/Components/View/ViewAccessibility';
 export * from '../Libraries/Components/View/ViewPropTypes';
 export * from '../Libraries/Components/Button';
 export * from '../Libraries/Core/registerCallableModule';
-export * from '../Libraries/DevToolsSettings/DevToolsSettingsManager';
 export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
 export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
@@ -139,15 +139,16 @@ export * from '../Libraries/StyleSheet/processColor';
 export * from '../Libraries/Text/Text';
 export * from '../Libraries/TurboModule/RCTExport';
 export * as TurboModuleRegistry from '../Libraries/TurboModule/TurboModuleRegistry';
+export * as CodegenTypes from '../Libraries/Types/CodegenTypesNamespace';
 export * from '../Libraries/Types/CoreEventTypes';
 export * from '../Libraries/Utilities/Appearance';
 export * from '../Libraries/Utilities/BackHandler';
+export * from '../src/private/devsupport/devmenu/DevMenu';
 export * from '../Libraries/Utilities/DevSettings';
 export * from '../Libraries/Utilities/Dimensions';
 export * from '../Libraries/Utilities/PixelRatio';
 export * from '../Libraries/Utilities/Platform';
 export * from '../Libraries/Vibration/Vibration';
-export * from '../Libraries/YellowBox/YellowBoxDeprecated';
 export * from '../Libraries/vendor/core/ErrorUtils';
 export {
   EmitterSubscription,
@@ -159,57 +160,5 @@ export * from './public/Insets';
 export * from './public/ReactNativeRenderer';
 export * from './public/ReactNativeTypes';
 
-import type {ErrorUtils} from '../Libraries/vendor/core/ErrorUtils';
-
-declare global {
-  interface NodeRequire {
-    (id: string): any;
-  }
-
-  var require: NodeRequire;
-
-  /**
-   * Console polyfill
-   * @see https://reactnative.dev/docs/javascript-environment#polyfills
-   */
-  interface Console {
-    error(message?: any, ...optionalParams: any[]): void;
-    info(message?: any, ...optionalParams: any[]): void;
-    log(message?: any, ...optionalParams: any[]): void;
-    warn(message?: any, ...optionalParams: any[]): void;
-    trace(message?: any, ...optionalParams: any[]): void;
-    debug(message?: any, ...optionalParams: any[]): void;
-    table(...data: any[]): void;
-    groupCollapsed(label?: string): void;
-    groupEnd(): void;
-    group(label?: string): void;
-    /**
-     * @deprecated Use LogBox.ignoreLogs(patterns) instead
-     */
-    ignoredYellowBox: string[];
-  }
-
-  var console: Console;
-
-  /**
-   * This contains the non-native `XMLHttpRequest` object, which you can use if you want to route network requests
-   * through DevTools (to trace them):
-   *
-   *   global.XMLHttpRequest = global.originalXMLHttpRequest;
-   *
-   * @see https://github.com/facebook/react-native/issues/934
-   */
-  const originalXMLHttpRequest: any;
-
-  const __BUNDLE_START_TIME__: number;
-  const ErrorUtils: ErrorUtils;
-
-  /**
-   * This variable is set to true when react-native is running in Dev mode
-   * @example
-   * if (__DEV__) console.log('Running in dev mode')
-   */
-  const __DEV__: boolean;
-
-  const HermesInternal: null | {};
-}
+export {default as codegenNativeCommands} from '../Libraries/Utilities/codegenNativeCommands';
+export {default as codegenNativeComponent} from '../Libraries/Utilities/codegenNativeComponent';

@@ -15,7 +15,7 @@ import type {
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
   Nullable,
@@ -57,6 +57,7 @@ export type SchemaInfo = {
 export type GetSchemaInfoFN = (
   property: PropAST,
   types: TypeDeclarationMap,
+  parser: Parser,
 ) => ?SchemaInfo;
 
 export type BuildSchemaFN<T> = (
@@ -147,6 +148,14 @@ export interface Parser {
     types: $FlowFixMe,
   ): UnionTypeAnnotationMemberType[];
   /**
+   * Given a union annotation members types, it returns an array of string literals.
+   * @parameter membersTypes: union annotation members types
+   * @returns: an array of string literals.
+   */
+  getStringLiteralUnionTypeAnnotationStringLiterals(
+    types: $FlowFixMe,
+  ): string[];
+  /**
    * Given the name of a file, it returns a Schema.
    * @parameter filename: the name of the file.
    * @returns: the Schema of the file.
@@ -232,7 +241,9 @@ export interface Parser {
   /**
    * Calculates enum's members
    */
-  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers;
+  parseEnumMembers(
+    typeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<NativeModuleEnumMember>;
 
   /**
    * Given a node, it returns true if it is a module interface

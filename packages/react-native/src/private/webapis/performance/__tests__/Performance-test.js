@@ -9,21 +9,93 @@
  * @oncall react_native
  */
 
-const Performance = require('../Performance').default;
+// eslint-disable-next-line lint/sort-imports
+import type Performance from '../Performance';
+import {performanceEntryTypeToRaw} from '../internals/RawPerformanceEntry';
+import {reportEntry} from '../specs/__mocks__/NativePerformanceMock';
 
-jest.mock(
-  '../specs/NativePerformance',
-  () => require('../specs/__mocks__/NativePerformance').default,
+jest.mock('../specs/NativePerformance', () =>
+  require('../specs/__mocks__/NativePerformanceMock'),
 );
 
-jest.mock(
-  '../specs/NativePerformanceObserver',
-  () => require('../specs/__mocks__/NativePerformanceObserver').default,
-);
+declare var performance: Performance;
+
+const NativePerformanceMock =
+  require('../specs/__mocks__/NativePerformanceMock').default;
 
 describe('Performance', () => {
-  it('clearEntries removes correct entry types', async () => {
-    const performance = new Performance();
+  beforeEach(() => {
+    jest.resetModules();
+
+    const PerformanceClass = require('../Performance').default;
+    // $FlowExpectedError[cannot-write]
+    global.performance = new PerformanceClass();
+  });
+
+  it('reports marks and measures', () => {
+    NativePerformanceMock.setCurrentTime(25);
+
+    performance.mark('mark-now');
+    performance.mark('mark-in-the-past', {
+      startTime: 10,
+    });
+    performance.mark('mark-in-the-future', {
+      startTime: 50,
+    });
+    performance.measure('measure-with-specific-time', {
+      start: 30,
+      duration: 4,
+    });
+    performance.measure('measure-now-with-start-mark', 'mark-in-the-past');
+    performance.measure(
+      'measure-with-start-and-end-mark',
+      'mark-in-the-past',
+      'mark-in-the-future',
+    );
+
+    const entries = performance.getEntries();
+    expect(entries.length).toBe(6);
+    expect(entries.map(entry => entry.toJSON())).toEqual([
+      {
+        duration: 0,
+        entryType: 'mark',
+        name: 'mark-in-the-past',
+        startTime: 10,
+      },
+      {
+        duration: -10,
+        entryType: 'measure',
+        name: 'measure-now-with-start-mark',
+        startTime: 10,
+      },
+      {
+        duration: 40,
+        entryType: 'measure',
+        name: 'measure-with-start-and-end-mark',
+        startTime: 10,
+      },
+      {
+        duration: 0,
+        entryType: 'mark',
+        name: 'mark-now',
+        startTime: 25,
+      },
+      {
+        duration: 4,
+        entryType: 'measure',
+        name: 'measure-with-specific-time',
+        startTime: 30,
+      },
+      {
+        duration: 0,
+        entryType: 'mark',
+        name: 'mark-in-the-future',
+        startTime: 50,
+      },
+    ]);
+  });
+
+  it('clearMarks and clearMeasures remove correct entry types', async () => {
     performance.mark('entry1', {startTime: 0});
     performance.mark('mark2', {startTime: 0});
 
@@ -53,7 +125,6 @@ describe('Performance', () => {
   });
 
   it('getEntries only works with allowed entry types', async () => {
-    const performance = new Performance();
     performance.clearMarks();
     performance.clearMeasures();
 
@@ -82,7 +153,6 @@ describe('Performance', () => {
   });
 
   it('getEntries works with marks and measures', async () => {
-    const performance = new Performance();
     performance.clearMarks();
     performance.clearMeasures();
 
@@ -114,5 +184,109 @@ describe('Performance', () => {
     expect(
       performance.getEntriesByName('entry1', 'measure').map(e => e.entryType),
     ).toStrictEqual(['measure']);
+  });
+
+  it('defines EventCounts for Performance', () => {
+    expect(performance.eventCounts).not.toBeUndefined();
+  });
+
+  it('consistently implements the API for EventCounts', async () => {
+    let interactionId = 0;
+    const eventDefaultValues = {
+      entryType: performanceEntryTypeToRaw('event'),
+      startTime: 0, // startTime
+      duration: 100, // duration
+      processingStart: 0, // processing start
+      processingEnd: 100, // processingEnd
+    };
+
+    reportEntry({
+      name: 'click',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+    reportEntry({
+      name: 'input',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+    reportEntry({
+      name: 'input',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+    reportEntry({
+      name: 'keyup',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+    reportEntry({
+      name: 'keyup',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+    reportEntry({
+      name: 'keyup',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+
+    const eventCounts = performance.eventCounts;
+    expect(eventCounts.size).toBe(3);
+    expect(Array.from(eventCounts.entries())).toStrictEqual([
+      ['click', 1],
+      ['input', 2],
+      ['keyup', 3],
+    ]);
+
+    expect(eventCounts.get('click')).toEqual(1);
+    expect(eventCounts.get('input')).toEqual(2);
+    expect(eventCounts.get('keyup')).toEqual(3);
+
+    expect(eventCounts.has('click')).toEqual(true);
+    expect(eventCounts.has('input')).toEqual(true);
+    expect(eventCounts.has('keyup')).toEqual(true);
+
+    expect(Array.from(eventCounts.keys())).toStrictEqual([
+      'click',
+      'input',
+      'keyup',
+    ]);
+    expect(Array.from(eventCounts.values())).toStrictEqual([1, 2, 3]);
+
+    await jest.runAllTicks();
+    reportEntry({
+      name: 'input',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+    reportEntry({
+      name: 'keyup',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+    reportEntry({
+      name: 'keyup',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+    expect(Array.from(eventCounts.values())).toStrictEqual([1, 3, 5]);
+
+    await jest.runAllTicks();
+    reportEntry({
+      name: 'click',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+
+    await jest.runAllTicks();
+
+    reportEntry({
+      name: 'keyup',
+      ...eventDefaultValues,
+      interactionId: interactionId++,
+    });
+
+    expect(Array.from(eventCounts.values())).toStrictEqual([2, 3, 6]);
   });
 });

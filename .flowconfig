@@ -26,6 +26,9 @@
 ; helloworld
 <PROJECT_ROOT>/packages/helloworld/ios/Pods/
 
+; Ignore rn-tester Pods
+<PROJECT_ROOT>/packages/rn-tester/Pods/
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -38,6 +41,7 @@
 flow-typed/
 packages/react-native/interface.js
 packages/react-native/flow/
+packages/react-native/src/types/
 
 [options]
 enums=true
@@ -63,11 +67,15 @@ module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/packages/react-nat
 module.name_mapper='^@react-native/dev-middleware$' -> '<PROJECT_ROOT>/packages/dev-middleware'
 module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\|xml\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
 
+react.runtime=automatic
+
 suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
+
+ban_spread_key_props=true
 
 [lints]
 sketchy-null-number=warn
@@ -90,4 +98,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.245.2
+^0.268.0

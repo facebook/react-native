@@ -24,15 +24,15 @@ public class PopupMenuPackage() : BaseReactPackage(), ViewManagerOnDemandReactPa
               ModuleSpec.viewManagerSpec({ ReactPopupMenuManager() }),
       )
 
-  override fun getModule(name: String, context: ReactApplicationContext): NativeModule? {
+  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
     return null
   }
 
-  protected override fun getViewManagers(context: ReactApplicationContext): List<ModuleSpec> {
+  protected override fun getViewManagers(reactContext: ReactApplicationContext): List<ModuleSpec> {
     return viewManagersMap.values.toList()
   }
 
-  override fun getViewManagerNames(context: ReactApplicationContext): Collection<String> {
+  override fun getViewManagerNames(reactContext: ReactApplicationContext): Collection<String> {
     return viewManagersMap.keys
   }
 

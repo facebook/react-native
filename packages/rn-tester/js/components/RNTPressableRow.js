@@ -13,7 +13,7 @@ import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 
-type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
+type ViewStyleProp = React.ElementConfig<typeof View>['style'];
 type Props = {
   accessibilityLabel?: ?string,
   testID?: ?string,

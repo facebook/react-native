@@ -3,9 +3,6 @@ description: Prepare iOS Tests
 runs:
   using: composite
   steps:
-    - name: brew install xcbeautify
-      run: brew install xcbeautify
-      shell: bash
     - name: Run Ruby Tests
       shell: bash
       run: |

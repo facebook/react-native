@@ -9,7 +9,7 @@
 #include <string>
 
 #include <cxxreact/MoveWrapper.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -813,7 +813,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable {
-            SystraceSection s(
+            TraceSection s(
                 "JavaTurboModuleAsyncMethodInvocation",
                 "module",
                 moduleNameStr,
@@ -923,7 +923,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable {
-            SystraceSection s(
+            TraceSection s(
                 "JavaTurboModuleAsyncMethodInvocation",
                 "module",
                 moduleNameStr,
@@ -970,34 +970,28 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   }
 }
 
-void JavaTurboModule::setEventEmitterCallback(
-    jni::alias_ref<jobject> jinstance) {
+void JavaTurboModule::configureEventEmitterCallback() {
   JNIEnv* env = jni::Environment::current();
-  auto instance = jinstance.get();
   static jmethodID cachedMethodId = nullptr;
   if (cachedMethodId == nullptr) {
-    jclass cls = env->GetObjectClass(instance);
+    jclass cls = env->GetObjectClass(instance_.get());
     cachedMethodId = env->GetMethodID(
         cls,
         "setEventEmitterCallback",
         "(Lcom/facebook/react/bridge/CxxCallbackImpl;)V");
+    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
   }
 
-  auto eventEmitterLookup =
-      [&](const std::string& eventName) -> AsyncEventEmitter<folly::dynamic>& {
-    return static_cast<AsyncEventEmitter<folly::dynamic>&>(
-        *eventEmitterMap_[eventName].get());
-  };
-
   jvalue arg;
-  arg.l = JCxxCallbackImpl::newObjectCxxArgs([eventEmitterLookup = std::move(
-                                                  eventEmitterLookup)](
-                                                 folly::dynamic args) {
-            auto eventName = args.at(0).asString();
-            auto eventArgs = args.size() > 1 ? args.at(1) : nullptr;
-            eventEmitterLookup(eventName).emit(std::move(eventArgs));
-          }).release();
-  env->CallVoidMethod(instance, cachedMethodId, arg);
+  arg.l =
+      JCxxCallbackImpl::newObjectCxxArgs([&](folly::dynamic args) {
+        auto eventName = args.at(0).asString();
+        auto& eventEmitter = static_cast<AsyncEventEmitter<folly::dynamic>&>(
+            *eventEmitterMap_[eventName].get());
+        eventEmitter.emit(args.size() > 1 ? std::move(args).at(1) : nullptr);
+      }).release();
+  env->CallVoidMethod(instance_.get(), cachedMethodId, arg);
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 }
 
 } // namespace facebook::react

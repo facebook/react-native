@@ -17,6 +17,12 @@ export type DynamicColorIOSTuple = {
   highContrastDark?: ColorValue,
 };
 
+/**
+ * Specify color to display depending on the current system appearance settings
+ *
+ * @param tuple Colors you want to use for "light mode" and "dark mode"
+ * @platform ios
+ */
 export const DynamicColorIOS = (tuple: DynamicColorIOSTuple): ColorValue => {
   throw new Error('DynamicColorIOS is not available on this platform.');
 };

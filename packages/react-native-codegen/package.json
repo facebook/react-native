@@ -1,6 +1,6 @@
 {
   "name": "@react-native/codegen",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "description": "Code generation tools for React Native",
   "license": "MIT",
   "repository": {
@@ -29,33 +29,27 @@
     "lib"
   ],
   "dependencies": {
-    "@babel/parser": "^7.25.3",
     "glob": "^7.1.1",
-    "hermes-parser": "0.23.1",
+    "hermes-parser": "0.28.1",
     "invariant": "^2.2.4",
-    "jscodeshift": "^0.14.0",
-    "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "yargs": "^17.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@babel/plugin-transform-class-properties": "^7.25.4",
-    "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.7",
-    "@babel/plugin-transform-object-rest-spread": "^7.24.7",
-    "@babel/plugin-transform-optional-chaining": "^7.24.8",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-async-to-generator": "^7.24.7",
-    "@babel/plugin-transform-destructuring": "^7.24.8",
+    "@babel/plugin-transform-class-properties": "^7.25.4",
     "@babel/plugin-transform-flow-strip-types": "^7.25.2",
+    "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.7",
+    "@babel/plugin-transform-optional-chaining": "^7.24.8",
     "@babel/preset-env": "^7.25.3",
     "chalk": "^4.0.0",
-    "hermes-estree": "0.23.1",
+    "hermes-estree": "0.28.1",
     "micromatch": "^4.0.4",
     "prettier": "2.8.8",
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {
-    "@babel/preset-env": "^7.1.6"
+    "@babel/core": "*"
   }
 }

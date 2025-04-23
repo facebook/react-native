@@ -27,7 +27,6 @@ const chalk = require('chalk');
 const fs = require('fs');
 const glob = require('glob');
 const micromatch = require('micromatch');
-const mkdirp = require('mkdirp');
 const path = require('path');
 const prettier = require('prettier');
 const prettierConfig = JSON.parse(
@@ -37,7 +36,7 @@ const prettierConfig = JSON.parse(
 const SRC_DIR = 'src';
 const BUILD_DIR = 'lib';
 const JS_FILES_PATTERN = '**/*.js';
-const IGNORE_PATTERN = '**/__tests__/**';
+const IGNORE_PATTERN = '**/(__tests__|__test_fixtures__)/**';
 const PACKAGE_DIR = path.resolve(__dirname, '../');
 
 const fixedWidth = str => {
@@ -60,7 +59,8 @@ function getBuildPath(file, buildFolder) {
 function buildFile(file, silent) {
   const destPath = getBuildPath(file, BUILD_DIR);
 
-  mkdirp.sync(path.dirname(destPath));
+  fs.mkdirSync(path.dirname(destPath), {recursive: true});
+
   if (micromatch.isMatch(file, IGNORE_PATTERN)) {
     silent ||
       process.stdout.write(

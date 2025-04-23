@@ -21,6 +21,7 @@
 #import <React/RCTPausedInDebuggerOverlayController.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
+#import <React/RCTUtils.h>
 #import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/InspectorInterfaces.h>
 #import <jsinspector-modern/ReactCdp.h>
@@ -47,12 +48,17 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   jsinspector_modern::HostTargetMetadata getMetadata() override
   {
     auto metadata = [RCTInspectorUtils getHostMetadata];
+#if TARGET_OS_IPHONE
+    NSString *osName = [[UIDevice currentDevice] systemName];
+#else
+    NSString *osName = @"macOS";
+#endif
 
     return {
         .appDisplayName = [metadata.appDisplayName UTF8String],
         .appIdentifier = [metadata.appIdentifier UTF8String],
         .deviceName = [metadata.deviceName UTF8String],
-        .integrationName = "iOS Bridgeless (RCTHost)",
+        .integrationName = [[NSString stringWithFormat:@"%@ Bridgeless (RCTHost)", osName] UTF8String],
         .platform = [metadata.platform UTF8String],
         .reactNativeVersion = [metadata.reactNativeVersion UTF8String],
     };
@@ -189,8 +195,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                        andSetter:bundleURLSetter
                                 andDefaultGetter:defaultBundleURLGetter];
 
-    // Listen to reload commands
-    dispatch_async(dispatch_get_main_queue(), ^{
+    RCTExecuteOnMainQueue(^{
+      // Listen to reload commands
       RCTRegisterReloadCommandListener(self);
     });
 
@@ -254,7 +260,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   surface.surfaceHandler.setDisplayMode(displayMode);
   [self _attachSurface:surface];
 
-  [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
+  __weak RCTFabricSurface *weakSurface = surface;
+  // Use the BufferedRuntimeExecutor to start the surface after the main JS bundle was fully executed.
+  [_instance callFunctionOnBufferedRuntimeExecutor:[weakSurface](facebook::jsi::Runtime &_) { [weakSurface start]; }];
   return surface;
 }
 
@@ -273,6 +281,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   return [_instance surfacePresenter];
 }
 
+- (RCTBundleManager *)bundleManager
+{
+  return _bundleManager;
+}
+
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
 {
   [_instance callFunctionOnJSModule:moduleName method:method args:args];
@@ -282,25 +295,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (void)didReceiveReloadCommand
 {
-  [_instance invalidate];
-  _instance = nil;
-  if (_bundleURLProvider) {
-    [self _setBundleURL:_bundleURLProvider()];
-  }
-
-  _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsRuntimeFactory:[self _provideJSEngine]
-                                      bundleManager:_bundleManager
-                         turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                     moduleRegistry:_moduleRegistry
-                              parentInspectorTarget:_inspectorTarget.get()
-                                      launchOptions:_launchOptions];
-  [_hostDelegate hostDidStart:self];
-
-  for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
-    [surface resetWithSurfacePresenter:self.surfacePresenter];
-    [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
-  }
+  [self _reloadWithShouldRestartSurfaces:YES];
 }
 
 - (void)dealloc
@@ -315,18 +310,56 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 #pragma mark - RCTInstanceDelegate
 
-- (void)instance:(RCTInstance *)instance
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
+{
+  if ([_hostDelegate respondsToSelector:@selector(unstableModulesRequiringMainQueueSetup)]) {
+    return [_hostDelegate unstableModulesRequiringMainQueueSetup];
+  }
+  return @[];
+}
+
+- (BOOL)instance:(RCTInstance *)instance
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
+           originalMessage:(NSString *_Nullable)originalMessage
+                      name:(NSString *_Nullable)name
+            componentStack:(NSString *_Nullable)componentStack
                exceptionId:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData
 {
-  [_hostDelegate host:self didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
+  if (![_hostDelegate respondsToSelector:@selector(host:
+                                             didReceiveJSErrorStack:message:originalMessage:name:componentStack
+                                                                   :exceptionId:isFatal:extraData:)]) {
+    return NO;
+  }
+
+  [_hostDelegate host:self
+      didReceiveJSErrorStack:stack
+                     message:message
+             originalMessage:originalMessage
+                        name:name
+              componentStack:componentStack
+                 exceptionId:exceptionId
+                     isFatal:isFatal
+                   extraData:extraData];
+  return YES;
 }
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
+}
+
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  if ([_hostDelegate respondsToSelector:@selector(loadBundleAtURL:onProgress:onComplete:)]) {
+    [_hostDelegate loadBundleAtURL:sourceURL onProgress:onProgress onComplete:loadCallback];
+  } else {
+    [RCTJavaScriptLoader loadBundleAtURL:sourceURL onProgress:onProgress onComplete:loadCallback];
+  }
 }
 
 #pragma mark - RCTContextContainerHandling
@@ -351,6 +384,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 - (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler
 {
   _contextContainerHandler = contextContainerHandler;
+}
+
+- (void)reload
+{
+  [self _reloadWithShouldRestartSurfaces:NO];
 }
 
 #pragma mark - Private
@@ -396,6 +434,33 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   // Update the global bundle URLq
   RCTReloadCommandSetBundleURL(_bundleURL);
 }
+
+- (void)_reloadWithShouldRestartSurfaces:(BOOL)shouldRestartSurfaces
+{
+  [_instance invalidate];
+  _instance = nil;
+  if (_bundleURLProvider) {
+    [self _setBundleURL:_bundleURLProvider()];
+  }
+
+  _instance = [[RCTInstance alloc] initWithDelegate:self
+                                   jsRuntimeFactory:[self _provideJSEngine]
+                                      bundleManager:_bundleManager
+                         turboModuleManagerDelegate:_turboModuleManagerDelegate
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()
+                                      launchOptions:_launchOptions];
+  [_hostDelegate hostDidStart:self];
+
+  for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
+    [surface resetWithSurfacePresenter:self.surfacePresenter];
+    if (shouldRestartSurfaces) {
+      [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
+    }
+  }
+}
+
+#pragma mark - jsinspector_modern
 
 - (jsinspector_modern::HostTarget *)inspectorTarget
 {

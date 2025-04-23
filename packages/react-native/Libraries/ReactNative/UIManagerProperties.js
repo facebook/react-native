@@ -26,7 +26,7 @@
  * accessed. Once UIManager property accesses for view managers has been fully
  * deprecated, this file will also be removed.
  */
-module.exports = [
+const UIManagerProperties: $ReadOnlyArray<string> = [
   'clearJSResponder',
   'configureNextLayoutAnimation',
   'createView',
@@ -59,3 +59,5 @@ module.exports = [
   'genericDirectEventTypes',
   'lazilyLoadView',
 ];
+
+export default UIManagerProperties;

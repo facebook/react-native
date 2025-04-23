@@ -10,11 +10,6 @@ package com.facebook.react.views.view
 import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.os.Build
-import android.os.Build.VERSION
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES
-import android.os.Build.VERSION_CODES.P
-import android.os.Build.VERSION_CODES.Q
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 

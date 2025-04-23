@@ -42,6 +42,97 @@ NSArray<Class> *RCTGetModuleClasses(void)
   return result;
 }
 
+NSSet<NSString *> *getCoreModuleClasses(void);
+NSSet<NSString *> *getCoreModuleClasses(void)
+{
+  static NSSet<NSString *> *coreModuleClasses = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    coreModuleClasses = [NSSet setWithArray:@[
+      @"RCTViewManager",
+      @"RCTActivityIndicatorViewManager",
+      @"RCTDebuggingOverlayManager",
+      @"RCTModalHostViewManager",
+      @"RCTModalManager",
+      @"RCTRefreshControlManager",
+      @"RCTSafeAreaViewManager",
+      @"RCTScrollContentViewManager",
+      @"RCTScrollViewManager",
+      @"RCTSwitchManager",
+      @"RCTUIManager",
+      @"RCTAccessibilityManager",
+      @"RCTActionSheetManager",
+      @"RCTAlertManager",
+      @"RCTAppearance",
+      @"RCTAppState",
+      @"RCTClipboard",
+      @"RCTDeviceInfo",
+      @"RCTDevLoadingView",
+      @"RCTDevMenu",
+      @"RCTDevSettings",
+      @"RCTDevToolsRuntimeSettingsModule",
+      @"RCTEventDispatcher",
+      @"RCTExceptionsManager",
+      @"RCTI18nManager",
+      @"RCTKeyboardObserver",
+      @"RCTLogBox",
+      @"RCTPerfMonitor",
+      @"RCTPlatform",
+      @"RCTRedBox",
+      @"RCTSourceCode",
+      @"RCTStatusBarManager",
+      @"RCTTiming",
+      @"RCTWebSocketModule",
+      @"RCTNativeAnimatedModule",
+      @"RCTNativeAnimatedTurboModule",
+      @"RCTBlobManager",
+      @"RCTFileReaderModule",
+      @"RCTBundleAssetImageLoader",
+      @"RCTGIFImageDecoder",
+      @"RCTImageEditingManager",
+      @"RCTImageLoader",
+      @"RCTImageStoreManager",
+      @"RCTImageViewManager",
+      @"RCTLocalAssetImageLoader",
+      @"RCTLinkingManager",
+      @"RCTDataRequestHandler",
+      @"RCTFileRequestHandler",
+      @"RCTHTTPRequestHandler",
+      @"RCTNetworking",
+      @"RCTPushNotificationManager",
+      @"RCTSettingsManager",
+      @"RCTBaseTextViewManager",
+      @"RCTBaseTextInputViewManager",
+      @"RCTInputAccessoryViewManager",
+      @"RCTMultilineTextInputViewManager",
+      @"RCTRawTextViewManager",
+      @"RCTSinglelineTextInputViewManager",
+      @"RCTTextViewManager",
+      @"RCTVirtualTextViewManager",
+      @"RCTVibration",
+    ]];
+  });
+
+  return coreModuleClasses;
+}
+
+static NSMutableArray<NSString *> *modulesLoadedWithOldArch;
+void addModuleLoadedWithOldArch(NSString *);
+void addModuleLoadedWithOldArch(NSString *moduleName)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    modulesLoadedWithOldArch = [NSMutableArray new];
+  });
+
+  [modulesLoadedWithOldArch addObject:moduleName];
+}
+
+NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void)
+{
+  return modulesLoadedWithOldArch;
+}
+
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.
@@ -50,6 +141,10 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
+  if (RCTAreLegacyLogsEnabled() && RCTIsNewArchEnabled() &&
+      ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
+    addModuleLoadedWithOldArch([moduleClass description]);
+  }
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
@@ -148,16 +243,6 @@ void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logL
   bridgeProxyLoggingLevel = logLevel;
 }
 
-static BOOL useTurboModuleInteropForAllTurboModules = NO;
-BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void)
-{
-  return useTurboModuleInteropForAllTurboModules;
-}
-void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled)
-{
-  useTurboModuleInteropForAllTurboModules = enabled;
-}
-
 // Turn on TurboModule sync execution of void methods
 static BOOL gTurboModuleEnableSyncVoidMethods = NO;
 BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
@@ -167,17 +252,6 @@ BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
 void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
 {
   gTurboModuleEnableSyncVoidMethods = enabled;
-}
-
-static BOOL gBridgeModuleDisableBatchDidComplete = NO;
-BOOL RCTBridgeModuleBatchDidCompleteDisabled(void)
-{
-  return gBridgeModuleDisableBatchDidComplete;
-}
-
-void RCTDisableBridgeModuleBatchDidComplete(BOOL disabled)
-{
-  gBridgeModuleDisableBatchDidComplete = disabled;
 }
 
 BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
@@ -217,7 +291,7 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
   void onReload(const PageReloadRequest &request) override
   {
     RCTAssertMainQueue();
-    [bridge_ reload];
+    RCTTriggerReloadCommandListeners(@"Reloading due to PageReloadRequest from DevTools.");
   }
 
   void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override
@@ -323,6 +397,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)dealloc
 {
+  RCTBridge *batchedBridge = self.batchedBridge;
   /**
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainQueue();
@@ -342,7 +417,17 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     RCTExecuteOnMainQueue(^{
       facebook::react::jsinspector_modern::getInspectorInstance().removePage(*inspectorPageId);
       inspectorPageId.reset();
-      inspectorTarget.reset();
+      // NOTE: RCTBridgeHostTargetDelegate holds a weak reference to RCTBridge.
+      // Conditionally call `inspectorTarget.reset()` to avoid a crash.
+      if (batchedBridge) {
+        [batchedBridge
+            dispatchBlock:^{
+              inspectorTarget.reset();
+            }
+                    queue:RCTJSThread];
+      } else {
+        inspectorTarget.reset();
+      }
     });
   }
 }

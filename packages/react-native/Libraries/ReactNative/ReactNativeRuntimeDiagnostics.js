@@ -14,7 +14,7 @@
  * Perform a set of runtime diagnostics, usually useful for test purpose.
  * This is only meaningful for __DEV__ mode.
  */
-export type RuntimeDiagnostics = {|
+export type RuntimeDiagnostics = {
   /**
    * Check if the runtime diagnostics is enabled at all.
    */
@@ -24,7 +24,7 @@ export type RuntimeDiagnostics = {|
    * If enabled, simulate early JavaScript errors during initialization.
    */
   simulateEarlyJavaScriptErrors: () => void,
-|};
+};
 
 export type RuntimeDiagnosticFlag = 'early_js_errors' | 'all';
 
@@ -65,4 +65,4 @@ const ReactNativeRuntimeDiagnostics: RuntimeDiagnostics = {
   },
 };
 
-module.exports = ReactNativeRuntimeDiagnostics;
+export default ReactNativeRuntimeDiagnostics;

@@ -12,10 +12,11 @@ import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONME
 
 import android.os.SystemClock;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactIgnorableMountingException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MountItemDispatcher {
 
   private static final String TAG = "MountItemDispatcher";
@@ -39,20 +41,18 @@ public class MountItemDispatcher {
   private final MountingManager mMountingManager;
   private final ItemDispatchListener mItemDispatchListener;
 
-  @NonNull
   private final ConcurrentLinkedQueue<DispatchCommandMountItem> mViewCommandMountItems =
       new ConcurrentLinkedQueue<>();
 
-  @NonNull
   private final ConcurrentLinkedQueue<MountItem> mMountItems = new ConcurrentLinkedQueue<>();
 
-  @NonNull
   private final ConcurrentLinkedQueue<MountItem> mPreMountItems = new ConcurrentLinkedQueue<>();
 
   private boolean mInDispatch = false;
-  private int mReDispatchCounter = 0;
   private long mBatchedExecutionTime = 0L;
   private long mRunStartTime = 0L;
+
+  private long mLastFrameTimeNanos = 0L;
 
   public MountItemDispatcher(MountingManager mountingManager, ItemDispatchListener listener) {
     mMountingManager = mountingManager;
@@ -101,60 +101,19 @@ public class MountItemDispatcher {
       return;
     }
 
-    if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
-      mInDispatch = true;
+    mInDispatch = true;
 
-      try {
-        boolean didDispatchItems = true;
-        // Dispatch as many mount items as we find. Some mount items might
-        // trigger state updates that trigger more mount items. This will
-        // process them correctly.
-        while (didDispatchItems) {
-          didDispatchItems = dispatchMountItems();
-        }
-      } finally {
-        mInDispatch = false;
-      }
-
-      // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
-      // NativeAnimatedModule relies on this for executing any animations that may have been
-      // scheduled
-      mItemDispatchListener.didDispatchMountItems();
-    } else {
-      final boolean didDispatchItems;
-      try {
-        didDispatchItems = dispatchMountItems();
-      } catch (Throwable e) {
-        mReDispatchCounter = 0;
-        throw e;
-      } finally {
-        // Clean up after running dispatchMountItems - even if an exception was thrown
-        mInDispatch = false;
-      }
-
-      // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
-      // NativeAnimatedModule relies on this for executing any animations that may have been
-      // scheduled
-      mItemDispatchListener.didDispatchMountItems();
-
-      // Decide if we want to try reentering
-      if (mReDispatchCounter < 10 && didDispatchItems) {
-        // Executing twice in a row is normal. Only log after that point.
-        if (mReDispatchCounter > 2) {
-          ReactSoftExceptionLogger.logSoftException(
-              TAG,
-              new ReactNoCrashSoftException(
-                  "Re-dispatched "
-                      + mReDispatchCounter
-                      + " times. This indicates setState (?) is likely being called too many times"
-                      + " during mounting."));
-        }
-
-        mReDispatchCounter++;
-        tryDispatchMountItems();
-      }
-      mReDispatchCounter = 0;
+    try {
+      dispatchMountItems();
+    } finally {
+      // Clean up after running dispatchMountItems - even if an exception was thrown
+      mInDispatch = false;
     }
+
+    // We call didDispatchMountItems regardless of whether we actually dispatched anything, since
+    // NativeAnimatedModule relies on this for executing any animations that may have been
+    // scheduled
+    mItemDispatchListener.didDispatchMountItems();
   }
 
   @UiThread
@@ -162,6 +121,7 @@ public class MountItemDispatcher {
   public void dispatchMountItems(Queue<MountItem> mountItems) {
     while (!mountItems.isEmpty()) {
       MountItem item = mountItems.poll();
+      Assertions.assertNotNull(item);
       try {
         item.execute(mMountingManager);
       } catch (RetryableMountingLayerException e) {
@@ -194,10 +154,8 @@ public class MountItemDispatcher {
    */
   @UiThread
   @ThreadConfined(UI)
-  private boolean dispatchMountItems() {
-    if (mReDispatchCounter == 0) {
-      mBatchedExecutionTime = 0;
-    }
+  private void dispatchMountItems() {
+    mBatchedExecutionTime = 0;
 
     mRunStartTime = SystemClock.uptimeMillis();
 
@@ -206,7 +164,7 @@ public class MountItemDispatcher {
     List<MountItem> mountItemsToDispatch = getAndResetMountItems();
 
     if (mountItemsToDispatch == null && viewCommandMountItemsToDispatch == null) {
-      return false;
+      return;
     }
 
     mItemDispatchListener.willMountItems(mountItemsToDispatch);
@@ -223,8 +181,7 @@ public class MountItemDispatcher {
     // errors/glitches.
     if (viewCommandMountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "MountItemDispatcher::mountViews viewCommandMountItems");
+          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews viewCommandMountItems");
       for (DispatchCommandMountItem command : viewCommandMountItemsToDispatch) {
         if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
@@ -258,7 +215,7 @@ public class MountItemDispatcher {
         }
       }
 
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
 
     // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
@@ -266,7 +223,7 @@ public class MountItemDispatcher {
     List<MountItem> preMountItemsToDispatch = getAndResetPreMountItems();
     if (preMountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::mountViews preMountItems");
+          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews preMountItems");
       for (MountItem preMountItem : preMountItemsToDispatch) {
         if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(preMountItem, "dispatchMountItems: Executing preMountItem");
@@ -274,13 +231,12 @@ public class MountItemDispatcher {
         executeOrEnqueue(preMountItem);
       }
 
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
 
     if (mountItemsToDispatch != null) {
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "MountItemDispatcher::mountViews mountItems to execute");
+          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews mountItems to execute");
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
@@ -318,12 +274,10 @@ public class MountItemDispatcher {
       }
       mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
 
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
 
     mItemDispatchListener.didMountItems(mountItemsToDispatch);
-
-    return true;
   }
 
   /*
@@ -335,22 +289,27 @@ public class MountItemDispatcher {
   @UiThread
   @ThreadConfined(UI)
   public void dispatchPreMountItems(long frameTimeNanos) {
+    mLastFrameTimeNanos = frameTimeNanos;
+
     if (mPreMountItems.isEmpty()) {
       // Avoid starting systrace if there are no pre mount items.
       return;
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "MountItemDispatcher::premountViews");
+    long deadline = mLastFrameTimeNanos + FRAME_TIME_NS / 2;
+    dispatchPreMountItemsImpl(deadline);
+  }
+
+  private void dispatchPreMountItemsImpl(long deadline) {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "MountItemDispatcher::premountViews");
 
     // dispatchPreMountItems cannot be reentrant, but we want to prevent dispatchMountItems from
     // reentering during dispatchPreMountItems
     mInDispatch = true;
 
-    long frameTimeDeadline = frameTimeNanos + FRAME_TIME_NS / 2;
     try {
       while (true) {
-        if (System.nanoTime() > frameTimeDeadline) {
+        if (System.nanoTime() > deadline) {
           break;
         }
 
@@ -369,7 +328,7 @@ public class MountItemDispatcher {
       mInDispatch = false;
     }
 
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
   }
 
   private void executeOrEnqueue(MountItem item) {
@@ -381,7 +340,8 @@ public class MountItemDispatcher {
             item.getSurfaceId());
       }
       SurfaceMountingManager surfaceMountingManager =
-          mMountingManager.getSurfaceManager(item.getSurfaceId());
+          mMountingManager.getSurfaceManagerEnforced(
+              item.getSurfaceId(), "MountItemDispatcher::executeOrEnqueue");
       surfaceMountingManager.scheduleMountItemOnViewAttach(item);
     } else {
       item.execute(mMountingManager);

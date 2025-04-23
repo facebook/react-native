@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-std=c++20)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB_RECURSE bridgeless_hermes_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(
@@ -25,6 +25,7 @@ target_link_libraries(bridgelesshermes
         reactnative
 )
 
+target_compile_reactnative_options(bridgelesshermes PRIVATE "Fabric")
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
         target_compile_options(
                 bridgelesshermes

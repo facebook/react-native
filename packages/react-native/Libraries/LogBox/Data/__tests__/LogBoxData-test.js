@@ -20,7 +20,8 @@ jest.mock('../../../Core/Devtools/parseErrorStack', () => {
 
 jest.mock('../../../Core/ExceptionsManager');
 
-const ExceptionsManager: any = require('../../../Core/ExceptionsManager');
+const ExceptionsManager: any =
+  require('../../../Core/ExceptionsManager').default;
 const LogBoxData = require('../LogBoxData');
 
 const registry = () => {

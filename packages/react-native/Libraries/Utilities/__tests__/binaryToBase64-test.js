@@ -14,7 +14,7 @@ const base64 = require('base64-js');
 const {TextDecoder, TextEncoder} = require('util');
 
 describe('binaryToBase64', () => {
-  const binaryToBase64 = require('../binaryToBase64');
+  const binaryToBase64 = require('../binaryToBase64').default;
 
   it('should encode a Uint8Array', () => {
     const input = new TextEncoder().encode('Test string');

@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/InstanceAgent.h>
-#include "CdpJson.h"
+#include "InstanceAgent.h"
 #include "RuntimeTarget.h"
+
+#include <jsinspector-modern/cdp/CdpJson.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -150,6 +151,26 @@ void InstanceAgent::maybeSendPendingConsoleMessages() {
       sendConsoleMessageImmediately(std::move(message));
     }
   }
+}
+
+void InstanceAgent::startTracing() {
+  if (runtimeAgent_) {
+    runtimeAgent_->registerForTracing();
+    runtimeAgent_->enableSamplingProfiler();
+  }
+}
+
+void InstanceAgent::stopTracing() {
+  if (runtimeAgent_) {
+    runtimeAgent_->disableSamplingProfiler();
+  }
+}
+
+tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
+  tracing::RuntimeSamplingProfile runtimeSamplingProfile =
+      runtimeAgent_->collectSamplingProfile();
+
+  return tracing::InstanceTracingProfile{std::move(runtimeSamplingProfile)};
 }
 
 } // namespace facebook::react::jsinspector_modern

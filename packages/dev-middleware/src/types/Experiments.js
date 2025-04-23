@@ -20,6 +20,7 @@ export type Experiments = $ReadOnly<{
   /**
    * Enables the Network panel in the debugger frontend.
    */
+  // NOTE: Used by Expo, exposing a tab labelled "Network (Expo, unstable)"
   enableNetworkInspector: boolean,
 }>;
 

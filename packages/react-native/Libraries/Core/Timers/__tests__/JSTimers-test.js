@@ -24,7 +24,7 @@ jest
   }))
   .unmock('../JSTimers');
 
-const JSTimers = require('../JSTimers');
+const JSTimers = require('../JSTimers').default;
 
 describe('JSTimers', function () {
   beforeEach(function () {

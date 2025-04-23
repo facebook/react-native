@@ -10,9 +10,8 @@
 
 'use strict';
 
-const React = require('react');
-const {useState} = require('react');
-const {
+import React, {useState} from 'react';
+import {
   Alert,
   Button,
   KeyboardAvoidingView,
@@ -23,7 +22,7 @@ const {
   TextInput,
   TouchableOpacity,
   View,
-} = require('react-native');
+} from 'react-native';
 
 const onButtonPress = () => {
   Alert.alert('Successfully Registered!');
@@ -59,7 +58,7 @@ const CloseButton = (
       <Pressable
         onPress={() => props.setModalOpen(false)}
         style={styles.closeButton}>
-        <Text>Close</Text>
+        <Text style={styles.touchableText}>Close</Text>
       </Pressable>
     </View>
   );
@@ -117,7 +116,9 @@ const KeyboardAvoidingViewBehaviour = () => {
       </Modal>
       <View>
         <Pressable onPress={() => setModalOpen(true)}>
-          <Text testID="keyboard_avoiding_view_behaviors_open">
+          <Text
+            style={styles.touchableText}
+            testID="keyboard_avoiding_view_behaviors_open">
             Open Example
           </Text>
         </Pressable>
@@ -141,7 +142,7 @@ const KeyboardAvoidingDisabled = () => {
       </Modal>
       <View>
         <Pressable onPress={() => setModalOpen(true)}>
-          <Text>Open Example</Text>
+          <Text style={styles.touchableText}>Open Example</Text>
         </Pressable>
       </View>
     </View>
@@ -163,7 +164,7 @@ const KeyboardAvoidingVerticalOffset = () => {
       </Modal>
       <View>
         <Pressable onPress={() => setModalOpen(true)}>
-          <Text>Open Example</Text>
+          <Text style={styles.touchableText}>Open Example</Text>
         </Pressable>
       </View>
     </View>
@@ -186,7 +187,7 @@ const KeyboardAvoidingContentContainerStyle = () => {
       </Modal>
       <View>
         <Pressable onPress={() => setModalOpen(true)}>
-          <Text>Open Example</Text>
+          <Text style={styles.touchableText}>Open Example</Text>
         </Pressable>
       </View>
     </View>
@@ -232,6 +233,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginVertical: 10,
     padding: 10,
+  },
+  touchableText: {
+    fontWeight: '500',
+    color: 'blue',
   },
 });
 

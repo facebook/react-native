@@ -8,6 +8,10 @@
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -16,11 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 /** A set of Java APIs to expose to a particular JavaScript instance. */
+@LegacyArchitecture
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NativeModuleRegistry {
 
   private final ReactApplicationContext mReactApplicationContext;
   private final Map<String, ModuleHolder> mModules;
-  private final String TAG = NativeModuleRegistry.class.getSimpleName();
 
   public NativeModuleRegistry(
       ReactApplicationContext reactApplicationContext, Map<String, ModuleHolder> modules) {
@@ -79,14 +84,13 @@ public class NativeModuleRegistry {
 
   /* package */ void notifyJSInstanceDestroy() {
     mReactApplicationContext.assertOnNativeModulesQueueThread();
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "NativeModuleRegistry_notifyJSInstanceDestroy");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "NativeModuleRegistry_notifyJSInstanceDestroy");
     try {
       for (ModuleHolder module : mModules.values()) {
         module.destroy();
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -96,13 +100,13 @@ public class NativeModuleRegistry {
             + "native modules are explicitly not initialized on the UI thread.");
     ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_START);
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "NativeModuleRegistry_notifyJSInstanceInitialized");
+        Systrace.TRACE_TAG_REACT, "NativeModuleRegistry_notifyJSInstanceInitialized");
     try {
       for (ModuleHolder module : mModules.values()) {
         module.markInitializable();
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_END);
     }
   }
@@ -113,6 +117,8 @@ public class NativeModuleRegistry {
     // short-circuit
     // the search, and simply call OnBatchComplete on the UI Manager.
     // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "NativeModuleRegistry.onBatchComplete()", LegacyArchitectureLogLevel.WARNING);
     ModuleHolder moduleHolder = mModules.get("UIManager");
     if (moduleHolder != null && moduleHolder.hasInstance()) {
       ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
@@ -120,7 +126,12 @@ public class NativeModuleRegistry {
   }
 
   public <T extends NativeModule> boolean hasModule(Class<T> moduleInterface) {
-    String name = moduleInterface.getAnnotation(ReactModule.class).name();
+    ReactModule annotation = moduleInterface.getAnnotation(ReactModule.class);
+    if (annotation == null) {
+      throw new IllegalArgumentException(
+          "Could not find @ReactModule annotation in class " + moduleInterface.getName());
+    }
+    String name = annotation.name();
     return mModules.containsKey(name);
   }
 

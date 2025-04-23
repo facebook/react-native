@@ -13,6 +13,7 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
@@ -24,8 +25,13 @@ export default class AnimatedDiffClamp extends AnimatedWithChildren {
   _value: number;
   _lastValue: number;
 
-  constructor(a: AnimatedNode, min: number, max: number) {
-    super();
+  constructor(
+    a: AnimatedNode,
+    min: number,
+    max: number,
+    config?: ?AnimatedNodeConfig,
+  ) {
+    super(config);
 
     this._a = a;
     this._min = min;
@@ -54,6 +60,7 @@ export default class AnimatedDiffClamp extends AnimatedWithChildren {
 
   __attach(): void {
     this._a.__addChild(this);
+    super.__attach();
   }
 
   __detach(): void {
@@ -67,6 +74,7 @@ export default class AnimatedDiffClamp extends AnimatedWithChildren {
       input: this._a.__getNativeTag(),
       min: this._min,
       max: this._max,
+      debugID: this.__getDebugID(),
     };
   }
 }

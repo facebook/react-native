@@ -7,21 +7,16 @@
 
 #include "JSLogging.h"
 
-#include <fb/log.h>
+#include <android/log.h>
 
 namespace facebook::react {
 
 void reactAndroidLoggingHook(
     const std::string& message,
-    android_LogPriority logLevel) {
-  FBLOG_PRI(logLevel, "ReactNativeJS", "%s", message.c_str());
-}
-
-void reactAndroidLoggingHook(
-    const std::string& message,
     unsigned int logLevel) {
-  reactAndroidLoggingHook(
-      message, static_cast<android_LogPriority>(logLevel + ANDROID_LOG_DEBUG));
+  auto logPriority =
+      static_cast<android_LogPriority>(logLevel + ANDROID_LOG_DEBUG);
+  __android_log_write(logPriority, "ReactNativeJS", message.c_str());
 }
 
 } // namespace facebook::react

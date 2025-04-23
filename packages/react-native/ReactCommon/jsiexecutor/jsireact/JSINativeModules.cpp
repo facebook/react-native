@@ -77,14 +77,14 @@ std::optional<Object> JSINativeModules::createModule(
         ReactMarker::NATIVE_MODULE_SETUP_START, name.c_str());
   }
 
-  if (!m_genNativeModuleJS) {
-    m_genNativeModuleJS =
-        rt.global().getPropertyAsFunction(rt, "__fbGenNativeModule");
-  }
-
   auto result = m_moduleRegistry->getConfig(name);
   if (!result.has_value()) {
     return std::nullopt;
+  }
+
+  if (!m_genNativeModuleJS) {
+    m_genNativeModuleJS =
+        rt.global().getPropertyAsFunction(rt, "__fbGenNativeModule");
   }
 
   Value moduleInfo = m_genNativeModuleJS->call(

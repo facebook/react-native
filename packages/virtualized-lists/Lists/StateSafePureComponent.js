@@ -31,8 +31,8 @@ export default class StateSafePureComponent<
     this._installSetStateHooks();
   }
 
-  setState(
-    partialState: ?(Partial<State> | ((State, Props) => ?Partial<State>)),
+  setState<K: $Keys<State>>(
+    partialState: ?(Pick<State, K> | ((State, Props) => ?Pick<State, K>)),
     callback?: () => mixed,
   ): void {
     if (typeof partialState === 'function') {

@@ -12,12 +12,9 @@ import type {TurboModule} from './RCTExport';
 
 import invariant from 'invariant';
 
-const NativeModules = require('../BatchedBridge/NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules').default;
 
 const turboModuleProxy = global.__turboModuleProxy;
-
-const useLegacyNativeModuleInterop =
-  global.RN$Bridgeless !== true || global.RN$TurboInterop === true;
 
 function requireModule<T: TurboModule>(name: string): ?T {
   if (turboModuleProxy != null) {
@@ -27,8 +24,11 @@ function requireModule<T: TurboModule>(name: string): ?T {
     }
   }
 
-  if (useLegacyNativeModuleInterop) {
-    // Backward compatibility layer during migration.
+  if (
+    global.RN$Bridgeless !== true ||
+    global.RN$TurboInterop === true ||
+    global.RN$UnifiedNativeModuleProxy === true
+  ) {
     const legacyModule: ?T = NativeModules[name];
     if (legacyModule != null) {
       return legacyModule;

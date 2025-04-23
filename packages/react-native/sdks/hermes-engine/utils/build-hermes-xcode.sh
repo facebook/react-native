@@ -4,7 +4,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-set -x
+set -x -e
 
 release_version="$1"; shift
 hermesc_path="$1"; shift
@@ -78,7 +78,8 @@ echo "Configure Apple framework"
   -DHERMES_ENABLE_BITCODE:BOOLEAN=false \
   -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
   -DHERMES_BUILD_SHARED_JSI:BOOLEAN=false \
-  -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
+  -DCMAKE_CXX_FLAGS:STRING="-gdwarf" \
+  -DCMAKE_C_FLAGS:STRING="-gdwarf" \
   -DIMPORT_HERMESC:PATH="${hermesc_path}" \
   -DJSI_DIR="$jsi_path" \
   -DHERMES_RELEASE_VERSION="for RN $release_version" \

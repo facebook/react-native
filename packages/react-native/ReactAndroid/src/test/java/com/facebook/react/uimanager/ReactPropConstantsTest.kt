@@ -11,9 +11,11 @@ import android.view.View
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import org.assertj.core.api.Assertions
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -82,6 +84,11 @@ class ReactPropConstantsTest {
         names = ["customBoxedIntGroupPropFirst", "customBoxedIntGroupPropSecond"],
         customType = "color")
     fun customIntGroupProp(v: View?, index: Int, value: Int?) = Unit
+  }
+
+  @Before
+  fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
   }
 
   @Test

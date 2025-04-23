@@ -28,21 +28,25 @@ static constexpr const char* INVALID = "<invalid>";
 std::shared_ptr<InspectorPackagerConnection::Impl>
 InspectorPackagerConnection::Impl::create(
     std::string url,
-    std::string app,
+    std::string deviceName,
+    std::string appName,
     std::unique_ptr<InspectorPackagerConnectionDelegate> delegate) {
   // No make_shared because the constructor is private
   std::shared_ptr<InspectorPackagerConnection::Impl> impl(
-      new InspectorPackagerConnection::Impl(url, app, std::move(delegate)));
+      new InspectorPackagerConnection::Impl(
+          url, deviceName, appName, std::move(delegate)));
   getInspectorInstance().registerPageStatusListener(impl);
   return impl;
 }
 
 InspectorPackagerConnection::Impl::Impl(
     std::string url,
-    std::string app,
+    std::string deviceName,
+    std::string appName,
     std::unique_ptr<InspectorPackagerConnectionDelegate> delegate)
     : url_(std::move(url)),
-      app_(std::move(app)),
+      deviceName_(std::move(deviceName)),
+      appName_(std::move(appName)),
       delegate_(std::move(delegate)) {}
 
 void InspectorPackagerConnection::Impl::handleProxyMessage(
@@ -159,8 +163,9 @@ folly::dynamic InspectorPackagerConnection::Impl::pages() {
   for (const auto& page : pages) {
     folly::dynamic pageDescription = folly::dynamic::object;
     pageDescription["id"] = std::to_string(page.id);
-    pageDescription["title"] = page.title + " [C++ connection]";
-    pageDescription["app"] = app_;
+    pageDescription["title"] = appName_ + " (" + deviceName_ + ")";
+    pageDescription["description"] = page.description + " [C++ connection]";
+    pageDescription["app"] = appName_;
     pageDescription["capabilities"] =
         targetCapabilitiesToDynamic(page.capabilities);
 
@@ -175,7 +180,7 @@ void InspectorPackagerConnection::Impl::didFailWithError(
   if (webSocket_) {
     abort(posixCode, "WebSocket exception", error);
   }
-  if (!closed_ && posixCode != ECONNREFUSED) {
+  if (!closed_) {
     reconnect();
   }
 }
@@ -193,7 +198,12 @@ void InspectorPackagerConnection::Impl::didReceiveMessage(
   handleProxyMessage(std::move(parsedJSON));
 }
 
+void InspectorPackagerConnection::Impl::didOpen() {
+  connected_ = true;
+}
+
 void InspectorPackagerConnection::Impl::didClose() {
+  connected_ = false;
   webSocket_.reset();
   closeAllConnections();
   if (!closed_) {
@@ -209,7 +219,7 @@ void InspectorPackagerConnection::Impl::onPageRemoved(int pageId) {
 }
 
 bool InspectorPackagerConnection::Impl::isConnected() const {
-  return webSocket_ != nullptr;
+  return webSocket_ != nullptr && connected_;
 }
 
 void InspectorPackagerConnection::Impl::connect() {
@@ -236,6 +246,10 @@ void InspectorPackagerConnection::Impl::reconnect() {
     suppressConnectionErrors_ = true;
   }
 
+  if (isConnected()) {
+    return;
+  }
+
   reconnectPending_ = true;
 
   delegate_->scheduleCallback(
@@ -243,7 +257,16 @@ void InspectorPackagerConnection::Impl::reconnect() {
         auto strongSelf = weakSelf.lock();
         if (strongSelf && !strongSelf->closed_) {
           strongSelf->reconnectPending_ = false;
+
+          if (strongSelf->isConnected()) {
+            return;
+          }
+
           strongSelf->connect();
+
+          if (!strongSelf->isConnected()) {
+            strongSelf->reconnect();
+          }
         }
       },
       RECONNECT_DELAY);
@@ -341,9 +364,10 @@ void InspectorPackagerConnection::Impl::RemoteConnection::onDisconnect() {
 
 InspectorPackagerConnection::InspectorPackagerConnection(
     std::string url,
-    std::string app,
+    std::string deviceName,
+    std::string appName,
     std::unique_ptr<InspectorPackagerConnectionDelegate> delegate)
-    : impl_(Impl::create(url, app, std::move(delegate))) {}
+    : impl_(Impl::create(url, deviceName, appName, std::move(delegate))) {}
 
 bool InspectorPackagerConnection::isConnected() const {
   return impl_->isConnected();

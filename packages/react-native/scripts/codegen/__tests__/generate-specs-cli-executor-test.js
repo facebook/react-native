@@ -10,7 +10,7 @@
 
 'use strict';
 
-const fixtures = require('../__test_fixtures__/fixtures');
+const fixtures = require('../__fixtures__/fixtures');
 const sut = require('../generate-specs-cli-executor');
 const {normalize} = require('path');
 
@@ -19,14 +19,13 @@ describe('generateSpec', () => {
     const platform = 'ios';
     const libraryType = 'all';
     const schemaPath = './';
-    const componentsOutputDir = normalize(
-      'app/ios/build/generated/ios/react/renderer/components/library',
-    );
-    const modulesOutputDir = normalize('app/ios/build/generated/ios/library');
     const outputDirectory = normalize('app/ios/build/generated/ios');
     const libraryName = 'library';
     const packageName = 'com.library';
     const generators = ['componentsIOS', 'modulesIOS', 'modulesCxx'];
+
+    // Create a mock for fs.mkdirSync
+    const mkdirSyncMock = jest.fn();
 
     jest.mock('fs', () => ({
       readFileSync: (path, encoding) => {
@@ -34,25 +33,9 @@ describe('generateSpec', () => {
         expect(encoding).toBe('utf-8');
         return fixtures.schemaText;
       },
-    }));
-
-    let mkdirpSyncInvoked = 0;
-    jest.mock('mkdirp', () => ({
-      sync: folder => {
-        if (mkdirpSyncInvoked === 0) {
-          expect(folder).toBe(outputDirectory);
-        }
-
-        if (mkdirpSyncInvoked === 1) {
-          expect(folder).toBe(componentsOutputDir);
-        }
-
-        if (mkdirpSyncInvoked === 2) {
-          expect(folder).toBe(modulesOutputDir);
-        }
-
-        mkdirpSyncInvoked += 1;
-      },
+      mkdirSync: mkdirSyncMock, // Use the mock for mkdirSync
+      readdirSync: jest.fn().mockReturnValue([]),
+      renameSync: jest.fn(),
     }));
 
     // We cannot mock directly the `RNCodegen` object because the
@@ -83,6 +66,9 @@ describe('generateSpec', () => {
       libraryType,
     );
 
-    expect(mkdirpSyncInvoked).toBe(1);
+    expect(mkdirSyncMock).toHaveBeenCalledTimes(1);
+    expect(mkdirSyncMock).toHaveBeenCalledWith(outputDirectory, {
+      recursive: true,
+    });
   });
 });

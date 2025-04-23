@@ -10,15 +10,32 @@
 
 'use strict';
 
-const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
+import type {ReactNativeFeatureFlagsJsOnlyOverrides} from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 
-jest.mock('../../vendor/core/ErrorUtils');
-jest.mock('../../BatchedBridge/BatchedBridge');
+function importModules(overrides: ReactNativeFeatureFlagsJsOnlyOverrides) {
+  const ReactNativeFeatureFlags = require('../../../src/private/featureflags/ReactNativeFeatureFlags');
+
+  // Make sure to setup overrides before importing any modules.
+  ReactNativeFeatureFlags.override(overrides);
+
+  const BatchedBridge = require('../../BatchedBridge/BatchedBridge').default;
+  const InteractionManager = require('../InteractionManager').default;
+
+  jest.mock('../../vendor/core/ErrorUtils');
+  jest.mock('../../BatchedBridge/BatchedBridge');
+
+  return {
+    BatchedBridge,
+    InteractionManager,
+  };
+}
 
 const isWindows = process.platform === 'win32';
-const itif = condition => (condition ? it : it.skip);
+const itif = (condition: boolean) => (condition ? it : it.skip);
 
-function expectToBeCalledOnce(fn) {
+function expectToBeCalledOnce(
+  fn: JestMockFn<$ReadOnlyArray<mixed>, mixed>,
+): void {
   expect(fn.mock.calls.length).toBe(1);
 }
 
@@ -29,7 +46,9 @@ describe('InteractionManager', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    InteractionManager = require('../InteractionManager');
+    ({InteractionManager} = importModules({
+      disableInteractionManager: () => false,
+    }));
 
     interactionStart = jest.fn();
     interactionComplete = jest.fn();
@@ -45,6 +64,7 @@ describe('InteractionManager', () => {
   });
 
   it('throws when clearing an undefined handle', () => {
+    // $FlowExpectedError[incompatible-call]
     expect(() => InteractionManager.clearInteractionHandle()).toThrow();
   });
 
@@ -157,16 +177,23 @@ describe('InteractionManager', () => {
 });
 
 describe('promise tasks', () => {
+  let BatchedBridge;
   let InteractionManager;
   let sequenceId;
-  function createSequenceTask(expectedSequenceId) {
+
+  function createSequenceTask(expectedSequenceId: number) {
     return jest.fn(() => {
       expect(++sequenceId).toBe(expectedSequenceId);
     });
   }
+
   beforeEach(() => {
     jest.resetModules();
-    InteractionManager = require('../InteractionManager');
+
+    ({BatchedBridge, InteractionManager} = importModules({
+      disableInteractionManager: () => false,
+    }));
+
     sequenceId = 0;
   });
 

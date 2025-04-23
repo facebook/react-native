@@ -46,30 +46,30 @@ class TurboModuleBinding;
 /**
  * Base HostObject class for every module to be exposed to JS
  */
-class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
+class JSI_EXPORT TurboModule : public jsi::HostObject {
  public:
   TurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker);
 
+  // DO NOT OVERRIDE - it will become final in a future release.
+  // This method provides automatic caching of properties on the TurboModule's
+  // JS representation. To customize lookup of properties, override `create`.
   // Note: keep this method declared inline to avoid conflicts
   // between RTTI and non-RTTI compilation units
-  facebook::jsi::Value get(
-      facebook::jsi::Runtime& runtime,
-      const facebook::jsi::PropNameID& propName) override {
-    {
-      auto prop = create(runtime, propName);
-      // If we have a JS wrapper, cache the result of this lookup
-      // We don't cache misses, to allow for methodMap_ to dynamically be
-      // extended
-      if (jsRepresentation_ && !prop.isUndefined()) {
-        jsRepresentation_->lock(runtime).asObject(runtime).setProperty(
-            runtime, propName, prop);
-      }
-      return prop;
+  jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& propName)
+      override {
+    auto prop = create(runtime, propName);
+    // If we have a JS wrapper, cache the result of this lookup
+    // We don't cache misses, to allow for methodMap_ to dynamically be
+    // extended
+    if (jsRepresentation_ && !prop.isUndefined()) {
+      jsRepresentation_->lock(runtime).asObject(runtime).setProperty(
+          runtime, propName, prop);
     }
+    return prop;
   }
 
-  virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(
-      facebook::jsi::Runtime& runtime) override {
+  std::vector<jsi::PropNameID> getPropertyNames(
+      jsi::Runtime& runtime) override {
     std::vector<jsi::PropNameID> result;
     result.reserve(methodMap_.size());
     for (auto it = methodMap_.cbegin(); it != methodMap_.cend(); ++it) {
@@ -84,10 +84,10 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
 
   struct MethodMetadata {
     size_t argCount;
-    facebook::jsi::Value (*invoker)(
-        facebook::jsi::Runtime& rt,
+    jsi::Value (*invoker)(
+        jsi::Runtime& rt,
         TurboModule& turboModule,
-        const facebook::jsi::Value* args,
+        const jsi::Value* args,
         size_t count);
   };
   std::unordered_map<std::string, MethodMetadata> methodMap_;
@@ -141,13 +141,13 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
     } else if (auto eventEmitterIter = eventEmitterMap_.find(propNameUtf8);
                eventEmitterIter != eventEmitterMap_.end()) {
       return eventEmitterIter->second->get(runtime, jsInvoker_);
+    } else {
+      // Neither Method nor EventEmitter were found, let JS decide what to do
+      return jsi::Value::undefined();
     }
-    // Neither Method nor EventEmitter were not found, let JS decide what to do.
-    return facebook::jsi::Value::undefined();
   }
 
  private:
-  friend class TurboCxxModule;
   friend class TurboModuleBinding;
   std::unique_ptr<jsi::WeakObject> jsRepresentation_;
 };

@@ -8,12 +8,10 @@
  * @format
  */
 
-import type {Node} from 'react';
-
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import Platform from '../../Utilities/Platform';
-import React from 'react';
+import * as React from 'react';
 
 const styles = StyleSheet.create({
   highlight: {
@@ -21,7 +19,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const ReloadInstructions: () => Node = Platform.select({
+const ReloadInstructions: () => React.Node = Platform.select({
   ios: () => (
     <Text>
       Press <Text style={styles.highlight}>Cmd + R</Text> in the simulator to

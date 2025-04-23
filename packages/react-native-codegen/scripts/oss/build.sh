@@ -29,9 +29,9 @@ EDEN_SAFE_MV="mv"
 if [ -x "$(command -v eden)" ]; then
   pushd "$THIS_DIR"
 
-  # Detect if we are in an EdenFS checkout, but be sure to use /bin/cp
-  # incase users have GNU coreutils installed which is incompatible with -X
-  if [[ "$OSTYPE" == "darwin"* ]] && eden info; then
+  # Detect if we are in an EdenFS checkout with `eden info` (we ignore the output as it creates noise on CI/IDE logs)
+  # Also be sure to use /bin/cp in case users have GNU coreutils installed which is incompatible with -X
+  if [[ "$OSTYPE" == "darwin"* ]] && eden info 2>/dev/null; then
     EDEN_SAFE_MV="/bin/cp -R -X"
   fi
 

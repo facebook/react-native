@@ -19,73 +19,45 @@ namespace facebook::react {
 /**
  * Called from Java constructor through the JNI.
  */
-jni::local_ref<StateWrapperImpl::jhybriddata> StateWrapperImpl::initHybrid(
-    jni::alias_ref<jclass>) {
-  return makeCxxInstance();
+void StateWrapperImpl::initHybrid(jni::alias_ref<jhybridobject> jobj) {
+  return setCxxInstance(jobj);
 }
 
 jni::local_ref<ReadableNativeMap::jhybridobject>
 StateWrapperImpl::getStateDataImpl() {
-  if (ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid()) {
-    if (state_) {
-      folly::dynamic map = state_->getDynamic();
-      return ReadableNativeMap::newObjectCxxArgs(std::move(map));
-    } else {
-      return nullptr;
-    }
+  if (state_) {
+    folly::dynamic map = state_->getDynamic();
+    return ReadableNativeMap::newObjectCxxArgs(std::move(map));
   } else {
-    if (auto state = weakState_.lock()) {
-      folly::dynamic map = state->getDynamic();
-      return ReadableNativeMap::newObjectCxxArgs(std::move(map));
-    } else {
-      return nullptr;
-    }
+    return nullptr;
   }
 }
 
 jni::local_ref<JReadableMapBuffer::jhybridobject>
 StateWrapperImpl::getStateMapBufferDataImpl() {
-  if (ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid()) {
-    if (state_) {
-      MapBuffer map = state_->getMapBuffer();
-      return JReadableMapBuffer::createWithContents(std::move(map));
-    } else {
-      return nullptr;
-    }
+  if (state_) {
+    MapBuffer map = state_->getMapBuffer();
+    return JReadableMapBuffer::createWithContents(std::move(map));
   } else {
-    if (auto state = weakState_.lock()) {
-      MapBuffer map = state->getMapBuffer();
-      return JReadableMapBuffer::createWithContents(std::move(map));
-    } else {
-      return nullptr;
-    }
+    return nullptr;
   }
 }
 
 void StateWrapperImpl::updateStateImpl(NativeMap* map) {
-  if (ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid()) {
-    if (state_) {
-      // Get folly::dynamic from map
-      auto dynamicMap = map->consume();
-      // Set state
-      state_->updateState(std::move(dynamicMap));
-    }
-  } else {
-    if (auto state = weakState_.lock()) {
-      // Get folly::dynamic from map
-      auto dynamicMap = map->consume();
-      // Set state
-      state->updateState(std::move(dynamicMap));
-    }
+  if (state_) {
+    // Get folly::dynamic from map
+    auto dynamicMap = map->consume();
+    // Set state
+    state_->updateState(std::move(dynamicMap));
   }
 }
 
 void StateWrapperImpl::setState(std::shared_ptr<const State> state) {
-  if (ReactNativeFeatureFlags::fixMissedFabricStateUpdatesOnAndroid()) {
-    state_ = state;
-  } else {
-    weakState_ = state;
-  }
+  state_ = state;
+}
+
+std::shared_ptr<const State> StateWrapperImpl::getState() const {
+  return state_;
 }
 
 void StateWrapperImpl::registerNatives() {

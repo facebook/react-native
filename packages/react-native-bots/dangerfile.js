@@ -8,27 +8,31 @@
  */
 
 'use strict';
+const {danger, fail, warn} = require('danger');
 
-/* eslint-disable lint/sort-imports */
-// The 'danger' package seems to have some side effects that make it unsafe
-// to reorder.
+const body = danger.github.pr.body?.toLowerCase() ?? '';
 
-const {danger, fail, /*message,*/ warn} = require('danger');
-const includes = require('lodash.includes');
-const {validate: validateChangelog} =
-  require('@rnx-kit/rn-changelog-generator').default;
+function body_contains(...text) {
+  for (const matcher of text) {
+    if (body.includes(matcher)) {
+      return true;
+    }
+  }
+  return false;
+}
 
-const isFromPhabricator =
-  danger.github.pr.body &&
-  danger.github.pr.body.toLowerCase().includes('differential revision:');
+const isFromPhabricator = body_contains('differential revision:');
 
 // Provides advice if a summary section is missing, or body is too short
-const includesSummary =
-  danger.github.pr.body &&
-  danger.github.pr.body.toLowerCase().includes('## summary');
-if (!danger.github.pr.body || danger.github.pr.body.length < 50) {
+const includesSummary = body_contains('## summary', 'summary:');
+
+const hasNoUsefulBody =
+  !danger.github.pr.body || danger.github.pr.body.length < 50;
+const hasTooShortAHumanSummary =
+  !includesSummary && body.split('\n').length <= 2 && !isFromPhabricator;
+if (hasNoUsefulBody) {
   fail(':grey_question: This pull request needs a description.');
-} else if (!includesSummary && !isFromPhabricator) {
+} else if (hasTooShortAHumanSummary) {
   // PRs from Phabricator always includes the Summary by default.
   const title = ':clipboard: Missing Summary';
   const idea =
@@ -38,20 +42,13 @@ if (!danger.github.pr.body || danger.github.pr.body.length < 50) {
   warn(`${title} - <i>${idea}</i>`);
 }
 
-// Warns if there are changes to package.json, and tags the team.
-const packageChanged = includes(danger.git.modified_files, 'package.json');
-if (packageChanged) {
-  const title = ':lock: package.json';
-  const idea =
-    'Changes were made to package.json. ' +
-    'This will require a manual import by a Facebook employee.';
-  warn(`${title} - <i>${idea}</i>`);
-}
-
 // Provides advice if a test plan is missing.
-const includesTestPlan =
-  danger.github.pr.body &&
-  danger.github.pr.body.toLowerCase().includes('## test plan');
+const includesTestPlan = body_contains(
+  '## test plan',
+  'test plan:',
+  'tests:',
+  'test:',
+);
 if (!includesTestPlan && !isFromPhabricator) {
   // PRs from Phabricator never exports the Test Plan so let's disable this check.
   const title = ':clipboard: Missing Test Plan';
@@ -64,7 +61,9 @@ if (!includesTestPlan && !isFromPhabricator) {
 
 // Check if there is a changelog and validate it
 if (!isFromPhabricator) {
-  const status = validateChangelog(danger.github.pr.body);
+  const status = require('@rnx-kit/rn-changelog-generator').default.validate(
+    danger.github.pr.body,
+  );
   const changelogInstructions =
     'See <a target="_blank" href="https://reactnative.dev/contributing/changelogs-in-pull-requests">Changelog format</a>';
   if (status === 'missing') {

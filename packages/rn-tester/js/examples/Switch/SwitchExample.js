@@ -10,15 +10,16 @@
 
 'use strict';
 
-const React = require('react');
-const {Platform, Switch, Text, View} = require('react-native');
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {Platform, Switch, View} from 'react-native';
 
-type OnOffIndicatorProps = $ReadOnly<{|on: boolean, testID: string|}>;
+type OnOffIndicatorProps = $ReadOnly<{on: boolean, testID: string}>;
 function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
-  return <Text testID={testID}>{on ? 'On' : 'Off'}</Text>;
+  return <RNTesterText testID={testID}>{on ? 'On' : 'Off'}</RNTesterText>;
 }
 
-type ExampleRowProps = $ReadOnly<{|children: React.Node|}>;
+type ExampleRowProps = $ReadOnly<{children: React.Node}>;
 function ExampleRow({children}: ExampleRowProps) {
   return (
     <View
@@ -33,15 +34,12 @@ function ExampleRow({children}: ExampleRowProps) {
   );
 }
 
-type SimpleSwitchExampleState = $ReadOnly<{|
+type SimpleSwitchExampleState = $ReadOnly<{
   trueSwitchIsOn: boolean,
   falseSwitchIsOn: boolean,
-|}>;
+}>;
 
-class BasicSwitchExample extends React.Component<
-  {||},
-  SimpleSwitchExampleState,
-> {
+class BasicSwitchExample extends React.Component<{}, SimpleSwitchExampleState> {
   state: SimpleSwitchExampleState = {
     trueSwitchIsOn: true,
     falseSwitchIsOn: false,
@@ -82,7 +80,7 @@ class BasicSwitchExample extends React.Component<
 }
 
 class DisabledSwitchExample extends React.Component<
-  {||},
+  {},
   SimpleSwitchExampleState,
 > {
   state: SimpleSwitchExampleState = {
@@ -183,9 +181,9 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
-          <Text testID="event-switch-indicator">
+          <RNTesterText testID="event-switch-indicator">
             {this.state.eventSwitchIsOn ? 'On' : 'Off'}
-          </Text>
+          </RNTesterText>
         </View>
         <View>
           <Switch
@@ -204,9 +202,9 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             style={{marginBottom: 10}}
             value={this.state.eventSwitchRegressionIsOn}
           />
-          <Text testID="event-switch-regression-indicator">
+          <RNTesterText testID="event-switch-regression-indicator">
             {this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}
-          </Text>
+          </RNTesterText>
         </View>
       </View>
     );
@@ -226,10 +224,10 @@ class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
           ios_backgroundColor={this.state.iosBackgroundColor}
           style={{marginBottom: 20}}
         />
-        <Text>
+        <RNTesterText>
           The background color can be seen either when the switch value is false
           or when the switch is disabled (and the switch is translucent).{' '}
-        </Text>
+        </RNTesterText>
       </View>
     );
   }
@@ -323,6 +321,8 @@ exports.examples = [
 ];
 
 if (Platform.OS === 'ios') {
+  /* $FlowFixMe[incompatible-call] error found during natural inference roll-
+   * out. See https://fburl.com/workplace/tc9m3tcf */
   exports.examples.push({
     title: '[iOS Only] Custom background colors can be set',
     render(): React.MixedElement {

@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.PointerEventHelper
@@ -22,9 +23,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatcher
-import org.mockito.Mockito.argThat
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
@@ -34,14 +35,15 @@ class JSPointerDispatcherTest {
   private lateinit var root: ViewGroup
   private lateinit var pointerDispatcher: JSPointerDispatcher
 
-  class EventWithName(private val eventName: String) : ArgumentMatcher<Event<Event<*>>> {
-    override fun matches(argument: Event<Event<*>>?): Boolean = argument?.eventName == eventName
+  class EventWithName(private val eventName: String) : ArgumentMatcher<Event<*>> {
+    override fun matches(argument: Event<*>?): Boolean = argument?.getEventName() == eventName
 
     override fun toString(): String = "[event with name: $eventName]"
   }
 
   @Before
   fun setupViewHierarchy() {
+    ReactNativeFeatureFlagsForTests.setUp()
     val ctx: Context = RuntimeEnvironment.getApplication()
     root = LinearLayout(ctx)
     val childView = TextView(ctx)
@@ -75,7 +77,7 @@ class JSPointerDispatcherTest {
     val ev =
         createMotionEvent(
             MotionEvent.ACTION_DOWN, childRect.centerX().toFloat(), childRect.centerY().toFloat())
-    val mockDispatcher: EventDispatcher = mock(EventDispatcher::class.java)
+    val mockDispatcher: EventDispatcher = mock()
     pointerDispatcher.handleMotionEvent(ev, mockDispatcher, false)
     verify(mockDispatcher).dispatchEvent(argThat(EventWithName(PointerEventHelper.POINTER_DOWN)))
   }

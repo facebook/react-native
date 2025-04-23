@@ -40,10 +40,6 @@ public class DevSettingsModule(
     devSupportManager.setHotModuleReplacementEnabled(isHotLoadingEnabled)
   }
 
-  override fun setIsDebuggingRemotely(isDebugginRemotelyEnabled: Boolean) {
-    devSupportManager.setRemoteJSDebugEnabled(isDebugginRemotelyEnabled)
-  }
-
   override fun setProfilingEnabled(isProfilingEnabled: Boolean) {
     devSupportManager.setFpsDebugEnabled(isProfilingEnabled)
   }
@@ -75,5 +71,9 @@ public class DevSettingsModule(
 
   override fun removeListeners(count: Double) {
     // iOS only
+  }
+
+  public companion object {
+    public const val NAME: String = NativeDevSettingsSpec.NAME
   }
 }

@@ -46,11 +46,19 @@ NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
     : NativeReactNativeFeatureFlagsCxxSpec(std::move(jsInvoker)) {}
 
 ${Object.entries(definitions.common)
-  .map(
-    ([flagName, flagConfig]) =>
-      `${getCxxTypeFromDefaultValue(
-        flagConfig.defaultValue,
-      )} NativeReactNativeFeatureFlags::${flagName}(
+  .map(([flagName, flagConfig]) =>
+    flagConfig.skipNativeAPI
+      ? `${getCxxTypeFromDefaultValue(
+          flagConfig.defaultValue,
+        )} NativeReactNativeFeatureFlags::${flagName}(
+    jsi::Runtime& /*runtime*/) {
+  // This flag is configured with \`skipNativeAPI: true\`.
+  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
+  return ${JSON.stringify(flagConfig.defaultValue)};
+}`
+      : `${getCxxTypeFromDefaultValue(
+          flagConfig.defaultValue,
+        )} NativeReactNativeFeatureFlags::${flagName}(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::${flagName}();
 }`,

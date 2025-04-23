@@ -47,5 +47,5 @@ export const DO_NOT_MODIFY_COMMENT = `/**
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */`;

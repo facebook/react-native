@@ -42,7 +42,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * Alias for scheduleTask with immediate priority.
    *
    * To be removed when we finish testing this implementation.
-   * All callers should use scheduleTask with the right priority afte that.
+   * All callers should use scheduleTask with the right priority after that.
    */
   void scheduleWork(RawCallback&& callback) noexcept override;
 

@@ -14,18 +14,20 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from './AnimatedNode';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import {validateInterpolation} from '../../../src/private/animated/NativeAnimatedValidation';
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import processColor from '../../StyleSheet/processColor';
 import Easing from '../Easing';
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedWithChildren from './AnimatedWithChildren';
 import invariant from 'invariant';
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType<OutputT: number | string> = $ReadOnly<{
+  ...AnimatedNodeConfig,
   inputRange: $ReadOnlyArray<number>,
   outputRange: $ReadOnlyArray<OutputT>,
   easing?: (input: number) => number,
@@ -327,7 +329,7 @@ export default class AnimatedInterpolation<
   _interpolation: ?(input: number) => OutputT;
 
   constructor(parent: AnimatedNode, config: InterpolationConfigType<OutputT>) {
-    super();
+    super(config);
     this._parent = parent;
     this._config = config;
 
@@ -374,6 +376,7 @@ export default class AnimatedInterpolation<
 
   __attach(): void {
     this._parent.__addChild(this);
+    super.__attach();
   }
 
   __detach(): void {
@@ -411,6 +414,7 @@ export default class AnimatedInterpolation<
       extrapolateRight:
         this._config.extrapolateRight || this._config.extrapolate || 'extend',
       type: 'interpolation',
+      debugID: this.__getDebugID(),
     };
   }
 }

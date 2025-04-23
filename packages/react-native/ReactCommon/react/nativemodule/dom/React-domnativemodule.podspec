@@ -16,7 +16,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-header_search_paths = []
+header_search_paths = [
+  "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+]
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the domnativemodule to access its own files
@@ -35,6 +37,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/nativemodule/dom"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                               "OTHER_CFLAGS" => "$(inherited)",
                                "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
@@ -42,9 +45,16 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../.."
   end
 
-  install_modules_dependencies(s)
+  s.dependency "React-jsi"
+  s.dependency "React-jsiexecutor"
 
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
+
+  s.dependency "Yoga"
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-Fabric"
   s.dependency "React-FabricComponents"
+  add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+  add_dependency(s, "React-RCTFBReactNativeSpec")
 end

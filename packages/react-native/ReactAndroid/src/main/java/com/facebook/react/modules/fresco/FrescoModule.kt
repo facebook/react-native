@@ -8,8 +8,9 @@
 package com.facebook.react.modules.fresco
 
 import com.facebook.common.logging.FLog
+import com.facebook.drawee.backends.pipeline.DraweeConfig
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory.newBuilder
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
 import com.facebook.imagepipeline.core.DownsampleMode
 import com.facebook.imagepipeline.core.ImagePipeline
 import com.facebook.imagepipeline.core.ImagePipelineConfig
@@ -75,10 +76,13 @@ constructor(
     val reactContext = reactApplicationContext
     reactContext.addLifecycleEventListener(this)
     if (!hasBeenInitialized()) {
-      if (config == null) {
-        config = getDefaultConfig(reactContext)
-      }
-      Fresco.initialize(reactContext.applicationContext, config)
+      val pipelineConfig = config ?: getDefaultConfig(reactContext)
+      val draweeConfigBuilder = DraweeConfig.newBuilder()
+      Fresco.initialize(
+          reactContext.applicationContext,
+          pipelineConfig,
+          draweeConfigBuilder.build(),
+      )
       hasBeenInitialized = true
     } else if (config != null) {
       FLog.w(
@@ -105,7 +109,7 @@ constructor(
     // the 'last' ReactActivity is being destroyed, which effectively means the app is being
     // backgrounded.
     if (hasBeenInitialized() && clearOnDestroy) {
-      imagePipeline!!.clearMemoryCaches()
+      imagePipeline?.clearMemoryCaches()
     }
   }
 
@@ -123,7 +127,7 @@ constructor(
   }
 
   public companion object {
-    internal const val NAME = "FrescoModule"
+    public const val NAME: String = "FrescoModule"
     private var hasBeenInitialized = false
 
     /**
@@ -152,12 +156,15 @@ constructor(
       // make sure to forward cookies for any requests via the okHttpClient
       // so that image requests to endpoints that use cookies still work
       val container = OkHttpCompat.getCookieJarContainer(client)
-      val handler = ForwardingCookieHandler(context)
+      val handler = ForwardingCookieHandler()
       container.setCookieJar(JavaNetCookieJar(handler))
-      return newBuilder(context.applicationContext, client)
-          .setNetworkFetcher(ReactOkHttpNetworkFetcher(client))
-          .setDownsampleMode(DownsampleMode.AUTO)
-          .setRequestListeners(requestListeners)
+      val builder =
+          OkHttpImagePipelineConfigFactory.newBuilder(context.applicationContext, client)
+              .setNetworkFetcher(ReactOkHttpNetworkFetcher(client))
+              .setDownsampleMode(DownsampleMode.AUTO)
+              .setRequestListeners(requestListeners)
+      builder.experiment().setBinaryXmlEnabled(true)
+      return builder
     }
   }
 }

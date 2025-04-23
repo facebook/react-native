@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeDevSettings';
-import NativeDevSettings from '../../../src/private/specs/modules/NativeDevSettings';
+export * from '../../../src/private/specs_DEPRECATED/modules/NativeDevSettings';
+import NativeDevSettings from '../../../src/private/specs_DEPRECATED/modules/NativeDevSettings';
 export default NativeDevSettings;

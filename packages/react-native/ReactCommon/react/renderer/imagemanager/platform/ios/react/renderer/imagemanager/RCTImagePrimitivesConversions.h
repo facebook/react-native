@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTConvert.h>
 #import <React/RCTImageLoader.h>
 #import <react/renderer/imagemanager/primitives.h>
 
@@ -25,6 +26,8 @@ inline static UIViewContentMode RCTContentModeFromImageResizeMode(facebook::reac
       // Repeat resize mode is handled by the UIImage. Use scale to fill
       // so the repeated image fills the UIImageView.
       return UIViewContentModeScaleToFill;
+    case facebook::react::ImageResizeMode::None:
+      return UIViewContentModeTopLeft;
   }
 }
 
@@ -41,6 +44,27 @@ inline std::string toString(const facebook::react::ImageResizeMode &value)
       return "center";
     case facebook::react::ImageResizeMode::Repeat:
       return "repeat";
+    case facebook::react::ImageResizeMode::None:
+      return "none";
+  }
+}
+
+inline static NSURLRequestCachePolicy NSURLRequestCachePolicyFromImageSource(
+    const facebook::react::ImageSource &imageSource)
+{
+  switch (imageSource.cache) {
+    case facebook::react::ImageSource::CacheStategy::Reload:
+      return NSURLRequestReloadIgnoringLocalCacheData;
+      break;
+    case facebook::react::ImageSource::CacheStategy::ForceCache:
+      return NSURLRequestReturnCacheDataElseLoad;
+      break;
+    case facebook::react::ImageSource::CacheStategy::OnlyIfCached:
+      return NSURLRequestReturnCacheDataDontLoad;
+      break;
+    default:
+      return NSURLRequestUseProtocolCachePolicy;
+      break;
   }
 }
 
@@ -102,13 +126,21 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
 
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
 
-  /*
-  // TODO(shergin): To be implemented.
-  request.HTTPBody = ...;
-  request.HTTPMethod = ...;
-  request.cachePolicy = ...;
-  request.allHTTPHeaderFields = ...;
-  */
+  NSString *method = @"GET";
+  if (!imageSource.method.empty()) {
+    method = [[NSString alloc] initWithUTF8String:imageSource.method.c_str()].uppercaseString;
+  }
+  NSData *body = nil;
+  if (!imageSource.body.empty()) {
+    body = [NSData dataWithBytes:imageSource.body.c_str() length:imageSource.body.size()];
+  }
+  NSURLRequestCachePolicy cachePolicy = NSURLRequestCachePolicyFromImageSource(imageSource);
+
+  if ([method isEqualToString:@"GET"] && imageSource.headers.empty() && body == nil &&
+      cachePolicy == NSURLRequestUseProtocolCachePolicy) {
+    return request;
+  }
+
   for (const auto &header : imageSource.headers) {
     NSString *key = [NSString stringWithUTF8String:header.first.c_str()];
     NSString *value = [NSString stringWithUTF8String:header.second.c_str()];
@@ -117,5 +149,9 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
     }
   }
 
-  return [request copy];
+  request.HTTPBody = body;
+  request.HTTPMethod = method;
+  request.cachePolicy = cachePolicy;
+
+  return request;
 }

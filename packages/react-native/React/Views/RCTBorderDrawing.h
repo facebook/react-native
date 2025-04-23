@@ -29,10 +29,10 @@ typedef struct {
 } RCTCornerInsets;
 
 typedef struct {
-  CGColorRef top;
-  CGColorRef left;
-  CGColorRef bottom;
-  CGColorRef right;
+  UIColor *top;
+  UIColor *left;
+  UIColor *bottom;
+  UIColor *right;
 } RCTBorderColors;
 
 /**
@@ -52,8 +52,11 @@ RCT_EXTERN RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii, UIEdge
  * Create a CGPath representing a rounded rectangle with the specified bounds
  * and corner insets. Note that the CGPathRef must be released by the caller.
  */
-RCT_EXTERN CGPathRef
-RCTPathCreateWithRoundedRect(CGRect bounds, RCTCornerInsets cornerInsets, const CGAffineTransform *transform);
+RCT_EXTERN CGPathRef RCTPathCreateWithRoundedRect(
+    CGRect bounds,
+    RCTCornerInsets cornerInsets,
+    const CGAffineTransform *transform,
+    const BOOL inverted);
 
 /**
  * Draw a CSS-compliant border as an image. You can determine if it's scalable
@@ -67,5 +70,5 @@ RCT_EXTERN UIImage *RCTGetBorderImage(
     RCTCornerRadii cornerRadii,
     UIEdgeInsets borderInsets,
     RCTBorderColors borderColors,
-    CGColorRef backgroundColor,
+    UIColor *backgroundColor,
     BOOL drawToEdge);

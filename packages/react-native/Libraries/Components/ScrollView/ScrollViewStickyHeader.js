@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {LayoutEvent} from '../../Types/CoreEventTypes';
+import type {LayoutChangeEvent} from '../../Types/CoreEventTypes';
 
 import Animated from '../../Animated/Animated';
 import {isPublicInstance as isFabricPublicInstance} from '../../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
@@ -18,10 +18,10 @@ import useMergeRefs from '../../Utilities/useMergeRefs';
 import * as React from 'react';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
-export type Props = $ReadOnly<{
-  children?: ExactReactElement_DEPRECATED<$FlowFixMe>,
+export type ScrollViewStickyHeaderProps = $ReadOnly<{
+  children?: React.Node,
   nextHeaderLayoutY: ?number,
-  onLayout: (event: LayoutEvent) => void,
+  onLayout: (event: LayoutChangeEvent) => void,
   scrollAnimatedValue: Animated.Value,
   // Will cause sticky headers to stick at the bottom of the ScrollView instead
   // of the top.
@@ -32,16 +32,14 @@ export type Props = $ReadOnly<{
   hiddenOnScroll?: ?boolean,
 }>;
 
-type Instance = {
-  ...React.ElementRef<typeof Animated.View>,
-  setNextHeaderY: number => void,
-  ...
-};
+interface Instance extends React.ElementRef<typeof Animated.View> {
+  +setNextHeaderY: number => void;
+}
 
-const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
-  Props,
-  Instance,
-> = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
+const ScrollViewStickyHeaderWithForwardedRef: component(
+  ref: React.RefSetter<Instance>,
+  ...props: ScrollViewStickyHeaderProps
+) = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
   const {
     inverted,
     scrollViewHeight,
@@ -62,11 +60,12 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     if (ref == null) {
       return;
     }
+    // $FlowExpectedError[cannot-write]
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);
-  const ref: (React.ElementRef<typeof Animated.View> | null) => void =
-    // $FlowFixMe[incompatible-type] - Ref is mutated by `callbackRef`.
+  const ref: React.RefSetter<React.ElementRef<typeof Animated.View>> =
+    // $FlowFixMe[prop-missing] - Instance is mutated to have `setNextHeaderY`.
     useMergeRefs<Instance>(callbackRef, forwardedRef);
 
   const offset = useMemo(
@@ -253,7 +252,7 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     isFabric,
   ]);
 
-  const _onLayout = (event: LayoutEvent) => {
+  const _onLayout = (event: LayoutChangeEvent) => {
     setLayoutY(event.nativeEvent.layout.y);
     setLayoutHeight(event.nativeEvent.layout.height);
     setMeasured(true);
@@ -275,12 +274,12 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
       : null;
 
   return (
-    /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
-       included in the Animated.View flow type. */
     <Animated.View
       collapsable={false}
       nativeID={props.nativeID}
       onLayout={_onLayout}
+      /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
+         included in the Animated.View flow type. */
       ref={ref}
       style={[
         child.props.style,
@@ -301,7 +300,6 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
 const styles = StyleSheet.create({
   header: {
     zIndex: 10,
-    position: 'relative',
   },
   fill: {
     flex: 1,

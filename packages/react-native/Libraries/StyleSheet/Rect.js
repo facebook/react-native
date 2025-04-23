@@ -8,13 +8,14 @@
  * @flow strict
  */
 
-export type Rect = $ReadOnly<{|
+export type Rect = $ReadOnly<{
   bottom?: ?number,
   left?: ?number,
   right?: ?number,
   top?: ?number,
-|}>;
+}>;
 
+export type Insets = Rect;
 export type RectOrSize = Rect | number;
 
 export function createSquare(size: number): Rect {

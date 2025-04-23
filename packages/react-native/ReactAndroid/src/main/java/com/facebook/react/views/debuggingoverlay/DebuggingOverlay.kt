@@ -15,7 +15,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import com.facebook.react.bridge.UiThreadUtil
 
-public class DebuggingOverlay(context: Context) : View(context) {
+internal class DebuggingOverlay(context: Context) : View(context) {
   private val traceUpdatePaint = Paint()
   private val traceUpdatesToDisplayMap = hashMapOf<Int, TraceUpdate>()
   private val traceUpdateIdToCleanupRunnableMap = hashMapOf<Int, Runnable>()
@@ -31,11 +31,13 @@ public class DebuggingOverlay(context: Context) : View(context) {
   }
 
   @UiThread
-  public fun setTraceUpdates(traceUpdates: List<TraceUpdate>) {
+  fun setTraceUpdates(traceUpdates: List<TraceUpdate>) {
     for (traceUpdate in traceUpdates) {
       val traceUpdateId = traceUpdate.id
       if (traceUpdateIdToCleanupRunnableMap.containsKey(traceUpdateId)) {
-        UiThreadUtil.removeOnUiThread(traceUpdateIdToCleanupRunnableMap[traceUpdateId])
+        traceUpdateIdToCleanupRunnableMap[traceUpdateId]?.let { runnable ->
+          UiThreadUtil.removeOnUiThread(runnable)
+        }
         traceUpdateIdToCleanupRunnableMap.remove(traceUpdateId)
       }
 
@@ -46,18 +48,18 @@ public class DebuggingOverlay(context: Context) : View(context) {
   }
 
   @UiThread
-  public fun setHighlightedElementsRectangles(elementsRectangles: MutableList<RectF>) {
+  fun setHighlightedElementsRectangles(elementsRectangles: MutableList<RectF>) {
     highlightedElementsRectangles = elementsRectangles
     invalidate()
   }
 
   @UiThread
-  public fun clearElementsHighlights() {
+  fun clearElementsHighlights() {
     highlightedElementsRectangles.clear()
     invalidate()
   }
 
-  public override fun onDraw(canvas: Canvas) {
+  override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
 
     // Draw border outside of the given overlays to be aligned with web trace highlights

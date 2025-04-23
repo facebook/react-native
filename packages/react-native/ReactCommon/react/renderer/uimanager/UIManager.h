@@ -25,7 +25,7 @@
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
-#include <react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.h>
+#include <react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h>
 #include <react/renderer/uimanager/consistency/LazyShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
 #include <react/renderer/uimanager/primitives.h>
@@ -68,7 +68,12 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
+  void setNativeAnimatedDelegate(
+      std::weak_ptr<UIManagerNativeAnimatedDelegate> delegate);
+
   void animationTick() const;
+
+  void synchronouslyUpdateViewOnUIThread(Tag tag, const folly::dynamic& props);
 
   /*
    * Provides access to a UIManagerBindging.
@@ -106,26 +111,29 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree::Unique&& shadowTree,
       const std::string& moduleName,
       const folly::dynamic& props,
-      DisplayMode displayMode) const;
+      DisplayMode displayMode) const noexcept;
+
+  void startEmptySurface(ShadowTree::Unique&& shadowTree) const noexcept;
 
   void setSurfaceProps(
       SurfaceId surfaceId,
       const std::string& moduleName,
       const folly::dynamic& props,
-      DisplayMode displayMode) const;
+      DisplayMode displayMode) const noexcept;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) const override;
 
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& shadowTree,
       const RootShadowNode::Shared& oldRootShadowNode,
-      const RootShadowNode::Unshared& newRootShadowNode) const override;
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTree::CommitOptions& commitOptions) const override;
 
   std::shared_ptr<ShadowNode> createNode(
       Tag tag,
@@ -188,15 +196,29 @@ class UIManager final : public ShadowTreeDelegate {
 
   /*
    * Iterates over all shadow nodes which are parts of all registered surfaces
-   * and find the one that has given `tag`. Returns `nullptr` if the node wasn't
-   * found. This is a temporary workaround that should not be used in any core
-   * functionality.
+   * and find the one that has given `tag`. Returns `nullptr` if the node
+   * wasn't found. This is a temporary workaround that should not be used in
+   * any core functionality.
    */
   ShadowNode::Shared findShadowNodeByTag_DEPRECATED(Tag tag) const;
 
   const ShadowTreeRegistry& getShadowTreeRegistry() const;
 
   void reportMount(SurfaceId surfaceId) const;
+
+  void updateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps);
+
+#pragma mark - Add & Remove event listener
+
+  void addEventListener(std::shared_ptr<const EventListener> listener);
+
+  void removeEventListener(
+      const std::shared_ptr<const EventListener>& listener);
+
+#pragma mark - Set on surface start callback
+  void setOnSurfaceStartCallback(
+      UIManagerDelegate::OnSurfaceStartCallback&& callback);
 
  private:
   friend class UIManagerBinding;
@@ -220,6 +242,8 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate* delegate_{};
   UIManagerAnimationDelegate* animationDelegate_{nullptr};
+  std::weak_ptr<UIManagerNativeAnimatedDelegate> nativeAnimatedDelegate_;
+
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   ContextContainer::Shared contextContainer_;
@@ -234,8 +258,6 @@ class UIManager final : public ShadowTreeDelegate {
 
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager>
       lazyShadowTreeRevisionConsistencyManager_;
-  std::unique_ptr<LatestShadowTreeRevisionProvider>
-      latestShadowTreeRevisionProvider_;
 };
 
 } // namespace facebook::react

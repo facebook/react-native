@@ -8,9 +8,11 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Rect;
+import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
@@ -37,18 +39,21 @@ import java.util.Set;
 public class JSPointerDispatcher {
   private static final int UNSELECTED_VIEW_TAG = -1;
   private static final int UNSET_POINTER_ID = -1;
+  private static final int UNSET_CHILD_VIEW_ID = -1;
   private static final float ONMOVE_EPSILON = 0.1f;
   private static final String TAG = "PointerEvents";
 
   private Map<Integer, List<ViewTarget>> mLastHitPathByPointerId;
   private Map<Integer, float[]> mLastEventCoordinatesByPointerId;
   private Map<Integer, List<ViewTarget>> mCurrentlyDownPointerIdsToHitPath;
-  private Set<Integer> mHoveringPointerIds = new HashSet<>();
+  private final Set<Integer> mHoveringPointerIds = new HashSet<>();
 
-  private int mChildHandlingNativeGesture = -1;
+  private int mChildHandlingNativeGesture = UNSET_CHILD_VIEW_ID;
   private int mPrimaryPointerId = UNSET_POINTER_ID;
   private int mCoalescingKey = 0;
   private int mLastButtonState = 0;
+  private volatile long mLastActionDownEventTime = 0;
+  private boolean mRunHoverExitNextFrame = true;
   private final ViewGroup mRootViewGroup;
 
   private static final int[] sRootScreenCoords = {0, 0};
@@ -61,8 +66,8 @@ public class JSPointerDispatcher {
   }
 
   public void onChildStartedNativeGesture(
-      View childView, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-    if (mChildHandlingNativeGesture != -1 || childView == null) {
+      @Nullable View childView, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
+    if (mChildHandlingNativeGesture != UNSET_CHILD_VIEW_ID || childView == null) {
       // This means we previously had another child start handling this native gesture and now a
       // different native parent of that child has decided to intercept the touch stream and handle
       // the gesture itself. Example where this can happen: HorizontalScrollView in a ScrollView.
@@ -92,7 +97,7 @@ public class JSPointerDispatcher {
 
   public void onChildEndedNativeGesture() {
     // There should be only one child gesture at any given time. We can safely turn off the flag.
-    mChildHandlingNativeGesture = -1;
+    mChildHandlingNativeGesture = UNSET_CHILD_VIEW_ID;
   }
 
   // returns the section of the hit path shared by both lists, or an empty list if there's no such
@@ -280,13 +285,58 @@ public class JSPointerDispatcher {
   public void handleMotionEvent(
       MotionEvent motionEvent, EventDispatcher eventDispatcher, boolean isCapture) {
     // Don't fire any pointer events if child view is handling native gesture
-    if (mChildHandlingNativeGesture != -1) {
+    if (mChildHandlingNativeGesture != UNSET_CHILD_VIEW_ID) {
       return;
     }
 
+    /**
+     * Android does not provide a consistent mechanism for determining if a MotionEvent is outside
+     * the bounds of a view. It fires ACTION_HOVER_EXIT in two cases:
+     *
+     * <ol>
+     *   <li>If the cursor leaves the bounds of the view
+     *   <li>If the user presses a button
+     * </ol>
+     *
+     * <p>Some OS will fire ACTION_HOVER_EXIT on the frame before the cursor leaves the bounds of
+     * the view, while others will fire it on the frame after the cursor leaves the bounds of the
+     * view, so using bounds is not sufficient. Some OS will include the button state in the
+     * ACTION_HOVER_EXIT event while others will not, so using button state is not sufficient.
+     * Instead, we must wait for both the ACTION_HOVER_EXIT and ACTION_DOWN events to fire, and then
+     * compare their event times to determine if the ACTION_HOVER_EXIT event was triggered by the
+     * cursor leaving the bounds of the view or by a button press. If no ACTION_DOWN event has fired
+     * by the next frame, we know that the cursor has left the bounds of the root view.
+     *
+     * <p>As ACTION_DOWN fires after ACTION_HOVER_EXIT, we need to wait until the next frame to make
+     * this determination. We do this by posting a frame callback to the choreographer and
+     * re-running this method on the next frame should timestamps between the two events not align.
+     */
+    if (isCapture
+        && mRunHoverExitNextFrame
+        && motionEvent.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT) {
+      mRunHoverExitNextFrame = false;
+      Choreographer.getInstance()
+          .postFrameCallback(
+              new Choreographer.FrameCallback() {
+                @Override
+                public void doFrame(long frameTimeNanos) {
+                  if (mLastActionDownEventTime != motionEvent.getEventTime()) {
+                    handleMotionEventHelper(motionEvent, eventDispatcher, isCapture);
+                  }
+                  mRunHoverExitNextFrame = true;
+                }
+              });
+    } else {
+      handleMotionEventHelper(motionEvent, eventDispatcher, isCapture);
+    }
+  }
+
+  private void handleMotionEventHelper(
+      MotionEvent motionEvent, EventDispatcher eventDispatcher, boolean isCapture) {
     int action = motionEvent.getActionMasked();
     int activePointerId = motionEvent.getPointerId(motionEvent.getActionIndex());
     if (action == MotionEvent.ACTION_DOWN) {
+      mLastActionDownEventTime = motionEvent.getEventTime();
       mPrimaryPointerId = motionEvent.getPointerId(0);
     } else if (action == MotionEvent.ACTION_HOVER_MOVE) {
       mHoveringPointerIds.add(activePointerId);
@@ -295,13 +345,16 @@ public class JSPointerDispatcher {
     PointerEventState eventState = createEventState(activePointerId, motionEvent);
 
     // We've empirically determined that when we get a ACTION_HOVER_EXIT from the root view on the
-    // `onInterceptHoverEvent`, this means we've exited the root view.
-    // This logic may be wrong but reasoning about the dispatch sequence for HOVER_ENTER/HOVER_EXIT
-    // doesn't follow the capture/bubbling sequence like other MotionEvents. See:
+    // `onInterceptHoverEvent`, this means we've exited the root view. This logic may be wrong but
+    // reasoning about the dispatch sequence for HOVER_ENTER/HOVER_EXIT doesn't follow the
+    // capture/bubbling sequence like other MotionEvents.
+    //
+    // The choreographer logic above is a hack to try to work around this, but it's not perfect.
+    //
+    // For more information, see:
     // https://developer.android.com/reference/android/view/MotionEvent#ACTION_HOVER_ENTER
     // https://suragch.medium.com/how-touch-events-are-delivered-in-android-eee3b607b038
-    boolean isExitFromRoot =
-        isCapture && motionEvent.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT;
+    boolean isExitFromRoot = isCapture && action == MotionEvent.ACTION_HOVER_EXIT;
 
     // Calculate the targetTag, with special handling for when we exit the root view. In that case,
     // we use the root viewId of the last event
@@ -609,7 +662,7 @@ public class JSPointerDispatcher {
     // expected to happen very often as it would mean some child View has decided to intercept the
     // touch stream and start a native gesture only upon receiving the UP/CANCEL event.
     Assertions.assertCondition(
-        mChildHandlingNativeGesture == -1,
+        mChildHandlingNativeGesture == UNSET_CHILD_VIEW_ID,
         "Expected to not have already sent a cancel for this gesture");
 
     int activePointerId = eventState.getActivePointerId();

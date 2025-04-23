@@ -7,12 +7,11 @@
 
 #pragma once
 
-#include "JSINativeModules.h"
-
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/RAMBundleRegistry.h>
 #include <jsi/jsi.h>
+#include <jsireact/JSINativeModules.h>
 #include <functional>
 #include <mutex>
 #include <optional>

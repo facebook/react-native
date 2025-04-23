@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TextInput tests (useRefsForTextInputState = false should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+exports[`TextInput tests (useTextChildren = false) should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
@@ -23,12 +23,11 @@ exports[`TextInput tests (useRefsForTextInputState = false should render as expe
   rejectResponderTermination={true}
   selection={null}
   submitBehavior="blurAndSubmit"
-  text=""
   underlineColorAndroid="transparent"
 />
 `;
 
-exports[`TextInput tests (useRefsForTextInputState = false should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+exports[`TextInput tests (useTextChildren = false) should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
@@ -51,12 +50,11 @@ exports[`TextInput tests (useRefsForTextInputState = false should render as expe
   rejectResponderTermination={true}
   selection={null}
   submitBehavior="blurAndSubmit"
-  text=""
   underlineColorAndroid="transparent"
 />
 `;
 
-exports[`TextInput tests (useRefsForTextInputState = true should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+exports[`TextInput tests (useTextChildren = true) should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
@@ -79,12 +77,11 @@ exports[`TextInput tests (useRefsForTextInputState = true should render as expec
   rejectResponderTermination={true}
   selection={null}
   submitBehavior="blurAndSubmit"
-  text=""
   underlineColorAndroid="transparent"
 />
 `;
 
-exports[`TextInput tests (useRefsForTextInputState = true should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+exports[`TextInput tests (useTextChildren = true) should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
   accessible={true}
   allowFontScaling={true}
@@ -107,7 +104,6 @@ exports[`TextInput tests (useRefsForTextInputState = true should render as expec
   rejectResponderTermination={true}
   selection={null}
   submitBehavior="blurAndSubmit"
-  text=""
   underlineColorAndroid="transparent"
 />
 `;

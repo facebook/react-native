@@ -15,9 +15,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,14 +99,14 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
   private Event[] mEventsToDispatch = new Event[16];
   private int mEventsToDispatchSize = 0;
-  private volatile ReactEventEmitter mReactEventEmitter;
+  private final EventEmitterImpl mReactEventEmitter;
   private short mNextEventTypeId = 0;
   private volatile boolean mHasDispatchScheduled = false;
 
   public EventDispatcherImpl(ReactApplicationContext reactContext) {
     mReactContext = reactContext;
     mReactContext.addLifecycleEventListener(this);
-    mReactEventEmitter = new ReactEventEmitter(mReactContext);
+    mReactEventEmitter = new EventEmitterImpl(mReactContext);
   }
 
   /** Sends the given Event to JS, coalescing eligible events if JS is backed up. */
@@ -121,8 +119,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
-      Systrace.startAsyncFlow(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT, event.getEventName(), event.getUniqueID());
     }
     maybePostFrameCallbackFromNonUI();
   }
@@ -132,16 +129,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
   }
 
   private void maybePostFrameCallbackFromNonUI() {
-    if (mReactEventEmitter != null) {
-      // If the host activity is paused, the frame callback may not be currently
-      // posted. Ensure that it is so that this event gets delivered promptly.
-      mCurrentFrameCallback.maybePostFromNonUI();
-    } else {
-      // No JS application has started yet, or resumed. This can happen when a ReactRootView is
-      // added to view hierarchy, but ReactContext creation has not completed yet. In this case, any
-      // touch event dispatch will hit this codepath, and we simply queue them so that they
-      // are dispatched once ReactContext creation completes and JS app is running.
-    }
+    mCurrentFrameCallback.maybePostFromNonUI();
   }
 
   /** Add a listener to this EventDispatcher. */
@@ -177,14 +165,10 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
     stopFrameCallback();
   }
 
+  @Override
+  @Deprecated
   public void onCatalystInstanceDestroyed() {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            stopFrameCallback();
-          }
-        });
+    UiThreadUtil.runOnUiThread(this::stopFrameCallback);
   }
 
   private void stopFrameCallback() {
@@ -262,19 +246,6 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
         | (((long) coalescingKey) & 0xffff) << 48;
   }
 
-  public void registerEventEmitter(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
-    mReactEventEmitter.register(uiManagerType, eventEmitter);
-  }
-
-  public void registerEventEmitter(
-      @UIManagerType int uiManagerType, RCTModernEventEmitter eventEmitter) {
-    mReactEventEmitter.register(uiManagerType, eventEmitter);
-  }
-
-  public void unregisterEventEmitter(@UIManagerType int uiManagerType) {
-    mReactEventEmitter.unregister(uiManagerType);
-  }
-
   private class ScheduleDispatchFrameCallback implements Choreographer.FrameCallback {
     private volatile boolean mIsPosted = false;
     private boolean mShouldStop = false;
@@ -289,20 +260,20 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
         post();
       }
 
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ScheduleDispatchFrameCallback");
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ScheduleDispatchFrameCallback");
       try {
         moveStagedEventsToDispatchQueue();
 
         if (!mHasDispatchScheduled) {
           mHasDispatchScheduled = true;
           Systrace.startAsyncFlow(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+              Systrace.TRACE_TAG_REACT,
               "ScheduleDispatchFrameCallback",
               mHasDispatchScheduledCount.get());
           mReactContext.runOnJSQueueThread(mDispatchEventsRunnable);
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(Systrace.TRACE_TAG_REACT);
       }
     }
 
@@ -318,11 +289,8 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
     }
 
     private void post() {
-      if (!ReactNativeFeatureFlags.enableFabricRendererExclusively()) {
-        ReactChoreographer.getInstance()
-            .postFrameCallback(
-                ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
-      }
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
     }
 
     public void maybePostFromNonUI() {
@@ -349,14 +317,13 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
     @Override
     public void run() {
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchEventsRunnable");
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "DispatchEventsRunnable");
       try {
         Systrace.endAsyncFlow(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+            Systrace.TRACE_TAG_REACT,
             "ScheduleDispatchFrameCallback",
             mHasDispatchScheduledCount.getAndIncrement());
         mHasDispatchScheduled = false;
-        Assertions.assertNotNull(mReactEventEmitter);
         synchronized (mEventsToDispatchLock) {
           if (mEventsToDispatchSize > 0) {
             // We avoid allocating an array and iterator, and "sorting" if we don't need to.
@@ -371,7 +338,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
                 continue;
               }
               Systrace.endAsyncFlow(
-                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
+                  Systrace.TRACE_TAG_REACT, event.getEventName(), event.getUniqueID());
 
               event.dispatchModern(mReactEventEmitter);
               event.dispose();
@@ -384,7 +351,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
           listener.onBatchEventDispatched();
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(Systrace.TRACE_TAG_REACT);
       }
     }
   }

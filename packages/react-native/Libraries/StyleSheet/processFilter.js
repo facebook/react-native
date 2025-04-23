@@ -317,5 +317,9 @@ function parseLength(length: string): ?number {
     return null;
   }
 
+  if (match[3] == null && match[1] !== '0') {
+    return null;
+  }
+
   return Number(match[1]);
 }

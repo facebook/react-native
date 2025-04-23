@@ -23,6 +23,7 @@ export type PackageJson = {
   private?: boolean,
   dependencies?: Record<string, string>,
   devDependencies?: Record<string, string>,
+  main?: string,
   ...
 };
 

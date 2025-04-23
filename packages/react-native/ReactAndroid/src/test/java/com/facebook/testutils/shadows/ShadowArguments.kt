@@ -29,7 +29,7 @@ class ShadowArguments {
     @Implementation
     fun fromJavaArgs(args: Array<Any?>): WritableNativeArray =
         WritableNativeArray().apply {
-          (Shadow.extract(this) as ShadowNativeArray).contents = args.toList()
+          (Shadow.extract(this) as ShadowNativeArray).backingArray = JavaOnlyArray.of(*args)
         }
   }
 }

@@ -8,8 +8,8 @@
 #pragma once
 
 #include <react/renderer/core/ShadowNode.h>
-#include "StubView.h"
-#include "StubViewTree.h"
+#include <react/renderer/mounting/stubs/StubView.h>
+#include <react/renderer/mounting/stubs/StubViewTree.h>
 
 namespace facebook::react {
 

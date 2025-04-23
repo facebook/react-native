@@ -11,16 +11,24 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
+import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.facebook.react.viewmanagers.AndroidPopupMenuManagerDelegate
 import com.facebook.react.viewmanagers.AndroidPopupMenuManagerInterface
 
 @ReactModule(name = ReactPopupMenuManager.REACT_CLASS)
 public class ReactPopupMenuManager :
     ViewGroupManager<ReactPopupMenuContainer>(),
     AndroidPopupMenuManagerInterface<ReactPopupMenuContainer> {
+
+  private val delegate: ViewManagerDelegate<ReactPopupMenuContainer> =
+      AndroidPopupMenuManagerDelegate(this)
+
   override fun createViewInstance(reactContext: ThemedReactContext): ReactPopupMenuContainer {
     return ReactPopupMenuContainer(reactContext)
   }
+
+  override fun getDelegate(): ViewManagerDelegate<ReactPopupMenuContainer> = delegate
 
   @ReactProp(name = "menuItems")
   override fun setMenuItems(view: ReactPopupMenuContainer, menuItems: ReadableArray?) {

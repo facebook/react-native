@@ -11,7 +11,7 @@
 'use strict';
 
 const {create} = require('../../../../jest/renderer');
-const StatusBar = require('../StatusBar');
+const StatusBar = require('../StatusBar').default;
 const React = require('react');
 
 describe('StatusBar', () => {

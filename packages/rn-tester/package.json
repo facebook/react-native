@@ -1,6 +1,6 @@
 {
   "name": "@react-native/tester",
-  "version": "0.77.0-main",
+  "version": "0.80.0-main",
   "private": true,
   "description": "React Native tester app.",
   "license": "MIT",
@@ -18,19 +18,22 @@
     "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",
     "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
     "clean-android": "rm -rf android/app/build",
-    "setup-ios-jsc": "bundle install && USE_HERMES=0 bundle exec pod install",
-    "setup-ios-hermes": "bundle install && USE_HERMES=1 bundle exec pod install",
-    "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock"
+    "prepare-ios": "node ./cli.js bootstrap ios",
+    "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock",
+    "e2e-build-android": "../../gradlew :packages:rn-tester:android:app:installHermesRelease -PreactNativeArchitectures=arm64-v8a",
+    "e2e-build-ios": "./scripts/maestro-build-ios.sh",
+    "e2e-test-android": "maestro test .maestro/ -e APP_ID=com.facebook.react.uiapp",
+    "e2e-test-ios": "./scripts/maestro-test-ios.sh"
   },
   "dependencies": {
-    "@react-native/oss-library-example": "0.77.0-main",
-    "@react-native/popup-menu-android": "0.77.0-main",
+    "@react-native/oss-library-example": "0.80.0-main",
+    "@react-native/popup-menu-android": "0.80.0-main",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
+    "react": "19.0.0",
     "react-native": "*"
   },
   "codegenConfig": {
@@ -39,11 +42,26 @@
     "jsSrcsDir": ".",
     "android": {
       "javaPackageName": "com.facebook.fbreact.specs"
+    },
+    "ios": {
+      "modules": {
+        "SampleTurboModule": {
+          "unstableRequiresMainQueueSetup": true
+        }
+      },
+      "components": {
+        "RNTMyNativeView": {
+          "className": "RNTMyNativeViewComponentView"
+        }
+      }
     }
   },
   "devDependencies": {
-    "@react-native-community/cli": "15.0.0-alpha.2",
-    "@react-native-community/cli-platform-android": "15.0.0-alpha.2",
-    "@react-native-community/cli-platform-ios": "15.0.0-alpha.2"
+    "@react-native-community/cli": "17.0.0",
+    "@react-native-community/cli-platform-android": "17.0.0",
+    "@react-native-community/cli-platform-ios": "17.0.0",
+    "commander": "^12.0.0",
+    "listr2": "^6.4.1",
+    "rxjs": "npm:@react-native-community/rxjs@6.5.4-custom"
   }
 }

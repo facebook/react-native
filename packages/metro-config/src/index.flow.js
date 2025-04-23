@@ -13,6 +13,8 @@ import type {ConfigT} from 'metro-config';
 
 import {getDefaultConfig as getBaseConfig, mergeConfig} from 'metro-config';
 
+export type {MetroConfig} from 'metro-config';
+
 const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
     '/Libraries/BatchedBridge/MessageQueue\\.js$',
@@ -24,12 +26,10 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/Libraries/Utilities/.+\\.js$',
     '/Libraries/vendor/.+\\.js$',
     '/Libraries/WebSocket/.+\\.js$',
-    '/Libraries/YellowBox/.+\\.js$',
     '/src/private/renderer/errorhandling/.+\\.js$',
     '/metro-runtime/.+\\.js$',
     '/node_modules/@babel/runtime/.+\\.js$',
     '/node_modules/@react-native/js-polyfills/.+\\.js$',
-    '/node_modules/event-target-shim/.+\\.js$',
     '/node_modules/invariant/.+\\.js$',
     '/node_modules/react-devtools-core/.+\\.js$',
     '/node_modules/react-native/index.js$',
@@ -52,7 +52,7 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['android', 'ios'],
-      unstable_conditionNames: ['require', 'import', 'react-native'],
+      unstable_conditionNames: ['react-native'],
     },
     serializer: {
       // Note: This option is overridden in cli-plugin-metro (getOverrideConfig)
@@ -87,7 +87,6 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
       babelTransformerPath: require.resolve(
         '@react-native/metro-babel-transformer',
       ),
-      hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,

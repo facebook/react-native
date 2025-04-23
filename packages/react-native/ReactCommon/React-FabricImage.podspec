@@ -16,21 +16,11 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
-folly_dep_name = 'RCT-Folly/Fabric'
-boost_compiler_flags = '-Wno-documentation'
 react_native_path = ".."
 
 header_search_path = [
-  "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
-  "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-  "\"$(PODS_ROOT)/DoubleConversion\"",
-  "\"$(PODS_ROOT)/fmt/include\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
@@ -54,7 +44,6 @@ Pod::Spec.new do |s|
   s.source_files         = "react/renderer/components/image/**/*.{m,mm,cpp,h}"
   s.exclude_files        = "react/renderer/components/image/tests"
   s.header_dir           = "react/renderer/components/image"
-  s.compiler_flags       = folly_compiler_flags
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" ")
@@ -65,20 +54,19 @@ Pod::Spec.new do |s|
     s.module_name             = 'React_FabricImage'
   end
 
-  s.dependency folly_dep_name, folly_version
-
   s.dependency "React-jsiexecutor", version
   s.dependency "RCTRequired", version
   s.dependency "RCTTypeSafety", version
   s.dependency "React-jsi"
   s.dependency "React-logger"
-  s.dependency "glog"
-  s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
-  s.dependency "React-ImageManager"
+  s.dependency "React-featureflags"
   s.dependency "React-utils"
   s.dependency "Yoga"
 
+  add_dependency(s, "React-ImageManager", :additional_framework_paths => [
+    "react/renderer/components/view/platform/cxx",
+    "react/renderer/imagemanager/platform/ios",
+  ])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-Fabric", :additional_framework_paths => [
@@ -87,9 +75,6 @@ Pod::Spec.new do |s|
   ])
   add_dependency(s, "React-rendererdebug")
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 end

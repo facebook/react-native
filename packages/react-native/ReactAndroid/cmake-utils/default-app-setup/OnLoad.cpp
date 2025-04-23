@@ -73,6 +73,8 @@ std::shared_ptr<TurboModule> cxxModuleProvider(
 
   // And we fallback to the CXX module providers autolinked
   return autolinking_cxxModuleProvider(name, jsInvoker);
+
+  return nullptr;
 }
 
 std::shared_ptr<TurboModule> javaModuleProvider(

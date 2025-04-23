@@ -20,6 +20,9 @@ export type PromiseTask = {
   gen: () => Promise<any>;
 };
 
+/**
+ * @deprecated
+ */
 export interface InteractionManagerStatic {
   Events: {
     interactionStart: string;
@@ -36,6 +39,8 @@ export interface InteractionManagerStatic {
    *   emitted
    * @param context - Optional context object to use when invoking the
    *   listener
+   *
+   * @deprecated
    */
   addListener(
     eventType: string,
@@ -46,6 +51,8 @@ export interface InteractionManagerStatic {
   /**
    * Schedule a function to run after all interactions have completed.
    * Returns a cancellable
+   *
+   * @deprecated
    */
   runAfterInteractions(task?: (() => any) | SimpleTask | PromiseTask): {
     then: (onfulfilled?: () => any, onrejected?: () => any) => Promise<any>;
@@ -55,11 +62,15 @@ export interface InteractionManagerStatic {
 
   /**
    * Notify manager that an interaction has started.
+   *
+   * @deprecated
    */
   createInteractionHandle(): Handle;
 
   /**
    * Notify manager that an interaction has completed.
+   *
+   * @deprecated
    */
   clearInteractionHandle(handle: Handle): void;
 
@@ -67,6 +78,8 @@ export interface InteractionManagerStatic {
    * A positive number will use setTimeout to schedule any tasks after
    * the eventLoopRunningTime hits the deadline value, otherwise all
    * tasks will be executed in one setImmediate batch (default).
+   *
+   * @deprecated
    */
   setDeadline(deadline: number): void;
 }

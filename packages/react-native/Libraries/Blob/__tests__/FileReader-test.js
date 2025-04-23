@@ -10,13 +10,16 @@
 
 'use strict';
 
-jest.unmock('event-target-shim').setMock('../../BatchedBridge/NativeModules', {
-  BlobModule: require('../__mocks__/BlobModule'),
-  FileReaderModule: require('../__mocks__/FileReaderModule'),
-});
+const Blob = require('../Blob').default;
+const FileReader = require('../FileReader').default;
 
-const Blob = require('../Blob');
-const FileReader = require('../FileReader');
+jest.setMock('../../BatchedBridge/NativeModules', {
+  __esModule: true,
+  default: {
+    BlobModule: require('../__mocks__/BlobModule'),
+    FileReaderModule: require('../__mocks__/FileReaderModule'),
+  },
+});
 
 describe('FileReader', function () {
   it('should read blob as text', async () => {

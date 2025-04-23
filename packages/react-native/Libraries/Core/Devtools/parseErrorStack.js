@@ -13,7 +13,7 @@
 import type {StackFrame} from '../NativeExceptionsManager';
 import type {HermesParsedStack} from './parseHermesStack';
 
-const parseHermesStack = require('./parseHermesStack');
+const parseHermesStack = require('./parseHermesStack').default;
 
 function convertHermesStack(stack: HermesParsedStack): Array<StackFrame> {
   const frames: Array<StackFrame> = [];
@@ -38,7 +38,9 @@ function convertHermesStack(stack: HermesParsedStack): Array<StackFrame> {
   return frames;
 }
 
-function parseErrorStack(errorStack?: string): Array<StackFrame> {
+export default function parseErrorStack(
+  errorStack?: string,
+): Array<StackFrame> {
   if (errorStack == null) {
     return [];
   }
@@ -55,5 +57,3 @@ function parseErrorStack(errorStack?: string): Array<StackFrame> {
 
   return parsedStack;
 }
-
-module.exports = parseErrorStack;

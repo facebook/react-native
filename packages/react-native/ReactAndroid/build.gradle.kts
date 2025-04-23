@@ -45,7 +45,7 @@ extra["publishing_version"] = project.findProperty("VERSION_NAME")?.toString()!!
 // This is the version of CMake we're requesting to the Android SDK to use.
 // If missing it will be downloaded automatically. Only CMake versions shipped with the
 // Android SDK are supported (you can find them listed in the SDK Manager of Android Studio).
-val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
+val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.30.5"
 
 extra["cmake_version"] = cmakeVersion
 
@@ -66,6 +66,7 @@ val prefabHeadersDir = project.file("$buildDir/prefab-headers")
 // Native versions which are defined inside the version catalog (libs.versions.toml)
 val BOOST_VERSION = libs.versions.boost.get()
 val DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
+val FAST_FLOAT_VERSION = libs.versions.fastFloat.get()
 val FMT_VERSION = libs.versions.fmt.get()
 val FOLLY_VERSION = libs.versions.folly.get()
 val GLOG_VERSION = libs.versions.glog.get()
@@ -96,7 +97,7 @@ val preparePrefab by
                       // jsiinpsector
                       Pair("../ReactCommon/jsinspector-modern/", "jsinspector-modern/"),
                       // mapbufferjni
-                      Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/"),
+                      Pair("src/main/jni/react/mapbuffer", ""),
                       // turbomodulejsijni
                       Pair("src/main/jni/react/turbomodule", ""),
                       // react_codegen_rncore
@@ -106,37 +107,43 @@ val preparePrefab by
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                       // react_featureflags
                       Pair("../ReactCommon/react/featureflags/", "react/featureflags/"),
-                      // react_render_animations
+                      // react_devtoolsruntimesettings
+                      Pair(
+                          "../ReactCommon/react/devtoolsruntimesettings/",
+                          "react/devtoolsruntimesettings/"),
+                      // react_renderer_animations
                       Pair(
                           "../ReactCommon/react/renderer/animations/",
                           "react/renderer/animations/"),
-                      // react_render_componentregistry
+                      // react_renderer_componentregistry
                       Pair(
                           "../ReactCommon/react/renderer/componentregistry/",
                           "react/renderer/componentregistry/"),
-                      // react_render_consistency
+                      // react_renderer_consistency
                       Pair(
                           "../ReactCommon/react/renderer/consistency/",
                           "react/renderer/consistency/"),
-                      // react_render_core
+                      // react_renderer_core
                       Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
+                      // react_renderer_css
+                      Pair("../ReactCommon/react/renderer/css/", "react/renderer/css/"),
                       // react_debug
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
-                      // react_render_debug
+                      // react_renderer_debug
                       Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
-                      // react_render_graphics
+                      // react_renderer_graphics
                       Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                       Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
-                      // react_render_imagemanager
+                      // react_renderer_imagemanager
                       Pair(
                           "../ReactCommon/react/renderer/imagemanager/",
                           "react/renderer/imagemanager/"),
                       Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
-                      // react_render_mounting
+                      // react_renderer_mounting
                       Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
-                      // react_render_scheduler
+                      // react_renderer_scheduler
                       Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
-                      // react_render_uimanager
+                      // react_renderer_uimanager
                       Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
                       // react_utils
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
@@ -155,7 +162,7 @@ val preparePrefab by
                           "react/renderer/components/root/"),
                       // runtimeexecutor
                       Pair("../ReactCommon/runtimeexecutor/", ""),
-                      // react_render_textlayoutmanager
+                      // react_renderer_textlayoutmanager
                       Pair(
                           "../ReactCommon/react/renderer/textlayoutmanager/",
                           "react/renderer/textlayoutmanager/"),
@@ -179,13 +186,13 @@ val preparePrefab by
                       // react_nativemodule_core
                       Pair(File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+                      Pair(File(buildDir, "third-party-ndk/fast_float/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                       Pair("../ReactCommon/callinvoker/", ""),
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                       Pair("../ReactCommon/react/bridging/", "react/bridging/"),
-                      Pair("../ReactCommon/react/config/", "react/config/"),
                       Pair("../ReactCommon/react/nativemodule/core/", ""),
                       Pair("../ReactCommon/react/nativemodule/core/platform/android/", ""),
                       Pair(
@@ -216,7 +223,7 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/performance/timeline/",
                           "react/performance/timeline/"),
-                      // react_render_observers_events
+                      // react_renderer_observers_events
                       Pair(
                           "../ReactCommon/react/renderer/observers/events/",
                           "react/renderer/observers/events/"),
@@ -244,131 +251,160 @@ val createNativeDepsDirectories by
       thirdPartyNdkDir.mkdirs()
     }
 
+val downloadBoostDest = File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz")
 val downloadBoost by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
           "https://archives.boost.io/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadBoostDest)
     }
 
 val prepareBoost by
     tasks.registering(PrepareBoostTask::class) {
       dependsOn(if (boostPathOverride != null) emptyList() else listOf(downloadBoost))
-      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoost.dest))
+      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoostDest))
+      boostThirdPartyJniPath.set(project.file("src/main/jni/third-party/boost"))
       boostVersion.set(BOOST_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "boost"))
     }
 
+val downloadDoubleConversionDest =
+    File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz")
 val downloadDoubleConversion by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
           "https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadDoubleConversionDest)
     }
 
 val prepareDoubleConversion by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadDoubleConversion))
-      from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
+      from(dependenciesPath ?: tarTree(downloadDoubleConversionDest))
       from("src/main/jni/third-party/double-conversion/")
       include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "CMakeLists.txt")
-      filesMatching("*/src/**/*") { this.path = "double-conversion/${this.name}" }
+      filesMatching("*/src/**/*") { path = "double-conversion/${name}" }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/double-conversion")
     }
 
+val downloadFollyDest = File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz")
 val downloadFolly by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadFollyDest)
     }
 
 val prepareFolly by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFolly))
-      from(dependenciesPath ?: tarTree(downloadFolly.dest))
+      from(dependenciesPath ?: tarTree(downloadFollyDest))
       from("src/main/jni/third-party/folly/")
       include("folly-${FOLLY_VERSION}/folly/**/*", "CMakeLists.txt")
-      eachFile { this.path = this.path.removePrefix("folly-${FOLLY_VERSION}/") }
+      eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/folly")
     }
 
+val downloadFastFloatDest = File(downloadsDir, "fast_float-${FAST_FLOAT_VERSION}.tar.gz")
+val downloadFastFloat by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src("https://github.com/fastfloat/fast_float/archive/v${FAST_FLOAT_VERSION}.tar.gz")
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadFastFloatDest)
+    }
+
+val prepareFastFloat by
+    tasks.registering(Copy::class) {
+      dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFastFloat))
+      from(dependenciesPath ?: tarTree(downloadFastFloatDest))
+      from("src/main/jni/third-party/fast_float/")
+      include("fast_float-${FAST_FLOAT_VERSION}/include/**/*", "CMakeLists.txt")
+      eachFile { path = path.substringAfter("/") }
+      includeEmptyDirs = false
+      into("$thirdPartyNdkDir/fast_float")
+    }
+
+val downloadFmtDest = File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz")
 val downloadFmt by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadFmtDest)
     }
 
 val prepareFmt by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFmt))
-      from(dependenciesPath ?: tarTree(downloadFmt.dest))
+      from(dependenciesPath ?: tarTree(downloadFmtDest))
       from("src/main/jni/third-party/fmt/")
       include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "CMakeLists.txt")
-      eachFile { this.path = this.path.removePrefix("fmt-${FMT_VERSION}/") }
+      eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/fmt")
     }
 
+val downloadGlogDest = File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz")
 val downloadGlog by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadGlogDest)
     }
 
+val downloadGtestDest = File(downloadsDir, "gtest.tar.gz")
 val downloadGtest by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "gtest.tar.gz"))
+      quiet(true)
+      dest(downloadGtestDest)
     }
 
 val prepareGtest by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGtest))
-      from(dependenciesPath ?: tarTree(downloadGtest.dest))
-      eachFile { this.path = (this.path.removePrefix("googletest-release-${GTEST_VERSION}/")) }
+      from(dependenciesPath ?: tarTree(downloadGtestDest))
+      eachFile { path = path.substringAfter("/") }
       into(File(thirdPartyNdkDir, "googletest"))
     }
 
-// Prepare glog sources to be compiled, this task will perform steps that normally should've been
-// executed by automake. This way we can avoid dependencies on make/automake
 val prepareGlog by
     tasks.registering(PrepareGlogTask::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGlog))
-      glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlog.dest))
+      glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlogDest))
+      glogThirdPartyJniPath.set(project.file("src/main/jni/third-party/glog/"))
       glogVersion.set(GLOG_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "glog"))
-    }
-
-// Create Android native library module based on jsc from npm
-val prepareJSC by
-    tasks.registering(PrepareJSCTask::class) {
-      jscPackagePath.set(findNodeModulePath(projectDir, "jsc-android"))
-      outputDir = project.layout.buildDirectory.dir("third-party-ndk/jsc")
     }
 
 val prepareKotlinBuildScriptModel by
@@ -383,10 +419,14 @@ val buildCodegenCLI by
     tasks.registering(BuildCodegenCLITask::class) {
       codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
       bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath").toString())
-      onlyIf {
-        // For build from source scenario, we don't need to build the codegen at all.
-        rootProject.name != "react-native-build-from-source"
-      }
+      logFile.set(file("$buildDir/codegen.log"))
+      inputFiles.set(fileTree(codegenDir) { include("src/**/*.js") })
+      outputFiles.set(
+          fileTree(codegenDir) {
+            include("lib/**/*.js")
+            include("lib/**/*.js.flow")
+          })
+      rootProjectName.set(rootProject.name)
     }
 
 /**
@@ -433,16 +473,6 @@ fun enableWarningsAsErrors(): Boolean {
   return value?.toString()?.toBoolean() ?: false
 }
 
-val packageReactNdkLibsForBuck by
-    tasks.registering(Copy::class) {
-      dependsOn("mergeDebugNativeLibs")
-      // Shared libraries (.so) are copied from the merged_native_libs folder instead
-      from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
-      exclude("**/libjsc.so")
-      exclude("**/libhermes.so")
-      into("src/main/jni/prebuilt/lib")
-    }
-
 repositories {
   // Normally RNGP will set repositories for all modules,
   // but when consumed from source, we need to re-declare
@@ -487,8 +517,12 @@ android {
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+    buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
+    buildConfigField("boolean", "ENABLE_PERFETTO", "false")
+    buildConfigField("boolean", "UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
+    resValue("string", "react_native_dev_server_ip", "localhost")
 
     testApplicationId = "com.facebook.react.tests.gradle"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -501,9 +535,8 @@ android {
             "-DREACT_BUILD_DIR=$buildDir",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_TOOLCHAIN=clang",
-            // Due to https://github.com/android/ndk/issues/1693 we're losing Android
-            // specific compilation flags. This can be removed once we moved to NDK 25/26
-            "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
+            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+            "-DCMAKE_POLICY_DEFAULT_CMP0069=NEW")
 
         targets(
             "reactnative",
@@ -541,11 +574,11 @@ android {
           "generateCodegenArtifactsFromSchema",
           prepareBoost,
           prepareDoubleConversion,
+          prepareFastFloat,
           prepareFmt,
           prepareFolly,
           prepareGlog,
           prepareGtest,
-          prepareJSC,
           preparePrefab)
   tasks.getByName("generateCodegenSchemaFromJavaScript").dependsOn(buildCodegenCLI)
   prepareKotlinBuildScriptModel.dependsOn("preBuild")
@@ -559,7 +592,8 @@ android {
             "src/main/res/shell",
             "src/main/res/views/alert",
             "src/main/res/views/modal",
-            "src/main/res/views/uimanager"))
+            "src/main/res/views/uimanager",
+            "src/main/res/views/view"))
     java.exclude("com/facebook/react/processing")
     java.exclude("com/facebook/react/module/processing")
   }
@@ -606,7 +640,11 @@ android {
   }
 }
 
-tasks.withType<KotlinCompile>().configureEach { exclude("com/facebook/annotationprocessors/**") }
+tasks.withType<KotlinCompile>().configureEach {
+  exclude("com/facebook/annotationprocessors/**")
+  exclude("com/facebook/react/processing/**")
+  exclude("com/facebook/react/module/processing/**")
+}
 
 dependencies {
   api(libs.androidx.appcompat)
@@ -631,13 +669,15 @@ dependencies {
   compileOnly(libs.javax.annotation.api)
   api(libs.javax.inject)
 
-  // It's up to the consumer to decide if hermes should be included or not.
-  // Therefore hermes-engine is a compileOnly dependency.
+  // It's up to the consumer to decide if hermes/jsc should be included or not.
+  // Therefore hermes-engine and jsc are compileOnly dependencies.
   compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
+  compileOnly(libs.jsc.android)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
   testImplementation(libs.mockito)
+  testImplementation(libs.mockito.kotlin)
   testImplementation(libs.robolectric)
   testImplementation(libs.thoughtworks)
 }
@@ -671,6 +711,8 @@ kotlin {
   jvmToolchain(17)
   explicitApi()
 }
+
+tasks.withType<Test> { jvmArgs = listOf("-Xshare:off") }
 
 /* Publishing Configuration */
 apply(from = "./publish.gradle")

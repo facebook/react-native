@@ -11,6 +11,7 @@ import com.facebook.react.model.ModelAutolinkingConfigJson
 import com.facebook.react.model.ModelAutolinkingDependenciesJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformAndroidJson
 import com.facebook.react.model.ModelAutolinkingDependenciesPlatformJson
+import com.facebook.react.tasks.GenerateAutolinkingNewArchitecturesFileTask.Companion.sanitizeCmakeListsPath
 import com.facebook.react.tests.createTestTask
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -115,6 +116,10 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       cmake_minimum_required(VERSION 3.13)
       set(CMAKE_VERBOSE_MAKEFILE on)
       
+      # We set REACTNATIVE_MERGED_SO so libraries/apps can selectively decide to depend on either libreactnative.so
+      # or link against a old prefab target (this is needed for React Native 0.76 on).
+      set(REACTNATIVE_MERGED_SO true)
+      
       
       
       set(AUTOLINKED_LIBRARIES
@@ -137,9 +142,13 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       cmake_minimum_required(VERSION 3.13)
       set(CMAKE_VERBOSE_MAKEFILE on)
       
-      add_subdirectory(./a/directory/ aPackage_autolinked_build)
-      add_subdirectory(./another/directory/ anotherPackage_autolinked_build)
-      add_subdirectory(./another/directory/cxx/ anotherPackage_cxxmodule_autolinked_build)
+      # We set REACTNATIVE_MERGED_SO so libraries/apps can selectively decide to depend on either libreactnative.so
+      # or link against a old prefab target (this is needed for React Native 0.76 on).
+      set(REACTNATIVE_MERGED_SO true)
+      
+      add_subdirectory("./a/directory/" aPackage_autolinked_build)
+      add_subdirectory("./another/directory/with\ spaces/" anotherPackage_autolinked_build)
+      add_subdirectory("./another/directory/cxx/" anotherPackage_cxxmodule_autolinked_build)
       
       set(AUTOLINKED_LIBRARIES
         react_codegen_aPackage
@@ -250,6 +259,24 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
                 .trimIndent())
   }
 
+  @Test
+  fun sanitizeCmakeListsPath_withPathEndingWithFileName_removesFilename() {
+    val input = "./a/directory/CMakeLists.txt"
+    assertThat(sanitizeCmakeListsPath(input)).isEqualTo("./a/directory/")
+  }
+
+  @Test
+  fun sanitizeCmakeListsPath_withSpaces_removesSpaces() {
+    val input = "./a/dir ectory/with spaces/"
+    assertThat(sanitizeCmakeListsPath(input)).isEqualTo("./a/dir\\ ectory/with\\ spaces/")
+  }
+
+  @Test
+  fun sanitizeCmakeListsPath_withPathEndingWithFileNameAndSpaces_sanitizesIt() {
+    val input = "./a/dir ectory/CMakeLists.txt"
+    assertThat(sanitizeCmakeListsPath(input)).isEqualTo("./a/dir\\ ectory/")
+  }
+
   private val testDependencies =
       listOf(
           ModelAutolinkingDependenciesPlatformAndroidJson(
@@ -268,7 +295,7 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
               buildTypes = emptyList(),
               libraryName = "anotherPackage",
               componentDescriptors = listOf("AnotherPackageComponentDescriptor"),
-              cmakeListsPath = "./another/directory/CMakeLists.txt",
+              cmakeListsPath = "./another/directory/with spaces/CMakeLists.txt",
               cxxModuleCMakeListsPath = "./another/directory/cxx/CMakeLists.txt",
               cxxModuleHeaderName = "AnotherCxxModule",
               cxxModuleCMakeListsModuleName = "another_cxxModule",

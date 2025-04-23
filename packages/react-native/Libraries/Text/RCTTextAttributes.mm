@@ -278,19 +278,15 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 static NSString *capitalizeText(NSString *text)
 {
-  NSArray *words = [text componentsSeparatedByString:@" "];
-  NSMutableArray *newWords = [NSMutableArray new];
-  NSNumberFormatter *num = [NSNumberFormatter new];
-  for (NSString *item in words) {
-    NSString *word;
-    if ([item length] > 0 && [num numberFromString:[item substringWithRange:NSMakeRange(0, 1)]] == nil) {
-      word = [item capitalizedString];
-    } else {
-      word = [item lowercaseString];
-    }
-    [newWords addObject:word];
-  }
-  return [newWords componentsJoinedByString:@" "];
+  NSMutableString *result = [[NSMutableString alloc] initWithString:text];
+  [result
+      enumerateSubstringsInRange:NSMakeRange(0, text.length)
+                         options:NSStringEnumerationByWords
+                      usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+                        [result replaceCharactersInRange:NSMakeRange(substringRange.location, 1)
+                                              withString:[[substring substringToIndex:1] uppercaseString]];
+                      }];
+  return result;
 }
 
 - (NSString *)applyTextAttributesToText:(NSString *)text

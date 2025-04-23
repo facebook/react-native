@@ -7,9 +7,11 @@
 
 #pragma once
 
-#include <functional>
-#include <vector>
 #include "folly/dynamic.h"
+
+#include <functional>
+#include <optional>
+#include <vector>
 
 namespace facebook::react {
 
@@ -20,6 +22,10 @@ struct BufferEvent {
   std::string track;
 };
 
+/**
+ * @deprecated Replaced by jsinspector_modern::PerformanceTracer and will be
+ * removed when we delete FuseboxPerfettoDataSource.
+ */
 class FuseboxTracer {
  public:
   FuseboxTracer(const FuseboxTracer&) = delete;
@@ -38,7 +44,7 @@ class FuseboxTracer {
       const std::string_view& name,
       uint64_t start,
       uint64_t end,
-      const std::string_view& track);
+      const std::optional<std::string_view>& track);
 
   static FuseboxTracer& getFuseboxTracer();
 

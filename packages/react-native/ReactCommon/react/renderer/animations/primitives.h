@@ -70,7 +70,7 @@ struct AnimationKeyFrame {
   // Tag representing the node being animated.
   Tag tag;
 
-  ShadowView parentView;
+  Tag parentTag;
 
   // ShadowView representing the start and end points of this animation.
   ShadowView viewStart;

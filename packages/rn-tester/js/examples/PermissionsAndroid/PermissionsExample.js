@@ -10,13 +10,16 @@
 
 'use strict';
 
+import type {Permission} from 'react-native/Libraries/PermissionsAndroid/PermissionsAndroid';
+
 import RNTesterButton from '../../components/RNTesterButton';
+import RNTesterText from '../../components/RNTesterText';
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
-import {PermissionsAndroid, StyleSheet, Text, View} from 'react-native';
+import {PermissionsAndroid, StyleSheet, View} from 'react-native';
 
 function PermissionsExample() {
-  const [permission, setPermission] = React.useState(
+  const [permission, setPermission] = React.useState<Permission>(
     PermissionsAndroid.PERMISSIONS.CAMERA,
   );
   const [hasPermission, setHasPermission] = React.useState('Not Checked');
@@ -50,7 +53,7 @@ function PermissionsExample() {
   return (
     <View style={styles.container}>
       <View style={styles.block}>
-        <Text style={styles.title}>Select Permission</Text>
+        <RNTesterText style={styles.title}>Select Permission</RNTesterText>
         <View style={styles.row}>
           <RNTOption
             label={PermissionsAndroid.PERMISSIONS.CAMERA}
@@ -96,17 +99,21 @@ function PermissionsExample() {
       </View>
       <RNTesterButton onPress={checkPermission}>
         <View>
-          <Text style={[styles.touchable, styles.text]}>Check Permission</Text>
+          <RNTesterText style={[styles.touchable, styles.text]}>
+            Check Permission
+          </RNTesterText>
         </View>
       </RNTesterButton>
       <RNTesterButton onPress={requestPermission}>
         <View>
-          <Text style={[styles.touchable, styles.text]}>
+          <RNTesterText style={[styles.touchable, styles.text]}>
             Request Permission
-          </Text>
+          </RNTesterText>
         </View>
       </RNTesterButton>
-      <Text style={styles.text}>Permission Status: {hasPermission}</Text>
+      <RNTesterText style={styles.text}>
+        Permission Status: {hasPermission}
+      </RNTesterText>
     </View>
   );
 }
@@ -114,7 +121,6 @@ function PermissionsExample() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   block: {
     borderColor: 'rgba(0,0,0, 0.1)',

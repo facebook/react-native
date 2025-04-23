@@ -19,7 +19,8 @@ namespace facebook::react::jsinspector_modern {
 struct InspectorFlagOverrides {
   // NOTE: Keep these entries in sync with ReactNativeFeatureFlagsOverrides in
   // the implementation file.
-  std::optional<bool> fuseboxEnabledDebug;
+  std::optional<bool> fuseboxEnabledRelease;
+  std::optional<bool> networkInspectionEnabled;
 };
 
 /**

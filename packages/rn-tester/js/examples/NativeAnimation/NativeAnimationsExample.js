@@ -13,16 +13,15 @@
 import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
 
 import RNTesterSettingSwitchRow from '../../components/RNTesterSettingSwitchRow';
+import RNTesterText from '../../components/RNTesterText';
 import useJsStalls from '../../utils/useJsStalls';
-
-const React = require('react');
-const {
+import React from 'react';
+import {
   Animated,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
-} = require('react-native');
+} from 'react-native';
 
 class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state: any | {js: AnimatedValue, native: AnimatedValue} = {
@@ -58,13 +57,13 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
       <TouchableWithoutFeedback onPress={this.onPress}>
         <View>
           <View>
-            <Text>Native:</Text>
+            <RNTesterText>Native:</RNTesterText>
           </View>
           <View style={styles.row}>
             {this.props.children(this.state.native)}
           </View>
           <View>
-            <Text>JavaScript{':'}</Text>
+            <RNTesterText>JavaScript{':'}</RNTesterText>
           </View>
           <View style={styles.row}>{this.props.children(this.state.js)}</View>
         </View>
@@ -115,7 +114,7 @@ class ValueListenerExample extends React.Component<{...}, $FlowFixMeState> {
               ]}
             />
           </View>
-          <Text>Value: {this.state.progress}</Text>
+          <RNTesterText>Value: {this.state.progress}</RNTesterText>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -184,10 +183,10 @@ const InternalSettings = () => {
       />
 
       {tracking && (
-        <Text>
+        <RNTesterText>
           {`JS Stall filtered: ${Math.round(filteredStall)}, `}
           {`last: ${busyTime !== null ? busyTime.toFixed(8) : '<none>'}`}
-        </Text>
+        </RNTesterText>
       )}
     </View>
   );
@@ -230,7 +229,9 @@ class EventExample extends React.Component<{...}, $FlowFixMeState> {
               justifyContent: 'center',
               paddingLeft: 100,
             }}>
-            <Text>Scroll me sideways!</Text>
+            <RNTesterText style={{color: 'black'}}>
+              Scroll me sideways!
+            </RNTesterText>
           </View>
         </Animated.ScrollView>
       </View>
@@ -301,13 +302,13 @@ class TrackingExample extends React.Component<
       <TouchableWithoutFeedback onPress={this.onPress}>
         <View>
           <View>
-            <Text>Native:</Text>
+            <RNTesterText>Native:</RNTesterText>
           </View>
           <View style={styles.row}>
             {this.renderBlock(this.state.native, this.state.toNative)}
           </View>
           <View>
-            <Text>JavaScript{':'}</Text>
+            <RNTesterText>JavaScript{':'}</RNTesterText>
           </View>
           <View style={styles.row}>
             {this.renderBlock(this.state.js, this.state.toJS)}

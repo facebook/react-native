@@ -10,6 +10,7 @@
  */
 
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
+import type {PageDescription} from '../inspector-proxy/types';
 import type {BrowserLauncher} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
@@ -19,6 +20,9 @@ import type {IncomingMessage, ServerResponse} from 'http';
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import url from 'url';
+
+const LEGACY_SYNTHETIC_PAGE_TITLE =
+  'React Native Experimental (Improved Chrome Reloads)';
 
 type Options = $ReadOnly<{
   serverBaseUrl: string,
@@ -32,8 +36,8 @@ type Options = $ReadOnly<{
 /**
  * Open the debugger frontend for a given CDP target.
  *
- * Currently supports Hermes targets, opening debugger websocket URL in Chrome
- * DevTools.
+ * Currently supports React Native DevTools (rn_fusebox.html) and legacy Hermes
+ * (rn_inspector.html) targets.
  *
  * @see https://chromedevtools.github.io/devtools-protocol/
  */
@@ -54,46 +58,60 @@ export default function openDebuggerMiddleware({
       req.method === 'POST' ||
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
-      const {query} = url.parse(req.url, true);
-      const {
-        appId,
-        device,
-        launchId,
-        target: targetId,
-      }: {
+      const paresedUrl = url.parse(req.url, true);
+      const query: {
+        /** @deprecated Will only match legacy Hermes targets */
         appId?: string,
+        /** @deprecated Will only match legacy Hermes targets */
         device?: string,
         launchId?: string,
+        telemetryInfo?: string,
         target?: string,
         ...
-      } = query;
+      } = paresedUrl.query;
 
-      const targets = inspectorProxy.getPageDescriptions().filter(
-        // Only use targets with better reloading support
-        app =>
-          app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
-          app.reactNative.capabilities?.nativePageReloads === true,
-      );
+      const targets = inspectorProxy
+        .getPageDescriptions({requestorRelativeBaseUrl: new URL(serverBaseUrl)})
+        .filter(app => {
+          const betterReloadingSupport =
+            app.title === LEGACY_SYNTHETIC_PAGE_TITLE ||
+            app.reactNative.capabilities?.nativePageReloads === true;
 
-      let target;
+          if (!betterReloadingSupport) {
+            logger?.warn(
+              "Ignoring DevTools app debug target for '%s' with title '%s' and 'nativePageReloads' capability set to '%s'. ",
+              app.appId,
+              app.title,
+              String(app.reactNative.capabilities?.nativePageReloads),
+            );
+          }
+
+          return betterReloadingSupport;
+        });
+
+      let target: PageDescription | void;
 
       const launchType: 'launch' | 'redirect' =
         req.method === 'POST' ? 'launch' : 'redirect';
 
       if (
-        typeof targetId === 'string' ||
-        typeof appId === 'string' ||
-        typeof device === 'string'
+        typeof query.target === 'string' ||
+        typeof query.appId === 'string' ||
+        typeof query.device === 'string'
       ) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
             ' DevTools...',
         );
+
         target = targets.find(
           _target =>
-            (targetId == null || _target.id === targetId) &&
-            (appId == null || _target.description === appId) &&
-            (device == null || _target.reactNative.logicalDeviceId === device),
+            (query.target == null || _target.id === query.target) &&
+            (query.appId == null ||
+              (_target.appId === query.appId &&
+                _target.title === LEGACY_SYNTHETIC_PAGE_TITLE)) &&
+            (query.device == null ||
+              _target.reactNative.logicalDeviceId === query.device),
         );
       } else if (targets.length > 0) {
         logger?.info(
@@ -129,9 +147,15 @@ export default function openDebuggerMiddleware({
                 experiments,
                 target.webSocketDebuggerUrl,
                 serverBaseUrl,
-                {launchId, useFuseboxEntryPoint},
+                {
+                  launchId: query.launchId,
+                  telemetryInfo: query.telemetryInfo,
+                  appId: target.appId,
+                  useFuseboxEntryPoint,
+                },
               ),
             );
+            res.writeHead(200);
             res.end();
             break;
           case 'redirect':
@@ -140,7 +164,13 @@ export default function openDebuggerMiddleware({
                 experiments,
                 target.webSocketDebuggerUrl,
                 serverBaseUrl,
-                {relative: true, launchId, useFuseboxEntryPoint},
+                {
+                  relative: true,
+                  launchId: query.launchId,
+                  telemetryInfo: query.telemetryInfo,
+                  appId: target.appId,
+                  useFuseboxEntryPoint,
+                },
               ),
             });
             res.end();
@@ -152,9 +182,11 @@ export default function openDebuggerMiddleware({
           type: 'launch_debugger_frontend',
           launchType,
           status: 'success',
-          appId: appId ?? null,
-          deviceId: device ?? null,
-          resolvedTargetDescription: target.description,
+          appId: target.appId,
+          deviceId: target.reactNative.logicalDeviceId,
+          pageId: target.id,
+          deviceName: target.deviceName,
+          targetDescription: target.description,
           prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;

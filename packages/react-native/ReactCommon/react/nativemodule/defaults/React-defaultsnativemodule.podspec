@@ -35,6 +35,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/nativemodule/defaults"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                               "OTHER_CFLAGS" => "$(inherited)",
                                "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
@@ -42,10 +43,14 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../.."
   end
 
-  install_modules_dependencies(s)
+  s.dependency "React-jsi"
+  s.dependency "React-jsiexecutor"
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   s.dependency "React-domnativemodule"
   s.dependency "React-featureflagsnativemodule"
   s.dependency "React-microtasksnativemodule"
   s.dependency "React-idlecallbacksnativemodule"
+  add_dependency(s, "React-RCTFBReactNativeSpec")
 end

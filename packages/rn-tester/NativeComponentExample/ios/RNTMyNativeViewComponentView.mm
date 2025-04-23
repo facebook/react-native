@@ -44,7 +44,6 @@ using namespace facebook::react;
     _props = defaultProps;
 
     _view = [[UIView alloc] init];
-    _view.backgroundColor = [UIColor redColor];
 
     self.contentView = _view;
   }

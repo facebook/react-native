@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress(
+    "DEPRECATION") // Suppressing deprecation of NotThreadSafeViewHierarchyUpdateDebugListener
+
 package com.facebook.react.modules.debug
 
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener

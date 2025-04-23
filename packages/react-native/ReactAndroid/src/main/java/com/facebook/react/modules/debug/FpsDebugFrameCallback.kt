@@ -11,6 +11,7 @@ import android.view.Choreographer
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.uimanager.UIManagerModule
 import java.util.TreeMap
 
@@ -37,8 +38,6 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
   )
 
   private var choreographer: Choreographer? = null
-  private val uiManagerModule: UIManagerModule? =
-      reactContext.getNativeModule(UIManagerModule::class.java)
   private val didJSUpdateUiDuringFrameDetector: DidJSUpdateUiDuringFrameDetector =
       DidJSUpdateUiDuringFrameDetector()
   private var firstFrameTime: Long = -1
@@ -88,10 +87,13 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
     // T172641976: re-think if we need to implement addBridgeIdleDebugListener and
     // removeBridgeIdleDebugListener for Bridgeless
     @Suppress("DEPRECATION")
-    if (!reactContext.isBridgeless) {
-      reactContext.catalystInstance.addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
+    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+      val uiManagerModule = reactContext.getNativeModule(UIManagerModule::class.java)
+      if (!reactContext.isBridgeless) {
+        reactContext.catalystInstance.addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
+      }
+      uiManagerModule?.setViewHierarchyUpdateDebugListener(didJSUpdateUiDuringFrameDetector)
     }
-    uiManagerModule?.setViewHierarchyUpdateDebugListener(didJSUpdateUiDuringFrameDetector)
     this.targetFps = targetFps
     UiThreadUtil.runOnUiThread {
       choreographer = Choreographer.getInstance()
@@ -107,10 +109,14 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
 
   public fun stop() {
     @Suppress("DEPRECATION")
-    if (!reactContext.isBridgeless) {
-      reactContext.catalystInstance.removeBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
+    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+      val uiManagerModule = reactContext.getNativeModule(UIManagerModule::class.java)
+      if (!reactContext.isBridgeless) {
+        reactContext.catalystInstance.removeBridgeIdleDebugListener(
+            didJSUpdateUiDuringFrameDetector)
+      }
+      uiManagerModule?.setViewHierarchyUpdateDebugListener(null)
     }
-    uiManagerModule?.setViewHierarchyUpdateDebugListener(null)
     UiThreadUtil.runOnUiThread {
       choreographer = Choreographer.getInstance()
       choreographer?.removeFrameCallback(this)
@@ -144,7 +150,7 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
   public fun get4PlusFrameStutters(): Int = fourPlusFrameStutters
 
   public val totalTimeMS: Int
-    get() = (lastFrameTime.toDouble() - firstFrameTime).toInt() / 1000000
+    get() = ((lastFrameTime.toDouble() - firstFrameTime) / 1000000.0).toInt()
 
   /**
    * Returns the FpsInfo as if stop had been called at the given upToTimeMs. Only valid if

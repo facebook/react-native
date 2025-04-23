@@ -11,9 +11,11 @@
 
 'use strict';
 
+import type {SectionBase} from 'react-native';
+
 import nullthrows from 'nullthrows';
 
-const VirtualizedSectionList = require('../VirtualizedSectionList');
+const VirtualizedSectionList = require('../VirtualizedSectionList').default;
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
@@ -42,8 +44,8 @@ describe('VirtualizedSectionList', () => {
     await ReactTestRenderer.act(() => {
       component = ReactTestRenderer.create(
         <VirtualizedSectionList
-          sections={[]}
-          renderItem={({item}) => <item value={item.key} />}
+          sections={[] as Array<SectionBase<string>>}
+          renderItem={({item}) => <item value={item} />}
           getItem={(data, key) => data[key]}
           getItemCount={data => data.length}
         />,
@@ -57,13 +59,13 @@ describe('VirtualizedSectionList', () => {
     await ReactTestRenderer.act(() => {
       component = ReactTestRenderer.create(
         <VirtualizedSectionList
-          sections={[]}
+          sections={[] as Array<SectionBase<string>>}
           ListEmptyComponent={() => <empty />}
           ListFooterComponent={() => <footer />}
           ListHeaderComponent={() => <header />}
           getItem={(data, key) => data[key]}
           getItemCount={data => data.length}
-          renderItem={({item}) => <item value={item.key} />}
+          renderItem={({item}) => <item value={item} />}
         />,
       );
     });
@@ -97,13 +99,11 @@ describe('VirtualizedSectionList', () => {
           ListFooterComponent={() => <footer />}
           ListHeaderComponent={() => <header />}
           sections={[
-            // $FlowFixMe[incompatible-type]
             {
               title: 's1',
-              // $FlowFixMe[incompatible-call]
               data: new Array<void>(5)
                 .fill()
-                .map((_, ii) => ({id: String(ii)})),
+                .map((_, ii) => ({id: String(ii)})) as Array<{id: string}>,
             },
           ]}
           getItem={(data, key) => data[key]}

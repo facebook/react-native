@@ -10,16 +10,12 @@
 
 'use strict';
 
-const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+import registerCallableModule from '../Core/registerCallableModule';
 
 const RCTEventEmitter = {
   register(eventEmitter: any) {
-    if (global.RN$Bridgeless) {
-      global.RN$registerCallableModule('RCTEventEmitter', () => eventEmitter);
-    } else {
-      BatchedBridge.registerCallableModule('RCTEventEmitter', eventEmitter);
-    }
+    registerCallableModule('RCTEventEmitter', eventEmitter);
   },
 };
 
-module.exports = RCTEventEmitter;
+export default RCTEventEmitter;

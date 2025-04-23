@@ -11,7 +11,7 @@
 'use strict';
 
 /*
-const getReactData = require('getReactData');
+const getReactData = require('getReactData').default;
 
 const INDENTATION_SIZE = 2;
 const MAX_DEPTH = 2;
@@ -148,4 +148,4 @@ function indent(size: number) {
 }
 */
 
-module.exports = dumpReactTree;
+export default dumpReactTree;

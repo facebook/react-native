@@ -8,12 +8,13 @@
  * @format
  */
 
+import typeof BlobT from './Blob';
 import type {BlobCollector, BlobData, BlobOptions} from './BlobTypes';
 
 import NativeBlobModule from './NativeBlobModule';
 import invariant from 'invariant';
 
-const Blob = require('./Blob');
+const Blob: BlobT = require('./Blob').default;
 const BlobRegistry = require('./BlobRegistry');
 
 /*eslint-disable no-bitwise */
@@ -176,4 +177,4 @@ class BlobManager {
   }
 }
 
-module.exports = BlobManager;
+export default BlobManager;

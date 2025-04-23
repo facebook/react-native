@@ -9,9 +9,11 @@
  */
 
 'use strict';
-import type {Item} from '../../components/ListExampleShared';
 
-const {
+import type {Item} from '../../components/ListExampleShared';
+import type {SectionBase} from 'react-native/Libraries/Lists/SectionList';
+
+import {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
@@ -22,10 +24,11 @@ const {
   pressItem,
   renderSmallSwitchOption,
   renderStackedItem,
-} = require('../../components/ListExampleShared');
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-const {
+} from '../../components/ListExampleShared';
+import RNTesterPage from '../../components/RNTesterPage';
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {
   Alert,
   Animated,
   Button,
@@ -33,8 +36,8 @@ const {
   StyleSheet,
   Text,
   View,
-} = require('react-native');
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
+} from 'react-native';
+import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -109,7 +112,9 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
 
 const EmptySectionList = () => (
   <View style={{alignItems: 'center'}}>
-    <Text style={{fontSize: 20}}>This is rendered when the list is empty</Text>
+    <RNTesterText style={{fontSize: 20}}>
+      This is rendered when the list is empty
+    </RNTesterText>
   </View>
 );
 
@@ -138,8 +143,9 @@ const renderItemComponent =
 
 const onScrollToIndexFailed = (info: {
   index: number,
-  c: number,
+  highestMeasuredFrameIndex: number,
   averageItemLength: number,
+  ...
 }) => {
   console.warn('onScrollToIndexFailed. See comment in callback', info);
   /**
@@ -206,7 +212,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
     setData([...data.slice(0, index), item, ...data.slice(index + 1)]);
   };
 
-  const ref = React.useRef<?React.ElementRef<typeof SectionList>>(null);
+  const ref = React.useRef<?SectionList<SectionBase<any>>>(null);
   const scrollToLocation = (sectionIndex: number, itemIndex: number) => {
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     if (ref != null && ref.current?.scrollToLocation != null) {
@@ -254,7 +260,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
           <Spindicator value={scrollPos} />
         </View>
         <View style={styles.scrollToColumn}>
-          <Text>scroll to:</Text>
+          <RNTesterText>scroll to:</RNTesterText>
           <View style={styles.button}>
             <Button
               title="Top"
@@ -312,6 +318,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
           )
         }
         onEndReachedThreshold={0}
+        // $FlowFixMe[incompatible-type] - incompatible redenerItem type
         sections={filteredSectionData}
         style={styles.list}
         viewabilityConfig={VIEWABILITY_CONFIG}

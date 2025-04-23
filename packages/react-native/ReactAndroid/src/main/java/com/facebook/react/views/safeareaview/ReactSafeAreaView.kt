@@ -15,13 +15,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.CONSUMED
 import com.facebook.react.bridge.GuardedRunnable
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 
-public class ReactSafeAreaView(public val reactContext: ThemedReactContext) :
-    ViewGroup(reactContext) {
+internal class ReactSafeAreaView(val reactContext: ThemedReactContext) : ViewGroup(reactContext) {
   internal var stateWrapper: StateWrapper? = null
 
   override fun onAttachedToWindow() {
@@ -41,25 +41,26 @@ public class ReactSafeAreaView(public val reactContext: ThemedReactContext) :
 
   @UiThread
   private fun updateState(insets: Insets) {
-    stateWrapper?.let { stateWrapper ->
-      // fabric
+    val sw = stateWrapper
+    if (sw != null) {
       WritableNativeMap().apply {
         putDouble("left", insets.left.toFloat().pxToDp().toDouble())
         putDouble("top", insets.top.toFloat().pxToDp().toDouble())
         putDouble("bottom", insets.bottom.toFloat().pxToDp().toDouble())
         putDouble("right", insets.right.toFloat().pxToDp().toDouble())
 
-        stateWrapper.updateState(this)
+        sw.updateState(this)
       }
+    } else if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+      // paper
+      reactContext.runOnNativeModulesQueueThread(
+          object : GuardedRunnable(reactContext) {
+            override fun runGuarded() {
+              this@ReactSafeAreaView.reactContext.reactApplicationContext
+                  .getNativeModule(UIManagerModule::class.java)
+                  ?.updateInsetsPadding(id, insets.top, insets.left, insets.bottom, insets.right)
+            }
+          })
     }
-        // paper
-        ?: reactContext.runOnNativeModulesQueueThread(
-            object : GuardedRunnable(reactContext) {
-              override fun runGuarded() {
-                this@ReactSafeAreaView.reactContext.reactApplicationContext
-                    .getNativeModule(UIManagerModule::class.java)
-                    ?.updateInsetsPadding(id, insets.top, insets.left, insets.bottom, insets.right)
-              }
-            })
   }
 }

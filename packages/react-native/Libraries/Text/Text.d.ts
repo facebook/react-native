@@ -12,12 +12,11 @@ import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';
 import {NativeMethods} from '../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../StyleSheet/StyleSheet';
-import {TextStyle} from '../StyleSheet/StyleSheetTypes';
+import {TextStyle, ViewStyle} from '../StyleSheet/StyleSheetTypes';
 import {
   GestureResponderEvent,
   LayoutChangeEvent,
-  NativeSyntheticEvent,
-  TextLayoutEventData,
+  TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 
 export interface TextPropsIOS {
@@ -163,9 +162,7 @@ export interface TextProps
   /**
    * Invoked on Text layout
    */
-  onTextLayout?:
-    | ((event: NativeSyntheticEvent<TextLayoutEventData>) => void)
-    | undefined;
+  onTextLayout?: ((event: TextLayoutEvent) => void) | undefined;
 
   /**
    * This function is called on press.
@@ -178,7 +175,7 @@ export interface TextProps
 
   /**
    * This function is called on long press.
-   * e.g., `onLongPress={this.increaseSize}>``
+   * e.g., `onLongPress={this.increaseSize}>`
    */
   onLongPress?: ((event: GestureResponderEvent) => void) | undefined;
 
@@ -209,6 +206,11 @@ export interface TextProps
    * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
    */
   minimumFontScale?: number | undefined;
+
+  /**
+   * Controls how touch events are handled. Similar to `View`'s `pointerEvents`.
+   */
+  pointerEvents?: ViewStyle['pointerEvents'] | undefined;
 }
 
 /**

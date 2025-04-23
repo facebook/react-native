@@ -4,38 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @flow
  */
 
-'use strict';
-
-module.exports = require('../Components/UnimplementedViews/UnimplementedView');
-
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
+type BackPressHandler = () => ?boolean;
 
 function emptyFunction(): void {}
 
-type TBackHandler = {|
-  +exitApp: () => void,
-  +addEventListener: (
+type TBackHandler = {
+  exitApp(): void,
+  addEventListener(
     eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ) => {remove: () => void, ...},
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean,
-  ) => void,
-|};
+    handler: BackPressHandler,
+  ): {remove: () => void, ...},
+};
 
-let BackHandler: TBackHandler = {
+const BackHandler: TBackHandler = {
   exitApp: emptyFunction,
-  addEventListener(_eventName: BackPressEventName, _handler: Function) {
+  addEventListener(_eventName: BackPressEventName, _handler: BackPressHandler) {
     return {
       remove: emptyFunction,
     };
   },
-  removeEventListener(_eventName: BackPressEventName, _handler: Function) {},
 };
 
-module.exports = BackHandler;
+export default BackHandler;

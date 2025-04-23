@@ -273,7 +273,7 @@ RCT_EXTERN_C_END
 
   for (NSUInteger i = 2; i < numberOfArguments; i++) {
     const char *objcType = [methodSignature getArgumentTypeAtIndex:i];
-    BOOL isNullableType = NO;
+    [[maybe_unused]] BOOL isNullableType = NO;
     RCTMethodArgument *argument = arguments[i - 2];
     NSString *typeName = argument.type;
     SEL selector = selectorForType(typeName);

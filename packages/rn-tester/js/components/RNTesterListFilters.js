@@ -22,7 +22,7 @@ type Props = {
 
 class RNTesterListFilters extends React.Component<
   Props,
-  {|currentFilter: string|},
+  {currentFilter: string},
 > {
   constructor(props: Props) {
     super(props);

@@ -10,6 +10,9 @@ package com.facebook.react.bridge;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -17,6 +20,7 @@ import javax.annotation.Nullable;
 
 @DoNotStripAny
 @Nullsafe(Nullsafe.Mode.LOCAL)
+@LegacyArchitecture
 public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
   @DoNotStripAny
   public interface TargetDelegate {
@@ -64,6 +68,8 @@ public class ReactInstanceManagerInspectorTarget implements AutoCloseable {
   }
 
   static {
-    ReactBridge.staticInit();
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "ReactInstanceManagerInspectorTarget", LegacyArchitectureLogLevel.WARNING);
+    BridgeSoLoader.staticInit();
   }
 }

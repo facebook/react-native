@@ -107,9 +107,9 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromTextDecorationStyle(
     case facebook::react::TextDecorationStyle::Double:
       return NSUnderlineStyleDouble;
     case facebook::react::TextDecorationStyle::Dashed:
-      return NSUnderlinePatternDash | NSUnderlineStyleSingle;
+      return NSUnderlineStylePatternDash | NSUnderlineStyleSingle;
     case facebook::react::TextDecorationStyle::Dotted:
-      return NSUnderlinePatternDot | NSUnderlineStyleSingle;
+      return NSUnderlineStylePatternDot | NSUnderlineStyleSingle;
   }
 }
 

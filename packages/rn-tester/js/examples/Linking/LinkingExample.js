@@ -9,22 +9,22 @@
 
 'use strict';
 
-const RNTesterBlock = require('../../components/RNTesterBlock');
-const React = require('react');
-const {
+import RNTesterBlock from '../../components/RNTesterBlock';
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {
   Button,
   Linking,
   Platform,
   StyleSheet,
-  Text,
   ToastAndroid,
   TouchableOpacity,
   View,
-} = require('react-native');
+} from 'react-native';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   url?: ?string,
-|}>;
+}>;
 
 class OpenURLButton extends React.Component<Props> {
   handleClick = () => {
@@ -47,7 +47,7 @@ class OpenURLButton extends React.Component<Props> {
     return (
       <TouchableOpacity onPress={this.handleClick}>
         <View style={styles.button}>
-          <Text style={styles.text}>Open {this.props.url}</Text>
+          <RNTesterText style={styles.text}>Open {this.props.url}</RNTesterText>
         </View>
       </TouchableOpacity>
     );
@@ -64,25 +64,30 @@ class OpenSettingsExample extends React.Component<Props, any> {
   }
 }
 
-class SendIntentButton extends React.Component<Props> {
-  handleIntent = async () => {
+const SendIntentButton = ({action, extras}: Props) => {
+  const [isOpeningIntent, setIsOpeningIntent] = React.useState(false);
+
+  const handleIntent = async () => {
+    setIsOpeningIntent(true);
     try {
-      await Linking.sendIntent(this.props.action, this.props.extras);
+      await Linking.sendIntent(action, extras);
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.LONG);
+    } finally {
+      setIsOpeningIntent(false);
     }
   };
 
-  render() {
-    return (
-      <TouchableOpacity onPress={this.handleIntent}>
-        <View style={[styles.button, styles.buttonIntent]}>
-          <Text style={styles.text}>{this.props.action}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-}
+  return (
+    <TouchableOpacity onPress={handleIntent}>
+      <View style={[styles.button, styles.buttonIntent]}>
+        <RNTesterText style={styles.text}>
+          {isOpeningIntent ? `Opening ${action}...` : action}
+        </RNTesterText>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 class IntentAndroidExample extends React.Component {
   render() {
@@ -99,13 +104,16 @@ class IntentAndroidExample extends React.Component {
         {Platform.OS === 'android' && (
           <RNTesterBlock title="Send intents">
             <SendIntentButton action="android.intent.action.POWER_USAGE_SUMMARY" />
-            <Text style={styles.textSeparator}>
-              Next one will crash if Facebook app is not installed.
-            </Text>
+            <RNTesterText style={styles.textSeparator}>
+              Next one will throw an exception if Facebook app is not installed.
+            </RNTesterText>
             <SendIntentButton
               action="android.settings.APP_NOTIFICATION_SETTINGS"
               extras={[
-                {'android.provider.extra.APP_PACKAGE': 'com.facebook.katana'},
+                {
+                  key: 'android.provider.extra.APP_PACKAGE',
+                  value: 'com.facebook.katana',
+                },
               ]}
             />
           </RNTesterBlock>

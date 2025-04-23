@@ -10,14 +10,14 @@
 
 'use strict';
 
-const infoLog = require('../Utilities/infoLog');
+const infoLog = require('../Utilities/infoLog').default;
 const invariant = require('invariant');
 
-type SimpleTask = {
+export type SimpleTask = {
   name: string,
   run: () => void,
 };
-type PromiseTask = {
+export type PromiseTask = {
   name: string,
   gen: () => Promise<void>,
 };
@@ -117,6 +117,7 @@ class TaskQueue {
       } catch (e) {
         e.message =
           // $FlowFixMe[incompatible-type]
+          // $FlowFixMe[incompatible-use]
           'TaskQueue: Error with task ' + (task.name || '') + ': ' + e.message;
         throw e;
       }
@@ -180,4 +181,4 @@ class TaskQueue {
   }
 }
 
-module.exports = TaskQueue;
+export default TaskQueue;

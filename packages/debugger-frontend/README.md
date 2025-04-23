@@ -20,7 +20,7 @@ const frontendPath = require('@react-native/debugger-frontend');
 
 ### Source repo
 
-Source code for this package lives in the [facebookexperimental/rn-chrome-devtools-frontend](https://github.com/facebookexperimental/rn-chrome-devtools-frontend) repo. See below for how we build and check in changes.
+Source code for this package lives in the [facebook/react-native-devtools-frontend](https://github.com/facebook/react-native-devtools-frontend) repo. See below for how we build and check in changes.
 
 ### Updating the frontend assets
 
@@ -34,4 +34,4 @@ node scripts/debugger-frontend/sync-and-build --branch main
 node scripts/debugger-frontend/sync-and-build --branch 0.73-stable
 ```
 
-By default, this will clone and build from [facebookexperimental/rn-chrome-devtools-frontend](https://github.com/facebookexperimental/rn-chrome-devtools-frontend).
+By default, this will clone and build from [facebook/react-native-devtools-frontend](https://github.com/facebook/react-native-devtools-frontend).

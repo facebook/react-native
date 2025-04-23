@@ -16,6 +16,7 @@
   CGFloat _scrollViewZoomScale;
   NSDictionary *_userData;
   uint16_t _coalescingKey;
+  CFTimeInterval _timestamp;
 }
 
 @synthesize viewTag = _viewTag;
@@ -43,6 +44,7 @@
     _scrollViewZoomScale = scrollViewZoomScale;
     _userData = userData;
     _coalescingKey = coalescingKey;
+    _timestamp = CACurrentMediaTime();
   }
   return self;
 }
@@ -67,6 +69,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     @"contentSize" : @{@"width" : @(_scrollViewContentSize.width), @"height" : @(_scrollViewContentSize.height)},
     @"layoutMeasurement" : @{@"width" : @(_scrollViewFrame.size.width), @"height" : @(_scrollViewFrame.size.height)},
     @"zoomScale" : @(_scrollViewZoomScale ?: 1),
+    @"timestamp" : @(_timestamp * 1000),
   };
 
   if (_userData) {

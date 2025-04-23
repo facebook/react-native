@@ -12,13 +12,14 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
 #include <jsinspector-modern/HostTarget.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/utils/jsi-utils.h>
 #include <iostream>
@@ -26,6 +27,24 @@
 #include <utility>
 
 namespace facebook::react {
+
+namespace {
+
+std::shared_ptr<RuntimeScheduler> createRuntimeScheduler(
+    RuntimeExecutor runtimeExecutor,
+    RuntimeSchedulerTaskErrorHandler taskErrorHandler) {
+  std::shared_ptr<RuntimeScheduler> scheduler =
+      std::make_shared<RuntimeScheduler>(
+          runtimeExecutor, RuntimeSchedulerClock::now, taskErrorHandler);
+  scheduler->setPerformanceEntryReporter(
+      // FIXME: Move creation of PerformanceEntryReporter to here and
+      // guarantee that its lifetime is the same as the runtime.
+      PerformanceEntryReporter::getInstance().get());
+
+  return scheduler;
+}
+
+} // namespace
 
 ReactInstance::ReactInstance(
     std::unique_ptr<JSRuntime> runtime,
@@ -38,68 +57,72 @@ ReactInstance::ReactInstance(
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(std::make_shared<JsErrorHandler>(std::move(onJsError))),
       parentInspectorTarget_(parentInspectorTarget) {
-  RuntimeExecutor runtimeExecutor = [weakRuntime = std::weak_ptr(runtime_),
-                                     weakTimerManager =
-                                         std::weak_ptr(timerManager_),
-                                     weakJsThread =
-                                         std::weak_ptr(jsMessageQueueThread_),
-                                     jsErrorHandler =
-                                         jsErrorHandler_](auto callback) {
-    if (weakRuntime.expired()) {
-      return;
-    }
-
-    /**
-     * If a fatal error was caught while executing the main bundle, assume the
-     * js runtime is invalid. And stop executing any more js.
-     */
-    if (!jsErrorHandler->isRuntimeReady() &&
-        jsErrorHandler->hasHandledFatalError()) {
-      LOG(INFO)
-          << "RuntimeExecutor: Detected fatal error. Dropping work on non-js thread."
-          << std::endl;
-      return;
-    }
-
-    if (auto jsThread = weakJsThread.lock()) {
-      jsThread->runOnQueue([jsErrorHandler,
-                            weakRuntime,
-                            weakTimerManager,
-                            callback = std::move(callback)]() {
-        auto runtime = weakRuntime.lock();
-        if (!runtime) {
+  RuntimeExecutor runtimeExecutor =
+      [weakRuntime = std::weak_ptr(runtime_),
+       weakTimerManager = std::weak_ptr(timerManager_),
+       weakJsThread = std::weak_ptr(jsMessageQueueThread_),
+       jsErrorHandler = jsErrorHandler_](auto callback) {
+        if (weakRuntime.expired()) {
           return;
         }
 
-        jsi::Runtime& jsiRuntime = runtime->getRuntime();
-        SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
-        try {
-          callback(jsiRuntime);
-
-          // If we have first-class support for microtasks,
-          // they would've been called as part of the previous callback.
-          if (!ReactNativeFeatureFlags::enableMicrotasks()) {
-            if (auto timerManager = weakTimerManager.lock()) {
-              timerManager->callReactNativeMicrotasks(jsiRuntime);
+        if (auto jsThread = weakJsThread.lock()) {
+          jsThread->runOnQueue([jsErrorHandler,
+                                weakRuntime,
+                                weakTimerManager,
+                                callback = std::move(callback)]() {
+            auto runtime = weakRuntime.lock();
+            if (!runtime) {
+              return;
             }
-          }
-        } catch (jsi::JSError& originalError) {
-          jsErrorHandler->handleFatalError(jsiRuntime, originalError);
+
+            jsi::Runtime& jsiRuntime = runtime->getRuntime();
+            TraceSection s("ReactInstance::_runtimeExecutor[Callback]");
+            try {
+              ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
+              callback(jsiRuntime);
+            } catch (jsi::JSError& originalError) {
+              jsErrorHandler->handleError(jsiRuntime, originalError, true);
+            } catch (std::exception& ex) {
+              jsi::JSError error(
+                  jsiRuntime, std::string("Non-js exception: ") + ex.what());
+              jsErrorHandler->handleError(jsiRuntime, error, true);
+            }
+          });
         }
-      });
-    }
-  };
+      };
 
   if (parentInspectorTarget_) {
     auto executor = parentInspectorTarget_->executorFromThis();
 
-    auto runtimeExecutorThatWaitsForInspectorSetup =
+    auto bufferedRuntimeExecutorThatWaitsForInspectorSetup =
         std::make_shared<BufferedRuntimeExecutor>(runtimeExecutor);
+    auto runtimeExecutorThatExecutesAfterInspectorSetup =
+        [bufferedRuntimeExecutorThatWaitsForInspectorSetup](
+            std::function<void(jsi::Runtime & runtime)>&& callback) {
+          bufferedRuntimeExecutorThatWaitsForInspectorSetup->execute(
+              std::move(callback));
+        };
+
+    runtimeScheduler_ = createRuntimeScheduler(
+        runtimeExecutorThatExecutesAfterInspectorSetup,
+        [jsErrorHandler = jsErrorHandler_](
+            jsi::Runtime& runtime, jsi::JSError& error) {
+          jsErrorHandler->handleError(runtime, error, true);
+        });
+
+    auto runtimeExecutorThatGoesThroughRuntimeScheduler =
+        [runtimeScheduler = runtimeScheduler_.get()](
+            std::function<void(jsi::Runtime & runtime)>&& callback) {
+          runtimeScheduler->scheduleWork(std::move(callback));
+        };
 
     // This code can execute from any thread, so we need to make sure we set up
     // the inspector logic in the right one. The callback executes immediately
     // if we are already in the right thread.
-    executor([this, runtimeExecutor, runtimeExecutorThatWaitsForInspectorSetup](
+    executor([this,
+              runtimeExecutorThatGoesThroughRuntimeScheduler,
+              bufferedRuntimeExecutorThatWaitsForInspectorSetup](
                  jsinspector_modern::HostTarget& hostTarget) {
       // Callbacks scheduled through the page target executor are generally
       // not guaranteed to run (e.g.: if the page target is destroyed)
@@ -110,31 +133,18 @@ ReactInstance::ReactInstance(
       //   creation task to finish before starting the destruction.
       inspectorTarget_ = &hostTarget.registerInstance(*this);
       runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(
-          runtime_->getRuntimeTargetDelegate(), runtimeExecutor);
-      runtimeExecutorThatWaitsForInspectorSetup->flush();
+          runtime_->getRuntimeTargetDelegate(),
+          runtimeExecutorThatGoesThroughRuntimeScheduler);
+      bufferedRuntimeExecutorThatWaitsForInspectorSetup->flush();
     });
-
-    // We decorate the runtime executor used everywhere else to wait for the
-    // inspector to finish its setup.
-    runtimeExecutor =
-        [runtimeExecutorThatWaitsForInspectorSetup](
-            std::function<void(jsi::Runtime & runtime)>&& callback) {
-          runtimeExecutorThatWaitsForInspectorSetup->execute(
-              std::move(callback));
-        };
+  } else {
+    runtimeScheduler_ = createRuntimeScheduler(
+        runtimeExecutor,
+        [jsErrorHandler = jsErrorHandler_](
+            jsi::Runtime& runtime, jsi::JSError& error) {
+          jsErrorHandler->handleError(runtime, error, true);
+        });
   }
-
-  runtimeScheduler_ = std::make_shared<RuntimeScheduler>(
-      runtimeExecutor,
-      RuntimeSchedulerClock::now,
-      [jsErrorHandler = jsErrorHandler_](
-          jsi::Runtime& runtime, jsi::JSError& error) {
-        jsErrorHandler->handleFatalError(runtime, error);
-      });
-  runtimeScheduler_->setPerformanceEntryReporter(
-      // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
-      // that its lifetime is the same as the runtime.
-      PerformanceEntryReporter::getInstance().get());
 
   bufferedRuntimeExecutor_ = std::make_shared<BufferedRuntimeExecutor>(
       [runtimeScheduler = runtimeScheduler_.get()](
@@ -204,47 +214,56 @@ std::string simpleBasename(const std::string& path) {
  */
 void ReactInstance::loadScript(
     std::unique_ptr<const JSBigString> script,
-    const std::string& sourceURL) {
+    const std::string& sourceURL,
+    std::function<void(jsi::Runtime& runtime)>&& beforeLoad,
+    std::function<void(jsi::Runtime& runtime)>&& afterLoad) {
   auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
-  runtimeScheduler_->scheduleWork(
-      [this,
-       scriptName,
-       sourceURL,
-       buffer = std::move(buffer),
-       weakBufferedRuntimeExecuter = std::weak_ptr<BufferedRuntimeExecutor>(
-           bufferedRuntimeExecutor_)](jsi::Runtime& runtime) {
-        SystraceSection s("ReactInstance::loadScript");
-        bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
-        if (hasLogger) {
-          ReactMarker::logTaggedMarkerBridgeless(
-              ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
-        }
+  runtimeScheduler_->scheduleWork([this,
+                                   scriptName,
+                                   sourceURL,
+                                   buffer = std::move(buffer),
+                                   weakBufferedRuntimeExecuter =
+                                       std::weak_ptr<BufferedRuntimeExecutor>(
+                                           bufferedRuntimeExecutor_),
+                                   beforeLoad,
+                                   afterLoad](jsi::Runtime& runtime) {
+    if (beforeLoad) {
+      beforeLoad(runtime);
+    }
+    TraceSection s("ReactInstance::loadScript");
+    bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
+    if (hasLogger) {
+      ReactMarker::logTaggedMarkerBridgeless(
+          ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
+    }
 
-        runtime.evaluateJavaScript(buffer, sourceURL);
+    runtime.evaluateJavaScript(buffer, sourceURL);
 
-        /**
-         * TODO(T183610671): We need a safe/reliable way to enable the js
-         * pipeline from javascript. Remove this after we figure that out, or
-         * after we just remove the js pipeline.
-         */
-        if (!jsErrorHandler_->hasHandledFatalError()) {
-          jsErrorHandler_->setRuntimeReady();
-        }
+    /**
+     * TODO(T183610671): We need a safe/reliable way to enable the js
+     * pipeline from javascript. Remove this after we figure that out, or
+     * after we just remove the js pipeline.
+     */
+    if (!jsErrorHandler_->hasHandledFatalError()) {
+      jsErrorHandler_->setRuntimeReady();
+    }
 
-        if (hasLogger) {
-          ReactMarker::logTaggedMarkerBridgeless(
-              ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
-          ReactMarker::logMarkerBridgeless(
-              ReactMarker::INIT_REACT_RUNTIME_STOP);
-          ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
-        }
-        if (auto strongBufferedRuntimeExecuter =
-                weakBufferedRuntimeExecuter.lock()) {
-          strongBufferedRuntimeExecuter->flush();
-        }
-      });
+    if (hasLogger) {
+      ReactMarker::logTaggedMarkerBridgeless(
+          ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
+      ReactMarker::logMarkerBridgeless(ReactMarker::INIT_REACT_RUNTIME_STOP);
+      ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
+    }
+    if (auto strongBufferedRuntimeExecuter =
+            weakBufferedRuntimeExecuter.lock()) {
+      strongBufferedRuntimeExecuter->flush();
+    }
+    if (afterLoad) {
+      afterLoad(runtime);
+    }
+  });
 }
 
 /*
@@ -255,12 +274,18 @@ void ReactInstance::callFunctionOnModule(
     const std::string& moduleName,
     const std::string& methodName,
     folly::dynamic&& args) {
+  if (bufferedRuntimeExecutor_ == nullptr) {
+    LOG(ERROR)
+        << "Calling callFunctionOnModule with null BufferedRuntimeExecutor";
+    return;
+  }
+
   bufferedRuntimeExecutor_->execute([this,
                                      moduleName = moduleName,
                                      methodName = methodName,
                                      args = std::move(args)](
                                         jsi::Runtime& runtime) {
-    SystraceSection s(
+    TraceSection s(
         "ReactInstance::callFunctionOnModule",
         "moduleName",
         moduleName,
@@ -309,8 +334,8 @@ void ReactInstance::registerSegment(
   LOG(WARNING) << "Starting to run ReactInstance::registerSegment with segment "
                << segmentId;
   runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
-    SystraceSection s("ReactInstance::registerSegment");
-    const auto tag = folly::to<std::string>(segmentId);
+    TraceSection s("ReactInstance::registerSegment");
+    auto tag = std::to_string(segmentId);
     auto script = JSBigFileString::fromPath(segmentPath);
     if (script->size() == 0) {
       throw std::invalid_argument(
@@ -366,7 +391,7 @@ void ReactInstance::initializeRuntime(
     BindingsInstallFunc bindingsInstallFunc) noexcept {
   runtimeScheduler_->scheduleWork([this, options, bindingsInstallFunc](
                                       jsi::Runtime& runtime) {
-    SystraceSection s("ReactInstance::initializeRuntime");
+    TraceSection s("ReactInstance::initializeRuntime");
 
     bindNativePerformanceNow(runtime);
 
@@ -377,6 +402,73 @@ void ReactInstance::initializeRuntime(
 
     defineReactInstanceFlags(runtime, options);
 
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$useAlwaysAvailableJSErrorHandling",
+        jsi::Value(
+            ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling()));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$isRuntimeReady",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "isRuntimeReady"),
+            0,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& /*runtime*/,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* /*args*/,
+                size_t /*count*/) {
+              return jsErrorHandler->isRuntimeReady();
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$hasHandledFatalException",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "hasHandledFatalException"),
+            0,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& /*runtime*/,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* /*args*/,
+                size_t /*count*/) {
+              return jsErrorHandler->hasHandledFatalError();
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$notifyOfFatalException",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "notifyOfFatalException"),
+            0,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& /*runtime*/,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* /*args*/,
+                size_t /*count*/) {
+              jsErrorHandler->notifyOfFatalError();
+              return jsi::Value::undefined();
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$inExceptionHandler",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "inExceptionHandler"),
+            0,
+            [jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& /*runtime*/,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* /*args*/,
+                size_t /*count*/) {
+              return jsErrorHandler->inErrorHandler();
+            }));
+
     // TODO(T196834299): We should really use a C++ turbomodule for this
     defineReadOnlyGlobal(
         runtime,
@@ -384,7 +476,7 @@ void ReactInstance::initializeRuntime(
         jsi::Function::createFromHostFunction(
             runtime,
             jsi::PropNameID::forAscii(runtime, "handleException"),
-            2,
+            3,
             [jsErrorHandler = jsErrorHandler_](
                 jsi::Runtime& runtime,
                 const jsi::Value& /*unused*/,
@@ -393,26 +485,71 @@ void ReactInstance::initializeRuntime(
               if (count < 2) {
                 throw jsi::JSError(
                     runtime,
-                    "handleException requires 2 arguments: error, isFatal");
+                    "handleException requires 3 arguments: error, isFatal, logToConsole (optional)");
               }
 
               auto isFatal = isTruthy(runtime, args[1]);
-              if (jsErrorHandler->isRuntimeReady()) {
-                if (isFatal) {
-                  jsErrorHandler->notifyOfFatalError();
+
+              if (!ReactNativeFeatureFlags::
+                      useAlwaysAvailableJSErrorHandling()) {
+                if (jsErrorHandler->isRuntimeReady()) {
+                  return jsi::Value(false);
                 }
-
-                return jsi::Value(false);
               }
 
-              if (isFatal) {
-                auto jsError =
-                    jsi::JSError(runtime, jsi::Value(runtime, args[0]));
-                jsErrorHandler->handleFatalError(runtime, jsError);
-                return jsi::Value(true);
+              auto jsError =
+                  jsi::JSError(runtime, jsi::Value(runtime, args[0]));
+
+              if (count == 2) {
+                jsErrorHandler->handleError(runtime, jsError, isFatal);
+              } else {
+                auto logToConsole = isTruthy(runtime, args[2]);
+                jsErrorHandler->handleError(
+                    runtime, jsError, isFatal, logToConsole);
               }
 
-              return jsi::Value(false);
+              return jsi::Value(true);
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$registerExceptionListener",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "registerExceptionListener"),
+            1,
+            [errorListeners = std::vector<std::shared_ptr<jsi::Function>>(),
+             jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
+                size_t count) mutable {
+              if (count < 1) {
+                throw jsi::JSError(
+                    runtime,
+                    "registerExceptionListener: requires 1 argument: fn");
+              }
+
+              if (!args[0].isObject() ||
+                  !args[0].getObject(runtime).isFunction(runtime)) {
+                throw jsi::JSError(
+                    runtime,
+                    "registerExceptionListener: The first argument must be a function");
+              }
+
+              auto errorListener = std::make_shared<jsi::Function>(
+                  args[0].getObject(runtime).getFunction(runtime));
+              errorListeners.emplace_back(errorListener);
+
+              jsErrorHandler->registerErrorListener(
+                  [weakErrorListener = std::weak_ptr<jsi::Function>(
+                       errorListener)](jsi::Runtime& runtime, jsi::Value data) {
+                    if (auto strongErrorListener = weakErrorListener.lock()) {
+                      strongErrorListener->call(runtime, data);
+                    }
+                  });
+
+              return jsi::Value::undefined();
             }));
 
     defineReadOnlyGlobal(
@@ -514,7 +651,7 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
       LOG(INFO) << "Memory warning (pressure level: " << levelName
                 << ") received by JS VM, running a GC";
       runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
-        SystraceSection s("ReactInstance::handleMemoryPressure");
+        TraceSection s("ReactInstance::handleMemoryPressure");
         runtime.instrumentation().collectGarbage(levelName);
       });
       break;

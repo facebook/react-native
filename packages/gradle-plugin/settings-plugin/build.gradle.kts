@@ -6,6 +6,8 @@
  */
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -50,11 +52,12 @@ java { targetCompatibility = JavaVersion.VERSION_11 }
 kotlin { jvmToolchain(17) }
 
 tasks.withType<KotlinCompile>().configureEach {
-  kotlinOptions {
-    apiVersion = "1.6"
+  compilerOptions {
+    apiVersion.set(KotlinVersion.KOTLIN_1_8)
     // See comment above on JDK 11 support
-    jvmTarget = "11"
-    allWarningsAsErrors = true
+    jvmTarget.set(JvmTarget.JVM_11)
+    allWarningsAsErrors =
+        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
   }
 }
 

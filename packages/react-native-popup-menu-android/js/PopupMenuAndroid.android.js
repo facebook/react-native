@@ -9,8 +9,8 @@
  */
 
 import type {RefObject} from 'react';
-import type {HostComponent} from 'react-native';
-import type {SyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {HostInstance} from 'react-native';
+import type {NativeSyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import PopupMenuAndroidNativeComponent, {
   Commands,
@@ -19,13 +19,13 @@ import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useCallback, useImperativeHandle, useRef} from 'react';
 
-type PopupMenuSelectionEvent = SyntheticEvent<
+type PopupMenuSelectionEvent = NativeSyntheticEvent<
   $ReadOnly<{
     item: number,
   }>,
 >;
 
-type PopupMenuDismissEvent = SyntheticEvent<$ReadOnly<{}>>;
+type PopupMenuDismissEvent = NativeSyntheticEvent<$ReadOnly<{}>>;
 
 export type PopupMenuAndroidInstance = {
   +show: () => void,
@@ -46,7 +46,7 @@ export default function PopupMenuAndroid({
   children,
   instanceRef,
 }: Props): React.Node {
-  const nativeRef = useRef<React.ElementRef<HostComponent<mixed>> | null>(null);
+  const nativeRef = useRef<HostInstance | null>(null);
   const _onSelectionChange = useCallback(
     (event: PopupMenuSelectionEvent) => {
       onSelectionChange(event.nativeEvent.item);

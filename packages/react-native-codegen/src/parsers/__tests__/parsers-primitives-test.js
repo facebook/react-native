@@ -478,11 +478,17 @@ describe('typeEnumResolution', () => {
             members: [
               {
                 name: 'Hello',
-                value: 'hello',
+                value: {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: 'hello',
+                },
               },
               {
                 name: 'Goodbye',
-                value: 'goodbye',
+                value: {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: 'goodbye',
+                },
               },
             ],
           },
@@ -521,11 +527,17 @@ describe('typeEnumResolution', () => {
             members: [
               {
                 name: 'On',
-                value: '1',
+                value: {
+                  type: 'NumberLiteralTypeAnnotation',
+                  value: 1,
+                },
               },
               {
                 name: 'Off',
-                value: '0',
+                value: {
+                  type: 'NumberLiteralTypeAnnotation',
+                  value: 0,
+                },
               },
             ],
           },
@@ -862,8 +874,8 @@ describe('emitUnion', () => {
       const typeAnnotation = {
         type: 'UnionTypeAnnotation',
         types: [
-          {type: 'StringLiteralTypeAnnotation'},
-          {type: 'StringLiteralTypeAnnotation'},
+          {type: 'StringLiteralTypeAnnotation', value: 'foo'},
+          {type: 'StringLiteralTypeAnnotation', value: 'bar'},
         ],
       };
       describe('when nullable is true', () => {
@@ -878,8 +890,17 @@ describe('emitUnion', () => {
           const expected = {
             type: 'NullableTypeAnnotation',
             typeAnnotation: {
-              type: 'UnionTypeAnnotation',
-              memberType: 'StringTypeAnnotation',
+              type: 'StringLiteralUnionTypeAnnotation',
+              types: [
+                {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: 'foo',
+                },
+                {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: 'bar',
+                },
+              ],
             },
           };
 
@@ -897,8 +918,17 @@ describe('emitUnion', () => {
           );
 
           const expected = {
-            type: 'UnionTypeAnnotation',
-            memberType: 'StringTypeAnnotation',
+            type: 'StringLiteralUnionTypeAnnotation',
+            types: [
+              {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'foo',
+              },
+              {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'bar',
+              },
+            ],
           };
 
           expect(result).toEqual(expected);
@@ -955,8 +985,8 @@ describe('emitUnion', () => {
       const typeAnnotation = {
         type: 'UnionTypeAnnotation',
         types: [
-          {type: 'NumberLiteralTypeAnnotation'},
-          {type: 'StringLiteralTypeAnnotation'},
+          {type: 'NumberLiteralTypeAnnotation', value: 'foo'},
+          {type: 'StringLiteralTypeAnnotation', value: 'bar'},
           {type: 'ObjectTypeAnnotation'},
         ],
       };
@@ -1002,11 +1032,11 @@ describe('emitUnion', () => {
         types: [
           {
             type: 'TSLiteralType',
-            literal: {type: 'NumericLiteral'},
+            literal: {type: 'NumericLiteral', value: 4},
           },
           {
             type: 'TSLiteralType',
-            literal: {type: 'NumericLiteral'},
+            literal: {type: 'NumericLiteral', value: 5},
           },
         ],
       };
@@ -1056,11 +1086,11 @@ describe('emitUnion', () => {
         types: [
           {
             type: 'TSLiteralType',
-            literal: {type: 'StringLiteral'},
+            literal: {type: 'StringLiteral', value: 'foo'},
           },
           {
             type: 'TSLiteralType',
-            literal: {type: 'StringLiteral'},
+            literal: {type: 'StringLiteral', value: 'bar'},
           },
         ],
       };
@@ -1076,8 +1106,17 @@ describe('emitUnion', () => {
           const expected = {
             type: 'NullableTypeAnnotation',
             typeAnnotation: {
-              type: 'UnionTypeAnnotation',
-              memberType: 'StringTypeAnnotation',
+              type: 'StringLiteralUnionTypeAnnotation',
+              types: [
+                {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: 'foo',
+                },
+                {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: 'bar',
+                },
+              ],
             },
           };
 
@@ -1095,8 +1134,17 @@ describe('emitUnion', () => {
           );
 
           const expected = {
-            type: 'UnionTypeAnnotation',
-            memberType: 'StringTypeAnnotation',
+            type: 'StringLiteralUnionTypeAnnotation',
+            types: [
+              {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'foo',
+              },
+              {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'bar',
+              },
+            ],
           };
 
           expect(result).toEqual(expected);
@@ -1162,11 +1210,11 @@ describe('emitUnion', () => {
         types: [
           {
             type: 'TSLiteralType',
-            literal: {type: 'NumericLiteral'},
+            literal: {type: 'NumericLiteral', value: 4},
           },
           {
             type: 'TSLiteralType',
-            literal: {type: 'StringLiteral'},
+            literal: {type: 'StringLiteral', value: 'foo'},
           },
           {
             type: 'TSLiteralType',
@@ -1801,8 +1849,17 @@ describe('emitUnionProp', () => {
         name: 'someProp',
         optional: true,
         typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: ['someValue1', 'someValue2'],
+          type: 'StringLiteralUnionTypeAnnotation',
+          types: [
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'someValue1',
+            },
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'someValue2',
+            },
+          ],
         },
       };
 
@@ -1836,8 +1893,17 @@ describe('emitUnionProp', () => {
         name: 'someProp',
         optional: false,
         typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: ['someValue1', 'someValue2'],
+          type: 'StringLiteralUnionTypeAnnotation',
+          types: [
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'someValue1',
+            },
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'someValue2',
+            },
+          ],
         },
       };
 

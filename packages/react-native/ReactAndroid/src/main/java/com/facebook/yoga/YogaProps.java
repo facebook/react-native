@@ -15,15 +15,33 @@ public interface YogaProps {
 
   void setWidthPercent(float percent);
 
+  void setWidthAuto();
+
+  void setWidthMaxContent();
+
+  void setWidthFitContent();
+
+  void setWidthStretch();
+
   void setMinWidth(float minWidth);
 
   void setMinWidthPercent(float percent);
+
+  void setMinWidthMaxContent();
+
+  void setMinWidthFitContent();
+
+  void setMinWidthStretch();
 
   void setMaxWidth(float maxWidth);
 
   void setMaxWidthPercent(float percent);
 
-  void setWidthAuto();
+  void setMaxWidthMaxContent();
+
+  void setMaxWidthFitContent();
+
+  void setMaxWidthStretch();
 
   /* Height properties */
 
@@ -31,15 +49,33 @@ public interface YogaProps {
 
   void setHeightPercent(float percent);
 
+  void setHeightAuto();
+
+  void setHeightMaxContent();
+
+  void setHeightFitContent();
+
+  void setHeightStretch();
+
   void setMinHeight(float minHeight);
 
   void setMinHeightPercent(float percent);
+
+  void setMinHeightMaxContent();
+
+  void setMinHeightFitContent();
+
+  void setMinHeightStretch();
 
   void setMaxHeight(float maxHeight);
 
   void setMaxHeightPercent(float percent);
 
-  void setHeightAuto();
+  void setMaxHeightMaxContent();
+
+  void setMaxHeightFitContent();
+
+  void setMaxHeightStretch();
 
   /* Margin properties */
 
@@ -81,6 +117,12 @@ public interface YogaProps {
 
   void setFlexBasis(float flexBasis);
 
+  void setFlexBasisMaxContent();
+
+  void setFlexBasisFitContent();
+
+  void setFlexBasisStretch();
+
   void setFlexDirection(YogaFlexDirection direction);
 
   void setFlexGrow(float flexGrow);
@@ -104,6 +146,8 @@ public interface YogaProps {
   void setMeasureFunction(YogaMeasureFunction measureFunction);
 
   void setBaselineFunction(YogaBaselineFunction yogaBaselineFunction);
+
+  void setBoxSizing(YogaBoxSizing boxSizing);
 
   /* Getters */
 
@@ -148,4 +192,6 @@ public interface YogaProps {
   YogaValue getPosition(YogaEdge edge);
 
   float getBorder(YogaEdge edge);
+
+  YogaBoxSizing getBoxSizing();
 }

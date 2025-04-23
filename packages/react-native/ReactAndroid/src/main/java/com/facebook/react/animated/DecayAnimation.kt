@@ -28,7 +28,7 @@ internal class DecayAnimation(config: ReadableMap) : AnimationDriver() {
     resetConfig(config)
   }
 
-  public override fun resetConfig(config: ReadableMap): Unit {
+  override fun resetConfig(config: ReadableMap): Unit {
     velocity = config.getDouble("velocity")
     deceleration = config.getDouble("deceleration")
     startFrameTimeMillis = -1
@@ -39,7 +39,7 @@ internal class DecayAnimation(config: ReadableMap) : AnimationDriver() {
     hasFinished = iterations == 0
   }
 
-  public override fun runAnimationStep(frameTimeNanos: Long) {
+  override fun runAnimationStep(frameTimeNanos: Long) {
     val animatedValue = requireNotNull(animatedValue) { "Animated value should not be null" }
     val frameTimeMillis = frameTimeNanos / 1000000
     if (startFrameTimeMillis == -1L) {

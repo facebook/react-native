@@ -12,15 +12,15 @@
 
 import type HTMLCollection from '../oldstylecollections/HTMLCollection';
 
-import DOMRect from '../geometry/DOMRect';
+import DOMRect from '../../geometry/DOMRect';
 import {createHTMLCollection} from '../oldstylecollections/HTMLCollection';
-import ReadOnlyNode, {
-  getChildNodes,
+import {
   getInstanceHandle,
-  getShadowNode,
-} from './ReadOnlyNode';
+  getNativeElementReference,
+} from './internals/NodeInternals';
+import {getElementSibling} from './internals/Traversal';
+import ReadOnlyNode, {getChildNodes} from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
-import {getElementSibling} from './utilities/Traversal';
 
 export default class ReadOnlyElement extends ReadOnlyNode {
   get childElementCount(): number {
@@ -32,7 +32,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientHeight(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const innerSize = NativeDOM.getInnerSize(node);
@@ -43,7 +43,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientLeft(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const borderSize = NativeDOM.getBorderWidth(node);
@@ -54,7 +54,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientTop(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const borderSize = NativeDOM.getBorderWidth(node);
@@ -65,7 +65,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get clientWidth(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const innerSize = NativeDOM.getInnerSize(node);
@@ -126,7 +126,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollHeight(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const scrollSize = NativeDOM.getScrollSize(node);
@@ -137,7 +137,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollLeft(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const scrollPosition = NativeDOM.getScrollPosition(node);
@@ -148,7 +148,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollTop(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const scrollPosition = NativeDOM.getScrollPosition(node);
@@ -159,7 +159,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollWidth(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const scrollSize = NativeDOM.getScrollSize(node);
@@ -170,7 +170,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get tagName(): string {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       return NativeDOM.getTagName(node);
@@ -179,11 +179,11 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     return '';
   }
 
-  get textContent(): string | null {
-    const shadowNode = getShadowNode(this);
+  get textContent(): string {
+    const node = getNativeElementReference(this);
 
-    if (shadowNode != null) {
-      return NativeDOM.getTextContent(shadowNode);
+    if (node != null) {
+      return NativeDOM.getTextContent(node);
     }
 
     return '';
@@ -197,7 +197,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
    * Pointer Capture APIs
    */
   hasPointerCapture(pointerId: number): boolean {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
       return NativeDOM.hasPointerCapture(node, pointerId);
     }
@@ -205,14 +205,14 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   setPointerCapture(pointerId: number): void {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
       NativeDOM.setPointerCapture(node, pointerId);
     }
   }
 
   releasePointerCapture(pointerId: number): void {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
       NativeDOM.releasePointerCapture(node, pointerId);
     }
@@ -232,13 +232,13 @@ function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
  * implement methods like `offsetWidth` and `offsetHeight`.
  */
 export function getBoundingClientRect(
-  node: ReadOnlyElement,
+  element: ReadOnlyElement,
   {includeTransform}: {includeTransform: boolean},
 ): DOMRect {
-  const shadowNode = getShadowNode(node);
+  const node = getNativeElementReference(element);
 
-  if (shadowNode != null) {
-    const rect = NativeDOM.getBoundingClientRect(shadowNode, includeTransform);
+  if (node != null) {
+    const rect = NativeDOM.getBoundingClientRect(node, includeTransform);
     return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
   }
 

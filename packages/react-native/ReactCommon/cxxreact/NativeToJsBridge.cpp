@@ -21,7 +21,7 @@
 #include "ModuleRegistry.h"
 #include "MoveWrapper.h"
 #include "RAMBundleRegistry.h"
-#include "SystraceSection.h"
+#include "TraceSection.h"
 
 #include <memory>
 
@@ -173,8 +173,7 @@ void NativeToJsBridge::callFunction(
   int systraceCookie = -1;
 #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
-  FbSystraceAsyncFlow::begin(
-      TRACE_TAG_REACT_CXX_BRIDGE, "JSCall", systraceCookie);
+  FbSystraceAsyncFlow::begin(TRACE_TAG_REACT, "JSCall", systraceCookie);
 #endif
 
   runOnExecutorQueue([this,
@@ -192,9 +191,8 @@ void NativeToJsBridge::callFunction(
     }
 
 #ifdef WITH_FBSYSTRACE
-    FbSystraceAsyncFlow::end(
-        TRACE_TAG_REACT_CXX_BRIDGE, "JSCall", systraceCookie);
-    SystraceSection s(
+    FbSystraceAsyncFlow::end(TRACE_TAG_REACT, "JSCall", systraceCookie);
+    TraceSection s(
         "NativeToJsBridge::callFunction", "module", module, "method", method);
 #else
     (void)(systraceCookie);
@@ -212,8 +210,7 @@ void NativeToJsBridge::invokeCallback(
   int systraceCookie = -1;
 #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
-  FbSystraceAsyncFlow::begin(
-      TRACE_TAG_REACT_CXX_BRIDGE, "<callback>", systraceCookie);
+  FbSystraceAsyncFlow::begin(TRACE_TAG_REACT, "<callback>", systraceCookie);
 #endif
 
   runOnExecutorQueue(
@@ -227,9 +224,8 @@ void NativeToJsBridge::invokeCallback(
               "Attempting to invoke JS callback on a bad application bundle.");
         }
 #ifdef WITH_FBSYSTRACE
-        FbSystraceAsyncFlow::end(
-            TRACE_TAG_REACT_CXX_BRIDGE, "<callback>", systraceCookie);
-        SystraceSection s("NativeToJsBridge::invokeCallback");
+        FbSystraceAsyncFlow::end(TRACE_TAG_REACT, "<callback>", systraceCookie);
+        TraceSection s("NativeToJsBridge::invokeCallback");
 #else
         (void)(systraceCookie);
 #endif

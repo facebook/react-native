@@ -64,7 +64,7 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
-        slice: [macosx, iphoneos, iphonesimulator, catalyst, xros, xrsimulator]
+        slice: [macosx, iphoneos, iphonesimulator, appletvos, appletvsimulator, catalyst, xros, xrsimulator]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -96,6 +96,9 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
+  prebuild_apple_dependencies:
+    uses: ./.github/workflows/prebuild-ios.yml
+    secrets: inherit
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -150,6 +153,7 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu
@@ -161,13 +165,14 @@ jobs:
         build_hermesc_linux,
         build_hermesc_windows,
         build_android,
+        prebuild_apple_dependencies,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
+        # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -183,57 +188,67 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Build and Publish NPM PAckage
+      - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gha-npm-token: ${{ env.GHA_NPM_TOKEN }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Publish @react-native-community/template
         id: publish-template-to-npm
-        shell: bash
-        run: |
-          COMMIT_MSG=$(git log -n1 --pretty=%B);
-          if grep -q '#publish-packages-to-npm&latest' <<< "$COMMIT_MSG"; then
-            echo "TAG=latest" >> $GITHUB_OUTPUT
-            IS_LATEST=true
-          else
-            IS_LATEST=false
-          fi
-          # Go from v0.75.0-rc.4 -> 0.75-stable, which is the template's branching scheme
-          VERSION=$(grep -oE '\d+\.\d+' <<< "${{ github.ref_name }}" | { read version; echo "$version-stable"; })
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
-          curl -L https://api.github.com/repos/react-native-community/template/actions/workflows/release.yaml/dispatches
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
-            -d "{\"ref\":\"$VERSION\",\"inputs\":{\"version\":\"${{ github.ref_name }}\",\"is_latest_on_npm\":\"$IS_LATEST\"}}"
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          script: |
+            const {publishTemplate} = require('./.github/workflow-scripts/publishTemplate.js')
+            const version = "${{ github.ref_name }}"
+            const isDryRun = false
+            await publishTemplate(github, version, isDryRun);
       - name: Wait for template to be published
         timeout-minutes: 3
-        env:
-          VERSION: ${{ steps.publish-template-to-npm.outputs.VERSION }}
-          TAG: ${{ steps.publish-template-to-npm.outputs.TAG }}
-        shell: bash
-        run: |
-          echo "Waiting until @react-native-community/template is published to npm"
-          while true; do
-            if curl -o /dev/null -s -f "https://registry.npmjs.org/@react-native-community/template/$VERSION"; then
-              echo "Confirm that @react-native-community/template@$VERSION is published on npm"
-              break
-            fi
-            sleep 10
-          done
-          while [ "$TAG" == "latest" ]; do
-            CURRENT=$(curl -s "https://registry.npmjs.org/react-native/latest" | jq -r '.version');
-            if [ "$CURRENT" == "$VERSION" ]; then
-              echo "Confirm that @react-native-community/template@latest == $VERSION on npm"
-              break
-            fi
-            sleep 10
-          done
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          script: |
+            const {verifyPublishedTemplate, isLatest} = require('./.github/workflow-scripts/publishTemplate.js')
+            const version = "${{ github.ref_name }}"
+            await verifyPublishedTemplate(version, isLatest());
       - name: Update rn-diff-purge to generate upgrade-support diff
         run: |
           curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
             -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${{ github.ref_name }}\" }}"
+      - name: Verify Release is on NPM
+        timeout-minutes: 3
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          script: |
+            const {verifyReleaseOnNpm} = require('./.github/workflow-scripts/verifyReleaseOnNpm.js');
+            const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
+            const version = "${{ github.ref_name }}";
+            await verifyReleaseOnNpm(version, isLatest());
+      - name: Verify that artifacts are on Maven
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {verifyArtifactsAreOnMaven} = require('./.github/workflow-scripts/verifyArtifactsAreOnMaven.js');
+            const version = "${{ github.ref_name }}";
+            await verifyArtifactsAreOnMaven(version);
+
+  generate_changelog:
+    needs: build_npm_package
+    uses: ./.github/workflows/generate-changelog.yml
+    secrets: inherit
+
+  bump_podfile_lock:
+    needs: build_npm_package
+    uses: ./.github/workflows/bump-podfile-lock.yml
+    secrets: inherit
+
+  create_draft_release:
+    needs: generate_changelog
+    uses: ./.github/workflows/create-draft-release.yml
+    secrets: inherit

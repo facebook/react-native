@@ -8,8 +8,8 @@
  * @format
  */
 
-import type {Props as VirtualizedListProps} from './VirtualizedListProps';
-import type {Layout} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {VirtualizedListProps} from './VirtualizedListProps';
+import type {LayoutRectangle} from 'react-native';
 
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
@@ -82,7 +82,7 @@ export default class ListMetricsAggregator {
     cellIndex: number,
     cellKey: string,
     orientation: ListOrientation,
-    layout: Layout,
+    layout: LayoutRectangle,
   }): boolean {
     this._invalidateIfOrientationChanged(orientation);
 
@@ -264,7 +264,10 @@ export default class ListMetricsAggregator {
    * Finds the flow-relative offset (e.g. starting from the left in LTR, but
    * right in RTL) from a layout box.
    */
-  flowRelativeOffset(layout: Layout, referenceContentLength?: ?number): number {
+  flowRelativeOffset(
+    layout: LayoutRectangle,
+    referenceContentLength?: ?number,
+  ): number {
     const {horizontal, rtl} = this._orientation;
 
     if (horizontal && rtl) {

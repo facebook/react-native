@@ -37,7 +37,7 @@ namespace {
 class InspectorImpl : public IInspector {
  public:
   int addPage(
-      const std::string& title,
+      const std::string& description,
       const std::string& vm,
       ConnectFunc connectFunc,
       InspectorTargetCapabilities capabilities) override;
@@ -66,7 +66,7 @@ class InspectorImpl : public IInspector {
 
    private:
     int id_;
-    std::string title_;
+    std::string description_;
     std::string vm_;
     ConnectFunc connectFunc_;
     InspectorTargetCapabilities capabilities_;
@@ -79,12 +79,12 @@ class InspectorImpl : public IInspector {
 
 InspectorImpl::Page::Page(
     int id,
-    const std::string& title,
+    const std::string& description,
     const std::string& vm,
     ConnectFunc connectFunc,
     InspectorTargetCapabilities capabilities)
     : id_(id),
-      title_(title),
+      description_(description),
       vm_(vm),
       connectFunc_(std::move(connectFunc)),
       capabilities_(std::move(capabilities)) {}
@@ -92,7 +92,7 @@ InspectorImpl::Page::Page(
 InspectorImpl::Page::operator InspectorPageDescription() const {
   return InspectorPageDescription{
       .id = id_,
-      .title = title_,
+      .description = description_,
       .vm = vm_,
       .capabilities = capabilities_,
   };
@@ -103,7 +103,7 @@ InspectorImpl::ConnectFunc InspectorImpl::Page::getConnectFunc() const {
 }
 
 int InspectorImpl::addPage(
-    const std::string& title,
+    const std::string& description,
     const std::string& vm,
     ConnectFunc connectFunc,
     InspectorTargetCapabilities capabilities) {
@@ -114,7 +114,8 @@ int InspectorImpl::addPage(
   int pageId = nextPageId_++;
   assert(pages_.count(pageId) == 0 && "Unexpected duplicate page ID");
   pages_.emplace(
-      pageId, Page{pageId, title, vm, std::move(connectFunc), capabilities});
+      pageId,
+      Page{pageId, description, vm, std::move(connectFunc), capabilities});
 
   return pageId;
 }

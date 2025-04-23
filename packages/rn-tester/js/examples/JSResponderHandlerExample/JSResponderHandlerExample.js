@@ -8,10 +8,9 @@
  * @flow strict-local
  */
 
-import {PanResponder, ScrollView} from 'react-native';
-
-const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {PanResponder, ScrollView, StyleSheet, View} from 'react-native';
 
 exports.displayName = 'JSResponderHandlerExample';
 exports.framework = 'React';
@@ -40,7 +39,11 @@ exports.examples = [
         views[i] = (
           <View key={i} style={styles.row} collapsable={false}>
             <View style={styles.touchable_area} collapsable={false}>
-              <Text testID="row_js_responder_handler">I am row {i}</Text>
+              <RNTesterText
+                testID="row_js_responder_handler"
+                style={styles.rowText}>
+                I am row {i}
+              </RNTesterText>
             </View>
           </View>
         );
@@ -68,6 +71,9 @@ const styles = StyleSheet.create({
   },
   row: {
     height: 25,
+  },
+  rowText: {
+    color: 'black',
   },
   touchable_area: {
     width: 150,

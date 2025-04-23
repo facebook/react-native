@@ -99,15 +99,16 @@ using namespace facebook::react;
 
   // We need to register a root view component here synchronously because right after
   // we start a surface, it can initiate an update that can query the root component.
-  RCTUnsafeExecuteOnMainQueueSync(^{
+  RCTExecuteOnMainQueue(^{
     [self->_surfacePresenter.mountingManager attachSurfaceToView:self.view
                                                        surfaceId:self->_surfaceHandler->getSurfaceId()];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+      self->_surfaceHandler->start();
+      [self _propagateStageChange];
+
+      [self->_surfacePresenter setupAnimationDriverWithSurfaceHandler:*self->_surfaceHandler];
+    });
   });
-
-  _surfaceHandler->start();
-  [self _propagateStageChange];
-
-  [_surfacePresenter setupAnimationDriverWithSurfaceHandler:*_surfaceHandler];
 }
 
 - (void)stop
@@ -142,6 +143,7 @@ using namespace facebook::react;
 
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:(RCTSurface *)self];
+    [self _updateLayoutContext];
     _touchHandler = [RCTSurfaceTouchHandler new];
     [_touchHandler attachToView:_view];
   }

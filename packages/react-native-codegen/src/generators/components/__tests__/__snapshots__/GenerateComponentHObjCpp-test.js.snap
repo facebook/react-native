@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTCommandNativeComponentViewProtocol <NSObject>
 - (void)flashScrollIndicators;
-- (void)allTypes:(NSInteger)x y:(float)y z:(double)z message:(NSString *)message animated:(BOOL)animated;
+- (void)allTypes:(NSInteger)x y:(float)y z:(double)z message:(NSString *)message animated:(BOOL)animated locations:(const NSArray *)locations;
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
@@ -143,8 +143,8 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
 
 if ([commandName isEqualToString:@\\"allTypes\\"]) {
 #if RCT_DEBUG
-  if ([args count] != 5) {
-    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 5);
+  if ([args count] != 6) {
+    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 6);
     return;
   }
 #endif
@@ -189,7 +189,15 @@ NSObject *arg4 = args[4];
 #endif
   BOOL animated = [(NSNumber *)arg4 boolValue];
 
-  [componentView allTypes:x y:y z:z message:message animated:animated];
+NSObject *arg5 = args[5];
+#if RCT_DEBUG
+  if (!RCTValidateTypeOfViewCommandArgument(arg5, [NSArray class], @\\"array\\", @\\"CommandNativeComponent\\", commandName, @\\"6th\\")) {
+    return;
+  }
+#endif
+  const NSArray * locations = (NSArray *)arg5;
+
+  [componentView allTypes:x y:y z:z message:message animated:animated locations:locations];
   return;
 }
 

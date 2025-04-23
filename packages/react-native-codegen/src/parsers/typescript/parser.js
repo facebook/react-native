@@ -15,7 +15,7 @@ import type {
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleParamTypeAnnotation,
   Nullable,
@@ -91,6 +91,10 @@ class TypeScriptParser implements Parser {
   }
 
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
+    if (typeAnnotation?.typeName?.type === 'TSQualifiedName') {
+      return typeAnnotation.typeName.right.name;
+    }
+
     return typeAnnotation?.typeName?.name;
   }
 
@@ -115,6 +119,12 @@ class TypeScriptParser implements Parser {
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
+  }
+
+  getStringLiteralUnionTypeAnnotationStringLiterals(
+    membersTypes: $FlowFixMe[],
+  ): string[] {
+    return membersTypes.map((item: $FlowFixMe) => item.literal.value);
   }
 
   parseFile(filename: string): SchemaType {
@@ -177,12 +187,30 @@ class TypeScriptParser implements Parser {
 
   parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType {
     const enumInitializer = typeAnnotation.members[0]?.initializer;
-    const enumMembersType: ?NativeModuleEnumMemberType =
-      !enumInitializer || enumInitializer.type === 'StringLiteral'
-        ? 'StringTypeAnnotation'
-        : enumInitializer.type === 'NumericLiteral'
-        ? 'NumberTypeAnnotation'
-        : null;
+    const enumInitializerType = enumInitializer?.type;
+
+    let enumMembersType: ?NativeModuleEnumMemberType = null;
+
+    if (!enumInitializerType) {
+      return 'StringTypeAnnotation';
+    }
+
+    switch (enumInitializerType) {
+      case 'StringLiteral':
+        enumMembersType = 'StringTypeAnnotation';
+        break;
+      case 'NumericLiteral':
+        enumMembersType = 'NumberTypeAnnotation';
+        break;
+      case 'UnaryExpression':
+        if (enumInitializer.operator === '-') {
+          enumMembersType = 'NumberTypeAnnotation';
+        }
+        break;
+      default:
+        enumMembersType = null;
+    }
+
     if (!enumMembersType) {
       throw new Error(
         'Enum values must be either blank, number, or string values.',
@@ -207,9 +235,14 @@ class TypeScriptParser implements Parser {
         : null;
 
     typeAnnotation.members.forEach(member => {
-      if (
-        (member.initializer?.type ?? 'StringLiteral') !== enumInitializerType
-      ) {
+      const isNegative =
+        member.initializer?.type === 'UnaryExpression' &&
+        member.initializer?.operator === '-';
+      const initializerType = isNegative
+        ? member.initializer?.argument?.type
+        : member.initializer?.type;
+
+      if ((initializerType ?? 'StringLiteral') !== enumInitializerType) {
         throw new Error(
           'Enum values can not be mixed. They all must be either blank, number, or string values.',
         );
@@ -217,11 +250,36 @@ class TypeScriptParser implements Parser {
     });
   }
 
-  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
-    return typeAnnotation.members.map(member => ({
-      name: member.id.name,
-      value: member.initializer?.value ?? member.id.name,
-    }));
+  parseEnumMembers(
+    typeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<NativeModuleEnumMember> {
+    return typeAnnotation.members.map(member => {
+      const value =
+        member.initializer?.operator === '-'
+          ? {
+              type: 'NumberLiteralTypeAnnotation',
+              value: -1 * member.initializer?.argument?.value,
+            }
+          : typeof member.initializer?.value === 'number'
+          ? {
+              type: 'NumberLiteralTypeAnnotation',
+              value: member.initializer?.value,
+            }
+          : typeof member.initializer?.value === 'string'
+          ? {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.initializer?.value,
+            }
+          : {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.id.name,
+            };
+
+      return {
+        name: member.id.name,
+        value,
+      };
+    });
   }
 
   isModuleInterface(node: $FlowFixMe): boolean {
@@ -405,7 +463,7 @@ class TypeScriptParser implements Parser {
     };
 
     for (;;) {
-      const topLevelType = parseTopLevelType(node);
+      const topLevelType = parseTopLevelType(node, parser);
       nullable = nullable || topLevelType.optional;
       node = topLevelType.type;
 
@@ -489,6 +547,7 @@ class TypeScriptParser implements Parser {
     for (const prop of flattenProperties(remaining, types, this)) {
       const topLevelType = parseTopLevelType(
         prop.typeAnnotation.typeAnnotation,
+        this,
         types,
       );
 

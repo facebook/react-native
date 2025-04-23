@@ -20,9 +20,24 @@
 
 const verbose = process.env.DEBUG && process.env.DEBUG.includes('react-native');
 
+function findCommunityPlatformPackage(spec, startDir = process.cwd()) {
+  // In monorepos, we cannot make any assumptions on where
+  // `@react-native-community/*` gets installed. The safest way to find it
+  // (barring adding an optional peer dependency) is to start from the project
+  // root.
+  //
+  // Note that we're assuming that the current working directory is the project
+  // root. This is also what `@react-native-community/cli` assumes (see
+  // https://github.com/react-native-community/cli/blob/14.x/packages/cli-tools/src/findProjectRoot.ts).
+  const main = require.resolve(spec, {paths: [startDir]});
+  return require(main);
+}
+
 let android;
 try {
-  android = require('@react-native-community/cli-platform-android');
+  android = findCommunityPlatformPackage(
+    '@react-native-community/cli-platform-android',
+  );
 } catch {
   if (verbose) {
     console.warn(
@@ -33,7 +48,9 @@ try {
 
 let ios;
 try {
-  ios = require('@react-native-community/cli-platform-ios');
+  ios = findCommunityPlatformPackage(
+    '@react-native-community/cli-platform-ios',
+  );
 } catch {
   if (verbose) {
     console.warn(
@@ -44,27 +61,11 @@ try {
 
 const commands = [];
 
-try {
-  const {
-    bundleCommand,
-    startCommand,
-  } = require('@react-native/community-cli-plugin');
-  commands.push(bundleCommand, startCommand);
-} catch (e) {
-  const known =
-    e.code === 'MODULE_NOT_FOUND' &&
-    e.message.includes('@react-native-community/cli-server-api');
-
-  if (!known) {
-    throw e;
-  }
-
-  if (verbose) {
-    console.warn(
-      '@react-native-community/cli-server-api not found, the react-native.config.js may be unusable.',
-    );
-  }
-}
+const {
+  bundleCommand,
+  startCommand,
+} = require('@react-native/community-cli-plugin');
+commands.push(bundleCommand, startCommand);
 
 const codegenCommand = {
   name: 'codegen',
@@ -84,12 +85,18 @@ const codegenCommand = {
       name: '--outputPath <path>',
       description: 'Path where generated artifacts will be output to.',
     },
+    {
+      name: '--source <string>',
+      description: 'Whether the script is invoked from an `app` or a `library`',
+      default: 'app',
+    },
   ],
   func: (argv, config, args) =>
     require('./scripts/codegen/generate-artifacts-executor').execute(
       args.path,
       args.platform,
       args.outputPath,
+      args.source,
     ),
 };
 

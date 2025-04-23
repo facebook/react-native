@@ -7,7 +7,7 @@
 
 #import "RCTScheduler.h"
 
-#import <cxxreact/SystraceSection.h>
+#import <cxxreact/TraceSection.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/animations/LayoutAnimationDriver.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -26,13 +26,13 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
  public:
   SchedulerDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(const MountingCoordinator::Shared &mountingCoordinator) override
+  void schedulerDidFinishTransaction(const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
-  void schedulerShouldRenderTransactions(const MountingCoordinator::Shared &mountingCoordinator) override
+  void schedulerShouldRenderTransactions(const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerShouldRenderTransactions:mountingCoordinator];
@@ -66,6 +66,12 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
+  }
+
+  void schedulerShouldSynchronouslyUpdateViewOnUIThread(facebook::react::Tag tag, const folly::dynamic &props) override
+  {
+    // Does nothing.
+    // This delegate method is not currently used on iOS.
   }
 
  private:
@@ -106,18 +112,15 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 @implementation RCTScheduler {
   std::unique_ptr<Scheduler> _scheduler;
   std::shared_ptr<LayoutAnimationDriver> _animationDriver;
-  std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
+  std::unique_ptr<SchedulerDelegateProxy> _delegateProxy;
   std::shared_ptr<LayoutAnimationDelegateProxy> _layoutAnimationDelegateProxy;
-  RunLoopObserver::Unique _uiRunLoopObserver;
+  std::unique_ptr<const PlatformRunLoopObserver> _uiRunLoopObserver;
 }
 
 - (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
-    auto reactNativeConfig =
-        toolbox.contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
-
-    _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
+    _delegateProxy = std::make_unique<SchedulerDelegateProxy>((__bridge void *)self);
 
     if (ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS()) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);

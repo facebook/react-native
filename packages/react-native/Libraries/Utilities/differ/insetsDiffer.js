@@ -25,7 +25,7 @@ const dummyInsets = {
   bottom: undefined,
 };
 
-const insetsDiffer = function (one: Inset, two: Inset): boolean {
+function insetsDiffer(one: Inset, two: Inset): boolean {
   one = one || dummyInsets;
   two = two || dummyInsets;
   return (
@@ -35,6 +35,6 @@ const insetsDiffer = function (one: Inset, two: Inset): boolean {
       one.right !== two.right ||
       one.bottom !== two.bottom)
   );
-};
+}
 
-module.exports = insetsDiffer;
+export default insetsDiffer;

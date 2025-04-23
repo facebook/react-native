@@ -3,7 +3,7 @@
     "display": "React Native",
     "compilerOptions": {
       "target": "esnext",
-      "module": "es2015",
+      "module": "esnext",
       "types": ["react-native", "jest"],
       "lib": [
         "es2019",

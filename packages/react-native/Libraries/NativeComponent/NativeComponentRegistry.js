@@ -8,8 +8,8 @@
  * @format
  */
 
+import type {HostComponent} from '../../src/private/types/HostComponent';
 import type {
-  HostComponent,
   PartialViewConfig,
   ViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
@@ -48,7 +48,7 @@ export function setRuntimeConfigProvider(
  * The supplied `viewConfigProvider` may or may not be invoked and utilized,
  * depending on how `setRuntimeConfigProvider` is configured.
  */
-export function get<Config>(
+export function get<Config: {...}>(
   name: string,
   viewConfigProvider: () => PartialViewConfig,
 ): HostComponent<Config> {
@@ -121,10 +121,10 @@ export function get<Config>(
  * that the return value of this is not `HostComponent` because the returned
  * component instance is not guaranteed to have native methods.
  */
-export function getWithFallback_DEPRECATED<Config>(
+export function getWithFallback_DEPRECATED<Config: {...}>(
   name: string,
   viewConfigProvider: () => PartialViewConfig,
-): React.AbstractComponent<Config> {
+): React.ComponentType<Config> {
   if (getRuntimeConfig == null) {
     // `getRuntimeConfig == null` when static view configs are disabled
     // If `setRuntimeConfigProvider` is not configured, use native reflection.

@@ -24,6 +24,7 @@ class IntersectionObserverManager final : public UIManagerMountHook {
       IntersectionObserverObserverId intersectionObserverId,
       const ShadowNode::Shared& shadowNode,
       std::vector<Float> thresholds,
+      std::optional<std::vector<Float>> rootThresholds,
       const UIManager& uiManager);
 
   void unobserve(

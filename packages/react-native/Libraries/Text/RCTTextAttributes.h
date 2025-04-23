@@ -9,8 +9,7 @@
 
 #import <React/RCTDynamicTypeRamp.h>
 #import <React/RCTTextDecorationLineType.h>
-
-#import "RCTTextTransform.h"
+#import <React/RCTTextTransform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

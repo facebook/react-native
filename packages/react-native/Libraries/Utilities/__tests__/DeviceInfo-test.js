@@ -11,7 +11,7 @@
 'use strict';
 
 describe('DeviceInfo', () => {
-  const DeviceInfo = require('../DeviceInfo');
+  const DeviceInfo = require('../DeviceInfo').default;
 
   it('should give device info', () => {
     expect(DeviceInfo.getConstants()).toHaveProperty('Dimensions');

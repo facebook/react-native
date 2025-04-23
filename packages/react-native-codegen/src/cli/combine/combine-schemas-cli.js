@@ -71,11 +71,18 @@ for (const file of schemaFiles) {
         );
       }
 
-      if (
-        module.excludedPlatforms &&
-        module.excludedPlatforms.indexOf(platform) >= 0
-      ) {
-        continue;
+      const excludedPlatforms = module.excludedPlatforms?.map(
+        excludedPlatform => excludedPlatform.toLowerCase(),
+      );
+
+      if (excludedPlatforms != null) {
+        const cxxOnlyModule =
+          excludedPlatforms.includes('ios') &&
+          excludedPlatforms.includes('android');
+
+        if (!cxxOnlyModule && excludedPlatforms.includes(platform)) {
+          continue;
+        }
       }
 
       modules[specName] = module;
@@ -84,4 +91,4 @@ for (const file of schemaFiles) {
   }
 }
 
-fs.writeFileSync(output, JSON.stringify({modules}, null, 2));
+fs.writeFileSync(output, JSON.stringify({modules}));

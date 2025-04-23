@@ -23,48 +23,51 @@ import useAnimatedProps from '../useAnimatedProps';
 import * as React from 'react';
 import {useMemo} from 'react';
 
-type Props = React.ElementConfig<typeof ScrollView>;
-type Instance = React.ElementRef<typeof ScrollView>;
+type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
+type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
 
 /**
  * @see https://github.com/facebook/react-native/commit/b8c8562
  */
-const AnimatedScrollView: AnimatedComponentType<Props, Instance> =
-  React.forwardRef(
-    function AnimatedScrollViewWithOrWithoutInvertedRefreshControl(
-      props,
-      forwardedRef,
+const AnimatedScrollView: AnimatedComponentType<
+  AnimatedScrollViewProps,
+  AnimatedScrollViewInstance,
+> = React.forwardRef(
+  function AnimatedScrollViewWithOrWithoutInvertedRefreshControl(
+    props,
+    forwardedRef,
+  ) {
+    // (Android only) When a ScrollView has a RefreshControl and
+    // any `style` property set with an Animated.Value, the CSS
+    // gets incorrectly applied twice. This is because ScrollView
+    // swaps the parent/child relationship of itself and the
+    // RefreshControl component (see ScrollView.js for more details).
+    if (
+      Platform.OS === 'android' &&
+      props.refreshControl != null &&
+      props.style != null
     ) {
-      // (Android only) When a ScrollView has a RefreshControl and
-      // any `style` property set with an Animated.Value, the CSS
-      // gets incorrectly applied twice. This is because ScrollView
-      // swaps the parent/child relationship of itself and the
-      // RefreshControl component (see ScrollView.js for more details).
-      if (
-        Platform.OS === 'android' &&
-        props.refreshControl != null &&
-        props.style != null
-      ) {
-        return (
-          // $FlowFixMe[prop-missing]
-          <AnimatedScrollViewWithInvertedRefreshControl
-            scrollEventThrottle={0.0001}
-            {...props}
-            ref={forwardedRef}
-            refreshControl={props.refreshControl}
-          />
-        );
-      } else {
-        return (
-          <AnimatedScrollViewWithoutInvertedRefreshControl
-            scrollEventThrottle={0.0001}
-            {...props}
-            ref={forwardedRef}
-          />
-        );
-      }
-    },
-  );
+      return (
+        // $FlowFixMe - It should return an Animated ScrollView but it returns a ScrollView with Animated props applied.
+        <AnimatedScrollViewWithInvertedRefreshControl
+          scrollEventThrottle={0.0001}
+          {...props}
+          ref={forwardedRef}
+          // $FlowFixMe[incompatible-type]
+          refreshControl={props.refreshControl}
+        />
+      );
+    } else {
+      return (
+        <AnimatedScrollViewWithoutInvertedRefreshControl
+          scrollEventThrottle={0.0001}
+          {...props}
+          ref={forwardedRef}
+        />
+      );
+    }
+  },
+);
 
 const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
   // $FlowFixMe[incompatible-call]
@@ -75,8 +78,8 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
       refreshControl: ExactReactElement_DEPRECATED<any>,
     },
     forwardedRef:
-      | {current: Instance | null, ...}
-      | ((Instance | null) => mixed),
+      | {current: AnimatedScrollViewInstance | null, ...}
+      | ((AnimatedScrollViewInstance | null) => mixed),
   ) {
     // Split `props` into the animate-able props for the parent (RefreshControl)
     // and child (ScrollView).
@@ -106,10 +109,13 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
 
     // Handle animated props on `NativeDirectionalScrollView`.
     const [scrollViewAnimatedProps, scrollViewRef] = useAnimatedProps<
-      Props,
-      Instance,
+      AnimatedScrollViewProps,
+      AnimatedScrollViewInstance,
     >(intermediatePropsForScrollView);
-    const ref = useMergeRefs<Instance>(scrollViewRef, forwardedRef);
+    const ref = useMergeRefs<AnimatedScrollViewInstance>(
+      scrollViewRef,
+      forwardedRef,
+    );
 
     return (
       // $FlowFixMe[incompatible-use] Investigate useAnimatedProps return value

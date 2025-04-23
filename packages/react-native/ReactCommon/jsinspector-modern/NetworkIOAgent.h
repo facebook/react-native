@@ -7,17 +7,15 @@
 
 #pragma once
 
-#include "CdpJson.h"
 #include "InspectorInterfaces.h"
 #include "ScopedExecutor.h"
 
 #include <folly/dynamic.h>
-#include <mutex>
-#include <sstream>
+#include <jsinspector-modern/cdp/CdpJson.h>
+
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <variant>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -43,7 +41,7 @@ struct ReadStreamParams {
 struct NetworkResource {
   bool success{};
   std::optional<std::string> stream;
-  std::optional<int> httpStatusCode;
+  std::optional<uint32_t> httpStatusCode;
   std::optional<std::string> netErrorName;
   std::optional<Headers> headers;
   folly::dynamic toDynamic() const {
@@ -111,7 +109,7 @@ class NetworkRequestListener {
    * \param httpStatusCode The HTTP status code received.
    * \param headers Response headers as an unordered_map.
    */
-  virtual void onHeaders(int httpStatusCode, const Headers& headers) = 0;
+  virtual void onHeaders(uint32_t httpStatusCode, const Headers& headers) = 0;
 
   /**
    * To be called by the delegate on receipt of data chunks.

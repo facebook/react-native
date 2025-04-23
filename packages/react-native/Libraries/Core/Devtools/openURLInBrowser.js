@@ -10,14 +10,15 @@
 
 'use strict';
 
-const getDevServer = require('./getDevServer');
+const getDevServer = require('./getDevServer').default;
 
-function openURLInBrowser(url: string) {
+export default function openURLInBrowser(url: string) {
   // $FlowFixMe[unused-promise]
   fetch(getDevServer().url + 'open-url', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({url}),
   });
 }
-
-module.exports = openURLInBrowser;

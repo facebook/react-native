@@ -37,6 +37,8 @@ ${DO_NOT_MODIFY_COMMENT}
 
 package com.facebook.react.internal.featureflags
 
+import androidx.annotation.VisibleForTesting
+
 /**
  * This object provides access to internal React Native feature flags.
  *
@@ -50,7 +52,7 @@ ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `  /**
-   * ${flagConfig.description}
+   * ${flagConfig.metadata.description}
    */
   @JvmStatic
   public fun ${flagName}(): ${getKotlinTypeFromDefaultValue(flagConfig.defaultValue)} = accessor.${flagName}()`,
@@ -94,9 +96,36 @@ ${Object.entries(definitions.common)
   }
 
   /**
+   * This is a combination of \`dangerouslyReset\` and \`override\` that reduces
+   * the likeliness of a race condition between the two calls.
+   *
+   * This is **dangerous** because it can introduce consistency issues that will
+   * be much harder to debug. For example, it could hide the fact that feature
+   * flags are read before you set the values you want to use everywhere. It
+   * could also cause a workflow to suddenly have different feature flags for
+   * behaviors that were configured with different values before.
+   *
+   * It returns a string that contains the feature flags that were accessed
+   * before this call (or between the last call to \`dangerouslyReset\` and this
+   * call). If you are using this method, you do not want the hard crash that
+   * you would get from using \`dangerouslyReset\` and \`override\` separately,
+   * but you should still log this somehow.
+   *
+   * Please see the documentation of \`dangerouslyReset\` for additional details.
+   */
+  @JvmStatic
+  public fun dangerouslyForceOverride(provider: ReactNativeFeatureFlagsProvider): String? {
+    val newAccessor = accessorProvider()
+    val previouslyAccessedFlags = newAccessor.dangerouslyForceOverride(provider)
+    accessor = newAccessor
+    return previouslyAccessedFlags
+  }
+
+  /**
    * This is just used to replace the default ReactNativeFeatureFlagsCxxAccessor
    * that uses JNI with a version that doesn't, to simplify testing.
    */
+  @VisibleForTesting
   internal fun setAccessorProvider(newAccessorProvider: () -> ReactNativeFeatureFlagsAccessor) {
     accessorProvider = newAccessorProvider
     accessor = accessorProvider()

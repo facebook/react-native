@@ -21,8 +21,10 @@
 namespace facebook::react {
 
 class MockEventLogger : public EventLogger {
-  EventTag onEventStart(std::string_view /*name*/, SharedEventTarget /*target*/)
-      override {
+  EventTag onEventStart(
+      std::string_view /*name*/,
+      SharedEventTarget /*target*/,
+      DOMHighResTimeStamp /*eventStartTimeStamp*/) override {
     return EMPTY_EVENT_TAG;
   }
   void onEventProcessingStart(EventTag /*tag*/) override {}

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -26,51 +25,59 @@ using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
     const RootShadowNode& oldRootShadowNode)>;
 
 /*
+ * Represents a result of a `commit` operation.
+ */
+enum class ShadowTreeCommitStatus {
+  Succeeded,
+  Failed,
+  Cancelled,
+};
+
+/*
+ * Represents commits' side-effects propagation mode.
+ */
+enum class ShadowTreeCommitMode {
+  // Commits' side-effects are observable via `MountingCoordinator`.
+  // The rendering pipeline fully works end-to-end.
+  Normal,
+
+  // Commits' side-effects are *not* observable via `MountingCoordinator`.
+  // The mounting phase is skipped in the rendering pipeline.
+  Suspended,
+};
+
+enum class ShadowTreeCommitSource {
+  Unknown,
+  React,
+};
+
+struct ShadowTreeCommitOptions {
+  // When set to true, Shadow Node state from current revision will be applied
+  // to the new revision. For more details see
+  // https://reactnative.dev/architecture/render-pipeline#react-native-renderer-state-updates
+  bool enableStateReconciliation{false};
+
+  // Indicates if mounting will be triggered synchronously and React will
+  // not get a chance to interrupt painting.
+  // This should be set to `false` when a commit is coming from React. It
+  // will then let React run layout effects and apply updates before paint.
+  // For all other commits, should be true.
+  bool mountSynchronously{true};
+
+  ShadowTreeCommitSource source{ShadowTreeCommitSource::Unknown};
+};
+
+/*
  * Represents the shadow tree and its lifecycle.
  */
 class ShadowTree final {
  public:
   using Unique = std::unique_ptr<ShadowTree>;
 
-  /*
-   * Represents a result of a `commit` operation.
-   */
-  enum class CommitStatus {
-    Succeeded,
-    Failed,
-    Cancelled,
-  };
-
-  /*
-   * Represents commits' side-effects propagation mode.
-   */
-  enum class CommitMode {
-    // Commits' side-effects are observable via `MountingCoordinator`.
-    // The rendering pipeline fully works end-to-end.
-    Normal,
-
-    // Commits' side-effects are *not* observable via `MountingCoordinator`.
-    // The mounting phase is skipped in the rendering pipeline.
-    Suspended,
-  };
-
-  struct CommitOptions {
-    // When set to true, Shadow Node state from current revision will be applied
-    // to the new revision. For more details see
-    // https://reactnative.dev/architecture/render-pipeline#react-native-renderer-state-updates
-    bool enableStateReconciliation{false};
-
-    // Indicates if mounting will be triggered synchronously and React will
-    // not get a chance to interrupt painting.
-    // This should be set to `false` when a commit is coming from React. It
-    // will then let React run layout effects and apply updates before paint.
-    // For all other commits, should be true.
-    bool mountSynchronously{true};
-
-    // Called during `tryCommit` phase. Returning true indicates current commit
-    // should yield to the next commit.
-    std::function<bool()> shouldYield;
-  };
+  using CommitStatus = ShadowTreeCommitStatus;
+  using CommitMode = ShadowTreeCommitMode;
+  using CommitSource = ShadowTreeCommitSource;
+  using CommitOptions = ShadowTreeCommitOptions;
 
   /*
    * Creates a new shadow tree instance.
@@ -130,7 +137,7 @@ class ShadowTree final {
    */
   void notifyDelegatesOfUpdates() const;
 
-  MountingCoordinator::Shared getMountingCoordinator() const;
+  std::shared_ptr<const MountingCoordinator> getMountingCoordinator() const;
 
  private:
   constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
@@ -146,9 +153,7 @@ class ShadowTree final {
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
-  mutable ShadowTreeRevision::Number
-      lastRevisionNumberWithNewState_; // Protected by `commitMutex_`.
-  MountingCoordinator::Shared mountingCoordinator_;
+  std::shared_ptr<const MountingCoordinator> mountingCoordinator_;
 };
 
 } // namespace facebook::react

@@ -61,8 +61,8 @@ const renderSectionHeader = ({section}: {section: any, ...}) => (
   </RNTesterThemeContext.Consumer>
 );
 
-const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
-  ({sections, handleModuleCardPress}) => {
+const RNTesterModuleList: React.ComponentType<any> = React.memo(
+  ({sections, handleModuleCardPress}: any) => {
     const filter = ({example, filterRegex, category}: any) =>
       filterRegex.test(example.module.title) &&
       (!category || example.category === category);

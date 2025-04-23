@@ -30,8 +30,25 @@ module.exports = {
         // These rules are not required with hermes-eslint
         'ft-flow/define-flow-type': 0,
         'ft-flow/use-flow-type': 0,
+        'lint/sort-imports': 1,
         // flow handles this check for us, so it's not required
         'no-undef': 0,
+      },
+    },
+    {
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      rules: {
+        '@react-native/no-deep-imports': 0,
+      },
+    },
+    {
+      files: [
+        './packages/react-native/**/*.{js,flow}',
+        './packages/assets/registry.js',
+      ],
+      parser: 'hermes-eslint',
+      rules: {
+        'lint/no-commonjs-exports': 1,
       },
     },
     {
@@ -63,6 +80,9 @@ module.exports = {
         'lint/no-haste-imports': 2,
         'lint/no-react-native-imports': 2,
         'lint/require-extends-error': 2,
+        'lint/no-react-node-imports': 2,
+        'lint/no-react-default-imports': 2,
+        'lint/no-react-named-type-imports': 2,
       },
     },
     {
@@ -111,6 +131,12 @@ module.exports = {
           'error',
           {followExactOptionalPropertyTypes: true},
         ],
+      },
+    },
+    {
+      files: ['**/*-itest{.fb,}.js'],
+      rules: {
+        'lint/no-react-native-imports': 'off',
       },
     },
   ],

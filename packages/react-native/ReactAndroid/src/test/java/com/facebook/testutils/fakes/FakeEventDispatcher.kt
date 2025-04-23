@@ -13,8 +13,6 @@ import com.facebook.react.uimanager.events.BatchEventDispatchedListener
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcherListener
-import com.facebook.react.uimanager.events.RCTEventEmitter
-import com.facebook.react.uimanager.events.RCTModernEventEmitter
 
 @SuppressWarnings("rawtypes")
 class FakeEventDispatcher : EventDispatcher {
@@ -38,11 +36,6 @@ class FakeEventDispatcher : EventDispatcher {
 
   override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener) = Unit
 
-  override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTEventEmitter) = Unit
-
-  override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTModernEventEmitter) = Unit
-
-  override fun unregisterEventEmitter(uiManagerType: Int) = Unit
-
+  @Deprecated("Private API, should only be used when the concrete implementation is known.")
   override fun onCatalystInstanceDestroyed() = Unit
 }

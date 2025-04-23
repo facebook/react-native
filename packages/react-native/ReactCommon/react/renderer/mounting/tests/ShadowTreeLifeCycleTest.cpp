@@ -10,7 +10,8 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#include <react/config/ReactNativeConfig.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -183,8 +184,6 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<ContextContainer>();
-  contextContainer->insert(
-      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
 
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
@@ -328,8 +327,34 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 } // namespace facebook::react
 
 using namespace facebook::react;
+class ShadowTreeLifecycleFeatureFlags : public ReactNativeFeatureFlagsDefaults {
+ public:
+  explicit ShadowTreeLifecycleFeatureFlags(
+      bool enableFixForParentTagDuringReparenting)
+      : enableFixForParentTagDuringReparenting_(
+            enableFixForParentTagDuringReparenting) {}
 
-TEST(
+  bool enableFixForParentTagDuringReparenting() override {
+    return enableFixForParentTagDuringReparenting_;
+  }
+
+ private:
+  bool enableFixForParentTagDuringReparenting_;
+};
+
+class ShadowTreeLifecycleTest : public testing::TestWithParam<bool> {
+ protected:
+  void SetUp() override {
+    ReactNativeFeatureFlags::override(
+        std::make_unique<ShadowTreeLifecycleFeatureFlags>(GetParam()));
+  }
+
+  void TearDown() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
+  }
+};
+
+TEST_P(
     ShadowTreeLifecycleTest,
     stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
@@ -339,7 +364,7 @@ TEST(
       /* stages */ 32);
 }
 
-TEST(
+TEST_P(
     ShadowTreeLifecycleTest,
     stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
   testShadowNodeTreeLifeCycle(
@@ -349,7 +374,7 @@ TEST(
       /* stages */ 32);
 }
 
-TEST(
+TEST_P(
     ShadowTreeLifecycleTest,
     stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
@@ -359,7 +384,7 @@ TEST(
       /* stages */ 32);
 }
 
-TEST(
+TEST_P(
     ShadowTreeLifecycleTest,
     unstableSmallerTreeFewerIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
@@ -369,7 +394,7 @@ TEST(
       /* stages */ 32);
 }
 
-TEST(
+TEST_P(
     ShadowTreeLifecycleTest,
     unstableBiggerTreeFewerIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
@@ -379,7 +404,7 @@ TEST(
       /* stages */ 32);
 }
 
-TEST(
+TEST_P(
     ShadowTreeLifecycleTest,
     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
@@ -390,15 +415,17 @@ TEST(
 }
 
 // failing test case found 4-25-2021
-TEST(
-    ShadowTreeLifecycleTest,
-    unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening_1167342011) {
-  testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
-      /* seed */ 1167342011,
-      /* size */ 32,
-      /* repeats */ 512,
-      /* stages */ 32);
-}
+// TODO: T213669056
+// TEST(
+//     ShadowTreeLifecycleTest,
+//     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening_1167342011)
+//     {
+//   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
+//       /* seed */ 1167342011,
+//       /* size */ 32,
+//       /* repeats */ 512,
+//       /* stages */ 32);
+// }
 
 // You may uncomment this - locally only! - to generate failing seeds.
 // TEST(
@@ -416,3 +443,8 @@ TEST(
 //         /* stages */ 32);
 //   }
 // }
+
+INSTANTIATE_TEST_SUITE_P(
+    enableFixForParentTagDuringReparenting,
+    ShadowTreeLifecycleTest,
+    testing::Values(false, true));

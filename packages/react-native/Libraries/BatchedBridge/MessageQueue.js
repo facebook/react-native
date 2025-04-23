@@ -11,10 +11,11 @@
 'use strict';
 
 const Systrace = require('../Performance/Systrace');
-const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev =
+  require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
 const stringifySafe = require('../Utilities/stringifySafe').default;
-const warnOnce = require('../Utilities/warnOnce');
-const ErrorUtils = require('../vendor/core/ErrorUtils');
+const warnOnce = require('../Utilities/warnOnce').default;
+const ErrorUtils = require('../vendor/core/ErrorUtils').default;
 const invariant = require('invariant');
 
 export type SpyData = {
@@ -34,7 +35,7 @@ const PARAMS = 2;
 const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
 // eslint-disable-next-line no-bitwise
-const TRACE_TAG_REACT_APPS = 1 << 17;
+const TRACE_TAG_REACT = 1 << 13;
 
 const DEBUG_INFO_LIMIT = 32;
 
@@ -227,7 +228,7 @@ class MessageQueue {
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
         global.nativeTraceBeginAsyncFlow(
-          TRACE_TAG_REACT_APPS,
+          TRACE_TAG_REACT,
           'native',
           this._callID,
         );
@@ -489,4 +490,4 @@ class MessageQueue {
   }
 }
 
-module.exports = MessageQueue;
+export default MessageQueue;

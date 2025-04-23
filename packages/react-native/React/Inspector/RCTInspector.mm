@@ -71,7 +71,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   NSMutableArray<RCTInspectorPage *> *array = [NSMutableArray arrayWithCapacity:pages.size()];
   for (size_t i = 0; i < pages.size(); i++) {
     RCTInspectorPage *pageWrapper = [[RCTInspectorPage alloc] initWithId:pages[i].id
-                                                                   title:@(pages[i].title.c_str())
+                                                                   title:@(pages[i].description.c_str())
                                                                       vm:@(pages[i].vm.c_str())];
     [array addObject:pageWrapper];
   }

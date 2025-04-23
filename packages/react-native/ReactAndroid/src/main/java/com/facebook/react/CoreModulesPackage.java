@@ -17,6 +17,9 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.common.ClassFinder;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.devsupport.LogBoxModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
@@ -27,6 +30,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
 import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
 import com.facebook.react.modules.core.TimingModule;
+import com.facebook.react.modules.debug.DevMenuModule;
 import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -49,6 +53,7 @@ import java.util.Map;
       AndroidInfoModule.class,
       DeviceEventManagerModule.class,
       DeviceInfoModule.class,
+      DevMenuModule.class,
       DevSettingsModule.class,
       ExceptionsManagerModule.class,
       LogBoxModule.class,
@@ -57,7 +62,13 @@ import java.util.Map;
       TimingModule.class,
       UIManagerModule.class,
     })
+@LegacyArchitecture
 class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger {
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "CoreModulesPackage", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
@@ -108,6 +119,7 @@ class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger 
           AndroidInfoModule.class,
           DeviceEventManagerModule.class,
           DeviceInfoModule.class,
+          DevMenuModule.class,
           DevSettingsModule.class,
           ExceptionsManagerModule.class,
           LogBoxModule.class,
@@ -142,6 +154,8 @@ class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger 
         return new AndroidInfoModule(reactContext);
       case DeviceEventManagerModule.NAME:
         return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
+      case DevMenuModule.NAME:
+        return new DevMenuModule(reactContext, mReactInstanceManager.getDevSupportManager());
       case DevSettingsModule.NAME:
         return new DevSettingsModule(reactContext, mReactInstanceManager.getDevSupportManager());
       case ExceptionsManagerModule.NAME:
@@ -166,7 +180,7 @@ class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger 
 
   private UIManagerModule createUIManager(final ReactApplicationContext reactContext) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "createUIManagerModule");
     try {
       if (mLazyViewManagersEnabled) {
         ViewManagerResolver resolver =
@@ -191,7 +205,7 @@ class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger 
             mMinTimeLeftInFrameForNonBatchedOperationMs);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
     }
   }

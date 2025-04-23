@@ -44,12 +44,14 @@ class JCxxInspectorPackagerConnection
    */
   JCxxInspectorPackagerConnection(
       const std::string& url,
+      const std::string& deviceName,
       const std::string& packageName,
       jni::alias_ref<JDelegateImpl::javaobject> delegate);
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
       const std::string& url,
+      const std::string& deviceName,
       const std::string& packageName,
       jni::alias_ref<JDelegateImpl::javaobject> delegate);
 

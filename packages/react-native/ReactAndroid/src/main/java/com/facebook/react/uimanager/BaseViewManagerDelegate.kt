@@ -19,10 +19,12 @@ import com.facebook.yoga.YogaConstants
  * This is a base implementation of [ViewManagerDelegate] which supports setting properties that
  * every view should support, such as rotation, background color, etc.
  */
-public abstract class BaseViewManagerDelegate<T : View, U : BaseViewManagerInterface<T>>(
+public abstract class BaseViewManagerDelegate<
+    T : View, U : BaseViewManager<T, out LayoutShadowNode>>(
     @Suppress("NoHungarianNotation") @JvmField protected val mViewManager: U
 ) : ViewManagerDelegate<T> {
-  override public fun setProperty(view: T, propName: String, value: Any?) {
+  @Suppress("ACCIDENTAL_OVERRIDE", "DEPRECATION")
+  public override fun setProperty(view: T, propName: String, value: Any?) {
     when (propName) {
       ViewProps.ACCESSIBILITY_ACTIONS ->
           mViewManager.setAccessibilityActions(view, value as ReadableArray?)
@@ -40,9 +42,11 @@ public abstract class BaseViewManagerDelegate<T : View, U : BaseViewManagerInter
       ViewProps.ACCESSIBILITY_COLLECTION_ITEM ->
           mViewManager.setAccessibilityCollectionItem(view, value as ReadableMap?)
 
+      ViewProps.ACCESSIBILITY_VALUE ->
+          mViewManager.setAccessibilityValue(view, value as ReadableMap?)
+
       ViewProps.BACKGROUND_COLOR ->
-          mViewManager.setBackgroundColor(
-              view, if (value == null) 0 else ColorPropConverter.getColor(value, view.context))
+          mViewManager.setBackgroundColor(view, ColorPropConverter.getColor(value, view.context, 0))
 
       ViewProps.BORDER_RADIUS ->
           mViewManager.setBorderRadius(
@@ -64,11 +68,16 @@ public abstract class BaseViewManagerDelegate<T : View, U : BaseViewManagerInter
           mViewManager.setBorderTopRightRadius(
               view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
 
+      ViewProps.BOX_SHADOW -> mViewManager.setBoxShadow(view, value as ReadableArray?)
+
       ViewProps.ELEVATION -> mViewManager.setElevation(view, (value as Double?)?.toFloat() ?: 0.0f)
 
+      ViewProps.FILTER -> mViewManager.setFilter(view, value as ReadableArray?)
+
+      ViewProps.MIX_BLEND_MODE -> mViewManager.setMixBlendMode(view, value as String?)
+
       ViewProps.SHADOW_COLOR ->
-          mViewManager.setShadowColor(
-              view, if (value == null) 0 else ColorPropConverter.getColor(value, view.context))
+          mViewManager.setShadowColor(view, ColorPropConverter.getColor(value, view.context, 0))
 
       ViewProps.IMPORTANT_FOR_ACCESSIBILITY ->
           mViewManager.setImportantForAccessibility(view, value as String?)
@@ -79,8 +88,21 @@ public abstract class BaseViewManagerDelegate<T : View, U : BaseViewManagerInter
         val dynamicFromObject: Dynamic = DynamicFromObject(value)
         mViewManager.setAccessibilityLabelledBy(view, dynamicFromObject)
       }
-
+      ViewProps.ACCESSIBILITY_ORDER ->
+          mViewManager.setAccessibilityOrder(view, value as ReadableArray?)
       ViewProps.OPACITY -> mViewManager.setOpacity(view, (value as Double?)?.toFloat() ?: 1.0f)
+
+      ViewProps.OUTLINE_COLOR -> mViewManager.setOutlineColor(view, value as Int?)
+
+      ViewProps.OUTLINE_OFFSET ->
+          mViewManager.setOutlineOffset(
+              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
+
+      ViewProps.OUTLINE_STYLE -> mViewManager.setOutlineStyle(view, value as String?)
+
+      ViewProps.OUTLINE_WIDTH ->
+          mViewManager.setOutlineWidth(
+              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
 
       ViewProps.RENDER_TO_HARDWARE_TEXTURE ->
           mViewManager.setRenderToHardwareTexture(view, value as Boolean? ?: false)
@@ -101,9 +123,29 @@ public abstract class BaseViewManagerDelegate<T : View, U : BaseViewManagerInter
           mViewManager.setTranslateY(view, (value as Double?)?.toFloat() ?: 0.0f)
 
       ViewProps.Z_INDEX -> mViewManager.setZIndex(view, (value as Double?)?.toFloat() ?: 0.0f)
+
+      // Experimental pointer events
+      ViewProps.ON_POINTER_ENTER -> mViewManager.setPointerEnter(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_ENTER_CAPTURE ->
+          mViewManager.setPointerEnterCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_OVER -> mViewManager.setPointerOver(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_OVER_CAPTURE ->
+          mViewManager.setPointerOverCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_OUT -> mViewManager.setPointerOut(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_OUT_CAPTURE ->
+          mViewManager.setPointerOutCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_LEAVE -> mViewManager.setPointerLeave(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_LEAVE_CAPTURE ->
+          mViewManager.setPointerLeaveCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_MOVE -> mViewManager.setPointerMove(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_MOVE_CAPTURE ->
+          mViewManager.setPointerMoveCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_CLICK -> mViewManager.setClick(view, value as Boolean? ?: false)
+      ViewProps.ON_CLICK_CAPTURE -> mViewManager.setClickCapture(view, value as Boolean? ?: false)
     }
   }
 
-  override public fun receiveCommand(view: T, commandName: String, args: ReadableArray?): Unit =
+  @Suppress("ACCIDENTAL_OVERRIDE")
+  public override fun receiveCommand(view: T, commandName: String, args: ReadableArray?): Unit =
       Unit
 }

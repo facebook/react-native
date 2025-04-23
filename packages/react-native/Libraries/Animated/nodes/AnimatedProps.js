@@ -9,11 +9,12 @@
  */
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
@@ -23,6 +24,12 @@ export type AnimatedPropsAllowlist = $ReadOnly<{
   style?: ?AnimatedStyleAllowlist,
   [string]: true,
 }>;
+
+type TargetView = {
+  +instance: TargetViewInstance,
+  connectedViewTag: ?number,
+};
+type TargetViewInstance = React.ElementRef<React.ElementType>;
 
 function createAnimatedProps(
   inputProps: {[string]: mixed},
@@ -37,7 +44,7 @@ function createAnimatedProps(
     const key = keys[ii];
     const value = inputProps[key];
 
-    if (allowlist == null || Object.hasOwn(allowlist, key)) {
+    if (allowlist == null || hasOwn(allowlist, key)) {
       let node;
       if (key === 'style') {
         node = AnimatedStyle.from(value, allowlist?.style);
@@ -74,18 +81,19 @@ function createAnimatedProps(
 }
 
 export default class AnimatedProps extends AnimatedNode {
-  #animatedView: any = null;
   #callback: () => void;
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
   #props: {[string]: mixed};
+  #target: ?TargetView = null;
 
   constructor(
     inputProps: {[string]: mixed},
     callback: () => void,
     allowlist?: ?AnimatedPropsAllowlist,
+    config?: ?AnimatedNodeConfig,
   ) {
-    super();
+    super(config);
     const [nodeKeys, nodes, props] = createAnimatedProps(inputProps, allowlist);
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
@@ -138,6 +146,22 @@ export default class AnimatedProps extends AnimatedNode {
     return props;
   }
 
+  __getNativeAnimatedEventTuples(): $ReadOnlyArray<[string, AnimatedEvent]> {
+    const tuples = [];
+
+    const keys = Object.keys(this.#props);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
+      const value = this.#props[key];
+
+      if (value instanceof AnimatedEvent && value.__isNative) {
+        tuples.push([key, value]);
+      }
+    }
+
+    return tuples;
+  }
+
   __getAnimatedValue(): Object {
     const props: {[string]: mixed} = {};
 
@@ -158,13 +182,14 @@ export default class AnimatedProps extends AnimatedNode {
       const node = nodes[ii];
       node.__addChild(this);
     }
+    super.__attach();
   }
 
   __detach(): void {
-    if (this.__isNative && this.#animatedView) {
-      this.__disconnectAnimatedView();
+    if (this.__isNative && this.#target != null) {
+      this.#disconnectAnimatedView(this.#target);
     }
-    this.#animatedView = null;
+    this.#target = null;
 
     const nodes = this.#nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
@@ -190,50 +215,54 @@ export default class AnimatedProps extends AnimatedNode {
       this.__isNative = true;
 
       // Since this does not call the super.__makeNative, we need to store the
-      // supplied platformConfig here, before calling __connectAnimatedView
+      // supplied platformConfig here, before calling #connectAnimatedView
       // where it will be needed to traverse the graph of attached values.
       super.__setPlatformConfig(platformConfig);
 
-      if (this.#animatedView) {
-        this.__connectAnimatedView();
+      if (this.#target != null) {
+        this.#connectAnimatedView(this.#target);
       }
     }
   }
 
-  setNativeView(animatedView: any): void {
-    if (this.#animatedView === animatedView) {
+  setNativeView(instance: TargetViewInstance): void {
+    if (this.#target?.instance === instance) {
       return;
     }
-    this.#animatedView = animatedView;
+    this.#target = {instance, connectedViewTag: null};
     if (this.__isNative) {
-      this.__connectAnimatedView();
+      this.#connectAnimatedView(this.#target);
     }
   }
 
-  __connectAnimatedView(): void {
+  #connectAnimatedView(target: TargetView): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = findNodeHandle(this.#animatedView);
-    invariant(
-      nativeViewTag != null,
-      'Unable to locate attached view in the native tree',
-    );
+    let viewTag: ?number = findNodeHandle(target.instance);
+    if (viewTag == null) {
+      if (process.env.NODE_ENV === 'test') {
+        viewTag = -1;
+      } else {
+        throw new Error('Unable to locate attached view in the native tree');
+      }
+    }
     NativeAnimatedHelper.API.connectAnimatedNodeToView(
       this.__getNativeTag(),
-      nativeViewTag,
+      viewTag,
     );
+    target.connectedViewTag = viewTag;
   }
 
-  __disconnectAnimatedView(): void {
+  #disconnectAnimatedView(target: TargetView): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    const nativeViewTag: ?number = findNodeHandle(this.#animatedView);
-    invariant(
-      nativeViewTag != null,
-      'Unable to locate attached view in the native tree',
-    );
+    const viewTag = target.connectedViewTag;
+    if (viewTag == null) {
+      return;
+    }
     NativeAnimatedHelper.API.disconnectAnimatedNodeFromView(
       this.__getNativeTag(),
-      nativeViewTag,
+      viewTag,
     );
+    target.connectedViewTag = null;
   }
 
   __restoreDefaultValues(): void {
@@ -262,6 +291,15 @@ export default class AnimatedProps extends AnimatedNode {
     return {
       type: 'props',
       props: propsConfig,
+      debugID: this.__getDebugID(),
     };
   }
 }
+
+// Supported versions of JSC do not implement the newer Object.hasOwn. Remove
+// this shim when they do.
+// $FlowIgnore[method-unbinding]
+const _hasOwnProp = Object.prototype.hasOwnProperty;
+const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
+  // $FlowIgnore[method-unbinding]
+  Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

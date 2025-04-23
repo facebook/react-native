@@ -15,7 +15,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = NativeLogBoxSpec.NAME)
-public class LogBoxModule(
+internal class LogBoxModule(
     reactContext: ReactApplicationContext?,
     private val devSupportManager: DevSupportManager
 ) : NativeLogBoxSpec(reactContext) {
@@ -25,7 +25,7 @@ public class LogBoxModule(
 
   override fun show() {
     UiThreadUtil.runOnUiThread {
-      if (!surfaceDelegate.isContentViewReady) {
+      if (!surfaceDelegate.isContentViewReady()) {
         /**
          * LogBoxModule can be rendered in different surface. By default, it will use LogBoxDialog
          * to wrap the content of logs. In other platform (for example VR), a surfaceDelegate can be
@@ -45,7 +45,7 @@ public class LogBoxModule(
     UiThreadUtil.runOnUiThread { surfaceDelegate.destroyContentView() }
   }
 
-  public companion object {
-    public const val NAME: String = "LogBox"
+  companion object {
+    const val NAME: String = "LogBox"
   }
 }

@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridge
 
+import com.facebook.react.bridge.ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS
+
 /**
  * Utility class to make assertions that should not hard-crash the app but instead be handled by the
  * Catalyst app [JSExceptionHandler]. See the javadoc on that class for more information about our
@@ -23,7 +25,7 @@ public object SoftAssertions {
    */
   @JvmStatic
   public fun assertUnreachable(message: String): Unit {
-    ReactSoftExceptionLogger.logSoftException("SoftAssertions", AssertionException(message))
+    ReactSoftExceptionLogger.logSoftException(SOFT_ASSERTIONS, AssertionException(message))
   }
 
   /**
@@ -34,7 +36,7 @@ public object SoftAssertions {
   @JvmStatic
   public fun assertCondition(condition: Boolean, message: String): Unit {
     if (!condition) {
-      ReactSoftExceptionLogger.logSoftException("SoftAssertions", AssertionException(message))
+      ReactSoftExceptionLogger.logSoftException(SOFT_ASSERTIONS, AssertionException(message))
     }
   }
 
@@ -46,7 +48,7 @@ public object SoftAssertions {
   public fun <T> assertNotNull(instance: T?): T? {
     if (instance == null) {
       ReactSoftExceptionLogger.logSoftException(
-          "SoftAssertions", AssertionException("Expected object to not be null!"))
+          SOFT_ASSERTIONS, AssertionException("Expected object to not be null!"))
     }
     return instance
   }

@@ -7,6 +7,7 @@
 
 package com.facebook.testutils.shadows
 
+import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.ReadableNativeArray
 import com.facebook.react.bridge.WritableNativeArray
@@ -16,14 +17,24 @@ import org.robolectric.shadow.api.Shadow
 // Mockito can't mock native methods, so shadow the entire class instead
 @Implements(NativeArray::class)
 public open class ShadowNativeArray {
-  public var contents: List<Any?> = mutableListOf()
+  var backingArray: JavaOnlyArray = JavaOnlyArray()
 
-  @Implements(ReadableNativeArray::class) public class Readable : ShadowNativeArray() {}
+  @Deprecated(
+      "Use ShadowReadableNativeArray",
+      ReplaceWith(
+          "ShadowReadableNativeArray", "com.facebook.testutils.shadows.ShadowReadableNativeArray"))
+  @Implements(ReadableNativeArray::class)
+  public class Readable : ShadowNativeArray() {}
 
-  @Implements(WritableNativeArray::class) public class Writable : ShadowNativeArray() {}
+  @Deprecated(
+      "Use ShadowWritableNativeArray",
+      ReplaceWith(
+          "ShadowWritableNativeArray", "com.facebook.testutils.shadows.ShadowWritableNativeArray"))
+  @Implements(WritableNativeArray::class)
+  public class Writable : ShadowNativeArray() {}
 
   public companion object {
     public fun getContents(array: NativeArray): List<Any?> =
-        (Shadow.extract(array) as ShadowNativeArray).contents
+        (Shadow.extract(array) as ShadowNativeArray).backingArray.toArrayList()
   }
 }

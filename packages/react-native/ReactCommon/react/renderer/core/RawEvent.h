@@ -13,6 +13,7 @@
 #include <react/renderer/core/EventLogger.h>
 #include <react/renderer/core/EventPayload.h>
 #include <react/renderer/core/EventTarget.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
 
@@ -55,7 +56,13 @@ struct RawEvent {
      * Forces continuous type for the event. Regardless if continuous event
      * isn't ongoing.
      */
-    Continuous = 4
+    Continuous = 4,
+
+    /*
+     * Priority for events that can be processed in idle times or in the
+     * background.
+     */
+    Idle = 5,
   };
 
   RawEvent(
@@ -69,6 +76,11 @@ struct RawEvent {
   SharedEventTarget eventTarget;
   Category category;
   EventTag loggingTag{0};
+
+  // The client may specify a platform-specific timestamp for the event start
+  // time, for example when MotionEvent was triggered on the Android native
+  // side.
+  DOMHighResTimeStamp eventStartTimeStamp{DOM_HIGH_RES_TIME_STAMP_UNSET};
 };
 
 } // namespace facebook::react

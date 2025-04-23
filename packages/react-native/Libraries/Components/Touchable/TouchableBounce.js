@@ -19,7 +19,7 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type TouchableBounceProps = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
 
   onPressAnimationComplete?: ?() => void,
@@ -28,16 +28,19 @@ type Props = $ReadOnly<{|
   releaseVelocity?: ?number,
   style?: ?ViewStyleProp,
 
-  hostRef: React.Ref<typeof Animated.View>,
-|}>;
+  hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+}>;
 
-type State = $ReadOnly<{|
+type TouchableBounceState = $ReadOnly<{
   pressability: Pressability,
   scale: Animated.Value,
-|}>;
+}>;
 
-class TouchableBounce extends React.Component<Props, State> {
-  state: State = {
+class TouchableBounce extends React.Component<
+  TouchableBounceProps,
+  TouchableBounceState,
+> {
+  state: TouchableBounceState = {
     pressability: new Pressability(this._createPressabilityConfig()),
     scale: new Animated.Value(1),
   };
@@ -173,7 +176,8 @@ class TouchableBounce extends React.Component<Props, State> {
         importantForAccessibility={
           this.props['aria-hidden'] === true
             ? 'no-hide-descendants'
-            : this.props.importantForAccessibility
+            : // $FlowFixMe[incompatible-type] - AnimatedProps types were made more strict and need refining at this call site
+              this.props.importantForAccessibility
         }
         accessibilityViewIsModal={
           this.props['aria-modal'] ?? this.props.accessibilityViewIsModal
@@ -189,6 +193,7 @@ class TouchableBounce extends React.Component<Props, State> {
           this.props.onPress !== undefined &&
           !this.props.disabled
         }
+        // $FlowFixMe[prop-missing]
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {this.props.children}
@@ -199,7 +204,10 @@ class TouchableBounce extends React.Component<Props, State> {
     );
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
+  componentDidUpdate(
+    prevProps: TouchableBounceProps,
+    prevState: TouchableBounceState,
+  ) {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 
@@ -213,6 +221,9 @@ class TouchableBounce extends React.Component<Props, State> {
   }
 }
 
-module.exports = (React.forwardRef((props, hostRef) => (
+export default (React.forwardRef((props, hostRef: React.RefSetter<mixed>) => (
   <TouchableBounce {...props} hostRef={hostRef} />
-)): React.AbstractComponent<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);
+)): component(
+  ref: React.RefSetter<mixed>,
+  ...props: $ReadOnly<Omit<TouchableBounceProps, 'hostRef'>>
+));

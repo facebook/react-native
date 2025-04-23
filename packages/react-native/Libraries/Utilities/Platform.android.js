@@ -11,7 +11,7 @@
 import type {
   Platform as PlatformType,
   PlatformSelectSpec,
-} from './Platform.flow';
+} from './PlatformTypes';
 
 import NativePlatformConstantsAndroid from './NativePlatformConstantsAndroid';
 
@@ -24,15 +24,15 @@ const Platform: PlatformType = {
     return this.constants.Version;
   },
   // $FlowFixMe[unsafe-getters-setters]
-  get constants(): {|
+  get constants(): {
     isTesting: boolean,
     isDisableAnimations?: boolean,
-    reactNativeVersion: {|
+    reactNativeVersion: {
       major: number,
       minor: number,
       patch: number,
       prerelease: ?string,
-    |},
+    },
     Version: number,
     Release: string,
     Serial: string,
@@ -42,7 +42,7 @@ const Platform: PlatformType = {
     uiMode: string,
     Brand: string,
     Manufacturer: string,
-  |} {
+  } {
     // $FlowFixMe[object-this-reference]
     if (this.__constants == null) {
       // $FlowFixMe[object-this-reference]
@@ -84,4 +84,4 @@ const Platform: PlatformType = {
           spec.default,
 };
 
-module.exports = Platform;
+export default Platform;

@@ -95,6 +95,14 @@ const startCommand: Command = {
       name: '--no-interactive',
       description: 'Disables interactive mode',
     },
+    {
+      name: '--client-logs',
+      description:
+        '[Deprecated] Enable plain text JavaScript log streaming for all ' +
+        'connected apps. This feature is deprecated and will be removed in ' +
+        'future.',
+      default: false,
+    },
   ],
 };
 

@@ -8,6 +8,7 @@
  * @flow strict-local
  */
 
+import typeof CustomEvent from '../../src/private/webapis/dom/events/CustomEvent';
 import typeof BatchedBridge from '../BatchedBridge/BatchedBridge';
 import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
 import typeof TextInputState from '../Components/TextInput/TextInputState';
@@ -15,9 +16,9 @@ import typeof ExceptionsManager from '../Core/ExceptionsManager';
 import typeof RawEventEmitter from '../Core/RawEventEmitter';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
-import typeof CustomEvent from '../Events/CustomEvent';
 import typeof {
   createPublicInstance,
+  createPublicRootInstance,
   createPublicTextInstance,
   getInternalInstanceHandleFromPublicInstance,
   getNativeTagFromPublicInstance,
@@ -35,55 +36,70 @@ import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAnd
 import typeof deepDiffer from '../Utilities/differ/deepDiffer';
 import typeof Platform from '../Utilities/Platform';
 
+// Expose these types to the React renderer
+export type {
+  HostInstance as PublicInstance,
+
+  // These types are only necessary for Paper
+  NativeMethods as LegacyPublicInstance,
+  MeasureOnSuccessCallback,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+} from '../../src/private/types/HostInstance';
+
+export type {PublicRootInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
+export type PublicTextInstance = ReturnType<createPublicTextInstance>;
+
 // flowlint unsafe-getters-setters:off
 module.exports = {
   get BatchedBridge(): BatchedBridge {
-    return require('../BatchedBridge/BatchedBridge');
+    return require('../BatchedBridge/BatchedBridge').default;
   },
   get ExceptionsManager(): ExceptionsManager {
-    return require('../Core/ExceptionsManager');
+    return require('../Core/ExceptionsManager').default;
   },
   get Platform(): Platform {
-    return require('../Utilities/Platform');
+    return require('../Utilities/Platform').default;
   },
   get RCTEventEmitter(): RCTEventEmitter {
-    return require('../EventEmitter/RCTEventEmitter');
+    return require('../EventEmitter/RCTEventEmitter').default;
   },
   get ReactNativeViewConfigRegistry(): ReactNativeViewConfigRegistry {
     return require('../Renderer/shims/ReactNativeViewConfigRegistry');
   },
   get TextInputState(): TextInputState {
-    return require('../Components/TextInput/TextInputState');
+    return require('../Components/TextInput/TextInputState').default;
   },
   get UIManager(): UIManager {
-    return require('../ReactNative/UIManager');
+    return require('../ReactNative/UIManager').default;
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get deepDiffer(): deepDiffer {
-    return require('../Utilities/differ/deepDiffer');
+    return require('../Utilities/differ/deepDiffer').default;
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
     {...} | Array<mixed>,
   > {
-    return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
+    return require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
     // $FlowFixMe[underconstrained-implicit-instantiation]
     // $FlowFixMe[incompatible-return]
-    return require('../StyleSheet/flattenStyle');
+    return require('../StyleSheet/flattenStyle').default;
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
     return require('../Core/ReactFiberErrorDialog').default;
   },
   get legacySendAccessibilityEvent(): legacySendAccessibilityEvent {
-    return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent');
+    return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent')
+      .default;
   },
   get RawEventEmitter(): RawEventEmitter {
     return require('../Core/RawEventEmitter').default;
   },
   get CustomEvent(): CustomEvent {
-    return require('../Events/CustomEvent').default;
+    return require('../../src/private/webapis/dom/events/CustomEvent').default;
   },
   get createAttributePayload(): createAttributePayload {
     return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')
@@ -92,6 +108,10 @@ module.exports = {
   get diffAttributePayloads(): diffAttributePayloads {
     return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')
       .diff;
+  },
+  get createPublicRootInstance(): createPublicRootInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .createPublicRootInstance;
   },
   get createPublicInstance(): createPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')

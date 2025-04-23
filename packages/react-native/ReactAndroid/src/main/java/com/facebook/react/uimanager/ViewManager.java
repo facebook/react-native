@@ -12,12 +12,18 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -25,6 +31,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -37,7 +44,9 @@ import java.util.Stack;
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     extends BaseJavaModule {
 
-  private static final String NAME = ViewManager.class.getSimpleName();
+  private static final String TAG = "ViewManager";
+
+  private @Nullable ViewManagerDelegate<T> mDelegate = null;
 
   /**
    * For View recycling: we store a Stack of unused, dead Views. This is null by default, and when
@@ -86,11 +95,11 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param props {@link ReactStylesDiffMap} props to update the view with
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
-    final ViewManagerDelegate<T> delegate = getDelegate();
-    if (delegate != null) {
-      ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
-    } else {
-      ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+    ViewManagerDelegate<T> delegate = getOrCreateViewManagerDelegate();
+    Iterator<Map.Entry<String, Object>> iterator = props.backingMap.getEntryIterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Object> entry = iterator.next();
+      delegate.setProperty(viewToUpdate, entry.getKey(), entry.getValue());
     }
     onAfterUpdateTransaction(viewToUpdate);
   }
@@ -101,15 +110,31 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * then get calls to {@link ViewManagerDelegate#setProperty(View, String, Object)} for every prop
    * that must be updated and it's the delegate's responsibility to apply these values to the view.
    *
-   * <p>By default this method returns {@code null}, which means that the view manager doesn't have
-   * a delegate and the view props should be set internally by the view manager itself.
+   * <p>By default, this methods returns a generic {@link ViewManagerDelegate} which uses {@link
+   * ViewManagerSetter} to apply property updates.
    *
    * @return an instance of {@link ViewManagerDelegate} if the props of the view managed by this
    *     view manager should be set via this delegate
    */
-  @Nullable
   protected ViewManagerDelegate<T> getDelegate() {
-    return null;
+    if (this instanceof ViewManagerWithGeneratedInterface) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "ViewManager using codegen must override getDelegate method (name: "
+                  + getName()
+                  + ")."));
+    }
+    return new ViewManagerPropertyUpdater.GenericViewManagerDelegate<>(this);
+  }
+
+  private ViewManagerDelegate<T> getOrCreateViewManagerDelegate() {
+    ViewManagerDelegate<T> delegate = mDelegate;
+    if (delegate == null) {
+      delegate = getDelegate();
+      mDelegate = delegate;
+    }
+    return delegate;
   }
 
   /** Creates a view with knowledge of props and state. */
@@ -214,12 +239,12 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (viewContext == null) {
       // Who knows! Anything is possible. Checking instanceof on null is an NPE,
       // So this is not redundant.
-      FLog.e(NAME, "onDropViewInstance: view [" + view.getId() + "] has a null context");
+      FLog.e(TAG, "onDropViewInstance: view [" + view.getId() + "] has a null context");
       return;
     }
     if (!(viewContext instanceof ThemedReactContext)) {
       FLog.e(
-          NAME,
+          TAG,
           "onDropViewInstance: view ["
               + view.getId()
               + "] has a context that is not a ThemedReactContext: "
@@ -234,6 +259,16 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (recyclableViews != null) {
       T recyclableView = prepareToRecycleView(themedReactContext, view);
       if (recyclableView != null) {
+        Assertions.assertCondition(
+            recyclableView.getParent() == null,
+            "Recycled view ["
+                + view.getId()
+                + "] should not be attached to a parent. View: "
+                + view
+                + " Parent: "
+                + recyclableView.getParent()
+                + " ThemedReactContext: "
+                + themedReactContext);
         recyclableViews.push(recyclableView);
       }
     }
@@ -304,10 +339,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param args optional arguments for the command
    */
   public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {
-    final ViewManagerDelegate<T> delegate = getDelegate();
-    if (delegate != null) {
-      delegate.receiveCommand(root, commandId, args);
-    }
+    getOrCreateViewManagerDelegate().receiveCommand(root, commandId, args);
   }
 
   /**
@@ -375,6 +407,9 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Map contains the names (key) and types (value) of the ViewManager's props.
    */
   public Map<String, String> getNativeProps() {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+      return ViewManagerPropertyUpdater.getNativeProps(getClass(), null);
+    }
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }
 
@@ -487,5 +522,28 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (mRecyclableViews != null) {
       mRecyclableViews = new HashMap<>();
     }
+  }
+
+  /**
+   * THIS PREFETCH METHOD IS EXPERIMENTAL, DO NOT USE IT FOR PRODUCTION CODE, MOST LIKELY IT WILL
+   * CHANGE OR BE REMOVED IN THE FUTURE.
+   *
+   * <p>Subclasses can override this method to implement custom resource prefetching for the
+   * ViewManager.
+   *
+   * @param reactContext {@link com.facebook.react.bridge.ReactContext} used for the view.
+   * @param surfaceId {@link int} surface ID
+   * @param reactTag reactTag that should be set as ID of the view instance
+   * @param params {@link MapBuffer} prefetch request params defined in C++
+   */
+  @UnstableReactNativeAPI
+  public void experimental_prefetchResource(
+      ReactContext reactContext, int surfaceId, int reactTag, MapBuffer params) {
+    return;
+  }
+
+  @UnstableReactNativeAPI
+  protected boolean experimental_isPrefetchingEnabled() {
+    return false;
   }
 }

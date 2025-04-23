@@ -159,6 +159,9 @@ inline static int displayModeToInt(const DisplayMode value) {
       return 2;
     case DisplayMode::Hidden:
       return 3;
+    default:
+      react_native_assert(0 && "displayModeToInt: Invalid DisplayMode");
+      return -1;
   }
 }
 

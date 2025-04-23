@@ -18,12 +18,16 @@ namespace facebook::react {
 class ImageSource {
  public:
   enum class Type { Invalid, Remote, Local };
+  enum class CacheStategy { Default, Reload, ForceCache, OnlyIfCached };
 
   Type type{};
   std::string uri{};
   std::string bundle{};
   Float scale{3};
   Size size{0};
+  std::string body{};
+  std::string method{};
+  CacheStategy cache = CacheStategy::Default;
   std::vector<std::pair<std::string, std::string>> headers{};
 
   bool operator==(const ImageSource& rhs) const {
@@ -43,6 +47,7 @@ enum class ImageResizeMode {
   Stretch,
   Center,
   Repeat,
+  None,
 };
 
 class ImageErrorInfo {

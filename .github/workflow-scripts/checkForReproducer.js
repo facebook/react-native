@@ -9,11 +9,6 @@
 
 const NEEDS_REPRO_LABEL = 'Needs: Repro';
 const NEEDS_AUTHOR_FEEDBACK_LABEL = 'Needs: Author Feedback';
-const NEEDS_REPRO_HEADER = 'Missing Reproducible Example';
-const NEEDS_REPRO_MESSAGE =
-  `| :warning: | Missing Reproducible Example |\n` +
-  `| --- | --- |\n` +
-  `| :information_source: | We could not detect a reproducible example in your issue report. Please provide either: <br /><ul><li>If your bug is UI related: a [Snack](https://snack.expo.dev)</li><li> If your bug is build/update related: use our [Reproducer Template](https://github.com/react-native-community/reproducer-react-native/generate). A reproducer needs to be in a GitHub repository under your username.</li></ul> |`;
 const SKIP_ISSUES_OLDER_THAN = '2023-07-01T00:00:00Z';
 
 module.exports = async (github, context) => {
@@ -25,7 +20,6 @@ module.exports = async (github, context) => {
 
   const issue = await github.rest.issues.get(issueData);
   const comments = await github.rest.issues.listComments(issueData);
-
   const author = issue.data.user.login;
 
   const issueDate = issue.data.created_at;
@@ -43,14 +37,15 @@ module.exports = async (github, context) => {
     return;
   }
 
-  const botComment = comments.data.find(comment =>
-    comment.body.includes(NEEDS_REPRO_HEADER),
-  );
-
   const entities = [issue.data, ...comments.data];
 
   // Look for Snack or a GH repo associated with the user that added an issue or comment
   const hasValidReproducer = entities.some(entity => {
+    const hasPullRequestRepoLink = containsPattern(
+      entity.body,
+      `https?:\/\/github\.com\/facebook\/react-native\/pull\/\d+\/?`,
+    );
+
     const hasExpoSnackLink = containsPattern(
       entity.body,
       `https?:\\/\\/snack\\.expo\\.dev\\/[^\\s)\\]]+`,
@@ -60,7 +55,7 @@ module.exports = async (github, context) => {
       entity.body,
       `https?:\\/\\/github\\.com\\/(${entity.user.login})\\/[^/]+\\/?\\s?`,
     );
-    return hasExpoSnackLink || hasGithubRepoLink;
+    return hasPullRequestRepoLink || hasExpoSnackLink || hasGithubRepoLink;
   });
 
   if (hasValidReproducer) {
@@ -74,24 +69,10 @@ module.exports = async (github, context) => {
         throw error;
       }
     }
-
-    if (!botComment) return;
-
-    await github.rest.issues.deleteComment({
-      ...issueData,
-      comment_id: botComment.id,
-    });
   } else {
     await github.rest.issues.addLabels({
       ...issueData,
       labels: [NEEDS_REPRO_LABEL, NEEDS_AUTHOR_FEEDBACK_LABEL],
-    });
-
-    if (botComment) return;
-
-    await github.rest.issues.createComment({
-      ...issueData,
-      body: NEEDS_REPRO_MESSAGE,
     });
   }
 };
@@ -101,7 +82,7 @@ function containsPattern(body, pattern) {
   return body.search(regexp) !== -1;
 }
 
-// Prevents the bot from responding when maintainer has changed Needs: Repro the label
+// Prevents the bot from responding when maintainer has changed the 'Needs: Repro' label
 async function hasMaintainerChangedLabel(github, issueData, author) {
   const timeline = await github.rest.issues.listEventsForTimeline(issueData);
 

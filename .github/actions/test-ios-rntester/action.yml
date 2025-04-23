@@ -41,7 +41,7 @@ runs:
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Run yarn
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Download Hermes
       uses: actions/download-artifact@v4
       with:
@@ -92,10 +92,23 @@ runs:
         else
           echo 'No Hermes tarball found.'
         fi
+    - name: Download ReactNativeDependencies
+      uses: actions/download-artifact@v4
+      with:
+        name: ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz
+        path: /tmp/third-party/
+    - name: Print third-party folder
+      shell: bash
+      run: ls -lR /tmp/third-party
     - name: Setup xcode build cache
       uses: ./.github/actions/setup-xcode-build-cache
       with:
         hermes-version: ${{ inputs.hermes-version }}
+        jsengine: ${{ inputs.jsengine }}
+        architecture: ${{ inputs.architecture }}
+        use-frameworks: ${{ inputs.use-frameworks }}
+        flavor: ${{ inputs.flavor }}
+        ruby-version: ${{ inputs.ruby-version }}
     - name: Install CocoaPods dependencies
       shell: bash
       run: |
@@ -109,36 +122,31 @@ runs:
           export USE_FRAMEWORKS=dynamic
         fi
 
-        if [[ ${{ inputs.architecture }} == "NewArch" ]]; then
-          export RCT_NEW_ARCH_ENABLED=1
+        if [[ ${{ inputs.architecture }} == "OldArch" ]]; then
+          export RCT_NEW_ARCH_ENABLED=0
         fi
 
+        export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
         cd packages/rn-tester
 
         bundle install
         bundle exec pod install
     - name: Build RNTester
-      if: ${{ inputs.run-unit-tests != 'true' && inputs.run-e2e-tests == 'false' }}
       shell: bash
       run: |
-        set -o pipefail && xcodebuild build \
-          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-          -scheme RNTester \
-          -sdk iphonesimulator | xcbeautify
-    - name: Build RNTester (E2E Tests)
-      shell: bash
-      if: ${{ inputs.run-e2e-tests == 'true' }}
-      run: |
-        set -o pipefail && xcodebuild \
+        xcodebuild \
           -scheme "RNTester" \
           -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-          -configuration "Release" \
+          -configuration "${{ inputs.flavor }}" \
           -sdk "iphonesimulator" \
           -destination "generic/platform=iOS Simulator" \
-          -derivedDataPath "/tmp/RNTesterBuild" | xcbeautify
+          -derivedDataPath "/tmp/RNTesterBuild"
 
           echo "Print path to *.app file"
-          find "/tmp/RNTesterBuild" -type d -name "*.app"
+          APP_PATH=$(find "/tmp/RNTesterBuild" -type d -name "*.app")
+
+          echo "App found at $APP_PATH"
+          echo "app-path=$APP_PATH" >> $GITHUB_ENV
     - name: "Run Tests: iOS Unit and Integration Tests"
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
@@ -158,6 +166,12 @@ runs:
       with:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
+    - name: Upload RNTester App
+      if: ${{ inputs.use-frameworks == 'StaticLibraries' && inputs.ruby-version == '2.6.10' }} # This is needed to avoid conflicts with the artifacts
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: RNTesterApp-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
+        path: ${{ env.app-path }}
     - name: Store test results
       if: ${{ inputs.run-unit-tests == 'true' }}
       uses: actions/upload-artifact@v4.3.4

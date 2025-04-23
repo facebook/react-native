@@ -58,7 +58,7 @@ class Blob {
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
    */
   constructor(parts: Array<Blob | string> = [], options?: BlobOptions) {
-    const BlobManager = require('./BlobManager');
+    const BlobManager = require('./BlobManager').default;
     this.data = BlobManager.createFromParts(parts, options).data;
   }
 
@@ -81,8 +81,8 @@ class Blob {
     return this._data;
   }
 
-  slice(start?: number, end?: number, contentType: string = ''): Blob {
-    const BlobManager = require('./BlobManager');
+  slice(start?: number, end?: number, contentType?: string = ''): Blob {
+    const BlobManager = require('./BlobManager').default;
     let {offset, size} = this.data;
 
     if (typeof start === 'number') {
@@ -132,7 +132,7 @@ class Blob {
    * `new Blob([blob, ...])` actually copies the data in memory.
    */
   close() {
-    const BlobManager = require('./BlobManager');
+    const BlobManager = require('./BlobManager').default;
     BlobManager.release(this.data.blobId);
     this.data = null;
   }
@@ -155,4 +155,4 @@ class Blob {
   }
 }
 
-module.exports = Blob;
+export default Blob;

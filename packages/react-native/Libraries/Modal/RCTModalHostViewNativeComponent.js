@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../src/private/specs/components/RCTModalHostViewNativeComponent';
-import RCTModalHostViewNativeComponent from '../../src/private/specs/components/RCTModalHostViewNativeComponent';
+export * from '../../src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent';
+import RCTModalHostViewNativeComponent from '../../src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent';
 export default RCTModalHostViewNativeComponent;

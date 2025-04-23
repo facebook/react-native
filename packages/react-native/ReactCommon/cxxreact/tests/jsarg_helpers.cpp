@@ -32,7 +32,7 @@ TEST(JsArgumentHelpersTest, args) {
   const std::string aString = "word";
   const dynamic anArray = dynamic::array("a", "b", "c");
   const dynamic anObject = dynamic::object("k1", "v1")("k2", "v2");
-  const std::string aNumericString = folly::to<std::string>(anInt);
+  const std::string aNumericString = std::to_string(anInt);
 
   folly::dynamic args = dynamic::array(
       aBool, anInt, aDouble, aString, anArray, anObject, aNumericString);
@@ -104,7 +104,7 @@ TEST(JsArgumentHelpersTest, args) {
       "Argument 3 of type double is not required type Array");
   EXPECT_JSAE(
       jsArgAsInt(args, 4),
-      "Error converting javascript arg 4 to C++: "
+      "Error converting JavaScript arg 4 to C++: "
       "TypeError: expected dynamic type 'int/double/bool/string', but had type 'array'");
   // type predicate failure
   EXPECT_JSAE(

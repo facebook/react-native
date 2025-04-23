@@ -10,11 +10,11 @@
 
 'use strict';
 
-import type {GestureState} from 'react-native/Libraries/Interaction/PanResponder';
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PanResponderGestureState} from 'react-native/Libraries/Interaction/PanResponder';
+import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
-const React = require('react');
-const {Animated, PanResponder, StyleSheet, View} = require('react-native');
+import React from 'react';
+import {Animated, PanResponder, StyleSheet, View} from 'react-native';
 
 class AnExChained extends React.Component<Object, any> {
   constructor(props: Object) {
@@ -36,7 +36,10 @@ class AnExChained extends React.Component<Object, any> {
       }).start();
       this.state.stickers.push(sticker); // push on the followers
     }
-    const releaseChain = (e: PressEvent, gestureState: GestureState) => {
+    const releaseChain = (
+      e: GestureResponderEvent,
+      gestureState: PanResponderGestureState,
+    ) => {
       this.state.stickers[0].flattenOffset(); // merges offset into value and resets
       Animated.sequence([
         // spring to start after decay finishes
@@ -119,4 +122,4 @@ const CHAIN_IMGS = [
   require('../../assets/bunny.png'),
 ];
 
-module.exports = AnExChained;
+export default AnExChained;

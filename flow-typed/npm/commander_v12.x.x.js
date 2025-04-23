@@ -317,7 +317,7 @@ declare module 'commander' {
      */
     formatHelp(cmd: Command, helper: Help): string;
   }
-  export type HelpConfiguration = $Rest<Help, {...}>;
+  export type HelpConfiguration = Partial<Help>;
   export interface ParseOptions {
     from: 'node' | 'electron' | 'user';
   }

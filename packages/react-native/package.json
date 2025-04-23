@@ -32,7 +32,6 @@
     "outputName": "js-test-results.xml"
   },
   "files": [
-    "android",
     "build.gradle.kts",
     "cli.js",
     "flow",
@@ -50,57 +49,68 @@
     "React",
     "!React/Fabric/RCTThirdPartyFabricComponentsProvider.*",
     "ReactAndroid",
+    "!ReactAndroid/.cxx",
+    "!ReactAndroid/build",
+    "!ReactAndroid/external-artifacts/artifacts",
+    "!ReactAndroid/external-artifacts/build",
+    "!ReactAndroid/hermes-engine/.cxx",
+    "!ReactAndroid/hermes-engine/build",
+    "!ReactAndroid/src/main/third-party",
+    "!ReactAndroid/src/test",
     "ReactApple",
     "ReactCommon",
     "README.md",
     "rn-get-polyfills.js",
+    "scripts/bundle.js",
+    "scripts/cocoapods",
+    "scripts/codegen",
     "scripts/compose-source-maps.js",
     "scripts/find-node-for-xcode.sh",
-    "scripts/bundle.js",
     "scripts/generate-codegen-artifacts.js",
     "scripts/generate-provider-cli.js",
     "scripts/generate-specs-cli.js",
-    "scripts/codegen",
-    "!scripts/codegen/__tests__",
-    "!scripts/codegen/__test_fixtures__",
     "scripts/hermes/hermes-utils.js",
     "scripts/hermes/prepare-hermes-for-build.js",
     "scripts/ios-configure-glog.sh",
-    "scripts/xcode/ccache-clang++.sh",
-    "scripts/xcode/ccache-clang.sh",
-    "scripts/xcode/ccache.conf",
-    "scripts/xcode/with-environment.sh",
     "scripts/native_modules.rb",
     "scripts/node-binary.sh",
-    "scripts/packager.sh",
     "scripts/packager-reporter.js",
+    "scripts/packager.sh",
     "scripts/react_native_pods_utils/script_phases.rb",
     "scripts/react_native_pods_utils/script_phases.sh",
     "scripts/react_native_pods.rb",
-    "scripts/cocoapods",
-    "!scripts/cocoapods/__tests__",
     "scripts/react-native-xcode.sh",
+    "scripts/xcode/ccache-clang.sh",
+    "scripts/xcode/ccache-clang++.sh",
+    "scripts/xcode/ccache.conf",
+    "scripts/xcode/with-environment.sh",
     "sdks/.hermesversion",
     "sdks/hermes-engine",
     "sdks/hermesc",
     "settings.gradle.kts",
     "src",
+    "!src/private/testing",
     "template.config.js",
     "template",
     "!template/node_modules",
     "!template/package-lock.json",
     "!template/yarn.lock",
     "third-party-podspecs",
-    "types"
+    "types",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__flowtests__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**",
+    "!**/__typetests__/**"
   ],
   "scripts": {
     "prepack": "node ./scripts/prepack.js",
-    "featureflags-check": "node ./scripts/featureflags/index.js --verify-unchanged",
-    "featureflags-update": "node ./scripts/featureflags/index.js"
+    "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
-    "@types/react": "^18.2.6",
-    "react": "^19.0.0-rc-fb9a90fa48-20240614"
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -108,37 +118,36 @@
     }
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^29.6.3",
-    "@react-native/assets-registry": "0.77.0-main",
-    "@react-native/codegen": "0.77.0-main",
-    "@react-native/community-cli-plugin": "0.77.0-main",
-    "@react-native/gradle-plugin": "0.77.0-main",
-    "@react-native/js-polyfills": "0.77.0-main",
-    "@react-native/normalize-colors": "0.77.0-main",
-    "@react-native/virtualized-lists": "0.77.0-main",
+    "@jest/create-cache-key-function": "^29.7.0",
+    "@react-native/assets-registry": "0.80.0-main",
+    "@react-native/codegen": "0.80.0-main",
+    "@react-native/community-cli-plugin": "0.80.0-main",
+    "@react-native/gradle-plugin": "0.80.0-main",
+    "@react-native/js-polyfills": "0.80.0-main",
+    "@react-native/normalize-colors": "0.80.0-main",
+    "@react-native/virtualized-lists": "0.80.0-main",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
+    "babel-jest": "^29.7.0",
+    "babel-plugin-syntax-hermes-parser": "0.28.1",
     "base64-js": "^1.5.1",
     "chalk": "^4.0.0",
     "commander": "^12.0.0",
-    "event-target-shim": "^5.0.1",
     "flow-enums-runtime": "^0.0.6",
     "glob": "^7.1.1",
     "invariant": "^2.2.4",
-    "jest-environment-node": "^29.6.3",
-    "jsc-android": "^250231.0.0",
+    "jest-environment-node": "^29.7.0",
     "memoize-one": "^5.0.0",
-    "metro-runtime": "^0.81.0-alpha.0",
-    "metro-source-map": "^0.81.0-alpha.0",
-    "mkdirp": "^0.5.1",
+    "metro-runtime": "^0.82.0",
+    "metro-source-map": "^0.82.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^29.7.0",
     "promise": "^8.3.0",
-    "react-devtools-core": "^5.3.1",
+    "react-devtools-core": "^6.1.1",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.25.0-rc-fb9a90fa48-20240614",
+    "scheduler": "0.25.0",
     "semver": "^7.1.3",
     "stacktrace-parser": "^0.1.10",
     "whatwg-fetch": "^3.0.0",
@@ -150,7 +159,28 @@
       {
         "name": "FBReactNativeSpec",
         "type": "modules",
-        "ios": {},
+        "ios": {
+          "modules": {
+            "AccessibilityManager": {
+              "unstableRequiresMainQueueSetup": true
+            },
+            "Appearance": {
+              "unstableRequiresMainQueueSetup": true
+            },
+            "AppState": {
+              "unstableRequiresMainQueueSetup": true
+            },
+            "DeviceInfo": {
+              "unstableRequiresMainQueueSetup": true
+            },
+            "PlatformConstants": {
+              "unstableRequiresMainQueueSetup": true
+            },
+            "StatusBarManager": {
+              "unstableRequiresMainQueueSetup": true
+            }
+          }
+        },
         "android": {},
         "jsSrcsDir": "src"
       },

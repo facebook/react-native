@@ -41,16 +41,38 @@ bool ParagraphAttributes::operator!=(const ParagraphAttributes& rhs) const {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
+  ParagraphAttributes paragraphAttributes{};
   return {
-      debugStringConvertibleItem("maximumNumberOfLines", maximumNumberOfLines),
-      debugStringConvertibleItem("ellipsizeMode", ellipsizeMode),
-      debugStringConvertibleItem("textBreakStrategy", textBreakStrategy),
-      debugStringConvertibleItem("adjustsFontSizeToFit", adjustsFontSizeToFit),
-      debugStringConvertibleItem("minimumFontSize", minimumFontSize),
-      debugStringConvertibleItem("maximumFontSize", maximumFontSize),
-      debugStringConvertibleItem("includeFontPadding", includeFontPadding),
       debugStringConvertibleItem(
-          "android_hyphenationFrequency", android_hyphenationFrequency)};
+          "maximumNumberOfLines",
+          maximumNumberOfLines,
+          paragraphAttributes.maximumNumberOfLines),
+      debugStringConvertibleItem(
+          "ellipsizeMode", ellipsizeMode, paragraphAttributes.ellipsizeMode),
+      debugStringConvertibleItem(
+          "textBreakStrategy",
+          textBreakStrategy,
+          paragraphAttributes.textBreakStrategy),
+      debugStringConvertibleItem(
+          "adjustsFontSizeToFit",
+          adjustsFontSizeToFit,
+          paragraphAttributes.adjustsFontSizeToFit),
+      debugStringConvertibleItem(
+          "minimumFontSize",
+          minimumFontSize,
+          paragraphAttributes.minimumFontSize),
+      debugStringConvertibleItem(
+          "maximumFontSize",
+          maximumFontSize,
+          paragraphAttributes.maximumFontSize),
+      debugStringConvertibleItem(
+          "includeFontPadding",
+          includeFontPadding,
+          paragraphAttributes.includeFontPadding),
+      debugStringConvertibleItem(
+          "android_hyphenationFrequency",
+          android_hyphenationFrequency,
+          paragraphAttributes.android_hyphenationFrequency)};
 }
 #endif
 

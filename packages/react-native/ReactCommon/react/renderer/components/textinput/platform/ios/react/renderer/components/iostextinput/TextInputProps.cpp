@@ -9,6 +9,7 @@
 
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/iostextinput/propsConversions.h>
+#include <react/renderer/components/textinput/baseConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 
@@ -32,6 +33,12 @@ TextInputProps::TextInputProps(
           "inputAccessoryViewID",
           sourceProps.inputAccessoryViewID,
           {})),
+      inputAccessoryViewButtonLabel(convertRawProp(
+          context,
+          rawProps,
+          "inputAccessoryViewButtonLabel",
+          sourceProps.inputAccessoryViewButtonLabel,
+          {})),
       onKeyPressSync(convertRawProp(
           context,
           rawProps,
@@ -44,31 +51,5 @@ TextInputProps::TextInputProps(
           "onChangeSync",
           sourceProps.onChangeSync,
           {})){};
-
-TextAttributes TextInputProps::getEffectiveTextAttributes(
-    Float fontSizeMultiplier) const {
-  auto result = TextAttributes::defaultTextAttributes();
-  result.fontSizeMultiplier = fontSizeMultiplier;
-  result.apply(textAttributes);
-
-  /*
-   * These props are applied to `View`, therefore they must not be a part of
-   * base text attributes.
-   */
-  result.backgroundColor = clearColor();
-  result.opacity = 1;
-
-  return result;
-}
-
-ParagraphAttributes TextInputProps::getEffectiveParagraphAttributes() const {
-  auto result = paragraphAttributes;
-
-  if (!traits.multiline) {
-    result.maximumNumberOfLines = 1;
-  }
-
-  return result;
-}
 
 } // namespace facebook::react

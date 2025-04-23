@@ -9,17 +9,25 @@
  */
 
 'use strict';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
+
+type Props = $ReadOnly<{
+  style?: ?ViewStyleProp,
+  children?: React.Node,
+  ...
+}>;
 
 /**
  * Common implementation for a simple stubbed view. Simply applies the view's styles to the inner
  * View component and renders its children.
  */
-class UnimplementedView extends React.Component<$FlowFixMeProps> {
+class UnimplementedView extends React.Component<Props> {
   render(): React.Node {
     // Workaround require cycle from requireNativeComponent
-    const View = require('../View/View');
+    const View = require('../View/View').default;
     return (
       <View style={[styles.unimplementedView, this.props.style]}>
         {this.props.children}
@@ -38,4 +46,4 @@ const styles = StyleSheet.create({
     : {},
 });
 
-module.exports = UnimplementedView;
+export default UnimplementedView;

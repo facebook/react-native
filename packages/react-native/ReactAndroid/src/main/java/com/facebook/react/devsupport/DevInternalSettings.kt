@@ -75,12 +75,6 @@ internal class DevInternalSettings(applicationContext: Context, private val list
 
   override var isDeviceDebugEnabled: Boolean = ReactBuildConfig.DEBUG
 
-  override var isRemoteJSDebugEnabled: Boolean
-    get() = preferences.getBoolean(PREFS_REMOTE_JS_DEBUG_KEY, false)
-    set(value) {
-      preferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, value).apply()
-    }
-
   @Deprecated(
       "Legacy sampling profiler is no longer supported - This field will be removed in React Native 0.77")
   override var isStartSamplingProfilerOnInit: Boolean = false
@@ -105,6 +99,5 @@ internal class DevInternalSettings(applicationContext: Context, private val list
     private const val PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug"
     private const val PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug"
     private const val PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement"
-    private const val PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug"
   }
 }

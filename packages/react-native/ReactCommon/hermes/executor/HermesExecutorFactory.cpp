@@ -8,7 +8,7 @@
 #include "HermesExecutorFactory.h"
 
 #include <cxxreact/MessageQueueThread.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <hermes/hermes.h>
 #include <jsi/decorator.h>
 #include <jsinspector-modern/InspectorFlags.h>
@@ -197,7 +197,7 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
     std::shared_ptr<MessageQueueThread> jsQueue) {
   std::unique_ptr<HermesRuntime> hermesRuntime;
   {
-    SystraceSection s("makeHermesRuntime");
+    TraceSection s("makeHermesRuntime");
     hermesRuntime = hermes::makeHermesRuntime(runtimeConfig_);
   }
 

@@ -24,17 +24,13 @@ class JSCExecutorFactory : public JSExecutorFactory {
   std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) override {
-    auto installBindings = [](jsi::Runtime& runtime) {
-      react::Logger androidLogger =
-          static_cast<void (*)(const std::string&, unsigned int)>(
-              &reactAndroidLoggingHook);
-      react::bindNativeLogger(runtime, androidLogger);
-    };
     return std::make_unique<JSIExecutor>(
         jsc::makeJSCRuntime(),
         delegate,
         JSIExecutor::defaultTimeoutInvoker,
-        installBindings);
+        [](jsi::Runtime& runtime) {
+          react::bindNativeLogger(runtime, &reactAndroidLoggingHook);
+        });
   }
 };
 

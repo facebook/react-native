@@ -11,9 +11,12 @@
 'use strict';
 
 import type {
+  CommandParamTypeAnnotation,
   CommandTypeAnnotation,
+  ComponentCommandArrayTypeAnnotation,
   NamedShape,
 } from '../../../CodegenSchema.js';
+import type {Parser} from '../../parser';
 import type {TypeDeclarationMap} from '../../utils';
 
 const {parseTopLevelType} = require('../parseTopLevelType');
@@ -27,6 +30,7 @@ function buildCommandSchemaInternal(
   optional: boolean,
   parameters: Array<$FlowFixMe>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): NamedShape<CommandTypeAnnotation> {
   const firstParam = parameters[0].typeAnnotation;
   if (
@@ -46,14 +50,15 @@ function buildCommandSchemaInternal(
     const paramName = param.name;
     const paramValue = parseTopLevelType(
       param.typeAnnotation.typeAnnotation,
+      parser,
       types,
     ).type;
 
     const type =
       paramValue.type === 'TSTypeReference'
-        ? paramValue.typeName.name
+        ? parser.getTypeAnnotationName(paramValue)
         : paramValue.type;
-    let returnType;
+    let returnType: CommandParamTypeAnnotation;
 
     switch (type) {
       case 'RootTag':
@@ -78,23 +83,23 @@ function buildCommandSchemaInternal(
         }
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: getPrimitiveTypeAnnotation(
-            // TODO: T172453752 support complex type annotation for array element
-            paramValue.typeParameters.params[0].type,
+          elementType: getCommandArrayElementTypeType(
+            paramValue.typeParameters.params[0],
+            parser,
           ),
         };
         break;
       case 'TSArrayType':
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: {
-            // TODO: T172453752 support complex type annotation for array element
-            type: getPrimitiveTypeAnnotation(paramValue.elementType.type).type,
-          },
+          elementType: getCommandArrayElementTypeType(
+            paramValue.elementType,
+            parser,
+          ),
         };
         break;
       default:
-        (type: empty);
+        (type: mixed);
         throw new Error(
           `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
         );
@@ -120,30 +125,86 @@ function buildCommandSchemaInternal(
   };
 }
 
+function getCommandArrayElementTypeType(
+  inputType: mixed,
+  parser: Parser,
+): ComponentCommandArrayTypeAnnotation['elementType'] {
+  // TODO: T172453752 support more complex type annotation for array element
+
+  if (inputType == null || typeof inputType !== 'object') {
+    throw new Error(`Expected an object, received ${typeof inputType}`);
+  }
+
+  const type = inputType.type;
+  if (typeof type !== 'string') {
+    throw new Error('Command array element type must be a string');
+  }
+
+  // This is not a great solution. This generally means its a type alias to another type
+  // like an object or union. Ideally we'd encode that in the schema so the compat-check can
+  // validate those deeper objects for breaking changes and the generators can do something smarter.
+  // As of now, the generators just create ReadableMap or (const NSArray *) which are untyped
+  if (type === 'TSTypeReference') {
+    const name =
+      typeof inputType.typeName === 'object'
+        ? parser.getTypeAnnotationName(inputType)
+        : null;
+
+    if (typeof name !== 'string') {
+      throw new Error('Expected TSTypeReference AST name to be a string');
+    }
+
+    try {
+      return getPrimitiveTypeAnnotation(name);
+    } catch (e) {
+      return {
+        type: 'MixedTypeAnnotation',
+      };
+    }
+  }
+
+  return getPrimitiveTypeAnnotation(type);
+}
+
 function buildCommandSchema(
   property: EventTypeAST,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): NamedShape<CommandTypeAnnotation> {
   if (property.type === 'TSPropertySignature') {
     const topLevelType = parseTopLevelType(
       property.typeAnnotation.typeAnnotation,
+      parser,
       types,
     );
     const name = property.key.name;
     const optional = property.optional || topLevelType.optional;
     const parameters = topLevelType.type.parameters || topLevelType.type.params;
-    return buildCommandSchemaInternal(name, optional, parameters, types);
+    return buildCommandSchemaInternal(
+      name,
+      optional,
+      parameters,
+      types,
+      parser,
+    );
   } else {
     const name = property.key.name;
     const optional = property.optional || false;
     const parameters = property.parameters || property.params;
-    return buildCommandSchemaInternal(name, optional, parameters, types);
+    return buildCommandSchemaInternal(
+      name,
+      optional,
+      parameters,
+      types,
+      parser,
+    );
   }
 }
 
 function getCommands(
   commandTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
     .filter(
@@ -151,7 +212,7 @@ function getCommands(
         property.type === 'TSPropertySignature' ||
         property.type === 'TSMethodSignature',
     )
-    .map(property => buildCommandSchema(property, types))
+    .map(property => buildCommandSchema(property, types, parser))
     .filter(Boolean);
 }
 

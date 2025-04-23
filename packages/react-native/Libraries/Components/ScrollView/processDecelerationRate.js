@@ -27,4 +27,4 @@ function processDecelerationRate(
   return decelerationRate;
 }
 
-module.exports = processDecelerationRate;
+export default processDecelerationRate;

@@ -8,7 +8,6 @@
  * @format
  */
 
-import type {EventSubscription} from '../../../Libraries/vendor/emitter/EventEmitter';
 import type {EventConfig} from '../../../Libraries/Animated/AnimatedEvent';
 import type {
   AnimationConfig,
@@ -18,13 +17,14 @@ import type {
   AnimatedNodeConfig,
   EventMapping,
 } from '../../../Libraries/Animated/NativeAnimatedModule';
+import type {EventSubscription} from '../../../Libraries/vendor/emitter/EventEmitter';
 
-import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
+import NativeAnimatedNonTurboModule from '../../../Libraries/Animated/NativeAnimatedModule';
+import NativeAnimatedTurboModule from '../../../Libraries/Animated/NativeAnimatedTurboModule';
 import NativeEventEmitter from '../../../Libraries/EventEmitter/NativeEventEmitter';
 import RCTDeviceEventEmitter from '../../../Libraries/EventEmitter/RCTDeviceEventEmitter';
 import Platform from '../../../Libraries/Utilities/Platform';
-import NativeAnimatedNonTurboModule from '../../../Libraries/Animated/NativeAnimatedModule';
-import NativeAnimatedTurboModule from '../../../Libraries/Animated/NativeAnimatedTurboModule';
+import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
@@ -46,7 +46,7 @@ const isSingleOpBatching =
   Platform.OS === 'android' &&
   NativeAnimatedModule?.queueAndExecuteBatchedOperations != null &&
   ReactNativeFeatureFlags.animatedShouldUseSingleOp();
-let flushQueueTimeout = null;
+let flushQueueImmediate = null;
 
 const eventListenerGetValueCallbacks: {
   [number]: (value: number) => void,
@@ -56,6 +56,10 @@ const eventListenerAnimationFinishedCallbacks: {
 } = {};
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
+
+const shouldSignalBatch =
+  ReactNativeFeatureFlags.animatedShouldSignalBatch() ||
+  ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
   const methodNames = [
@@ -106,6 +110,11 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
         if (queueOperations || queue.length !== 0) {
           // $FlowExpectedError[incompatible-call] - Dynamism.
           queue.push(() => method(...args));
+        } else if (shouldSignalBatch) {
+          // $FlowExpectedError[incompatible-call] - Dynamism.
+          queue.push(() => method(...args));
+          clearImmediate(flushQueueImmediate);
+          flushQueueImmediate = setImmediate(API.flushQueue);
         } else {
           // $FlowExpectedError[incompatible-call] - Dynamism.
           method(...args);
@@ -138,17 +147,25 @@ const API = {
       }) as $NonMaybeType<typeof NativeAnimatedModule>['getValue'],
 
   setWaitingForIdentifier(id: string): void {
+    if (shouldSignalBatch) {
+      return;
+    }
+
     waitingForQueuedOperations.add(id);
     queueOperations = true;
     if (
       ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() &&
-      flushQueueTimeout
+      flushQueueImmediate
     ) {
-      clearTimeout(flushQueueTimeout);
+      clearImmediate(flushQueueImmediate);
     }
   },
 
   unsetWaitingForIdentifier(id: string): void {
+    if (shouldSignalBatch) {
+      return;
+    }
+
     waitingForQueuedOperations.delete(id);
 
     if (waitingForQueuedOperations.size === 0) {
@@ -161,9 +178,9 @@ const API = {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
 
     if (ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()) {
-      const prevTimeout = flushQueueTimeout;
-      clearImmediate(prevTimeout);
-      flushQueueTimeout = setImmediate(API.flushQueue);
+      const prevImmediate = flushQueueImmediate;
+      clearImmediate(prevImmediate);
+      flushQueueImmediate = setImmediate(API.flushQueue);
     } else {
       API.flushQueue();
     }
@@ -171,12 +188,11 @@ const API = {
 
   flushQueue: (isSingleOpBatching
     ? (): void => {
-        // TODO: (T136971132)
         invariant(
-          NativeAnimatedModule || process.env.NODE_ENV === 'test',
+          NativeAnimatedModule,
           'Native animated module is not available',
         );
-        flushQueueTimeout = null;
+        flushQueueImmediate = null;
 
         if (singleOpQueue.length === 0) {
           return;
@@ -193,18 +209,17 @@ const API = {
         singleOpQueue.length = 0;
       }
     : (): void => {
-        // TODO: (T136971132)
         invariant(
-          NativeAnimatedModule || process.env.NODE_ENV === 'test',
+          NativeAnimatedModule,
           'Native animated module is not available',
         );
-        flushQueueTimeout = null;
+        flushQueueImmediate = null;
 
         if (queue.length === 0) {
           return;
         }
 
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' || shouldSignalBatch) {
           NativeAnimatedModule?.startOperationBatch?.();
         }
 
@@ -213,7 +228,7 @@ const API = {
         }
         queue.length = 0;
 
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' || shouldSignalBatch) {
           NativeAnimatedModule?.finishOperationBatch?.();
         }
       }) as () => void,
@@ -369,7 +384,7 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(
-  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig,
+  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig<mixed>,
 ): boolean {
   if (config.useNativeDriver == null) {
     console.warn(

@@ -18,35 +18,53 @@ InspectorFlags& InspectorFlags::getInstance() {
 }
 
 bool InspectorFlags::getFuseboxEnabled() const {
+  if (fuseboxDisabledForTest_) {
+    return false;
+  }
+
   return loadFlagsAndAssertUnchanged().fuseboxEnabled;
+}
+
+bool InspectorFlags::getIsProfilingBuild() const {
+  return loadFlagsAndAssertUnchanged().isProfilingBuild;
+}
+
+bool InspectorFlags::getNetworkInspectionEnabled() const {
+  return loadFlagsAndAssertUnchanged().networkInspectionEnabled;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
 
-#if defined(REACT_NATIVE_FORCE_ENABLE_FUSEBOX) && \
-    defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
+void InspectorFlags::dangerouslyDisableFuseboxForTest() {
+  fuseboxDisabledForTest_ = true;
+}
+
+#if defined(REACT_NATIVE_DEBUGGER_ENABLED) && \
+    defined(REACT_NATIVE_DEBUGGER_FORCE_DISABLE)
 #error \
-    "Cannot define both REACT_NATIVE_FORCE_ENABLE_FUSEBOX and REACT_NATIVE_FORCE_DISABLE_FUSEBOX"
+    "Cannot define both REACT_NATIVE_DEBUGGER_ENABLED and REACT_NATIVE_DEBUGGER_FORCE_DISABLE"
 #endif
 
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
       .fuseboxEnabled =
-#if defined(REACT_NATIVE_FORCE_ENABLE_FUSEBOX)
+#if defined(REACT_NATIVE_DEBUGGER_ENABLED)
           true,
-#elif defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
-          false,
-#elif defined(HERMES_ENABLE_DEBUGGER) && \
-    defined(REACT_NATIVE_ENABLE_FUSEBOX_DEBUG)
-          true,
-#elif defined(HERMES_ENABLE_DEBUGGER)
-          ReactNativeFeatureFlags::fuseboxEnabledDebug(),
 #else
           ReactNativeFeatureFlags::fuseboxEnabledRelease(),
 #endif
+      .isProfilingBuild =
+#if defined(REACT_NATIVE_DEBUGGER_MODE_PROD)
+          true,
+#else
+          false,
+#endif
+      .networkInspectionEnabled =
+          ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+          ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(),
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {

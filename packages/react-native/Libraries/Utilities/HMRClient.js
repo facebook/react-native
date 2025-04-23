@@ -14,8 +14,8 @@ import getDevServer from '../Core/Devtools/getDevServer';
 import LogBox from '../LogBox/LogBox';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
-const DevSettings = require('./DevSettings');
-const Platform = require('./Platform');
+const DevSettings = require('./DevSettings').default;
+const Platform = require('./Platform').default;
 const invariant = require('invariant');
 const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const prettyFormat = require('pretty-format');
@@ -26,7 +26,6 @@ let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
 let pendingLogs: Array<[LogLevel, $ReadOnlyArray<mixed>]> = [];
-let pendingFuseboxConsoleNotification = false;
 
 type LogLevel =
   | 'trace'
@@ -39,7 +38,7 @@ type LogLevel =
   | 'groupEnd'
   | 'debug';
 
-export type HMRClientNativeInterface = {|
+export type HMRClientNativeInterface = {
   enable(): void,
   disable(): void,
   registerBundle(requestUrl: string): void,
@@ -52,8 +51,7 @@ export type HMRClientNativeInterface = {|
     isEnabled: boolean,
     scheme?: string,
   ): void,
-  unstable_notifyFuseboxConsoleEnabled(): void,
-|};
+};
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
@@ -70,7 +68,7 @@ const HMRClient: HMRClientNativeInterface = {
     }
 
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-    const DevLoadingView = require('./DevLoadingView');
+    const DevLoadingView = require('./DevLoadingView').default;
 
     // We use this for internal logging only.
     // It doesn't affect the logic.
@@ -142,29 +140,6 @@ const HMRClient: HMRClientNativeInterface = {
     }
   },
 
-  unstable_notifyFuseboxConsoleEnabled() {
-    if (!hmrClient) {
-      pendingFuseboxConsoleNotification = true;
-      return;
-    }
-    hmrClient.send(
-      JSON.stringify({
-        type: 'log',
-        level: 'info',
-        data: [
-          '\n' +
-            '\x1b[7m' +
-            ' \x1b[1mJavaScript logs have moved!\x1b[22m They will now appear in the debugger console. ' +
-            'Tip: Type \x1b[1mj\x1b[22m in the terminal to open the debugger (requires Google Chrome ' +
-            'or Microsoft Edge).' +
-            '\x1b[27m' +
-            '\n',
-        ],
-      }),
-    );
-    pendingFuseboxConsoleNotification = false;
-  },
-
   // Called once by the bridge on startup, even if Fast Refresh is off.
   // It creates the HMR client but doesn't actually set up the socket yet.
   setup(
@@ -181,7 +156,7 @@ const HMRClient: HMRClientNativeInterface = {
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
 
     // Moving to top gives errors due to NativeModules not being initialized
-    const DevLoadingView = require('./DevLoadingView');
+    const DevLoadingView = require('./DevLoadingView').default;
 
     const serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
 
@@ -341,9 +316,6 @@ function flushEarlyLogs(client: MetroHMRClient) {
     pendingLogs.forEach(([level, data]) => {
       HMRClient.log(level, data);
     });
-    if (pendingFuseboxConsoleNotification) {
-      HMRClient.unstable_notifyFuseboxConsoleEnabled();
-    }
   } finally {
     pendingLogs.length = 0;
   }
@@ -387,4 +359,4 @@ function showCompileError() {
   throw error;
 }
 
-module.exports = HMRClient;
+export default HMRClient;

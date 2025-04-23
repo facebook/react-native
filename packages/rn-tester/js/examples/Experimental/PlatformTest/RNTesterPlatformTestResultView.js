@@ -12,7 +12,7 @@ import type {
   PlatformTestResult,
   PlatformTestResultStatus,
 } from './RNTesterPlatformTestTypes';
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
 import type {
   TextStyle,
   ViewStyleProp,
@@ -177,16 +177,16 @@ const TableRow = React.memo(
   },
 );
 
-function renderTableRow({item}: RenderItemProps<PlatformTestResult>) {
+function renderTableRow({item}: ListRenderItemInfo<PlatformTestResult>) {
   return <TableRow testResult={item} />;
 }
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   numPending: number,
   reset: () => void,
   results: $ReadOnlyArray<PlatformTestResult>,
   style?: ?ViewStyleProp,
-|}>;
+}>;
 export default function RNTesterPlatformTestResultView(
   props: Props,
 ): React.MixedElement {

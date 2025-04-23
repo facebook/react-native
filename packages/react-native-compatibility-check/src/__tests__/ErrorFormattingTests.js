@@ -1,0 +1,150 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ * @oncall react_native
+ */
+
+export const okayChanges = [
+  [
+    'native-module-before-after-types-removed/NativeModuleBeforeAfterTypes',
+    'native-module-before-after-types/NativeModuleBeforeAfterTypes',
+  ],
+  [
+    'native-module-get-constants/NativeModule',
+    'native-module-get-constants-added-optional-constant/NativeModule',
+  ],
+  [
+    'native-module-with-enum-from-native-changes/NativeModule',
+    'native-module-with-enum-from-native/NativeModule',
+  ],
+  [
+    'native-module-with-union/NativeModule',
+    'native-module-with-union-changes/NativeModule',
+  ],
+  [
+    'native-component-with-command/NativeComponent',
+    'native-component-with-command/NativeComponent',
+  ],
+  [
+    'native-component-with-props/NativeComponent',
+    'native-component-with-props-default-change/NativeComponent',
+  ],
+];
+
+export const incompatibleChanges = [
+  [
+    'native-module-before-after-types/NativeModuleBeforeAfterTypes',
+    'native-module-before-after-types-removed/NativeModuleBeforeAfterTypes',
+  ],
+  [
+    'native-module-before-after-types/NativeModuleBeforeAfterTypes',
+    'native-module-before-after-types-type-changed/NativeModuleBeforeAfterTypes',
+  ],
+  ['native-module/NativeModule', 'native-module-changed/NativeModule'],
+  [
+    'native-module-nested/NativeModule',
+    'native-module-nested-changed/NativeModule',
+  ],
+  [
+    'native-module-nested-optional/NativeModule',
+    'native-module-nested/NativeModule',
+  ],
+  [
+    'native-module-nested-nullable/NativeModule',
+    'native-module-nested-optional/NativeModule',
+  ],
+  [
+    'native-module-nested-optional/NativeModule',
+    'native-module-nested-changed/NativeModule',
+  ],
+  [
+    'native-module-nested-alias/NativeModule',
+    'native-module-nested-alias-changed/NativeModule',
+  ],
+  [
+    'native-module-with-dictionary/NativeModule',
+    'native-module-with-dictionary-changed/NativeModule',
+  ],
+  [
+    'native-module-with-enum-changes/NativeModule',
+    'native-module-with-enum/NativeModule',
+  ],
+  [
+    'native-module-with-enum/NativeModule',
+    'native-module-with-enum-type-changes/NativeModule',
+  ],
+  [
+    'native-module-with-enum/NativeModule',
+    'native-module-with-enum-value-changes/NativeModule',
+  ],
+
+  [
+    'native-module-with-enum-from-native/NativeModule',
+    'native-module-with-enum-from-native-changes/NativeModule',
+  ],
+  [
+    'native-module-with-enum-from-native/NativeModule',
+    'native-module-with-enum-from-native-type-changes/NativeModule',
+  ],
+  [
+    'native-module-with-enum-from-native/NativeModule',
+    'native-module-with-enum-from-native-value-changes/NativeModule',
+  ],
+  [
+    'native-module-with-eventemitter/NativeModule',
+    'native-module-with-eventemitter-changes/NativeModule',
+  ],
+  [
+    'native-module/NativeModule',
+    'native-module-with-optional-argument/NativeModule',
+  ],
+  [
+    'native-module-with-union/NativeModule',
+    'native-module-with-union-type-changes/NativeModule',
+  ],
+  [
+    'native-module-with-union-changes/NativeModule',
+    'native-module-with-union/NativeModule',
+  ],
+  [
+    'native-module-with-union-from-native/NativeModule',
+    'native-module-with-union-from-native-changes/NativeModule',
+  ],
+  [
+    'native-module-with-union/NativeModule',
+    'native-module-with-union-confusing-string-literals/NativeModule',
+  ],
+  [
+    'native-component-with-command/NativeComponent',
+    'native-component-with-command-changed/NativeComponent',
+  ],
+  [
+    'native-component-with-command-all-basic-types-arrays/NativeComponent',
+    'native-component-with-command-all-basic-types/NativeComponent',
+  ],
+  [
+    'native-component-with-command-extra-arg/NativeComponent',
+    'native-component-with-command/NativeComponent',
+  ],
+  [
+    'native-component-with-props/NativeComponent',
+    'native-component-with-props-changes/NativeComponent',
+  ],
+  [
+    'native-component-with-props/NativeComponent',
+    'native-component-with-props-added-required-prop/NativeComponent',
+  ],
+  [
+    'native-component-with-props-union-added/NativeComponent',
+    'native-component-with-props-union/NativeComponent',
+  ],
+  [
+    'native-component-with-props-array-union-added/NativeComponent',
+    'native-component-with-props-array-union/NativeComponent',
+  ],
+];

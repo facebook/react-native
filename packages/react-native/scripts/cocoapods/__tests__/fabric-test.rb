@@ -34,14 +34,13 @@ class FabricTest < Test::Unit::TestCase
     end
 
     def check_installed_pods(prefix)
-        assert_equal(7, $podInvocationCount)
+        assert_equal(6, $podInvocationCount)
 
         check_pod("React-Fabric", :path => "#{prefix}/ReactCommon")
         check_pod("React-FabricComponents", :path => "#{prefix}/ReactCommon")
         check_pod("React-FabricImage", :path => "#{prefix}/ReactCommon")
         check_pod("React-graphics", :path => "#{prefix}/ReactCommon/react/renderer/graphics")
         check_pod("React-RCTFabric", :path => "#{prefix}/React", :modular_headers => true)
-        check_pod("RCT-Folly/Fabric", :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec")
         check_pod("React-ImageManager", :path => "#{prefix}/ReactCommon/react/renderer/imagemanager/platform/ios")
     end
 

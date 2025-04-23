@@ -11,8 +11,7 @@
 
 #import <CoreText/CoreText.h>
 
-typedef CGFloat RCTFontWeight;
-static RCTFontWeight weightOfFont(UIFont *font)
+RCTFontWeight RCTGetFontWeight(UIFont *font)
 {
   static NSArray<NSString *> *weightSuffixes;
   static NSArray<NSNumber *> *fontWeights;
@@ -95,11 +94,7 @@ BOOL RCTHasFontHandlerSet()
 // which one we actually have.
 static inline BOOL CompareFontWeights(UIFontWeight firstWeight, UIFontWeight secondWeight)
 {
-#if CGFLOAT_IS_DOUBLE
   return fabs(firstWeight - secondWeight) < 0.01;
-#else
-  return fabsf(firstWeight - secondWeight) < 0.01;
-#endif
 }
 
 static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
@@ -405,7 +400,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
   if (font) {
     familyName = font.familyName ?: defaultFontFamily;
     fontSize = font.pointSize ?: defaultFontSize;
-    fontWeight = weightOfFont(font);
+    fontWeight = RCTGetFontWeight(font);
     isItalic = isItalicFont(font);
     isCondensed = isCondensedFont(font);
   }
@@ -453,7 +448,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
       // It's actually a font name, not a font family name,
       // but we'll do what was meant, not what was said.
       familyName = font.familyName;
-      fontWeight = weight ? fontWeight : weightOfFont(font);
+      fontWeight = weight ? fontWeight : RCTGetFontWeight(font);
       isItalic = style ? isItalic : isItalicFont(font);
       isCondensed = isCondensedFont(font);
     } else {
@@ -476,7 +471,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     for (NSString *name in names) {
       UIFont *match = [UIFont fontWithName:name size:fontSize];
       if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
-        CGFloat testWeight = weightOfFont(match);
+        CGFloat testWeight = RCTGetFontWeight(match);
         if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
           font = match;
           closestWeight = testWeight;

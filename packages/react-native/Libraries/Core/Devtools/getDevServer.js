@@ -25,7 +25,7 @@ type DevServerInfo = {
  * Many RN development tools rely on the development server (packager) running
  * @return URL to packager with trailing slash
  */
-function getDevServer(): DevServerInfo {
+export default function getDevServer(): DevServerInfo {
   if (_cachedDevServerURL === undefined) {
     const scriptUrl = NativeSourceCode.getConstants().scriptURL;
     const match = scriptUrl.match(/^https?:\/\/.*?\//);
@@ -39,5 +39,3 @@ function getDevServer(): DevServerInfo {
     bundleLoadedFromServer: _cachedDevServerURL !== null,
   };
 }
-
-module.exports = getDevServer;

@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 
 function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
   const x = React.useRef(new Animated.Value(0));

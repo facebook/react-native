@@ -348,21 +348,6 @@ TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
   EXPECT_TRUE(this->eval("globalThis.foo === 42").getBool());
 }
 
-TYPED_TEST(JsiIntegrationPortableTest, FuseboxSetClientMetadata) {
-  this->connect();
-
-  this->expectMessageFromPage(JsonEq(R"({
-                                          "id": 1,
-                                          "result": {}
-                                        })"));
-
-  this->toPage_->sendMessage(R"({
-                                 "id": 1,
-                                 "method": "FuseboxClient.setClientMetadata",
-                                 "params": {}
-                               })");
-}
-
 TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
   this->connect();
 
@@ -373,7 +358,9 @@ TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
   this->expectMessageFromPage(JsonEq(R"({
                                           "method": "ReactNativeApplication.metadataUpdated",
                                           "params": {
-                                            "integrationName": "JsiIntegrationTest"
+                                            "integrationName": "JsiIntegrationTest",
+                                            "unstable_isProfilingBuild": false,
+                                            "unstable_networkInspectionEnabled": false
                                           }
                                         })"));
 
@@ -703,7 +690,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ScriptParsedExactlyOnce) {
 
 TYPED_TEST(JsiIntegrationHermesTest, FunctionDescriptionIncludesName) {
   // See
-  // https://github.com/facebookexperimental/rn-chrome-devtools-frontend/blob/9a23d4c7c4c2d1a3d9e913af38d6965f474c4284/front_end/ui/legacy/components/object_ui/ObjectPropertiesSection.ts#L311-L391
+  // https://github.com/facebook/react-native-devtools-frontend/blob/9a23d4c7c4c2d1a3d9e913af38d6965f474c4284/front_end/ui/legacy/components/object_ui/ObjectPropertiesSection.ts#L311-L391
 
   this->connect();
 
@@ -720,6 +707,136 @@ TYPED_TEST(JsiIntegrationHermesTest, FunctionDescriptionIncludesName) {
                                "method": "Runtime.evaluate",
                                "params": {"expression": "(function foo() {Math.random()});"}
                              })");
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObject) {
+  this->connect();
+
+  InSequence s;
+
+  // Create a remote object.
+  auto objectInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 1),
+      AtJsonPtr("/result/result/type", "object"),
+      AtJsonPtr("/result/result/objectId", Not(IsEmpty())))));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.evaluate",
+                                 "params": {"expression": "[]"}
+                               })");
+
+  ASSERT_TRUE(objectInfo->has_value());
+  auto objectId = objectInfo->value()["result"]["result"]["objectId"];
+
+  // Ensure we can get the properties of the object.
+  this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/id", 2), AtJsonPtr("/result/result", SizeIs(Gt(0))))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 2,
+          "method": "Runtime.getProperties",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Release the object.
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 3,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 3,
+          "method": "Runtime.releaseObject",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Getting properties for a released object results in an error.
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 4), AtJsonPtr("/error/code", -32000))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 4,
+          "method": "Runtime.getProperties",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Releasing an already released object is an error.
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 5), AtJsonPtr("/error/code", -32000))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 5,
+          "method": "Runtime.releaseObject",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
+  this->connect();
+
+  InSequence s;
+
+  // Create a remote object.
+  auto objectInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 1),
+      AtJsonPtr("/result/result/type", "object"),
+      AtJsonPtr("/result/result/objectId", Not(IsEmpty())))));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.evaluate",
+                                 "params": {"expression": "[]", "objectGroup": "foo"}
+                               })");
+
+  ASSERT_TRUE(objectInfo->has_value());
+  auto objectId = objectInfo->value()["result"]["result"]["objectId"];
+
+  // Ensure we can get the properties of the object.
+  this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/id", 2), AtJsonPtr("/result/result", SizeIs(Gt(0))))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 2,
+          "method": "Runtime.getProperties",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Release the object group containing our object.
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 3,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 3,
+                                 "method": "Runtime.releaseObjectGroup",
+                                 "params": {"objectGroup": "foo"}
+                               })");
+
+  // Getting properties for a released object results in an error.
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 4), AtJsonPtr("/error/code", -32000))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 4,
+          "method": "Runtime.getProperties",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Releasing an already released object group is a no-op.
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 5,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 5,
+                                 "method": "Runtime.releaseObjectGroup",
+                                 "params": {"objectGroup": "foo"}
+                               })");
 }
 
 #pragma endregion // AllHermesVariants

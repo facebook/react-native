@@ -9,6 +9,7 @@
  */
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import {validateStyles} from '../../../src/private/animated/NativeAnimatedValidation';
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
@@ -35,7 +36,7 @@ function createAnimatedStyle(
     const key = keys[ii];
     const value = inputStyle[key];
 
-    if (allowlist == null || Object.hasOwn(allowlist, key)) {
+    if (allowlist == null || hasOwn(allowlist, key)) {
       let node;
       if (value != null && key === 'transform') {
         node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
@@ -112,8 +113,9 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     nodes: $ReadOnlyArray<AnimatedNode>,
     style: {[string]: mixed},
     inputStyle: any,
+    config?: ?AnimatedNodeConfig,
   ) {
-    super();
+    super(config);
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
     this.#style = style;
@@ -135,6 +137,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       }
     }
 
+    /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+     * Platform.flow.js */
     return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
   }
 
@@ -172,6 +176,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       }
     }
 
+    /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+     * Platform.flow.js */
     return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
   }
 
@@ -195,6 +201,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       const node = nodes[ii];
       node.__addChild(this);
     }
+    super.__attach();
   }
 
   __detach(): void {
@@ -234,6 +241,15 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     return {
       type: 'style',
       style: styleConfig,
+      debugID: this.__getDebugID(),
     };
   }
 }
+
+// Supported versions of JSC do not implement the newer Object.hasOwn. Remove
+// this shim when they do.
+// $FlowIgnore[method-unbinding]
+const _hasOwnProp = Object.prototype.hasOwnProperty;
+const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
+  // $FlowIgnore[method-unbinding]
+  Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

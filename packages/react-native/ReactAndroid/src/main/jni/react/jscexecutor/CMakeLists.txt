@@ -9,6 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(-fvisibility=hidden -fexceptions -frtti)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB jscexecutor_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_library(jscexecutor OBJECT ${jscexecutor_SRC})
@@ -33,3 +34,4 @@ target_link_libraries(jscexecutor
         jscruntime
         jsi
         reactnative)
+target_compile_reactnative_options(jscexecutor PRIVATE)

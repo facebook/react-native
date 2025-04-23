@@ -19,6 +19,8 @@ const {compareSnaps, compareTsArraySnaps} = require('../compareSnaps.js');
 const flowExtraCases = [];
 const tsExtraCases = [
   'ARRAY2_PROP_TYPES_NO_EVENTS',
+  'NAMESPACED_ARRAY2_PROP_TYPES_NO_EVENTS',
+  'NAMESPACED_PROPS_AND_EVENTS_WITH_INTERFACES',
   'PROPS_AND_EVENTS_WITH_INTERFACES',
 ];
 const ignoredCases = [];

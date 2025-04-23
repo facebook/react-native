@@ -6,9 +6,16 @@
  */
 
 #include "NetworkIOAgent.h"
-#include <utility>
+#include "InspectorFlags.h"
+
 #include "Base64.h"
 #include "Utf8.h"
+
+#include <jsinspector-modern/network/NetworkReporter.h>
+
+#include <sstream>
+#include <utility>
+#include <variant>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -27,7 +34,7 @@ static constexpr std::array kTextMIMETypePrefixes{
 namespace {
 
 struct InitStreamResult {
-  int httpStatusCode;
+  uint32_t httpStatusCode;
   Headers headers;
   std::shared_ptr<Stream> stream;
 };
@@ -113,7 +120,7 @@ class Stream : public NetworkRequestListener,
     processPending();
   }
 
-  void onHeaders(int httpStatusCode, const Headers& headers) override {
+  void onHeaders(uint32_t httpStatusCode, const Headers& headers) override {
     // Find content-type through case-insensitive search of headers.
     for (const auto& [name, value] : headers) {
       std::string lowerName = name;
@@ -262,6 +269,32 @@ bool NetworkIOAgent::handleRequest(
     handleIoClose(req);
     return true;
   }
+
+  if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
+    auto& networkReporter = NetworkReporter::getInstance();
+
+    // @cdp Network.enable support is experimental.
+    if (req.method == "Network.enable") {
+      networkReporter.setFrontendChannel(frontendChannel_);
+      networkReporter.enableDebugging();
+      frontendChannel_(cdp::jsonResult(req.id));
+      return true;
+    }
+
+    // @cdp Network.disable support is experimental.
+    if (req.method == "Network.disable") {
+      networkReporter.disableDebugging();
+      frontendChannel_(cdp::jsonResult(req.id));
+      return true;
+    }
+
+    // @cdp Network.getResponseBody support is experimental.
+    if (req.method == "Network.getResponseBody") {
+      // TODO(T218468200)
+      return false;
+    }
+  }
+
   return false;
 }
 

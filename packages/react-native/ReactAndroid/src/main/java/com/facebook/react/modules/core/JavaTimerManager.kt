@@ -65,6 +65,7 @@ public open class JavaTimerManager(
 
   init {
     reactApplicationContext.addLifecycleEventListener(this)
+    HeadlessJsTaskContext.getInstance(reactApplicationContext).addTaskEventListener(this)
   }
 
   override fun onHostPause() {
@@ -103,6 +104,7 @@ public open class JavaTimerManager(
   }
 
   public open fun onInstanceDestroy() {
+    HeadlessJsTaskContext.getInstance(reactApplicationContext).removeTaskEventListener(this)
     reactApplicationContext.removeLifecycleEventListener(this)
     clearFrameCallback()
     clearChoreographerIdleCallback()

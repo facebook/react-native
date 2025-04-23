@@ -27,6 +27,13 @@ class AndroidSwitchShadowNode final : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
+    return traits;
+  }
+
   // Associates a shared `AndroidSwitchMeasurementsManager` with the node.
   void setAndroidSwitchMeasurementsManager(
       const std::shared_ptr<AndroidSwitchMeasurementsManager>&

@@ -14,5 +14,8 @@
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
 - (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider;
 - (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler;
+- (void)reload;
+
+@property (nonatomic, readonly) RCTBundleManager *bundleManager;
 
 @end

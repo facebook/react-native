@@ -199,7 +199,7 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
                   "getBindingsInstaller");
       auto installer = getBindingsInstaller(moduleInstance);
       if (installer) {
-        installer->cthis()->installBindings(runtime);
+        installer->cthis()->installBindings(runtime, jsCallInvoker_);
       }
     }
 

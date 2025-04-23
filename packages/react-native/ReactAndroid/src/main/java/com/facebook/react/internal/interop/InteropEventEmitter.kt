@@ -13,6 +13,8 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.VisibleForTesting
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.RCTEventEmitter
@@ -27,18 +29,21 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * is providing support for the `receiveEvent` method, so that non-Fabric ViewManagers can continue
  * to deliver events also when Fabric is turned on.
  */
-public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
+@LegacyArchitecture
+internal class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
+
   private var eventDispatcherOverride: EventDispatcher? = null
 
   @Deprecated("Deprecated in Java")
-  override fun receiveEvent(targetReactTag: Int, eventName: String, eventData: WritableMap?) {
+  override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) {
     val dispatcher: EventDispatcher? =
         eventDispatcherOverride
-            ?: UIManagerHelper.getEventDispatcherForReactTag(reactContext, targetReactTag)
+            ?: UIManagerHelper.getEventDispatcherForReactTag(reactContext, targetTag)
     val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
-    dispatcher?.dispatchEvent(InteropEvent(eventName, eventData, surfaceId, targetReactTag))
+    dispatcher?.dispatchEvent(InteropEvent(eventName, params, surfaceId, targetTag))
   }
 
+  @Deprecated("Deprecated in Java")
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
@@ -49,7 +54,13 @@ public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEv
   }
 
   @VisibleForTesting
-  public fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
+  fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
     this.eventDispatcherOverride = eventDispatcherOverride
+  }
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture("InteropEventEmitter")
+    }
   }
 }

@@ -38,10 +38,10 @@ const EVENT_DEFINITION = `
   int32_optional_value: Int32 | null | undefined;
   int32_optional_both?: Int32 | null | undefined;
 
-  enum_required: 'small' | 'large';
-  enum_optional_key?: 'small' | 'large';
-  enum_optional_value: ('small' | 'large') | null | undefined;
-  enum_optional_both?: ('small' | 'large') | null | undefined;
+  union_required: 'small' | 'large';
+  union_optional_key?: 'small' | 'large';
+  union_optional_value: ('small' | 'large') | null | undefined;
+  union_optional_both?: ('small' | 'large') | null | undefined;
 
   object_required: {
     boolean_required: boolean;
@@ -110,10 +110,10 @@ const EVENT_DEFINITION = `
   int32_array_optional_value: Int32[] | null | undefined;
   int32_array_optional_both?: Int32[] | null | undefined;
 
-  enum_array_required: ('small' | 'large')[];
-  enum_array_optional_key?: ('small' | 'large')[];
-  enum_array_optional_value: ('small' | 'large')[] | null | undefined;
-  enum_array_optional_both?: ('small' | 'large')[] | null | undefined;
+  union_array_required: ('small' | 'large')[];
+  union_array_optional_key?: ('small' | 'large')[];
+  union_array_optional_value: ('small' | 'large')[] | null | undefined;
+  union_array_optional_both?: ('small' | 'large')[] | null | undefined;
 
   object_array_required: {
     boolean_required: boolean;
@@ -386,7 +386,7 @@ const ARRAY_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, UnsafeMixed, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {
   ColorValue,
@@ -478,6 +478,12 @@ export interface ModuleProps extends ViewProps {
   array_object_optional_key?: ReadonlyArray<Readonly<{prop: string}>>;
   array_object_optional_value: ArrayObjectType | null | undefined;
   array_object_optional_both?: ReadonlyArray<ObjectType> | null | undefined;
+
+  // UnsafeMixed props
+  array_mixed_required: ReadonlyArray<UnsafeMixed>;
+  array_mixed_optional_key?: ReadonlyArray<UnsafeMixed>;
+  array_mixed_optional_value: ReadonlyArray<UnsafeMixed> | null | undefined;
+  array_mixed_optional_both?: ReadonlyArray<UnsafeMixed> | null | undefined;
 
   // Nested array object types
   array_of_array_object_required: ReadonlyArray<
@@ -1065,10 +1071,18 @@ type NativeType = HostComponent<ModuleProps>;
      z: Double,
      animated: boolean,
    ): void;
+   readonly arrayArgs: (
+    viewRef: React.ElementRef<NativeType>,
+    booleanArray: ReadOnlyArray<boolean>,
+    stringArray: ReadOnlyArray<string>,
+    floatArray: ReadOnlyArray<Float>,
+    intArray: ReadOnlyArray<Int32>,
+    doubleArray: ReadOnlyArray<Double>,
+  ) => void;
  }
 
  export const Commands = codegenNativeCommands<NativeCommands>({
-   supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo'],
+   supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo', 'arrayArgs'],
  });
 
 export default codegenNativeComponent<ModuleProps>(
@@ -1096,6 +1110,10 @@ import type {HostComponent} from 'react-native';
 export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
+export type Locations = {
+  x: number,
+  y: number,
+}
 
 export interface ModuleProps extends ViewProps {
   // No props or events
@@ -1113,6 +1131,7 @@ export type AddOverlays = (
   overlayColorsReadOnly: ReadOnlyArray<string>,
   overlayColorsArray: Array<string>,
   overlayColorsArrayAnnotation: string[],
+  overlayLocations: ReadOnlyArray<Locations>,
 ) => Void;
 
 interface NativeCommands {
@@ -1232,6 +1251,1118 @@ export default codegenNativeComponent<ModuleProps>('Module', {
 }) as HostComponent<ModuleProps>;
 `;
 
+const NAMESPACED_EVENT_DEFINITION = `
+  boolean_required: boolean;
+  boolean_optional_key?: boolean;
+  boolean_optional_value: boolean | null | undefined;
+  boolean_optional_both?: boolean | null | undefined;
+
+  string_required: string;
+  string_optional_key?: (string);
+  string_optional_value: (string) | null | undefined;
+  string_optional_both?: (string | null | undefined);
+
+  double_required: CodegenTypes.Double;
+  double_optional_key?: CodegenTypes.Double;
+  double_optional_value: CodegenTypes.Double | null | undefined;
+  double_optional_both?: CodegenTypes.Double | null | undefined;
+
+  float_required: CodegenTypes.Float;
+  float_optional_key?: CodegenTypes.Float;
+  float_optional_value: CodegenTypes.Float | null | undefined;
+  float_optional_both?: CodegenTypes.Float | null | undefined;
+
+  int32_required: CodegenTypes.Int32;
+  int32_optional_key?: CodegenTypes.Int32;
+  int32_optional_value: CodegenTypes.Int32 | null | undefined;
+  int32_optional_both?: CodegenTypes.Int32 | null | undefined;
+
+  union_required: 'small' | 'large';
+  union_optional_key?: 'small' | 'large';
+  union_optional_value: ('small' | 'large') | null | undefined;
+  union_optional_both?: ('small' | 'large') | null | undefined;
+
+  object_required: {
+    boolean_required: boolean;
+  };
+
+  object_optional_key?: {
+    string_optional_key?: string;
+  };
+
+  object_optional_value: {
+    float_optional_value: CodegenTypes.Float | null | undefined;
+  } | null | undefined;
+
+  object_optional_both?: {
+    int32_optional_both?: CodegenTypes.Int32 | null | undefined;
+  } | null | undefined;
+
+  object_required_nested_2_layers: {
+    object_optional_nested_1_layer?: {
+      boolean_required: CodegenTypes.Int32;
+      string_optional_key?: string;
+      double_optional_value: CodegenTypes.Double | null | undefined;
+      float_optional_value: CodegenTypes.Float | null | undefined;
+      int32_optional_both?: CodegenTypes.Int32 | null | undefined;
+    } | null | undefined;
+  };
+
+  object_readonly_required: Readonly<{
+    boolean_required: boolean;
+  }>;
+
+  object_readonly_optional_key?: Readonly<{
+    string_optional_key?: string;
+  }>;
+
+  object_readonly_optional_value: Readonly<{
+    float_optional_value: CodegenTypes.Float | null | undefined;
+  }> | null | undefined;
+
+  object_readonly_optional_both?: Readonly<{
+    int32_optional_both?: CodegenTypes.Int32 | null | undefined;
+  }> | null | undefined;
+
+  boolean_array_required: boolean[];
+  boolean_array_optional_key?: boolean[];
+  boolean_array_optional_value: boolean[] | null | undefined;
+  boolean_array_optional_both?: boolean[] | null | undefined;
+
+  string_array_required: string[];
+  string_array_optional_key?: (string[]);
+  string_array_optional_value: (string[]) | null | undefined;
+  string_array_optional_both?: (string[] | null | undefined);
+
+  double_array_required: CodegenTypes.Double[];
+  double_array_optional_key?: CodegenTypes.Double[];
+  double_array_optional_value: CodegenTypes.Double[] | null | undefined;
+  double_array_optional_both?: CodegenTypes.Double[] | null | undefined;
+
+  float_array_required: CodegenTypes.Float[];
+  float_array_optional_key?: CodegenTypes.Float[];
+  float_array_optional_value: CodegenTypes.Float[] | null | undefined;
+  float_array_optional_both?: CodegenTypes.Float[] | null | undefined;
+
+  int32_array_required: CodegenTypes.Int32[];
+  int32_array_optional_key?: CodegenTypes.Int32[];
+  int32_array_optional_value: CodegenTypes.Int32[] | null | undefined;
+  int32_array_optional_both?: CodegenTypes.Int32[] | null | undefined;
+
+  union_array_required: ('small' | 'large')[];
+  union_array_optional_key?: ('small' | 'large')[];
+  union_array_optional_value: ('small' | 'large')[] | null | undefined;
+  union_array_optional_both?: ('small' | 'large')[] | null | undefined;
+
+  object_array_required: {
+    boolean_required: boolean;
+  }[];
+
+  object_array_optional_key?: {
+    string_optional_key?: string;
+  }[];
+
+  object_array_optional_value: {
+    float_optional_value: CodegenTypes.Float | null | undefined;
+  }[] | null | undefined;
+
+  object_array_optional_both?: {
+    int32_optional_both?: CodegenTypes.Int32 | null | undefined;
+  }[] | null | undefined;
+
+  int32_array_array_required: CodegenTypes.Int32[][];
+  int32_array_array_optional_key?: CodegenTypes.Int32[][];
+  int32_array_array_optional_value: CodegenTypes.Int32[][] | null | undefined;
+  int32_array_array_optional_both?: CodegenTypes.Int32[][] | null | undefined;
+`;
+
+const NAMESPACED_ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  boolean_default_true_optional_both?: CodegenTypes.WithDefault<boolean, true>;
+
+  // Events
+  onDirectEventDefinedInlineNull: CodegenTypes.DirectEventHandler<null>;
+  onBubblingEventDefinedInlineNull: CodegenTypes.BubblingEventHandler<null>;
+}
+
+export default codegenNativeComponent<ModuleProps>('Module', {
+  interfaceOnly: true,
+  paperComponentName: 'RCTModule',
+}) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  boolean_default_true_optional_both?: CodegenTypes.WithDefault<boolean, true>;
+
+  // Events
+  onDirectEventDefinedInlineNull: CodegenTypes.DirectEventHandler<null>;
+  onBubblingEventDefinedInlineNull: CodegenTypes.BubblingEventHandler<null>;
+}
+
+export default codegenNativeComponent<ModuleProps>('Module', {
+  interfaceOnly: true,
+  excludedPlatforms: ['android'],
+  paperComponentName: 'RCTModule',
+}) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_ALL_PROP_TYPES_NO_EVENTS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ImageSource} from 'ImageSource';
+import type {
+  ColorValue,
+  ColorArrayValue,
+  PointValue,
+  EdgeInsetsValue,
+  DimensionValue,
+} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  // Boolean props
+  boolean_required: boolean;
+  boolean_optional_key?: CodegenTypes.WithDefault<boolean, true>;
+  boolean_optional_both?: CodegenTypes.WithDefault<boolean, true>;
+
+  // Boolean props, null default
+  boolean_null_optional_key?: CodegenTypes.WithDefault<boolean, null>;
+  boolean_null_optional_both?: CodegenTypes.WithDefault<boolean, null>;
+
+  // String props
+  string_required: string;
+  string_optional_key?: CodegenTypes.WithDefault<string, ''>;
+  string_optional_both?: CodegenTypes.WithDefault<string, ''>;
+
+  // String props, null default
+  string_null_optional_key?: CodegenTypes.WithDefault<string, null>;
+  string_null_optional_both?: CodegenTypes.WithDefault<string, null>;
+
+  // Stringish props
+  stringish_required: Stringish;
+  stringish_optional_key?: CodegenTypes.WithDefault<Stringish, ''>;
+  stringish_optional_both?: CodegenTypes.WithDefault<Stringish, ''>;
+
+  // Stringish props, null default
+  stringish_null_optional_key?: CodegenTypes.WithDefault<Stringish, null>;
+  stringish_null_optional_both?: CodegenTypes.WithDefault<Stringish, null>;
+
+  // Double props
+  double_required: CodegenTypes.Double;
+  double_optional_key?: CodegenTypes.WithDefault<CodegenTypes.Double, 1.1>;
+  double_optional_both?: CodegenTypes.WithDefault<CodegenTypes.Double, 1.1>;
+
+  // Float props
+  float_required: CodegenTypes.Float;
+  float_optional_key?: CodegenTypes.WithDefault<CodegenTypes.Float, 1.1>;
+  float_optional_both?: CodegenTypes.WithDefault<CodegenTypes.Float, 1.1>;
+
+  // Float props, null default
+  float_null_optional_key?: CodegenTypes.WithDefault<CodegenTypes.Float, null>;
+  float_null_optional_both?: CodegenTypes.WithDefault<CodegenTypes.Float, null>;
+
+  // Int32 props
+  int32_required: Int32;
+  int32_optional_key?: CodegenTypes.WithDefault<CodegenTypes.Int32, 1>;
+  int32_optional_both?: CodegenTypes.WithDefault<CodegenTypes.Int32, 1>;
+
+  // String enum props
+  enum_optional_key?: CodegenTypes.WithDefault<'small' | 'large', 'small'>;
+  enum_optional_both?: CodegenTypes.WithDefault<'small' | 'large', 'small'>;
+
+  // Int enum props
+  int_enum_optional_key?: CodegenTypes.WithDefault<0 | 1, 0>;
+
+  // Object props
+  object_optional_key?: Readonly<{prop: string}>;
+  object_optional_both?: Readonly<{prop: string} | null | undefined>;
+  object_optional_value: Readonly<{prop: string} | null | undefined>;
+
+  // ImageSource props
+  image_required: ImageSource;
+  image_optional_value: ImageSource | null | undefined;
+  image_optional_both?: ImageSource | null | undefined;
+
+  // ColorValue props
+  color_required: ColorValue;
+  color_optional_key?: ColorValue;
+  color_optional_value: ColorValue | null | undefined;
+  color_optional_both?: ColorValue | null | undefined;
+
+  // ColorArrayValue props
+  color_array_required: ColorArrayValue;
+  color_array_optional_key?: ColorArrayValue;
+  color_array_optional_value: ColorArrayValue | null | undefined;
+  color_array_optional_both?: ColorArrayValue | null | undefined;
+
+  // ProcessedColorValue props
+  processed_color_required: ProcessedColorValue;
+  processed_color_optional_key?: ProcessedColorValue;
+  processed_color_optional_value: ProcessedColorValue | null | undefined;
+  processed_color_optional_both?: ProcessedColorValue | null | undefined;
+
+  // PointValue props
+  point_required: PointValue;
+  point_optional_key?: PointValue;
+  point_optional_value: PointValue | null | undefined;
+  point_optional_both?: PointValue | null | undefined;
+
+  // EdgeInsets props
+  insets_required: EdgeInsetsValue;
+  insets_optional_key?: EdgeInsetsValue;
+  insets_optional_value: EdgeInsetsValue | null | undefined;
+  insets_optional_both?: EdgeInsetsValue | null | undefined;
+
+
+  // DimensionValue props
+  dimension_required: DimensionValue;
+  dimension_optional_key?: DimensionValue;
+  dimension_optional_value: DimensionValue | null | undefined;
+  dimension_optional_both?: DimensionValue | null | undefined;
+
+  // Mixed props
+  mixed_required: CodegenTypes.UnsafeMixed,
+  mixed_optional_key?: CodegenTypes.UnsafeMixed,
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_ARRAY_PROP_TYPES_NO_EVENTS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ImageSource} from 'ImageSource';
+import type {
+  ColorValue,
+  ColorArrayValue,
+  PointValue,
+  EdgeInsetsValue,
+  DimensionValue,
+} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+type ObjectType = Readonly<{prop: string}>;
+type ArrayObjectType = ReadonlyArray<Readonly<{prop: string}>>;
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  // Boolean props
+  array_boolean_required: ReadonlyArray<boolean>;
+  array_boolean_optional_key?: ReadonlyArray<boolean>;
+  array_boolean_optional_value: ReadonlyArray<boolean> | null | undefined;
+  array_boolean_optional_both?: ReadonlyArray<boolean> | null | undefined;
+
+  // String props
+  array_string_required: ReadonlyArray<string>;
+  array_string_optional_key?: ReadonlyArray<string>;
+  array_string_optional_value: ReadonlyArray<string> | null | undefined;
+  array_string_optional_both?: ReadonlyArray<string> | null | undefined;
+
+  // Double props
+  array_double_required: ReadonlyArray<CodegenTypes.Double>;
+  array_double_optional_key?: ReadonlyArray<CodegenTypes.Double>;
+  array_double_optional_value: ReadonlyArray<CodegenTypes.Double> | null | undefined;
+  array_double_optional_both?: ReadonlyArray<CodegenTypes.Double> | null | undefined;
+
+  // Float props
+  array_float_required: ReadonlyArray<CodegenTypes.Float>;
+  array_float_optional_key?: ReadonlyArray<CodegenTypes.Float>;
+  array_float_optional_value: ReadonlyArray<CodegenTypes.Float> | null | undefined;
+  array_float_optional_both?: ReadonlyArray<CodegenTypes.Float> | null | undefined;
+
+  // Int32 props
+  array_int32_required: ReadonlyArray<CodegenTypes.Int32>;
+  array_int32_optional_key?: ReadonlyArray<CodegenTypes.Int32>;
+  array_int32_optional_value: ReadonlyArray<CodegenTypes.Int32> | null | undefined;
+  array_int32_optional_both?: ReadonlyArray<CodegenTypes.Int32> | null | undefined;
+
+  // String enum props
+  array_enum_optional_key?: CodegenTypes.WithDefault<
+    ReadonlyArray<'small' | 'large'>,
+    'small'
+  >;
+  array_enum_optional_both?: CodegenTypes.WithDefault<
+    ReadonlyArray<'small' | 'large'>,
+    'small'
+  >;
+
+  // ImageSource props
+  array_image_required: ReadonlyArray<ImageSource>;
+  array_image_optional_key?: ReadonlyArray<ImageSource>;
+  array_image_optional_value: ReadonlyArray<ImageSource> | null | undefined;
+  array_image_optional_both?: ReadonlyArray<ImageSource> | null | undefined;
+
+  // ColorValue props
+  array_color_required: ReadonlyArray<ColorValue>;
+  array_color_optional_key?: ReadonlyArray<ColorValue>;
+  array_color_optional_value: ReadonlyArray<ColorValue> | null | undefined;
+  array_color_optional_both?: ReadonlyArray<ColorValue> | null | undefined;
+
+  // PointValue props
+  array_point_required: ReadonlyArray<PointValue>;
+  array_point_optional_key?: ReadonlyArray<PointValue>;
+  array_point_optional_value: ReadonlyArray<PointValue> | null | undefined;
+  array_point_optional_both?: ReadonlyArray<PointValue> | null | undefined;
+
+  // EdgeInsetsValue props
+  array_insets_required: ReadonlyArray<EdgeInsetsValue>;
+  array_insets_optional_key?: ReadonlyArray<EdgeInsetsValue>;
+  array_insets_optional_value: ReadonlyArray<EdgeInsetsValue> | null | undefined;
+  array_insets_optional_both?: ReadonlyArray<EdgeInsetsValue> | null | undefined;
+
+  // DimensionValue props
+  array_dimension_required: ReadonlyArray<DimensionValue>;
+  array_dimension_optional_key?: ReadonlyArray<DimensionValue>;
+  array_dimension_optional_value: ReadonlyArray<DimensionValue> | null | undefined;
+  array_dimension_optional_both?: ReadonlyArray<DimensionValue> | null | undefined;
+
+  // Object props
+  array_object_required: ReadonlyArray<Readonly<{prop: string}>>;
+  array_object_optional_key?: ReadonlyArray<Readonly<{prop: string}>>;
+  array_object_optional_value: ArrayObjectType | null | undefined;
+  array_object_optional_both?: ReadonlyArray<ObjectType> | null | undefined;
+
+  // UnsafeMixed props
+  array_mixed_required: ReadonlyArray<CodegenTypes.UnsafeMixed>;
+  array_mixed_optional_key?: ReadonlyArray<CodegenTypes.UnsafeMixed>;
+  array_mixed_optional_value: ReadonlyArray<CodegenTypes.UnsafeMixed> | null | undefined;
+  array_mixed_optional_both?: ReadonlyArray<CodegenTypes.UnsafeMixed> | null | undefined;
+
+  // Nested array object types
+  array_of_array_object_required: ReadonlyArray<
+    Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_required: ReadonlyArray<Readonly<{prop: string}>>;
+    }>
+  >;
+  array_of_array_object_optional_key?: ReadonlyArray<
+    Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_key: ReadonlyArray<Readonly<{prop?: string}>>;
+    }>
+  >;
+  array_of_array_object_optional_value: ReadonlyArray<
+    Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_value: ReadonlyArray<
+        Readonly<{prop: string | null | undefined}>
+      >;
+    }>
+  > | null | undefined;
+  array_of_array_object_optional_both?: ReadonlyArray<
+    Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_both: ReadonlyArray<
+        Readonly<{prop?: string | null | undefined}>
+      >;
+    }>
+  > | null | undefined;
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: ReadonlyArray<
+    ReadonlyArray<
+      Readonly<{
+        prop: string;
+      }>
+    >
+  >;
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: ReadonlyArray<
+    ReadonlyArray<ObjectType>
+  >;
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: ReadonlyArray<
+    ReadonlyArray<
+      Readonly<ObjectType & {}>,
+    >,
+  >,
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_ARRAY2_PROP_TYPES_NO_EVENTS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ImageSource} from 'ImageSource';
+import type {
+  ColorValue,
+  ColorArrayValue,
+  PointValue,
+  EdgeInsetsValue,
+} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+type ObjectType = Readonly<{prop: string}>;
+type ArrayObjectType = readonly Readonly<{prop: string}>[];
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  // Boolean props
+  array_boolean_required: readonly boolean[];
+  array_boolean_optional_key?: readonly boolean[];
+  array_boolean_optional_value: readonly boolean[] | null | undefined;
+  array_boolean_optional_both?: readonly boolean[] | null | undefined;
+
+  // String props
+  array_string_required: readonly string[];
+  array_string_optional_key?: readonly string[];
+  array_string_optional_value: readonly string[] | null | undefined;
+  array_string_optional_both?: readonly string[] | null | undefined;
+
+  // Double props
+  array_double_required: readonly CodegenTypes.Double[];
+  array_double_optional_key?: readonly CodegenTypes.Double[];
+  array_double_optional_value: readonly CodegenTypes.Double[] | null | undefined;
+  array_double_optional_both?: readonly CodegenTypes.Double[] | null | undefined;
+
+  // Float props
+  array_float_required: readonly CodegenTypes.Float[];
+  array_float_optional_key?: readonly CodegenTypes.Float[];
+  array_float_optional_value: readonly CodegenTypes.Float[] | null | undefined;
+  array_float_optional_both?: readonly CodegenTypes.Float[] | null | undefined;
+
+  // Int32 props
+  array_int32_required: readonly CodegenTypes.Int32[];
+  array_int32_optional_key?: readonly CodegenTypes.Int32[];
+  array_int32_optional_value: readonly CodegenTypes.Int32[] | null | undefined;
+  array_int32_optional_both?: readonly CodegenTypes.Int32[] | null | undefined;
+
+  // String enum props
+  array_enum_optional_key?: WithDefault<
+    readonly ('small' | 'large')[],
+    'small'
+  >;
+  array_enum_optional_both?: WithDefault<
+    readonly ('small' | 'large')[],
+    'small'
+  >;
+
+  // ImageSource props
+  array_image_required: readonly ImageSource[];
+  array_image_optional_key?: readonly ImageSource[];
+  array_image_optional_value: readonly ImageSource[] | null | undefined;
+  array_image_optional_both?: readonly ImageSource[] | null | undefined;
+
+  // ColorValue props
+  array_color_required: readonly ColorValue[];
+  array_color_optional_key?: readonly ColorValue[];
+  array_color_optional_value: readonly ColorValue[] | null | undefined;
+  array_color_optional_both?: readonly ColorValue[] | null | undefined;
+
+  // PointValue props
+  array_point_required: readonly PointValue[];
+  array_point_optional_key?: readonly PointValue[];
+  array_point_optional_value: readonly PointValue[] | null | undefined;
+  array_point_optional_both?: readonly PointValue[] | null | undefined;
+
+  // EdgeInsetsValue props
+  array_insets_required: readonly EdgeInsetsValue[];
+  array_insets_optional_key?: readonly EdgeInsetsValue[];
+  array_insets_optional_value: readonly EdgeInsetsValue[] | null | undefined;
+  array_insets_optional_both?: readonly EdgeInsetsValue[] | null | undefined;
+
+  // Object props
+  array_object_required: readonly Readonly<{prop: string}>[];
+  array_object_optional_key?: readonly Readonly<{prop: string}>[];
+  array_object_optional_value: ArrayObjectType | null | undefined;
+  array_object_optional_both?: readonly ObjectType[] | null | undefined;
+
+  // Nested array object types
+  array_of_array_object_required: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_required: readonly Readonly<{prop: string}>[];
+    }>[];
+  array_of_array_object_optional_key?: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_key: readonly Readonly<{prop?: string}>[];
+    }>[];
+  array_of_array_object_optional_value: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_value: readonly Readonly<{prop: string | null | undefined}>[];
+    }>[] | null | undefined;
+  array_of_array_object_optional_both?: readonly Readonly<{
+      // This needs to be the same name as the top level array above
+      array_object_optional_both: readonly Readonly<{prop?: string | null | undefined}>[];
+    }>[] | null | undefined;
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: readonly Readonly<{
+        prop: string;
+      }>[][];
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: readonly ObjectType[][];
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: readonly Readonly<ObjectType & {}>[][];
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_OBJECT_PROP_TYPES_NO_EVENTS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ImageSource} from 'ImageSource';
+import type {
+  ColorValue,
+  ColorArrayValue,
+  PointValue,
+  EdgeInsetsValue,
+  DimensionValue,
+} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  // Boolean props
+  boolean_required: Readonly<{prop: boolean}>;
+  boolean_optional: Readonly<{prop?: CodegenTypes.WithDefault<boolean, false>}>;
+
+  // String props
+  string_required: Readonly<{prop: string}>;
+  string_optional: Readonly<{prop?: CodegenTypes.WithDefault<string, ''>}>;
+
+  // Double props
+  double_required: Readonly<{prop: CodegenTypes.Double}>;
+  double_optional: Readonly<{prop?: CodegenTypes.WithDefault<CodegenTypes.Double, 0.0>}>;
+
+  // Float props
+  float_required: Readonly<{prop: CodegenTypes.Float}>;
+  float_optional: Readonly<{prop?: CodegenTypes.WithDefault<CodegenTypes.Float, 0.0>}>;
+
+  // Int32 props
+  int_required: Readonly<{prop: CodegenTypes.Int32}>;
+  int_optional: Readonly<{prop?: CodegenTypes.WithDefault<CodegenTypes.Int32, 0>}>;
+
+  // String enum props
+  enum_optional: Readonly<{
+    prop?: WithDefault<ReadonlyArray<'small' | 'large'>, 'small'>;
+  }>;
+
+  // ImageSource props
+  image_required: Readonly<{prop: ImageSource}>;
+  image_optional_key: Readonly<{prop?: ImageSource}>;
+  image_optional_value: Readonly<{prop: ImageSource | null | undefined}>;
+  image_optional_both: Readonly<{prop?: ImageSource | null | undefined}>;
+
+  // ColorValue props
+  color_required: Readonly<{prop: ColorValue}>;
+  color_optional_key: Readonly<{prop?: ColorValue}>;
+  color_optional_value: Readonly<{prop: ColorValue | null | undefined}>;
+  color_optional_both: Readonly<{prop?: ColorValue | null | undefined}>;
+
+  // ProcessedColorValue props
+  processed_color_required: Readonly<{prop: ProcessedColorValue}>;
+  processed_color_optional_key: Readonly<{prop?: ProcessedColorValue}>;
+  processed_color_optional_value: Readonly<{
+    prop: ProcessedColorValue | null | undefined;
+  }>;
+  processed_color_optional_both: Readonly<{
+    prop?: ProcessedColorValue | null | undefined;
+  }>;
+
+  // PointValue props
+  point_required: Readonly<{prop: PointValue}>;
+  point_optional_key: Readonly<{prop?: PointValue}>;
+  point_optional_value: Readonly<{prop: PointValue | null | undefined}>;
+  point_optional_both: Readonly<{prop?: PointValue | null | undefined}>;
+
+  // EdgeInsetsValue props
+  insets_required: Readonly<{prop: EdgeInsetsValue}>;
+  insets_optional_key: Readonly<{prop?: EdgeInsetsValue}>;
+  insets_optional_value: Readonly<{prop: EdgeInsetsValue | null | undefined}>;
+  insets_optional_both: Readonly<{prop?: EdgeInsetsValue | null | undefined}>;
+
+  // DimensionValue props
+  dimension_required: Readonly<{prop: DimensionValue}>;
+  dimension_optional_key: Readonly<{prop?: DimensionValue}>;
+  dimension_optional_value: Readonly<{prop: DimensionValue | null | undefined}>;
+  dimension_optional_both: Readonly<{prop?: DimensionValue | null | undefined}>;
+
+  // Nested object props
+  object_required: Readonly<{prop: Readonly<{nestedProp: string}>}>;
+  object_optional_key?: Readonly<{prop: Readonly<{nestedProp: string}>}>;
+  object_optional_value: Readonly<{
+    prop: Readonly<{nestedProp: string}>;
+  }> | null | undefined;
+  object_optional_both?: Readonly<{
+    prop: Readonly<{nestedProp: string}>;
+  }> | null | undefined;
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {CodegenTypes, HostComponent} from 'react-native';
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+
+export interface ModuleProps extends ViewProps {
+  // No Props
+
+  // Events
+  onDirectEventDefinedInline: CodegenTypes.DirectEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>
+  >;
+
+  onDirectEventDefinedInlineOptionalKey?: (CodegenTypes.DirectEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>
+  >);
+
+  onDirectEventDefinedInlineOptionalValue: (CodegenTypes.DirectEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>
+  >) | null | undefined;
+
+  onDirectEventDefinedInlineOptionalBoth?: (CodegenTypes.DirectEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>
+  > | null | undefined);
+
+  onDirectEventDefinedInlineWithPaperName?: CodegenTypes.DirectEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>,
+    'paperDirectEventDefinedInlineWithPaperName'
+  > | null | undefined;
+
+  onBubblingEventDefinedInline: CodegenTypes.BubblingEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>
+  >;
+
+  onBubblingEventDefinedInlineOptionalKey?: CodegenTypes.BubblingEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>
+  >;
+
+  onBubblingEventDefinedInlineOptionalValue: CodegenTypes.BubblingEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>
+  > | null | undefined;
+
+  onBubblingEventDefinedInlineOptionalBoth?: CodegenTypes.BubblingEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>
+  > | null | undefined;
+
+  onBubblingEventDefinedInlineWithPaperName?: CodegenTypes.BubblingEventHandler<
+    Readonly<{
+      ${NAMESPACED_EVENT_DEFINITION}
+    }>,
+    'paperBubblingEventDefinedInlineWithPaperName'
+  > | null | undefined;
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_EVENTS_DEFINED_AS_NULL_INLINE = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+export interface ModuleProps extends ViewProps {
+  // No props
+
+  // Events defined inline
+  onDirectEventDefinedInlineNull: CodegenTypes.DirectEventHandler<null>;
+  onDirectEventDefinedInlineNullOptionalKey?: CodegenTypes.DirectEventHandler<null>;
+  onDirectEventDefinedInlineNullOptionalValue: CodegenTypes.DirectEventHandler<null> | null | undefined;
+  onDirectEventDefinedInlineNullOptionalBoth?: CodegenTypes.DirectEventHandler<null>;
+  onDirectEventDefinedInlineNullWithPaperName?: CodegenTypes.DirectEventHandler<
+    null,
+    'paperDirectEventDefinedInlineNullWithPaperName'
+  > | null | undefined;
+
+  onBubblingEventDefinedInlineNull: CodegenTypes.BubblingEventHandler<undefined>;
+  onBubblingEventDefinedInlineNullOptionalKey?: CodegenTypes.BubblingEventHandler<undefined>;
+  onBubblingEventDefinedInlineNullOptionalValue: CodegenTypes.BubblingEventHandler<undefined> | null | undefined;
+  onBubblingEventDefinedInlineNullOptionalBoth?: CodegenTypes.BubblingEventHandler<undefined> | null | undefined;
+  onBubblingEventDefinedInlineNullWithPaperName?: CodegenTypes.BubblingEventHandler<
+  undefined,
+    'paperBubblingEventDefinedInlineNullWithPaperName'
+  > | null | undefined;
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_PROPS_AND_EVENTS_TYPES_EXPORTED = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenConfig, HostComponent} from 'react-native';
+
+export type EventInFile = Readonly<{
+  ${NAMESPACED_EVENT_DEFINITION}
+}>;
+
+export interface ModuleProps extends ViewProps {
+  // No props
+
+  // Events defined inline
+  onBubblingEventDefinedInline: CodegenTypes.BubblingEventHandler<EventInFile>;
+  onBubblingEventDefinedInlineWithPaperName: CodegenTypes.BubblingEventHandler<
+    EventInFile,
+    'paperBubblingEventDefinedInlineWithPaperName'
+  >;
+  onDirectEventDefinedInline: CodegenTypes.DirectEventHandler<EventInFile>;
+  onDirectEventDefinedInlineWithPaperName: CodegenTypes.DirectEventHandler<
+    EventInFile,
+    'paperDirectEventDefinedInlineWithPaperName'
+  >;
+}
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as HostComponent<ModuleProps>;
+`;
+
+const NAMESPACED_COMMANDS_DEFINED_WITH_ALL_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+ const codegenNativeCommands = require('codegenNativeCommands');
+ const codegenNativeComponent = require('codegenNativeComponent');
+
+ import type {RootTag} from 'RCTExport';
+ import type {ViewProps} from 'ViewPropTypes';
+ import type {CodegenTypes, HostComponent} from 'react-native';
+
+
+export interface ModuleProps extends ViewProps {
+  // No props or events
+}
+
+type NativeType = HostComponent<ModuleProps>;
+
+ interface NativeCommands {
+   readonly handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
+   readonly hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: CodegenTypes.Int32, y: CodegenTypes.Int32) => void;
+   scrollTo(
+     viewRef: React.ElementRef<NativeType>,
+     x: CodegenTypes.Float,
+     y: CodegenTypes.Int32,
+     z: CodegenTypes.Double,
+     animated: boolean,
+   ): void;
+   readonly arrayArgs: (
+    viewRef: React.ElementRef<NativeType>,
+    booleanArray: ReadOnlyArray<boolean>,
+    stringArray: ReadOnlyArray<string>,
+    floatArray: ReadOnlyArray<CodegenTypes.Float>,
+    intArray: ReadOnlyArray<CodegenTypes.Int32>,
+    doubleArray: ReadOnlyArray<CodegenTypes.Double>,
+  ) => void;
+ }
+
+ export const Commands = codegenNativeCommands<NativeCommands>({
+   supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo', 'arrayArgs'],
+ });
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as NativeType;
+`;
+
+const NAMESPACED_COMMANDS_WITH_EXTERNAL_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+export type Boolean = boolean;
+export type Int = CodegenTypes.Int32;
+export type Void = void;
+export type Locations = {
+  x: number,
+  y: number,
+}
+
+export interface ModuleProps extends ViewProps {
+  // No props or events
+}
+
+type NativeType = HostComponent<ModuleProps>;
+
+export type ScrollTo = (
+  viewRef: React.ElementRef<NativeType>,
+  y: Int,
+  animated: Boolean,
+) => Void;
+export type AddOverlays = (
+  viewRef: React.ElementRef<NativeType>,
+  overlayColorsReadOnly: ReadOnlyArray<string>,
+  overlayColorsArray: Array<string>,
+  overlayColorsArrayAnnotation: string[],
+  overlayLocations: ReadOnlyArray<Locations>,
+) => Void;
+
+interface NativeCommands {
+  readonly scrollTo: ScrollTo;
+  readonly addOverlays: AddOverlays;
+}
+
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['scrollTo', 'addOverlays'],
+});
+
+export default codegenNativeComponent<ModuleProps>('Module') as NativeType;
+
+`;
+
+const NAMESPACED_COMMANDS_EVENTS_TYPES_EXPORTED = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenTypes, HostComponent} from 'react-native';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type EventInFile = Readonly<{
+  ${NAMESPACED_EVENT_DEFINITION}
+}>;
+
+export type Boolean = boolean;
+export type Int = CodegenTypes.Int32;
+export type Void = void;
+
+export interface ModuleProps extends ViewProps {
+  // No props
+
+  // Events defined inline
+  onBubblingEventDefinedInline: CodegenTypes.BubblingEventHandler<EventInFile>,
+  onBubblingEventDefinedInlineWithPaperName: CodegenTypes.BubblingEventHandler<EventInFile, 'paperBubblingEventDefinedInlineWithPaperName'>,
+  onDirectEventDefinedInline: CodegenTypes.DirectEventHandler<EventInFile>,
+  onDirectEventDefinedInlineWithPaperName: CodegenTypes.DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
+}
+
+// Add state here
+export interface ModuleNativeState {
+  boolean_required: boolean,
+  boolean_optional_key?: CodegenTypes.WithDefault<boolean, true>,
+  boolean_optional_both?: CodegenTypes.WithDefault<boolean, true>,
+}
+
+type NativeType = HostComponent<ModuleProps>;
+
+export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void;
+
+interface NativeCommands {
+  readonly scrollTo: ScrollTo;
+}
+
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['scrollTo']
+});
+
+export default codegenNativeComponent<ModuleProps>(
+  'Module',
+) as NativeType;
+`;
+
+const NAMESPACED_PROPS_AND_EVENTS_WITH_INTERFACES = `
+import type {ViewProps} from 'ViewPropTypes';
+import type {CodegenConfig, HostComponent} from 'react-native';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export interface Base1 {
+  readonly x: string;
+}
+
+export interface Base2 {
+  readonly y: CodegenTypes.Int32;
+}
+
+export interface Derived extends Base1, Base2 {
+  readonly z: boolean;
+}
+
+export interface ModuleProps extends ViewProps {
+  // Props
+  ordinary_prop: Derived;
+  readonly_prop: Readonly<Derived>;
+  ordinary_array_prop?: readonly Derived[];
+  readonly_array_prop?: readonly Readonly<Derived>[];
+  ordinary_nested_array_prop?: readonly Derived[][];
+  readonly_nested_array_prop?: readonly Readonly<Derived>[][];
+
+  // Events
+  onDirect: CodegenTypes.DirectEventHandler<Derived>;
+  onBubbling: CodegenTypes.BubblingEventHandler<Readonly<Derived>>;
+}
+
+export default codegenNativeComponent<ModuleProps>('Module', {
+  interfaceOnly: true,
+  paperComponentName: 'RCTModule',
+}) as HostComponent<ModuleProps>;
+`;
+
 module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
@@ -1249,4 +2380,18 @@ module.exports = {
   PROPS_AS_EXTERNAL_TYPES,
   COMMANDS_WITH_EXTERNAL_TYPES,
   PROPS_AND_EVENTS_WITH_INTERFACES,
+
+  NAMESPACED_ALL_PROP_TYPES_NO_EVENTS,
+  NAMESPACED_ARRAY_PROP_TYPES_NO_EVENTS,
+  NAMESPACED_ARRAY2_PROP_TYPES_NO_EVENTS,
+  NAMESPACED_OBJECT_PROP_TYPES_NO_EVENTS,
+  NAMESPACED_ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,
+  NAMESPACED_ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST,
+  NAMESPACED_EVENTS_DEFINED_INLINE_WITH_ALL_TYPES,
+  NAMESPACED_EVENTS_DEFINED_AS_NULL_INLINE,
+  NAMESPACED_PROPS_AND_EVENTS_TYPES_EXPORTED,
+  NAMESPACED_COMMANDS_EVENTS_TYPES_EXPORTED,
+  NAMESPACED_COMMANDS_DEFINED_WITH_ALL_TYPES,
+  NAMESPACED_COMMANDS_WITH_EXTERNAL_TYPES,
+  NAMESPACED_PROPS_AND_EVENTS_WITH_INTERFACES,
 };

@@ -10,65 +10,49 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
+import * as React from 'react';
+import {useEffect, useState} from 'react';
+import {NativeModules, StyleSheet, Text, View} from 'react-native';
 
-const {Text, View, StyleSheet} = ReactNative;
-const {TestModule} = ReactNative.NativeModules;
+const {TestModule} = NativeModules;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   shouldThrow?: boolean,
   waitOneFrame?: boolean,
-|}>;
+}>;
 
-type State = {|
-  done: boolean,
-|};
+function IntegrationTestHarnessTest(props: Props): React.Node {
+  const [done, setDone] = useState(false);
 
-class IntegrationTestHarnessTest extends React.Component<Props, State> {
-  state: State = {
-    done: false,
-  };
-
-  componentDidMount() {
-    if (this.props.waitOneFrame) {
-      requestAnimationFrame(this.runTest);
-    } else {
-      this.runTest();
-    }
-  }
-
-  runTest: () => void = () => {
-    if (this.props.shouldThrow) {
-      throw new Error('Throwing error because shouldThrow');
-    }
-    if (!TestModule) {
-      throw new Error('RCTTestModule is not registered.');
-    } else if (!TestModule.markTestCompleted) {
-      throw new Error('RCTTestModule.markTestCompleted not defined.');
-    }
-    this.setState({done: true}, () => {
+  useEffect(() => {
+    const runTest = () => {
+      if (props.shouldThrow) {
+        throw new Error('Throwing error because shouldThrow');
+      }
+      if (!TestModule) {
+        throw new Error('RCTTestModule is not registered.');
+      } else if (!TestModule.markTestCompleted) {
+        throw new Error('RCTTestModule.markTestCompleted not defined.');
+      }
+      setDone(true);
       TestModule.markTestCompleted();
-    });
-  };
+    };
 
-  render(): React.Node {
-    return (
-      <View style={styles.container}>
-        <Text>
-          {
-            /* $FlowFixMe[incompatible-type] (>=0.54.0 site=react_native_fb,react_
-             * native_oss) This comment suppresses an error found when Flow v0.54
-             * was deployed. To see the error delete this comment and run Flow.
-             */
-            // $FlowFixMe[unsafe-addition]
-            this.constructor.displayName + ': '
-          }
-          {this.state.done ? 'Done' : 'Testing...'}
-        </Text>
-      </View>
-    );
-  }
+    if (props.waitOneFrame) {
+      requestAnimationFrame(runTest);
+    } else {
+      runTest();
+    }
+  }, [props.shouldThrow, props.waitOneFrame]);
+
+  return (
+    <View style={styles.container}>
+      <Text>
+        {IntegrationTestHarnessTest.name + ': '}
+        {done ? 'Done' : 'Testing...'}
+      </Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -78,6 +62,4 @@ const styles = StyleSheet.create({
   },
 });
 
-IntegrationTestHarnessTest.displayName = 'IntegrationTestHarnessTest';
-
-module.exports = IntegrationTestHarnessTest;
+export default IntegrationTestHarnessTest;

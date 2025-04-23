@@ -8,10 +8,12 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
+#import "RCTJSRuntimeConfiguratorProtocol.h"
 
 @protocol RCTCxxBridgeDelegate;
 @protocol RCTComponentViewFactoryComponentProvider;
 @protocol RCTTurboModuleManagerDelegate;
+@protocol RCTHostDelegate;
 @class RCTBridge;
 @class RCTHost;
 @class RCTRootView;
@@ -30,13 +32,11 @@ typedef NSURL *_Nullable (^RCTBundleURLBlock)(void);
 typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
 typedef NSDictionary<NSString *, Class> *_Nonnull (^RCTExtraLazyModuleClassesForBridge)(RCTBridge *bridge);
 typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *moduleName);
-typedef void (^RCTHostDidStartBlock)(RCTHost *host);
-typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
-    RCTHost *host,
-    NSArray<NSDictionary<NSString *, id> *> *stack,
-    NSString *message,
-    NSUInteger exceptionId,
-    BOOL isFatal);
+typedef void (^RCTLoadSourceForBridgeWithProgressBlock)(
+    RCTBridge *bridge,
+    RCTSourceLoadProgressBlock onProgress,
+    RCTSourceLoadBlock loadCallback);
+typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBlock loadCallback);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -65,12 +65,16 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
                         newArchEnabled:(BOOL)newArchEnabled
                     turboModuleEnabled:(BOOL)turboModuleEnabled
-                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER;
+                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER __deprecated;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated;
+
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock newArchEnabled:(BOOL)newArchEnabled;
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled;
 
 /**
  * Block that allows to override logic of creating root view instance.
@@ -106,6 +110,8 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
  * @parameter: rootView - The root view to customize.
  */
 @property (nonatomic, nullable) RCTCustomizeRootViewBlock customizeRootView;
+
+@property (nonatomic, weak, nullable) id<RCTJSRuntimeConfiguratorProtocol> jsRuntimeConfiguratorDelegate;
 
 #pragma mark - RCTBridgeDelegate blocks
 
@@ -148,20 +154,17 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
 @property (nonatomic, nullable) RCTBridgeDidNotFindModuleBlock bridgeDidNotFindModule;
 
 /**
- * Called when `RCTHost` started.
- * @parameter: host - The started `RCTHost`.
+ * The bridge will automatically attempt to load the JS source code from the
+ * location specified by the `sourceURLForBridge:` method, however, if you want
+ * to handle loading the JS yourself, you can do so by setting this property.
  */
-@property (nonatomic, nullable) RCTHostDidStartBlock hostDidStartBlock;
+@property (nonatomic, nullable) RCTLoadSourceForBridgeWithProgressBlock loadSourceForBridgeWithProgress;
 
 /**
- * Called when `RCTHost` received JS error.
- * @parameter: host - `RCTHost` which received js error.
- * @parameter: stack - JS error stack.
- * @parameter: message - Error message.
- * @parameter: exceptionId - Exception ID.
- * @parameter: isFatal - YES if JS error is fatal.
+ * Similar to loadSourceForBridgeWithProgress but without progress
+ * reporting.
  */
-@property (nonatomic, nullable) RCTHostDidReceiveJSErrorStackBlock hostDidReceiveJSErrorStackBlock;
+@property (nonatomic, nullable) RCTLoadSourceForBridgeBlock loadSourceForBridge;
 
 @end
 
@@ -187,6 +190,10 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration;
 
+- (instancetype)initWithTurboModuleDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                               hostDelegate:(id<RCTHostDelegate>)hostdelegate
+                              configuration:(RCTRootViewFactoryConfiguration *)configuration;
+
 /**
  * This method can be used to create new RCTRootViews on demand.
  *
@@ -204,6 +211,15 @@ typedef void (^RCTHostDidReceiveJSErrorStackBlock)(
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName;
 
 #pragma mark - RCTRootViewFactory Helpers
+
+/**
+ * Initialize React Host/Bridge without creating a view.
+ *
+ * Use it to speed up later viewWithModuleName: calls.
+ *
+ * @parameter: launchOptions  - a dictionary with a set of options.
+ */
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions;
 
 - (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 

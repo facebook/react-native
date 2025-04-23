@@ -14,8 +14,9 @@ import typeof INativeAppearance from './NativeAppearance';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import EventEmitter from '../vendor/emitter/EventEmitter';
-import {isAsyncDebugging} from './DebugEnvironment';
 import invariant from 'invariant';
+
+export type {AppearancePreferences};
 
 type Appearance = {
   colorScheme: ?ColorSchemeName,
@@ -74,13 +75,6 @@ function getState(): $NonMaybeType<typeof lazyState> {
  * the `useColorScheme` hook.
  */
 export function getColorScheme(): ?ColorSchemeName {
-  if (__DEV__) {
-    if (isAsyncDebugging) {
-      // Hard code light theme when using the async debugger as
-      // sync calls aren't supported
-      return 'light';
-    }
-  }
   let colorScheme = null;
   const state = getState();
   const {NativeAppearance} = state;
@@ -105,7 +99,9 @@ export function setColorScheme(colorScheme: ?ColorSchemeName): void {
   const {NativeAppearance} = state;
   if (NativeAppearance != null) {
     NativeAppearance.setColorScheme(colorScheme ?? 'unspecified');
-    state.appearance = {colorScheme};
+    state.appearance = {
+      colorScheme: toColorScheme(NativeAppearance.getColorScheme()),
+    };
   }
 }
 

@@ -11,10 +11,10 @@
 'use strict';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
-import React from 'react';
+import * as React from 'react';
 
 const render = require('../../../jest/renderer');
-const Text = require('../Text');
+const Text = require('../Text').default;
 
 jest.unmock('../Text');
 jest.unmock('../TextNativeComponent');
@@ -36,8 +36,6 @@ describe('Text', () => {
         accessible={true}
         allowFontScaling={true}
         ellipsizeMode="tail"
-        isHighlighted={false}
-        selectionColor={null}
       />
     `);
   });
@@ -62,9 +60,7 @@ describe('Text compat with web', () => {
         accessible={true}
         allowFontScaling={true}
         ellipsizeMode="tail"
-        isHighlighted={false}
         nativeID="id"
-        selectionColor={null}
         tabIndex={0}
         testID="testID"
       />
@@ -178,9 +174,7 @@ describe('Text compat with web', () => {
         aria-valuetext="3"
         disabled={true}
         ellipsizeMode="tail"
-        isHighlighted={false}
         role="main"
-        selectionColor={null}
       />
     `);
   });
@@ -202,9 +196,7 @@ describe('Text compat with web', () => {
         accessible={true}
         allowFontScaling={true}
         ellipsizeMode="tail"
-        isHighlighted={false}
         selectable={false}
-        selectionColor={null}
         style={
           Object {
             "backgroundColor": "white",

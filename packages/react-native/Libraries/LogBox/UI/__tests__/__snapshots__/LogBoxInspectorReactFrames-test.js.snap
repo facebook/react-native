@@ -38,6 +38,7 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames with ful
         }
       >
         <Text
+          id="logbox_component_stack_frame_text"
           style={
             Object {
               "color": "rgba(255, 255, 255, 1)",
@@ -174,6 +175,7 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames with mor
         }
       >
         <Text
+          id="logbox_component_stack_frame_text"
           style={
             Object {
               "color": "rgba(255, 255, 255, 1)",
@@ -266,6 +268,7 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames with mor
         }
       >
         <Text
+          id="logbox_component_stack_frame_text"
           style={
             Object {
               "color": "rgba(255, 255, 255, 1)",
@@ -358,6 +361,7 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames with mor
         }
       >
         <Text
+          id="logbox_component_stack_frame_text"
           style={
             Object {
               "color": "rgba(255, 255, 255, 1)",
@@ -496,6 +500,7 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames with par
         }
       >
         <Text
+          id="logbox_component_stack_frame_text"
           style={
             Object {
               "color": "rgba(255, 255, 255, 1)",
@@ -632,6 +637,7 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames without 
         }
       >
         <Text
+          id="logbox_component_stack_frame_text"
           style={
             Object {
               "color": "rgba(255, 255, 255, 1)",

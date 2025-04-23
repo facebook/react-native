@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Schedule a mounting transaction to be performed on the main thread.
  * Can be called from any thread.
  */
-- (void)scheduleTransaction:(facebook::react::MountingCoordinator::Shared)mountingCoordinator;
+- (void)scheduleTransaction:(std::shared_ptr<const facebook::react::MountingCoordinator>)mountingCoordinator;
 
 /**
  * Dispatch a command to be performed on the main thread.

@@ -36,4 +36,30 @@ folly::dynamic mergeDynamicProps(
   return result;
 }
 
+folly::dynamic diffDynamicProps(
+    const folly::dynamic& oldProps,
+    const folly::dynamic& newProps) {
+  folly::dynamic result = folly::dynamic::object();
+  if (!oldProps.isObject() || !newProps.isObject()) {
+    return result;
+  }
+  for (const auto& oldPair : oldProps.items()) {
+    const auto& newIterator = newProps.find(oldPair.first);
+    if (newIterator == newProps.items().end()) {
+      // Prop removed.
+      result[oldPair.first] = nullptr;
+    } else if (oldPair.second != newIterator->second) {
+      // Prop changed.
+      result[oldPair.first] = newIterator->second;
+    }
+  }
+  for (const auto& newIterator : newProps.items()) {
+    if (oldProps.find(newIterator.first) == oldProps.items().end()) {
+      // Prop added.
+      result[newIterator.first] = newIterator.second;
+    }
+  }
+  return result;
+}
+
 } // namespace facebook::react

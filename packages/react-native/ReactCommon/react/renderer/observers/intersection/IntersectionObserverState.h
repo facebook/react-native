@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/graphics/Float.h>
+#include <optional>
 
 namespace {
 enum class IntersectionObserverStateType {
@@ -24,6 +25,9 @@ class IntersectionObserverState {
   static IntersectionObserverState Initial();
   static IntersectionObserverState NotIntersecting();
   static IntersectionObserverState Intersecting(Float threshold);
+  static IntersectionObserverState Intersecting(
+      Float threshold,
+      Float rootThreshold);
 
   bool isIntersecting() const;
 
@@ -32,15 +36,21 @@ class IntersectionObserverState {
 
  private:
   explicit IntersectionObserverState(IntersectionObserverStateType state);
+
   IntersectionObserverState(
       IntersectionObserverStateType state,
-      Float threshold);
+      Float threshold,
+      Float rootThreshold);
 
   IntersectionObserverStateType state_;
 
   // This value is only relevant if the state is
   // IntersectionObserverStateType::Intersecting.
   Float threshold_{};
+
+  // This value is only relevant if the state is
+  // IntersectionObserverStateType::Intersecting.
+  std::optional<Float> rootThreshold_{};
 };
 
 } // namespace facebook::react

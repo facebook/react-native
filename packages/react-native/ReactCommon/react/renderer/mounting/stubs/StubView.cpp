@@ -23,6 +23,7 @@ StubView::operator ShadowView() const {
   shadowView.eventEmitter = eventEmitter;
   shadowView.layoutMetrics = layoutMetrics;
   shadowView.state = state;
+  shadowView.traits = traits;
   return shadowView;
 }
 
@@ -35,6 +36,7 @@ void StubView::update(const ShadowView& shadowView) {
   eventEmitter = shadowView.eventEmitter;
   layoutMetrics = shadowView.layoutMetrics;
   state = shadowView.state;
+  traits = shadowView.traits;
 }
 
 bool operator==(const StubView& lhs, const StubView& rhs) {

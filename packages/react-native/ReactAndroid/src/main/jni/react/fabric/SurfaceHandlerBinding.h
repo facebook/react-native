@@ -24,13 +24,9 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
 
   SurfaceHandlerBinding(SurfaceId surfaceId, const std::string& moduleName);
 
-  void start();
-  void stop();
-
   void setDisplayMode(jint mode);
 
   jint getSurfaceId();
-  void setSurfaceId(jint surfaceId);
   jni::local_ref<jstring> getModuleName();
 
   jboolean isRunning();
@@ -44,20 +40,18 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
       jfloat offsetY,
       jboolean doLeftAndRightSwapInRTL,
       jboolean isRTL,
-      jfloat pixelDensity);
+      jfloat pixelDensity,
+      jfloat fontScale);
 
   void setProps(NativeMap* props);
 
   const SurfaceHandler& getSurfaceHandler();
 
  private:
-  mutable std::shared_mutex lifecycleMutex_;
   const SurfaceHandler surfaceHandler_;
 
-  jni::alias_ref<SurfaceHandlerBinding::jhybriddata> jhybridobject_;
-
-  static jni::local_ref<jhybriddata> initHybrid(
-      jni::alias_ref<jclass>,
+  static void initHybrid(
+      jni::alias_ref<jhybridobject> jobj,
       jint surfaceId,
       jni::alias_ref<jstring> moduleName);
 };

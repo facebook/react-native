@@ -4,36 +4,35 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedValue from '../nodes/AnimatedValue';
 import type {AnimationConfig, EndCallback} from './Animation';
 
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import Animation from './Animation';
 
-export type DecayAnimationConfig = {
+export type DecayAnimationConfig = $ReadOnly<{
   ...AnimationConfig,
   velocity:
     | number
-    | {
+    | $ReadOnly<{
         x: number,
         y: number,
         ...
-      },
+      }>,
   deceleration?: number,
-};
+  ...
+}>;
 
-export type DecayAnimationConfigSingle = {
+export type DecayAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
   velocity: number,
   deceleration?: number,
-};
+  ...
+}>;
 
 export default class DecayAnimation extends Animation {
   _startTime: number;
@@ -42,33 +41,32 @@ export default class DecayAnimation extends Animation {
   _deceleration: number;
   _velocity: number;
   _onUpdate: (value: number) => void;
-  _animationFrame: any;
-  _useNativeDriver: boolean;
+  _animationFrame: ?AnimationFrameID;
   _platformConfig: ?PlatformConfig;
 
   constructor(config: DecayAnimationConfigSingle) {
-    super();
+    super(config);
+
     this._deceleration = config.deceleration ?? 0.998;
     this._velocity = config.velocity;
-    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this._platformConfig = config.platformConfig;
-    this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
-    this.__iterations = config.iterations ?? 1;
   }
 
-  __getNativeAnimationConfig(): {|
+  __getNativeAnimationConfig(): $ReadOnly<{
     deceleration: number,
     iterations: number,
     platformConfig: ?PlatformConfig,
-    type: $TEMPORARY$string<'decay'>,
+    type: 'decay',
     velocity: number,
-  |} {
+    ...
+  }> {
     return {
       type: 'decay',
       deceleration: this._deceleration,
       velocity: this._velocity,
       iterations: this.__iterations,
       platformConfig: this._platformConfig,
+      debugID: this.__getDebugID(),
     };
   }
 
@@ -79,26 +77,16 @@ export default class DecayAnimation extends Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {
-    this.__active = true;
+    super.start(fromValue, onUpdate, onEnd, previousAnimation, animatedValue);
+
     this._lastValue = fromValue;
     this._fromValue = fromValue;
     this._onUpdate = onUpdate;
-    this.__onEnd = onEnd;
     this._startTime = Date.now();
 
-    if (!this._useNativeDriver && animatedValue.__isNative === true) {
-      throw new Error(
-        'Attempting to run JS driven animation on animated node ' +
-          'that has been moved to "native" earlier by starting an ' +
-          'animation with `useNativeDriver: true`',
-      );
-    }
-
-    if (this._useNativeDriver) {
-      this.__startNativeAnimation(animatedValue);
-    } else {
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+    const useNativeDriver = this.__startAnimationIfNative(animatedValue);
+    if (!useNativeDriver) {
+      this._animationFrame = requestAnimationFrame(() => this.onUpdate());
     }
   }
 
@@ -113,7 +101,7 @@ export default class DecayAnimation extends Animation {
     this._onUpdate(value);
 
     if (Math.abs(this._lastValue - value) < 0.1) {
-      this.__debouncedOnEnd({finished: true});
+      this.__notifyAnimationEnd({finished: true});
       return;
     }
 
@@ -126,8 +114,9 @@ export default class DecayAnimation extends Animation {
 
   stop(): void {
     super.stop();
-    this.__active = false;
-    global.cancelAnimationFrame(this._animationFrame);
-    this.__debouncedOnEnd({finished: false});
+    if (this._animationFrame != null) {
+      global.cancelAnimationFrame(this._animationFrame);
+    }
+    this.__notifyAnimationEnd({finished: false});
   }
 }

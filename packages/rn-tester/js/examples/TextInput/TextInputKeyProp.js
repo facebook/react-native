@@ -10,9 +10,8 @@
 
 'use strict';
 
-const React = require('react');
-const {TextInput, View} = require('react-native');
-const {useEffect, useState} = React;
+import React, {useEffect, useState} from 'react';
+import {TextInput, View} from 'react-native';
 
 function TextInputKeyProp() {
   const [startKey, setStartKey] = useState(0);

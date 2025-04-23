@@ -34,7 +34,7 @@ import java.util.WeakHashMap
  * a new one with the style given.
  */
 @ReactModule(name = ReactProgressBarViewManager.REACT_CLASS)
-public class ReactProgressBarViewManager :
+internal class ReactProgressBarViewManager :
     BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode>(),
     AndroidProgressBarManagerInterface<ProgressBarContainerView> {
   private val measuredStyles = WeakHashMap<Int, Pair<Int, Int>>()
@@ -42,60 +42,60 @@ public class ReactProgressBarViewManager :
   private val delegate: ViewManagerDelegate<ProgressBarContainerView> =
       AndroidProgressBarManagerDelegate(this)
 
-  public override fun getName(): String = REACT_CLASS
+  override fun getName(): String = REACT_CLASS
 
-  protected override fun createViewInstance(context: ThemedReactContext): ProgressBarContainerView {
+  override fun createViewInstance(context: ThemedReactContext): ProgressBarContainerView {
     return ProgressBarContainerView(context)
   }
 
   @ReactProp(name = PROP_STYLE)
-  public override fun setStyleAttr(view: ProgressBarContainerView, styleName: String?) {
+  override fun setStyleAttr(view: ProgressBarContainerView, styleName: String?) {
     view.setStyle(styleName)
   }
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
-  public override fun setColor(view: ProgressBarContainerView, color: Int?) {
+  override fun setColor(view: ProgressBarContainerView, color: Int?) {
     view.color = color
   }
 
   @ReactProp(name = PROP_INDETERMINATE)
-  public override fun setIndeterminate(view: ProgressBarContainerView, indeterminate: Boolean) {
+  override fun setIndeterminate(view: ProgressBarContainerView, indeterminate: Boolean) {
     view.indeterminate = indeterminate
   }
 
   @ReactProp(name = PROP_PROGRESS)
-  public override fun setProgress(view: ProgressBarContainerView, progress: Double) {
+  override fun setProgress(view: ProgressBarContainerView, progress: Double) {
     view.progress = progress
   }
 
   @ReactProp(name = PROP_ANIMATING)
-  public override fun setAnimating(view: ProgressBarContainerView, animating: Boolean) {
+  override fun setAnimating(view: ProgressBarContainerView, animating: Boolean) {
     view.animating = animating
   }
 
-  public override fun setTestID(view: ProgressBarContainerView, value: String?) {
+  override fun setTestID(view: ProgressBarContainerView, value: String?) {
     super.setTestId(view, value)
   }
 
   @ReactProp(name = PROP_ATTR)
-  public override fun setTypeAttr(view: ProgressBarContainerView, value: String?): Unit = Unit
+  override fun setTypeAttr(view: ProgressBarContainerView, value: String?): Unit = Unit
 
-  public override fun createShadowNodeInstance(): ProgressBarShadowNode = ProgressBarShadowNode()
+  override fun createShadowNodeInstance(): ProgressBarShadowNode = ProgressBarShadowNode()
 
-  public override fun getShadowNodeClass(): Class<ProgressBarShadowNode> =
+  override fun getShadowNodeClass(): Class<ProgressBarShadowNode> =
       ProgressBarShadowNode::class.java
 
-  public override fun updateExtraData(root: ProgressBarContainerView, extraData: Any) {
+  override fun updateExtraData(root: ProgressBarContainerView, extraData: Any) {
     // do nothing
   }
 
-  protected override fun onAfterUpdateTransaction(view: ProgressBarContainerView) {
+  override fun onAfterUpdateTransaction(view: ProgressBarContainerView) {
     view.apply()
   }
 
-  protected override fun getDelegate(): ViewManagerDelegate<ProgressBarContainerView> = delegate
+  override fun getDelegate(): ViewManagerDelegate<ProgressBarContainerView> = delegate
 
-  public override fun measure(
+  override fun measure(
       context: Context,
       localData: ReadableMap,
       props: ReadableMap,
@@ -119,15 +119,15 @@ public class ReactProgressBarViewManager :
         toDIPFromPixel(value.first.toFloat()), toDIPFromPixel(value.second.toFloat()))
   }
 
-  public companion object {
-    public const val REACT_CLASS: String = "AndroidProgressBar"
+  companion object {
+    const val REACT_CLASS: String = "AndroidProgressBar"
 
-    internal const val PROP_STYLE: String = "styleAttr"
-    internal const val PROP_ATTR: String = "typeAttr"
-    internal const val PROP_INDETERMINATE: String = "indeterminate"
-    internal const val PROP_PROGRESS: String = "progress"
-    internal const val PROP_ANIMATING: String = "animating"
-    internal const val DEFAULT_STYLE: String = "Normal"
+    const val PROP_STYLE: String = "styleAttr"
+    const val PROP_ATTR: String = "typeAttr"
+    const val PROP_INDETERMINATE: String = "indeterminate"
+    const val PROP_PROGRESS: String = "progress"
+    const val PROP_ANIMATING: String = "animating"
+    const val DEFAULT_STYLE: String = "Normal"
 
     private val progressBarCtorLock = Any()
 
@@ -136,7 +136,7 @@ public class ReactProgressBarViewManager :
      * ProgressBar constructor that may cause crashes when two ProgressBars are constructed at the
      * same time on two different threads. This static ctor wrapper protects against that.
      */
-    public fun createProgressBar(context: Context?, style: Int): ProgressBar {
+    fun createProgressBar(context: Context?, style: Int): ProgressBar {
       synchronized(progressBarCtorLock) {
         return ProgressBar(context, null, style)
       }

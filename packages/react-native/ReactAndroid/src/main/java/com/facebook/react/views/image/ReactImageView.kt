@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@file:Suppress("DEPRECATION") // As we depend on ReactFeatureFlags still
+@file:Suppress("DEPRECATION") // GenericDraweeView is deprecated
 
 package com.facebook.react.views.image
 
@@ -24,22 +24,24 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.facebook.common.references.CloseableReference
 import com.facebook.common.util.UriUtil
+import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
 import com.facebook.drawee.controller.ControllerListener
 import com.facebook.drawee.controller.ForwardingControllerListener
 import com.facebook.drawee.drawable.AutoRotateDrawable
-import com.facebook.drawee.drawable.RoundedColorDrawable
 import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder
 import com.facebook.drawee.generic.RoundingParams
 import com.facebook.drawee.view.GenericDraweeView
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory
 import com.facebook.imagepipeline.common.ResizeOptions
+import com.facebook.imagepipeline.core.DownsampleMode
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.postprocessors.IterativeBoxBlurPostProcessor
 import com.facebook.imagepipeline.request.BasePostprocessor
 import com.facebook.imagepipeline.request.ImageRequest
+import com.facebook.imagepipeline.request.ImageRequest.RequestLevel
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.imagepipeline.request.Postprocessor
 import com.facebook.react.bridge.ReactContext
@@ -48,18 +50,14 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
-import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.enableBackgroundStyleApplicator
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.loadVectorDrawablesOnImages
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useNewReactImageViewBackgroundDrawing
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
+import com.facebook.react.modules.fresco.ImageCacheControl
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.uimanager.BackgroundStyleApplicator
-import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
-import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -76,8 +74,6 @@ import com.facebook.react.views.imagehelper.ImageSource
 import com.facebook.react.views.imagehelper.ImageSource.Companion.getTransparentBitmapImageSource
 import com.facebook.react.views.imagehelper.MultiSourceHelper.getBestSourceForSize
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper.Companion.instance
-import com.facebook.react.views.view.ReactViewBackgroundManager
-import com.facebook.yoga.YogaConstants
 import kotlin.math.abs
 
 /**
@@ -97,13 +93,7 @@ public class ReactImageView(
   private var cachedImageSource: ImageSource? = null
   private var defaultImageDrawable: Drawable? = null
   private var loadingImageDrawable: Drawable? = null
-  private var backgroundImageDrawable: RoundedColorDrawable? = null
-  private var backgroundColor = 0x00000000
-  private var borderColor = 0
   private var overlayColor = 0
-  private var borderWidth = 0f
-  private var borderRadius = YogaConstants.UNDEFINED
-  private var borderCornerRadii: FloatArray? = null
   private var scaleType = defaultValue()
   private var tileMode = defaultTileMode()
   private var isDirty = false
@@ -115,11 +105,9 @@ public class ReactImageView(
   private var progressiveRenderingEnabled = false
   private var headers: ReadableMap? = null
   private var resizeMultiplier = 1.0f
-  private val reactBackgroundManager = ReactViewBackgroundManager(this)
   private var resizeMethod = ImageResizeMethod.AUTO
 
   init {
-    reactBackgroundManager.setOverflow("hidden")
     // Workaround Android bug where ImageView visibility is not propagated to the Drawable, so you
     // have to manually update visibility. Will be resolved once we move to VitoView.
     setLegacyVisibilityHandlingEnabled(true)
@@ -213,26 +201,11 @@ public class ReactImageView(
   }
 
   public override fun setBackgroundColor(backgroundColor: Int) {
-    if (enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBackgroundColor(this, backgroundColor)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.backgroundColor = backgroundColor
-    } else if (this.backgroundColor != backgroundColor) {
-      this.backgroundColor = backgroundColor
-      backgroundImageDrawable = RoundedColorDrawable(backgroundColor)
-      isDirty = true
-    }
+    BackgroundStyleApplicator.setBackgroundColor(this, backgroundColor)
   }
 
   public fun setBorderColor(borderColor: Int) {
-    if (enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.ALL, borderColor)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.setBorderColor(Spacing.ALL, borderColor)
-    } else if (this.borderColor != borderColor) {
-      this.borderColor = borderColor
-      isDirty = true
-    }
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.ALL, borderColor)
   }
 
   public fun setOverlayColor(overlayColor: Int) {
@@ -243,49 +216,21 @@ public class ReactImageView(
   }
 
   public fun setBorderWidth(borderWidth: Float) {
-    val newBorderWidth = borderWidth.dpToPx()
-    if (enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setBorderWidth(this, LogicalEdge.ALL, borderWidth)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.setBorderWidth(Spacing.ALL, newBorderWidth)
-    } else if (!floatsEqual(this.borderWidth, newBorderWidth)) {
-      this.borderWidth = newBorderWidth
-      isDirty = true
-    }
+    BackgroundStyleApplicator.setBorderWidth(this, LogicalEdge.ALL, borderWidth)
   }
 
   public fun setBorderRadius(borderRadius: Float) {
-    if (enableBackgroundStyleApplicator()) {
-      val radius =
-          if (borderRadius.isNaN()) null
-          else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.BORDER_RADIUS, radius)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.setBorderRadius(borderRadius)
-    } else if (!floatsEqual(this.borderRadius, borderRadius)) {
-      this.borderRadius = borderRadius
-      isDirty = true
-    }
+    val radius =
+        if (borderRadius.isNaN()) null
+        else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.BORDER_RADIUS, radius)
   }
 
   public fun setBorderRadius(borderRadius: Float, position: Int) {
-    if (enableBackgroundStyleApplicator()) {
-      val radius =
-          if (borderRadius.isNaN()) null
-          else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
-      BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.setBorderRadius(borderRadius, position + 1)
-    } else {
-      if (borderCornerRadii == null) {
-        borderCornerRadii = FloatArray(4) { YogaConstants.UNDEFINED }
-      }
-
-      if (!floatsEqual(borderCornerRadii?.get(position), borderRadius)) {
-        borderCornerRadii?.set(position, borderRadius)
-        isDirty = true
-      }
-    }
+    val radius =
+        if (borderRadius.isNaN()) null
+        else LengthPercentage(borderRadius.pxToDp(), LengthPercentageType.POINT)
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius)
   }
 
   public fun setScaleType(scaleType: ScalingUtils.ScaleType) {
@@ -325,8 +270,9 @@ public class ReactImageView(
       tmpSources.add(getTransparentBitmapImageSource(context))
     } else if (sources.size() == 1) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
-      val source = sources.getMap(0)
-      var imageSource = ImageSource(context, source.getString("uri"))
+      val source = checkNotNull(sources.getMap(0))
+      val cacheControl = computeCacheControl(source.getString("cache"))
+      var imageSource = ImageSource(context, source.getString("uri"), cacheControl = cacheControl)
       if (Uri.EMPTY == imageSource.uri) {
         warnImageSource(source.getString("uri"))
         imageSource = getTransparentBitmapImageSource(context)
@@ -334,13 +280,15 @@ public class ReactImageView(
       tmpSources.add(imageSource)
     } else {
       for (idx in 0 until sources.size()) {
-        val source = sources.getMap(idx)
+        val source = sources.getMap(idx) ?: continue
+        val cacheControl = computeCacheControl(source.getString("cache"))
         var imageSource =
             ImageSource(
                 context,
                 source.getString("uri"),
                 source.getDouble("width"),
-                source.getDouble("height"))
+                source.getDouble("height"),
+                cacheControl)
         if (Uri.EMPTY == imageSource.uri) {
           warnImageSource(source.getString("uri"))
           imageSource = getTransparentBitmapImageSource(context)
@@ -357,6 +305,24 @@ public class ReactImageView(
     this.sources.clear()
     this.sources.addAll(tmpSources)
     isDirty = true
+  }
+
+  private fun computeCacheControl(cacheControl: String?): ImageCacheControl {
+    return when (cacheControl) {
+      null,
+      "default" -> ImageCacheControl.DEFAULT
+      "reload" -> ImageCacheControl.RELOAD
+      "force-cache" -> ImageCacheControl.FORCE_CACHE
+      "only-if-cached" -> ImageCacheControl.ONLY_IF_CACHED
+      else -> ImageCacheControl.DEFAULT
+    }
+  }
+
+  private fun computeRequestLevel(cacheControl: ImageCacheControl): RequestLevel {
+    return when (cacheControl) {
+      ImageCacheControl.ONLY_IF_CACHED -> RequestLevel.DISK_CACHE
+      else -> RequestLevel.FULL_FETCH
+    }
   }
 
   public fun setDefaultSource(name: String?) {
@@ -395,12 +361,17 @@ public class ReactImageView(
   public override fun hasOverlappingRendering(): Boolean = false
 
   public override fun onDraw(canvas: Canvas) {
-    if (enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
-    } else if (useNewReactImageViewBackgroundDrawing()) {
-      reactBackgroundManager.maybeClipToPaddingBox(canvas)
+    BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+    try {
+      super.onDraw(canvas)
+    } catch (e: RuntimeException) {
+      // Only provide updates if downloadListener is set (shouldNotify is true)
+      if (downloadListener != null) {
+        val eventDispatcher =
+            UIManagerHelper.getEventDispatcherForReactTag(context as ReactContext, id)
+        eventDispatcher?.dispatchEvent(createErrorEvent(UIManagerHelper.getSurfaceId(this), id, e))
+      }
     }
-    super.onDraw(canvas)
   }
 
   public fun maybeUpdateView() {
@@ -439,22 +410,8 @@ public class ReactImageView(
       hierarchy.setPlaceholderImage(loadingImageDrawable, ScalingUtils.ScaleType.CENTER)
     }
 
-    getCornerRadii(computedCornerRadii)
-
     val roundingParams = hierarchy.roundingParams
     if (roundingParams != null) {
-      roundingParams.setCornersRadii(
-          computedCornerRadii[0],
-          computedCornerRadii[1],
-          computedCornerRadii[2],
-          computedCornerRadii[3])
-
-      backgroundImageDrawable?.let { background ->
-        background.setBorder(borderColor, borderWidth)
-        roundingParams.cornersRadii?.let { background.radii = it }
-        hierarchy.setBackgroundImage(background)
-      }
-      roundingParams.setBorder(borderColor, borderWidth)
       if (overlayColor != Color.TRANSPARENT) {
         roundingParams.setOverlayColor(overlayColor)
       } else {
@@ -470,18 +427,16 @@ public class ReactImageView(
           else -> REMOTE_IMAGE_FADE_DURATION_MS
         }
 
-    val drawable = getDrawableIfUnsupported(imageSourceSafe)
-    if (drawable != null) {
-      maybeUpdateViewFromDrawable(drawable)
-    } else {
-      maybeUpdateViewFromRequest(doResize)
-    }
+    maybeUpdateViewFromRequest(doResize)
 
     isDirty = false
   }
 
   private fun maybeUpdateViewFromRequest(doResize: Boolean) {
-    val uri = this.imageSource?.uri ?: return
+    val imageSource = this.imageSource ?: return
+    val uri = imageSource.uri
+    val cacheControl = imageSource.cacheControl
+    val requestLevel = computeRequestLevel(cacheControl)
 
     val postprocessorList = mutableListOf<Postprocessor>()
     iterativeBoxBlurPostProcessor?.let { postprocessorList.add(it) }
@@ -490,15 +445,25 @@ public class ReactImageView(
 
     val resizeOptions = if (doResize) resizeOptions else null
 
+    if (cacheControl == ImageCacheControl.RELOAD) {
+      val imagePipeline = Fresco.getImagePipeline()
+      imagePipeline.evictFromCache(uri)
+    }
+
     val imageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(uri)
             .setPostprocessor(postprocessor)
             .setResizeOptions(resizeOptions)
             .setAutoRotateEnabled(true)
             .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
+            .setLowestPermittedRequestLevel(requestLevel)
+
+    if (resizeMethod == ImageResizeMethod.NONE) {
+      imageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
+    }
 
     val imageRequest: ImageRequest =
-        ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers)
+        ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers, cacheControl)
 
     globalImageLoadListener?.onLoadAttempt(uri)
 
@@ -517,14 +482,16 @@ public class ReactImageView(
     callerContext?.let { builder.setCallerContext(it) }
 
     cachedImageSource?.let { cachedSource ->
-      val cachedImageRequest =
+      val cachedImageRequestBuilder =
           ImageRequestBuilder.newBuilderWithSource(cachedSource.uri)
               .setPostprocessor(postprocessor)
               .setResizeOptions(resizeOptions)
               .setAutoRotateEnabled(true)
               .setProgressiveRenderingEnabled(progressiveRenderingEnabled)
-              .build()
-      builder.setLowResImageRequest(cachedImageRequest)
+      if (resizeMethod == ImageResizeMethod.NONE) {
+        cachedImageRequestBuilder.setDownsampleOverride(DownsampleMode.NEVER)
+      }
+      builder.setLowResImageRequest(cachedImageRequestBuilder.build())
     }
 
     if (downloadListener != null && controllerForTesting != null) {
@@ -548,44 +515,6 @@ public class ReactImageView(
     // Reset again so the DraweeControllerBuilder clears all it's references. Otherwise, this causes
     // a memory leak.
     builder.reset()
-  }
-
-  private fun maybeUpdateViewFromDrawable(drawable: Drawable) {
-    val shouldNotify = downloadListener != null
-
-    val eventDispatcher =
-        if (shouldNotify) {
-          UIManagerHelper.getEventDispatcherForReactTag((context as ReactContext), id)
-        } else {
-          null
-        }
-
-    eventDispatcher?.dispatchEvent(
-        createLoadStartEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), id))
-
-    hierarchy.setImage(drawable, 1f, false)
-
-    if (eventDispatcher != null && imageSource != null) {
-      eventDispatcher.dispatchEvent(
-          createLoadEvent(
-              UIManagerHelper.getSurfaceId(this@ReactImageView),
-              id,
-              imageSource?.source,
-              width,
-              height))
-      eventDispatcher.dispatchEvent(
-          createLoadEndEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), id))
-    }
-  }
-
-  private fun getCornerRadii(computedCorners: FloatArray) {
-    val defaultBorderRadius = if (!YogaConstants.isUndefined(borderRadius)) borderRadius else 0f
-
-    val radii = borderCornerRadii ?: FloatArray(4) { Float.NaN }
-    computedCorners[0] = if (!YogaConstants.isUndefined(radii[0])) radii[0] else defaultBorderRadius
-    computedCorners[1] = if (!YogaConstants.isUndefined(radii[1])) radii[1] else defaultBorderRadius
-    computedCorners[2] = if (!YogaConstants.isUndefined(radii[2])) radii[2] else defaultBorderRadius
-    computedCorners[3] = if (!YogaConstants.isUndefined(radii[3])) radii[3] else defaultBorderRadius
   }
 
   @VisibleForTesting
@@ -633,30 +562,6 @@ public class ReactImageView(
         else -> false
       }
 
-  /**
-   * Checks if the provided ImageSource should not be requested through Fresco and instead loaded
-   * directly from the resources table. Fresco explicitly does not support a number of drawable
-   * types like VectorDrawable but they can still be mounted in the image hierarchy.
-   *
-   * @param imageSource
-   * @return drawable resource if Fresco cannot load the image, null otherwise
-   */
-  private fun getDrawableIfUnsupported(imageSource: ImageSource): Drawable? {
-    if (!loadVectorDrawablesOnImages()) {
-      return null
-    }
-    val resourceName = imageSource.source
-    if (!imageSource.isResource || resourceName == null) {
-      return null
-    }
-    val drawableHelper = instance
-    val isVectorDrawable = drawableHelper.isVectorDrawable(context, resourceName)
-    if (!isVectorDrawable) {
-      return null
-    }
-    return drawableHelper.getResourceDrawable(context, resourceName)
-  }
-
   private val resizeOptions: ResizeOptions?
     get() {
       val width = Math.round(width.toFloat() * resizeMultiplier)
@@ -676,7 +581,8 @@ public class ReactImageView(
     // 3. ReactImageView detects the null src; displays a warning in LogBox (via this code).
     // 3. LogBox renders an <Image/>, which fabric preallocates.
     // 4. Rinse and repeat.
-    if (ReactBuildConfig.DEBUG && !ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (ReactBuildConfig.DEBUG &&
+        !ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
       RNLog.w(context as ReactContext, "ReactImageView: Image source \"$uri\" doesn't exist")
     }
   }
@@ -708,8 +614,6 @@ public class ReactImageView(
 
   public companion object {
     public const val REMOTE_IMAGE_FADE_DURATION_MS: Int = 300
-
-    private val computedCornerRadii = FloatArray(4)
 
     // Fresco lacks support for repeating images, see https://github.com/facebook/fresco/issues/1575
     // We implement it here as a postprocessing step.

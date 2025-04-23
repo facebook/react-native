@@ -27,7 +27,7 @@
  * from release builds to improve performance and reduce binary size.
  */
 #ifndef RCT_DEBUG
-#if DEBUG
+#ifdef DEBUG
 #define RCT_DEBUG 1
 #else
 #define RCT_DEBUG 0
@@ -39,7 +39,7 @@
  * such as the debug executors, dev menu, red box, etc.
  */
 #ifndef RCT_DEV
-#if DEBUG
+#ifdef DEBUG
 #define RCT_DEV 1
 #else
 #define RCT_DEV 0
@@ -48,11 +48,15 @@
 
 /**
  * RCT_REMOTE_PROFILE: RCT_PROFILE + RCT_ENABLE_INSPECTOR + enable the
- * connectivity functionality to control the profiler remotely, such as via Chrome DevTools or
- * Flipper.
+ * connectivity functionality to control the profiler remotely, such as via Chrome DevTools.
+ * If Fusebox is enabled for release builds, enable the remote profile mode, fall back to RCT_DEV by default.
  */
 #ifndef RCT_REMOTE_PROFILE
+#ifdef REACT_NATIVE_DEBUGGER_MODE_PROD
+#define RCT_REMOTE_PROFILE REACT_NATIVE_DEBUGGER_MODE_PROD
+#else
 #define RCT_REMOTE_PROFILE RCT_DEV
+#endif
 #endif
 
 /**

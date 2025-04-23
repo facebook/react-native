@@ -113,7 +113,7 @@ buildProject() {
 
 xcbeautifyFormat() {
   if [ "$CI" ]; then
-    # Circle CI expects JUnit reports to be available here
+    # CI expects JUnit reports to be available here
     REPORTS_DIR="$HOME/react-native/reports/junit"
   else
     THIS_DIR=$(cd -P "$(dirname "$(realpath "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)

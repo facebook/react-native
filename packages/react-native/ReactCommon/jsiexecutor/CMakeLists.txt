@@ -6,11 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -O3)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 add_library(jsireact
         OBJECT
@@ -25,3 +21,6 @@ target_link_libraries(jsireact
         folly_runtime
         glog
         jsi)
+
+target_compile_reactnative_options(jsireact PRIVATE)
+target_compile_options(jsireact PRIVATE -O3)

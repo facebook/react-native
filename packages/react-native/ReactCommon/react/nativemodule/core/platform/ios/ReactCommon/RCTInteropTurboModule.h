@@ -86,9 +86,12 @@ class JSI_EXPORT ObjCInteropTurboModule : public ObjCTurboModule {
   std::vector<MethodDescriptor> methodDescriptors_;
   NSDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames_;
   jsi::Value constantsCache_;
+  std::unordered_set<std::string> warnedModuleInvocation_;
 
   const jsi::Value &getConstants(jsi::Runtime &runtime);
   bool exportsConstants();
+
+  void _logLegacyArchitectureWarning(NSString *moduleName, const std::string &methodName);
 };
 
 } // namespace react

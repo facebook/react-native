@@ -27,7 +27,7 @@ type Props = $ReadOnly<{
   level: LogLevel,
 }>;
 
-const LogBoxInspectorHeaderSafeArea: React.AbstractComponent<ViewProps> =
+const LogBoxInspectorHeaderSafeArea: React.ComponentType<ViewProps> =
   Platform.OS === 'android' ? View : SafeAreaView;
 
 export default function LogBoxInspectorHeader(props: Props): React.Node {
@@ -36,7 +36,9 @@ export default function LogBoxInspectorHeader(props: Props): React.Node {
       <LogBoxInspectorHeaderSafeArea style={styles[props.level]}>
         <View style={styles.header}>
           <View style={styles.title}>
-            <Text style={styles.titleText}>Failed to compile</Text>
+            <Text style={styles.titleText} id="logbox_header_title_text">
+              Failed to compile
+            </Text>
           </View>
         </View>
       </LogBoxInspectorHeaderSafeArea>
@@ -54,15 +56,19 @@ export default function LogBoxInspectorHeader(props: Props): React.Node {
     <LogBoxInspectorHeaderSafeArea style={styles[props.level]}>
       <View style={styles.header}>
         <LogBoxInspectorHeaderButton
+          id="logbox_header_button_prev"
           disabled={props.total <= 1}
           level={props.level}
           image={require('./LogBoxImages/chevron-left.png')}
           onPress={() => props.onSelectIndex(prevIndex)}
         />
         <View style={styles.title}>
-          <Text style={styles.titleText}>{titleText}</Text>
+          <Text style={styles.titleText} id="logbox_header_title_text">
+            {titleText}
+          </Text>
         </View>
         <LogBoxInspectorHeaderButton
+          id="logbox_header_button_next"
           disabled={props.total <= 1}
           level={props.level}
           image={require('./LogBoxImages/chevron-right.png')}

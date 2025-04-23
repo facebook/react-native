@@ -10,7 +10,6 @@
 #include <exception>
 #include <string>
 
-#include <folly/Conv.h>
 #include <folly/dynamic.h>
 
 // When building a cross-platform module for React Native, arguments passed
@@ -31,7 +30,7 @@ class JsArgumentException : public std::logic_error {
 
 // This extracts a single argument by calling the given method pointer on it.
 // If an exception is thrown, the additional arguments are passed to
-// folly::to<> to be included in the exception string.  This will be most
+// std::to_string to be included in the exception string.  This will be most
 // commonly used when extracting values from non-scalar argument.  The second
 // overload accepts ref-qualified member functions.
 

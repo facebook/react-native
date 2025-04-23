@@ -13,22 +13,47 @@ inputs:
   maestro-flow:
     required: true
     description: the folder that contains the maestro tests
+  flavor:
+    required: true
+    description: Whether we are building for Debug or Release
+    default: Release
+  working-directory:
+    required: false
+    default: "."
+    description: The directory from which metro should be started
+  architecture:
+    required: false
+    default: "NewArch"
+    description: The react native architecture to test
+
 runs:
   using: composite
   steps:
     - name: Installing Maestro
       shell: bash
-      run: export MAESTRO_VERSION=1.36.0; curl -Ls "https://get.maestro.mobile.dev" | bash
+      run: export MAESTRO_VERSION=1.39.7; curl -Ls "https://get.maestro.mobile.dev" | bash
     - name: Installing Maestro dependencies
       shell: bash
       run: |
         brew tap facebook/fb
-        brew install facebook/fb/idb-companion jq
+        brew install facebook/fb/idb-companion
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
         java-version: '17'
         distribution: 'zulu'
+    - name: Run yarn install
+      uses: ./.github/actions/yarn-install
+    - name: Start Metro in Debug
+      shell: bash
+      if: ${{ inputs.flavor == 'Debug' }}
+      run: |
+        # build codegen or we will see a redbox
+        ./packages/react-native-codegen/scripts/oss/build.sh
+
+        cd ${{ inputs.working-directory }}
+        yarn start &
+        sleep 5 # to give metro time to load
     - name: Run tests
       id: run-tests
       shell: bash
@@ -37,60 +62,28 @@ runs:
         # Maestro can fail in case of flakyness, we have some retry logic.
         set +e
 
-        echo "Launching iOS Simulator: iPhone 15 Pro"
-        xcrun simctl boot "iPhone 15 Pro"
-
-        echo "Installing app on Simulator"
-        xcrun simctl install booted "${{ inputs.app-path }}"
-
-        echo "Retrieving device UDID"
-        UDID=$(xcrun simctl list devices booted -j | jq -r '[.devices[]] | add | first | .udid')
-        echo "UDID is $UDID"
-
-        echo "Bring simulator in foreground"
-        open -a simulator
-
-        echo "Launch the app"
-        xcrun simctl launch $UDID ${{ inputs.app-id }}
-
-        echo "Running tests with Maestro"
-        export MAESTRO_DRIVER_STARTUP_TIMEOUT=1500000 # 25 min. CI is extremely slow
-
-        # Add retries for flakyness
-        MAX_ATTEMPTS=3
-        CURR_ATTEMPT=0
-        RESULT=1
-
-        while [[ $CURR_ATTEMPT -lt $MAX_ATTEMPTS ]] && [[ $RESULT -ne 0 ]]; do
-          CURR_ATTEMPT=$((CURR_ATTEMPT+1))
-          echo "Attempt number $CURR_ATTEMPT"
-
-          echo "Start video record using pid: video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid"
-          xcrun simctl io booted recordVideo video_record_$CURR_ATTEMPT.mov & echo $! > video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid
-
-          echo '$HOME/.maestro/bin/maestro --udid=$UDID test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }}'
-          $HOME/.maestro/bin/maestro --udid=$UDID test ${{ inputs.maestro-flow }} --format junit -e APP_ID=${{ inputs.app-id }} --debug-output /tmp/MaestroLogs
-
-          RESULT=$?
-
-          # Stop video
-          kill -SIGINT $(cat video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid)
-        done
-
-        exit $RESULT
+        node .github/workflow-scripts/maestro-ios.js \
+          "${{ inputs.app-path }}" \
+          "${{ inputs.app-id }}" \
+          "${{ inputs.maestro-flow }}" \
+          "${{ inputs.jsengine }}" \
+          "${{ inputs.flavor }}" \
+          "${{ inputs.working-directory }}"
     - name: Store video record
       if: always()
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}
+        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}_${{ inputs.architecture }}
         path: |
-          video_record_1.mov
-          video_record_2.mov
-          video_record_3.mov
+          video_record_${{ inputs.jsengine }}_1.mov
+          video_record_${{ inputs.jsengine }}_2.mov
+          video_record_${{ inputs.jsengine }}_3.mov
+          video_record_${{ inputs.jsengine }}_4.mov
+          video_record_${{ inputs.jsengine }}_5.mov
           report.xml
     - name: Store Logs
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}
+        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.architecture }}
         path: /tmp/MaestroLogs

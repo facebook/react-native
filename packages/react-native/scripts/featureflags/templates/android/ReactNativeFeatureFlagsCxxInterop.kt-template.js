@@ -51,6 +51,8 @@ ${Object.entries(definitions.common)
   @DoNotStrip @JvmStatic public external fun override(provider: Any)
 
   @DoNotStrip @JvmStatic public external fun dangerouslyReset()
+
+  @DoNotStrip @JvmStatic public external fun dangerouslyForceOverride(provider: Any): String?
 }
 `);
 }

@@ -31,7 +31,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   BaseViewProps(
       const PropsParserContext& context,
       const BaseViewProps& sourceProps,
-      const RawProps& rawProps);
+      const RawProps& rawProps,
+      const std::function<bool(const std::string&)>& filterObjectKeys =
+          nullptr);
 
   void setProp(
       const PropsParserContext& context,
@@ -71,8 +73,8 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   // Filter
   std::vector<FilterFunction> filter{};
 
-  // Gradient
-  std::vector<GradientValue> backgroundImage{};
+  // Background Image
+  std::vector<BackgroundImage> backgroundImage{};
 
   // MixBlendMode
   BlendMode mixBlendMode{BlendMode::Normal};
@@ -105,8 +107,6 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   bool collapsableChildren{true};
 
   bool removeClippedSubviews{false};
-
-  LayoutConformance experimental_layoutConformance{};
 
 #pragma mark - Convenience Methods
 

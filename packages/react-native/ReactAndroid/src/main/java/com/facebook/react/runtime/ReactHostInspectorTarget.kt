@@ -23,7 +23,7 @@ internal class ReactHostInspectorTarget(private val reactHostImpl: ReactHostImpl
 
   private external fun initHybrid(reactHostImpl: ReactHostImpl, executor: Executor): HybridData
 
-  public external fun sendDebuggerResumeCommand()
+  external fun sendDebuggerResumeCommand()
 
   override fun close() {
     mHybridData.resetNative()

@@ -12,6 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedNode from './AnimatedNode';
@@ -23,8 +24,12 @@ export default class AnimatedDivision extends AnimatedWithChildren {
   _b: AnimatedNode;
   _warnedAboutDivideByZero: boolean = false;
 
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number) {
-    super();
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig,
+  ) {
+    super(config);
     if (b === 0 || (b instanceof AnimatedNode && b.__getValue() === 0)) {
       console.error('Detected potential division by zero in AnimatedDivision');
     }
@@ -63,6 +68,7 @@ export default class AnimatedDivision extends AnimatedWithChildren {
   __attach(): void {
     this._a.__addChild(this);
     this._b.__addChild(this);
+    super.__attach();
   }
 
   __detach(): void {
@@ -75,6 +81,7 @@ export default class AnimatedDivision extends AnimatedWithChildren {
     return {
       type: 'division',
       input: [this._a.__getNativeTag(), this._b.__getNativeTag()],
+      debugID: this.__getDebugID(),
     };
   }
 }

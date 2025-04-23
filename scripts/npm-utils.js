@@ -21,7 +21,7 @@ const {exec} = require('shelljs');
 /*::
 import type { ExecOptsSync, ShellString } from 'shelljs';
 
-type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+type BuildType = 'dry-run' | 'release' | 'nightly';
 type NpmInfo = {
   version: string,
   tag: ?string,
@@ -70,29 +70,9 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
     };
   }
 
-  if (buildType === 'prealpha') {
-    const mainVersion = '0.0.0';
-    // Date in the format of YYYYMMDDHH.
-    // This is a progressive int that can track subsequent
-    // releases and it is smaller of 2^32-1.
-    // It is unlikely that we can trigger two prealpha in less
-    // than an hour given that nightlies take ~ 1 hr to complete.
-    const dateIdentifier = new Date()
-      .toISOString()
-      .slice(0, -10)
-      .replace(/[-T:]/g, '');
-
-    return {
-      version: `${mainVersion}-prealpha-${dateIdentifier}`,
-      tag: 'prealpha',
-    };
-  }
-
   if (buildType === 'release') {
     let versionTag /*: string*/ = '';
-    if (process.env.CIRCLE_TAG != null && process.env.CIRCLE_TAG !== '') {
-      versionTag = process.env.CIRCLE_TAG;
-    } else if (
+    if (
       process.env.GITHUB_REF != null &&
       process.env.GITHUB_REF.includes('/tags/') &&
       process.env.GITHUB_REF_NAME != null &&
@@ -105,7 +85,7 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
 
     if (versionTag === '') {
       throw new Error(
-        'No version tag found in CI. It looks like this script is running in release mode, but the CIRCLE_TAG or the GITHUB_REF_NAME are missing.',
+        'No version tag found in CI. It looks like this script is running in release mode, but the GITHUB_REF_NAME are missing.',
       );
     }
 

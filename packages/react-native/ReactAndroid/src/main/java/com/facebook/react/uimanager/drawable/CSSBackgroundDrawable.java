@@ -18,6 +18,7 @@ import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
+import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -189,7 +190,15 @@ public class CSSBackgroundDrawable extends Drawable {
 
   @Override
   public int getOpacity() {
-    return (Color.alpha(mColor) * mAlpha) >> 8;
+    int alpha = (Color.alpha(mColor) * mAlpha) >> 8;
+    switch (alpha) {
+      case 255:
+        return PixelFormat.OPAQUE;
+      case 0:
+        return PixelFormat.TRANSPARENT;
+      default:
+        return PixelFormat.TRANSLUCENT;
+    }
   }
 
   /* Android's elevation implementation requires this to be implemented to know where to draw the shadow. */
@@ -327,13 +336,6 @@ public class CSSBackgroundDrawable extends Drawable {
     return Math.max(computedRadius - borderWidth, 0);
   }
 
-  // TODO: This API is unsafe and should be removed when
-  // BackgroundStyleApplicator is rolled out
-  @Deprecated(forRemoval = true, since = "0.76.0")
-  public ComputedBorderRadius getComputedBorderRadius() {
-    return mComputedBorderRadius;
-  }
-
   public void setColor(int color) {
     mColor = color;
     invalidateSelf();
@@ -388,11 +390,8 @@ public class CSSBackgroundDrawable extends Drawable {
     updatePath();
     canvas.save();
 
-    // Clip outer border
-    canvas.clipPath(Preconditions.checkNotNull(mOuterClipPathForBorderRadius), Region.Op.INTERSECT);
-
     // Draws the View without its border first (with background color fill)
-    int useColor = ColorUtils.setAlphaComponent(mColor, getOpacity());
+    int useColor = ColorUtils.setAlphaComponent(mColor, (Color.alpha(mColor) * mAlpha) >> 8);
     if (Color.alpha(useColor) != 0) {
       mPaint.setColor(useColor);
       mPaint.setStyle(Paint.Style.FILL);
@@ -431,6 +430,10 @@ public class CSSBackgroundDrawable extends Drawable {
         || borderWidth.bottom > 0
         || borderWidth.left > 0
         || borderWidth.right > 0) {
+
+      // Clip outer border
+      canvas.clipPath(
+          Preconditions.checkNotNull(mOuterClipPathForBorderRadius), Region.Op.INTERSECT);
 
       // If it's a full and even border draw inner rect path with stroke
       final float fullBorderWidth = getFullBorderWidth();
@@ -644,22 +647,17 @@ public class CSSBackgroundDrawable extends Drawable {
       colorTop = colorBlockStart;
     }
 
-    // Clip border ONLY if its color is non transparent
-    float pathAdjustment = 0f;
+    // Clip border ONLY if at least one edge is non-transparent
     if (Color.alpha(colorLeft) != 0
-        && Color.alpha(colorTop) != 0
-        && Color.alpha(colorRight) != 0
-        && Color.alpha(colorBottom) != 0
-        && Color.alpha(borderColor) != 0) {
+        || Color.alpha(colorTop) != 0
+        || Color.alpha(colorRight) != 0
+        || Color.alpha(colorBottom) != 0
+        || Color.alpha(borderColor) != 0) {
 
       mInnerClipTempRectForBorderRadius.top += borderWidth.top;
       mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
       mInnerClipTempRectForBorderRadius.left += borderWidth.left;
       mInnerClipTempRectForBorderRadius.right -= borderWidth.right;
-
-      // only close gap between border and main path if we draw the border, otherwise
-      // we wind up pixelating small pixel-radius curves
-      pathAdjustment = mGapBetweenPaths;
     }
 
     mTempRectForCenterDrawPath.top += borderWidth.top * 0.5f;
@@ -713,11 +711,21 @@ public class CSSBackgroundDrawable extends Drawable {
     // border. mGapBetweenPaths is used to slightly enlarge the rectangle
     // (mInnerClipTempRectForBorderRadius), ensuring the border can be
     // drawn on top without the gap.
+    // only close gap between border and main path if we draw the border, otherwise
+    // we wind up pixelating small pixel-radius curves
     mBackgroundColorRenderPath.addRoundRect(
-        mInnerClipTempRectForBorderRadius.left - pathAdjustment,
-        mInnerClipTempRectForBorderRadius.top - pathAdjustment,
-        mInnerClipTempRectForBorderRadius.right + pathAdjustment,
-        mInnerClipTempRectForBorderRadius.bottom + pathAdjustment,
+        (borderWidth.left > 0)
+            ? mInnerClipTempRectForBorderRadius.left - mGapBetweenPaths
+            : mInnerClipTempRectForBorderRadius.left,
+        (borderWidth.top > 0)
+            ? mInnerClipTempRectForBorderRadius.top - mGapBetweenPaths
+            : mInnerClipTempRectForBorderRadius.top,
+        (borderWidth.right > 0)
+            ? mInnerClipTempRectForBorderRadius.right + mGapBetweenPaths
+            : mInnerClipTempRectForBorderRadius.right,
+        (borderWidth.bottom > 0)
+            ? mInnerClipTempRectForBorderRadius.bottom + mGapBetweenPaths
+            : mInnerClipTempRectForBorderRadius.bottom,
         new float[] {
           innerTopLeftRadiusX,
           innerTopLeftRadiusY,

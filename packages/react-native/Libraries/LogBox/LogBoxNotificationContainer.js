@@ -8,19 +8,19 @@
  * @format
  */
 
+import SafeAreaView from '../../src/private/components/safeareaview/SafeAreaView_INTERNAL_DO_NOT_USE';
 import View from '../Components/View/View';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import * as LogBoxData from './Data/LogBoxData';
 import LogBoxLog from './Data/LogBoxLog';
 import LogBoxLogNotification from './UI/LogBoxNotification';
 import * as React from 'react';
-import SafeAreaView from '../../src/private/components/SafeAreaView_INTERNAL_DO_NOT_USE';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   logs: $ReadOnlyArray<LogBoxLog>,
   selectedLogIndex: number,
   isDisabled?: ?boolean,
-|}>;
+}>;
 
 export function _LogBoxNotificationContainer(props: Props): React.Node {
   const {logs} = props;
@@ -102,4 +102,4 @@ const styles = StyleSheet.create({
 
 export default (LogBoxData.withSubscription(
   _LogBoxNotificationContainer,
-): React.AbstractComponent<{||}>);
+): React.ComponentType<{}>);

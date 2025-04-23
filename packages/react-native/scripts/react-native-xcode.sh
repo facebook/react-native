@@ -92,6 +92,8 @@ fi
 
 [ -z "$CLI_PATH" ] && CLI_PATH="$REACT_NATIVE_DIR/scripts/bundle.js"
 
+[ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
+
 [ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
 
 if [[ -z "$BUNDLE_CONFIG" ]]; then
@@ -146,7 +148,7 @@ if [[ -n "$CONFIG_JSON" ]]; then
 elif [[ -n "$CONFIG_CMD" ]]; then
   EXTRA_ARGS+=("--config-cmd" "$CONFIG_CMD")
 else
-  EXTRA_ARGS+=("--config-cmd" "$NODE_BINARY $NODE_ARGS $REACT_NATIVE_DIR/cli.js config")
+  EXTRA_ARGS+=("--config-cmd" "'$NODE_BINARY' $NODE_ARGS '$REACT_NATIVE_DIR/cli.js' config")
 fi
 
 # shellcheck disable=SC2086

@@ -66,6 +66,15 @@ typedef NS_OPTIONS(NSInteger, RCTTextSizeComparisonOptions) {
   NSLayoutManager *layoutManager = self.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
+  // A workaround for truncatedGlyphRangeInLineFragmentForGlyphAtIndex returning NSNotFound when text has only
+  // one character and it gets truncated
+  if ([self length] == 1) {
+    CGSize characterSize = [[self string] sizeWithAttributes:[self attributesAtIndex:0 effectiveRange:nil]];
+    if (characterSize.width > size.width) {
+      return RCTTextSizeComparisonLarger;
+    }
+  }
+
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
   // Does it fit the text container?

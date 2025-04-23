@@ -8,8 +8,10 @@
 #pragma once
 
 #include <array>
+#include <string>
 #include <vector>
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/RectangleEdges.h>
@@ -101,7 +103,8 @@ struct Transform {
    */
   static Transform FromTransformOperation(
       TransformOperation transformOperation,
-      const Size& size);
+      const Size& size,
+      const Transform& transform = Transform::Identity());
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
 

@@ -52,7 +52,7 @@ package ${packageName};
 
 ${imports}
 
-public interface ${className}<T extends ${extendClasses}> {
+public interface ${className}<T extends ${extendClasses}> extends ViewManagerWithGeneratedInterface {
   ${methods}
 }
 `;

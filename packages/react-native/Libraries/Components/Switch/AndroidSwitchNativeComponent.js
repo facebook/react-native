@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/AndroidSwitchNativeComponent';
-import AndroidSwitchNativeComponent from '../../../src/private/specs/components/AndroidSwitchNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent';
+import AndroidSwitchNativeComponent from '../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent';
 export default AndroidSwitchNativeComponent;

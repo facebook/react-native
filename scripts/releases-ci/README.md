@@ -1,6 +1,6 @@
 # scripts/releases-ci
 
-CI-only release scripts — intended to run from a CI workflow (CircleCI or GitHub Actions).
+CI-only release scripts — intended to run from a CI workflow (GitHub Actions).
 
 ## Commands
 

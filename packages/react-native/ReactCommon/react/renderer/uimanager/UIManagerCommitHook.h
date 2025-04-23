@@ -12,6 +12,7 @@
 namespace facebook::react {
 
 class ShadowTree;
+struct ShadowTreeCommitOptions;
 class UIManager;
 
 /*
@@ -34,7 +35,24 @@ class UIManagerCommitHook {
   virtual RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& shadowTree,
       const RootShadowNode::Shared& oldRootShadowNode,
-      const RootShadowNode::Unshared& newRootShadowNode) noexcept = 0;
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTreeCommitOptions& /*commitOptions*/) noexcept {
+    return shadowTreeWillCommit(
+        shadowTree, oldRootShadowNode, newRootShadowNode);
+  }
+
+  /*
+   * This is a version of `shadowTreeWillCommit` without `commitOptions` for
+   * backward compatibility.
+   */
+  virtual RootShadowNode::Unshared shadowTreeWillCommit(
+      const ShadowTree& /*shadowTree*/,
+      const RootShadowNode::Shared& /*oldRootShadowNode*/,
+      const RootShadowNode::Unshared& newRootShadowNode) noexcept {
+    // No longer a pure method as subclasses are expected to implement the other
+    // flavor instead.
+    return newRootShadowNode;
+  }
 
   virtual ~UIManagerCommitHook() noexcept = default;
 };

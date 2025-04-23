@@ -16,7 +16,7 @@ import type {
 import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleEventEmitterShape,
   NativeModuleFunctionTypeAnnotation,
@@ -76,8 +76,12 @@ const ModuleSpecClassDeclarationTemplate = ({
   return `template <typename T>
 class JSI_EXPORT ${hasteModuleName}CxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = "${moduleName}";
@@ -169,7 +173,13 @@ function translatePrimitiveJSTypeToCpp(
       return 'void';
     case 'StringTypeAnnotation':
       return wrapOptional('jsi::String', isRequired);
+    case 'StringLiteralTypeAnnotation':
+      return wrapOptional('jsi::String', isRequired);
+    case 'StringLiteralUnionTypeAnnotation':
+      return wrapOptional('jsi::String', isRequired);
     case 'NumberTypeAnnotation':
+      return wrapOptional('double', isRequired);
+    case 'NumberLiteralTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
       return wrapOptional('double', isRequired);
@@ -396,19 +406,24 @@ struct Bridging<${enumName}> {
 };`;
 };
 
+function getMemberValueAppearance(member: NativeModuleEnumMember['value']) {
+  if (member.type === 'StringLiteralTypeAnnotation') {
+    return `"${member.value}"`;
+  } else {
+    return member.value;
+  }
+}
+
 function generateEnum(
   hasteModuleName: string,
   origEnumName: string,
-  members: NativeModuleEnumMembers,
+  members: $ReadOnlyArray<NativeModuleEnumMember>,
   memberType: NativeModuleEnumMemberType,
 ): string {
   const enumName = getEnumName(hasteModuleName, origEnumName);
 
   const nativeEnumMemberType: NativeEnumMemberValueType =
     memberType === 'StringTypeAnnotation' ? 'std::string' : 'int32_t';
-
-  const getMemberValueAppearance = (value: string | number) =>
-    memberType === 'StringTypeAnnotation' ? `"${value}"` : `${value}`;
 
   const fromCases =
     members

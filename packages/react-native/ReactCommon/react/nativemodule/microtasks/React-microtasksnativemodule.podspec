@@ -34,6 +34,7 @@ Pod::Spec.new do |s|
   s.source_files           = "*.{cpp,h}"
   s.header_dir             = "react/nativemodule/microtasks"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+                               "OTHER_CFLAGS" => "$(inherited)",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "DEFINES_MODULE" => "YES" }
 
@@ -42,7 +43,12 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../.."
   end
 
-  install_modules_dependencies(s)
+  s.dependency "React-jsi"
+  s.dependency "React-jsiexecutor"
+
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   s.dependency "ReactCommon/turbomodule/core"
+  add_dependency(s, "React-RCTFBReactNativeSpec")
 end

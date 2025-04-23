@@ -4,25 +4,35 @@ inputs:
   hermes-version:
     description: The version of hermes
     required: true
+  jsengine:
+    dscription: The js engine in use
+    default: Hermes
+  flavor:
+    description: The flavor that is going to be built
+    default: Debug
+  architecture:
+    description: The architecture that is going to be built
+    default: NewArch
+  use-frameworks:
+    description: Whether we are bulding with DynamicFrameworks or StaticLibraries
+    default: StaticLibraries
+  ruby-version:
+    description: The ruby version we are going to use
+    default: 2.6.10
+
 runs:
   using: composite
   steps:
     - name: See commands.yml with_xcodebuild_cache
       shell: bash
       run: echo "See commands.yml with_xcodebuild_cache"
-    - name: Prepare Xcodebuild cache
-      shell: bash
-      run: |
-        WEEK=$(date +"%U")
-        YEAR=$(date +"%Y")
-        echo "$WEEK-$YEAR" > /tmp/week_year
     - name: Cache podfile lock
       uses: actions/cache@v4
       with:
         path: packages/rn-tester/Podfile.lock
-        key: v11-podfilelock-${{ github.job }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ hashfiles('/tmp/week_year') }}-${{ inputs.hermes-version }}
+        key: v13-podfilelock-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version }}
     - name: Cache cocoapods
       uses: actions/cache@v4
       with:
         path: packages/rn-tester/Pods
-        key: v13-cocoapods-${{ github.job }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}
+        key: v15-cocoapods-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}

@@ -15,9 +15,9 @@ import type {
   PerformanceEntryJSON,
 } from './PerformanceEntry';
 
+import {warnNoNativePerformance} from './internals/Utilities';
 import {PerformanceEntry} from './PerformanceEntry';
-import {warnNoNativePerformanceObserver} from './PerformanceObserver';
-import NativePerformanceObserver from './specs/NativePerformanceObserver';
+import NativePerformance from './specs/NativePerformance';
 
 export type PerformanceEventTimingJSON = {
   ...PerformanceEntryJSON,
@@ -85,14 +85,18 @@ function getCachedEventCounts(): Map<string, number> {
   if (cachedEventCounts) {
     return cachedEventCounts;
   }
-  if (!NativePerformanceObserver) {
-    warnNoNativePerformanceObserver();
-    return new Map();
+
+  if (!NativePerformance || !NativePerformance?.getEventCounts) {
+    warnNoNativePerformance();
+    cachedEventCounts = new Map();
+    return cachedEventCounts;
   }
 
-  cachedEventCounts = new Map<string, number>(
-    NativePerformanceObserver.getEventCounts(),
+  const eventCounts = new Map<string, number>(
+    NativePerformance.getEventCounts?.() ?? [],
   );
+  cachedEventCounts = eventCounts;
+
   // $FlowFixMe[incompatible-call]
   global.queueMicrotask(() => {
     // To be consistent with the calls to the API from the same task,
@@ -101,7 +105,8 @@ function getCachedEventCounts(): Map<string, number> {
     // after the current task is guaranteed to have finished.
     cachedEventCounts = null;
   });
-  return cachedEventCounts ?? new Map();
+
+  return eventCounts;
 }
 
 /**

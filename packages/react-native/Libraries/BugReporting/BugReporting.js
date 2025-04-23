@@ -23,7 +23,7 @@ type DebugData = {
 
 function defaultExtras() {
   BugReporting.addFileSource('react_hierarchy.txt', () =>
-    require('./dumpReactTree')(),
+    require('./dumpReactTree').default(),
   );
 }
 
@@ -137,4 +137,4 @@ class BugReporting {
   }
 }
 
-module.exports = BugReporting;
+export default BugReporting;

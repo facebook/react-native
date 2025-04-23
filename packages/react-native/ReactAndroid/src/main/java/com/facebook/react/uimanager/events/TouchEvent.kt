@@ -14,6 +14,8 @@ import androidx.core.util.Pools.SynchronizedPool
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.SoftAssertions
+import com.facebook.react.uimanager.common.UIManagerType
+import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 import com.facebook.react.uimanager.events.TouchEventType.Companion.getJSEventName
 
 /**
@@ -64,7 +66,8 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
           coalescingKey = touchEventCoalescingKeyHelper.getCoalescingKey(gestureStartTime)
       MotionEvent.ACTION_CANCEL ->
           touchEventCoalescingKeyHelper.removeCoalescingKey(gestureStartTime)
-      else -> throw RuntimeException("Unhandled MotionEvent action: $action")
+      else ->
+          Unit // Passthrough for other actions (such as ACTION_SCROLL), coalescing is not applied
     }
 
     motionEvent = MotionEvent.obtain(motionEventToCopy)
@@ -110,6 +113,7 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
 
   override fun getCoalescingKey(): Short = coalescingKey
 
+  @Deprecated("Deprecated in Java")
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
     if (verifyMotionEvent()) {
       TouchesHelper.sendTouchesLegacy(rctEventEmitter, this)
@@ -117,15 +121,20 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
   }
 
   override fun dispatchModern(rctEventEmitter: RCTModernEventEmitter) {
-    if (verifyMotionEvent()) {
+    if (!verifyMotionEvent()) {
+      return
+    }
+
+    @UIManagerType val uiManagerType = getUIManagerType(viewTag, surfaceId)
+    if (uiManagerType == UIManagerType.FABRIC) {
       // TouchesHelper.sendTouchEvent can be inlined here post Fabric rollout
-      // For now, we go via the event emitter, which will decide whether the legacy or modern
-      // event path is required
-      rctEventEmitter.receiveTouches(this)
+      TouchesHelper.sendTouchEvent(rctEventEmitter, this)
+    } else if (uiManagerType == UIManagerType.LEGACY) {
+      TouchesHelper.sendTouchesLegacy(rctEventEmitter, this)
     }
   }
 
-  protected override fun getEventCategory(): Int {
+  public override fun getEventCategory(): Int {
     val type = touchEventType ?: return EventCategoryDef.UNSPECIFIED
     return when (type) {
       TouchEventType.START -> EventCategoryDef.CONTINUOUS_START

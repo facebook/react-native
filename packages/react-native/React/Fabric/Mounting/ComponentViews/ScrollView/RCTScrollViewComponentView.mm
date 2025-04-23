@@ -74,7 +74,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                                                                  userData:nil
                                                             coalescingKey:coalescingKey];
   NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:scrollEvent, @"event", nil];
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED
                                                       object:nil
                                                     userInfo:userInfo];
 }
@@ -182,16 +182,18 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
   UIViewAnimationCurve curve =
       (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
   CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGRect keyboardBeginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
 
   CGPoint absoluteViewOrigin = [self convertPoint:self.bounds.origin toView:nil];
   CGFloat scrollViewLowerY = isInverted ? absoluteViewOrigin.y : absoluteViewOrigin.y + self.bounds.size.height;
 
   UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
   CGFloat inset = MAX(scrollViewLowerY - keyboardEndFrame.origin.y, 0);
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   if (isInverted) {
-    newEdgeInsets.top = MAX(inset, _scrollView.contentInset.top);
+    newEdgeInsets.top = MAX(inset, props.contentInset.top);
   } else {
-    newEdgeInsets.bottom = MAX(inset, _scrollView.contentInset.bottom);
+    newEdgeInsets.bottom = MAX(inset, props.contentInset.bottom);
   }
 
   CGPoint newContentOffset = _scrollView.contentOffset;
@@ -203,21 +205,18 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                                                from:self
                                            forEvent:nil]) {
     if (CGRectEqualToRect(_firstResponderFocus, CGRectNull)) {
-      // Text input view is outside of the scroll view.
-      return;
-    }
-
-    CGRect viewIntersection = CGRectIntersection(self.firstResponderFocus, keyboardEndFrame);
-
-    if (CGRectIsNull(viewIntersection)) {
-      return;
-    }
-
-    // Inner text field focused
-    CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
-    if (focusEnd > keyboardEndFrame.origin.y) {
-      // Text field active region is below visible area with keyboard - update diff to bring into view
-      contentDiff = keyboardEndFrame.origin.y - focusEnd;
+      UIView *inputAccessoryView = _firstResponderViewOutsideScrollView.inputAccessoryView;
+      if (inputAccessoryView) {
+        // Text input view is within the inputAccessoryView.
+        contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
+      }
+    } else {
+      // Inner text field focused
+      CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
+      if (focusEnd > keyboardEndFrame.origin.y) {
+        // Text field active region is below visible area with keyboard - update diff to bring into view
+        contentDiff = keyboardEndFrame.origin.y - focusEnd;
+      }
     }
   }
 
@@ -243,7 +242,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                    animations:^{
                      self->_scrollView.contentInset = newEdgeInsets;
                      self->_scrollView.verticalScrollIndicatorInsets = newEdgeInsets;
-                     [self scrollToOffset:newContentOffset animated:NO];
+                     [self scrollTo:newContentOffset.x y:newContentOffset.y animated:NO];
                    }
                    completion:nil];
 }
@@ -476,6 +475,37 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }];
 }
 
+- (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // This is the same algorithm as in the RCTViewComponentView with the exception of
+  // skipping the immediate child (_containerView) and checking grandchildren instead.
+  // This prevents issues with touches outside of _containerView being ignored even
+  // if they are within the bounds of the _containerView's children.
+
+  if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+    return nil;
+  }
+
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+
+  BOOL clipsToBounds = _containerView.clipsToBounds;
+
+  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
+
+  if (clipsToBounds && !isPointInside) {
+    return nil;
+  }
+
+  for (UIView *subview in [_containerView.subviews reverseObjectEnumerator]) {
+    UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
+    if (hitView) {
+      return hitView;
+    }
+  }
+
+  return isPointInside ? self : nil;
+}
+
 /*
  * Disables programmatical changing of ScrollView's `contentOffset` if a touch gesture is in progress.
  */
@@ -539,6 +569,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
   metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
   metrics.zoomScale = _scrollView.zoomScale;
+  metrics.timestamp = CACurrentMediaTime();
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
@@ -547,17 +578,35 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   return metrics;
 }
 
+- (ScrollViewEventEmitter::EndDragMetrics)_scrollViewMetricsWithVelocity:(CGPoint)velocity
+                                                  andTargetContentOffset:(CGPoint)targetContentOffset
+{
+  ScrollViewEventEmitter::EndDragMetrics metrics = [self _scrollViewMetrics];
+  metrics.targetContentOffset.x = targetContentOffset.x;
+  metrics.targetContentOffset.y = targetContentOffset.y;
+  metrics.velocity.x = velocity.x;
+  metrics.velocity.y = velocity.y;
+  return metrics;
+}
+
 - (void)_updateStateWithContentOffset
 {
   if (!_state) {
     return;
   }
+
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  _state->updateState([contentOffset](const ScrollViewShadowNode::ConcreteState::Data &data) {
-    auto newData = data;
-    newData.contentOffset = contentOffset;
-    return std::make_shared<const ScrollViewShadowNode::ConcreteState::Data>(newData);
-  });
+  _state->updateState(
+      [contentOffset](
+          const ScrollViewShadowNode::ConcreteState::Data &oldData) -> ScrollViewShadowNode::ConcreteState::SharedData {
+        if (oldData.contentOffset == contentOffset) {
+          // avoid doing a state update if content offset didn't change.
+          return nullptr;
+        }
+        auto newData = oldData;
+        newData.contentOffset = contentOffset;
+        return std::make_shared<const ScrollViewShadowNode::ConcreteState::Data>(newData);
+      });
 }
 
 - (void)prepareForRecycle
@@ -595,6 +644,14 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       targetContentOffset->y = scrollView.contentOffset.y + travel * _endDraggingSensitivityMultiplier;
     }
   }
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  auto metrics = [self _scrollViewMetricsWithVelocity:velocity andTargetContentOffset:*targetContentOffset];
+
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag(metrics);
 }
 
 - (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
@@ -606,31 +663,18 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   auto scrollMetrics = [self _scrollViewMetrics];
 
-  if (props.enableSyncOnScroll) {
+  [self _updateStateWithContentOffset];
+
+  NSTimeInterval now = CACurrentMediaTime();
+  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+    _lastScrollEventDispatchTime = now;
     if (_eventEmitter) {
-      const auto &eventEmitter = static_cast<const ScrollViewEventEmitter &>(*_eventEmitter);
-      // TODO: temporary API to unblock testing of synchronous rendering.
-      eventEmitter.experimental_flushSync([&eventEmitter, &scrollMetrics, &self]() {
-        [self _updateStateWithContentOffset];
-        // TODO: temporary API to unblock testing of synchronous rendering.
-        eventEmitter.experimental_onDiscreteScroll(scrollMetrics);
-      });
+      static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll(scrollMetrics);
     }
-  } else {
-    [self _updateStateWithContentOffset];
 
-    NSTimeInterval now = CACurrentMediaTime();
-    if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
-      _lastScrollEventDispatchTime = now;
-      if (_eventEmitter) {
-        static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll(scrollMetrics);
-      }
-
-      RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag, kOnScrollEvent);
-    }
+    RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag, kOnScrollEvent);
   }
 
   [self _remountChildrenIfNeeded];
@@ -677,8 +721,6 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if (!_eventEmitter) {
     return;
   }
-
-  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
 
   [self _updateStateWithContentOffset];
 
@@ -776,7 +818,9 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     return;
   }
 
-  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
+  auto metrics = [self _scrollViewMetricsWithVelocity:{} andTargetContentOffset:{}];
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag(metrics);
+
   [self _updateStateWithContentOffset];
 }
 

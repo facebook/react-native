@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import * as React from 'react';
 import {
@@ -34,7 +34,7 @@ const DATA = [
   'Brownie',
 ];
 
-const Item = ({item, separators}: RenderItemProps<string>) => {
+const Item = ({item, separators}: ListRenderItemInfo<string>) => {
   return (
     <Pressable
       onPressIn={() => {
@@ -59,22 +59,20 @@ const Item = ({item, separators}: RenderItemProps<string>) => {
   );
 };
 
-type Props = {
+type Props = $ReadOnly<{
   exampleProps: Partial<React.ElementConfig<typeof FlatList>>,
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
   children?: ?React.Node,
-};
+}>;
 
-const BaseFlatListExample = React.forwardRef(
+const BaseFlatListExample: component(
+  ref: React.RefSetter<FlatList<string>>,
+  ...props: Props
+) = React.forwardRef(
   // $FlowFixMe[incompatible-call]
-  (
-    props: Props,
-    ref:
-      | ((null | FlatList<string>) => mixed)
-      | {current: null | FlatList<string>, ...},
-  ) => {
+  (props: Props, ref) => {
     return (
       <View style={styles.container}>
         {props.testOutput != null ? (
@@ -109,10 +107,7 @@ const BaseFlatListExample = React.forwardRef(
   },
 );
 
-export default (BaseFlatListExample: React.AbstractComponent<
-  Props,
-  FlatList<string>,
->);
+export default BaseFlatListExample;
 
 const ITEM_INNER_HEIGHT = 70;
 const ITEM_MARGIN = 8;

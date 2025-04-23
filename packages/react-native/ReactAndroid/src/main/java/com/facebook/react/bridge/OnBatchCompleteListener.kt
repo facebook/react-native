@@ -7,7 +7,10 @@
 
 package com.facebook.react.bridge
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
 /** Interface for a module that will be notified when a batch of JS->Java calls has finished. */
+@LegacyArchitecture
 public fun interface OnBatchCompleteListener {
   public fun onBatchComplete()
 }

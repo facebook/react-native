@@ -72,7 +72,7 @@ internal class ColorAnimatedNode(
       return
     }
     val context = context ?: return
-    val color = ColorPropConverter.getColor(nativeColor, context)
+    val color = ColorPropConverter.getColor(nativeColor, context) ?: return
     val rNode = nativeAnimatedNodesManager.getNodeById(rNodeId) as ValueAnimatedNode?
     val gNode = nativeAnimatedNodesManager.getNodeById(gNodeId) as ValueAnimatedNode?
     val bNode = nativeAnimatedNodesManager.getNodeById(bNodeId) as ValueAnimatedNode?

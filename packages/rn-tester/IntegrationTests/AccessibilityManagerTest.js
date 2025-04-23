@@ -10,13 +10,14 @@
 
 import invariant from 'invariant';
 import * as React from 'react';
+import {useEffect} from 'react';
 import {DeviceEventEmitter, NativeModules, View} from 'react-native';
 import NativeAccessibilityManager from 'react-native/Libraries/Components/AccessibilityInfo/NativeAccessibilityManager';
 
 const {TestModule} = NativeModules;
 
-class AccessibilityManagerTest extends React.Component<{...}> {
-  componentDidMount(): void {
+function AccessibilityManagerTest(): React.Node {
+  useEffect(() => {
     invariant(
       NativeAccessibilityManager,
       "NativeAccessibilityManager doesn't exist",
@@ -36,16 +37,20 @@ class AccessibilityManagerTest extends React.Component<{...}> {
       accessibilityExtraExtraLarge: 11.0,
       accessibilityExtraExtraExtraLarge: 12.0,
     });
-    DeviceEventEmitter.addListener('didUpdateDimensions', update => {
-      TestModule.markTestPassed(update.window.fontScale === 4.0);
-    });
-  }
 
-  render(): React.Node {
-    return <View />;
-  }
+    const subscription = DeviceEventEmitter.addListener(
+      'didUpdateDimensions',
+      update => {
+        TestModule.markTestPassed(update.window.fontScale === 4.0);
+      },
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  return <View />;
 }
 
-AccessibilityManagerTest.displayName = 'AccessibilityManagerTest';
-
-module.exports = AccessibilityManagerTest;
+export default AccessibilityManagerTest;

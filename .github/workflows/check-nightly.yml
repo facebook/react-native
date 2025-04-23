@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'facebook/react-native'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Check nightly
         run: |
           TODAY=$(date "+%Y%m%d")
@@ -24,3 +26,7 @@ jobs:
           else
             echo 'Nightly Worked, All Good!'
           fi
+
+  test-libraries:
+    uses: ./.github/workflows/test-libraries-on-nightlies.yml
+    needs: check-nightly

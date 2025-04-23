@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
@@ -30,22 +31,22 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   protected static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
   protected static final String ARG_FABRIC_ENABLED = "arg_fabric_enabled";
 
+  /**
+   * @deprecated We will remove this and use a different solution for handling Fragment lifecycle
+   *     events
+   */
+  @Deprecated
+  protected static final String ARG_DISABLE_HOST_LIFECYCLE_EVENTS =
+      "arg_disable_host_lifecycle_events";
+
   protected ReactDelegate mReactDelegate;
 
-  private final boolean mDisableHostLifecycleEvents;
+  private boolean mDisableHostLifecycleEvents;
 
   @Nullable private PermissionListener mPermissionListener;
 
   public ReactFragment() {
     // Required empty public constructor
-    this(false);
-  }
-
-  /**
-   * @param disableHostLifecycleEvents Disable forwarding lifecycle events to the {@link ReactHost}.
-   */
-  protected ReactFragment(boolean disableHostLifecycleEvents) {
-    this.mDisableHostLifecycleEvents = disableHostLifecycleEvents;
   }
 
   /**
@@ -75,13 +76,19 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
       mainComponentName = getArguments().getString(ARG_COMPONENT_NAME);
       launchOptions = getArguments().getBundle(ARG_LAUNCH_OPTIONS);
       fabricEnabled = getArguments().getBoolean(ARG_FABRIC_ENABLED);
+      mDisableHostLifecycleEvents = getArguments().getBoolean(ARG_DISABLE_HOST_LIFECYCLE_EVENTS);
     }
     if (mainComponentName == null) {
       throw new IllegalStateException("Cannot loadApp if component name is null");
     }
-    mReactDelegate =
-        new ReactDelegate(
-            getActivity(), getReactNativeHost(), mainComponentName, launchOptions, fabricEnabled);
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+      mReactDelegate =
+          new ReactDelegate(getActivity(), getReactHost(), mainComponentName, launchOptions);
+    } else {
+      mReactDelegate =
+          new ReactDelegate(
+              getActivity(), getReactNativeHost(), mainComponentName, launchOptions, fabricEnabled);
+    }
   }
 
   /**
@@ -91,8 +98,34 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactNativeHost}, e.g. as a static field somewhere.
    */
+  @Nullable
   protected ReactNativeHost getReactNativeHost() {
-    return ((ReactApplication) getActivity().getApplication()).getReactNativeHost();
+    ReactApplication application = ((ReactApplication) getActivity().getApplication());
+    if (application != null) {
+      return application.getReactNativeHost();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Get the {@link ReactHost} used by this app. By default, assumes {@link
+   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * ReactApplication#getReactHost()}. Override this method if your application class does not
+   * implement {@code ReactApplication} or you simply have a different mechanism for storing a
+   * {@code ReactHost}, e.g. as a static field somewhere.
+   *
+   * <p>If you're using Old Architecture/Bridge Mode, this method should return null as {@link
+   * ReactHost} is a Bridgeless-only concept.
+   */
+  @Nullable
+  protected ReactHost getReactHost() {
+    ReactApplication application = ((ReactApplication) getActivity().getApplication());
+    if (application != null) {
+      return application.getReactHost();
+    } else {
+      return null;
+    }
   }
 
   protected ReactDelegate getReactDelegate() {

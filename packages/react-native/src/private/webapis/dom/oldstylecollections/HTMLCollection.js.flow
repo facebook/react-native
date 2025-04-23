@@ -8,7 +8,7 @@
  * @flow strict
  */
 
-import type {ArrayLike} from './ArrayLikeUtils';
+import type {ArrayLike} from '../../utils/ArrayLikeUtils';
 
 declare export default class HTMLCollection<+T>
   implements Iterable<T>, ArrayLike<T>

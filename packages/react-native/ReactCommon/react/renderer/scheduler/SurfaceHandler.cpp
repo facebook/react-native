@@ -7,8 +7,9 @@
 
 #include "SurfaceHandler.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/uimanager/UIManager.h>
 
 namespace facebook::react {
@@ -55,7 +56,7 @@ Status SurfaceHandler::getStatus() const noexcept {
 }
 
 void SurfaceHandler::start() const noexcept {
-  SystraceSection s("SurfaceHandler::start");
+  TraceSection s("SurfaceHandler::start");
   std::unique_lock lock(linkMutex_);
   react_native_assert(
       link_.status == Status::Registered && "Surface must be registered.");
@@ -67,7 +68,7 @@ void SurfaceHandler::start() const noexcept {
 
   auto parameters = Parameters{};
   {
-    SystraceSection s2("SurfaceHandler::start::paramsLock");
+    TraceSection s2("SurfaceHandler::start::paramsLock");
     std::shared_lock parametersLock(parametersMutex_);
     parameters = parameters_;
   }
@@ -81,11 +82,15 @@ void SurfaceHandler::start() const noexcept {
 
   link_.shadowTree = shadowTree.get();
 
-  link_.uiManager->startSurface(
-      std::move(shadowTree),
-      parameters.moduleName,
-      parameters.props,
-      parameters_.displayMode);
+  if (!parameters.moduleName.empty()) {
+    link_.uiManager->startSurface(
+        std::move(shadowTree),
+        parameters.moduleName,
+        parameters.props,
+        parameters_.displayMode);
+  } else {
+    link_.uiManager->startEmptySurface(std::move(shadowTree));
+  }
 
   link_.status = Status::Running;
 
@@ -165,7 +170,7 @@ std::string SurfaceHandler::getModuleName() const noexcept {
 }
 
 void SurfaceHandler::setProps(const folly::dynamic& props) const noexcept {
-  SystraceSection s("SurfaceHandler::setProps");
+  TraceSection s("SurfaceHandler::setProps");
   auto parameters = Parameters{};
   {
     std::unique_lock lock(parametersMutex_);
@@ -206,7 +211,7 @@ SurfaceHandler::getMountingCoordinator() const noexcept {
 
 Size SurfaceHandler::measure(
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
+    const LayoutContext& layoutContext) const {
   std::shared_lock lock(linkMutex_);
 
   if (link_.status != Status::Running) {
@@ -228,10 +233,81 @@ Size SurfaceHandler::measure(
   return rootShadowNode->getLayoutMetrics().frame.size;
 }
 
+std::shared_ptr<const ShadowNode> SurfaceHandler::dirtyMeasurableNodesRecursive(
+    std::shared_ptr<const ShadowNode> node) const {
+  const auto nodeHasChildren = !node->getChildren().empty();
+  const auto isMeasurableYogaNode =
+      node->getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode);
+
+  // Node is not measurable and has no children, its layout will not be affected
+  if (!nodeHasChildren && !isMeasurableYogaNode) {
+    return nullptr;
+  }
+
+  ShadowNode::SharedListOfShared newChildren =
+      ShadowNodeFragment::childrenPlaceholder();
+
+  if (nodeHasChildren) {
+    ShadowNode::UnsharedListOfShared newChildrenMutable = nullptr;
+
+    for (size_t i = 0; i < node->getChildren().size(); i++) {
+      const auto& child = node->getChildren()[i];
+
+      if (const auto& layoutableNode =
+              std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(
+                  child)) {
+        auto newChild = dirtyMeasurableNodesRecursive(layoutableNode);
+
+        if (newChild != nullptr) {
+          if (newChildrenMutable == nullptr) {
+            newChildrenMutable =
+                std::make_shared<ShadowNode::ListOfShared>(node->getChildren());
+            newChildren = newChildrenMutable;
+          }
+
+          (*newChildrenMutable)[i] = newChild;
+        }
+      }
+    }
+
+    // Node is not measurable and its children were not dirtied, its layout will
+    // not be affected
+    if (!isMeasurableYogaNode && newChildrenMutable == nullptr) {
+      return nullptr;
+    }
+  }
+
+  const auto newNode = node->getComponentDescriptor().cloneShadowNode(
+      *node,
+      {
+          .children = newChildren,
+          // Preserve the original state of the node
+          .state = node->getState(),
+      });
+
+  if (isMeasurableYogaNode) {
+    std::static_pointer_cast<YogaLayoutableShadowNode>(newNode)->dirtyLayout();
+  }
+
+  return newNode;
+}
+
+void SurfaceHandler::dirtyMeasurableNodes(ShadowNode& root) const {
+  for (const auto& child : root.getChildren()) {
+    if (const auto& layoutableNode =
+            std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child)) {
+      const auto newChild = dirtyMeasurableNodesRecursive(layoutableNode);
+      if (newChild != nullptr) {
+        root.replaceChild(*child, newChild);
+      }
+    }
+  }
+}
+
 void SurfaceHandler::constraintLayout(
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
-  SystraceSection s("SurfaceHandler::constraintLayout");
+    const LayoutContext& layoutContext) const {
+  TraceSection s("SurfaceHandler::constraintLayout");
   {
     std::unique_lock lock(parametersMutex_);
 
@@ -258,8 +334,19 @@ void SurfaceHandler::constraintLayout(
         link_.shadowTree && "`link_.shadowTree` must not be null.");
     link_.shadowTree->commit(
         [&](const RootShadowNode& oldRootShadowNode) {
-          return oldRootShadowNode.clone(
+          auto newRoot = oldRootShadowNode.clone(
               propsParserContext, layoutConstraints, layoutContext);
+
+          // Dirty all measurable nodes when the fontSizeMultiplier changes to
+          // trigger re-measurement.
+          if (ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() &&
+              layoutContext.fontSizeMultiplier !=
+                  oldRootShadowNode.getConcreteProps()
+                      .layoutContext.fontSizeMultiplier) {
+            dirtyMeasurableNodes(*newRoot);
+          }
+
+          return newRoot;
         },
         {/* default commit options */});
   }
@@ -277,8 +364,8 @@ LayoutContext SurfaceHandler::getLayoutContext() const noexcept {
 
 #pragma mark - Private
 
-void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
-  SystraceSection s("SurfaceHandler::applyDisplayMode");
+void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const {
+  TraceSection s("SurfaceHandler::applyDisplayMode");
   react_native_assert(
       link_.status == Status::Running && "Surface must be running.");
   react_native_assert(

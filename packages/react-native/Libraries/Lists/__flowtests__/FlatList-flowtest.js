@@ -10,7 +10,7 @@
 
 'use strict';
 
-const FlatList = require('../FlatList');
+const FlatList = require('../FlatList').default;
 const React = require('react');
 
 function renderMyListItem(info: {
@@ -75,7 +75,7 @@ module.exports = {
     );
   },
 
-  testBadRenderItemFunction(): $TEMPORARY$array<React.Node> {
+  testBadRenderItemFunction(): $ReadOnlyArray<React.Node> {
     const data = [
       {
         title: 'foo',
@@ -105,7 +105,7 @@ module.exports = {
     ];
   },
 
-  testOtherBadProps(): $TEMPORARY$array<React.Node> {
+  testOtherBadProps(): $ReadOnlyArray<React.Node> {
     return [
       // $FlowExpectedError - bad numColumns type "lots"
       <FlatList renderItem={renderMyListItem} data={[]} numColumns="lots" />,

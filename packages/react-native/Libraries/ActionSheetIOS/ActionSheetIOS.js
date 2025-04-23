@@ -16,6 +16,39 @@ import RCTActionSheetManager from './NativeActionSheetManager';
 const processColor = require('../StyleSheet/processColor').default;
 const invariant = require('invariant');
 
+export type ActionSheetIOSOptions = $ReadOnly<{
+  title?: ?string,
+  message?: ?string,
+  options: Array<string>,
+  destructiveButtonIndex?: ?number | ?Array<number>,
+  cancelButtonIndex?: ?number,
+  anchor?: ?number,
+  tintColor?: ColorValue | ProcessedColorValue,
+  cancelButtonTintColor?: ColorValue | ProcessedColorValue,
+  disabledButtonTintColor?: ColorValue | ProcessedColorValue,
+  userInterfaceStyle?: string,
+  disabledButtonIndices?: Array<number>,
+}>;
+
+export type ShareActionSheetIOSOptions = $ReadOnly<{
+  message?: ?string,
+  url?: ?string,
+  subject?: ?string,
+  anchor?: ?number,
+  tintColor?: ?number,
+  cancelButtonTintColor?: ?number,
+  disabledButtonTintColor?: ?number,
+  excludedActivityTypes?: ?Array<string>,
+  userInterfaceStyle?: ?string,
+}>;
+
+export type ShareActionSheetError = $ReadOnly<{
+  domain: string,
+  code: string,
+  userInfo?: ?Object,
+  message: string,
+}>;
+
 /**
  * Display action sheets and share sheets on iOS.
  *
@@ -40,18 +73,7 @@ const ActionSheetIOS = {
    * See https://reactnative.dev/docs/actionsheetios#showactionsheetwithoptions
    */
   showActionSheetWithOptions(
-    options: {|
-      +title?: ?string,
-      +message?: ?string,
-      +options: Array<string>,
-      +destructiveButtonIndex?: ?number | ?Array<number>,
-      +cancelButtonIndex?: ?number,
-      +anchor?: ?number,
-      +tintColor?: ColorValue | ProcessedColorValue,
-      +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
-      +userInterfaceStyle?: string,
-      +disabledButtonIndices?: Array<number>,
-    |},
+    options: ActionSheetIOSOptions,
     callback: (buttonIndex: number) => void,
   ) {
     invariant(
@@ -64,6 +86,7 @@ const ActionSheetIOS = {
     const {
       tintColor,
       cancelButtonTintColor,
+      disabledButtonTintColor,
       destructiveButtonIndex,
       ...remainingOptions
     } = options;
@@ -77,6 +100,10 @@ const ActionSheetIOS = {
 
     const processedTintColor = processColor(tintColor);
     const processedCancelButtonTintColor = processColor(cancelButtonTintColor);
+    const processedDisabledButtonTintColor = processColor(
+      disabledButtonTintColor,
+    );
+
     invariant(
       processedTintColor == null || typeof processedTintColor === 'number',
       'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions tintColor',
@@ -86,6 +113,11 @@ const ActionSheetIOS = {
         typeof processedCancelButtonTintColor === 'number',
       'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions cancelButtonTintColor',
     );
+    invariant(
+      processedDisabledButtonTintColor == null ||
+        typeof processedDisabledButtonTintColor === 'number',
+      'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions disabledButtonTintColor',
+    );
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
@@ -93,6 +125,8 @@ const ActionSheetIOS = {
         tintColor: processedTintColor,
         // $FlowFixMe[incompatible-call]
         cancelButtonTintColor: processedCancelButtonTintColor,
+        // $FlowFixMe[incompatible-call]
+        disabledButtonTintColor: processedDisabledButtonTintColor,
         destructiveButtonIndices,
       },
       callback,
@@ -123,9 +157,9 @@ const ActionSheetIOS = {
    * See https://reactnative.dev/docs/actionsheetios#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
-    options: Object,
-    failureCallback: Function,
-    successCallback: Function,
+    options: ShareActionSheetIOSOptions,
+    failureCallback: Function | ((error: ShareActionSheetError) => void),
+    successCallback: Function | ((success: boolean, method: ?string) => void),
   ) {
     invariant(
       typeof options === 'object' && options !== null,
@@ -141,7 +175,7 @@ const ActionSheetIOS = {
     );
     invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
     RCTActionSheetManager.showShareActionSheetWithOptions(
-      {...options, tintColor: processColor(options.tintColor)},
+      {...options, tintColor: processColor(options.tintColor) as $FlowFixMe},
       failureCallback,
       successCallback,
     );
@@ -159,4 +193,4 @@ const ActionSheetIOS = {
   },
 };
 
-module.exports = ActionSheetIOS;
+export default ActionSheetIOS;

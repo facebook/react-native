@@ -27,8 +27,11 @@ class EventPerformanceLogger : public EventLogger,
 
 #pragma mark - EventLogger
 
-  EventTag onEventStart(std::string_view name, SharedEventTarget target)
-      override;
+  EventTag onEventStart(
+      std::string_view name,
+      SharedEventTarget target,
+      DOMHighResTimeStamp eventStartTimeStamp =
+          DOM_HIGH_RES_TIME_STAMP_UNSET) override;
   void onEventProcessingStart(EventTag tag) override;
   void onEventProcessingEnd(EventTag tag) override;
 

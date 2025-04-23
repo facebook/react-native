@@ -11,7 +11,7 @@
 'use strict';
 
 describe('clamp', () => {
-  const clamp = require('../clamp');
+  const clamp = require('../clamp').default;
 
   it('should return the value if the value does not exceed boundaries', () => {
     expect(clamp(0, 5, 10)).toEqual(5);

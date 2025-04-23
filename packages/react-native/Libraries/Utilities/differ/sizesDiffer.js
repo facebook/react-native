@@ -13,7 +13,7 @@
 const dummySize = {width: undefined, height: undefined};
 type Size = {width: ?number, height: ?number};
 
-const sizesDiffer = function (one: Size, two: Size): boolean {
+function sizesDiffer(one: Size, two: Size): boolean {
   const defaultedOne = one || dummySize;
   const defaultedTwo = two || dummySize;
   return (
@@ -21,6 +21,6 @@ const sizesDiffer = function (one: Size, two: Size): boolean {
     (defaultedOne.width !== defaultedTwo.width ||
       defaultedOne.height !== defaultedTwo.height)
   );
-};
+}
 
-module.exports = sizesDiffer;
+export default sizesDiffer;

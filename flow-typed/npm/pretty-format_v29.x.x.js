@@ -19,7 +19,6 @@ declare type Colors = {
   tag: {close: string, open: string},
   value: {close: string, open: string},
 };
-declare type CompareKeys = ((a: string, b: string) => number) | null | void;
 
 declare type PrettyFormatPlugin =
   | {
@@ -38,6 +37,10 @@ declare type PrettyFormatPlugin =
     };
 
 declare module 'pretty-format' {
+  declare export type CompareKeys =
+    | ((a: string, b: string) => number)
+    | null
+    | void;
   declare export function format(
     value: mixed,
     options?: ?{

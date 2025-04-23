@@ -126,8 +126,10 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +passBool?: (arg: boolean) => void;
   +passNumber: (arg: number) => void;
+  +passNumberLiteral: (arg: 4) => void;
   +passString: (arg: string) => void;
   +passStringish: (arg: Stringish) => void;
+  +passStringLiteral: (arg: 'A String Literal') => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -162,6 +164,7 @@ export type ObjectAlias = {|
   label: string,
   truthy: boolean,
 |};
+export type PureObjectAlias = ObjectAlias;
 export type ReadOnlyAlias = $ReadOnly<ObjectAlias>;
 
 export interface Spec extends TurboModule {
@@ -171,6 +174,7 @@ export interface Spec extends TurboModule {
   +getArray: (a: Array<A>) => {| a: B |};
   +getStringFromAlias: (a: ObjectAlias) => string;
   +getStringFromNullableAlias: (a: ?ObjectAlias) => string;
+  +getStringFromPureAlias: (a: PureObjectAlias) => string;
   +getStringFromReadOnlyAlias: (a: ReadOnlyAlias) => string;
   +getStringFromNullableReadOnlyAlias: (a: ?ReadOnlyAlias) => string;
 }
@@ -617,7 +621,35 @@ export interface Spec extends TurboModule {
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
 
+const NATIVE_MODULE_WITH_UNION_RETURN_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict
+ * @format
+ */
+
+import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getStringUnion: () => 'light' | 'dark';
+  +setStringUnion: (strings: 'light' | 'dark') => void;
+
+  +getNumberUnion: () => 1 | 2;
+  +setNumberUnion: (numbers: 1 | 2) => void;
+
+  +getObjectUnion: () => {a: 1} | {b: 2};
+  +setObjectUnion: (objects: {a: 1} | {b: 2}) => void;
+}
+
+export default (TurboModuleRegistry.get<Spec>('SampleTurboModule'): ?Spec);
 `;
 
 const NATIVE_MODULE_WITH_EVENT_EMITTERS = `
@@ -750,6 +782,7 @@ export enum Quality {
 }
 
 export enum Resolution {
+  Corrupted = -1,
   Low = 720,
   High = 1080,
 }
@@ -780,7 +813,7 @@ export type CustomDeviceEvent = {
 export interface Spec extends TurboModule {
   +getCallback: () => () => void;
   +getMixed: (arg: mixed) => mixed;
-  +getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => string;
+  +getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => Quality;
   +getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   +getGraphNode: (arg: GraphNode) => GraphNode;
   +getMap: (arg: {[a: string]: ?number}) => {[b: string]: ?number};
@@ -831,6 +864,95 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
+const NAMESPACED_NATIVE_MODULE_WITH_FLOAT_AND_INT32 = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {CodegenTypes} from 'react-native';
+
+export interface Spec extends TurboModule {
+  +getInt: (arg: CodegenTypes.Int32) => CodegenTypes.Int32;
+  +getFloat: (arg: CodegenTypes.Float) => CodegenTypes.Float;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const NAMESPACED_NATIVE_MODULE_WITH_UNSAFE_OBJECT = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {CodegenTypes} from 'react-native';
+
+export interface Spec extends TurboModule {
+  +getUnsafeObject: (o: CodegenTypes.UnsafeObject) => CodegenTypes.UnsafeObject,
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NAMESPACED_NATIVE_MODULE_WITH_EVENT_EMITTERS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import type {CodegenTypes} from 'react-native';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type ObjectStruct = {
+  a: number,
+  b: string,
+  c?: ?string,
+};
+
+export type MappedObject = {[string]: string};
+
+export interface Spec extends TurboModule {
+  +onEvent1: EventEmitter<void>;
+  +onEvent2: EventEmitter<string>;
+  +onEvent3: EventEmitter<number>;
+  +onEvent4: EventEmitter<boolean>;
+  +onEvent5: EventEmitter<ObjectStruct>;
+  +onEvent6: EventEmitter<ObjectStruct[]>;
+  +onEvent7: EventEmitter<MappedObject>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 module.exports = {
   NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
@@ -852,10 +974,15 @@ module.exports = {
   NATIVE_MODULE_WITH_BASIC_PARAM_TYPES,
   NATIVE_MODULE_WITH_CALLBACK,
   NATIVE_MODULE_WITH_UNION,
+  NATIVE_MODULE_WITH_UNION_RETURN_TYPES,
   NATIVE_MODULE_WITH_EVENT_EMITTERS,
   EMPTY_NATIVE_MODULE,
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,
   CXX_ONLY_NATIVE_MODULE,
   PROMISE_WITH_COMMONLY_USED_TYPES,
+
+  NAMESPACED_NATIVE_MODULE_WITH_FLOAT_AND_INT32,
+  NAMESPACED_NATIVE_MODULE_WITH_UNSAFE_OBJECT,
+  NAMESPACED_NATIVE_MODULE_WITH_EVENT_EMITTERS,
 };

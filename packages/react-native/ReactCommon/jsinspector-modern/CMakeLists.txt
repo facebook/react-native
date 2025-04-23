@@ -6,12 +6,8 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
-        -fexceptions
-        -std=c++20)
-
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB jsinspector_SRC CONFIGURE_DEPENDS *.cpp)
 # jsinspector contains singletons that hold app-global state (InspectorFlags, InspectorImpl).
@@ -25,7 +21,13 @@ target_include_directories(jsinspector PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(jsinspector
         folly_runtime
         glog
+        jsinspector_network
+        jsinspector_tracing
         react_featureflags
         runtimeexecutor
-        reactperflogger
+)
+target_compile_reactnative_options(jsinspector PRIVATE)
+target_compile_options(jsinspector PRIVATE
+        $<$<CONFIG:Debug>:-DREACT_NATIVE_DEBUGGER_ENABLED=1>
+        $<$<CONFIG:Debug>:-DREACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1>
 )

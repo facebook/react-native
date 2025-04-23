@@ -18,7 +18,9 @@ import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
-import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.runtime.JSCInstance
+import com.facebook.react.runtime.JSRuntimeFactory
+import com.facebook.react.runtime.hermes.HermesInstance
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.ViewManagerResolver
 
@@ -63,8 +65,7 @@ protected constructor(
                     reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
               }
 
-          FabricUIManagerProviderImpl(
-                  componentFactory, ReactNativeConfig.DEFAULT_CONFIG, viewManagerRegistry)
+          FabricUIManagerProviderImpl(componentFactory, viewManagerRegistry)
               .createUIManager(reactApplicationContext)
         }
       } else {
@@ -77,6 +78,11 @@ protected constructor(
         false -> JSEngineResolutionAlgorithm.JSC
         null -> null
       }
+
+  override fun clear() {
+    super.clear()
+    DefaultReactHost.invalidate()
+  }
 
   /**
    * Returns whether the user wants to use the New Architecture or not.
@@ -105,14 +111,20 @@ protected constructor(
    * @param context the Android [Context] to use for creating the [ReactHost]
    */
   @UnstableReactNativeAPI
-  internal fun toReactHost(context: Context): ReactHost =
-      DefaultReactHost.getDefaultReactHost(
-          context,
-          packages,
-          jsMainModuleName,
-          bundleAssetName ?: "index",
-          null,
-          isHermesEnabled ?: true,
-          useDeveloperSupport,
-      )
+  internal fun toReactHost(
+      context: Context,
+      jsRuntimeFactory: JSRuntimeFactory? = null
+  ): ReactHost {
+    val concreteJSRuntimeFactory =
+        jsRuntimeFactory ?: if (isHermesEnabled == false) JSCInstance() else HermesInstance()
+    return DefaultReactHost.getDefaultReactHost(
+        context,
+        packages,
+        jsMainModuleName,
+        bundleAssetName ?: "index",
+        jsBundleFile,
+        concreteJSRuntimeFactory,
+        useDeveloperSupport,
+    )
+  }
 }

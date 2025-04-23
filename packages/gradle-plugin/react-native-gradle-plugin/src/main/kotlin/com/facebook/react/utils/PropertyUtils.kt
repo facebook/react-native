@@ -14,13 +14,28 @@ object PropertyUtils {
   const val NEW_ARCH_ENABLED = "newArchEnabled"
   const val SCOPED_NEW_ARCH_ENABLED = "react.newArchEnabled"
 
+  /** Public property that toggles the Legacy Architecture Warnings */
+  const val LEGACY_WARNINGS_ENABLED = "legacyWarningsEnabled"
+  const val SCOPED_LEGACY_WARNINGS_ENABLED = "react.legacyWarningsEnabled"
+
   /** Public property that toggles the New Architecture */
   const val HERMES_ENABLED = "hermesEnabled"
   const val SCOPED_HERMES_ENABLED = "react.hermesEnabled"
 
+  /** Public property that excludes jsctooling from core */
+  const val USE_THIRD_PARTY_JSC = "useThirdPartyJSC"
+  const val SCOPED_USE_THIRD_PARTY_JSC = "react.useThirdPartyJSC"
+
   /** Public property that allows to control which architectures to build for React Native. */
   const val REACT_NATIVE_ARCHITECTURES = "reactNativeArchitectures"
   const val SCOPED_REACT_NATIVE_ARCHITECTURES = "react.nativeArchitectures"
+
+  /** Public property that allows to control whether the JitPack repository is included or not */
+  const val INCLUDE_JITPACK_REPOSITORY = "includeJitpackRepository"
+  const val SCOPED_INCLUDE_JITPACK_REPOSITORY = "react.includeJitpackRepository"
+
+  /** By default we include JitPack to avoid breaking user builds */
+  internal const val INCLUDE_JITPACK_REPOSITORY_DEFAULT = true
 
   /**
    * Internal Property that acts as a killswitch to configure the JDK version and align it for app

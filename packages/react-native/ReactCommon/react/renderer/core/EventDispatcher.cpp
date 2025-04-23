@@ -7,7 +7,6 @@
 
 #include "EventDispatcher.h"
 #include <cxxreact/JSExecutor.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/StateUpdate.h>
 
 #include "EventQueue.h"
@@ -17,15 +16,10 @@ namespace facebook::react {
 
 EventDispatcher::EventDispatcher(
     const EventQueueProcessor& eventProcessor,
-    const EventBeat::Factory& asynchronousEventBeatFactory,
-    const EventBeat::SharedOwnerBox& ownerBox,
-    RuntimeScheduler& runtimeScheduler,
+    std::unique_ptr<EventBeat> eventBeat,
     StatePipe statePipe,
     std::weak_ptr<EventLogger> eventLogger)
-    : eventQueue_(EventQueue(
-          eventProcessor,
-          asynchronousEventBeatFactory(ownerBox),
-          runtimeScheduler)),
+    : eventQueue_(EventQueue(eventProcessor, std::move(eventBeat))),
       statePipe_(std::move(statePipe)),
       eventLogger_(std::move(eventLogger)) {}
 
@@ -37,8 +31,8 @@ void EventDispatcher::dispatchEvent(RawEvent&& rawEvent) const {
 
   auto eventLogger = eventLogger_.lock();
   if (eventLogger != nullptr) {
-    rawEvent.loggingTag =
-        eventLogger->onEventStart(rawEvent.type, rawEvent.eventTarget);
+    rawEvent.loggingTag = eventLogger->onEventStart(
+        rawEvent.type, rawEvent.eventTarget, rawEvent.eventStartTimeStamp);
   }
   eventQueue_.enqueueEvent(std::move(rawEvent));
 }
@@ -48,11 +42,7 @@ void EventDispatcher::experimental_flushSync() const {
 }
 
 void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate) const {
-  if (ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
-    statePipe_(stateUpdate);
-  } else {
-    eventQueue_.enqueueStateUpdate(std::move(stateUpdate));
-  }
+  eventQueue_.enqueueStateUpdate(std::move(stateUpdate));
 }
 
 void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {

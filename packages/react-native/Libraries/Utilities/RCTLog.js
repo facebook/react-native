@@ -53,4 +53,4 @@ const RCTLog = {
   },
 };
 
-module.exports = RCTLog;
+export default RCTLog;

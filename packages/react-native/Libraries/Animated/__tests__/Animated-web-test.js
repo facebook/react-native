@@ -8,13 +8,16 @@
  * @oncall react_native
  */
 
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+const StyleSheet = require('../../StyleSheet/StyleSheet').default;
 let Animated = require('../Animated').default;
 let AnimatedProps = require('../nodes/AnimatedProps').default;
 
-jest.mock('../../Utilities/Platform', () => {
-  return {OS: 'web'};
-});
+jest.mock('../../Utilities/Platform', () => ({
+  __esModule: true,
+  default: {
+    OS: 'web',
+  },
+}));
 
 describe('Animated tests', () => {
   beforeEach(() => {

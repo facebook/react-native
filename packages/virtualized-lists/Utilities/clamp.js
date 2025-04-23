@@ -20,4 +20,4 @@ function clamp(min: number, value: number, max: number): number {
   return value;
 }
 
-module.exports = clamp;
+export default clamp;

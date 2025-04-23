@@ -10,6 +10,7 @@
 
 import * as IntersectionObserverBenchmark from './IntersectionObserverBenchmark';
 import * as IntersectionObserverMDNExample from './IntersectionObserverMDNExample';
+import * as IntersectionObserverRootThreshold from './IntersectionObserverRootThreshold';
 
 export const framework = 'React';
 export const title = 'IntersectionObserver';
@@ -22,4 +23,5 @@ export const showIndividualExamples = true;
 export const examples = [
   IntersectionObserverMDNExample,
   IntersectionObserverBenchmark,
+  IntersectionObserverRootThreshold,
 ];

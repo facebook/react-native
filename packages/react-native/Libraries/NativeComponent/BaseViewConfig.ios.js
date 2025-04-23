@@ -10,6 +10,8 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
+import NativeReactNativeFeatureFlags from '../../src/private/featureflags/specs/NativeReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {
   ConditionallyIgnoredEventHandlers,
@@ -195,19 +197,20 @@ const validAttributesForNonEventProps = {
   accessibilityIgnoresInvertColors: true,
   accessibilityShowsLargeContentViewer: true,
   accessibilityLargeContentTitle: true,
+  experimental_accessibilityOrder: true,
   testID: true,
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   backfaceVisibility: true,
   cursor: true,
   opacity: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
-  shadowOffset: {diff: require('../Utilities/differ/sizesDiffer')},
+  shadowOffset: {diff: require('../Utilities/differ/sizesDiffer').default},
   shadowOpacity: true,
   shadowRadius: true,
   needsOffscreenAlphaCompositing: true,
   overflow: true,
   shouldRasterizeIOS: true,
-  transform: {diff: require('../Utilities/differ/matricesDiffer')},
+  transform: {diff: require('../Utilities/differ/matricesDiffer').default},
   transformOrigin: true,
   accessibilityRole: true,
   accessibilityState: true,
@@ -222,16 +225,24 @@ const validAttributesForNonEventProps = {
   borderWidth: true,
   borderBlockWidth: true,
   borderStyle: true,
-  hitSlop: {diff: require('../Utilities/differ/insetsDiffer')},
+  hitSlop: {diff: require('../Utilities/differ/insetsDiffer').default},
   collapsable: true,
   collapsableChildren: true,
-  filter: {
-    process: require('../StyleSheet/processFilter').default,
-  },
-  boxShadow: {
-    process: require('../StyleSheet/processBoxShadow').default,
-  },
-  experimental_mixBlendMode: true,
+  filter:
+    NativeReactNativeFeatureFlags != null &&
+    ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? true
+      : {
+          process: require('../StyleSheet/processFilter').default,
+        },
+  boxShadow:
+    NativeReactNativeFeatureFlags != null &&
+    ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? true
+      : {
+          process: require('../StyleSheet/processBoxShadow').default,
+        },
+  mixBlendMode: true,
   isolation: true,
 
   borderTopWidth: true,
@@ -348,6 +359,7 @@ const validAttributesForNonEventProps = {
   alignContent: true,
   position: true,
   aspectRatio: true,
+  boxSizing: true,
 
   // Also declared as ViewProps
   // overflow: true,
@@ -356,8 +368,6 @@ const validAttributesForNonEventProps = {
   direction: true,
 
   style: ReactNativeStyleAttributes,
-
-  experimental_layoutConformance: true,
 };
 
 // Props for bubbling and direct events

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Promise = require('promise/setimmediate/es6-extensions');
+import Promise from 'promise/setimmediate/es6-extensions';
 
 require('promise/setimmediate/finally');
 
@@ -20,4 +20,4 @@ if (__DEV__) {
   );
 }
 
-module.exports = Promise;
+export default Promise;

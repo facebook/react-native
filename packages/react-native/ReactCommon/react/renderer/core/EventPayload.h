@@ -10,6 +10,8 @@
 #include <jsi/jsi.h>
 
 #include <react/renderer/core/EventPayloadType.h>
+#include <optional>
+#include <vector>
 
 namespace facebook::react {
 
@@ -33,6 +35,17 @@ struct EventPayload {
    * in `EventPayloadType` and return it from its overriden `getType()` method.
    */
   virtual EventPayloadType getType() const = 0;
+
+  /**
+   * Used to extract numeric values from the event payload based on
+   * property path names as they will exist in JavaScript. This can
+   * be used in conjunction with listeners on EventEmitters to do
+   * things like drive native animations.
+   */
+  virtual std::optional<double> extractValue(
+      const std::vector<std::string>& /* path */) const {
+    return std::nullopt;
+  }
 };
 
 using SharedEventPayload = std::shared_ptr<const EventPayload>;

@@ -15,23 +15,18 @@ import type {
   ViewLayoutEvent,
 } from 'react-native/Libraries/Components/View/ViewPropTypes';
 
-const React = require('react');
-const {
-  Image,
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  View,
-} = require('react-native');
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {Image, LayoutAnimation, StyleSheet, View} from 'react-native';
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 type State = {
-  containerStyle?: {|width: number|},
+  containerStyle?: {width: number},
   extraText?: string,
   imageLayout?: ViewLayout,
   textLayout?: ViewLayout,
   viewLayout?: ViewLayout,
-  viewStyle: {|margin: number|},
+  viewStyle: {margin: number},
   ...
 };
 
@@ -86,15 +81,18 @@ class LayoutEventExample extends React.Component<Props, State> {
     const imageLayout = this.state.imageLayout || {x: '?', y: '?'};
     return (
       <View style={this.state.containerStyle}>
-        <Text>
+        <RNTesterText>
           layout events are called on mount and whenever layout is recalculated.
           Note that the layout event will typically be received{' '}
-          <Text style={styles.italicText}>before</Text> the layout has updated
-          on screen, especially when using layout animations.{'  '}
-          <Text style={styles.pressText} onPress={this.animateViewLayout}>
+          <RNTesterText style={styles.italicText}>before</RNTesterText> the
+          layout has updated on screen, especially when using layout animations.
+          {'  '}
+          <RNTesterText
+            style={styles.pressText}
+            onPress={this.animateViewLayout}>
             Press here to change layout.
-          </Text>
-        </Text>
+          </RNTesterText>
+        </RNTesterText>
         <View onLayout={this.onViewLayout} style={viewStyle}>
           <Image
             onLayout={this.onImageLayout}
@@ -103,7 +101,7 @@ class LayoutEventExample extends React.Component<Props, State> {
               uri: 'https://www.facebook.com/favicon.ico',
             }}
           />
-          <Text>
+          <RNTesterText>
             ViewLayout:{' '}
             {
               /* $FlowFixMe[incompatible-type] (>=0.95.0 site=react_native_fb)
@@ -113,15 +111,15 @@ class LayoutEventExample extends React.Component<Props, State> {
               // $FlowFixMe[unsafe-addition]
               JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'
             }
-          </Text>
-          <Text onLayout={this.onTextLayout} style={styles.text}>
+          </RNTesterText>
+          <RNTesterText onLayout={this.onTextLayout} style={styles.text}>
             A simple piece of text.{this.state.extraText}
-          </Text>
-          <Text>
+          </RNTesterText>
+          <RNTesterText>
             {'\n'}
             Text w/h: {textLayout.width}/{textLayout.height + '\n'}
             Image x/y: {imageLayout.x}/{imageLayout.y}
-          </Text>
+          </RNTesterText>
         </View>
       </View>
     );

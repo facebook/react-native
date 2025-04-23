@@ -56,7 +56,7 @@ SharedColor parsePlatformColor(const ContextContainer &contextContainer, int32_t
     auto items = (std::unordered_map<std::string, RawValue>)value;
     if (items.find("semantic") != items.end() && items.at("semantic").hasType<std::vector<std::string>>()) {
       auto semanticItems = (std::vector<std::string>)items.at("semantic");
-      return {wrapManagedObject(RCTPlatformColorFromSemanticItems(semanticItems))};
+      return SharedColor(Color::createSemanticColor(semanticItems));
     } else if (
         items.find("dynamic") != items.end() &&
         items.at("dynamic").hasType<std::unordered_map<std::string, RawValue>>()) {

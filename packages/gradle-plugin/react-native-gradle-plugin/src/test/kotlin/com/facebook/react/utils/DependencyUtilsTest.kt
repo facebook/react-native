@@ -14,6 +14,7 @@ import com.facebook.react.utils.DependencyUtils.getDependencySubstitutions
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
 import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
+import com.facebook.react.utils.DependencyUtils.shouldAddJitPack
 import java.net.URI
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
@@ -33,7 +34,7 @@ class DependencyUtilsTest {
     val project = createProject()
     project.extensions.extraProperties.set("react.internal.mavenLocalRepo", localMaven.absolutePath)
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -47,24 +48,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://oss.sonatype.org/content/repositories/snapshots/")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
-
-    assertThat(
-            project.repositories.firstOrNull {
-              it is MavenArtifactRepository && it.url == repositoryURI
-            })
-        .isNotNull()
-  }
-
-  @Test
-  fun configureRepositories_containsJscLocalMavenRepo() {
-    val projectFolder = tempFolder.newFolder()
-    val reactNativeDir = tempFolder.newFolder("react-native")
-    val jscAndroidDir = tempFolder.newFolder("jsc-android")
-    val repositoryURI = URI.create("file://${jscAndroidDir}/dist")
-    val project = createProject(projectFolder)
-
-    configureRepositories(project, reactNativeDir)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -78,7 +62,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -92,7 +76,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://dl.google.com/dl/android/maven2/")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -106,7 +90,61 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://www.jitpack.io")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            })
+        .isNotNull()
+  }
+
+  @Test
+  fun configureRepositories_withIncludeJitpackRepositoryFalse_doesNotContainJitPack() {
+    val repositoryURI = URI.create("https://www.jitpack.io")
+    var project = createProject()
+    project.extensions.extraProperties.set("includeJitpackRepository", "false")
+
+    configureRepositories(project)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            })
+        .isNull()
+
+    // We test both with scoped and unscoped property
+    project = createProject()
+    project.extensions.extraProperties.set("react.includeJitpackRepository", "false")
+
+    configureRepositories(project)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            })
+        .isNull()
+  }
+
+  @Test
+  fun configureRepositories_withincludeJitpackRepositoryTrue_containJitPack() {
+    val repositoryURI = URI.create("https://www.jitpack.io")
+    var project = createProject()
+    project.extensions.extraProperties.set("includeJitpackRepository", "true")
+
+    configureRepositories(project)
+
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            })
+        .isNotNull()
+
+    // We test both with scoped and unscoped property
+    project = createProject()
+    project.extensions.extraProperties.set("react.includeJitpackRepository", "true")
+
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -123,7 +161,7 @@ class DependencyUtilsTest {
     val project = createProject()
     project.extensions.extraProperties.set("react.internal.mavenLocalRepo", localMaven.absolutePath)
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     val indexOfLocalRepo =
         project.repositories.indexOfFirst {
@@ -142,7 +180,7 @@ class DependencyUtilsTest {
     val mavenCentralURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     val indexOfSnapshotRepo =
         project.repositories.indexOfFirst {
@@ -162,7 +200,7 @@ class DependencyUtilsTest {
     val appProject = ProjectBuilder.builder().withName("app").withParent(rootProject).build()
     val libProject = ProjectBuilder.builder().withName("lib").withParent(rootProject).build()
 
-    configureRepositories(appProject, tempFolder.root)
+    configureRepositories(appProject)
 
     assertThat(
             appProject.repositories.firstOrNull {
@@ -188,7 +226,7 @@ class DependencyUtilsTest {
       repo.content { content -> content.excludeGroup("com.facebook.react") }
     }
 
-    configureRepositories(appProject, tempFolder.root)
+    configureRepositories(appProject)
 
     // We need to make sure we have Maven Central defined twice, one by the library,
     // and another is the override by RNGP.
@@ -420,5 +458,25 @@ class DependencyUtilsTest {
     val mavenRepo = process.mavenRepoFromURI(repoFolder.toURI())
 
     assertThat(mavenRepo.url).isEqualTo(repoFolder.toURI())
+  }
+
+  @Test
+  fun shouldAddJitPack_withScopedProperty() {
+    val project = createProject(tempFolder.root)
+    project.extensions.extraProperties.set("react.includeJitpackRepository", "false")
+    assertThat(project.shouldAddJitPack()).isFalse()
+  }
+
+  @Test
+  fun shouldAddJitPack_withUnscopedProperty() {
+    val project = createProject(tempFolder.root)
+    project.extensions.extraProperties.set("react.includeJitpackRepository", "false")
+    assertThat(project.shouldAddJitPack()).isFalse()
+  }
+
+  @Test
+  fun shouldAddJitPack_defaultIsTrue() {
+    val project = createProject(tempFolder.root)
+    assertThat(project.shouldAddJitPack()).isTrue()
   }
 }

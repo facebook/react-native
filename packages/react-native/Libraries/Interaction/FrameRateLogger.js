@@ -69,4 +69,4 @@ const FrameRateLogger = {
   },
 };
 
-module.exports = FrameRateLogger;
+export default FrameRateLogger;

@@ -9,9 +9,10 @@
 
 namespace facebook::react {
 
-void* TextLayoutManager::getNativeTextLayoutManager() const {
-  return (void*)this;
-}
+TextLayoutManager::TextLayoutManager(
+    const ContextContainer::Shared& /*contextContainer*/)
+    : textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
+      lineMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
@@ -28,12 +29,14 @@ TextMeasurement TextLayoutManager::measure(
   return TextMeasurement{{0, 0}, attachments};
 }
 
+#ifdef ANDROID
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t /*cacheId*/,
     const ParagraphAttributes& /*paragraphAttributes*/,
     const LayoutConstraints& /*layoutConstraints*/) const {
   return {};
 }
+#endif
 
 LinesMeasurements TextLayoutManager::measureLines(
     const AttributedStringBox& /*attributedStringBox*/,
@@ -41,12 +44,5 @@ LinesMeasurements TextLayoutManager::measureLines(
     const Size& /*size*/) const {
   return {};
 };
-
-Float TextLayoutManager::baseline(
-    const AttributedStringBox& /*attributedStringBox*/,
-    const ParagraphAttributes& /*paragraphAttributes*/,
-    const Size& /*size*/) const {
-  return 0;
-}
 
 } // namespace facebook::react

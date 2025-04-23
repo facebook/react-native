@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeImageLoaderAndroid';
-import NativeImageLoaderAndroid from '../../src/private/specs/modules/NativeImageLoaderAndroid';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeImageLoaderAndroid';
+import NativeImageLoaderAndroid from '../../src/private/specs_DEPRECATED/modules/NativeImageLoaderAndroid';
 export default NativeImageLoaderAndroid;

@@ -9,7 +9,13 @@
  * @oncall react_native
  */
 
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as StaticViewConfigValidator from '../StaticViewConfigValidator';
+
+beforeAll(() => {
+  // $FlowExpectedError[cannot-write]
+  ReactNativeFeatureFlags.enableNativeCSSParsing = () => false;
+});
 
 test('passes for identical configs', () => {
   const name = 'RCTView';

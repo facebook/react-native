@@ -8,10 +8,13 @@
 package com.facebook.react.utils
 
 import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY
+import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY_DEFAULT
 import com.facebook.react.utils.PropertyUtils.INTERNAL_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
 import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
 import com.facebook.react.utils.PropertyUtils.INTERNAL_VERSION_NAME
+import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_JITPACK_REPOSITORY
 import java.io.File
 import java.net.URI
 import java.util.*
@@ -24,7 +27,7 @@ internal object DependencyUtils {
    * This method takes care of configuring the repositories{} block for both the app and all the 3rd
    * party libraries which are auto-linked.
    */
-  fun configureRepositories(project: Project, reactNativeDir: File) {
+  fun configureRepositories(project: Project) {
     project.rootProject.allprojects { eachProject ->
       with(eachProject) {
         if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
@@ -47,22 +50,22 @@ internal object DependencyUtils {
             repo.content { it.excludeGroup("com.facebook.react") }
           }
         }
-        // Android JSC is installed from npm
-        mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI()) { repo ->
-          repo.content { it.includeGroup("org.webkit") }
-        }
         repositories.google { repo ->
           repo.content {
             // We don't want to fetch JSC or React from Google
             it.excludeGroup("org.webkit")
+            it.excludeGroup("io.github.react-native-community")
             it.excludeGroup("com.facebook.react")
           }
         }
-        mavenRepoFromUrl("https://www.jitpack.io") { repo ->
-          repo.content {
-            // We don't want to fetch JSC or React from JitPack
-            it.excludeGroup("org.webkit")
-            it.excludeGroup("com.facebook.react")
+        if (shouldAddJitPack()) {
+          mavenRepoFromUrl("https://www.jitpack.io") { repo ->
+            repo.content { content ->
+              // We don't want to fetch JSC or React from JitPack
+              content.excludeGroup("org.webkit")
+              content.excludeGroup("io.github.react-native-community")
+              content.excludeGroup("com.facebook.react")
+            }
           }
         }
       }
@@ -168,5 +171,14 @@ internal object DependencyUtils {
       project.repositories.maven {
         it.url = uri
         action(it)
+      }
+
+  internal fun Project.shouldAddJitPack() =
+      when {
+        hasProperty(SCOPED_INCLUDE_JITPACK_REPOSITORY) ->
+            property(SCOPED_INCLUDE_JITPACK_REPOSITORY).toString().toBoolean()
+        hasProperty(INCLUDE_JITPACK_REPOSITORY) ->
+            property(INCLUDE_JITPACK_REPOSITORY).toString().toBoolean()
+        else -> INCLUDE_JITPACK_REPOSITORY_DEFAULT
       }
 }

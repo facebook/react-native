@@ -8,9 +8,9 @@
  * @flow
  */
 
-import * as React from 'react';
-import {useEffect, useState} from 'react';
-import {Dimensions, Text, useWindowDimensions} from 'react-native';
+import RNTesterText from '../../components/RNTesterText';
+import React, {useEffect, useState} from 'react';
+import {Dimensions, useWindowDimensions} from 'react-native';
 
 type Props = {dim: string};
 
@@ -25,12 +25,16 @@ function DimensionsSubscription(props: Props) {
     return () => subscription.remove();
   }, [props.dim]);
 
-  return <Text>{JSON.stringify(dims, null, 2)}</Text>;
+  return (
+    <RNTesterText variant="label">{JSON.stringify(dims, null, 2)}</RNTesterText>
+  );
 }
 
 const DimensionsViaHook = () => {
   const dims = useWindowDimensions();
-  return <Text>{JSON.stringify(dims, null, 2)}</Text>;
+  return (
+    <RNTesterText variant="label">{JSON.stringify(dims, null, 2)}</RNTesterText>
+  );
 };
 
 exports.title = 'Dimensions';

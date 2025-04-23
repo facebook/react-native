@@ -12,10 +12,11 @@
 
 'use strict';
 
-const TextInputState = require('../Components/TextInput/TextInputState');
+const TextInputState =
+  require('../Components/TextInput/TextInputState').default;
 
 function dismissKeyboard() {
   TextInputState.blurTextInput(TextInputState.currentlyFocusedInput());
 }
 
-module.exports = dismissKeyboard;
+export default dismissKeyboard;

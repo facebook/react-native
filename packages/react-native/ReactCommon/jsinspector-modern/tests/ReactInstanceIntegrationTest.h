@@ -10,7 +10,6 @@
 #include "InspectorMocks.h"
 #include "ReactNativeMocks.h"
 #include "UniquePtrFactory.h"
-#include "utils/InspectorFlagOverridesGuard.h"
 
 #include <folly/executors/QueuedImmediateExecutor.h>
 #include <folly/json.h>
@@ -24,11 +23,14 @@ namespace facebook::react::jsinspector_modern {
 
 using namespace ::testing;
 
-struct FeatureFlags {
-  const bool fuseboxEnabledDebug = true;
+enum ReactInstanceIntegrationTestMode {
+  LEGACY_HERMES,
+  FUSEBOX,
 };
 
-class ReactInstanceIntegrationTest : public Test {
+class ReactInstanceIntegrationTest
+    : public Test,
+      public ::testing::WithParamInterface<ReactInstanceIntegrationTestMode> {
  protected:
   ReactInstanceIntegrationTest();
 
@@ -58,6 +60,7 @@ class ReactInstanceIntegrationTest : public Test {
  private:
   void initializeRuntime(std::string_view script);
 
+  ReactInstanceIntegrationTestMode testMode_;
   size_t id_ = 1;
   bool verbose_ = false;
   std::optional<int> pageId_;
@@ -66,13 +69,4 @@ class ReactInstanceIntegrationTest : public Test {
   folly::QueuedImmediateExecutor immediateExecutor_;
 };
 
-class ReactInstanceIntegrationTestWithFlags
-    : public ReactInstanceIntegrationTest,
-      public ::testing::WithParamInterface<InspectorFlagOverrides> {
- protected:
-  ReactInstanceIntegrationTestWithFlags() : inspectorFlagsGuard_(GetParam()) {}
-
- private:
-  InspectorFlagOverridesGuard inspectorFlagsGuard_;
-};
 } // namespace facebook::react::jsinspector_modern

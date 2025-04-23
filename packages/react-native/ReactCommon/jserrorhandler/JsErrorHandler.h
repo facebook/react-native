@@ -8,35 +8,55 @@
 #pragma once
 
 #include <jsi/jsi.h>
+#include <iostream>
+#include <optional>
 
 namespace facebook::react {
 
 class JsErrorHandler {
  public:
-  struct ParsedError {
+  struct ProcessedError {
     struct StackFrame {
-      std::string fileName;
+      std::optional<std::string> file;
       std::string methodName;
-      int lineNumber;
-      int columnNumber;
+      std::optional<int> lineNumber;
+      std::optional<int> column;
+      friend std::ostream& operator<<(
+          std::ostream& os,
+          const StackFrame& frame);
     };
 
-    std::vector<StackFrame> frames;
     std::string message;
-    int exceptionId;
+    std::optional<std::string> originalMessage;
+    std::optional<std::string> name;
+    std::optional<std::string> componentStack;
+    std::vector<StackFrame> stack;
+    int id;
     bool isFatal;
+    jsi::Object extraData;
+    friend std::ostream& operator<<(
+        std::ostream& os,
+        const ProcessedError& error);
   };
 
-  using OnJsError = std::function<void(const ParsedError& error)>;
+  using OnJsError =
+      std::function<void(jsi::Runtime& runtime, const ProcessedError& error)>;
 
   explicit JsErrorHandler(OnJsError onJsError);
   ~JsErrorHandler();
 
-  void handleFatalError(jsi::Runtime& runtime, jsi::JSError& error);
+  void handleError(
+      jsi::Runtime& runtime,
+      jsi::JSError& error,
+      bool isFatal,
+      bool logToConsole = true);
   bool hasHandledFatalError();
+  void registerErrorListener(
+      const std::function<void(jsi::Runtime&, jsi::Value)>& listener);
   void setRuntimeReady();
   bool isRuntimeReady();
   void notifyOfFatalError();
+  bool inErrorHandler();
 
  private:
   /**
@@ -47,8 +67,16 @@ class JsErrorHandler {
    *    teardown get reported properly.
    **/
   OnJsError _onJsError;
-  bool _hasHandledFatalError;
+  bool _hasHandledFatalError{};
   bool _isRuntimeReady{};
+  std::shared_ptr<bool> _inErrorHandler;
+  std::vector<std::function<void(jsi::Runtime&, jsi::Value)>> _errorListeners;
+
+  void handleErrorWithCppPipeline(
+      jsi::Runtime& runtime,
+      jsi::JSError& error,
+      bool isFatal,
+      bool logToConsole);
 };
 
 } // namespace facebook::react

@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
@@ -15,10 +16,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class Inspector {
   static {
-    ReactBridge.staticInit();
+    BridgeSoLoader.staticInit();
   }
 
   private final HybridData mHybridData;

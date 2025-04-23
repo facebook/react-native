@@ -41,15 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
 
 /**
- * Configure whether the JSCExecutor created should use the system JSC API or
- * alternative hooks provided. When returning YES from this method, you must have
- * previously called facebook::react::setCustomJSCWrapper.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
-
-/**
  * The bridge will call this method when a module been called from JS
  * cannot be found among registered modules.
  * It should return YES if the module with name 'moduleName' was registered

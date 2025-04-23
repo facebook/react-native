@@ -477,7 +477,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
 
     // Add missing png extension
     if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
-      mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
+      // Check if there exists a file with that url on disk already
+      // This should fix issue https://github.com/facebook/react-native/issues/46870
+      if ([[NSFileManager defaultManager] fileExistsAtPath:request.URL.path]) {
+        mutableRequest.URL = request.URL;
+      } else {
+        // This is the default behavior in case there is no file on disk with no extension.
+        // We assume that the extension is `png`.
+        mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
+      }
     }
     if (_redirectDelegate != nil) {
       mutableRequest.URL = [_redirectDelegate redirectAssetsURL:mutableRequest.URL];

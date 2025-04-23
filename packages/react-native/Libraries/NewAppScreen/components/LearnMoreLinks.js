@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {Node} from 'react';
-
 import TouchableOpacity from '../../Components/Touchable/TouchableOpacity';
 import View from '../../Components/View/View';
 import openURLInBrowser from '../../Core/Devtools/openURLInBrowser';
@@ -17,7 +15,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
-import React, {Fragment} from 'react';
+import * as React from 'react';
 
 const links = [
   {
@@ -81,12 +79,12 @@ const links = [
   },
 ];
 
-const LinkList = (): Node => {
+const LinkList = (): React.Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.container}>
       {links.map(({id, title, link, description}) => (
-        <Fragment key={id}>
+        <React.Fragment key={id}>
           <View
             style={[
               styles.separator,
@@ -110,7 +108,7 @@ const LinkList = (): Node => {
               {description}
             </Text>
           </TouchableOpacity>
-        </Fragment>
+        </React.Fragment>
       ))}
     </View>
   );

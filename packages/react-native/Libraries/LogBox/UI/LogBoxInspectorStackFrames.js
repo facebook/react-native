@@ -23,10 +23,10 @@ import LogBoxInspectorStackFrame from './LogBoxInspectorStackFrame';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   log: LogBoxLog,
   onRetry: () => void,
-|}>;
+}>;
 
 export function getCollapseMessage(
   stackFrames: Stack,
@@ -138,7 +138,7 @@ function StackFrameList(props: {
 }
 
 function StackFrameFooter(
-  props: $TEMPORARY$object<{message: string, onPress: () => void}>,
+  props: $ReadOnly<{message: string, onPress: () => void}>,
 ) {
   return (
     <View style={stackStyles.collapseContainer}>

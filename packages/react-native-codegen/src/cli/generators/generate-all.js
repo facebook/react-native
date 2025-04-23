@@ -16,7 +16,6 @@
 
 const RNCodegen = require('../../generators/RNCodegen.js');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 
 const args = process.argv.slice(2);
 if (args.length < 3) {
@@ -39,7 +38,7 @@ if (schemaText == null) {
   throw new Error(`Can't find schema at ${schemaPath}`);
 }
 
-mkdirp.sync(outputDirectory);
+fs.mkdirSync(outputDirectory, {recursive: true});
 
 let schema;
 try {

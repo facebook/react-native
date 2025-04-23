@@ -15,6 +15,8 @@ import ReactNativeFeatureFlagsH from './templates/common-cxx/ReactNativeFeatureF
 import ReactNativeFeatureFlagsAccessorCPP from './templates/common-cxx/ReactNativeFeatureFlagsAccessor.cpp-template';
 import ReactNativeFeatureFlagsAccessorH from './templates/common-cxx/ReactNativeFeatureFlagsAccessor.h-template';
 import ReactNativeFeatureFlagsDefaultsH from './templates/common-cxx/ReactNativeFeatureFlagsDefaults.h-template';
+import ReactNativeFeatureFlagsDynamicProviderH from './templates/common-cxx/ReactNativeFeatureFlagsDynamicProvider.h-template';
+import ReactNativeFeatureFlagsOverrides from './templates/common-cxx/ReactNativeFeatureFlagsOverridesOSS_Stage_.h-template';
 import ReactNativeFeatureFlagsProviderH from './templates/common-cxx/ReactNativeFeatureFlagsProvider.h-template';
 import path from 'path';
 
@@ -34,7 +36,18 @@ export default function generateCommonCxxModules(
       ReactNativeFeatureFlagsAccessorCPP(featureFlagDefinitions),
     [path.join(commonCxxPath, 'ReactNativeFeatureFlagsDefaults.h')]:
       ReactNativeFeatureFlagsDefaultsH(featureFlagDefinitions),
+    [path.join(
+      commonCxxPath,
+      'ReactNativeFeatureFlagsOverridesOSSExperimental.h',
+    )]: ReactNativeFeatureFlagsOverrides(
+      featureFlagDefinitions,
+      'experimental',
+    ),
+    [path.join(commonCxxPath, 'ReactNativeFeatureFlagsOverridesOSSCanary.h')]:
+      ReactNativeFeatureFlagsOverrides(featureFlagDefinitions, 'canary'),
     [path.join(commonCxxPath, 'ReactNativeFeatureFlagsProvider.h')]:
       ReactNativeFeatureFlagsProviderH(featureFlagDefinitions),
+    [path.join(commonCxxPath, 'ReactNativeFeatureFlagsDynamicProvider.h')]:
+      ReactNativeFeatureFlagsDynamicProviderH(featureFlagDefinitions),
   };
 }

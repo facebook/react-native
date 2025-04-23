@@ -15,22 +15,24 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PathEffect
+import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
-import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
 import com.facebook.react.uimanager.style.CornerRadii
 import com.facebook.react.uimanager.style.OutlineStyle
 import kotlin.math.roundToInt
-import kotlin.properties.ObservableProperty
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
 
 /** Draws outline https://drafts.csswg.org/css-ui/#outline */
 internal class OutlineDrawable(
     private val context: Context,
-    borderRadius: BorderRadiusStyle? = null,
+    /*
+     * We assume borderRadius to be shared across multiple drawables
+     * therefore we should manually invalidate this drawable when changing it
+     */
+    var borderRadius: BorderRadiusStyle? = null,
     outlineColor: Int,
     outlineOffset: Float,
     outlineStyle: OutlineStyle,
@@ -43,18 +45,15 @@ internal class OutlineDrawable(
    */
   private val gapBetweenPaths = 0.8f
 
-  private fun <T> invalidatingChange(initialValue: T): ReadWriteProperty<Any?, T> =
-      object : ObservableProperty<T>(initialValue) {
-        override fun afterChange(property: KProperty<*>, oldValue: T, newValue: T) {
-          if (oldValue != newValue) {
-            invalidateSelf()
-          }
-        }
+  var outlineOffset: Float = outlineOffset
+    set(value) {
+      if (value != field) {
+        field = value
+        invalidateSelf()
       }
+    }
 
-  public var borderRadius: BorderRadiusStyle? by invalidatingChange(borderRadius)
-  public var outlineOffset: Float by invalidatingChange(outlineOffset)
-  public var outlineStyle: OutlineStyle = outlineStyle
+  var outlineStyle: OutlineStyle = outlineStyle
     set(value) {
       if (value != field) {
         field = value
@@ -63,7 +62,7 @@ internal class OutlineDrawable(
       }
     }
 
-  public var outlineColor: Int = outlineColor
+  var outlineColor: Int = outlineColor
     set(value) {
       if (value != field) {
         field = value
@@ -72,7 +71,7 @@ internal class OutlineDrawable(
       }
     }
 
-  public var outlineWidth: Float = outlineWidth
+  var outlineWidth: Float = outlineWidth
     set(value) {
       if (value != field) {
         field = value
@@ -105,18 +104,26 @@ internal class OutlineDrawable(
     invalidateSelf()
   }
 
-  override fun getOpacity(): Int =
-      ((outlinePaint.alpha / 255f) / (Color.alpha(outlineColor) / 255f) * 255f).roundToInt()
+  @Deprecated("Deprecated in Java")
+  override fun getOpacity(): Int {
+    val alpha = outlinePaint.alpha
+    return when (alpha) {
+      255 -> PixelFormat.OPAQUE
+      in 1..254 -> PixelFormat.TRANSLUCENT
+      else -> PixelFormat.TRANSPARENT
+    }
+  }
 
   override fun draw(canvas: Canvas) {
+    if (outlineWidth == 0f) {
+      return
+    }
+
     pathForOutline.reset()
 
     computedBorderRadius =
         borderRadius?.resolve(
-            layoutDirection,
-            context,
-            bounds.width().toFloat().dpToPx(),
-            bounds.height().toFloat().dpToPx())
+            layoutDirection, context, bounds.width().pxToDp(), bounds.height().pxToDp())
 
     updateOutlineRect()
     if (computedBorderRadius != null && computedBorderRadius?.hasRoundedBorders() == true) {
@@ -147,8 +154,8 @@ internal class OutlineDrawable(
     }
   }
 
-  private fun calculateRadius(radius: Float, outlineWidth: Float) =
-      if (radius != 0f) radius + outlineWidth * 0.5f else 0f
+  private fun calculateRadius(radius: Float, outlineWidth: Float, outlineOffset: Float) =
+      if (radius != 0f) radius + (outlineWidth * 0.5f) + outlineOffset else 0f
 
   private fun drawRectangularOutline(canvas: Canvas) {
     pathForOutline.addRect(tempRectForOutline, Path.Direction.CW)
@@ -166,14 +173,14 @@ internal class OutlineDrawable(
     pathForOutline.addRoundRect(
         tempRectForOutline,
         floatArrayOf(
-            calculateRadius(topLeftRadius.horizontal, outlineWidth),
-            calculateRadius(topLeftRadius.vertical, outlineWidth),
-            calculateRadius(topRightRadius.horizontal, outlineWidth),
-            calculateRadius(topRightRadius.vertical, outlineWidth),
-            calculateRadius(bottomRightRadius.horizontal, outlineWidth),
-            calculateRadius(bottomRightRadius.vertical, outlineWidth),
-            calculateRadius(bottomLeftRadius.horizontal, outlineWidth),
-            calculateRadius(bottomLeftRadius.vertical, outlineWidth),
+            calculateRadius(topLeftRadius.horizontal, outlineWidth, outlineOffset),
+            calculateRadius(topLeftRadius.vertical, outlineWidth, outlineOffset),
+            calculateRadius(topRightRadius.horizontal, outlineWidth, outlineOffset),
+            calculateRadius(topRightRadius.vertical, outlineWidth, outlineOffset),
+            calculateRadius(bottomRightRadius.horizontal, outlineWidth, outlineOffset),
+            calculateRadius(bottomRightRadius.vertical, outlineWidth, outlineOffset),
+            calculateRadius(bottomLeftRadius.horizontal, outlineWidth, outlineOffset),
+            calculateRadius(bottomLeftRadius.vertical, outlineWidth, outlineOffset),
         ),
         Path.Direction.CW)
 

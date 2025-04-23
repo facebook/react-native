@@ -16,7 +16,7 @@ const os = require('os');
 const path = require('path');
 
 /*::
-type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+type BuildType = 'dry-run' | 'release' | 'nightly';
 */
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));

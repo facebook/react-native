@@ -4,17 +4,20 @@ inputs:
   cache-read-only:
     description: "Whether the Gradle Cache should be in read-only mode so this job won't be allowed to write to it"
     default: "true"
+  cache-encryption-key:
+    description: "The encryption key needed to store the Gradle Configuration cache"
 runs:
   using: "composite"
   steps:
     - name: Setup gradle
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v4
       with:
         gradle-version: wrapper
         # We want the Gradle cache to be written only on main/-stable branches run, and only for jobs with `cache-read-only` == false (i.e. `build_android`).
         cache-read-only: ${{ (github.ref != 'refs/heads/main' && !contains(github.ref, '-stable')) || inputs.cache-read-only == 'true' }}
         # Similarly, for those jobs we want to start with a clean cache so it doesn't grow without limits (this is the negation of the previous condition).
         cache-write-only: ${{ (github.ref == 'refs/heads/main' || contains(github.ref, '-stable')) && inputs.cache-read-only != 'true' }}
-        # Temporarily disabling to try resolve a cache cleanup failure
-        # gradle-home-cache-cleanup: true
         add-job-summary-as-pr-comment: on-failure
+        # Encryption key for the Gradle Configuration Cache.
+        # See https://docs.gradle.org/8.6/userguide/configuration_cache.html#config_cache:secrets:configuring_encryption_key
+        cache-encryption-key: ${{ inputs.cache-encryption-key }}

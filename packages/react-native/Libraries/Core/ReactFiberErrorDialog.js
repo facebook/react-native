@@ -10,7 +10,7 @@
 
 import type {ExtendedError} from './ExtendedError';
 
-import {SyntheticError, handleException} from './ExceptionsManager';
+import ExceptionsManager, {SyntheticError} from './ExceptionsManager';
 
 export type CapturedError = {
   +componentStack: string,
@@ -52,7 +52,7 @@ const ReactFiberErrorDialog = {
       // Ignored.
     }
 
-    handleException(error, false);
+    ExceptionsManager.handleException(error, false);
 
     // Return false here to prevent ReactFiberErrorLogger default behavior of
     // logging error details to console.error. Calls to console.error are
