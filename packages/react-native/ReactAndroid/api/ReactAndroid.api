@@ -6651,6 +6651,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public final fun getBorderColor (I)I
 	protected final fun getContainsImages ()Z
 	public final fun getDisableFullscreenUI ()Z
+	public final fun getDragAndDropFilter ()Ljava/util/List;
 	protected final fun getNativeEventCount ()I
 	public final fun getReturnKeyType ()Ljava/lang/String;
 	public final fun getStagedInputType ()I
@@ -6670,6 +6671,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onCreateInputConnection (Landroid/view/inputmethod/EditorInfo;)Landroid/view/inputmethod/InputConnection;
 	public fun onDetachedFromWindow ()V
+	public fun onDragEvent (Landroid/view/DragEvent;)Z
 	public fun onDraw (Landroid/graphics/Canvas;)V
 	public fun onFinishTemporaryDetach ()V
 	protected fun onFocusChanged (ZILandroid/graphics/Rect;)V
@@ -6695,6 +6697,7 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public final fun setContentSizeWatcher (Lcom/facebook/react/views/textinput/ContentSizeWatcher;)V
 	public final fun setContextMenuHidden (Z)V
 	public final fun setDisableFullscreenUI (Z)V
+	public final fun setDragAndDropFilter (Ljava/util/List;)V
 	public final fun setEventDispatcher (Lcom/facebook/react/uimanager/events/EventDispatcher;)V
 	public final fun setFontFamily (Ljava/lang/String;)V
 	public fun setFontFeatureSettings (Ljava/lang/String;)V
@@ -6758,6 +6761,7 @@ public class com/facebook/react/views/textinput/ReactTextInputManager : com/face
 	public synthetic fun receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (Lcom/facebook/react/views/textinput/ReactEditText;ILcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun setAcceptDragAndDropTypes (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/ReadableArray;)V
 	public final fun setAllowFontScaling (Lcom/facebook/react/views/textinput/ReactEditText;Z)V
 	public final fun setAutoCapitalize (Lcom/facebook/react/views/textinput/ReactEditText;Lcom/facebook/react/bridge/Dynamic;)V
 	public final fun setAutoCorrect (Lcom/facebook/react/views/textinput/ReactEditText;Ljava/lang/Boolean;)V
