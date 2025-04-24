@@ -13,14 +13,27 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 
 function Playground() {
   return (
     <View style={styles.container}>
-      <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
-      </RNTesterText>
+
+      <View>
+        <Text>Row not cutoff</Text>
+      </View>
+
+      <View style={{ display: "flex", flexDirection: "row" }}>
+        <Text>
+          <View>
+            <Text>Row cutoff</Text>
+          </View>
+        </Text>
+      </View>
+
+      <View>
+        <Text>Row not cutoff</Text>
+      </View>
     </View>
   );
 }
