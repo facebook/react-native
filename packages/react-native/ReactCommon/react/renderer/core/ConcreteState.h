@@ -14,6 +14,7 @@
 #include <react/renderer/core/State.h>
 
 #ifdef ANDROID
+#include <fbjni/fbjni.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
@@ -24,6 +25,11 @@ namespace facebook::react {
 template <typename StateDataT>
 concept StateDataWithMapBuffer = requires(StateDataT stateData) {
   { stateData.getMapBuffer() } -> std::same_as<MapBuffer>;
+};
+
+template <typename StateDataT>
+concept StateDataWithJNIReference = requires(StateDataT stateData) {
+  { stateData.getJNIReference() } -> std::same_as<jni::local_ref<jobject>>;
 };
 #endif
 
@@ -117,6 +123,14 @@ class ConcreteState : public State {
       return getData().getMapBuffer();
     } else {
       return MapBufferBuilder::EMPTY();
+    }
+  }
+
+  jni::local_ref<jobject> getJNIReference() const override {
+    if constexpr (StateDataWithJNIReference<DataT>) {
+      return getData().getJNIReference();
+    } else {
+      return nullptr;
     }
   }
 #endif
