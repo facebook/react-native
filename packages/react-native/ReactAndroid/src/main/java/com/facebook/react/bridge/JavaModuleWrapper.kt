@@ -60,14 +60,13 @@ internal class JavaModuleWrapper(
   private fun findMethods() {
     Systrace.beginSection(TRACE_TAG_REACT, "findMethods")
 
-    var classForMethods: Class<out NativeModule> = moduleHolder.module.javaClass
+    var classForMethods: Class<*> = moduleHolder.module.javaClass
     val superClass = classForMethods.superclass
-    if (TurboModule::class.java.isAssignableFrom(superClass)) {
+    if (superClass != null && TurboModule::class.java.isAssignableFrom(superClass)) {
       // For java module that is based on generated flow-type spec, inspect the
       // spec abstract class instead, which is the super class of the given Java
       // module.
-      @Suppress("UNCHECKED_CAST")
-      classForMethods = superClass as Class<out NativeModule>
+      classForMethods = superClass
     }
 
     val targetMethods = classForMethods.declaredMethods
