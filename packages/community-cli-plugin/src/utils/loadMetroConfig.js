@@ -61,7 +61,7 @@ function getOverrideConfig(
       // We can include multiple copies of InitializeCore here because metro will
       // only add ones that are already part of the bundle
       getModulesRunBeforeMainModule: () => [
-        ...(config.serializer.getModulesRunBeforeMainModule() ?? []),
+        ...(config.serializer?.getModulesRunBeforeMainModule(ctx.root) ?? []),
         require.resolve(
           path.join(ctx.reactNativePath, 'Libraries/Core/InitializeCore'),
           {paths: [ctx.root]},
