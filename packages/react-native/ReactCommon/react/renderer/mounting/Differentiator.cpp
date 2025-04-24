@@ -710,8 +710,6 @@ static void calculateShadowViewMutationsFlattener(
             // Flatten old tree into new list
             // At the end of this loop we still want to know which of these
             // children are visited, so we reuse the `newRemainingPairs` map.
-            // TODO(T217775046): Find a test case for this branch of view
-            // flattening + culling.
             calculateShadowViewMutationsFlattener(
                 scope,
                 ReparentMode::Flatten,
