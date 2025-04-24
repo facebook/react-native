@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8bf45578eb5463a1ff3db6b45c99981b>>
+ * @generated SignedSource<<539c3b06eebd5ba5b12198da7b276851>>
  */
 
 /**
@@ -215,12 +215,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
-
-  /**
-   * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
-   */
-  @JvmStatic
-  public fun removeTurboModuleManagerDelegateMutex(): Boolean = accessor.removeTurboModuleManagerDelegateMutex()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<504cdd3bda613ec06dab7179da28c376>>
+ * @generated SignedSource<<800051a42305429384c0a46f17543d86>>
  */
 
 /**
@@ -51,7 +51,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
-  private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -339,15 +338,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxNetworkInspectionEnabled()
       fuseboxNetworkInspectionEnabledCache = cached
-    }
-    return cached
-  }
-
-  override fun removeTurboModuleManagerDelegateMutex(): Boolean {
-    var cached = removeTurboModuleManagerDelegateMutexCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.removeTurboModuleManagerDelegateMutex()
-      removeTurboModuleManagerDelegateMutexCache = cached
     }
     return cached
   }

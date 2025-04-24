@@ -826,13 +826,7 @@ typedef struct {
     return _legacyEagerlyRegisteredModuleClasses[moduleNameStr];
   }
 
-  Class moduleClass = nil;
-  if (ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex()) {
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  } else {
-    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  }
+  Class moduleClass = [_delegate getModuleClassFromName:moduleName];
 
   if (moduleClass != nil) {
     return moduleClass;
@@ -867,13 +861,7 @@ typedef struct {
     return [_legacyEagerlyRegisteredModuleClasses[moduleNameStr] new];
   }
 
-  id<RCTBridgeModule> module = nil;
-  if (ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex()) {
-    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
-  } else {
-    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
-  }
+  id<RCTBridgeModule> module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
 
   if (!module) {
     module = [moduleClass new];
