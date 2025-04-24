@@ -4208,12 +4208,12 @@ declare class AssetSourceResolver {
   isLoadedFromFileSystem(): boolean;
   defaultAsset(): ResolvedAssetSource;
   getAssetUsingResolver(resolver: AssetDestPathResolver): ResolvedAssetSource;
-  assetServerURL(): ResolvedAssetSource;
+  assetServerURL(scale?: number): ResolvedAssetSource;
   scaledAssetPath(): ResolvedAssetSource;
-  scaledAssetURLNearBundle(): ResolvedAssetSource;
+  scaledAssetURLNearBundle(scale?: number): ResolvedAssetSource;
   resourceIdentifierWithoutScale(): ResolvedAssetSource;
   drawableFolderInBundle(): ResolvedAssetSource;
-  fromSource(source: string): ResolvedAssetSource;
+  fromSource(source: string, scale?: number): ResolvedAssetSource;
   static pickScale: (scales: Array<number>, deviceScale?: number) => number;
 }
 declare export default typeof AssetSourceResolver;
