@@ -12,21 +12,19 @@
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
-#ifdef ANDROID
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
-#endif
+
+#include <utility>
 
 namespace facebook::react {
 
-#ifdef ANDROID
 // constants for Text State serialization
 constexpr static MapBuffer::Key TX_STATE_KEY_ATTRIBUTED_STRING = 0;
 constexpr static MapBuffer::Key TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
 // Used for TextInput only
 constexpr static MapBuffer::Key TX_STATE_KEY_HASH = 2;
 constexpr static MapBuffer::Key TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
-#endif
 
 /*
  * State for <Paragraph> component.
@@ -49,28 +47,25 @@ class ParagraphState final {
    * `TextLayoutManager` provides a connection to platform-specific
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
-   * This is not on every platform. This is not used on Android, but is
-   * used on the iOS mounting layer.
    */
   std::weak_ptr<const TextLayoutManager> layoutManager;
 
-#ifdef ANDROID
   ParagraphState(
-      const AttributedString& attributedString,
-      const ParagraphAttributes& paragraphAttributes,
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
       const std::weak_ptr<const TextLayoutManager>& layoutManager)
-      : attributedString(attributedString),
-        paragraphAttributes(paragraphAttributes),
+      : attributedString(std::move(attributedString)),
+        paragraphAttributes(std::move(paragraphAttributes)),
         layoutManager(layoutManager) {}
   ParagraphState() = default;
   ParagraphState(
-      const ParagraphState& previousState,
-      const folly::dynamic& data) {
+      const ParagraphState& /*previousState*/,
+      const folly::dynamic& /*data*/) {
     react_native_assert(false && "Not supported");
   };
+
   folly::dynamic getDynamic() const;
   MapBuffer getMapBuffer() const;
-#endif
 };
 
 } // namespace facebook::react
