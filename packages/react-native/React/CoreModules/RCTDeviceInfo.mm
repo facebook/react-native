@@ -14,7 +14,6 @@
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTInvalidating.h>
-#import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
 #import <atomic>
 
@@ -175,20 +174,25 @@ static BOOL RCTIsIPhoneNotched()
 static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 {
   RCTAssertMainQueue();
-  RCTDimensions dimensions = RCTGetDimensions(fontScale);
-  __typeof(dimensions.window) window = dimensions.window;
+  UIScreen *mainScreen = UIScreen.mainScreen;
+  CGSize screenSize = mainScreen.bounds.size;
+  UIView *mainWindow = RCTKeyWindow();
+
+  // We fallback to screen size if a key window is not found.
+  CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
+
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
-    @"width" : @(window.width),
-    @"height" : @(window.height),
-    @"scale" : @(window.scale),
-    @"fontScale" : @(window.fontScale)
+    @"width" : @(windowSize.width),
+    @"height" : @(windowSize.height),
+    @"scale" : @(mainScreen.scale),
+    @"fontScale" : @(fontScale)
   };
-  __typeof(dimensions.screen) screen = dimensions.screen;
+
   NSDictionary<NSString *, NSNumber *> *dimsScreen = @{
-    @"width" : @(screen.width),
-    @"height" : @(screen.height),
-    @"scale" : @(screen.scale),
-    @"fontScale" : @(screen.fontScale)
+    @"width" : @(screenSize.width),
+    @"height" : @(screenSize.height),
+    @"scale" : @(mainScreen.scale),
+    @"fontScale" : @(fontScale)
   };
   return @{@"window" : dimsWindow, @"screen" : dimsScreen};
 }
