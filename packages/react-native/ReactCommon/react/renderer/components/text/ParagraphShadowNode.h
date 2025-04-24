@@ -52,6 +52,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
 #ifdef ANDROID
     // Unsetting `FormsStackingContext` trait is essential on Android where we
     // can't mount views inside `TextView`.
+    // T221699219: This should be removed when PreparedLayoutTextView is rolled
+    // out.
     traits.unset(ShadowNodeTraits::Trait::FormsStackingContext);
 #endif
 
