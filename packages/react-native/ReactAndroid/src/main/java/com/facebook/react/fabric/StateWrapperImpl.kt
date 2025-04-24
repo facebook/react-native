@@ -23,7 +23,7 @@ import com.facebook.react.uimanager.StateWrapper
  */
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
-public class StateWrapperImpl private constructor() : HybridClassBase(), StateWrapper {
+internal class StateWrapperImpl private constructor() : HybridClassBase(), StateWrapper {
 
   private external fun initHybrid()
 
