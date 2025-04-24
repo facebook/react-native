@@ -35,7 +35,7 @@ class BaseJavaModuleTest {
     moduleWrapper = JavaModuleWrapper(jsInstance, moduleHolder)
     methods = moduleWrapper.methodDescriptors
     val generatedModuleHolder = ModuleHolder(GeneratedMethodsModule())
-    generatedModuleWrapper = JavaModuleWrapper(null, generatedModuleHolder)
+    generatedModuleWrapper = JavaModuleWrapper(jsInstance, generatedModuleHolder)
     generatedMethods = generatedModuleWrapper.methodDescriptors
     arguments = mock(ReadableNativeArray::class.java)
   }
