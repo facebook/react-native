@@ -699,9 +699,10 @@ static void calculateShadowViewMutationsFlattener(
             }
           }
 
-          // Unflatten parent, flatten child
           if (childReparentMode == ReparentMode::Flatten) {
-            auto parentTagForUpdateWhenUnflattened =
+            // Unflatten parent, flatten child
+            react_native_assert(reparentMode == ReparentMode::Unflatten);
+            auto fixedParentTagForUpdate =
                 ReactNativeFeatureFlags::
                     enableFixForParentTagDuringReparenting()
                 ? newTreeNodePair.shadowView.tag
@@ -715,22 +716,18 @@ static void calculateShadowViewMutationsFlattener(
                 scope,
                 ReparentMode::Flatten,
                 mutationContainer,
-                (reparentMode == ReparentMode::Flatten
-                     ? parentTag
-                     : newTreeNodePair.shadowView.tag),
+                newTreeNodePair.shadowView.tag,
                 unvisitedRecursiveChildPairs,
                 oldTreeNodePair,
-                (reparentMode == ReparentMode::Flatten
-                     ? oldTreeNodePair.shadowView.tag
-                     : parentTagForUpdateWhenUnflattened),
+                fixedParentTagForUpdate,
                 subVisitedNewMap,
                 subVisitedOldMap,
-                cullingContext.adjustCullingContextIfNeeded(oldTreeNodePair));
-          }
-          // Flatten parent, unflatten child
-          else {
+                adjustedNewCullingContext);
+          } else {
+            // Flatten parent, unflatten child
+            react_native_assert(reparentMode == ReparentMode::Flatten);
             // Unflatten old list into new tree
-            auto parentTagForUpdateWhenFlattened =
+            auto fixedParentTagForUpdate =
                 ReactNativeFeatureFlags::
                     enableFixForParentTagDuringReparenting()
                 ? parentTagForUpdate
@@ -739,21 +736,13 @@ static void calculateShadowViewMutationsFlattener(
                 scope,
                 /* reparentMode */ ReparentMode::Unflatten,
                 mutationContainer,
-                /* parentTag */
-                (reparentMode == ReparentMode::Flatten
-                     ? parentTag
-                     : newTreeNodePair.shadowView.tag),
+                parentTag,
                 /* unvisitedOtherNodes */ unvisitedRecursiveChildPairs,
                 /* node */ newTreeNodePair,
-                /* parentTagForUpdate */
-                (reparentMode == ReparentMode::Flatten
-                     ? parentTagForUpdateWhenFlattened
-                     : parentTag),
+                /* parentTagForUpdate */ fixedParentTagForUpdate,
                 /* parentSubVisitedOtherNewNodes */ subVisitedNewMap,
                 /* parentSubVisitedOtherOldNodes */ subVisitedOldMap,
-                reparentMode == ReparentMode::Flatten
-                    ? adjustedOldCullingContext
-                    : adjustedNewCullingContext);
+                /* cullingContext */ adjustedOldCullingContext);
 
             // If old nodes were not visited, we know that we can delete them
             // now. They will be removed from the hierarchy by the outermost
