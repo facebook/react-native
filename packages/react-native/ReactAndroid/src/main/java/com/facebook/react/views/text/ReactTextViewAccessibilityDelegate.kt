@@ -270,7 +270,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
     return null
   }
 
-  public class AccessibilityLinks(spans: Array<ClickableSpan?>, text: Spannable) {
+  public class AccessibilityLinks(spans: Array<out ClickableSpan>, text: Spannable) {
     private val links: List<AccessibleLink>
 
     init {
