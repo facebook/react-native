@@ -44,7 +44,6 @@ export type BundleCommandArgs = {
   unstableTransformProfile: string,
   indexedRamBundle?: boolean,
   resolverOption?: Array<string>,
-  disableConfigOverride: boolean,
 };
 
 async function buildBundle(
@@ -57,7 +56,6 @@ async function buildBundle(
     maxWorkers: args.maxWorkers,
     resetCache: args.resetCache,
     config: args.config,
-    disableConfigOverride: args.disableConfigOverride,
   });
 
   return buildBundleWithConfig(args, config, bundleImpl);

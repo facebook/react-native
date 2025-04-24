@@ -45,7 +45,6 @@ export type StartCommandArgs = {
   projectRoot?: string,
   interactive: boolean,
   clientLogs: boolean,
-  disableConfigOverride: boolean,
 };
 
 async function runServer(
@@ -61,7 +60,6 @@ async function runServer(
     watchFolders: args.watchFolders,
     projectRoot: args.projectRoot,
     sourceExts: args.sourceExts,
-    disableConfigOverride: args.disableConfigOverride,
   });
   const hostname = args.host?.length ? args.host : 'localhost';
   const {

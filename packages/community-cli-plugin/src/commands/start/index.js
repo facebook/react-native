@@ -103,14 +103,6 @@ const startCommand: Command = {
         'future.',
       default: false,
     },
-    {
-      name: '--disable-config-override',
-      description:
-        'Disables overriding of some Metro config properties, which ensures ' +
-        'proper bundling of React Native code. Use it only if you know ' +
-        ' what you are doing.',
-      default: false,
-    },
   ],
 };
 
