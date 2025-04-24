@@ -1218,7 +1218,7 @@ inline void fromRawValue(
       }
     }
 
-    if (type == "linearGradient") {
+    if (type == "linear-gradient") {
       LinearGradient linearGradient;
 
       auto directionIt = rawBackgroundImageMap.find("direction");
@@ -1256,7 +1256,7 @@ inline void fromRawValue(
       }
 
       backgroundImage.emplace_back(std::move(linearGradient));
-    } else if (type == "radialGradient") {
+    } else if (type == "radial-gradient") {
       RadialGradient radialGradient;
       auto shapeIt = rawBackgroundImageMap.find("shape");
       if (shapeIt != rawBackgroundImageMap.end() &&
