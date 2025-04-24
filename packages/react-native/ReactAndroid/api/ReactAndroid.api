@@ -2140,6 +2140,7 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 }
 
 public final class com/facebook/react/devsupport/StackTraceHelper {
+	public static final field COLLAPSE_KEY Ljava/lang/String;
 	public static final field COLUMN_KEY Ljava/lang/String;
 	public static final field COMPONENT_STACK_KEY Ljava/lang/String;
 	public static final field EXTRA_DATA_KEY Ljava/lang/String;

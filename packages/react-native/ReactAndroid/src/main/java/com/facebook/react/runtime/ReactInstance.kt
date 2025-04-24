@@ -40,6 +40,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
@@ -271,8 +272,7 @@ internal class ReactInstance(
   ) : ReactJsExceptionHandler {
 
     override fun reportJsException(errorMap: ProcessedError) {
-      val data = ReactInstanceProcessedErrorConverter.convertProcessedError(errorMap)
-
+      val data = StackTraceHelper.convertProcessedError(errorMap)
       try {
         val exceptionsManager =
             checkNotNull(
