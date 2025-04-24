@@ -3,9 +3,6 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -81,4 +78,18 @@ test('import from other package', () => {
   expect(transform(code, [rnDeepImportsWarningPlugin])).toMatchInlineSnapshot(
     `"import { foo } from 'react-native-foo';"`,
   );
+});
+
+test('import react-native/Libraries/Core/InitializeCore', () => {
+  const code = `
+    import 'react-native/Libraries/Core/InitializeCore';
+    require('react-native/Libraries/Core/InitializeCore');
+    export * from 'react-native/Libraries/Core/InitializeCore';
+  `;
+
+  expect(transform(code, [rnDeepImportsWarningPlugin])).toMatchInlineSnapshot(`
+    "import 'react-native/Libraries/Core/InitializeCore';
+    require('react-native/Libraries/Core/InitializeCore');
+    export * from 'react-native/Libraries/Core/InitializeCore';"
+  `);
 });
