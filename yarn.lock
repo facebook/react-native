@@ -2824,7 +2824,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/js@npm:20.0.7, @nx/js@npm:~20.0.0":
+"@nx/js@npm:~20.0.0":
   version: 20.0.7
   resolution: "@nx/js@npm:20.0.7"
   dependencies:
@@ -2864,49 +2864,6 @@ __metadata:
     verdaccio:
       optional: true
   checksum: 10c0/eae4688886a73c2fc0354dbfc1b626c897337b4a77a264f851cc166ae48ae9e7437fd052d94325c1270724e95e9cebb2e45b872adbe742fc3784d3a454815b93
-  languageName: node
-  linkType: hard
-
-"@nx/js@patch:@nx/js@npm%3A20.0.7#~/.yarn/patches/@nx-js-npm-20.0.7-30719000fd.patch":
-  version: 20.0.7
-  resolution: "@nx/js@patch:@nx/js@npm%3A20.0.7#~/.yarn/patches/@nx-js-npm-20.0.7-30719000fd.patch::version=20.0.7&hash=6556dd"
-  dependencies:
-    "@babel/core": "npm:^7.23.2"
-    "@babel/plugin-proposal-decorators": "npm:^7.22.7"
-    "@babel/plugin-transform-class-properties": "npm:^7.22.5"
-    "@babel/plugin-transform-runtime": "npm:^7.23.2"
-    "@babel/preset-env": "npm:^7.23.2"
-    "@babel/preset-typescript": "npm:^7.22.5"
-    "@babel/runtime": "npm:^7.22.6"
-    "@nx/devkit": "npm:20.0.7"
-    "@nx/workspace": "npm:20.0.7"
-    "@zkochan/js-yaml": "npm:0.0.7"
-    babel-plugin-const-enum: "npm:^1.0.1"
-    babel-plugin-macros: "npm:^2.8.0"
-    babel-plugin-transform-typescript-metadata: "npm:^0.3.1"
-    chalk: "npm:^4.1.0"
-    columnify: "npm:^1.6.0"
-    detect-port: "npm:^1.5.1"
-    enquirer: "npm:~2.3.6"
-    fast-glob: "npm:3.2.7"
-    ignore: "npm:^5.0.4"
-    js-tokens: "npm:^4.0.0"
-    jsonc-parser: "npm:3.2.0"
-    minimatch: "npm:9.0.3"
-    npm-package-arg: "npm:11.0.1"
-    npm-run-path: "npm:^4.0.1"
-    ora: "npm:5.3.0"
-    semver: "npm:^7.5.3"
-    source-map-support: "npm:0.5.19"
-    ts-node: "npm:10.9.1"
-    tsconfig-paths: "npm:^4.1.2"
-    tslib: "npm:^2.3.0"
-  peerDependencies:
-    verdaccio: ^5.0.4
-  peerDependenciesMeta:
-    verdaccio:
-      optional: true
-  checksum: 10c0/4ea6d88fd623baad2627dcb0a8aa68d2f5eb799b8ded1abc2984eedb508295e640244c7a5a4a57b7b060b0cd2df735142b7d8c00ea6ad33ea4c9608b078f8a14
   languageName: node
   linkType: hard
 
@@ -3345,7 +3302,7 @@ __metadata:
     "@babel/preset-flow": "npm:^7.24.7"
     "@definitelytyped/dtslint": "npm:^0.0.127"
     "@jest/create-cache-key-function": "npm:^29.6.3"
-    "@nx/js": "patch:@nx/js@npm%3A20.0.7#~/.yarn/patches/@nx-js-npm-20.0.7-30719000fd.patch"
+    "@nx/js": "npm:~20.0.0"
     "@pkgjs/parseargs": "npm:^0.11.0"
     "@react-native/metro-babel-transformer": "npm:0.76.9"
     "@react-native/metro-config": "npm:0.76.9"
