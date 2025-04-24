@@ -376,17 +376,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    removeTurboModuleManagerDelegateMutex: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-02-24',
-        description:
-          'When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
