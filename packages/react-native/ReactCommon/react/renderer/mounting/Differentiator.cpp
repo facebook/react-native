@@ -165,8 +165,7 @@ static void calculateShadowViewMutationsFlattener(
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
-    const CullingContext& oldCullingContext,
-    const CullingContext& newCullingContext);
+    const CullingContext& cullingContext);
 
 /**
  * Updates the subtrees of any matched ShadowViewNodePair. This handles
@@ -222,8 +221,7 @@ static void updateMatchedPairSubtrees(
           oldPair.shadowView.tag,
           nullptr,
           nullptr,
-          oldCullingContextCopy,
-          newCullingContextCopy);
+          oldCullingContextCopy);
     }
     // Unflattening
     else {
@@ -257,7 +255,6 @@ static void updateMatchedPairSubtrees(
           parentTag,
           nullptr,
           nullptr,
-          oldCullingContextCopy,
           newCullingContextCopy);
 
       // If old nodes were not visited, we know that we can delete
@@ -423,12 +420,11 @@ static void calculateShadowViewMutationsFlattener(
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
-    const CullingContext& oldCullingContext,
-    const CullingContext& newCullingContext) {
+    const CullingContext& cullingContext) {
   // Step 1: iterate through entire tree
   std::vector<ShadowViewNodePair*> treeChildren =
       sliceChildShadowNodeViewPairsFromViewNodePair(
-          node, scope, false, newCullingContext);
+          node, scope, false, cullingContext);
 
   DEBUG_LOGS({
     LOG(ERROR) << "Differ Flattener: "
@@ -620,16 +616,13 @@ static void calculateShadowViewMutationsFlattener(
       }
 
       auto adjustedOldCullingContext =
-          oldCullingContext.adjustCullingContextIfNeeded(oldTreeNodePair);
+          cullingContext.adjustCullingContextIfNeeded(oldTreeNodePair);
       auto adjustedNewCullingContext =
-          newCullingContext.adjustCullingContextIfNeeded(newTreeNodePair);
+          cullingContext.adjustCullingContextIfNeeded(newTreeNodePair);
 
       // Update children if appropriate.
       if (!oldTreeNodePair.flattened && !newTreeNodePair.flattened) {
-        if (oldTreeNodePair.shadowNode != newTreeNodePair.shadowNode ||
-            oldCullingContext != newCullingContext) {
-          // TODO(T217775046): Find a test case for oldCullingContext !=
-          // newCullingContext condition above.
+        if (oldTreeNodePair.shadowNode != newTreeNodePair.shadowNode) {
           ViewNodePairScope innerScope{};
           auto oldGrandChildPairs =
               sliceChildShadowNodeViewPairsFromViewNodePair(
@@ -677,12 +670,9 @@ static void calculateShadowViewMutationsFlattener(
                    : parentTag),
               subVisitedNewMap,
               subVisitedOldMap,
-              oldCullingContext,
-              newCullingContext);
+              cullingContext.adjustCullingContextIfNeeded(treeChildPair));
         } else {
           // Get flattened nodes from either new or old tree
-          // TODO(T217775046): Find a test case for this branch of view
-          // flattening + culling.
           auto flattenedNodes = sliceChildShadowNodeViewPairsFromViewNodePair(
               (childReparentMode == ReparentMode::Flatten ? newTreeNodePair
                                                           : oldTreeNodePair),
@@ -735,8 +725,7 @@ static void calculateShadowViewMutationsFlattener(
                      : parentTagForUpdateWhenUnflattened),
                 subVisitedNewMap,
                 subVisitedOldMap,
-                adjustedOldCullingContext,
-                adjustedNewCullingContext);
+                cullingContext.adjustCullingContextIfNeeded(oldTreeNodePair));
           }
           // Flatten parent, unflatten child
           else {
@@ -762,8 +751,9 @@ static void calculateShadowViewMutationsFlattener(
                      : parentTag),
                 /* parentSubVisitedOtherNewNodes */ subVisitedNewMap,
                 /* parentSubVisitedOtherOldNodes */ subVisitedOldMap,
-                oldCullingContext,
-                newCullingContext);
+                reparentMode == ReparentMode::Flatten
+                    ? adjustedOldCullingContext
+                    : adjustedNewCullingContext);
 
             // If old nodes were not visited, we know that we can delete them
             // now. They will be removed from the hierarchy by the outermost
@@ -848,10 +838,8 @@ static void calculateShadowViewMutationsFlattener(
       continue;
     }
 
-    auto adjustedOldCullingContext =
-        oldCullingContext.adjustCullingContextIfNeeded(treeChildPair);
-    auto adjustedNewCullingContext =
-        newCullingContext.adjustCullingContextIfNeeded(treeChildPair);
+    auto adjustedCullingContext =
+        cullingContext.adjustCullingContextIfNeeded(treeChildPair);
 
     if (reparentMode == ReparentMode::Flatten) {
       mutationContainer.deleteMutations.push_back(
@@ -864,10 +852,10 @@ static void calculateShadowViewMutationsFlattener(
             mutationContainer.destructiveDownwardMutations,
             treeChildPair.shadowView.tag,
             sliceChildShadowNodeViewPairsFromViewNodePair(
-                treeChildPair, innerScope, false, adjustedOldCullingContext),
+                treeChildPair, innerScope, false, adjustedCullingContext),
             {},
-            adjustedOldCullingContext,
-            newCullingContext);
+            adjustedCullingContext,
+            {});
       }
     } else {
       mutationContainer.createMutations.push_back(
@@ -881,9 +869,9 @@ static void calculateShadowViewMutationsFlattener(
             treeChildPair.shadowView.tag,
             {},
             sliceChildShadowNodeViewPairsFromViewNodePair(
-                treeChildPair, innerScope, false, adjustedNewCullingContext),
-            oldCullingContext,
-            adjustedNewCullingContext);
+                treeChildPair, innerScope, false, adjustedCullingContext),
+            {},
+            adjustedCullingContext);
       }
     }
   }
