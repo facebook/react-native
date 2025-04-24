@@ -507,7 +507,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
         if (error) {
           [strongSelf handleBundleLoadingError:error];
-          [strongSelf invalidate];
           return;
         }
         // DevSettings module is needed by _loadScriptFromSource's callback so prior initialization is required
