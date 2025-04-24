@@ -57,6 +57,16 @@ export function expectRectEquals(
 }
 
 describe('IntersectionObserver', () => {
+  let observer: IntersectionObserver;
+
+  afterEach(() => {
+    Fantom.runTask(() => {
+      if (observer != null) {
+        observer.disconnect();
+      }
+    });
+  });
+
   describe('constructor(callback, {root, rootMargin, threshold, rnRootThreshold})', () => {
     it('should throw if `callback` is not provided', () => {
       expect(() => {
@@ -133,7 +143,7 @@ describe('IntersectionObserver', () => {
     });
 
     it('should provide access to `root`, `rootMargin` and `thresholds`', () => {
-      const observer = new IntersectionObserver(() => {});
+      observer = new IntersectionObserver(() => {});
 
       expect(observer.root).toBe(null);
       expect(observer.rootMargin).toBe('0px 0px 0px 0px');
@@ -312,7 +322,7 @@ describe('IntersectionObserver', () => {
 
   describe('observe(target)', () => {
     it('should throw if `target` is not a `ReactNativeElement`', () => {
-      const observer = new IntersectionObserver(() => {});
+      observer = new IntersectionObserver(() => {});
       expect(() => {
         // $FlowExpectedError[incompatible-call]
         observer.observe('something');
@@ -323,8 +333,6 @@ describe('IntersectionObserver', () => {
 
     it('should start observing the target when called for the first time (using normalized thresholds)', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
-
       const root = Fantom.createRoot({
         viewportWidth: 1000,
         viewportHeight: 1000,
@@ -351,7 +359,7 @@ describe('IntersectionObserver', () => {
         observer.observe(node);
       });
 
-      expect(observer?.thresholds).toEqual([0, 0.5, 1]);
+      expect(observer.thresholds).toEqual([0, 0.5, 1]);
       expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
       const [entries, reportedObserver] =
         intersectionObserverCallback.mock.lastCall;
@@ -384,7 +392,6 @@ describe('IntersectionObserver', () => {
 
     it('should ignore subsequent calls to observe a target already being observed', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
@@ -454,7 +461,7 @@ describe('IntersectionObserver', () => {
       const intersectionObserverCallback = jest.fn();
 
       Fantom.runTask(() => {
-        const observer = new IntersectionObserver(intersectionObserverCallback);
+        observer = new IntersectionObserver(intersectionObserverCallback);
         observer.observe(node);
       });
 
@@ -463,7 +470,7 @@ describe('IntersectionObserver', () => {
 
     it('should report completely non-intersecting initial state correctly', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
+      let maybeScrollNode;
 
       const root = Fantom.createRoot({
         viewportWidth: 1000,
@@ -471,7 +478,7 @@ describe('IntersectionObserver', () => {
       });
       Fantom.runTask(() => {
         root.render(
-          <ScrollView contentOffset={{x: 0, y: 200}}>
+          <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
             <View
               style={{width: 50, height: 50}}
               ref={receivedNode => {
@@ -481,6 +488,10 @@ describe('IntersectionObserver', () => {
           </ScrollView>,
         );
       });
+      const scrollNode = ensureReactNativeElement(maybeScrollNode);
+      // Ensure View is not intersecting with ScrollView
+      Fantom.scrollTo(scrollNode, {x: 0, y: 200});
+
       const node = ensureReactNativeElement(maybeNode);
 
       const intersectionObserverCallback = jest.fn();
@@ -527,15 +538,16 @@ describe('IntersectionObserver', () => {
 
     it('should report partial non-intersecting initial state correctly', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
+      let maybeScrollNode;
 
       const root = Fantom.createRoot({
         viewportWidth: 1000,
         viewportHeight: 1000,
       });
+
       Fantom.runTask(() => {
         root.render(
-          <ScrollView contentOffset={{x: 0, y: 25}}>
+          <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
             <View
               style={{width: 50, height: 50}}
               ref={receivedNode => {
@@ -545,7 +557,12 @@ describe('IntersectionObserver', () => {
           </ScrollView>,
         );
       });
+
+      const scrollNode = ensureReactNativeElement(maybeScrollNode);
       const node = ensureReactNativeElement(maybeNode);
+
+      // Scroll such that View is partially intersecting
+      Fantom.scrollTo(scrollNode, {x: 0, y: 25});
 
       const intersectionObserverCallback = jest.fn();
 
@@ -590,7 +607,7 @@ describe('IntersectionObserver', () => {
 
     it('should report partial intersecting initial state correctly', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
+      let maybeScrollNode;
 
       const root = Fantom.createRoot({
         viewportWidth: 1000,
@@ -598,7 +615,7 @@ describe('IntersectionObserver', () => {
       });
       Fantom.runTask(() => {
         root.render(
-          <ScrollView contentOffset={{x: 0, y: 25}}>
+          <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
             <View
               style={{width: 50, height: 50}}
               ref={receivedNode => {
@@ -608,7 +625,11 @@ describe('IntersectionObserver', () => {
           </ScrollView>,
         );
       });
+      const scrollNode = ensureReactNativeElement(maybeScrollNode);
       const node = ensureReactNativeElement(maybeNode);
+
+      // Scroll such that View is partially intersecting
+      Fantom.scrollTo(scrollNode, {x: 0, y: 25});
 
       const intersectionObserverCallback = jest.fn();
 
@@ -653,24 +674,28 @@ describe('IntersectionObserver', () => {
 
     it('should report subsequent updates correctly', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
+      let maybeScrollNode;
 
       const root = Fantom.createRoot({
         viewportWidth: 1000,
         viewportHeight: 1000,
       });
+
       Fantom.runTask(() => {
         root.render(
-          <View
-            style={{width: 100, height: 100}}
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
+          <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
+            <View
+              style={{width: 100, height: 100}}
+              ref={receivedNode => {
+                maybeNode = receivedNode;
+              }}
+            />
+          </ScrollView>,
         );
       });
 
       const node = ensureReactNativeElement(maybeNode);
+      const scrollNode = ensureReactNativeElement(maybeScrollNode);
 
       expect(node.isConnected).toBe(true);
 
@@ -712,17 +737,7 @@ describe('IntersectionObserver', () => {
       expect(reportedObserver).toBe(observer);
 
       // Move the view out of the viewport
-      // Using position absolute as there isn't support ScrollView scrolls
-      Fantom.runTask(() => {
-        root.render(
-          <View
-            style={{position: 'absolute', top: 2000, width: 100, height: 100}}
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
-      });
+      Fantom.scrollTo(scrollNode, {x: 0, y: 200});
 
       expect(node.isConnected).toBe(true);
       expect(intersectionObserverCallback).toHaveBeenCalledTimes(2);
@@ -740,7 +755,7 @@ describe('IntersectionObserver', () => {
       });
       expectRectEquals(entries2[0].boundingClientRect, {
         x: 0,
-        y: 2000,
+        y: -200,
         width: 100,
         height: 100,
       });
@@ -756,6 +771,7 @@ describe('IntersectionObserver', () => {
     it('should report updates to the right observers', () => {
       let maybeNode1;
       let maybeNode2;
+      let maybeScrollNode;
       let observer1: IntersectionObserver;
       let observer2: IntersectionObserver;
 
@@ -763,9 +779,10 @@ describe('IntersectionObserver', () => {
         viewportWidth: 1000,
         viewportHeight: 1000,
       });
+
       Fantom.runTask(() => {
         root.render(
-          <ScrollView contentOffset={{x: 0, y: 100}}>
+          <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
             <View
               style={{width: 50, height: 50}}
               ref={receivedNode => {
@@ -783,6 +800,10 @@ describe('IntersectionObserver', () => {
       });
       const node1 = ensureReactNativeElement(maybeNode1);
       const node2 = ensureReactNativeElement(maybeNode2);
+      const scrollNode = ensureReactNativeElement(maybeScrollNode);
+
+      // Scroll such that node1 is not intersecting and node 2 is intersecting
+      Fantom.scrollTo(scrollNode, {x: 0, y: 100});
 
       const intersectionObserverCallback1 = jest.fn();
       const intersectionObserverCallback2 = jest.fn();
@@ -867,10 +888,10 @@ describe('IntersectionObserver', () => {
         height: 1000,
       });
     });
+
     describe('rootThreshold', () => {
       it('should report partial intersecting initial state correctly', () => {
         let maybeNode;
-        let observer: IntersectionObserver;
 
         const root = Fantom.createRoot({
           viewportWidth: 1000,
@@ -898,7 +919,7 @@ describe('IntersectionObserver', () => {
           observer.observe(node);
         });
 
-        expect(observer?.rnRootThresholds).toEqual([0, 0.5, 1]);
+        expect(observer.rnRootThresholds).toEqual([0, 0.5, 1]);
         expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
 
         const [entries, reportedObserver] =
@@ -933,7 +954,7 @@ describe('IntersectionObserver', () => {
 
       it('should report partial non-intersecting initial state correctly', () => {
         let maybeNode;
-        let observer: IntersectionObserver;
+        let maybeScrollNode;
 
         const root = Fantom.createRoot({
           viewportWidth: 1000,
@@ -941,7 +962,7 @@ describe('IntersectionObserver', () => {
         });
         Fantom.runTask(() => {
           root.render(
-            <ScrollView contentOffset={{x: 0, y: 25}}>
+            <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
               <View
                 style={{width: 50, height: 50}}
                 ref={receivedNode => {
@@ -952,6 +973,9 @@ describe('IntersectionObserver', () => {
           );
         });
         const node = ensureReactNativeElement(maybeNode);
+        const scrollNode = ensureReactNativeElement(maybeScrollNode);
+
+        Fantom.scrollTo(scrollNode, {x: 0, y: 25});
 
         const intersectionObserverCallback = jest.fn();
 
@@ -996,7 +1020,7 @@ describe('IntersectionObserver', () => {
 
       it('should report completely non-intersecting initial state correctly', () => {
         let maybeNode;
-        let observer: IntersectionObserver;
+        let maybeScrollNode;
 
         const root = Fantom.createRoot({
           viewportWidth: 1000,
@@ -1004,7 +1028,7 @@ describe('IntersectionObserver', () => {
         });
         Fantom.runTask(() => {
           root.render(
-            <ScrollView contentOffset={{x: 0, y: 200}}>
+            <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
               <View
                 style={{width: 50, height: 50}}
                 ref={receivedNode => {
@@ -1015,6 +1039,9 @@ describe('IntersectionObserver', () => {
           );
         });
         const node = ensureReactNativeElement(maybeNode);
+        const scrollNode = ensureReactNativeElement(maybeScrollNode);
+
+        Fantom.scrollTo(scrollNode, {x: 0, y: 200});
 
         const intersectionObserverCallback = jest.fn();
 
@@ -1059,29 +1086,40 @@ describe('IntersectionObserver', () => {
 
       it('should report subsequent updates correctly', () => {
         let maybeNode;
-        let observer: IntersectionObserver;
+        let maybeScrollNode;
 
         const root = Fantom.createRoot({
           viewportWidth: 1000,
           viewportHeight: 1000,
         });
+
         Fantom.runTask(() => {
           root.render(
-            <View
-              style={{
-                position: 'absolute',
-                top: 2000,
-                width: 1000,
-                height: 1000,
-              }}
-              ref={receivedNode => {
-                maybeNode = receivedNode;
-              }}
-            />,
+            <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
+              <View
+                style={{
+                  width: 1000,
+                  height: 1000,
+                }}
+                ref={receivedNode => {
+                  maybeNode = receivedNode;
+                }}
+              />
+              <View
+                style={{
+                  width: 1000,
+                  height: 2000, // This view purely to add height
+                }}
+              />
+            </ScrollView>,
           );
         });
 
         const node = ensureReactNativeElement(maybeNode);
+        const scrollNode = ensureReactNativeElement(maybeScrollNode);
+
+        // Scroll such that target View is not intersecting
+        Fantom.scrollTo(scrollNode, {x: 0, y: 2000});
 
         expect(node.isConnected).toBe(true);
 
@@ -1110,7 +1148,7 @@ describe('IntersectionObserver', () => {
         });
         expectRectEquals(entries[0].boundingClientRect, {
           x: 0,
-          y: 2000,
+          y: -2000,
           width: 1000,
           height: 1000,
         });
@@ -1123,18 +1161,8 @@ describe('IntersectionObserver', () => {
 
         expect(reportedObserver).toBe(observer);
 
-        // Move the view out of the viewport
-        // Using position absolute as we don't support changes in scroll position yet
-        Fantom.runTask(() => {
-          root.render(
-            <View
-              style={{position: 'absolute', top: 0, width: 1000, height: 1000}}
-              ref={receivedNode => {
-                maybeNode = receivedNode;
-              }}
-            />,
-          );
-        });
+        // Scroll target View into viewport
+        Fantom.scrollTo(scrollNode, {x: 0, y: 0});
 
         expect(node.isConnected).toBe(true);
         expect(intersectionObserverCallback).toHaveBeenCalledTimes(2);
@@ -1172,7 +1200,7 @@ describe('IntersectionObserver', () => {
 
   describe('unobserve(target)', () => {
     it('should throw if `target` is not a `ReactNativeElement`', () => {
-      const observer = new IntersectionObserver(() => {});
+      observer = new IntersectionObserver(() => {});
       expect(() => {
         // $FlowExpectedError[incompatible-call]
         observer.unobserve('something');
@@ -1199,7 +1227,7 @@ describe('IntersectionObserver', () => {
       const callback = jest.fn();
 
       Fantom.runTask(() => {
-        const observer = new IntersectionObserver(callback);
+        observer = new IntersectionObserver(callback);
         observer.unobserve(node);
       });
 
@@ -1208,13 +1236,13 @@ describe('IntersectionObserver', () => {
 
     it('should stop observing the target if it was observed', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
+      let maybeScrollNode;
 
       const root = Fantom.createRoot();
       // View is not intersecting with ScrollView
       Fantom.runTask(() => {
         root.render(
-          <ScrollView contentOffset={{x: 0, y: 100}}>
+          <ScrollView ref={receivedNode => (maybeScrollNode = receivedNode)}>
             <View
               style={{width: 100, height: 100}}
               ref={receivedNode => {
@@ -1226,6 +1254,9 @@ describe('IntersectionObserver', () => {
       });
 
       const node = ensureReactNativeElement(maybeNode);
+      const scrollNode = ensureReactNativeElement(maybeScrollNode);
+
+      Fantom.scrollTo(scrollNode, {x: 0, y: 100});
 
       const callback = jest.fn();
 
@@ -1264,7 +1295,6 @@ describe('IntersectionObserver', () => {
 
     it('should stop observing the target if it was observed (detached target after observing)', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
@@ -1304,7 +1334,6 @@ describe('IntersectionObserver', () => {
 
     it('should stop observing the target if it was observed (detached target before observing)', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
@@ -1331,7 +1360,6 @@ describe('IntersectionObserver', () => {
 
     it('should not report the initial state if the target is unobserved before it is delivered', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
@@ -1359,13 +1387,15 @@ describe('IntersectionObserver', () => {
 
     it('should not report updates if the target is unobserved before they are delivered', () => {
       let maybeNode;
-      let observer: IntersectionObserver;
+      let maybeScrollNode;
 
       const root = Fantom.createRoot();
-      // View is not intersecting with ScrollView
       Fantom.runTask(() => {
         root.render(
-          <ScrollView contentOffset={{x: 0, y: 100}}>
+          <ScrollView
+            ref={receivedNode => {
+              maybeScrollNode = receivedNode;
+            }}>
             <View
               style={{width: 100, height: 100}}
               ref={receivedNode => {
@@ -1374,6 +1404,14 @@ describe('IntersectionObserver', () => {
             />
           </ScrollView>,
         );
+      });
+
+      const scrollNode = ensureReactNativeElement(maybeScrollNode);
+
+      // Scroll such that view is not intersecting with ScrollView
+      Fantom.scrollTo(scrollNode, {
+        x: 0,
+        y: 100,
       });
 
       const node = ensureReactNativeElement(maybeNode);
@@ -1395,18 +1433,10 @@ describe('IntersectionObserver', () => {
         observer.unobserve(node);
       });
 
-      // Update View such that it is intersecting
-      Fantom.runTask(() => {
-        root.render(
-          <ScrollView>
-            <View
-              style={{width: 100, height: 100}}
-              ref={receivedNode => {
-                maybeNode = receivedNode;
-              }}
-            />
-          </ScrollView>,
-        );
+      // Scroll ScrollView such that View is intersecting
+      Fantom.scrollTo(scrollNode, {
+        x: 0,
+        y: 0,
       });
 
       // The callback should not be called again because the target was
@@ -1417,7 +1447,6 @@ describe('IntersectionObserver', () => {
     it('should not report updates if the target is unobserved before they are delivered (with other active targets)', () => {
       let maybeNode1;
       let maybeNode2;
-      let observer: IntersectionObserver;
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
@@ -1523,7 +1552,7 @@ describe('IntersectionObserver', () => {
       const callback = jest.fn();
 
       Fantom.runTask(() => {
-        const observer = new IntersectionObserver(callback);
+        observer = new IntersectionObserver(callback);
         observer.disconnect();
       });
 
@@ -1559,7 +1588,7 @@ describe('IntersectionObserver', () => {
       const callback = jest.fn();
 
       Fantom.runTask(() => {
-        const observer = new IntersectionObserver(callback);
+        observer = new IntersectionObserver(callback);
 
         observer.observe(node1);
         observer.observe(node2);
