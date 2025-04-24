@@ -69,15 +69,6 @@ class TextLayoutManager {
       const ParagraphAttributes& paragraphAttributes,
       const Size& size) const;
 
-  /*
-   * Calculates baseline of `attributedString` using native text rendering
-   * infrastructure.
-   */
-  Float baseline(
-      const AttributedStringBox& attributedStringBox,
-      const ParagraphAttributes& paragraphAttributes,
-      const Size& size) const;
-
 #ifdef __APPLE__
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.

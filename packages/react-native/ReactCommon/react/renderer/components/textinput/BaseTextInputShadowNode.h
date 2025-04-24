@@ -106,8 +106,8 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
                    &(YogaLayoutableShadowNode::yogaNode_), YGEdgeTop);
 
     AttributedStringBox attributedStringBox{attributedString};
-    return textLayoutManager_->baseline(
-               attributedStringBox, props.paragraphAttributes, size) +
+    return LineMeasurement::baseline(textLayoutManager_->measureLines(
+               attributedStringBox, props.paragraphAttributes, size)) +
         top;
   }
 

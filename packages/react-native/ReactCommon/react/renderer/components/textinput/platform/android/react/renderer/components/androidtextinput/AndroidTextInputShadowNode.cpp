@@ -92,10 +92,10 @@ Float AndroidTextInputShadowNode::baseline(
       YGNodeLayoutGetPadding(&yogaNode_, YGEdgeTop);
 
   AttributedStringBox attributedStringBox{attributedString};
-  return textLayoutManager_->baseline(
+  return LineMeasurement::baseline(textLayoutManager_->measureLines(
              attributedStringBox,
              getConcreteProps().paragraphAttributes,
-             size) +
+             size)) +
       top;
 }
 
