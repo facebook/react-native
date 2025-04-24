@@ -11,21 +11,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
-import java.util.*
+import java.util.WeakHashMap
+
 
 public abstract class ViewGroupManager<T : ViewGroup>
 @JvmOverloads
 constructor(reactContext: ReactApplicationContext? = null) :
     BaseViewManager<T, LayoutShadowNode>(reactContext), IViewGroupManager<T> {
-
-    public companion object {
-        private val zIndexHash: WeakHashMap<View, Int> = WeakHashMap()
-
-        @JvmStatic
-        public fun setViewZIndex(view: View, zIndex: Int): Unit = zIndexHash.set(view, zIndex)
-
-        @JvmStatic public fun getViewZIndex(view: View?): Int? = zIndexHash[view]
-    }
 
     public override fun createShadowNodeInstance(): LayoutShadowNode = LayoutShadowNode()
 
@@ -60,13 +52,32 @@ constructor(reactContext: ReactApplicationContext? = null) :
 
     public fun removeView(parent: T, view: View) {
         UiThreadUtil.assertOnUiThread()
+
         for (i in 0 until getChildCount(parent)) {
             if (getChildAt(parent, i) === view) {
+
                 removeViewAt(parent, i)
                 break
             }
         }
     }
 
+    /**
+     * Returns whether this View type needs to handle laying out its own children instead of deferring
+     * to the standard css-layout algorithm. Returns true for the layout to *not* be automatically
+     * invoked. Instead onLayout will be invoked as normal and it is the View instance's
+     * responsibility to properly call layout on its children. Returns false for the default behavior
+     * of automatically laying out children without going through the ViewGroup's onLayout method. In
+     * that case, onLayout for this View type must *not* call layout on its children.
+     */
     public override fun needsCustomLayoutForChildren(): Boolean = false
+
+    public companion object {
+        private val zIndexHash: WeakHashMap<View, Int> = WeakHashMap()
+
+        @JvmStatic
+        public fun setViewZIndex(view: View, zIndex: Int): Unit = zIndexHash.set(view, zIndex)
+
+        @JvmStatic public fun getViewZIndex(view: View?): Int? = zIndexHash[view]
+    }
 }
