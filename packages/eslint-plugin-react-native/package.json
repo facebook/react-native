@@ -18,8 +18,8 @@
   "bugs": "https://github.com/facebook/react-native/issues",
   "main": "index.js",
   "devDependencies": {
-    "babel-plugin-syntax-hermes-parser": "0.28.0",
-    "hermes-eslint": "0.28.0"
+    "babel-plugin-syntax-hermes-parser": "0.28.1",
+    "hermes-eslint": "0.28.1"
   },
   "engines": {
     "node": ">=18"

@@ -38,8 +38,7 @@ import java.util.Map;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
-public class ReactTextViewManager
-    extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
+public class ReactTextViewManager extends ReactTextAnchorViewManager<ReactTextShadowNode>
     implements IViewManagerWithChildren {
 
   private static final String TAG = "ReactTextViewManager";
@@ -201,9 +200,7 @@ public class ReactTextViewManager
     Map<String, Object> eventTypeConstants =
         baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
     eventTypeConstants.putAll(
-        MapBuilder.of(
-            "topTextLayout", MapBuilder.of("registrationName", "onTextLayout"),
-            "topInlineViewLayout", MapBuilder.of("registrationName", "onInlineViewLayout")));
+        MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout")));
     return eventTypeConstants;
   }
 

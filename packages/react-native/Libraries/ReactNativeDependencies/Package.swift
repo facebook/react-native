@@ -15,12 +15,12 @@ let package = Package(
     .library(
       name: "ReactNativeDependencies",
       targets: ["ReactNativeDependencies"]
-    ),
+    )
   ],
   targets: [
     .binaryTarget(
       name: "ReactNativeDependencies",
       path: "../../third-party/ReactNativeDependencies.xcframework" // this will be replaced by the URL of the xcframework after we publish it on maven
-    ),
+    )
   ]
 )

@@ -213,9 +213,18 @@ jint FabricUIManagerBinding::findNextFocusableElement(
 
   ShadowNode::Shared parentShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
+
+  if (parentShadowNode == nullptr) {
+    return -1;
+  }
+
   ShadowNode::Shared focusedShadowNode =
       FocusOrderingHelper::findShadowNodeByTagRecursively(
           parentShadowNode, focusedTag);
+
+  if (focusedShadowNode == nullptr) {
+    return -1;
+  }
 
   LayoutMetrics childLayoutMetrics = uimanager->getRelativeLayoutMetrics(
       *focusedShadowNode, parentShadowNode.get(), {.includeTransform = true});

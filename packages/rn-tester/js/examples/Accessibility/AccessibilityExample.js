@@ -98,6 +98,17 @@ const styles = StyleSheet.create({
   scrollView: {
     height: 50,
   },
+  boxSize: {
+    width: 50,
+    height: 50,
+  },
+  smallBoxSize: {
+    width: 25,
+    height: 25,
+  },
+  link: {
+    color: 'blue',
+  },
 });
 
 class AccessibilityExample extends React.Component<{}> {
@@ -1643,6 +1654,161 @@ function AccessibilityTextInputWithArialabelledByAttributeExample(): React.Node 
   );
 }
 
+function AccessibilityOrderExample(): React.Node {
+  return (
+    <>
+      <RNTesterText style={{marginBottom: 8}}>
+        accessibilityOrder=['e', 'ca', 'b', 'a', 'c', 'd']
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10}}
+        experimental_accessibilityOrder={['e', 'ca', 'b', 'a', 'c', 'd']}>
+        <View
+          nativeID="a"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}
+        />
+        <View
+          nativeID="b"
+          style={[{backgroundColor: 'orange'}, styles.boxSize]}>
+          <View
+            accessible={true}
+            nativeID="ba"
+            accessibilityLabel="ba"
+            style={[{backgroundColor: 'teal'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="bb"
+            accessibilityLabel="bb"
+            style={[{backgroundColor: 'ivory'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          accessible={true}
+          nativeID="c"
+          accessibilityLabel="c"
+          style={[{backgroundColor: 'indianred'}, styles.boxSize]}>
+          <View
+            accessible={true}
+            nativeID="ca"
+            accessibilityLabel="ca"
+            style={[{backgroundColor: 'lime'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="cb"
+            accessibilityLabel="cb"
+            style={[{backgroundColor: 'blueviolet'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          experimental_accessibilityOrder={['dc', 'da', 'db']}
+          nativeID="d"
+          style={{
+            backgroundColor: 'fuchsia',
+            ...styles.boxSize,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+          }}>
+          <View
+            accessible={true}
+            nativeID="da"
+            accessibilityLabel="da"
+            style={[{backgroundColor: 'black'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="db"
+            accessibilityLabel="db"
+            style={[{backgroundColor: 'lightslategray'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="dc"
+            accessibilityLabel="dc"
+            style={[{backgroundColor: 'khaki'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          accessible={true}
+          nativeID="e"
+          accessibilityLabel="e"
+          style={[{backgroundColor: 'deepskyblue'}, styles.boxSize]}
+        />
+      </View>
+    </>
+  );
+}
+
+function handleLinkPress(linkText: string): void {
+  Alert.alert('Link Clicked', `You clicked on the ${linkText} link!`);
+}
+
+function TextLinkExample(): React.Node {
+  return (
+    <View style={{gap: 10}}>
+      <RNTesterText>
+        We can focus{' '}
+        <RNTesterText
+          accessibilityRole="link"
+          onPress={() => handleLinkPress('first')}
+          style={styles.link}>
+          links
+        </RNTesterText>{' '}
+        in text, even if there are{' '}
+        <RNTesterText
+          accessibilityRole="link"
+          onPress={() => handleLinkPress('second')}
+          style={styles.link}>
+          multiple of them!
+        </RNTesterText>
+      </RNTesterText>
+      <RNTesterText
+        accessibilityRole="link"
+        onPress={() => handleLinkPress('thrid')}
+        style={styles.link}>
+        We can also focus text that are entirly links!
+      </RNTesterText>
+    </View>
+  );
+}
+
+function LabelCooptingExample(): React.Node {
+  return (
+    <View style={{gap: 10}} experimental_accessibilityOrder={['a', 'b', 'c']}>
+      <View
+        accessible={true}
+        nativeID="a"
+        style={{
+          backgroundColor: 'lightseagreen',
+          padding: 10,
+          borderRadius: 5,
+        }}>
+        <RNTesterText>
+          This View is accessible and it will coopt this text. This text is not
+          accessible because it got coopted!
+        </RNTesterText>
+      </View>
+      <View
+        accessible={true}
+        nativeID="b"
+        style={{backgroundColor: 'lightcoral', padding: 10, borderRadius: 5}}>
+        <RNTesterText nativeID="c">
+          This View is accessible and it will coopt this text. This text is not
+          accessible because it got coopted! But it's{' '}
+          <RNTesterText
+            accessibilityRole="link"
+            onPress={() => handleLinkPress('first')}
+            style={styles.link}>
+            links
+          </RNTesterText>{' '}
+          are!
+        </RNTesterText>
+      </View>
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -1738,6 +1904,24 @@ exports.examples = [
     title: 'TextInput with aria-labelledby attribute',
     render(): React.MixedElement {
       return <AccessibilityTextInputWithArialabelledByAttributeExample />;
+    },
+  },
+  {
+    title: 'accessibilityOrder',
+    render(): React.MixedElement {
+      return <AccessibilityOrderExample />;
+    },
+  },
+  {
+    title: 'Links in text',
+    render(): React.MixedElement {
+      return <TextLinkExample />;
+    },
+  },
+  {
+    title: 'Label coopting',
+    render(): React.MixedElement {
+      return <LabelCooptingExample />;
     },
   },
 ];

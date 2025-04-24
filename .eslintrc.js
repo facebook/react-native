@@ -82,6 +82,7 @@ module.exports = {
         'lint/require-extends-error': 2,
         'lint/no-react-node-imports': 2,
         'lint/no-react-default-imports': 2,
+        'lint/no-react-named-type-imports': 2,
       },
     },
     {

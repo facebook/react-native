@@ -1180,6 +1180,44 @@ inline void fromRawValue(
     }
 
     std::string type = (std::string)(typeIt->second);
+    std::vector<ColorStop> colorStops;
+    auto colorStopsIt = rawBackgroundImageMap.find("colorStops");
+
+    if (colorStopsIt != rawBackgroundImageMap.end() &&
+        colorStopsIt->second.hasType<std::vector<RawValue>>()) {
+      auto rawColorStops =
+          static_cast<std::vector<RawValue>>(colorStopsIt->second);
+
+      for (const auto& stop : rawColorStops) {
+        if (stop.hasType<std::unordered_map<std::string, RawValue>>()) {
+          auto stopMap =
+              static_cast<std::unordered_map<std::string, RawValue>>(stop);
+          auto positionIt = stopMap.find("position");
+          auto colorIt = stopMap.find("color");
+
+          if (positionIt != stopMap.end() && colorIt != stopMap.end()) {
+            ColorStop colorStop;
+            if (positionIt->second.hasValue()) {
+              auto valueUnit = toValueUnit(positionIt->second);
+              if (!valueUnit) {
+                result = {};
+                return;
+              }
+              colorStop.position = valueUnit;
+            }
+            if (colorIt->second.hasValue()) {
+              fromRawValue(
+                  context.contextContainer,
+                  context.surfaceId,
+                  colorIt->second,
+                  colorStop.color);
+            }
+            colorStops.push_back(colorStop);
+          }
+        }
+      }
+    }
+
     if (type == "linearGradient") {
       LinearGradient linearGradient;
 
@@ -1213,43 +1251,88 @@ inline void fromRawValue(
         }
       }
 
-      auto colorStopsIt = rawBackgroundImageMap.find("colorStops");
-      if (colorStopsIt != rawBackgroundImageMap.end() &&
-          colorStopsIt->second.hasType<std::vector<RawValue>>()) {
-        auto rawColorStops =
-            static_cast<std::vector<RawValue>>(colorStopsIt->second);
+      if (!colorStops.empty()) {
+        linearGradient.colorStops = colorStops;
+      }
 
-        for (const auto& stop : rawColorStops) {
-          if (stop.hasType<std::unordered_map<std::string, RawValue>>()) {
-            auto stopMap =
-                static_cast<std::unordered_map<std::string, RawValue>>(stop);
-            auto positionIt = stopMap.find("position");
-            auto colorIt = stopMap.find("color");
+      backgroundImage.emplace_back(std::move(linearGradient));
+    } else if (type == "radialGradient") {
+      RadialGradient radialGradient;
+      auto shapeIt = rawBackgroundImageMap.find("shape");
+      if (shapeIt != rawBackgroundImageMap.end() &&
+          shapeIt->second.hasType<std::string>()) {
+        auto shape = (std::string)(shapeIt->second);
+        radialGradient.shape = shape == "circle" ? RadialGradientShape::Circle
+                                                 : RadialGradientShape::Ellipse;
+      }
 
-            if (positionIt != stopMap.end() && colorIt != stopMap.end()) {
-              ColorStop colorStop;
-              if (positionIt->second.hasValue()) {
-                auto valueUnit = toValueUnit(positionIt->second);
-                if (!valueUnit) {
-                  result = {};
-                  return;
-                }
-                colorStop.position = valueUnit;
-              }
-              if (colorIt->second.hasValue()) {
-                fromRawValue(
-                    context.contextContainer,
-                    context.surfaceId,
-                    colorIt->second,
-                    colorStop.color);
-              }
-              linearGradient.colorStops.push_back(colorStop);
-            }
+      auto sizeIt = rawBackgroundImageMap.find("size");
+      if (sizeIt != rawBackgroundImageMap.end()) {
+        if (sizeIt->second.hasType<std::string>()) {
+          auto sizeStr = (std::string)(sizeIt->second);
+          if (sizeStr == "closest-side") {
+            radialGradient.size.value =
+                RadialGradientSize::SizeKeyword::ClosestSide;
+          } else if (sizeStr == "farthest-side") {
+            radialGradient.size.value =
+                RadialGradientSize::SizeKeyword::FarthestSide;
+          } else if (sizeStr == "closest-corner") {
+            radialGradient.size.value =
+                RadialGradientSize::SizeKeyword::ClosestCorner;
+          } else if (sizeStr == "farthest-corner") {
+            radialGradient.size.value =
+                RadialGradientSize::SizeKeyword::FarthestCorner;
+          }
+        } else if (sizeIt->second
+                       .hasType<std::unordered_map<std::string, RawValue>>()) {
+          auto sizeMap = static_cast<std::unordered_map<std::string, RawValue>>(
+              sizeIt->second);
+          auto xIt = sizeMap.find("x");
+          auto yIt = sizeMap.find("y");
+          if (xIt != sizeMap.end() && yIt != sizeMap.end()) {
+            RadialGradientSize sizeObj;
+            sizeObj.value = RadialGradientSize::Dimensions{
+                toValueUnit(xIt->second), toValueUnit(yIt->second)};
+            radialGradient.size = sizeObj;
+          }
+        }
+
+        auto positionIt = rawBackgroundImageMap.find("position");
+        if (positionIt != rawBackgroundImageMap.end() &&
+            positionIt->second
+                .hasType<std::unordered_map<std::string, RawValue>>()) {
+          auto positionMap =
+              static_cast<std::unordered_map<std::string, RawValue>>(
+                  positionIt->second);
+
+          auto topIt = positionMap.find("top");
+          auto bottomIt = positionMap.find("bottom");
+          auto leftIt = positionMap.find("left");
+          auto rightIt = positionMap.find("right");
+
+          if (topIt != positionMap.end()) {
+            auto topValue = toValueUnit(topIt->second);
+            radialGradient.position.top = topValue;
+          } else if (bottomIt != positionMap.end()) {
+            auto bottomValue = toValueUnit(bottomIt->second);
+            radialGradient.position.bottom = bottomValue;
+          }
+
+          if (leftIt != positionMap.end()) {
+            auto leftValue = toValueUnit(leftIt->second);
+            radialGradient.position.left = leftValue;
+          } else if (rightIt != positionMap.end()) {
+            auto rightValue = toValueUnit(rightIt->second);
+            radialGradient.position.right = rightValue;
           }
         }
       }
 
-      backgroundImage.push_back(std::move(linearGradient));
+      if (!colorStops.empty()) {
+        radialGradient.colorStops = colorStops;
+      }
+
+      backgroundImage.emplace_back(std::move(radialGradient));
     }
   }
 

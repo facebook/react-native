@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ff9e2c1e9cc5c780777c0a80efcc74f>>
+ * @generated SignedSource<<02eee4ab43643c5b4a77a041775da76f>>
  */
 
 /**
@@ -79,6 +79,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableFixForParentTagDuringReparenting() override {
+    return false;
+  }
+
   bool enableFontScaleChangesUpdatingLayout() override {
     return false;
   }
@@ -108,7 +112,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableNewBackgroundAndBorderDrawables() override {
-    return false;
+    return true;
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {
@@ -147,11 +151,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool removeTurboModuleManagerDelegateMutex() override {
+  bool traceTurboModulePromiseRejectionsOnAndroid() override {
     return false;
   }
 
-  bool traceTurboModulePromiseRejectionsOnAndroid() override {
+  bool updateRuntimeShadowNodeReferencesOnCommit() override {
     return false;
   }
 
@@ -176,6 +180,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useRawPropsJsiValue() override {
+    return false;
+  }
+
+  bool useShadowNodeStateOnClone() override {
     return false;
   }
 

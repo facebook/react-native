@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c38f54724a573b954fd8aee1e41e73a>>
+ * @generated SignedSource<<1b96ba67dfa2a679ed2da6f7e70d2a14>>
  */
 
 /**
@@ -49,6 +49,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricRenderer(): Boolean = false
 
+  override fun enableFixForParentTagDuringReparenting(): Boolean = false
+
   override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
@@ -63,7 +65,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableNativeCSSParsing(): Boolean = false
 
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
+  override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
@@ -83,9 +85,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
-  override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
-
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
+
+  override fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = false
 
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
@@ -98,6 +100,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
   override fun useRawPropsJsiValue(): Boolean = false
+
+  override fun useShadowNodeStateOnClone(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 

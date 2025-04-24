@@ -188,6 +188,12 @@ class ShadowNode : public Sealable,
                                          runtimeShadowNodeReference) const;
 
   /*
+   * Update the runtime reference to point to the provided shadow node.
+   */
+  void updateRuntimeShadowNodeReference(
+      const Shared& destinationShadowNode) const;
+
+  /*
    * Transfer the runtime reference to this `ShadowNode` to a new instance,
    * updating the reference to point to the new `ShadowNode` referencing it.
    */

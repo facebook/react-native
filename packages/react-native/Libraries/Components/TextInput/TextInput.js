@@ -675,6 +675,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         ref={(ref: $FlowFixMe)}
         {...otherProps}
         {...eventHandlers}
+        acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
@@ -741,6 +742,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}
         accessible={accessible}
+        acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         autoCapitalize={autoCapitalize}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}

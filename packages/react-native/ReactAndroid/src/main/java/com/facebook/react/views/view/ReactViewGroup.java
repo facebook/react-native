@@ -406,11 +406,6 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void updateClippingRect() {
-    updateClippingRect(null);
-  }
-
-  @Override
-  public void updateClippingRect(@Nullable Set<Integer> excludedViewsSet) {
     if (!mRemoveClippedSubviews) {
       return;
     }
@@ -419,7 +414,7 @@ public class ReactViewGroup extends ViewGroup
     Assertions.assertNotNull(mAllChildren);
 
     ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
-    updateClippingToRect(mClippingRect, excludedViewsSet);
+    updateClippingToRect(mClippingRect);
   }
 
   @Override
@@ -443,16 +438,12 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void updateClippingToRect(Rect clippingRect) {
-    updateClippingToRect(clippingRect, null);
-  }
-
-  private void updateClippingToRect(Rect clippingRect, @Nullable Set<Integer> excludedViewsSet) {
     Assertions.assertNotNull(mAllChildren);
     mInSubviewClippingLoop = true;
     int clippedSoFar = 0;
     for (int i = 0; i < mAllChildrenCount; i++) {
       try {
-        updateSubviewClipStatus(clippingRect, i, clippedSoFar, excludedViewsSet);
+        updateSubviewClipStatus(clippingRect, i, clippedSoFar);
       } catch (IndexOutOfBoundsException e) {
         int realClippedSoFar = 0;
         Set<View> uniqueViews = new HashSet<>();
@@ -486,11 +477,6 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
-    updateSubviewClipStatus(clippingRect, idx, clippedSoFar, null);
-  }
-
-  private void updateSubviewClipStatus(
-      Rect clippingRect, int idx, int clippedSoFar, @Nullable Set<Integer> excludedViewsSet) {
     UiThreadUtil.assertOnUiThread();
 
     View child = Assertions.assertNotNull(mAllChildren)[idx];
@@ -506,22 +492,14 @@ public class ReactViewGroup extends ViewGroup
     // it won't be size and located properly.
     Animation animation = child.getAnimation();
     boolean isAnimating = animation != null && !animation.hasEnded();
-    boolean shouldSkipView = excludedViewsSet != null && excludedViewsSet.contains(child.getId());
-    if (excludedViewsSet != null) {
-      needUpdateClippingRecursive = true;
-    }
     // We don't want to clip a view that is currently focused at that might break focus navigation
-    if (!intersects
-        && !isViewClipped(child, idx)
-        && !isAnimating
-        && child != getFocusedChild()
-        && !shouldSkipView) {
+    if (!intersects && !isViewClipped(child, idx) && !isAnimating && child != getFocusedChild()) {
       setViewClipped(child, true);
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
       removeViewInLayout(child);
       needUpdateClippingRecursive = true;
-    } else if (shouldSkipView || (intersects && isViewClipped(child, idx))) {
+    } else if (intersects && isViewClipped(child, idx)) {
       int adjustedIdx = idx - clippedSoFar;
       Assertions.assertCondition(adjustedIdx >= 0);
       setViewClipped(child, false);
@@ -536,7 +514,7 @@ public class ReactViewGroup extends ViewGroup
       if (child instanceof ReactClippingViewGroup) {
         ReactClippingViewGroup clippingChild = (ReactClippingViewGroup) child;
         if (clippingChild.getRemoveClippedSubviews()) {
-          clippingChild.updateClippingRect(excludedViewsSet);
+          clippingChild.updateClippingRect();
         }
       }
     }
@@ -742,7 +720,7 @@ public class ReactViewGroup extends ViewGroup
             public void run() {
               if (!child.isShown()) {
                 ReactSoftExceptionLogger.logSoftException(
-                    TAG,
+                    ReactSoftExceptionLogger.Categories.CLIPPING_PROHIBITED_VIEW,
                     new ReactNoCrashSoftException(
                         "Child view has been added to Parent view in which it is clipped and not"
                             + " visible. This is not legal for this particular child view. Child: ["

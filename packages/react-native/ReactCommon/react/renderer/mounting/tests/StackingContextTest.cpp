@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <algorithm>
 #include <memory>
 
 #include <gtest/gtest.h>
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
@@ -24,9 +25,24 @@
 
 namespace facebook::react {
 
-class StackingContextTest : public ::testing::Test {
+class StackingContextTestFeatureFlags : public ReactNativeFeatureFlagsDefaults {
+ public:
+  explicit StackingContextTestFeatureFlags(
+      bool enableFixForParentTagDuringReparenting)
+      : enableFixForParentTagDuringReparenting_(
+            enableFixForParentTagDuringReparenting) {}
+
+  bool enableFixForParentTagDuringReparenting() override {
+    return enableFixForParentTagDuringReparenting_;
+  }
+
+ private:
+  bool enableFixForParentTagDuringReparenting_;
+};
+
+class StackingContextTest : public ::testing::TestWithParam<bool> {
  protected:
-  ComponentBuilder builder_;
+  std::unique_ptr<ComponentBuilder> builder_;
   std::shared_ptr<RootShadowNode> rootShadowNode_;
   std::shared_ptr<ViewShadowNode> nodeA_;
   std::shared_ptr<ViewShadowNode> nodeAA_;
@@ -41,7 +57,10 @@ class StackingContextTest : public ::testing::Test {
   std::shared_ptr<RootShadowNode> currentRootShadowNode_;
   StubViewTree currentStubViewTree_;
 
-  StackingContextTest() : builder_(simpleComponentBuilder()) {
+  void SetUp() override {
+    ReactNativeFeatureFlags::override(
+        std::make_unique<StackingContextTestFeatureFlags>(GetParam()));
+
     //  ┌────────────── (Root) ──────────────┐
     //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │
     //  │ ┃                                ┃ │
@@ -144,12 +163,17 @@ class StackingContextTest : public ::testing::Test {
           });
     // clang-format on
 
-    builder_.build(element);
+    builder_ = std::make_unique<ComponentBuilder>(simpleComponentBuilder());
+    builder_->build(element);
 
     currentRootShadowNode_ = rootShadowNode_;
     currentRootShadowNode_->layoutIfNeeded();
     currentStubViewTree_ =
         buildStubViewTreeWithoutUsingDifferentiator(*currentRootShadowNode_);
+  }
+
+  void TearDown() override {
+    ReactNativeFeatureFlags::dangerouslyReset();
   }
 
   void mutateViewShadowNodeProps_(
@@ -179,7 +203,7 @@ class StackingContextTest : public ::testing::Test {
   }
 };
 
-TEST_F(StackingContextTest, defaultPropsMakeEverythingFlattened) {
+TEST_P(StackingContextTest, defaultPropsMakeEverythingFlattened) {
   testViewTree_([](const StubViewTree& viewTree) {
     // 1 view in total.
     EXPECT_EQ(viewTree.size(), 1);
@@ -189,7 +213,7 @@ TEST_F(StackingContextTest, defaultPropsMakeEverythingFlattened) {
   });
 }
 
-TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
+TEST_P(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   //  ┌────────────── (Root) ──────────────┐    ┌────────── (Root) ───────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │                             │
   //  │ ┃                                ┃ │    │                             │
@@ -292,7 +316,7 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   });
 }
 
-TEST_F(StackingContextTest, somePropsForceViewsToMaterialize1) {
+TEST_P(StackingContextTest, somePropsForceViewsToMaterialize1) {
   //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ AA (tag: 3) ━━━━━━━━━━━┓ │
   //  │ ┃                                ┃ │    │ ┃ #FormsView              ┃ │
@@ -376,7 +400,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize1) {
   });
 }
 
-TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
+TEST_P(StackingContextTest, somePropsForceViewsToMaterialize2) {
   //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ A (tag: 2) ━━━━━━━━━━━━┓ │
   //  │ ┃ backgroundColor: black;        ┃ │    │ ┃ #FormsView              ┃ │
@@ -478,7 +502,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
   });
 }
 
-TEST_F(StackingContextTest, nonCollapsableChildren) {
+TEST_P(StackingContextTest, nonCollapsableChildren) {
   //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BBA (tag: 7) ━━━━━━━━━━┓ │
   //  │ ┃                                ┃ │    │ ┃                         ┃ │
@@ -555,7 +579,7 @@ TEST_F(StackingContextTest, nonCollapsableChildren) {
   });
 }
 
-TEST_F(StackingContextTest, nonCollapsableChildrenMixed) {
+TEST_P(StackingContextTest, nonCollapsableChildrenMixed) {
   //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BA (tag: 5) ━━ ━━━━━━━━┓ │
   //  │ ┃                                ┃ │    │ ┃                         ┃ │
@@ -648,7 +672,7 @@ TEST_F(StackingContextTest, nonCollapsableChildrenMixed) {
   });
 }
 
-TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
+TEST_P(StackingContextTest, zIndexAndFlattenedNodes) {
   //  ┌────────────── (Root) ──────────────┐    ┌────────── (Root) ───────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BD (tag: 10) ━━━━━━━━━━┓ │
   //  │ ┃                                ┃ │    │ ┃ #FormsView              ┃ │
@@ -970,5 +994,10 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 #endif
   });
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    enableFixForParentTagDuringReparenting,
+    StackingContextTest,
+    testing::Values(false, true));
 
 } // namespace facebook::react

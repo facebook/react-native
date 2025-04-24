@@ -28,19 +28,19 @@ internal object UIConstantsProviderBinding {
   )
 
   @DoNotStripAny
-  interface DefaultEventTypesProvider {
+  fun interface DefaultEventTypesProvider {
     /* Returns UIManager's constants. */
     fun getDefaultEventTypes(): NativeMap
   }
 
   @DoNotStripAny
-  interface ConstantsForViewManagerProvider {
+  fun interface ConstantsForViewManagerProvider {
     /* Returns UIManager's constants. */
     fun getConstantsForViewManager(viewManagerName: String): NativeMap?
   }
 
   @DoNotStripAny
-  interface ConstantsProvider {
+  fun interface ConstantsProvider {
     /* Returns UIManager's constants. */
     fun getConstants(): NativeMap
   }

@@ -330,9 +330,14 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/Filter/FilterExample'),
   },
   {
-    key: 'LinearGradient',
+    key: 'LinearGradientExample',
     category: 'UI',
     module: require('../examples/LinearGradient/LinearGradientExample'),
+  },
+  {
+    key: 'RadialGradientExample',
+    category: 'UI',
+    module: require('../examples/RadialGradient/RadialGradientExample'),
   },
   {
     key: 'MixBlendModeExample',

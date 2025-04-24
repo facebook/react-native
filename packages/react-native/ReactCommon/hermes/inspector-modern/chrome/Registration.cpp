@@ -10,10 +10,7 @@
 
 #ifdef HERMES_ENABLE_DEBUGGER
 
-namespace facebook {
-namespace hermes {
-namespace inspector_modern {
-namespace chrome {
+namespace facebook::hermes::inspector_modern::chrome {
 
 namespace {
 
@@ -35,9 +32,6 @@ void disableDebugging(DebugSessionToken session) {
   demux().disableDebugging(session);
 }
 
-} // namespace chrome
-} // namespace inspector_modern
-} // namespace hermes
-} // namespace facebook
+} // namespace facebook::hermes::inspector_modern::chrome
 
 #endif // HERMES_ENABLE_DEBUGGER

@@ -125,7 +125,7 @@ class MultipartStreamReaderTest {
     var callCount = 0
       private set
 
-    override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
+    override fun onChunkComplete(headers: Map<String, String>, body: Buffer, isLastChunk: Boolean) {
       callCount++
     }
 

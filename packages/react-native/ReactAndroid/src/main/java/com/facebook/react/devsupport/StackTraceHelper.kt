@@ -7,10 +7,13 @@
 
 package com.facebook.react.devsupport
 
+import com.facebook.react.bridge.JavaOnlyArray
+import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.interfaces.StackFrame
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler.ProcessedError
 import java.io.File
 import java.util.regex.Pattern
 import org.json.JSONArray
@@ -25,6 +28,7 @@ public object StackTraceHelper {
   public const val LINE_NUMBER_KEY: String = "lineNumber"
   public const val FILE_KEY: String = "file"
   public const val METHOD_NAME_KEY: String = "methodName"
+  public const val COLLAPSE_KEY: String = "collapse"
 
   public const val MESSAGE_KEY: String = "message"
   public const val ORIGINAL_MESSAGE_KEY: String = "originalMessage"
@@ -51,10 +55,12 @@ public object StackTraceHelper {
       val type = stack.getType(i)
       if (type == ReadableType.Map) {
         val frame = requireNotNull(stack.getMap(i))
-        val method = requireNotNull(frame.getString("methodName"))
-        val file = requireNotNull(frame.getString("file"))
+        val method = requireNotNull(frame.getString(METHOD_NAME_KEY))
+        val file = requireNotNull(frame.getString(FILE_KEY))
         val collapse =
-            frame.hasKey("collapse") && !frame.isNull("collapse") && frame.getBoolean("collapse")
+            frame.hasKey(COLLAPSE_KEY) &&
+                !frame.isNull(COLLAPSE_KEY) &&
+                frame.getBoolean(COLLAPSE_KEY)
         var lineNumber = -1
         if (frame.hasKey(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
           lineNumber = frame.getInt(LINE_NUMBER_KEY)
@@ -89,8 +95,8 @@ public object StackTraceHelper {
     try {
       return Array(size) { i ->
         val frame = stack.getJSONObject(i)
-        val method = frame.getString("methodName")
-        val file = frame.getString("file")
+        val method = frame.getString(METHOD_NAME_KEY)
+        val file = frame.getString(FILE_KEY)
         var lineNumber = -1
         if (frame.has(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
           lineNumber = frame.getInt(LINE_NUMBER_KEY)
@@ -100,7 +106,7 @@ public object StackTraceHelper {
           columnNumber = frame.getInt(COLUMN_KEY)
         }
         val collapse =
-            frame.has("collapse") && !frame.isNull("collapse") && frame.getBoolean("collapse")
+            frame.has(COLLAPSE_KEY) && !frame.isNull(COLLAPSE_KEY) && frame.getBoolean(COLLAPSE_KEY)
         StackFrameImpl(
             file = file,
             method = method,
@@ -186,6 +192,31 @@ public object StackTraceHelper {
     return stackTrace.toString()
   }
 
+  @JvmStatic
+  internal fun convertProcessedError(error: ProcessedError): JavaOnlyMap {
+    val stack = JavaOnlyArray()
+    for (frame in error.stack) {
+      stack.pushMap(
+          JavaOnlyMap().apply {
+            frame.column?.let { putDouble(COLUMN_KEY, it.toDouble()) }
+            frame.lineNumber?.let { putDouble(LINE_NUMBER_KEY, it.toDouble()) }
+            putString(FILE_KEY, frame.file)
+            putString(METHOD_NAME_KEY, frame.methodName)
+          })
+    }
+
+    return JavaOnlyMap().apply {
+      putString(MESSAGE_KEY, error.message)
+      error.originalMessage?.let { putString(ORIGINAL_MESSAGE_KEY, it) }
+      error.name?.let { putString(NAME_KEY, it) }
+      error.componentStack?.let { putString(COMPONENT_STACK_KEY, it) }
+      putArray(STACK_KEY, stack)
+      putInt(ID_KEY, error.id)
+      putBoolean(IS_FATAL_KEY, error.isFatal)
+      putMap(EXTRA_DATA_KEY, error.extraData)
+    }
+  }
+
   /**
    * Represents a generic entry in a stack trace, be it originally from JS or Java.
    *
@@ -211,10 +242,10 @@ public object StackTraceHelper {
     override fun toJSON(): JSONObject =
         JSONObject(
             mapOf(
-                "file" to (file.orEmpty()),
-                "methodName" to method,
-                "lineNumber" to line,
-                "column" to column,
-                "collapse" to isCollapsed))
+                FILE_KEY to (file.orEmpty()),
+                METHOD_NAME_KEY to method,
+                LINE_NUMBER_KEY to line,
+                COLUMN_KEY to column,
+                COLLAPSE_KEY to isCollapsed))
   }
 }

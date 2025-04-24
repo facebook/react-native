@@ -10,7 +10,7 @@
 
 'use strict';
 
-const fixtures = require('../__test_fixtures__/fixtures');
+const fixtures = require('../__fixtures__/fixtures');
 const sut = require('../generate-specs-cli-executor');
 const {normalize} = require('path');
 

@@ -585,13 +585,13 @@ public open class ReactTextInputManager public constructor() :
   public fun setTextAlignVertical(view: ReactEditText, textAlignVertical: String?) {
     when (textAlignVertical) {
       null,
-      "auto" -> view.setGravityVertical(Gravity.NO_GRAVITY)
-      "top" -> view.setGravityVertical(Gravity.TOP)
-      "bottom" -> view.setGravityVertical(Gravity.BOTTOM)
-      "center" -> view.setGravityVertical(Gravity.CENTER_VERTICAL)
+      "auto" -> view.gravityVertical = Gravity.NO_GRAVITY
+      "top" -> view.gravityVertical = Gravity.TOP
+      "bottom" -> view.gravityVertical = Gravity.BOTTOM
+      "center" -> view.gravityVertical = Gravity.CENTER_VERTICAL
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid textAlignVertical: $textAlignVertical")
-        view.setGravityVertical(Gravity.NO_GRAVITY)
+        view.gravityVertical = Gravity.NO_GRAVITY
       }
     }
   }
@@ -768,6 +768,22 @@ public open class ReactTextInputManager public constructor() :
   @ReactProp(name = "returnKeyType")
   public fun setReturnKeyType(view: ReactEditText, returnKeyType: String?) {
     view.returnKeyType = returnKeyType
+  }
+
+  @ReactProp(name = "acceptDragAndDropTypes")
+  public fun setAcceptDragAndDropTypes(
+      view: ReactEditText,
+      acceptDragAndDropTypes: ReadableArray?
+  ) {
+    if (acceptDragAndDropTypes == null) {
+      view.dragAndDropFilter = null
+    } else {
+      val acceptedTypes = mutableListOf<String>()
+      for (i in 0 until acceptDragAndDropTypes.size()) {
+        acceptDragAndDropTypes.getString(i)?.also(acceptedTypes::add)
+      }
+      view.dragAndDropFilter = acceptedTypes
+    }
   }
 
   @ReactProp(name = "disableFullscreenUI", defaultBoolean = false)
