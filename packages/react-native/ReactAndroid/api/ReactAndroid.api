@@ -2384,15 +2384,6 @@ public final class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/f
 	public fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
 
-public final class com/facebook/react/fabric/StateWrapperImpl : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/StateWrapper {
-	public fun destroyState ()V
-	public fun getStateData ()Lcom/facebook/react/bridge/ReadableNativeMap;
-	public fun getStateDataMapBuffer ()Lcom/facebook/react/common/mapbuffer/ReadableMapBuffer;
-	public fun toString ()Ljava/lang/String;
-	public fun updateState (Lcom/facebook/react/bridge/WritableMap;)V
-	public final fun updateStateImpl (Lcom/facebook/react/bridge/NativeMap;)V
-}
-
 public final class com/facebook/react/fabric/events/EventBeatManager : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/events/BatchEventDispatchedListener {
 	public fun <init> ()V
 	public fun onBatchEventDispatched ()V
