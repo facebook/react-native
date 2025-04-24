@@ -109,8 +109,8 @@
     "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
-    "@types/react": "^19.0.0",
-    "react": "^19.0.0"
+    "@types/react": "^19.1.0",
+    "react": "^19.1.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -147,7 +147,7 @@
     "react-devtools-core": "^6.1.1",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.25.0",
+    "scheduler": "0.26.0",
     "semver": "^7.1.3",
     "stacktrace-parser": "^0.1.10",
     "whatwg-fetch": "^3.0.0",
