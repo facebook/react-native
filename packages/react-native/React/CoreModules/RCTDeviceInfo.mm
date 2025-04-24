@@ -178,6 +178,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
   CGSize screenSize = mainScreen.bounds.size;
   UIView *mainWindow = RCTKeyWindow();
 
+  UIView *mainWindow = RCTKeyWindow();
   // We fallback to screen size if a key window is not found.
   CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
 
