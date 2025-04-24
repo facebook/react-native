@@ -25,11 +25,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.eq
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -52,13 +52,13 @@ class BridgelessReactContextTest {
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
     context = Robolectric.buildActivity(Activity::class.java).create().get()
-    reactHost = mock(ReactHostImpl::class.java)
+    reactHost = mock<ReactHostImpl>()
     bridgelessReactContext = BridgelessReactContext(context, reactHost)
   }
 
   @Test
   fun getNativeModuleTest() {
-    val mUiManagerModule = mock(UIManagerModule::class.java)
+    val mUiManagerModule = mock<UIManagerModule>()
     doReturn(mUiManagerModule)
         .`when`(reactHost)
         .getNativeModule(ArgumentMatchers.any<Class<UIManagerModule>>())
@@ -68,7 +68,7 @@ class BridgelessReactContextTest {
 
   @Test
   fun getFabricUIManagerTest() {
-    val fabricUiManager = mock(FabricUIManager::class.java)
+    val fabricUiManager = mock<FabricUIManager>()
     doReturn(fabricUiManager).`when`(reactHost).uiManager
     assertThat(bridgelessReactContext.getFabricUIManager()).isEqualTo(fabricUiManager)
   }
