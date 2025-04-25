@@ -22,7 +22,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 
 function blobToBase64(blob: Blob) {
   return new Promise<string>((resolve, reject) => {
@@ -43,6 +42,7 @@ const ContentSelector = (): React.Node => {
   const [base64Image, setBase64Image] = React.useState('');
   const imageSelector = React.useCallback(async () => {
     try {
+      const NativeSampleTurboModule = require('react-native/Libraries/TurboModule/samples/NativeSampleTurboModule');
       const uri = await NativeSampleTurboModule.getImageUrl?.();
       if (uri != null) {
         console.log({uri});
