@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc4db71645093cb063feeb6f5c1b42ef>>
+ * @generated SignedSource<<e6ac6ad8ad5f9ccca5b0ae6542351e4b>>
  */
 
 /**
@@ -88,15 +88,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::disableMountItemReorderingAndroid();
-  }
-
-  bool disableShadowNodeOnNewArchitectureAndroid() override {
-    auto value = values_["disableShadowNodeOnNewArchitectureAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::disableShadowNodeOnNewArchitectureAndroid();
   }
 
   bool enableAccessibilityOrder() override {
