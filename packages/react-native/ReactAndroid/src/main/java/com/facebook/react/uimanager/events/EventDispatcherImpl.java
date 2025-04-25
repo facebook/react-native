@@ -15,6 +15,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 0x0000ffff00000000 COALESCING_KEY_MASK = 0xffff000000000000
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
+@InteropLegacyArchitecture
 public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListener {
 
   private static final Comparator<Event> EVENT_COMPARATOR =
