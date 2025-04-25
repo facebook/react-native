@@ -5522,18 +5522,6 @@ public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager : co
 public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager$Companion {
 }
 
-public final class com/facebook/react/views/drawer/events/DrawerStateChangedEvent : com/facebook/react/uimanager/events/Event {
-	public static final field Companion Lcom/facebook/react/views/drawer/events/DrawerStateChangedEvent$Companion;
-	public static final field EVENT_NAME Ljava/lang/String;
-	public fun <init> (II)V
-	public fun <init> (III)V
-	public final fun getDrawerState ()I
-	public fun getEventName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/views/drawer/events/DrawerStateChangedEvent$Companion {
-}
-
 public abstract interface class com/facebook/react/views/image/GlobalImageLoadListener {
 	public abstract fun onLoadAttempt (Landroid/net/Uri;)V
 }
