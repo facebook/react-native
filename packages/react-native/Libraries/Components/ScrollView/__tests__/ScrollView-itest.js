@@ -11,6 +11,8 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import type {HostInstance} from 'react-native';
+
 import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -20,7 +22,7 @@ import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/React
 describe('onScroll', () => {
   it('delivers onScroll event', () => {
     const root = Fantom.createRoot();
-    let maybeNode;
+    const scrollViewRef = React.createRef<HostInstance>();
     const onScroll = jest.fn();
 
     Fantom.runTask(() => {
@@ -29,14 +31,12 @@ describe('onScroll', () => {
           onScroll={event => {
             onScroll(event.nativeEvent);
           }}
-          ref={node => {
-            maybeNode = node;
-          }}
+          ref={scrollViewRef}
         />,
       );
     });
 
-    const element = ensureInstance(maybeNode, ReactNativeElement);
+    const element = ensureInstance(scrollViewRef.current, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
       Fantom.enqueueNativeEvent(
@@ -66,7 +66,7 @@ describe('onScroll', () => {
 
   it('batches onScroll event per UI tick', () => {
     const root = Fantom.createRoot();
-    let maybeNode;
+    const scrollViewRef = React.createRef<HostInstance>();
     const onScroll = jest.fn();
 
     Fantom.runTask(() => {
@@ -75,14 +75,12 @@ describe('onScroll', () => {
           onScroll={event => {
             onScroll(event.nativeEvent);
           }}
-          ref={node => {
-            maybeNode = node;
-          }}
+          ref={scrollViewRef}
         />,
       );
     });
 
-    const element = ensureInstance(maybeNode, ReactNativeElement);
+    const element = ensureInstance(scrollViewRef.current, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
       Fantom.enqueueNativeEvent(element, 'scroll', {

@@ -14,6 +14,8 @@
 
 import 'react-native/Libraries/Core/InitializeCore.js';
 
+import type {HostInstance} from 'react-native';
+
 import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -22,15 +24,11 @@ import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/React
 
 test('basic culling', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
 
   Fantom.runTask(() => {
     root.render(
-      <ScrollView
-        style={{height: 100, width: 100}}
-        ref={node => {
-          maybeNode = node;
-        }}>
+      <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
         <View
           nativeID={'child'}
           style={{height: 10, width: 10, marginTop: 45}}
@@ -49,7 +47,7 @@ test('basic culling', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -80,15 +78,11 @@ test('basic culling', () => {
 
 test('recursive culling', () => {
   const root = Fantom.createRoot({viewportHeight: 100, viewportWidth: 100});
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
 
   Fantom.runTask(() => {
     root.render(
-      <ScrollView
-        style={{height: 100, width: 100}}
-        ref={node => {
-          maybeNode = node;
-        }}>
+      <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
         <View
           nativeID={'element A'}
           style={{height: 30, width: 30, marginTop: 25}}>
@@ -125,7 +119,7 @@ test('recursive culling', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   // === Scroll down to the edge of child AA ===
   Fantom.scrollTo(element, {
@@ -241,16 +235,14 @@ test('recursive culling', () => {
 
 test('recursive culling when initial offset is negative', () => {
   const root = Fantom.createRoot({viewportHeight: 874, viewportWidth: 402});
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
 
   Fantom.runTask(() => {
     root.render(
       <ScrollView
         style={{height: 874, width: 402}}
         contentOffset={{x: 0, y: -10000}}
-        ref={node => {
-          maybeNode = node;
-        }}>
+        ref={nodeRef}>
         <View
           nativeID={'child A'}
           style={{height: 100, width: 100, marginTop: 235}}
@@ -274,7 +266,7 @@ test('recursive culling when initial offset is negative', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -298,15 +290,11 @@ test('recursive culling when initial offset is negative', () => {
 
 test('deep nesting', () => {
   const root = Fantom.createRoot({viewportHeight: 100, viewportWidth: 100});
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
 
   Fantom.runTask(() => {
     root.render(
-      <ScrollView
-        style={{height: 100, width: 100}}
-        ref={node => {
-          maybeNode = node;
-        }}>
+      <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
         <View
           nativeID={'element A'}
           style={{height: 10, width: 100, marginTop: 30}}
@@ -341,7 +329,7 @@ test('deep nesting', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -469,16 +457,14 @@ test('adding new item into area that is culled', () => {
 });
 
 test('initial render', () => {
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
   const root = Fantom.createRoot({viewportHeight: 100, viewportWidth: 100});
 
   Fantom.runTask(() => {
     root.render(
       <ScrollView
         contentOffset={{x: 0, y: 45}}
-        ref={node => {
-          maybeNode = node;
-        }}
+        ref={nodeRef}
         style={{height: 100, width: 100}}>
         <View nativeID={'element A'} style={{height: 50, width: 100}} />
         <View
@@ -504,7 +490,7 @@ test('initial render', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -555,16 +541,12 @@ test('unmounting culled elements', () => {
 
 // TODO: only elements in ScrollView are culled.
 test('basic culling smaller ScrollView', () => {
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
 
   Fantom.runTask(() => {
     root.render(
-      <ScrollView
-        ref={node => {
-          maybeNode = node;
-        }}
-        style={{height: 50, width: 50, marginTop: 25}}>
+      <ScrollView ref={nodeRef} style={{height: 50, width: 50, marginTop: 25}}>
         <View nativeID={'element 1'} style={{height: 10, width: 10}} />
       </ScrollView>,
     );
@@ -580,7 +562,7 @@ test('basic culling smaller ScrollView', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -617,15 +599,11 @@ test('views are not culled when outside of viewport', () => {
 
 test('culling with transform move', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
 
   Fantom.runTask(() => {
     root.render(
-      <ScrollView
-        style={{height: 100, width: 100}}
-        ref={node => {
-          maybeNode = node;
-        }}>
+      <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
         <View
           nativeID={'child'}
           style={{
@@ -647,7 +625,7 @@ test('culling with transform move', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -663,15 +641,11 @@ test('culling with transform move', () => {
 
 test('culling with recursive transform move', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
 
   Fantom.runTask(() => {
     root.render(
-      <ScrollView
-        style={{height: 100, width: 100}}
-        ref={node => {
-          maybeNode = node;
-        }}>
+      <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
         <View style={{transform: [{translateY: 11}]}}>
           <View
             nativeID={'child'}
@@ -696,7 +670,7 @@ test('culling with recursive transform move', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -712,15 +686,11 @@ test('culling with recursive transform move', () => {
 
 test('culling with transform scale', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
 
   Fantom.runTask(() => {
     root.render(
-      <ScrollView
-        style={{height: 100, width: 100}}
-        ref={node => {
-          maybeNode = node;
-        }}>
+      <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
         <View
           nativeID={'child'}
           style={{
@@ -744,7 +714,7 @@ test('culling with transform scale', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -791,7 +761,7 @@ test('culling when ScrollView parent has transform', () => {
 
 test('culling inside of Modal', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
-  let maybeNode;
+  const nodeRef = React.createRef<HostInstance>();
 
   Fantom.runTask(() => {
     root.render(
@@ -800,16 +770,12 @@ test('culling inside of Modal', () => {
       <ScrollView
         contentOffset={{x: 0, y: 100}}
         style={{height: 100, width: 100}}>
-        <Modal
-          ref={(node: ?React.ElementRef<typeof Modal>) => {
-            maybeNode = node;
-          }}
-        />
+        <Modal ref={nodeRef} />
       </ScrollView>,
     );
   });
 
-  const element = ensureInstance(maybeNode, ReactNativeElement);
+  const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
     Fantom.enqueueModalSizeUpdate(element, {
@@ -836,10 +802,7 @@ test('culling inside of Modal', () => {
       <ScrollView
         contentOffset={{x: 0, y: 100}}
         style={{height: 100, width: 100}}>
-        <Modal
-          ref={(node: ?React.ElementRef<typeof Modal>) => {
-            maybeNode = node;
-          }}>
+        <Modal ref={nodeRef}>
           <View
             nativeID={'child'}
             style={{height: 10, width: 10, marginTop: 45}}
@@ -858,15 +821,11 @@ test('culling inside of Modal', () => {
 describe('reparenting', () => {
   test('view flattening with culling', () => {
     const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
-    let maybeNode;
+    const nodeRef = React.createRef<HostInstance>();
 
     Fantom.runTask(() => {
       root.render(
-        <ScrollView
-          style={{height: 100, width: 100}}
-          ref={node => {
-            maybeNode = node;
-          }}>
+        <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
           <View
             style={{
               marginTop: 150,
@@ -888,7 +847,7 @@ describe('reparenting', () => {
       'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(maybeNode, ReactNativeElement);
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
     Fantom.scrollTo(element, {
       x: 0,
@@ -904,11 +863,7 @@ describe('reparenting', () => {
     // force view to be unflattened.
     Fantom.runTask(() => {
       root.render(
-        <ScrollView
-          style={{height: 100, width: 100}}
-          ref={node => {
-            maybeNode = node;
-          }}>
+        <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
           <View
             style={{
               marginTop: 150,
@@ -934,11 +889,7 @@ describe('reparenting', () => {
     // force view to be flattened.
     Fantom.runTask(() => {
       root.render(
-        <ScrollView
-          style={{height: 100, width: 100}}
-          ref={node => {
-            maybeNode = node;
-          }}>
+        <ScrollView style={{height: 100, width: 100}} ref={nodeRef}>
           <View
             style={{
               marginTop: 150,
@@ -1339,16 +1290,14 @@ describe('reparenting', () => {
       'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     ]);
 
-    let maybeNode = null;
+    const nodeRef = React.createRef<HostInstance>();
 
     // Now update opacity to unflattned the container and add a child that has a culled descendant.
     Fantom.runTask(() => {
       root.render(
         <ScrollView
           style={{height: 100, width: 100}}
-          ref={node => {
-            maybeNode = node;
-          }}
+          ref={nodeRef}
           contentOffset={{x: 0, y: 111}}>
           <View
             style={{
@@ -1385,7 +1334,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(maybeNode, ReactNativeElement);
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
     // Scroll down to see the grandchild.
     Fantom.scrollTo(element, {
@@ -1509,16 +1458,14 @@ describe('reparenting', () => {
       'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     ]);
 
-    let maybeNode = null;
+    const nodeRef = React.createRef<HostInstance>();
 
     // Now change unflattened view container to flattened and change its child to be unflattened.
     Fantom.runTask(() => {
       root.render(
         <ScrollView
           style={{height: 100, width: 100}}
-          ref={node => {
-            maybeNode = node;
-          }}
+          ref={nodeRef}
           contentOffset={{x: 0, y: 60}}>
           <View
             style={{
@@ -1547,7 +1494,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(maybeNode, ReactNativeElement);
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
     // Scroll to reveal grandchild.
     Fantom.scrollTo(element, {
@@ -1601,16 +1548,14 @@ describe('reparenting', () => {
       'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     ]);
 
-    let maybeNode = null;
+    const nodeRef = React.createRef<HostInstance>();
 
     // Now change unflattened view container to flattened and change its child to be unflattened.
     Fantom.runTask(() => {
       root.render(
         <ScrollView
           style={{height: 100, width: 100}}
-          ref={node => {
-            maybeNode = node;
-          }}
+          ref={nodeRef}
           contentOffset={{x: 0, y: 60}}>
           <View
             style={{
@@ -1639,7 +1584,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(maybeNode, ReactNativeElement);
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
     // Scroll to reveal grandchild.
     Fantom.scrollTo(element, {

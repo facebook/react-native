@@ -13,6 +13,8 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import type {HostInstance} from 'react-native';
+
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -24,14 +26,12 @@ describe('UIConsistency', () => {
   it('should provide consistent data from the tree within the same synchronous function', () => {
     const root = Fantom.createRoot();
 
-    let maybeScrollViewNode;
+    const scrollViewRef = React.createRef<HostInstance>();
 
     Fantom.runTask(() => {
       root.render(
         <ScrollView
-          ref={node => {
-            maybeScrollViewNode = node;
-          }}
+          ref={scrollViewRef}
           style={{height: 100}}
           contentContainerStyle={{height: 1000}}
         />,
@@ -39,7 +39,7 @@ describe('UIConsistency', () => {
     });
 
     const scrollViewNode = ensureInstance(
-      maybeScrollViewNode,
+      scrollViewRef.current,
       ReactNativeElement,
     );
 
@@ -59,14 +59,12 @@ describe('UIConsistency', () => {
   it('should provide up-to-date data in the first access to the tree', () => {
     const root = Fantom.createRoot();
 
-    let maybeScrollViewNode;
+    const scrollViewRef = React.createRef<HostInstance>();
 
     Fantom.runTask(() => {
       root.render(
         <ScrollView
-          ref={node => {
-            maybeScrollViewNode = node;
-          }}
+          ref={scrollViewRef}
           style={{height: 100}}
           contentContainerStyle={{height: 1000}}
         />,
@@ -74,7 +72,7 @@ describe('UIConsistency', () => {
     });
 
     const scrollViewNode = ensureInstance(
-      maybeScrollViewNode,
+      scrollViewRef.current,
       ReactNativeElement,
     );
 
@@ -93,7 +91,7 @@ describe('UIConsistency', () => {
   it('should provide up-to-date data after commit', () => {
     const root = Fantom.createRoot();
 
-    let maybeScrollViewNode;
+    const scrollViewRef = React.createRef<HostInstance>();
 
     function InnerComponent(props: {
       text: string,
@@ -114,9 +112,7 @@ describe('UIConsistency', () => {
     Fantom.runTask(() => {
       root.render(
         <ScrollView
-          ref={node => {
-            maybeScrollViewNode = node;
-          }}
+          ref={scrollViewRef}
           style={{height: 100}}
           contentContainerStyle={{height: 1000}}>
           <InnerComponent text="A" />
@@ -125,7 +121,7 @@ describe('UIConsistency', () => {
     });
 
     const scrollViewNode = ensureInstance(
-      maybeScrollViewNode,
+      scrollViewRef.current,
       ReactNativeElement,
     );
 

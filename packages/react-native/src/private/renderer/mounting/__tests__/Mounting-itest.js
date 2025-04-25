@@ -12,6 +12,8 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import type {HostInstance} from 'react-native';
+
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -354,14 +356,12 @@ test('parent-child switching from flattened-unflattened to unflattened-flattened
 describe('reconciliation of setNativeProps and React commit', () => {
   it('props set by setNativeProps must not be overriden by React commit', () => {
     const root = Fantom.createRoot();
-    let maybeNode;
+    const nodeRef = React.createRef<HostInstance>();
 
     Fantom.runTask(() => {
       root.render(
         <View
-          ref={node => {
-            maybeNode = node;
-          }}
+          ref={nodeRef}
           nativeID="first native id"
           testID="first test id"
         />,
@@ -378,7 +378,7 @@ describe('reconciliation of setNativeProps and React commit', () => {
       <rn-view nativeID={'first native id'} testID={'first test id'} />,
     );
 
-    const element = ensureInstance(maybeNode, ReactNativeElement);
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
     Fantom.runTask(() => {
       // Calling `setNativeProps` forces bug https://github.com/facebook/react-native/issues/47476 to manifest.
@@ -401,9 +401,7 @@ describe('reconciliation of setNativeProps and React commit', () => {
     Fantom.runTask(() => {
       root.render(
         <View
-          ref={node => {
-            maybeNode = node;
-          }}
+          ref={nodeRef}
           nativeID="second native id"
           // testID was changed by `setNativeProps` and React does not know about it.
           // Therefore, it will treat testID as unchanged.
@@ -426,17 +424,10 @@ describe('reconciliation of setNativeProps and React commit', () => {
 
   it('allows React commit to override value set by setNativeProps', () => {
     const root = Fantom.createRoot();
-    let maybeNode;
+    const nodeRef = React.createRef<HostInstance>();
 
     Fantom.runTask(() => {
-      root.render(
-        <View
-          ref={node => {
-            maybeNode = node;
-          }}
-          nativeID="first native id"
-        />,
-      );
+      root.render(<View ref={nodeRef} nativeID="first native id" />);
     });
 
     expect(
@@ -447,7 +438,7 @@ describe('reconciliation of setNativeProps and React commit', () => {
         .toJSX(),
     ).toEqual(<rn-view nativeID={'first native id'} />);
 
-    const element = ensureInstance(maybeNode, ReactNativeElement);
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
 
     Fantom.runTask(() => {
       element.setNativeProps({nativeID: 'second native id'});
@@ -462,14 +453,7 @@ describe('reconciliation of setNativeProps and React commit', () => {
     ).toEqual(<rn-view nativeID={'second native id'} />);
 
     Fantom.runTask(() => {
-      root.render(
-        <View
-          ref={node => {
-            maybeNode = node;
-          }}
-          nativeID="third native id"
-        />,
-      );
+      root.render(<View ref={nodeRef} nativeID="third native id" />);
     });
 
     expect(
