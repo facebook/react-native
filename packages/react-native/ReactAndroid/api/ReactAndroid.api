@@ -770,13 +770,22 @@ public final class com/facebook/react/bridge/JSApplicationIllegalArgumentExcepti
 }
 
 public abstract class com/facebook/react/bridge/JSBundleLoader {
+	public static final field Companion Lcom/facebook/react/bridge/JSBundleLoader$Companion;
 	public fun <init> ()V
-	public static fun createAssetLoader (Landroid/content/Context;Ljava/lang/String;Z)Lcom/facebook/react/bridge/JSBundleLoader;
-	public static fun createCachedBundleFromNetworkLoader (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
-	public static fun createCachedSplitBundleFromNetworkLoader (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
-	public static fun createFileLoader (Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
-	public static fun createFileLoader (Ljava/lang/String;Ljava/lang/String;Z)Lcom/facebook/react/bridge/JSBundleLoader;
+	public static final fun createAssetLoader (Landroid/content/Context;Ljava/lang/String;Z)Lcom/facebook/react/bridge/JSBundleLoader;
+	public static final fun createCachedBundleFromNetworkLoader (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
+	public static final fun createCachedSplitBundleFromNetworkLoader (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
+	public static final fun createFileLoader (Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
+	public static final fun createFileLoader (Ljava/lang/String;Ljava/lang/String;Z)Lcom/facebook/react/bridge/JSBundleLoader;
 	public abstract fun loadScript (Lcom/facebook/react/bridge/JSBundleLoaderDelegate;)Ljava/lang/String;
+}
+
+public final class com/facebook/react/bridge/JSBundleLoader$Companion {
+	public final fun createAssetLoader (Landroid/content/Context;Ljava/lang/String;Z)Lcom/facebook/react/bridge/JSBundleLoader;
+	public final fun createCachedBundleFromNetworkLoader (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
+	public final fun createCachedSplitBundleFromNetworkLoader (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
+	public final fun createFileLoader (Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
+	public final fun createFileLoader (Ljava/lang/String;Ljava/lang/String;Z)Lcom/facebook/react/bridge/JSBundleLoader;
 }
 
 public abstract interface class com/facebook/react/bridge/JSBundleLoaderDelegate {
