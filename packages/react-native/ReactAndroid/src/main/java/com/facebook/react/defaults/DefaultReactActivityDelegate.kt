@@ -21,7 +21,7 @@ import com.facebook.react.ReactActivityDelegate
  */
 public open class DefaultReactActivityDelegate(
     activity: ReactActivity,
-    mainComponentName: String,
+    mainComponentName: String?,
     private val fabricEnabled: Boolean = false,
 ) : ReactActivityDelegate(activity, mainComponentName) {
 
