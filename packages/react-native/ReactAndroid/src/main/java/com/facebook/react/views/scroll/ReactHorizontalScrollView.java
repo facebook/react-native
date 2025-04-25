@@ -11,6 +11,7 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNME
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_DISABLED;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.findNextFocusableView;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -31,6 +32,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -39,6 +41,7 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -64,6 +67,7 @@ import com.facebook.systrace.Systrace;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -772,7 +776,25 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
+  public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
+    if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, true);
+
+      if (nextfocusableView != null) {
+        return nextfocusableView;
+      }
+    }
+
+    return super.focusSearch(focused, direction);
+  }
+
+  @Override
   public void updateClippingRect() {
+    updateClippingRect(null);
+  }
+
+  @Override
+  public void updateClippingRect(@Nullable Set<Integer> excludedViewId) {
     if (!mRemoveClippedSubviews) {
       return;
     }
@@ -784,7 +806,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
       View contentView = getContentView();
       if (contentView instanceof ReactClippingViewGroup) {
-        ((ReactClippingViewGroup) contentView).updateClippingRect();
+        ((ReactClippingViewGroup) contentView).updateClippingRect(excludedViewId);
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);

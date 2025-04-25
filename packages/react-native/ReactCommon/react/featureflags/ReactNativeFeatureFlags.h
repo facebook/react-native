@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7db312ec3cf0991e95572baeba2a140e>>
+ * @generated SignedSource<<8c259acc61fa1b132df222cf16a2f29f>>
  */
 
 /**
@@ -83,6 +83,11 @@ class ReactNativeFeatureFlags {
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   RN_EXPORT static bool enableCppPropsIteratorSetter();
+
+  /**
+   * This enables the fabric implementation of focus search so that we can focus clipped elements
+   */
+  RN_EXPORT static bool enableCustomFocusSearchOnClippedElementsAndroid();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
