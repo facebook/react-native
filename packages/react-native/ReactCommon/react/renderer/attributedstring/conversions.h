@@ -236,7 +236,6 @@ inline void fromRawValue(
       result = FontWeight::Weight900;
     } else {
       LOG(ERROR) << "Unsupported FontWeight value: " << string;
-      react_native_expect(false);
       // sane default for prod
       result = FontWeight::Regular;
     }
@@ -265,7 +264,6 @@ inline void fromRawValue(
       result = FontWeight::Weight900;
     } else {
       LOG(ERROR) << "Unsupported FontWeight value: " << numeric;
-      react_native_expect(false);
       // sane default for prod
       result = FontWeight::Regular;
     }
