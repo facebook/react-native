@@ -26,7 +26,25 @@
   "bin": {
     "react-native": "cli.js"
   },
+  "main": "./index.js",
   "types": "types",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*.js",
+    "./*.js": "./*.js",
+    "./Libraries/*.d.ts": "./Libraries/*.d.ts",
+    "./types/*.d.ts": "./types/*.d.ts",
+    "./gradle/*": null,
+    "./React/*": null,
+    "./ReactAndroid/*": null,
+    "./ReactApple/*": null,
+    "./ReactCommon/*": null,
+    "./sdks/*": null,
+    "./src/*": null,
+    "./third-party-podspecs/*": null,
+    "./types/*": null,
+    "./package.json": "./package.json"
+  },
   "jest-junit": {
     "outputDirectory": "reports/junit",
     "outputName": "js-test-results.xml"
@@ -90,11 +108,6 @@
     "settings.gradle.kts",
     "src",
     "!src/private/testing",
-    "template.config.js",
-    "template",
-    "!template/node_modules",
-    "!template/package-lock.json",
-    "!template/yarn.lock",
     "third-party-podspecs",
     "types",
     "!**/__docs__/**",
