@@ -11,6 +11,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.JavaScriptModule
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
 
 /**
  * Paper JS interface to emit events from native to JS.
@@ -18,6 +19,7 @@ import com.facebook.react.bridge.WritableMap
  * Deprecated in favor of [RCTModernEventEmitter], which works with both the old and new renderer.
  */
 @DoNotStripAny
+@InteropLegacyArchitecture
 @Deprecated("Use [RCTModernEventEmitter] instead")
 public interface RCTEventEmitter : JavaScriptModule {
   /**
