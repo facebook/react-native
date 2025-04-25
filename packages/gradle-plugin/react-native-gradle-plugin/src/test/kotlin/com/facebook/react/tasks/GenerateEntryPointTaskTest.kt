@@ -75,9 +75,6 @@ class GenerateEntryPointTaskTest {
               throw new RuntimeException(error);
             }
             
-            if (com.facebook.react.BuildConfig.LEGACY_WARNINGS_ENABLED) {
-              LegacyArchitectureLogger.OSS_LEGACY_WARNINGS_ENABLED = true;
-            }
             if (com.facebook.react.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
               DefaultNewArchitectureEntryPoint.load();
             }

@@ -14,10 +14,6 @@ object PropertyUtils {
   const val NEW_ARCH_ENABLED = "newArchEnabled"
   const val SCOPED_NEW_ARCH_ENABLED = "react.newArchEnabled"
 
-  /** Public property that toggles the Legacy Architecture Warnings */
-  const val LEGACY_WARNINGS_ENABLED = "legacyWarningsEnabled"
-  const val SCOPED_LEGACY_WARNINGS_ENABLED = "react.legacyWarningsEnabled"
-
   /** Public property that toggles the New Architecture */
   const val HERMES_ENABLED = "hermesEnabled"
   const val SCOPED_HERMES_ENABLED = "react.hermesEnabled"
