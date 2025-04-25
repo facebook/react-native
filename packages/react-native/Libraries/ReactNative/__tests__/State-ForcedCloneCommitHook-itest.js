@@ -12,6 +12,8 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import type {HostInstance} from 'react-native';
+
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -24,23 +26,19 @@ NativeFantomForcedCloneCommitHook.setup();
 describe('ScrollViewShadowNode', () => {
   it('maintains state after commit hook processing', () => {
     const root = Fantom.createRoot();
-    let maybeScrollViewNode;
+    const scrollViewRef = React.createRef<HostInstance>();
 
     Fantom.runTask(() => {
       root.render(
         <View>
-          <ScrollView
-            ref={node => {
-              maybeScrollViewNode = node;
-            }}
-          />
+          <ScrollView ref={scrollViewRef} />
           <View nativeID="to-be-cloned-in-the-commit-hook" />
         </View>,
       );
     });
 
     const scrollViewElement = ensureInstance(
-      maybeScrollViewNode,
+      scrollViewRef.current,
       ReactNativeElement,
     );
 

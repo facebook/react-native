@@ -11,6 +11,8 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import type {HostInstance} from 'react-native';
+
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -26,9 +28,9 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 describe('discrete event category', () => {
   it('interrupts React rendering and higher priority update is committed first', () => {
     const root = Fantom.createRoot();
-    let maybeTextInputNode;
-    let importantTextNode;
-    let deferredTextNode;
+    const textInputRef = React.createRef<HostInstance>();
+    const importantTextNodeRef = React.createRef<HostInstance>();
+    const deferredTextNodeRef = React.createRef<HostInstance>();
     let interruptRendering = false;
     let effectMock = jest.fn();
     let afterUpdate;
@@ -40,7 +42,7 @@ describe('discrete event category', () => {
 
       if (interruptRendering) {
         interruptRendering = false;
-        const element = ensureReactNativeElement(maybeTextInputNode);
+        const element = ensureReactNativeElement(textInputRef.current);
         Fantom.runOnUIThread(() => {
           Fantom.enqueueNativeEvent(
             element,
@@ -64,24 +66,9 @@ describe('discrete event category', () => {
 
       return (
         <>
-          <TextInput
-            onChangeText={setText}
-            ref={node => {
-              maybeTextInputNode = node;
-            }}
-          />
-          <Text
-            ref={node => {
-              importantTextNode = node;
-            }}>
-            Important text: {text}
-          </Text>
-          <Text
-            ref={node => {
-              deferredTextNode = node;
-            }}>
-            Deferred text: {deferredText}
-          </Text>
+          <TextInput onChangeText={setText} ref={textInputRef} />
+          <Text ref={importantTextNodeRef}>Important text: {text}</Text>
+          <Text ref={deferredTextNodeRef}>Deferred text: {deferredText}</Text>
         </>
       );
     }
@@ -90,10 +77,12 @@ describe('discrete event category', () => {
       root.render(<App text={'first render'} />);
     });
 
-    const importantTextNativeElement =
-      ensureReactNativeElement(importantTextNode);
-    const deferredTextNativeElement =
-      ensureReactNativeElement(deferredTextNode);
+    const importantTextNativeElement = ensureReactNativeElement(
+      importantTextNodeRef.current,
+    );
+    const deferredTextNativeElement = ensureReactNativeElement(
+      deferredTextNodeRef.current,
+    );
 
     expect(importantTextNativeElement.textContent).toBe(
       'Important text: initial text',
@@ -146,9 +135,9 @@ describe('discrete event category', () => {
 describe('continuous event category', () => {
   it('interrupts React rendering but update from continous event is delayed', () => {
     const root = Fantom.createRoot();
-    let maybeTextInputNode;
-    let importantTextNode;
-    let deferredTextNode;
+    const textInputRef = React.createRef<HostInstance>();
+    const importantTextNodeRef = React.createRef<HostInstance>();
+    const deferredTextNodeRef = React.createRef<HostInstance>();
     let interruptRendering = false;
     let effectMock = jest.fn();
 
@@ -159,7 +148,7 @@ describe('continuous event category', () => {
 
       if (interruptRendering) {
         interruptRendering = false;
-        const element = ensureReactNativeElement(maybeTextInputNode);
+        const element = ensureReactNativeElement(textInputRef.current);
         Fantom.runOnUIThread(() => {
           Fantom.enqueueNativeEvent(
             element,
@@ -188,22 +177,10 @@ describe('continuous event category', () => {
                 `start: ${event.nativeEvent.selection.start}, end: ${event.nativeEvent.selection.end}`,
               );
             }}
-            ref={node => {
-              maybeTextInputNode = node;
-            }}
+            ref={textInputRef}
           />
-          <Text
-            ref={node => {
-              importantTextNode = node;
-            }}>
-            Important text: {text}
-          </Text>
-          <Text
-            ref={node => {
-              deferredTextNode = node;
-            }}>
-            Deferred text: {deferredText}
-          </Text>
+          <Text ref={importantTextNodeRef}>Important text: {text}</Text>
+          <Text ref={deferredTextNodeRef}>Deferred text: {deferredText}</Text>
         </>
       );
     }
@@ -212,10 +189,12 @@ describe('continuous event category', () => {
       root.render(<App text={'first render'} />);
     });
 
-    const importantTextNativeElement =
-      ensureReactNativeElement(importantTextNode);
-    const deferredTextNativeElement =
-      ensureReactNativeElement(deferredTextNode);
+    const importantTextNativeElement = ensureReactNativeElement(
+      importantTextNodeRef.current,
+    );
+    const deferredTextNativeElement = ensureReactNativeElement(
+      deferredTextNodeRef.current,
+    );
 
     expect(importantTextNativeElement.textContent).toBe(
       'Important text: initial text',
