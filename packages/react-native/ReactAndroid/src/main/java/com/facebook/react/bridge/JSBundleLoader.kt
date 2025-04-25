@@ -4,14 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge
 
 import android.content.Context
-import com.facebook.infer.annotation.Nullsafe
 import com.facebook.react.common.DebugServerException
 
 /** A class that stores JS bundle information and allows a [JSBundleLoaderDelegate]. */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class JSBundleLoader {
 
   /** Loads the script, returning the URL of the source it loaded. */
@@ -42,9 +41,8 @@ public abstract class JSBundleLoader {
      * passing large strings from java to native memory.
      */
     @JvmStatic
-    public fun createFileLoader(fileName: String): JSBundleLoader {
-      return createFileLoader(fileName, fileName, false)
-    }
+    public fun createFileLoader(fileName: String): JSBundleLoader =
+        createFileLoader(fileName, fileName, false)
 
     @JvmStatic
     public fun createFileLoader(
