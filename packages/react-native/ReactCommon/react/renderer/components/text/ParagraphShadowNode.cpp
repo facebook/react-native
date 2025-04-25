@@ -214,8 +214,9 @@ Float ParagraphShadowNode::baseline(
   }
 
   AttributedStringBox attributedStringBox{attributedString};
-  return textLayoutManager_->baseline(
-      attributedStringBox, getConcreteProps().paragraphAttributes, size);
+
+  return LineMeasurement::baseline(textLayoutManager_->measureLines(
+      attributedStringBox, getConcreteProps().paragraphAttributes, size));
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
