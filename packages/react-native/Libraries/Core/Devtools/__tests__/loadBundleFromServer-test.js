@@ -14,9 +14,9 @@
 // TODO(legacy-fake-timers): Fix these tests to work with modern timers.
 jest.useFakeTimers({legacyFakeTimers: true});
 
-jest.mock('react-native/Libraries/Utilities/HMRClient');
+jest.mock('../../../Utilities/HMRClient');
 
-jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+jest.mock('../../../Core/Devtools/getDevServer', () => ({
   __esModule: true,
   default: jest.fn(() => ({
     url: 'localhost:8042/',
@@ -32,7 +32,7 @@ const loadingViewMock = {
   showMessage: jest.fn(),
   hide: jest.fn(),
 };
-jest.mock('react-native/Libraries/Utilities/DevLoadingView', () => ({
+jest.mock('../../../Utilities/DevLoadingView', () => ({
   __esModule: true,
   default: loadingViewMock,
 }));
@@ -54,7 +54,7 @@ const sendRequest = jest.fn(
   },
 );
 
-jest.mock('react-native/Libraries/Network/RCTNetworking', () => ({
+jest.mock('../../../Network/RCTNetworking', () => ({
   __esModule: true,
   default: {
     sendRequest,
