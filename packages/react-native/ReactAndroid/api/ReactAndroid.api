@@ -3396,16 +3396,8 @@ public final class com/facebook/react/touch/JSResponderHandler : com/facebook/re
 	public final fun setJSResponder (ILandroid/view/ViewParent;)V
 }
 
-public abstract interface class com/facebook/react/touch/OnInterceptTouchEventListener {
-	public abstract fun onInterceptTouchEvent (Landroid/view/ViewGroup;Landroid/view/MotionEvent;)Z
-}
-
 public abstract interface class com/facebook/react/touch/ReactHitSlopView {
 	public abstract fun getHitSlopRect ()Landroid/graphics/Rect;
-}
-
-public abstract interface class com/facebook/react/touch/ReactInterceptingViewGroup {
-	public abstract fun setOnInterceptTouchEventListener (Lcom/facebook/react/touch/OnInterceptTouchEventListener;)V
 }
 
 public final class com/facebook/react/turbomodule/core/interfaces/BindingsInstallerHolder {
