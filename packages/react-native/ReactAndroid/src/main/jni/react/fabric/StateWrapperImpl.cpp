@@ -43,6 +43,13 @@ StateWrapperImpl::getStateMapBufferDataImpl() {
   }
 }
 
+jni::local_ref<jobject> StateWrapperImpl::getStateDataReferenceImpl() {
+  if (state_) {
+    return state_->getJNIReference();
+  }
+  return nullptr;
+}
+
 void StateWrapperImpl::updateStateImpl(NativeMap* map) {
   if (state_) {
     // Get folly::dynamic from map
@@ -68,6 +75,9 @@ void StateWrapperImpl::registerNatives() {
       makeNativeMethod(
           "getStateMapBufferDataImpl",
           StateWrapperImpl::getStateMapBufferDataImpl),
+      makeNativeMethod(
+          "getStateDataReferenceImpl",
+          StateWrapperImpl::getStateDataReferenceImpl),
   });
 }
 
