@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c15f06adf75101e9f8d54e872e5b2f1c>>
+ * @generated SignedSource<<259f5f37683db64fd63ffb92e4fbae54>>
  */
 
 /**
@@ -29,7 +29,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
-  private var disableShadowNodeOnNewArchitectureAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -113,16 +112,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.disableMountItemReorderingAndroid()
       accessedFeatureFlags.add("disableMountItemReorderingAndroid")
       disableMountItemReorderingAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean {
-    var cached = disableShadowNodeOnNewArchitectureAndroidCache
-    if (cached == null) {
-      cached = currentProvider.disableShadowNodeOnNewArchitectureAndroid()
-      accessedFeatureFlags.add("disableShadowNodeOnNewArchitectureAndroid")
-      disableShadowNodeOnNewArchitectureAndroidCache = cached
     }
     return cached
   }

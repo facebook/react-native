@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b96ba67dfa2a679ed2da6f7e70d2a14>>
+ * @generated SignedSource<<4aa66c9504fb46e2a6b052d708fdc4b0>>
  */
 
 /**
@@ -32,8 +32,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableMainQueueSyncDispatchIOS(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
-
-  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = true
 
   override fun enableAccessibilityOrder(): Boolean = false
 
