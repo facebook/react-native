@@ -2,6 +2,18 @@
 
 [🏠 Home](../../../__docs__/README.md)
 
+> [!WARNING]
+>
+> This is experimental!
+>
+> We are limiting the scope of the project to just React Native internals for
+> now, so we can iterate on it quickly and keep the maintenance costs at bay.
+>
+> In the future, we might explore providing it for testing library/product code
+> internally and externally.
+>
+> This means tests must live in `packages/react-native`.
+
 Fantom is the new **integration testing and benchmarking tool for React
 Native**.
 
@@ -48,18 +60,6 @@ platform. It exposes fine grained controls over scheduling, making it possible
 to test cases that are hard to reproduce manually.
 
 ## 🚀 Usage
-
-> [!WARNING]
->
-> This is experimental!
->
-> We are limiting the scope of the project to just React Native internals for
-> now, so we can iterate on it quickly and keep the maintenance costs at bay.
->
-> In the future, we might explore providing it for testing library/product code
-> internally and externally.
->
-> This means tests must live in `packages/react-native`.
 
 Create a file with the `-itest.js` suffix anywhere you would normally create a
 Jest unit test file.
@@ -139,11 +139,11 @@ Available pragmas:
 
 #### How is this different from Jest tests?
 
-Fantom runs C++ part of React Native, as well as JavaScript. This makes it
-possible to test things related to shadow nodes, layout, events, scheduling, C++
-state updates to name a few. The results of Fabric are mounted in a mock UI tree
-that can be asserted against and individual mounting instructions can be
-inspected.
+Fantom runs C++ part of React Native, as well as JavaScript on Hermes VM -
+unlike Jest tests that run on V8. This makes it possible to test things related
+to shadow nodes, layout, events, scheduling, C++ state updates to name a few.
+The results of Fabric are mounted in a mock UI tree that can be asserted against
+and individual mounting instructions can be inspected.
 
 You can even test your C++ code. For example, we have
 [Fantom tests for the new View Culling optimization](../../react-native/Libraries/Components/ScrollView/__tests__/ScrollView-viewCulling-itest.js),
@@ -179,16 +179,26 @@ Native.
 
 #### Is Fantom ready for production use cases?
 
-Fantom is stable and will not go away. For testing specific to React Native, it
-is the recommended solution.
+Fantom is a stable and reliable testing framework that is here to stay. If
+you're planning to make changes to React or React Native internals, we highly
+recommend using Fantom as your go-to testing solution.
 
-For now, it is discouraged to use Fantom for product code testing.
+**Important Note:** While Fantom is ideal for testing React and React Native
+internals, it is not currently supported for testing application-specific code
+in React Native apps. We'll keep you updated on any future developments that may
+change this.
 
 #### Where can I find examples of tests?
 
 Look for files with the `-itest.js` suffix to find existing tests. The Fantom
 test for its public API ([`Fantom-itest.js`](../src/__tests__/Fantom-itest.js))
 has simple examples you can learn from.
+
+#### Are tests executed on Github CI?
+
+Fantom tests are currently tied to Meta's infrastructure and do not run outside
+of Meta's CI. We are working on migrating Fantom to Github CI. If you submit a
+PR, the tests will run as part of the PR import process.
 
 ---
 
