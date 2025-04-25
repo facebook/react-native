@@ -8,7 +8,7 @@
 package com.facebook.react.bridge
 
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger.assertLegacyArchitecture
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
@@ -23,7 +23,7 @@ import java.lang.reflect.Method
  * read and means fewer JNI calls.
  */
 @DoNotStrip
-@LegacyArchitecture
+@InteropLegacyArchitecture
 internal class JavaModuleWrapper(
     private val jsInstance: JSInstance,
     private val moduleHolder: ModuleHolder

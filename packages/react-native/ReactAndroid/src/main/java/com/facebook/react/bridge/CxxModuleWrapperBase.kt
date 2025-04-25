@@ -9,7 +9,7 @@ package com.facebook.react.bridge
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
@@ -20,7 +20,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  * the underlying Cxx module will be extracted by the bridge and called directly.
  */
 @DoNotStrip
-@LegacyArchitecture
+@InteropLegacyArchitecture
 public open class CxxModuleWrapperBase
 protected constructor(
     // For creating a wrapper from C++, or from a derived class.
