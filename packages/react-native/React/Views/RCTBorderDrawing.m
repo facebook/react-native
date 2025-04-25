@@ -218,15 +218,13 @@ static UIImage *RCTGetSolidBorderImage(
       (borderInsets.top + cornerInsets.topRight.height + borderInsets.bottom + cornerInsets.bottomLeft.height <=
        viewSize.height);
 
-  BOOL hasOnlyLeftRoundedCorners = (cornerRadii.topLeftHorizontal > 0 || cornerRadii.bottomLeftHorizontal > 0) &&
-      cornerRadii.topRightHorizontal == 0 && cornerRadii.bottomRightHorizontal == 0;
-
-  UIEdgeInsets edgeInsets =
-      (UIEdgeInsets){borderInsets.top + MAX(cornerInsets.topLeft.height, cornerInsets.topRight.height),
-                     borderInsets.left + MAX(cornerInsets.topLeft.width, cornerInsets.bottomLeft.width),
-                     borderInsets.bottom + MAX(cornerInsets.bottomLeft.height, cornerInsets.bottomRight.height),
-                     borderInsets.right + MAX(cornerInsets.bottomRight.width, cornerInsets.topRight.width) +
-                         (makeStretchable && hasOnlyLeftRoundedCorners ? 1 : 0)};
+  UIEdgeInsets edgeInsets = (UIEdgeInsets){
+      borderInsets.top + MAX(cornerInsets.topLeft.height, cornerInsets.topRight.height),
+      borderInsets.left + MAX(cornerInsets.topLeft.width, cornerInsets.bottomLeft.width),
+      borderInsets.bottom +
+          MAX(cornerInsets.bottomLeft.height, cornerInsets.bottomRight.height + (makeStretchable ? 1 : 0)),
+      borderInsets.right + MAX(cornerInsets.bottomRight.width, cornerInsets.topRight.width) +
+          (makeStretchable ? 1 : 0)};
 
   const CGSize size = makeStretchable ? (CGSize){
     // 1pt for the middle stretchable area along each axis
