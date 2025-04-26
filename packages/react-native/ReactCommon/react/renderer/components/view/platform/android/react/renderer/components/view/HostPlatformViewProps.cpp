@@ -454,6 +454,10 @@ inline static void updateAccessibilityStateProp(
     resultState["busy"] = newState->busy;
   }
 
+  if (!oldState.has_value() || newState->invalid != oldState->invalid) {
+    resultState["invalid"] = newState->invalid;
+  }
+
   if (!oldState.has_value() || newState->expanded != oldState->expanded) {
     resultState["expanded"] =
         newState->expanded.has_value() && newState->expanded.value();

@@ -77,6 +77,10 @@
     description="an element currently being updated or modified"
     >busy</string>
   <string
+    name="state_invalid_description"
+    description="input field that has failed validation or does not conform to the expected format"
+    >an input field which has failed validation or does not conform to the expected format</string>
+  <string
     name="state_expanded_description"
     description="a menu, dialog, accordian panel, or other widget which is expanded"
     >expanded</string>

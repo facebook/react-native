@@ -162,6 +162,7 @@ type TextBaseProps = $ReadOnly<{
   'aria-checked'?: ?boolean | 'mixed',
   'aria-disabled'?: ?boolean,
   'aria-expanded'?: ?boolean,
+  'aria-invalid'?: ?boolean,
   'aria-selected'?: ?boolean,
 
   /**

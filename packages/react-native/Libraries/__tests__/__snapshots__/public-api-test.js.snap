@@ -1518,6 +1518,7 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
   \\"aria-checked\\"?: ?boolean | \\"mixed\\",
   \\"aria-disabled\\"?: ?boolean,
   \\"aria-expanded\\"?: ?boolean,
+  \\"aria-invalid\\"?: ?boolean,
   \\"aria-selected\\"?: ?boolean,
   importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
   accessibilityHint?: ?string,
@@ -3629,6 +3630,7 @@ export type AccessibilityState = {
   checked?: ?boolean | \\"mixed\\",
   busy?: ?boolean,
   expanded?: ?boolean,
+  invalid?: ?boolean,
   ...
 };
 export type AccessibilityValue = $ReadOnly<{
@@ -3674,6 +3676,7 @@ export type AccessibilityProps = $ReadOnly<{
   \\"aria-checked\\"?: ?boolean | \\"mixed\\",
   \\"aria-disabled\\"?: ?boolean,
   \\"aria-expanded\\"?: ?boolean,
+  \\"aria-invalid\\"?: ?boolean,
   \\"aria-selected\\"?: ?boolean,
   \\"aria-hidden\\"?: ?boolean,
 }>;
@@ -7833,6 +7836,7 @@ type TextBaseProps = $ReadOnly<{
   \\"aria-checked\\"?: ?boolean | \\"mixed\\",
   \\"aria-disabled\\"?: ?boolean,
   \\"aria-expanded\\"?: ?boolean,
+  \\"aria-invalid\\"?: ?boolean,
   \\"aria-selected\\"?: ?boolean,
   \\"aria-labelledby\\"?: ?string,
   children?: ?React.Node,

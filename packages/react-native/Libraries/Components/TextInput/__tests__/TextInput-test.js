@@ -415,6 +415,7 @@ jest.unmock('../TextInput');
             "checked": true,
             "disabled": true,
             "expanded": true,
+            "invalid": true,
             "selected": true,
           }
         }
@@ -434,7 +435,6 @@ jest.unmock('../TextInput');
         aria-flowto="flowto"
         aria-haspopup={true}
         aria-hidden={true}
-        aria-invalid={true}
         aria-keyshortcuts="Cmd+S"
         aria-label="label"
         aria-labelledby="labelledby"

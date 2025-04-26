@@ -356,6 +356,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-invalid': ariaInvalid,
     'aria-selected': ariaSelected,
     accessibilityState,
     id,
@@ -620,6 +621,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
     ariaChecked != null ||
     ariaDisabled != null ||
     ariaExpanded != null ||
+    ariaInvalid != null ||
     ariaSelected != null
   ) {
     _accessibilityState = {
@@ -627,6 +629,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
       checked: ariaChecked ?? accessibilityState?.checked,
       disabled: ariaDisabled ?? accessibilityState?.disabled,
       expanded: ariaExpanded ?? accessibilityState?.expanded,
+      invalid: ariaInvalid ?? accessibilityState?.invalid,
       selected: ariaSelected ?? accessibilityState?.selected,
     };
   }

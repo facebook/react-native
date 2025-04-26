@@ -1272,6 +1272,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     [valueComponents addObject:RCTLocalizedString("busy", "an element currently being updated or modified")];
   }
 
+  if (accessibilityState.invalid) {
+    [valueComponents addObject:RCTLocalizedString("invalid", "an input field which has failed validation or does not conform to the expected format")];
+  }
+
   // Using super.accessibilityValue:
   // 1. to access the value that is set to accessibilityValue in updateProps
   // 2. can't access from self.accessibilityElement because it resolves to self

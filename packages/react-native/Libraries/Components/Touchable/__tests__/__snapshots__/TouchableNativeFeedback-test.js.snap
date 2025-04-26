@@ -8,6 +8,7 @@ exports[`<TouchableNativeFeedback /> should render as expected 1`] = `
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -39,6 +40,7 @@ exports[`<TouchableNativeFeedback disabled={false} accessibilityState={{disabled
       "checked": undefined,
       "disabled": false,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -70,6 +72,7 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{}}> shoul
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -101,6 +104,7 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{checked: 
       "checked": true,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -132,6 +136,7 @@ exports[`<TouchableNativeFeedback disabled={true} accessibilityState={{disabled:
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -163,6 +168,7 @@ exports[`<TouchableNativeFeedback disabled={true}> should be disabled when disab
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -194,6 +200,7 @@ exports[`TouchableWithoutFeedback renders correctly 1`] = `
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
