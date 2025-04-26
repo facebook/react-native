@@ -521,7 +521,7 @@ public class ReactViewGroup extends ViewGroup
       // therefore invalidation is not necessary.
       removeViewInLayout(child);
       needUpdateClippingRecursive = true;
-    } else if (shouldSkipView || (intersects && isViewClipped(child, idx))) {
+    } else if ((shouldSkipView || intersects) && isViewClipped(child, idx)) {
       int adjustedIdx = idx - clippedSoFar;
       Assertions.assertCondition(adjustedIdx >= 0);
       setViewClipped(child, false);
