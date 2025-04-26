@@ -20,6 +20,7 @@
     <string name="toolbar_description" gender="unknown">Thanh công cụ</string>
     <string name="summary_description" gender="unknown">Tóm tắt</string>
     <string name="state_busy_description" gender="unknown">bận</string>
+    <string name="state_invalid_description" gender="unknown">không hợp lệ</string>
     <string name="state_expanded_description" gender="unknown">đã mở rộng</string>
     <string name="state_collapsed_description" gender="unknown">đã thu gọn</string>
     <string name="state_unselected_description" gender="unknown">không được chọn</string>

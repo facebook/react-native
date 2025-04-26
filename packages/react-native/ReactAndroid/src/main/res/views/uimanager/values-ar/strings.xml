@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">شريط الأدوات</string>
     <string name="summary_description" gender="unknown">ملخص</string>
     <string name="state_busy_description" gender="unknown">مشغول</string>
+    <string name="state_invalid_description" gender="unknown">غير صالح</string>
     <string name="state_expanded_description" gender="unknown">موسع</string>
     <string name="state_collapsed_description" gender="unknown">مطوي</string>
     <string name="state_unselected_description" gender="unknown">غير محدَد</string>

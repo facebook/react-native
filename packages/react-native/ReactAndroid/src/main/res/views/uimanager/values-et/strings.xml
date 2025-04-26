@@ -21,6 +21,7 @@
     <string name="toolbar_description" gender="unknown">Tööriistariba</string>
     <string name="summary_description" gender="unknown">Kokkuvõte</string>
     <string name="state_busy_description" gender="unknown">hõivatud</string>
+    <string name="state_invalid_description" gender="unknown">vigane</string>
     <string name="state_expanded_description" gender="unknown">laiendatud</string>
     <string name="state_collapsed_description" gender="unknown">ahendatud</string>
     <string name="state_unselected_description" gender="unknown">valimata</string>

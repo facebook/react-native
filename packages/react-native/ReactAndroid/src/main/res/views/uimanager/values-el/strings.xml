@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Γραμμή εργαλείων</string>
     <string name="summary_description" gender="unknown">Σύνοψη</string>
     <string name="state_busy_description" gender="unknown">απασχολημένος/η</string>
+    <string name="state_invalid_description" gender="unknown">άκυρος</string>
     <string name="state_expanded_description" gender="unknown">διευρυμένο</string>
     <string name="state_collapsed_description" gender="unknown">συμπτυγμένο</string>
     <string name="state_unselected_description" gender="unknown">μη επιλεγμένα</string>

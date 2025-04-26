@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">ಟೂಲ್ ಬಾರ್</string>
     <string name="summary_description" gender="unknown">ಸಾರಾಂಶ</string>
     <string name="state_busy_description" gender="unknown">ಕಾರ್ಯನಿರತ</string>
+    <string name="state_invalid_description" gender="unknown">ಅಮಾನ</string>
     <string name="state_expanded_description" gender="unknown">ವಿಸ್ತರಿಸಲಾಗಿದೆ</string>
     <string name="state_collapsed_description" gender="unknown">ಮುಚ್ಚಿದೆ</string>
     <string name="state_unselected_description" gender="unknown">ಆಯ್ಕೆ ರದ್ದುಮಾಡಲಾಗಿದೆ</string>

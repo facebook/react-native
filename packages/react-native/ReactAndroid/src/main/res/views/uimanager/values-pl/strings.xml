@@ -19,6 +19,7 @@
     <string name="toolbar_description" gender="unknown">Pasek narzędzi</string>
     <string name="summary_description" gender="unknown">Podsumowanie</string>
     <string name="state_busy_description" gender="unknown">zajęte</string>
+    <string name="state_invalid_description" gender="unknown">nieprawidłowe</string>
     <string name="state_expanded_description" gender="unknown">rozwinięte</string>
     <string name="state_collapsed_description" gender="unknown">zwinięte</string>
     <string name="state_unselected_description" gender="unknown">nie wybrano</string>
