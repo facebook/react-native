@@ -6023,18 +6023,6 @@ declare export const Response: typeof global.Response;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NewAppScreen/index.js 1`] = `
-"export {
-  Colors,
-  Header,
-  HermesBadge,
-  LearnMoreLinks,
-  DebugInstructions,
-  ReloadInstructions,
-};
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Performance/Systrace.js 1`] = `
 "type EventName = string | (() => string);
 type EventArgs = ?{ [string]: string };
