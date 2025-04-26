@@ -11,6 +11,7 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNME
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_DISABLED;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.findNextFocusableView;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -31,6 +32,7 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -39,6 +41,7 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -63,6 +66,7 @@ import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScro
 import com.facebook.systrace.Systrace;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -359,6 +363,19 @@ public class ReactScrollView extends ScrollView
     }
   }
 
+  @Override
+  public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
+    if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, false);
+
+      if (nextfocusableView != null) {
+        return nextfocusableView;
+      }
+    }
+
+    return super.focusSearch(focused, direction);
+  }
+
   /**
    * Since ReactScrollView handles layout changes on JS side, it does not call super.onlayout due to
    * which mIsLayoutDirty flag in ScrollView remains true and prevents scrolling to child when
@@ -528,6 +545,11 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void updateClippingRect() {
+    updateClippingRect(null);
+  }
+
+  @Override
+  public void updateClippingRect(@Nullable Set<Integer> excludedViewsSet) {
     if (!mRemoveClippedSubviews) {
       return;
     }
@@ -539,7 +561,7 @@ public class ReactScrollView extends ScrollView
       ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
       View contentView = getContentView();
       if (contentView instanceof ReactClippingViewGroup) {
-        ((ReactClippingViewGroup) contentView).updateClippingRect();
+        ((ReactClippingViewGroup) contentView).updateClippingRect(excludedViewsSet);
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);

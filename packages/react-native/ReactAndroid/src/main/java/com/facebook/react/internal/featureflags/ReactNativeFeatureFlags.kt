@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<48d7086046009130361c8878bded54d0>>
+ * @generated SignedSource<<3043c6e2fd674eaf2c1d6c3a064083b2>>
  */
 
 /**
@@ -83,6 +83,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCppPropsIteratorSetter(): Boolean = accessor.enableCppPropsIteratorSetter()
+
+  /**
+   * This enables the fabric implementation of focus search so that we can focus clipped elements
+   */
+  @JvmStatic
+  public fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = accessor.enableCustomFocusSearchOnClippedElementsAndroid()
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.

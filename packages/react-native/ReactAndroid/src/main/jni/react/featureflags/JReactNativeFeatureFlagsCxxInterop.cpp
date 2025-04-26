@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d6ad64e99d507c7c51e5c938b2092bfb>>
+ * @generated SignedSource<<77e8728a964ccb7227f1020b5cca3663>>
  */
 
 /**
@@ -90,6 +90,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableCppPropsIteratorSetter() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCppPropsIteratorSetter");
+    return method(javaProvider_);
+  }
+
+  bool enableCustomFocusSearchOnClippedElementsAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCustomFocusSearchOnClippedElementsAndroid");
     return method(javaProvider_);
   }
 
@@ -334,6 +340,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter(
   return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableCustomFocusSearchOnClippedElementsAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableCustomFocusSearchOnClippedElementsAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
@@ -552,6 +563,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCppPropsIteratorSetter",
         JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter),
+      makeNativeMethod(
+        "enableCustomFocusSearchOnClippedElementsAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableCustomFocusSearchOnClippedElementsAndroid),
       makeNativeMethod(
         "enableEagerRootViewAttachment",
         JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment),
