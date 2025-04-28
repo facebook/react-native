@@ -8,8 +8,7 @@
  * @format
  */
 
-import type {HostComponent} from 'react-native';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {HostComponent, ViewProps} from 'react-native';
 import type {
   BubblingEventHandler,
   Double,
@@ -18,8 +17,7 @@ import type {
 } from 'react-native/Libraries/Types/CodegenTypes';
 
 import * as React from 'react';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import {codegenNativeCommands, codegenNativeComponent} from 'react-native';
 
 type Event = $ReadOnly<{
   values: $ReadOnlyArray<Int32>,

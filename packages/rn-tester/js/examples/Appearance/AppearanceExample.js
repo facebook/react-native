@@ -8,7 +8,7 @@
  * @flow
  */
 
-import type {ColorSchemeName} from 'react-native/Libraries/Utilities/NativeAppearance';
+import type {ColorSchemeName} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';

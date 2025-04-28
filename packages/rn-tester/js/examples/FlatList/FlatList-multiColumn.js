@@ -12,7 +12,7 @@
 
 import type {Item} from '../../components/ListExampleShared';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native';
 
 import {
   FooterComponent,

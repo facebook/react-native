@@ -9,7 +9,7 @@
  */
 
 import type {EventOccurrence} from './PointerEventSupport';
-import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PointerEvent} from 'react-native';
 
 import {EventTracker} from './PointerEventSupport';
 import * as React from 'react';

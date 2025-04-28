@@ -9,7 +9,7 @@
  */
 
 import type {RNTesterModuleExample} from '../../../types/RNTesterTypes';
-import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PointerEvent} from 'react-native';
 
 import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
