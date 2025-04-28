@@ -1014,7 +1014,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
                         opsAndArgs.getInt(i++), opsAndArgs.getDouble(i++))
 
                 BatchExecutionOpCodes.OP_CODE_SET_ANIMATED_NODE_OFFSET ->
-                    animatedNodesManager.setAnimatedNodeValue(
+                    animatedNodesManager.setAnimatedNodeOffset(
                         opsAndArgs.getInt(i++), opsAndArgs.getDouble(i++))
 
                 BatchExecutionOpCodes.OP_CODE_FLATTEN_ANIMATED_NODE_OFFSET ->
