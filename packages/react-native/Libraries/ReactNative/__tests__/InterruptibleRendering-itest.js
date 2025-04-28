@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags fixMappingOfEventPrioritiesBetweenFabricAndReact:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
@@ -213,8 +214,8 @@ describe('continuous event category', () => {
       deferredText: 'first render',
     });
     expect(effectMock.mock.calls[1][0]).toEqual({
-      text: 'initial text',
-      deferredText: 'transition',
+      text: 'start: 1, end: 5',
+      deferredText: 'first render',
     });
     expect(effectMock.mock.calls[2][0]).toEqual({
       text: 'start: 1, end: 5',
