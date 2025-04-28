@@ -413,9 +413,9 @@ let package = Package(
      */
     .reactNativeTarget(
       name: .reactCore,
-      dependencies: [.reactCxxReact, .reactPerfLogger, .jsi, .reactJsiExecutor, .reactUtils, .reactFeatureFlags, .reactRuntimeScheduler, .yoga, .reactJsInspector, .reactJsiTooling, .rctDeprecation, .reactCoreRCTWebsocket, .reactRCTImage, .reactNativeModulesApple, .reactRCTText, .reactRCTBlob, .reactRCTAnimation, .reactRCTNetwork],
+      dependencies: [.reactCxxReact, .reactPerfLogger, .jsi, .reactJsiExecutor, .reactUtils, .reactFeatureFlags, .reactRuntimeScheduler, .yoga, .reactJsInspector, .reactJsiTooling, .rctDeprecation, .reactCoreRCTWebsocket, .reactRCTImage, .reactNativeModulesApple, .reactRCTText, .reactRCTBlob, .reactRCTAnimation, .reactRCTNetwork, .reactFabric],
       path: "React",
-      extraExcludes: ["FBReactNativeSpec", "Tests", "Resources", "Runtime/RCTJscInstanceFactory.mm", "I18n/strings", "CxxBridge/JSCExecutorFactory.mm", "Fabric", "FBReactNativeSpec", "CoreModules"],
+      extraExcludes: ["FBReactNativeSpec", "Tests", "Resources", "Runtime/RCTJscInstanceFactory.mm", "I18n/strings", "CxxBridge/JSCExecutorFactory.mm", "FBReactNativeSpec", "CoreModules"],
       sources: [".", "Runtime/RCTHermesInstanceFactory.mm"],
       extraCSettings: [.headerSearchPath("./Base/")],
       extraCxxSettings: [.headerSearchPath("./Base/")],
@@ -465,11 +465,11 @@ let package = Package(
      */
     .reactNativeTarget(
       name: .reactFabric,
-      dependencies: [.reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactCore, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics],
+      dependencies: [.reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics],
       path: "ReactCommon/react/renderer",
-      extraExcludes: ["animations/tests", "attributedstring/tests", "core/tests", "components/root/tests", "components/view/tests", "mounting/tests", "uimanager/tests", "telemetry/tests", "css", "debug", "graphics", "imagemanager", "mapbuffer", "consistency", "uimanager/consistency/tests", "components/view/platform/android", "textlayoutmanager/tests", "textlayoutmanager/platform/android", "textlayoutmanager/platform/cxx", "components/text/tests", "components/scrollview/tests", "components/scrollview/platform/android"],
-      sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/scrollview", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "telemetry", "consistency", "leakchecker"],
-      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga","ReactCommon/react/renderer/components/view", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/textlayoutmanager", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/components/text"],
+      extraExcludes: ["animations/tests", "attributedstring/tests", "core/tests", "components/root/tests", "components/view/tests", "mounting/tests", "uimanager/tests", "telemetry/tests", "css", "debug", "graphics", "imagemanager", "mapbuffer", "consistency", "uimanager/consistency/tests", "components/view/platform/android", "textlayoutmanager/tests", "textlayoutmanager/platform/android", "textlayoutmanager/platform/cxx", "components/text/tests", "components/scrollview/tests", "components/scrollview/platform/android", "components/image/tests"],
+      sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/scrollview", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "telemetry", "consistency", "leakchecker", "components/image"],
+      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga","ReactCommon/react/renderer/components/view", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/textlayoutmanager", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/components/text", "ReactCommon/react/renderer/imagemanager/platform/ios"],
       extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxUtils", "Modules", "CoreModules", "Text_Text"]
     ),
 

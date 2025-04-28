@@ -113,6 +113,12 @@ function main() {
   link('ReactCommon/hermes', 'Hermes', 'reacthermes');
   link('ReactCommon/hermes', 'Hermes', 'jsireact');
 
+  link(
+    'ReactCommon/react/renderer/imagemanager',
+    'ImageManager',
+    'react/renderer/imagemanager',
+  );
+
   console.log('Running codegen...');
   execSync(
     `node scripts/generate-codegen-artifacts -p "${process.cwd()}" -t ios -o "${process.cwd()}/.build/codegen" -s library`,
