@@ -13,7 +13,6 @@ import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedProps from '../nodes/AnimatedProps';
 
 export type EndResult = {finished: boolean, value?: number, ...};
