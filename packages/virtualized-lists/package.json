@@ -19,11 +19,23 @@
   "engines": {
     "node": ">=18"
   },
+  "exports": {
+    ".": {
+      "types": "./types_generated/index.d.ts",
+      "default": "./index.js"
+    },
+    "./*": {
+      "types": null,
+      "default": "./*.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "index.js",
     "index.d.ts",
     "Lists",
     "README.md",
+    "types_generated",
     "Utilities",
     "!**/__docs__/**",
     "!**/__fixtures__/**",

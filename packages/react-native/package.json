@@ -29,11 +29,28 @@
   "main": "./index.js",
   "types": "types",
   "exports": {
-    ".": "./index.js",
-    "./*": "./*.js",
-    "./*.js": "./*.js",
-    "./Libraries/*.d.ts": "./Libraries/*.d.ts",
-    "./types/*.d.ts": "./types/*.d.ts",
+    ".": {
+      "react-native-strict-api": "./types_generated/index.d.ts",
+      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/index.d.ts",
+      "default": "./index.js"
+    },
+    "./*": {
+      "react-native-strict-api": null,
+      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/*.d.ts",
+      "default": "./*.js"
+    },
+    "./*.js": {
+      "react-native-strict-api": null,
+      "default": "./*.js"
+    },
+    "./Libraries/*.d.ts": {
+      "react-native-strict-api": null,
+      "default": "./Libraries/*.d.ts"
+    },
+    "./types/*.d.ts": {
+      "react-native-strict-api": null,
+      "default": "./types/*.d.ts"
+    },
     "./gradle/*": null,
     "./React/*": null,
     "./ReactAndroid/*": null,
@@ -110,6 +127,7 @@
     "!src/private/testing",
     "third-party-podspecs",
     "types",
+    "types_generated",
     "!**/__docs__/**",
     "!**/__fixtures__/**",
     "!**/__flowtests__/**",
