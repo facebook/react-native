@@ -47,6 +47,7 @@ class HostPlatformViewProps : public BaseViewProps {
   bool hasTVPreferredFocus{false};
   bool needsOffscreenAlphaCompositing{false};
   bool renderToHardwareTextureAndroid{false};
+  bool screenReaderFocusable{false};
 
 #pragma mark - Convenience Methods
 

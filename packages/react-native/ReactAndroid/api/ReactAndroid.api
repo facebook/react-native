@@ -3517,6 +3517,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setRotation (Landroid/view/View;F)V
 	public fun setScaleX (Landroid/view/View;F)V
 	public fun setScaleY (Landroid/view/View;F)V
+	public fun setScreenReaderFocusable (Landroid/view/View;Z)V
 	public fun setShadowColor (Landroid/view/View;I)V
 	public fun setShouldBlockNativeResponder (Landroid/view/View;Z)V
 	public fun setStartShouldSetResponder (Landroid/view/View;Z)V
@@ -4890,6 +4891,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field ROW_GAP Ljava/lang/String;
 	public static final field SCALE_X Ljava/lang/String;
 	public static final field SCALE_Y Ljava/lang/String;
+	public static final field SCREEN_READER_FOCUSABLE Ljava/lang/String;
 	public static final field SCROLL Ljava/lang/String;
 	public static final field SHADOW_COLOR Ljava/lang/String;
 	public static final field START Ljava/lang/String;
