@@ -348,7 +348,9 @@ export function dispatchNativeEvent(
     enqueueNativeEvent(node, type, payload, options);
   });
 
-  runWorkLoop();
+  if (!flushingQueue) {
+    runWorkLoop();
+  }
 }
 
 export type ScrollEventOptions = {
