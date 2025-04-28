@@ -391,8 +391,8 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     }
   }
 
-  if (ReactNativeFeatureFlags::enableAccessibilityOrder() &&
-      oldViewProps.accessibilityOrder != newViewProps.accessibilityOrder) {
+  if (oldViewProps.accessibilityOrder != newViewProps.accessibilityOrder &&
+      ReactNativeFeatureFlags::enableAccessibilityOrder()) {
     _accessibleElementsNativeIds = [NSMutableArray new];
     for (const std::string &childId : newViewProps.accessibilityOrder) {
       [_accessibleElementsNativeIds addObject:RCTNSStringFromString(childId)];
