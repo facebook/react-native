@@ -440,6 +440,11 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     }
   }
 
+  if (oldViewProps.accessibilityRespondsToUserInteraction != newViewProps.accessibilityRespondsToUserInteraction) {
+    self.accessibilityElement.accessibilityRespondsToUserInteraction =
+        newViewProps.accessibilityRespondsToUserInteraction;
+  }
+
   // `testId`
   if (oldViewProps.testId != newViewProps.testId) {
     SEL setAccessibilityIdentifierSelector = @selector(setAccessibilityIdentifier:);
