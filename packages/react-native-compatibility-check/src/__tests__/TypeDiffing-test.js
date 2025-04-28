@@ -82,7 +82,7 @@ const [
   nativeTypeDiffingTypesAliases,
   nativeTypeDiffingTypesMethodParamLookup,
   nativeTypeDiffingTypesMethodLookup,
-  _,
+  ,
   nativeTypeDiffingTypesEnums,
 ] = getModule(
   'native-module-type-diffing-types',
