@@ -932,15 +932,6 @@ public abstract interface class com/facebook/react/bridge/LifecycleEventListener
 	public abstract fun onHostResume ()V
 }
 
-public final class com/facebook/react/bridge/MemoryPressure : java/lang/Enum {
-	public static final field CRITICAL Lcom/facebook/react/bridge/MemoryPressure;
-	public static final field MODERATE Lcom/facebook/react/bridge/MemoryPressure;
-	public static final field UI_HIDDEN Lcom/facebook/react/bridge/MemoryPressure;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/bridge/MemoryPressure;
-	public static fun values ()[Lcom/facebook/react/bridge/MemoryPressure;
-}
-
 public abstract interface class com/facebook/react/bridge/MemoryPressureListener {
 	public abstract fun handleMemoryPressure (I)V
 }
