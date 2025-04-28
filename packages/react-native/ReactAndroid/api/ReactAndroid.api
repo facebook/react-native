@@ -737,20 +737,26 @@ public abstract class com/facebook/react/bridge/GuardedRunnable : java/lang/Runn
 	public abstract fun runGuarded ()V
 }
 
-public class com/facebook/react/bridge/Inspector {
-	public static fun connect (ILcom/facebook/react/bridge/Inspector$RemoteConnection;)Lcom/facebook/react/bridge/Inspector$LocalConnection;
-	public static fun getPages ()Ljava/util/List;
+public final class com/facebook/react/bridge/Inspector {
+	public static final field Companion Lcom/facebook/react/bridge/Inspector$Companion;
+	public static final fun connect (ILcom/facebook/react/bridge/Inspector$RemoteConnection;)Lcom/facebook/react/bridge/Inspector$LocalConnection;
+	public static final fun getPages ()Ljava/util/List;
 }
 
-public class com/facebook/react/bridge/Inspector$LocalConnection {
-	public fun disconnect ()V
-	public fun sendMessage (Ljava/lang/String;)V
+public final class com/facebook/react/bridge/Inspector$Companion {
+	public final fun connect (ILcom/facebook/react/bridge/Inspector$RemoteConnection;)Lcom/facebook/react/bridge/Inspector$LocalConnection;
+	public final fun getPages ()Ljava/util/List;
 }
 
-public class com/facebook/react/bridge/Inspector$Page {
-	public fun getId ()I
-	public fun getTitle ()Ljava/lang/String;
-	public fun getVM ()Ljava/lang/String;
+public final class com/facebook/react/bridge/Inspector$LocalConnection {
+	public final fun disconnect ()V
+	public final fun sendMessage (Ljava/lang/String;)V
+}
+
+public final class com/facebook/react/bridge/Inspector$Page {
+	public final fun getId ()I
+	public final fun getTitle ()Ljava/lang/String;
+	public final fun getVM ()Ljava/lang/String;
 	public fun toString ()Ljava/lang/String;
 }
 
