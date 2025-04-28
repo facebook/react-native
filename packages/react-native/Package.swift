@@ -9,7 +9,7 @@
 import PackageDescription
 
 let react = "React"
-let hermesVersion = "0.79.0-rc.2"
+let hermesVersion = "0.79.1"
 
 let cxxRNDepHeaderSearchPath: (Int) -> CXXSetting = {
   let prefix = (0..<$0).map { _ in "../" } .joined(separator: "")
@@ -48,7 +48,7 @@ func generatedIncludePath<T>(_ depth: Int, _ path: String, _ settingType: T.Type
  .rctRequired,
  .reactCallInvoker,
  .reactTiming,
- 
+
  .reactRuntimeExecutor,
  */
 
@@ -60,40 +60,40 @@ let package = Package(
       name: react,
       type: .dynamic,
       targets: [
-        
-        .rctDeprecation,
-        .yoga,
-        .reactOSCompat,
-        
-        .reactRendererConsistency,
-        .reactFeatureFlags,
-        .reactDebug,
-        .jsi,
-        .reactPerfLogger,
-        .mapbuffer,
-        .reactRendererDebug,
-        .reactUtils,
-        .logger,
-        
-        .reactJsInspector,
-        .reactJsInspectorTracing,
-        .reactJsInspectorNetwork,
-        .reactCxxReact,
-        
-        .reactJsiTooling,
-        .reactJsiExecutor,
-        .reactHermes,
-        .hermesIncludes,
-        .reactPerformanceTimeline,
-        .reactRuntimeScheduler,
 
-        .reactTurboModuleCore,
-        .reactTurboModuleBridging,
-        .reactJsErrorHandler,
+        //.rctDeprecation,
+        //.yoga,
+        //.reactOSCompat,
 
-        .reactGraphicsApple,
-        .reactGraphics,
-        
+        //.reactRendererConsistency,
+        //.reactFeatureFlags,
+        //.reactDebug,
+        //.jsi,
+        //.reactPerfLogger,
+        //.mapbuffer,
+        //.reactRendererDebug,
+        //.reactUtils,
+        //.logger,
+
+        //.reactJsInspector,
+        //.reactJsInspectorTracing,
+        //.reactJsInspectorNetwork,
+        //.reactCxxReact,
+
+        //.reactJsiTooling,
+        //.reactJsiExecutor,
+        //.reactHermes,
+        //.hermesIncludes,
+        //.reactPerformanceTimeline,
+        //.reactRuntimeScheduler,
+
+        //.reactTurboModuleCore,
+        //.reactTurboModuleBridging,
+        //.reactJsErrorHandler,
+
+        //.reactGraphicsApple,
+        //.reactGraphics,
+
         //.reactRendererCss,
 
         // Now we need React/Base files
@@ -103,8 +103,9 @@ let package = Package(
         //.rctTypesafety,
         //.reactRuntimeApple,
         //.reactCore
-        .reactFabric,
-        .reactAppDelegate
+        //.reactFabric,
+        //.reactAppDelegate
+        .reactCodegen
       ]
     ),
   ],
@@ -225,7 +226,7 @@ let package = Package(
      */
     .reactNativeTarget(
       name: .reactJsInspector,
-      dependencies: [.reactNativeDependencies, .reactFeatureFlags, .jsi, .hermesIncludes, .reactJsInspectorTracing, .reactJsInspectorNetwork],
+      dependencies: [.reactNativeDependencies, .reactFeatureFlags, .jsi, .reactJsInspectorTracing, .reactJsInspectorNetwork],
       path: "ReactCommon/jsinspector-modern",
       extraExcludes: ["tracing", "network", "tests"],
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/runtimeexecutor"]
@@ -255,14 +256,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/runtimeexecutor", "ReactCommon/callinvoker"]
     ),
 
-    /* This target compiles the same sources as React-hermes and fails if we add it to the target list above.
-     .reactNativeTarget(
-      name: .reactJsiTracing,
-      dependencies: [.jsi, .hermesIncludes, .reactJsiExecutor],
-      path: "ReactCommon/hermes/executor",
-    ),*/
-    
-    
+
     /**
      JSI Executor, tooling
      */
@@ -358,17 +352,6 @@ let package = Package(
     ),
 
     /**
-     Renderer CSS
-     */
-    /*.reactNativeTarget(
-      name: .reactRendererCss,
-      dependencies: [.reactDebug, .reactUtils],
-      path: "ReactCommon",
-      extraExcludes: ["react/renderer/css/tests", "react/renderer/css/CMakeLists.txt", "react/renderer/css/React-renderercss.podspec"],
-      sources: ["react/renderer/css"],
-    ),*/
-
-    /**
      Turbo-modules core
      */
     .reactNativeTarget(
@@ -390,7 +373,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "Libraries/FBLazyVector"],
       extraGeneratedIncludePaths: ["Base", "ReactApple", "Views"]
     ),
-    
+
     /**
      RCT-WebSocket
      */
@@ -401,7 +384,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon/yoga"],
       extraGeneratedIncludePaths: ["WebSocket", "Base", "Views", "RefreshControl"]
     ),
-    
+
     /**
      React-Runtime
      */
@@ -424,7 +407,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/react/renderer/graphics/platform/cxx", "React", "ReactCommon/yoga", "ReactCommon/runtimeexecutor", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/callinvoker", "React/FBReactNativeSpec", "React/Fabric", "Libraries/FBLazyVector"],
       extraGeneratedIncludePaths: ["Base", "CxxBridge", "CoreModules", "ReactApple", "CxxModule", "Views", "Modules", "Required", "TypeSafety", "Fabric", "Fabric_Surface", "Fabric_Mounting", "Surface", "Surface_HostingView", "I18n", "DevSupport", "Inspector", "CxxUtils"]
     ),
-    
+
     /**
      React Core
      */
@@ -440,7 +423,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/callinvoker", "ReactCommon", "React/FBReactNativeSpec", "React/I18n", "React/Profiler", "ReactCommon/runtimeexecutor", "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/renderer/components/textinput/platform/ios", "ReactCommon/react/renderer/graphics/platform/ios", "Libraries/FBLazyVector", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/imagemanager/platform/cxx", "ReactCommon/react/renderer/imagemanager/platform/ios", "ReactCommon/hermes"],
       extraGeneratedIncludePaths: ["WebSocket", "Base", "Views", "Modules", "ReactApple", "Surface", "ScrollView", "RefreshControl", "RefreshControl", "Modules", "Surface_SurfaceHostingView", "ScrollView", "Views", "Base", "Surface", "I18n", "CxxModule", "CxxUtils", "Profiler", "CxxBridge", "CoreModules", "CoreModules", "DevSupport", "Inspector", "DevSupport", "Inspector", "Fabric_Surface", "Fabric_Mounting", "Fabric_Mounting_ComponentViews_View", "Fabric_Mounting_ComponentViews", "Text_TextInput", "Fabric", "Fabric_Mounting_ComponentViews", "Fabric_Mounting_ComponentViews_ScrollView", "Fabric_Mounting_ComponentViews_Text", "Fabric_Mounting_ComponentViews_Image", "Fabric", "Fabric_Utils", "Image", "Text_TextInput_SingleLine", "Text_TextInput_MultiLine", "Fabric_Utils", "NativeAnimation", "Fabric_Mounting_ComponentViews_LegacyViewManagerInterop", "Fabric_Mounting_ComponentViews_Root", "Fabric_Mounting_ComponentViews_TextInput", "Fabric_Mounting_ComponentViews_UnimplementedView", "Required", "TypeSafety", "Hermes_executor"]
     ),
-    
+
     /**
      React Core modules
      */
@@ -490,9 +473,9 @@ let package = Package(
       extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxUtils", "Modules", "CoreModules", "Text_Text"]
     ),
 
+
     /*
      FBReactNativeSpec
-     TODO: Generate/run codegen
      */
     .reactNativeTarget(
       name: .reactFBReactNativeSpec,
@@ -530,7 +513,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/callinvoker", "React/FBReactNativeSpec", "Libraries/FBLazyVector"],
       extraGeneratedIncludePaths: ["Base", "Blob", "Animation", "Views", "ReactApple", "Required", "TypeSafety", "Modules", "CoreModules", "Network"]
     ),
-    
+
     .reactNativeTarget(
       name: .reactRCTNetwork,
       dependencies: [.yoga, .jsi],
@@ -538,7 +521,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/callinvoker", "React/FBReactNativeSpec", "Libraries/FBLazyVector"],
       extraGeneratedIncludePaths: ["Base", "Network", "ReactApple", "Required", "TypeSafety", "Modules", "CoreModules", "Views"]
     ),
-    
+
     .reactNativeTarget(
       name: .reactCoreModules,
       dependencies: [.jsi],
@@ -547,7 +530,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "React/FBReactNativeSpec", "Libraries/FBLazyVector", "ReactCommon/RuntimeExecutor", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/callinvoker"],
       extraGeneratedIncludePaths: ["Base", "ReactApple", "Required", "TypeSafety", "CoreModules", "Views", "Modules", "Surface", "Surface_SurfaceHostingView", "Profiler", "DevSupport", "Inspector"]
     ),
-    
+
     .reactNativeTarget(
       name: .reactAppDelegate,
       dependencies: [.jsi, .reactJsiExecutor, .reactRuntime, .reactRCTImage, .reactHermes, .reactCore, .reactFabric],
@@ -555,7 +538,16 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/graphics/platform/ios", "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/hermes", "ReactCommon/jsiexecutor"],
       extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxUtils", "Modules", "Fabric", "CoreModules", "CxxBridge", "Fabric_Mounting", "Fabric_Surface", "Surface", "Image", "Network", "Surface_SurfaceHostingView", "Fabric_Utils", "Runtime", "Hermes_Executor"]
     ),
-    
+
+    .reactNativeTarget(
+      name: .reactCodegen,
+      dependencies: [.reactJsiExecutor, .rctTypesafety, .reactCore, .jsi, .reactTurboModuleCore, .reactTurboModuleBridging, .reactRuntimeApple, .reactGraphics, .reactRendererDebug, .reactFabric, .reactDebug, .reactAppDelegate],
+      path: ".build/codegen/build/generated",
+      extraExcludes: ["ios/RCTAppDependencyProvider.h", "ios/RCTAppDependencyProvider.mm"],
+      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/graphics/platform/ios", "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/hermes", "ReactCommon/jsiexecutor"],
+      extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxUtils", "Modules", "Fabric", "CoreModules", "CxxBridge", "Fabric_Mounting", "Fabric_Surface", "Surface", "Image", "Network", "Surface_SurfaceHostingView", "Fabric_Utils", "Runtime", "Hermes_Executor", "ReactCodegen"]
+    ),
+
     .reactNativeTarget(
       name: .reactRCTLinking,
       dependencies: [.jsi],
@@ -568,11 +560,11 @@ let package = Package(
     ),
     .binaryTarget(
       name: .hermesPrebuilt,
-      path: ".build/hermes-engine-artifacts/hermes-ios-\(hermesVersion)-debug/destroot/Library/Frameworks/universal/hermes.xcframework"
+      path: ".build/artifacts/hermes-\(hermesVersion)-release/destroot/Library/Frameworks/universal/hermes.xcframework",
     ),
     .target(
       name: .hermesIncludes,
-      path: ".build/hermes-engine-artifacts/hermes-ios-\(hermesVersion)-debug/destroot",
+      path: ".build/artifacts/hermes-\(hermesVersion)-release/destroot/",
       sources: ["dummy.c"]
     )
   ]
@@ -609,7 +601,7 @@ extension String {
   static let reactCoreRCTWebsocket = "React-Core/RCTWebSocket"
   static let reactFBReactNativeSpec = "React-RCTFBReactNativeSpec"
   static let reactFabric = "React-Fabric"
-  
+
   static let reactNativeDependencies = "ReactNativeDependencies"
 
   static let hermesPrebuilt = "hermes-prebuilt"
@@ -641,6 +633,7 @@ extension String {
   static let reactTurboModuleBridging = "ReactCommon/turbomodule/bridging"
   static let reactTurboModuleCore = "ReactCommon/turbomodule/core"
   static let reactAppDelegate = "React-RCTAppDelegate"
+  static let reactCodegen = "React-Codegen"
 }
 
 extension Target {
@@ -668,7 +661,7 @@ extension Target {
     } + extraGeneratedIncludePaths.map {
       generatedIncludePath(numOfSlash + 1, $0 + "/React", CSetting.self)
     }
-    
+
     let cxxCommonHeaderPaths : [CXXSetting] = commonHeaderPathModules.map {
       commonModulePath(numOfSlash + 1, $0, CXXSetting.self)
     } + extraGeneratedIncludePaths.map {
@@ -686,7 +679,7 @@ extension Target {
     ] +
     cCommonHeaderPaths +
     extraCSettings
-    
+
     let cxxSettings = [
       cxxRNDepHeaderSearchPath(numOfSlash + 1),
       .unsafeFlags(["-std=c++20"]),
@@ -697,7 +690,7 @@ extension Target {
     ] +
     cxxCommonHeaderPaths +
     extraCxxSettings
-    
+
     return .target(
       name: name,
       dependencies: dependencies,

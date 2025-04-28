@@ -9,7 +9,9 @@
  * @oncall react_native
  */
 
+const {prepareHermesArtifactsAsync} = require('./ios-prebuild/hermes');
 const {createFolderIfNotExists, createLink} = require('./ios-prebuild/utils');
+const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -111,7 +113,19 @@ function main() {
   link('ReactCommon/hermes', 'Hermes', 'reacthermes');
   link('ReactCommon/hermes', 'Hermes', 'jsireact');
 
-  console.log('🏁 Done!');
+  console.log('Running codegen...');
+  execSync(
+    `node scripts/generate-codegen-artifacts -p "${process.cwd()}" -t ios -o "${process.cwd()}/.build/codegen" -s library`,
+  );
+
+  console.log('Download hermes...');
+  prepareHermesArtifactsAsync('0.79.1', 'release').then(() => {
+    // Link codegen
+    link('.build/codegen/build/generated/ios', 'CodeGen', 'ReactCodegen');
+
+    // Done!
+    console.log('🏁 Done!');
+  });
 }
 
 if (require.main === module) {
