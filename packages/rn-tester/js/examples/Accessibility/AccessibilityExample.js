@@ -10,8 +10,7 @@
 
 'use strict';
 
-import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {EventSubscription, GestureResponderEvent} from 'react-native';
 
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterText from '../../components/RNTesterText';

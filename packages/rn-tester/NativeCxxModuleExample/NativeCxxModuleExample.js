@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {TurboModule} from 'react-native';
 import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
 
 import {TurboModuleRegistry} from 'react-native';

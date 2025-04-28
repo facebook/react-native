@@ -11,7 +11,7 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {TextStyle} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';

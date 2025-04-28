@@ -11,7 +11,7 @@
 'use strict';
 
 import type {Item} from '../../components/ListExampleShared';
-import type {SectionBase} from 'react-native/Libraries/Lists/SectionList';
+import type {SectionBase} from 'react-native';
 
 import {
   FooterComponent,

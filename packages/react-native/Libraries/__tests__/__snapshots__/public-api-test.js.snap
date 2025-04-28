@@ -9256,6 +9256,7 @@ export type {
   LayoutChangeEvent,
   LayoutRectangle,
   MouseEvent,
+  PointerEvent,
   NativeMouseEvent,
   NativePointerEvent,
   NativeScrollEvent,

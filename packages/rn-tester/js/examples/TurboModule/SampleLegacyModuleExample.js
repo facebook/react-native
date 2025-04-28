@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
+import type {RootTag} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import styles from './TurboModuleExampleCommon';

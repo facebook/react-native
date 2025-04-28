@@ -11,8 +11,7 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {ImageProps} from 'react-native/Libraries/Image/ImageProps';
-import type {LayoutChangeEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {ImageProps, LayoutChangeEvent} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
