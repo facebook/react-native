@@ -110,7 +110,7 @@ public class ReactActivityDelegate {
     return mReactDelegate.getReactInstanceManager();
   }
 
-  public String getMainComponentName() {
+  public @Nullable String getMainComponentName() {
     return mMainComponentName;
   }
 
