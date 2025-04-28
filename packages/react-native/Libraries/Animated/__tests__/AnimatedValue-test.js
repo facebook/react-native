@@ -38,6 +38,7 @@ describe('AnimatedValue', () => {
         removeListeners: jest.fn(),
         startListeningToAnimatedNodeValue: jest.fn(),
         stopListeningToAnimatedNodeValue: jest.fn(),
+        extractAnimatedNodeOffset: jest.fn(),
         // ...
       },
     }));
@@ -49,6 +50,8 @@ describe('AnimatedValue', () => {
     jest.spyOn(NativeAnimatedHelper.API, 'createAnimatedNode');
     jest.spyOn(NativeAnimatedHelper.API, 'dropAnimatedNode');
     jest.spyOn(NativeAnimatedHelper.API, 'startListeningToAnimatedNodeValue');
+    jest.spyOn(NativeAnimatedHelper.API, 'setWaitingForIdentifier');
+    jest.spyOn(NativeAnimatedHelper.API, 'unsetWaitingForIdentifier');
   });
 
   it('emits update events for listeners added', () => {
@@ -158,6 +161,41 @@ describe('AnimatedValue', () => {
 
       expect(
         NativeAnimatedHelper.API.startListeningToAnimatedNodeValue,
+      ).toBeCalledTimes(0);
+    });
+  });
+
+  describe('when extractOffset is called', () => {
+    it('flushes changes to native immediately when native', () => {
+      const node = new AnimatedValue(0, {useNativeDriver: true});
+
+      expect(NativeAnimatedHelper.API.setWaitingForIdentifier).toBeCalledTimes(
+        0,
+      );
+      expect(
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier,
+      ).toBeCalledTimes(0);
+
+      node.extractOffset();
+
+      expect(NativeAnimatedHelper.API.setWaitingForIdentifier).toBeCalledTimes(
+        1,
+      );
+      expect(
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier,
+      ).toBeCalledTimes(1);
+    });
+
+    it('does not flush changes when not native', () => {
+      const node = new AnimatedValue(0, {useNativeDriver: false});
+
+      node.extractOffset();
+
+      expect(NativeAnimatedHelper.API.setWaitingForIdentifier).toBeCalledTimes(
+        0,
+      );
+      expect(
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier,
       ).toBeCalledTimes(0);
     });
   });

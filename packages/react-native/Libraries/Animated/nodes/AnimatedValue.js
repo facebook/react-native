@@ -247,7 +247,9 @@ export default class AnimatedValue extends AnimatedWithChildren {
     this._offset += this._value;
     this._value = 0;
     if (this.__isNative) {
-      NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag());
+      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () =>
+        NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag()),
+      );
     }
   }
 
