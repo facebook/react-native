@@ -667,11 +667,11 @@ RCT_EXPORT_MODULE()
     }
     _tasksByRequestID[task.requestID] = task;
     responseSender(@[ task.requestID ]);
+    [RCTInspectorNetworkReporter reportRequestStart:task.requestID
+                                            request:request
+                                  encodedDataLength:task.response.expectedContentLength];
   }
 
-  [RCTInspectorNetworkReporter reportRequestStart:task.requestID
-                                          request:request
-                                encodedDataLength:task.response.expectedContentLength];
   [task start];
 }
 
