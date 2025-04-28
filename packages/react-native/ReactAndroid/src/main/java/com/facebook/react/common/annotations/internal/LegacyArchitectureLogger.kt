@@ -41,24 +41,6 @@ public object LegacyArchitectureLogger {
     }
   }
 
-  /**
-   * Similar to [assertLegacyArchitecture] but executes only when
-   * [UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE] is set to true. This applies only to internal
-   * builds.
-   *
-   * @param name The name of the legacy class being used
-   * @param logLevel The severity level of the log (ERROR or WARNING, defaults to WARNING)
-   */
-  @JvmStatic
-  public fun assertLegacyArchitectureOnlyWhenMinifyEnabled(
-      name: String,
-      logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
-  ) {
-    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
-      executeAssert(name, logLevel)
-    }
-  }
-
   private fun executeAssert(
       name: String,
       logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
