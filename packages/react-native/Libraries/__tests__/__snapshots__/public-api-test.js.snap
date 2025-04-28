@@ -3652,6 +3652,7 @@ export type AccessibilityPropsIOS = $ReadOnly<{
   \\"aria-modal\\"?: ?boolean,
   accessibilityElementsHidden?: ?boolean,
   accessibilityLanguage?: ?Stringish,
+  accessibilityRespondsToUserInteraction?: ?boolean,
 }>;
 export type AccessibilityProps = $ReadOnly<{
   ...AccessibilityPropsAndroid,

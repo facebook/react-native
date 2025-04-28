@@ -334,6 +334,14 @@ export interface AccessibilityPropsIOS {
    * @platform ios
    */
   accessibilityLargeContentTitle?: string | undefined;
+
+  /**
+   * Blocks the user from interacting with the component through keyboard while still allowing
+   * screen reader to interact with it if this View is still accessible.
+   *
+   * @platform ios
+   */
+  accessibilityRespondsToUserInteraction?: boolean | undefined;
 }
 
 export type Role =
