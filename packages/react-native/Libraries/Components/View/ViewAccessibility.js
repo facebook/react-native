@@ -258,6 +258,14 @@ export type AccessibilityPropsAndroid = $ReadOnly<{
    * See https://reactnative.dev/docs/view#importantforaccessibility
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
+
+  /**
+   * Enables the view to be screen reader focusable, not keyboard focusable. This has lower priority
+   * than focusable or accessible props.
+   *
+   * @platform android
+   */
+  screenReaderFocusable?: boolean,
 }>;
 
 export type AccessibilityPropsIOS = $ReadOnly<{

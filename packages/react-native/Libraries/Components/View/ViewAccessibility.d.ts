@@ -273,6 +273,13 @@ export interface AccessibilityPropsAndroid {
     | 'no'
     | 'no-hide-descendants'
     | undefined;
+
+  /**
+   * Enables the view to be screen reader focusable, not keyboard focusable.
+   *
+   * @platform android
+   */
+  screenReaderFocusable?: boolean | undefined;
 }
 
 export interface AccessibilityPropsIOS {

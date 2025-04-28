@@ -513,6 +513,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  @ReactProp(name = ViewProps.SCREEN_READER_FOCUSABLE)
+  public void setScreenReaderFocusable(@NonNull T view, boolean screenReaderFocusable) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setScreenReaderFocusable(screenReaderFocusable);
+    }
+  }
+
   @ReactProp(name = ViewProps.ROLE)
   public void setRole(@NonNull T view, @Nullable String role) {
     if (role == null) {

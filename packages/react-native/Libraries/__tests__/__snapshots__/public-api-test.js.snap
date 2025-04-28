@@ -3643,6 +3643,7 @@ export type AccessibilityPropsAndroid = $ReadOnly<{
   accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
   \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
   importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
+  screenReaderFocusable?: boolean,
 }>;
 export type AccessibilityPropsIOS = $ReadOnly<{
   accessibilityIgnoresInvertColors?: ?boolean,
