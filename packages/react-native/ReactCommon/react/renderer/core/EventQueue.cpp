@@ -35,7 +35,7 @@ void EventQueue::enqueueEvent(RawEvent&& rawEvent) const {
 
       for (auto it = eventQueue_.rbegin(); it != eventQueue_.rend(); ++it) {
         if (it->type == rawEvent.type &&
-            it->eventTarget == rawEvent.eventTarget) {
+            it->eventTarget == rawEvent.eventTarget && it->isUnique) {
           repeatedEvent = it;
           break;
         } else if (it->eventTarget == rawEvent.eventTarget) {
