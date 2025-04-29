@@ -646,9 +646,7 @@ public class ReactInstanceManager {
   public void onHostPause(@Nullable Activity activity) {
     if (mRequireActivity) {
       if (mCurrentActivity == null) {
-        String message =
-            "ReactInstanceManager.onHostPause called with null activity, expected:"
-                + mCurrentActivity.getClass().getSimpleName();
+        String message = "ReactInstanceManager.onHostPause called with null activity";
         FLog.e(TAG, message);
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : stackTrace) {
