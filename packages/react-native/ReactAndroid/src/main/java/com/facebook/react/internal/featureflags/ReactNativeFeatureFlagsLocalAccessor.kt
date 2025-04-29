@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c8f6a3a41aebb8c9e81c26cd7973f90>>
+ * @generated SignedSource<<580a0bc36f98e9680387089a9740bba8>>
  */
 
 /**
@@ -34,6 +34,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
+  private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
@@ -163,6 +164,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableCustomFocusSearchOnClippedElementsAndroid()
       accessedFeatureFlags.add("enableCustomFocusSearchOnClippedElementsAndroid")
       enableCustomFocusSearchOnClippedElementsAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableDoubleMeasurementFixAndroid(): Boolean {
+    var cached = enableDoubleMeasurementFixAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableDoubleMeasurementFixAndroid()
+      accessedFeatureFlags.add("enableDoubleMeasurementFixAndroid")
+      enableDoubleMeasurementFixAndroidCache = cached
     }
     return cached
   }

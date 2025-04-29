@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3043c6e2fd674eaf2c1d6c3a064083b2>>
+ * @generated SignedSource<<519e6095d6c91fbbb4225a066c9cbe26>>
  */
 
 /**
@@ -89,6 +89,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = accessor.enableCustomFocusSearchOnClippedElementsAndroid()
+
+  /**
+   * When enabled a subset of components will avoid double measurement on Android.
+   */
+  @JvmStatic
+  public fun enableDoubleMeasurementFixAndroid(): Boolean = accessor.enableDoubleMeasurementFixAndroid()
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.

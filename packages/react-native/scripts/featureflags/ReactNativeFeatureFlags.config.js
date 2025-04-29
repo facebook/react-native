@@ -155,6 +155,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableDoubleMeasurementFixAndroid: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled a subset of components will avoid double measurement on Android.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       metadata: {

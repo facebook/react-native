@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8c259acc61fa1b132df222cf16a2f29f>>
+ * @generated SignedSource<<43fcd5c23c1eb9b91d3bc26d5543a4b7>>
  */
 
 /**
@@ -88,6 +88,11 @@ class ReactNativeFeatureFlags {
    * This enables the fabric implementation of focus search so that we can focus clipped elements
    */
   RN_EXPORT static bool enableCustomFocusSearchOnClippedElementsAndroid();
+
+  /**
+   * When enabled a subset of components will avoid double measurement on Android.
+   */
+  RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.

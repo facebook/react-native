@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f1a0488306a1cbe4cc892eba27a3b7c5>>
+ * @generated SignedSource<<da8e7e537e16a1338c7a56b1d17b2c6e>>
  */
 
 /**
@@ -64,6 +64,10 @@ bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
 
 bool ReactNativeFeatureFlags::enableCustomFocusSearchOnClippedElementsAndroid() {
   return getAccessor().enableCustomFocusSearchOnClippedElementsAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid() {
+  return getAccessor().enableDoubleMeasurementFixAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
