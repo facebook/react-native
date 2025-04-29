@@ -320,7 +320,7 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
       .pid = processId_,
       .tid = threadId,
       .args =
-          folly::dynamic::object("data", traceEventProfileChunk.asDynamic()),
+          folly::dynamic::object("data", traceEventProfileChunk.toDynamic()),
   });
 }
 

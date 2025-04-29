@@ -122,7 +122,7 @@ RuntimeSamplingProfile::SampleCallStackFrame convertHermesFrameToTracingFrame(
 }
 
 RuntimeSamplingProfile::Sample convertHermesSampleToTracingSample(
-    hermes::sampling_profiler::ProfileSample& hermesSample) {
+    const hermes::sampling_profiler::ProfileSample& hermesSample) {
   uint64_t reconciledTimestamp = hermesSample.getTimestamp();
   std::vector<hermes::sampling_profiler::ProfileSampleCallStackFrame*>
       hermesSampleCallStack = hermesSample.getCallStack();
