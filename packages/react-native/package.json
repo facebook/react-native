@@ -58,6 +58,7 @@
     "./ReactApple/*": null,
     "./ReactCommon/*": null,
     "./sdks/*": null,
+    "./src/fb_internal/*": "./src/fb_internal/*",
     "./src/*": null,
     "./third-party-podspecs/*": null,
     "./types/*": null,
