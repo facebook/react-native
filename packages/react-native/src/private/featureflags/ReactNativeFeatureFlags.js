@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<074f41df4d09a9053b71cf4255b144a5>>
+ * @generated SignedSource<<b481579db5c5ea0acc4b9774c72b914c>>
  * @flow strict
  */
 
@@ -25,6 +25,8 @@ import {
   createNativeFlagGetter,
   setOverrides,
 } from './ReactNativeFeatureFlagsBase';
+
+export type {Getter} from './ReactNativeFeatureFlagsBase';
 
 export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
