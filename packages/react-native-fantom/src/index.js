@@ -123,6 +123,8 @@ class Root {
 
 export type {Root};
 
+export {NativeEventCategory} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
+
 const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
 
 /**
