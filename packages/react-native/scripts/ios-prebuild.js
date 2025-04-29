@@ -77,48 +77,6 @@ function main() {
     });
   };
 
-  link('Libraries/WebSocket/', 'WebSocket', 'React');
-  link('React/Base', 'Base', 'React');
-  link('React/Base/Surface', 'Surface', 'React');
-  link('React/CxxBridge', 'CxxBridge', 'React');
-  link('React/CxxModule', 'CxxModule', 'React');
-  link('React/CxxUtils', 'CxxUtils', 'React');
-  link('React/DevSupport', 'DevSupport', 'React');
-  link('React/Inspector', 'Inspector', 'React');
-  link('React/I18n', 'I18n', 'React');
-  link('React/Views', 'Views', 'React');
-  link('React/CoreModules', 'CoreModules', 'React');
-  link('React/Modules', 'Modules', 'React');
-  link('React/Fabric', 'Fabric', 'React');
-  link('React/Profiler', 'Profiler', 'React');
-  link('React/CoreModules', 'CoreModules', 'React');
-
-  link('React/Runtime', 'Runtime', 'React');
-  link('React/Views/ScrollView', 'ScrollView', 'React');
-  link('React/Views/RefreshControl', 'RefreshControl', 'React');
-
-  link(
-    'ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported',
-    'ReactApple/',
-    'RCTDeprecation',
-  );
-  link('Libraries/Required', 'Required', 'RCTRequired');
-  link('Libraries/TypeSafety', 'TypeSafety', 'RCTTypeSafety');
-  link('Libraries/Text', 'Text', 'React');
-  link('Libraries/Image', 'Image', 'React');
-  link('Libraries/Network', 'Network', 'React');
-  link('Libraries/Blob', 'Blob', 'React');
-  link('Libraries/NativeAnimation', 'NativeAnimation', 'React');
-
-  link('ReactCommon/hermes', 'Hermes', 'reacthermes');
-  link('ReactCommon/hermes', 'Hermes', 'jsireact');
-
-  link(
-    'ReactCommon/react/renderer/imagemanager',
-    'ImageManager',
-    'react/renderer/imagemanager',
-  );
-
   console.log('Running codegen...');
   execSync(
     `node scripts/generate-codegen-artifacts -p "${process.cwd()}" -t ios -o "${process.cwd()}/.build/codegen" -s library`,
@@ -128,6 +86,49 @@ function main() {
   prepareHermesArtifactsAsync('0.79.1', 'release').then(() => {
     // Link codegen
     link('.build/codegen/build/generated/ios', 'CodeGen', 'ReactCodegen');
+
+    // Link the rest
+    link('Libraries/WebSocket/', 'WebSocket', 'React');
+    link('React/Base', 'Base', 'React');
+    link('React/Base/Surface', 'Surface', 'React');
+    link('React/CxxBridge', 'CxxBridge', 'React');
+    link('React/CxxModule', 'CxxModule', 'React');
+    link('React/CxxUtils', 'CxxUtils', 'React');
+    link('React/DevSupport', 'DevSupport', 'React');
+    link('React/Inspector', 'Inspector', 'React');
+    link('React/I18n', 'I18n', 'React');
+    link('React/Views', 'Views', 'React');
+    link('React/CoreModules', 'CoreModules', 'React');
+    link('React/Modules', 'Modules', 'React');
+    link('React/Fabric', 'Fabric', 'React');
+    link('React/Profiler', 'Profiler', 'React');
+    link('React/CoreModules', 'CoreModules', 'React');
+
+    link('React/Runtime', 'Runtime', 'React');
+    link('React/Views/ScrollView', 'ScrollView', 'React');
+    link('React/Views/RefreshControl', 'RefreshControl', 'React');
+
+    link(
+      'ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported',
+      'ReactApple/',
+      'RCTDeprecation',
+    );
+    link('Libraries/Required', 'Required', 'RCTRequired');
+    link('Libraries/TypeSafety', 'TypeSafety', 'RCTTypeSafety');
+    link('Libraries/Text', 'Text', 'React');
+    link('Libraries/Image', 'Image', 'React');
+    link('Libraries/Network', 'Network', 'React');
+    link('Libraries/Blob', 'Blob', 'React');
+    link('Libraries/NativeAnimation', 'NativeAnimation', 'React');
+
+    link('ReactCommon/hermes', 'Hermes', 'reacthermes');
+    link('ReactCommon/hermes', 'Hermes', 'jsireact');
+
+    link(
+      'ReactCommon/react/renderer/imagemanager',
+      'ImageManager',
+      'react/renderer/imagemanager',
+    );
 
     // Done!
     console.log('🏁 Done!');
