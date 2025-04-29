@@ -365,7 +365,7 @@ export interface ScrollViewPropsIOS {
 
   /**
    * When true the scroll view bounces when it reaches the end of the
-   * content if the content is larger then the scroll view along the axis of
+   * content if the content is larger than the scroll view along the axis of
    * the scroll direction. When false it disables all bouncing even if
    * the `alwaysBounce*` props are true. The default value is true.
    */
