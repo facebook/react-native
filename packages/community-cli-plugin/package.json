@@ -26,13 +26,13 @@
     "chalk": "^4.0.0",
     "debug": "^4.4.0",
     "invariant": "^2.2.4",
-    "metro": "^0.82.0",
-    "metro-config": "^0.82.0",
-    "metro-core": "^0.82.0",
+    "metro": "^0.82.2",
+    "metro-config": "^0.82.2",
+    "metro-core": "^0.82.2",
     "semver": "^7.1.3"
   },
   "devDependencies": {
-    "metro-resolver": "^0.82.0"
+    "metro-resolver": "^0.82.2"
   },
   "peerDependencies": {
     "@react-native-community/cli": "*"
