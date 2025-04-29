@@ -151,7 +151,7 @@ RuntimeSamplingProfile::Sample convertHermesSampleToTracingSample(
 /* static */ RuntimeSamplingProfile
 HermesRuntimeSamplingProfileSerializer::serializeToTracingSamplingProfile(
     const hermes::sampling_profiler::Profile& hermesProfile) {
-  std::vector<hermes::sampling_profiler::ProfileSample> hermesSamples =
+  const std::vector<hermes::sampling_profiler::ProfileSample>& hermesSamples =
       hermesProfile.getSamples();
   std::vector<RuntimeSamplingProfile::Sample> reconciledSamples;
   reconciledSamples.reserve(hermesSamples.size());
