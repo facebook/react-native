@@ -242,7 +242,7 @@ class NativeAnimatedNodeTraversalTest {
         animationCallback)
 
     nativeAnimatedNodesManager.runUpdates(nextFrameTime())
-    verify(valueListener).onValueUpdate(eq(0.0))
+    verify(valueListener).onValueUpdate(eq(0.0), eq(0.0))
 
     nativeAnimatedNodesManager.stopListeningToAnimatedNodeValue(nodeId)
 
@@ -271,7 +271,7 @@ class NativeAnimatedNodeTraversalTest {
     for (i in 0 until frames.size()) {
       reset(valueListener)
       nativeAnimatedNodesManager.runUpdates(nextFrameTime())
-      verify(valueListener).onValueUpdate(eq(frames.getDouble(i)))
+      verify(valueListener).onValueUpdate(eq(frames.getDouble(i)), eq(0.0))
     }
 
     reset(valueListener)
