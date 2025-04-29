@@ -483,7 +483,7 @@ describe('Event Dispatching', () => {
       expect(onPointerMove).toHaveBeenCalledTimes(2);
     });
 
-    it.skip('are NOT combined with the same type if it is non-unique', () => {
+    it('are NOT combined with the same type if it is non-unique', () => {
       const root = Fantom.createRoot();
 
       const ref = React.createRef<React.ElementRef<typeof View>>();
