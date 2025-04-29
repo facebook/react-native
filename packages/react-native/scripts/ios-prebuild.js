@@ -129,6 +129,7 @@ async function main() {
     link('Libraries/Network', 'Network', 'React');
     link('Libraries/Blob', 'Blob', 'React');
     link('Libraries/NativeAnimation', 'NativeAnimation', 'React');
+    link('Libraries/LinkingIOS', 'LinkingIOS', 'React');
 
     link('ReactCommon/hermes', 'Hermes', 'reacthermes');
     link('ReactCommon/hermes', 'Hermes', 'jsireact');
