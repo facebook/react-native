@@ -2,6 +2,9 @@ name: Test Libraries on Nightlies
 
 on:
   workflow_call:
+    secrets:
+      discord_webhook_url:
+        required: true
 
 
 # We use the matrix.library entry to specify the dependency we want to use
@@ -93,4 +96,4 @@ jobs:
         with:
           script: |
             const {collectResults} = require('./.github/workflow-scripts/collectNightlyOutcomes.js');
-            collectResults();
+            await collectResults('${{secrets.discord_webhook_url}}');

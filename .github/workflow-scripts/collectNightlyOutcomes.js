@@ -9,6 +9,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const {
+  prepareFailurePayload,
+  sendMessageToDiscord,
+} = require('./notifyDiscord');
 
 function readOutcomes() {
   const baseDir = '/tmp';
@@ -51,26 +55,67 @@ function readOutcomes() {
 
 function printFailures(outcomes) {
   console.log('Printing failures...');
-  let failures = 0;
+  let failedLibraries = [];
   outcomes.forEach(entry => {
     if (entry.status !== 'success') {
       console.log(
         `❌ [${entry.platform}] ${entry.library} failed with status ${entry.status}`,
       );
-      failures++;
+      failedLibraries.push({
+        library: entry.library,
+        platform: entry.platform,
+      });
     }
   });
-  return failures > 0;
+  return failedLibraries;
 }
 
-function collectResults() {
+/**
+ * Sends a message to Discord with the list of failures.
+ * @param {string} webHook - The Discord webhook URL
+ * @param {Array<Object>} failures - List of failures to report
+ * @returns {Promise<void>} - A promise that resolves when the message is sent
+ */
+async function notifyDiscord(webHook, failures) {
+  if (!webHook) {
+    console.error('Discord webhook URL is missing');
+    return;
+  }
+
+  if (!failures || failures.length === 0) {
+    console.log('No failures to report to Discord');
+    return;
+  }
+
+  try {
+    // Use the prepareFailurePayload function to format the message
+    const message = prepareFailurePayload(failures);
+
+    // Use the sendMessageToDiscord function to send the message
+    await sendMessageToDiscord(webHook, message);
+  } catch (error) {
+    console.error('Error in notifyDiscord function:', error);
+    throw error;
+  }
+}
+
+async function collectResults(discordWebHook) {
   const outcomes = readOutcomes();
   const failures = printFailures(outcomes);
-  if (failures) {
+
+  if (failures.length > 0) {
+    if (discordWebHook) {
+      console.log('Sending to discord');
+      await notifyDiscord(discordWebHook, failures);
+    } else {
+      console.log('Web hook not set');
+    }
     process.exit(1);
   }
   console.log('✅ All tests passed!');
 }
+
 module.exports = {
   collectResults,
+  notifyDiscord,
 };
