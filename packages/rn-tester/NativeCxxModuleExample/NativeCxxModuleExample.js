@@ -8,8 +8,7 @@
  * @format
  */
 
-import type {TurboModule} from 'react-native';
-import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
+import type {CodegenTypes, TurboModule} from 'react-native';
 
 import {TurboModuleRegistry} from 'react-native';
 
@@ -77,11 +76,11 @@ export type CustomDeviceEvent = {
 };
 
 export interface Spec extends TurboModule {
-  +onPress: EventEmitter<void>;
-  +onClick: EventEmitter<string>;
-  +onChange: EventEmitter<ObjectStruct>;
-  +onSubmit: EventEmitter<ObjectStruct[]>;
-  +onEvent: EventEmitter<EnumNone>;
+  +onPress: CodegenTypes.EventEmitter<void>;
+  +onClick: CodegenTypes.EventEmitter<string>;
+  +onChange: CodegenTypes.EventEmitter<ObjectStruct>;
+  +onSubmit: CodegenTypes.EventEmitter<ObjectStruct[]>;
+  +onEvent: CodegenTypes.EventEmitter<EnumNone>;
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
