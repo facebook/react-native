@@ -61,51 +61,50 @@ let package = Package(
       type: .dynamic,
       targets: [
 
-        //.rctDeprecation,
-        //.yoga,
-        //.reactOSCompat,
+        .yoga,
+        .reactOSCompat,
 
-        //.reactRendererConsistency,
-        //.reactFeatureFlags,
-        //.reactDebug,
-        //.jsi,
-        //.reactPerfLogger,
-        //.mapbuffer,
-        //.reactRendererDebug,
-        //.reactUtils,
-        //.logger,
+        .reactRendererConsistency,
+        .reactFeatureFlags,
+        .reactDebug,
+        .jsi,
+        .reactPerfLogger,
+        .mapbuffer,
+        .reactRendererDebug,
+        .reactUtils,
+        .logger,
 
-        //.reactJsInspector,
-        //.reactJsInspectorTracing,
-        //.reactJsInspectorNetwork,
-        //.reactCxxReact,
+        .reactJsInspector,
+        .reactJsInspectorTracing,
+        .reactJsInspectorNetwork,
+        .reactCxxReact,
 
-        //.reactJsiTooling,
-        //.reactJsiExecutor,
-        //.reactHermes,
-        //.hermesIncludes,
-        //.reactPerformanceTimeline,
-        //.reactRuntimeScheduler,
+        .reactJsiTooling,
+        .reactJsiExecutor,
+        .reactHermes,
+        .hermesIncludes,
+        .reactPerformanceTimeline,
+        .reactRuntimeScheduler,
 
-        //.reactTurboModuleCore,
-        //.reactTurboModuleBridging,
-        //.reactJsErrorHandler,
+        .reactTurboModuleCore,
+        .reactTurboModuleBridging,
+        .reactJsErrorHandler,
 
-        //.reactGraphicsApple,
-        //.reactGraphics,
+        .reactGraphicsApple,
+        .reactGraphics,
 
-        //.reactRendererCss,
-
-        // Now we need React/Base files
-        //.reactCoreRCTWebsocket,
-        //.reactFabric,
-        //.reactRuntime,
-        //.rctTypesafety,
-        //.reactRuntimeApple,
-        //.reactCore
-        //.reactFabric,
-        //.reactAppDelegate
-        .reactCodegen
+        .reactCoreRCTWebsocket,
+        .reactRuntime,
+        .rctTypesafety,
+        .reactRuntimeApple,
+        .reactCore,
+        .reactFabric,
+        .reactAppDelegate,
+        .reactCodegen,
+        .reactRCTFabric,
+        .reactFabricComponents,
+        .reactFabric,
+        .reactRCTText
       ]
     ),
   ],
@@ -113,18 +112,10 @@ let package = Package(
     /**
      Without any dependencies
     */
-   /*.reactNativeTarget(
-      name: .fbLazyVector,
-      path: "Libraries/FBLazyVector"
-    ),*/
     .reactNativeTarget(
       name: .rctDeprecation,
       path: "ReactApple/Libraries/RCTFoundation/RCTDeprecation"
     ),
-    /*.reactNativeTarget(
-      name: .rctRequired,
-      path: "Libraries/Required",
-    ),*/
     .reactNativeTarget(
       name: .yoga,
       path: "ReactCommon/yoga",
@@ -138,17 +129,6 @@ let package = Package(
       name: .reactOSCompat,
       path: "ReactCommon/oscompat"
     ),
-    /*.reactNativeTarget(
-      name: .reactCallInvoker,
-      path: "ReactCommon/callinvoker",
-    ),*/
-    /*.reactNativeTarget(
-      name: .reactTiming,
-      path: "ReactCommon/react/timing",
-      extraExcludes: ["tests"],
-      extraCSettings: [.headerSearchPath("../../../React/FBReactNativeSpec")],
-      extraCxxSettings: [.headerSearchPath("../../../React/FBReactNativeSpec")]
-    ),*/
     .reactNativeTarget(
       name: .reactRendererConsistency,
       path: "ReactCommon/react/renderer/consistency"
@@ -401,7 +381,7 @@ let package = Package(
      */
     .reactNativeTarget(
       name: .reactRuntimeApple,
-      dependencies: [.jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactFabric, .reactCoreModules],
+      dependencies: [.jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactRCTFabric, .reactCoreModules],
       path: "ReactCommon/react/runtime/platform/ios",
       extraExcludes: ["ReactCommon/RCTJscInstance.mm"],
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/react/renderer/graphics/platform/cxx", "React", "ReactCommon/yoga", "ReactCommon/runtimeexecutor", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/callinvoker", "React/FBReactNativeSpec", "React/Fabric", "Libraries/FBLazyVector"],
@@ -415,7 +395,7 @@ let package = Package(
       name: .reactCore,
       dependencies: [.reactCxxReact, .reactPerfLogger, .jsi, .reactJsiExecutor, .reactUtils, .reactFeatureFlags, .reactRuntimeScheduler, .yoga, .reactJsInspector, .reactJsiTooling, .rctDeprecation, .reactCoreRCTWebsocket, .reactRCTImage, .reactNativeModulesApple, .reactRCTText, .reactRCTBlob, .reactRCTAnimation, .reactRCTNetwork, .reactFabric],
       path: "React",
-      extraExcludes: ["FBReactNativeSpec", "Tests", "Resources", "Runtime/RCTJscInstanceFactory.mm", "I18n/strings", "CxxBridge/JSCExecutorFactory.mm", "FBReactNativeSpec", "CoreModules"],
+      extraExcludes: ["FBReactNativeSpec", "Fabric", "Tests", "Resources", "Runtime/RCTJscInstanceFactory.mm", "I18n/strings", "CxxBridge/JSCExecutorFactory.mm", "FBReactNativeSpec", "CoreModules"],
       sources: [".", "Runtime/RCTHermesInstanceFactory.mm"],
       extraCSettings: [.headerSearchPath("./Base/")],
       extraCxxSettings: [.headerSearchPath("./Base/")],
@@ -423,31 +403,67 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/callinvoker", "ReactCommon", "React/FBReactNativeSpec", "React/I18n", "React/Profiler", "ReactCommon/runtimeexecutor", "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/renderer/components/textinput/platform/ios", "ReactCommon/react/renderer/graphics/platform/ios", "Libraries/FBLazyVector", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/imagemanager/platform/cxx", "ReactCommon/react/renderer/imagemanager/platform/ios", "ReactCommon/hermes"],
       extraGeneratedIncludePaths: ["WebSocket", "Base", "Views", "Modules", "ReactApple", "Surface", "ScrollView", "RefreshControl", "RefreshControl", "Modules", "Surface_SurfaceHostingView", "ScrollView", "Views", "Base", "Surface", "I18n", "CxxModule", "CxxUtils", "Profiler", "CxxBridge", "CoreModules", "CoreModules", "DevSupport", "Inspector", "DevSupport", "Inspector", "Fabric_Surface", "Fabric_Mounting", "Fabric_Mounting_ComponentViews_View", "Fabric_Mounting_ComponentViews", "Text_TextInput", "Fabric", "Fabric_Mounting_ComponentViews", "Fabric_Mounting_ComponentViews_ScrollView", "Fabric_Mounting_ComponentViews_Text", "Fabric_Mounting_ComponentViews_Image", "Fabric", "Fabric_Utils", "Image", "Text_TextInput_SingleLine", "Text_TextInput_MultiLine", "Fabric_Utils", "NativeAnimation", "Fabric_Mounting_ComponentViews_LegacyViewManagerInterop", "Fabric_Mounting_ComponentViews_Root", "Fabric_Mounting_ComponentViews_TextInput", "Fabric_Mounting_ComponentViews_UnimplementedView", "Required", "TypeSafety", "Hermes_executor"]
     ),
-
+    
+    
     /**
-     React Core modules
+     Fabric
      */
-    /*.reactNativeTarget(
-      name: .reactCoreModules,
-      dependencies: [.rctTypesafety, .reactRCTImage, .jsi, .reactJsInspector, .reactJsInspectorTracing, .reactFBReactNativeSpec, .reactTurboModuleBridging, .reactNativeModulesApple],
-      path: "React/CoreModules",
-      extraGeneratedIncludePaths: ["Base", "ReactApple", "Required", "TypeSafety", "CoreModules", "Views"]
-    ),*/
+    .reactNativeTarget(
+      name: .reactFabric,
+      dependencies: [.reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics],
+      path: "ReactCommon/react/renderer",
+      extraExcludes: ["animations/tests", "attributedstring/tests", "core/tests", "components", "mounting/tests", "uimanager/tests", "telemetry/tests", "css", "debug", "graphics", "imagemanager", "mapbuffer", "consistency", "uimanager/consistency/tests"],
+      sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/scrollview", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "telemetry", "consistency", "leakchecker"],
+      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga","ReactCommon/react/renderer/components/view", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/components/text", "ReactCommon/react/renderer/imagemanager/platform/ios"],
+      extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxUtils", "Modules", "CoreModules"]
+    ),
+    
+    .reactNativeTarget(
+      name: .reactRCTFabric,
+      dependencies: [.reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricComponents, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage],
+      path: "React/Fabric",
+      extraExcludes: [],
+      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/components/textinput/platform/ios", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/imagemanager/platform/ios", "ReactCommon/react/renderer/legacyviewmanagerinterop"],
+      extraGeneratedIncludePaths: ["Base", "Base_Surface", "ReactApple", "Modules", "CxxUtils", "Fabric", "Fabric_Surface", "Fabric_Mounting", "Fabric_Mounting_ComponentViews_View", "Fabric_Mounting_ComponentViews", "Fabric_Mounting_ComponentViews_ScrollView", "Fabric_Mounting_ComponentViews_LegacyViewManagerInterop", "Fabric_Mounting_ComponentViews_Root", "Fabric_Mounting_ComponentViews_Image", "Fabric_Mounting_ComponentViews_Text", "Fabric_Mounting_ComponentViews_TextInput", "Fabric_Mounting_ComponentViews_UnimplementedView", "Fabric_Utils", "Views", "Views_ScrollView", "Views_RefreshControl", "Text_TextInput", "Text_TextInput_Singleline", "Text_TextInput_Multiline", "Image", "NativeAnimation", "I18n"]
+    ),
+    
+    .reactNativeTarget(
+      name: .reactFabricComponents,
+      dependencies: [.reactFabric, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
+      path: "ReactCommon/react/renderer/components",
+      extraExcludes: ["view/platform/android", "scrollview/tests", "scrollview/platform/android", "text/tests"],
+      sources: ["inputaccessory", "modal", "rncore", "safeareaview", "scrollview", "text", "iostextinput", "unimplementedview", "textlayoutmanager"],
+      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/renderer/components/view/platform/cxx"],
+      extraGeneratedIncludePaths: ["Base"]
+    ),
+    
+    .reactNativeTarget(
+      name: .reactFabricImage,
+      dependencies: [.reactFabric, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging, .reactImageManagerApple],
+      path: "ReactCommon/react/renderer/components/image",
+      extraExcludes: ["tests"],
+      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/imagemanager/platform/ios"],
+      extraGeneratedIncludePaths: ["Base"]
+    ),
 
     /**
      Image manager
      */
     .reactNativeTarget(
       name: .reactImageManagerApple,
-      dependencies: [.reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug, .reactImageManager, .reactRCTImage, .reactCore],
+      dependencies: [.reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug, .reactImageManager, .reactRCTImage, .reactCore, .yoga],
       path: "ReactCommon/react/renderer/imagemanager/platform/ios",
+      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga"],
+      extraGeneratedIncludePaths: ["Base", "Image", "ReactApple", "Views"]
     ),
 
     .reactNativeTarget(
       name: .reactImageManager,
-      dependencies: [.reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug],
+      dependencies: [.reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug, .yoga],
       path: "ReactCommon/react/renderer/imagemanager",
-      extraExcludes: ["platform", "tests"]
+      extraExcludes: ["platform", "tests"],
+      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga"],
+      extraGeneratedIncludePaths: []
     ),
 
     .reactNativeTarget(
@@ -459,20 +475,6 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker"],
       extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxModule"]
     ),
-
-    /**
-     Fabric modules
-     */
-    .reactNativeTarget(
-      name: .reactFabric,
-      dependencies: [.reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics],
-      path: "ReactCommon/react/renderer",
-      extraExcludes: ["animations/tests", "attributedstring/tests", "core/tests", "components/root/tests", "components/view/tests", "mounting/tests", "uimanager/tests", "telemetry/tests", "css", "debug", "graphics", "imagemanager", "mapbuffer", "consistency", "uimanager/consistency/tests", "components/view/platform/android", "textlayoutmanager/tests", "textlayoutmanager/platform/android", "textlayoutmanager/platform/cxx", "components/text/tests", "components/scrollview/tests", "components/scrollview/platform/android", "components/image/tests"],
-      sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/scrollview", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "telemetry", "consistency", "leakchecker", "components/image"],
-      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga","ReactCommon/react/renderer/components/view", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/textlayoutmanager", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/components/text", "ReactCommon/react/renderer/imagemanager/platform/ios"],
-      extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxUtils", "Modules", "CoreModules", "Text_Text"]
-    ),
-
 
     /*
      FBReactNativeSpec
@@ -601,6 +603,9 @@ extension String {
   static let reactCoreRCTWebsocket = "React-Core/RCTWebSocket"
   static let reactFBReactNativeSpec = "React-RCTFBReactNativeSpec"
   static let reactFabric = "React-Fabric"
+  static let reactRCTFabric = "React-RCTFabric"
+  static let reactFabricComponents = "React-FabricComponents"
+  static let reactFabricImage = "React-FabricImage"
 
   static let reactNativeDependencies = "ReactNativeDependencies"
 
