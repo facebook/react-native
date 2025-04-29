@@ -148,9 +148,11 @@ void RuntimeSamplingProfileTraceEventSerializer::bufferProfileChunkTraceEvent(
           chunk.threadId,
           chunk.timestamp,
           TraceEventProfileChunk{
-              TraceEventProfileChunk::CPUProfile{
-                  traceEventNodes, chunk.samples},
-              TraceEventProfileChunk::TimeDeltas{chunk.timeDeltas},
+              .cpuProfile =
+                  TraceEventProfileChunk::CPUProfile{
+                      traceEventNodes, chunk.samples},
+              .timeDeltas =
+                  TraceEventProfileChunk::TimeDeltas{chunk.timeDeltas},
           }));
 }
 
