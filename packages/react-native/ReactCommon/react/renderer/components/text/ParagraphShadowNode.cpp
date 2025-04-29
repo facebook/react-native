@@ -181,8 +181,11 @@ Size ParagraphShadowNode::measureContent(
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
-  TextLayoutContext textLayoutContext{};
-  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  TextLayoutContext textLayoutContext{
+      .pointScaleFactor = layoutContext.pointScaleFactor,
+      .surfaceId = getSurfaceId(),
+  };
+
   return textLayoutManager_
       ->measure(
           AttributedStringBox{attributedString},
@@ -242,8 +245,10 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   updateStateIfNeeded(content);
 
-  TextLayoutContext textLayoutContext{};
-  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  TextLayoutContext textLayoutContext{
+      .pointScaleFactor = layoutContext.pointScaleFactor,
+      .surfaceId = getSurfaceId(),
+  };
   auto measurement = TextMeasurement{};
 
   AttributedStringBox attributedStringBox{content.attributedString};

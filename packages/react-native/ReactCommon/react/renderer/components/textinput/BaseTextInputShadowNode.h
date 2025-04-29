@@ -75,7 +75,9 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     auto textConstraints = getTextConstraints(layoutConstraints);
 
     TextLayoutContext textLayoutContext{
-        .pointScaleFactor = layoutContext.pointScaleFactor};
+        .pointScaleFactor = layoutContext.pointScaleFactor,
+        .surfaceId = BaseShadowNode::getSurfaceId(),
+    };
     auto textSize = textLayoutManager_
                         ->measure(
                             attributedStringBoxToMeasure(layoutContext),
