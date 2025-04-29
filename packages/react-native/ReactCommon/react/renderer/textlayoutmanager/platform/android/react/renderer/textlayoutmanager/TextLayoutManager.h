@@ -55,6 +55,7 @@ class TextLayoutManager {
   TextMeasurement measureCachedSpannableById(
       int64_t cacheId,
       const ParagraphAttributes& paragraphAttributes,
+      const TextLayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const;
 
   /*
