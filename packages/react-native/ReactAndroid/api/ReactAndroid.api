@@ -4652,11 +4652,13 @@ public final class com/facebook/react/uimanager/ViewGroupDrawingOrderHelper {
 }
 
 public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebook/react/uimanager/BaseViewManager, com/facebook/react/uimanager/IViewGroupManager {
+	public static final field Companion Lcom/facebook/react/uimanager/ViewGroupManager$Companion;
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
+	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun addView (Landroid/view/View;Landroid/view/View;I)V
 	public fun addView (Landroid/view/ViewGroup;Landroid/view/View;I)V
-	public fun addViews (Landroid/view/ViewGroup;Ljava/util/List;)V
+	public final fun addViews (Landroid/view/ViewGroup;Ljava/util/List;)V
 	public fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/LayoutShadowNode;
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public synthetic fun getChildAt (Landroid/view/View;I)Landroid/view/View;
@@ -4664,14 +4666,19 @@ public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebo
 	public synthetic fun getChildCount (Landroid/view/View;)I
 	public fun getChildCount (Landroid/view/ViewGroup;)I
 	public fun getShadowNodeClass ()Ljava/lang/Class;
-	public static fun getViewZIndex (Landroid/view/View;)Ljava/lang/Integer;
+	public static final fun getViewZIndex (Landroid/view/View;)Ljava/lang/Integer;
 	public fun needsCustomLayoutForChildren ()Z
-	public fun removeView (Landroid/view/ViewGroup;Landroid/view/View;)V
+	public final fun removeView (Landroid/view/ViewGroup;Landroid/view/View;)V
 	public synthetic fun removeViewAt (Landroid/view/View;I)V
 	public fun removeViewAt (Landroid/view/ViewGroup;I)V
-	public static fun setViewZIndex (Landroid/view/View;I)V
+	public static final fun setViewZIndex (Landroid/view/View;I)V
 	public synthetic fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateExtraData (Landroid/view/ViewGroup;Ljava/lang/Object;)V
+}
+
+public final class com/facebook/react/uimanager/ViewGroupManager$Companion {
+	public final fun getViewZIndex (Landroid/view/View;)Ljava/lang/Integer;
+	public final fun setViewZIndex (Landroid/view/View;I)V
 }
 
 public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/react/bridge/BaseJavaModule {
