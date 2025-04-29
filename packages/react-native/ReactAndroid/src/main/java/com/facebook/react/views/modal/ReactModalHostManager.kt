@@ -23,34 +23,34 @@ import com.facebook.react.views.modal.ReactModalHostView.OnRequestCloseListener
 
 /** View manager for [ReactModalHostView] components. */
 @ReactModule(name = ReactModalHostManager.REACT_CLASS)
-public class ReactModalHostManager :
+internal class ReactModalHostManager :
     ViewGroupManager<ReactModalHostView>(), ModalHostViewManagerInterface<ReactModalHostView> {
   private val delegate: ViewManagerDelegate<ReactModalHostView> = ModalHostViewManagerDelegate(this)
 
-  public override fun getName(): String = REACT_CLASS
+  override fun getName(): String = REACT_CLASS
 
   protected override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
       ReactModalHostView(reactContext)
 
-  public override fun onDropViewInstance(view: ReactModalHostView) {
+  override fun onDropViewInstance(view: ReactModalHostView) {
     super.onDropViewInstance(view)
     view.onDropInstance()
   }
 
   @ReactProp(name = "animationType")
-  public override fun setAnimationType(view: ReactModalHostView, animationType: String?) {
+  override fun setAnimationType(view: ReactModalHostView, animationType: String?) {
     if (animationType != null) {
       view.animationType = animationType
     }
   }
 
   @ReactProp(name = "transparent")
-  public override fun setTransparent(view: ReactModalHostView, transparent: Boolean) {
+  override fun setTransparent(view: ReactModalHostView, transparent: Boolean) {
     view.transparent = transparent
   }
 
   @ReactProp(name = "statusBarTranslucent")
-  public override fun setStatusBarTranslucent(
+  override fun setStatusBarTranslucent(
       view: ReactModalHostView,
       statusBarTranslucent: Boolean
   ) {
@@ -58,7 +58,7 @@ public class ReactModalHostManager :
   }
 
   @ReactProp(name = "navigationBarTranslucent")
-  public override fun setNavigationBarTranslucent(
+  override fun setNavigationBarTranslucent(
       view: ReactModalHostView,
       navigationBarTranslucent: Boolean
   ) {
@@ -66,7 +66,7 @@ public class ReactModalHostManager :
   }
 
   @ReactProp(name = "hardwareAccelerated")
-  public override fun setHardwareAccelerated(
+  override fun setHardwareAccelerated(
       view: ReactModalHostView,
       hardwareAccelerated: Boolean
   ) {
@@ -74,26 +74,26 @@ public class ReactModalHostManager :
   }
 
   @ReactProp(name = "visible")
-  public override fun setVisible(view: ReactModalHostView, visible: Boolean) {
+  override fun setVisible(view: ReactModalHostView, visible: Boolean) {
     // iOS only
   }
 
   @ReactProp(name = "presentationStyle")
-  public override fun setPresentationStyle(view: ReactModalHostView, value: String?): Unit = Unit
+  override fun setPresentationStyle(view: ReactModalHostView, value: String?): Unit = Unit
 
   @ReactProp(name = "animated")
-  public override fun setAnimated(view: ReactModalHostView, value: Boolean): Unit = Unit
+  override fun setAnimated(view: ReactModalHostView, value: Boolean): Unit = Unit
 
   @ReactProp(name = "supportedOrientations")
-  public override fun setSupportedOrientations(
+  override fun setSupportedOrientations(
       view: ReactModalHostView,
       value: ReadableArray?
   ): Unit = Unit
 
   @ReactProp(name = "identifier")
-  public override fun setIdentifier(view: ReactModalHostView, value: Int): Unit = Unit
+  override fun setIdentifier(view: ReactModalHostView, value: Int): Unit = Unit
 
-  public override fun setTestId(view: ReactModalHostView, value: String?) {
+  override fun setTestId(view: ReactModalHostView, value: String?) {
     super.setTestId(view, value)
     view.setDialogRootViewGroupTestId(value)
   }
@@ -115,7 +115,7 @@ public class ReactModalHostManager :
     }
   }
 
-  public override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =
+  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =
       (super.getExportedCustomDirectEventTypeConstants() ?: mutableMapOf()).apply {
         put(RequestCloseEvent.EVENT_NAME, mapOf("registrationName" to "onRequestClose"))
         put(ShowEvent.EVENT_NAME, mapOf("registrationName" to "onShow")) // iOS only
@@ -128,7 +128,7 @@ public class ReactModalHostManager :
     view.showOrUpdate()
   }
 
-  public override fun updateState(
+  override fun updateState(
       view: ReactModalHostView,
       props: ReactStylesDiffMap,
       stateWrapper: StateWrapper
@@ -137,9 +137,9 @@ public class ReactModalHostManager :
     return null
   }
 
-  public override fun getDelegate(): ViewManagerDelegate<ReactModalHostView> = delegate
+  override fun getDelegate(): ViewManagerDelegate<ReactModalHostView> = delegate
 
-  public companion object {
-    public const val REACT_CLASS: String = "RCTModalHostView"
+  companion object {
+    const val REACT_CLASS: String = "RCTModalHostView"
   }
 }
