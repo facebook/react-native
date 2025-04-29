@@ -69,13 +69,15 @@ struct RawEvent {
       std::string type,
       SharedEventPayload eventPayload,
       SharedEventTarget eventTarget,
-      Category category = Category::Unspecified);
+      Category category = Category::Unspecified,
+      bool isUnique = false);
 
   std::string type;
   SharedEventPayload eventPayload;
   SharedEventTarget eventTarget;
   Category category;
   EventTag loggingTag{0};
+  bool isUnique{false};
 
   // The client may specify a platform-specific timestamp for the event start
   // time, for example when MotionEvent was triggered on the Android native
