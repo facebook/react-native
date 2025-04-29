@@ -13,10 +13,12 @@ RawEvent::RawEvent(
     std::string type,
     SharedEventPayload eventPayload,
     SharedEventTarget eventTarget,
-    Category category)
+    Category category,
+    bool isUnique)
     : type(std::move(type)),
       eventPayload(std::move(eventPayload)),
       eventTarget(std::move(eventTarget)),
-      category(category) {}
+      category(category),
+      isUnique(isUnique) {}
 
 } // namespace facebook::react
