@@ -15,75 +15,84 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-function main() {
-  console.log('Prebuilding React Native...');
+async function main() {
+  console.log('Prebuilding React Native iOS...');
   console.log('');
 
-  // Root
-  const root = process.cwd();
+  try {
+    // Root
+    const root = process.cwd();
 
-  // Create build folder
-  const buildFolder = path.resolve(root, '.build');
-  createFolderIfNotExists(buildFolder);
+    // Create build folder
+    const buildFolder = path.resolve(root, '.build');
+    createFolderIfNotExists(buildFolder);
 
-  // Create the hard links folder
-  const linksFolder = path.resolve(buildFolder, 'includes');
-  createFolderIfNotExists(linksFolder);
+    // Create the hard links folder
+    const linksFolder = path.resolve(buildFolder, 'includes');
+    createFolderIfNotExists(linksFolder);
 
-  /**
-   * Creates a symbolic link from one path to another. For each subfolder
-   * in the source path, it creates a link in the target path with an
-   * underscore prefix.
-   * @param {string} fromPath - The path to the source file or directory
-   * @param {string} toPath - The path to the destination file or directory
-   * @param {string} includePath - Path inside the toPath to create the link
-   * @throws {Error} If the source path does not exist or if the link creation fails
-   * @returns {void}
-   */
-  const link = (
-    fromPath /*:string*/,
-    toPath /*:string*/,
-    includePath /*:string*/,
-  ) => {
-    if (toPath.includes('__tests__')) {
-      // Skip test folders
-      return;
-    }
+    /**
+     * Creates a symbolic link from one path to another. For each subfolder
+     * in the source path, it creates a link in the target path with an
+     * underscore prefix.
+     * @param {string} fromPath - The path to the source file or directory
+     * @param {string} toPath - The path to the destination file or directory
+     * @param {string} includePath - Path inside the toPath to create the link
+     * @throws {Error} If the source path does not exist or if the link creation fails
+     * @returns {void}
+     */
+    const link = (
+      fromPath /*:string*/,
+      toPath /*:string*/,
+      includePath /*:string*/,
+    ) => {
+      if (toPath.includes('__tests__')) {
+        // Skip test folders
+        return;
+      }
 
-    console.log(`Linking ${fromPath} to ${toPath + '/' + includePath}...`);
-    const source = path.resolve(root, fromPath);
-    const target = path.resolve(linksFolder, toPath, includePath);
+      console.log(`Linking ${fromPath} to ${toPath + '/' + includePath}...`);
+      const source = path.resolve(root, fromPath);
+      const target = path.resolve(linksFolder, toPath, includePath);
 
-    // get subfolders in source
-    const entries = fs.readdirSync(source, {withFileTypes: true});
-    if (
-      entries.some(
-        dirent =>
-          dirent.isFile() &&
-          (dirent.name.endsWith('.h') || dirent.name.endsWith('.hpp')),
-      )
-    ) {
-      // Create link for current folder
-      createLink(source, target);
-    }
+      // get subfolders in source - make sure we only copy folders with header files
+      const entries = fs.readdirSync(source, {withFileTypes: true});
+      if (
+        entries.some(
+          dirent =>
+            dirent.isFile() &&
+            (dirent.name.endsWith('.h') || dirent.name.endsWith('.hpp')),
+        )
+      ) {
+        // Create link for current folder
+        createLink(source, target);
+      }
 
-    const subfolders = entries
-      .filter(dirent => dirent.isDirectory())
-      .map(dirent => dirent.name);
+      const subfolders = entries
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name);
 
-    // Create links for subfolders
-    subfolders.forEach(folder => {
-      link(fromPath + '/' + folder, toPath + '_' + folder, includePath);
-    });
-  };
+      // Create links for subfolders
+      subfolders.forEach(folder => {
+        link(fromPath + '/' + folder, toPath + '_' + folder, includePath);
+      });
+    };
 
-  console.log('Running codegen...');
-  execSync(
-    `node scripts/generate-codegen-artifacts -p "${process.cwd()}" -t ios -o "${process.cwd()}/.build/codegen" -s library`,
-  );
+    // CODEGEN
+    console.log('Running codegen...');
+    const codegenPath = path.join(root, '.build/codegen');
+    createFolderIfNotExists(codegenPath);
 
-  console.log('Download hermes...');
-  prepareHermesArtifactsAsync('0.79.1', 'release').then(() => {
+    const command = `node scripts/generate-codegen-artifacts -p "${root}" -o "${codegenPath}"  -t ios`;
+    console.log(command);
+    execSync(command);
+
+    // HERMES ARTIFACTS
+    console.log('Download hermes...');
+    await prepareHermesArtifactsAsync('0.79.1', 'release');
+
+    // LINKING
+
     // Link codegen
     link('.build/codegen/build/generated/ios', 'CodeGen', 'ReactCodegen');
 
@@ -132,7 +141,10 @@ function main() {
 
     // Done!
     console.log('🏁 Done!');
-  });
+  } catch (err) {
+    console.error(err);
+    process.exitCode = 1;
+  }
 }
 
 if (require.main === module) {
