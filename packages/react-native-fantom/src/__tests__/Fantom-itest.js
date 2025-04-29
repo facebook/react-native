@@ -497,12 +497,19 @@ describe('Fantom', () => {
       const element = ensureInstance(ref.current, ReactNativeElement);
 
       Fantom.runOnUIThread(() => {
-        Fantom.enqueueNativeEvent(element, 'scroll', {
-          contentOffset: {
-            x: 0,
-            y: 1,
+        Fantom.enqueueNativeEvent(
+          element,
+          'scroll',
+          {
+            contentOffset: {
+              x: 0,
+              y: 1,
+            },
           },
-        });
+          {
+            isUnique: true,
+          },
+        );
         Fantom.enqueueNativeEvent(
           element,
           'scroll',
