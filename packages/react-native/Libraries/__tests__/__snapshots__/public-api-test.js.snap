@@ -6593,6 +6593,11 @@ export interface Spec {
     node: Node | NativeElementReference,
     includeTransform: boolean
   ) => ?[number, number, number, number];
+  +unstable_DefaultEventPriority: number;
+  +unstable_DiscreteEventPriority: number;
+  +unstable_ContinuousEventPriority: number;
+  +unstable_IdleEventPriority: number;
+  +unstable_getCurrentEventPriority: () => number;
 }
 declare export function getFabricUIManager(): ?Spec;
 "
