@@ -17,6 +17,7 @@
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
 
 #include "ParagraphState.h"
 
@@ -215,8 +216,17 @@ Float ParagraphShadowNode::baseline(
 
   AttributedStringBox attributedStringBox{attributedString};
 
-  return LineMeasurement::baseline(textLayoutManager_->measureLines(
-      attributedStringBox, getConcreteProps().paragraphAttributes, size));
+  if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
+    auto lines =
+        TextLayoutManagerExtended(*textLayoutManager_)
+            .measureLines(
+                attributedStringBox, content.paragraphAttributes, size);
+    return LineMeasurement::baseline(lines);
+  } else {
+    LOG(WARNING)
+        << "Baseline alignment is not supported by the current platform";
+    return 0;
+  }
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
@@ -239,9 +249,15 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   AttributedStringBox attributedStringBox{content.attributedString};
 
   if (getConcreteProps().onTextLayout) {
-    auto linesMeasurements = textLayoutManager_->measureLines(
-        attributedStringBox, content.paragraphAttributes, size);
-    getConcreteEventEmitter().onTextLayout(linesMeasurements);
+    if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
+      auto linesMeasurements =
+          TextLayoutManagerExtended(*textLayoutManager_)
+              .measureLines(
+                  attributedStringBox, content.paragraphAttributes, size);
+      getConcreteEventEmitter().onTextLayout(linesMeasurements);
+    } else {
+      LOG(WARNING) << "onTextLayout is not supported by the current platform";
+    }
   }
 
   if (content.attachments.empty()) {

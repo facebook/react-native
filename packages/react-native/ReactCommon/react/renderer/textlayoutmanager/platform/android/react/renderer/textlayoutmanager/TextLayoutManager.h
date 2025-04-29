@@ -26,7 +26,6 @@ class TextLayoutManager;
 class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared& contextContainer);
-  virtual ~TextLayoutManager() = default;
 
   /*
    * Not copyable.
@@ -43,13 +42,12 @@ class TextLayoutManager {
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
-  virtual TextMeasurement measure(
+  TextMeasurement measure(
       const AttributedStringBox& attributedStringBox,
       const ParagraphAttributes& paragraphAttributes,
       const TextLayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const;
 
-#ifdef ANDROID
   /**
    * Measures an AttributedString on the platform, as identified by some
    * opaque cache ID.
@@ -58,30 +56,18 @@ class TextLayoutManager {
       int64_t cacheId,
       const ParagraphAttributes& paragraphAttributes,
       const LayoutConstraints& layoutConstraints) const;
-#endif
 
   /*
    * Measures lines of `attributedString` using native text rendering
    * infrastructure.
    */
-  virtual LinesMeasurements measureLines(
+  LinesMeasurements measureLines(
       const AttributedStringBox& attributedStringBox,
       const ParagraphAttributes& paragraphAttributes,
       const Size& size) const;
 
-#ifdef __APPLE__
-  /*
-   * Returns an opaque pointer to platform-specific TextLayoutManager.
-   * Is used on a native views layer to delegate text rendering to the manager.
-   */
-  std::shared_ptr<void> getNativeTextLayoutManager() const;
-#endif
-
- protected:
+ private:
   std::shared_ptr<const ContextContainer> contextContainer_;
-#ifdef __APPLE__
-  std::shared_ptr<void> nativeTextLayoutManager_;
-#endif
   TextMeasureCache textMeasureCache_;
   LineMeasureCache lineMeasureCache_;
 };
