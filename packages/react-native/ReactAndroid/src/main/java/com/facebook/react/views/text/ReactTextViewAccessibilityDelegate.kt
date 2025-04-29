@@ -10,7 +10,6 @@ package com.facebook.react.views.text
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Bundle
-import android.text.Spannable
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ClickableSpan
@@ -270,7 +269,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
     return null
   }
 
-  public class AccessibilityLinks(spans: Array<out ClickableSpan>, text: Spannable) {
+  public class AccessibilityLinks(spans: Array<out ClickableSpan>, text: Spanned) {
     private val links: List<AccessibleLink>
 
     init {
