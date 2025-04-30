@@ -2397,13 +2397,6 @@ public final class com/facebook/react/fabric/events/EventBeatManager : com/faceb
 	public fun onBatchEventDispatched ()V
 }
 
-public final class com/facebook/react/fabric/events/EventEmitterWrapper : com/facebook/jni/HybridClassBase {
-	public final fun destroy ()V
-	public final fun dispatch (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;I)V
-	public final fun dispatchEventSynchronously (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
-	public final fun dispatchUnique (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
-}
-
 public final class com/facebook/react/fabric/events/FabricEventEmitter : com/facebook/react/uimanager/events/RCTModernEventEmitter {
 	public fun <init> (Lcom/facebook/react/fabric/FabricUIManager;)V
 	public fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
