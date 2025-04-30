@@ -24,11 +24,6 @@ function createLink(source /*:string*/, target /*:string*/) {
     throw new Error(`Source path does not exist: ${source}`);
   }
 
-  // Check if the destination already exists
-  if (fs.existsSync(target)) {
-    return;
-  }
-
   // Ensure the parent path of the link path
   createFolderIfNotExists(target);
 
