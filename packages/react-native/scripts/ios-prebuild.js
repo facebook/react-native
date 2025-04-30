@@ -92,11 +92,6 @@ async function main() {
     await prepareHermesArtifactsAsync('0.79.1', 'release');
 
     // LINKING
-
-    // Link codegen
-    link('.build/codegen/build/generated/ios', 'CodeGen', 'ReactCodegen');
-
-    // Link the rest
     link('Libraries/WebSocket/', 'WebSocket', 'React');
     link('React/Base', 'Base', 'React');
     link('React/Base/Surface', 'Surface', 'React');
