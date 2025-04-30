@@ -50,7 +50,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
       return samples.empty();
     }
 
-    std::vector<std::shared_ptr<ProfileTreeNode>> nodes;
+    std::vector<ProfileTreeNode> nodes;
     std::vector<uint32_t> samples;
     std::vector<long long> timeDeltas;
     uint16_t size;
@@ -128,11 +128,10 @@ class RuntimeSamplingProfileTraceEventSerializer {
    * \param callStack The call stack that will be processed.
    * \param chunk The profile chunk, which will buffer the sample with the
    * provided call stack.
-   * \param rootNode Shared pointer to the (root) node. Will be the parent node
-   * of the corresponding profile tree branch.
-   * \param idleNode Shared pointer to the (idle) node. Will be the only node
-   * that is used for the corresponding profile tree branch, in case of an empty
-   * call stack.
+   * \param rootNode The (root) node. Will be the parent node of the
+   * corresponding profile tree branch.
+   * \param idleNodeId Id of the (idle) node. Will be the only node that is used
+   * for the corresponding profile tree branch, in case of an empty call stack.
    * \param samplesTimeDelta Delta between the current sample and the previous
    * one.
    * \param nodeIdGenerator NodeIdGenerator instance that will be used for
@@ -142,8 +141,8 @@ class RuntimeSamplingProfileTraceEventSerializer {
       const std::vector<RuntimeSamplingProfile::SampleCallStackFrame>&
           callStack,
       ProfileChunk& chunk,
-      std::shared_ptr<ProfileTreeNode> rootNode,
-      std::shared_ptr<ProfileTreeNode> idleNode,
+      ProfileTreeNode& rootNode,
+      uint32_t idleNodeId,
       long long samplesTimeDelta,
       NodeIdGenerator& nodeIdGenerator);
 
