@@ -76,10 +76,10 @@ internal class EventAnimationDriver(
         val index = eventPath[i].toInt()
         val keyType = currArray?.getType(index)
         if (keyType == ReadableType.Map) {
-          currMap = currArray?.getMap(index)
+          currMap = currArray.getMap(index)
           currArray = null
         } else if (keyType == ReadableType.Array) {
-          currArray = currArray?.getArray(index)
+          currArray = currArray.getArray(index)
           currMap = null
         } else {
           throw UnexpectedNativeTypeException("Unexpected type $keyType for index '$index'")
