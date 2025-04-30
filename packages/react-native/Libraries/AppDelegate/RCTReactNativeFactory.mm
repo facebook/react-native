@@ -314,6 +314,10 @@ class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefau
   {
     return true;
   }
+  bool updateRuntimeShadowNodeReferencesOnCommit() override
+  {
+    return true;
+  }
 };
 
 - (void)_setUpFeatureFlags
