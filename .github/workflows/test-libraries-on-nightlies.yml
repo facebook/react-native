@@ -13,7 +13,7 @@ jobs:
   runner-setup:
     runs-on: ubuntu-latest
     outputs:
-      runners: '{"ios":"macos-13-large", "android": "ubuntu-latest"}'
+      runners: '{"ios":"macos-14-large", "android": "ubuntu-latest"}'
     steps:
       - run: echo no-op
 
