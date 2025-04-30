@@ -11,8 +11,7 @@ namespace facebook::react {
 
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared& /*contextContainer*/)
-    : textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
-      lineMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
+    : textMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
@@ -28,21 +27,5 @@ TextMeasurement TextLayoutManager::measure(
   }
   return TextMeasurement{{0, 0}, attachments};
 }
-
-#ifdef ANDROID
-TextMeasurement TextLayoutManager::measureCachedSpannableById(
-    int64_t /*cacheId*/,
-    const ParagraphAttributes& /*paragraphAttributes*/,
-    const LayoutConstraints& /*layoutConstraints*/) const {
-  return {};
-}
-#endif
-
-LinesMeasurements TextLayoutManager::measureLines(
-    const AttributedStringBox& /*attributedStringBox*/,
-    const ParagraphAttributes& /*paragraphAttributes*/,
-    const Size& /*size*/) const {
-  return {};
-};
 
 } // namespace facebook::react

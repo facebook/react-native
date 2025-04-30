@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <glog/logging.h>
+
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/text/BaseTextShadowNode.h>
@@ -18,6 +20,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
@@ -106,9 +109,18 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
                    &(YogaLayoutableShadowNode::yogaNode_), YGEdgeTop);
 
     AttributedStringBox attributedStringBox{attributedString};
-    return LineMeasurement::baseline(textLayoutManager_->measureLines(
-               attributedStringBox, props.paragraphAttributes, size)) +
-        top;
+
+    if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
+      auto lines =
+          TextLayoutManagerExtended(*textLayoutManager_)
+              .measureLines(
+                  attributedStringBox, props.paragraphAttributes, size);
+      return LineMeasurement::baseline(lines) + top;
+    } else {
+      LOG(WARNING)
+          << "Baseline alignment is not supported by the current platform";
+      return top;
+    }
   }
 
   /*
