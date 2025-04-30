@@ -22,7 +22,7 @@ import java.io.FileDescriptor
 import java.io.PrintWriter
 
 internal class RNTesterActivity : ReactActivity() {
-  class RNTesterActivityDelegate(val activity: ReactActivity, mainComponentName: String?) :
+  class RNTesterActivityDelegate(val activity: ReactActivity, mainComponentName: String) :
       DefaultReactActivityDelegate(activity, mainComponentName, fabricEnabled) {
     private val PARAM_ROUTE = "route"
     private lateinit var initialProps: Bundle
@@ -43,9 +43,6 @@ internal class RNTesterActivity : ReactActivity() {
         if (this::initialProps.isInitialized) initialProps else Bundle()
   }
 
-  override val mainComponentName: String?
-    get() = "RNTesterApp"
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -55,7 +52,7 @@ internal class RNTesterActivity : ReactActivity() {
     this.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
     // register insets listener to update margins on the ReactRootView to avoid overlap w/ system
     // bars
-    reactDelegate?.getReactRootView()?.let { rootView ->
+    getReactDelegate()?.getReactRootView()?.let { rootView ->
       val insetsType: Int =
           WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
 
@@ -73,6 +70,8 @@ internal class RNTesterActivity : ReactActivity() {
   }
 
   override fun createReactActivityDelegate() = RNTesterActivityDelegate(this, mainComponentName)
+
+  override fun getMainComponentName() = "RNTesterApp"
 
   override fun dump(
       prefix: String,
