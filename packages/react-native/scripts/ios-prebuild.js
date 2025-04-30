@@ -28,7 +28,7 @@ async function main() {
     createFolderIfNotExists(buildFolder);
 
     // Create the hard links folder
-    const linksFolder = path.resolve(buildFolder, 'includes');
+    const linksFolder = path.resolve(buildFolder, 'headers');
     createFolderIfNotExists(linksFolder);
 
     /**
@@ -36,24 +36,14 @@ async function main() {
      * in the source path, it creates a link in the target path with an
      * underscore prefix.
      * @param {string} fromPath - The path to the source file or directory
-     * @param {string} toPath - The path to the destination file or directory
-     * @param {string} includePath - Path inside the toPath to create the link
+     * @param {string} includePath - Path in the headers folder to create the link
      * @throws {Error} If the source path does not exist or if the link creation fails
      * @returns {void}
      */
-    const link = (
-      fromPath /*:string*/,
-      toPath /*:string*/,
-      includePath /*:string*/,
-    ) => {
-      if (toPath.includes('__tests__')) {
-        // Skip test folders
-        return;
-      }
-
-      console.log(`Linking ${fromPath} to ${toPath + '/' + includePath}...`);
+    const link = (fromPath /*:string*/, includePath /*:string*/) => {
+      console.log(`Linking ${fromPath} to ${includePath}...`);
       const source = path.resolve(root, fromPath);
-      const target = path.resolve(linksFolder, toPath, includePath);
+      const target = path.resolve(linksFolder, includePath);
 
       // get subfolders in source - make sure we only copy folders with header files
       const entries = fs.readdirSync(source, {withFileTypes: true});
@@ -65,16 +55,23 @@ async function main() {
         )
       ) {
         // Create link for current folder
-        createLink(source, target);
+        try {
+          createLink(source, target);
+        } catch (e) {
+          console.error(
+            `Failed to create link for ${source} to ${target}: ${e}`,
+          );
+        }
       }
 
       const subfolders = entries
         .filter(dirent => dirent.isDirectory())
+        .filter(dirent => dirent.name !== '__tests__')
         .map(dirent => dirent.name);
 
       // Create links for subfolders
       subfolders.forEach(folder => {
-        link(fromPath + '/' + folder, toPath + '_' + folder, includePath);
+        link(fromPath + '/' + folder, '', includePath);
       });
     };
 
@@ -92,46 +89,43 @@ async function main() {
     await prepareHermesArtifactsAsync('0.79.1', 'release');
 
     // LINKING
-    link('Libraries/WebSocket/', 'WebSocket', 'React');
-    link('React/Base', 'Base', 'React');
-    link('React/Base/Surface', 'Surface', 'React');
-    link('React/CxxBridge', 'CxxBridge', 'React');
-    link('React/CxxModule', 'CxxModule', 'React');
-    link('React/CxxUtils', 'CxxUtils', 'React');
-    link('React/DevSupport', 'DevSupport', 'React');
-    link('React/Inspector', 'Inspector', 'React');
-    link('React/I18n', 'I18n', 'React');
-    link('React/Views', 'Views', 'React');
-    link('React/CoreModules', 'CoreModules', 'React');
-    link('React/Modules', 'Modules', 'React');
-    link('React/Fabric', 'Fabric', 'React');
-    link('React/Profiler', 'Profiler', 'React');
-    link('React/CoreModules', 'CoreModules', 'React');
-
-    link('React/Runtime', 'Runtime', 'React');
-    link('React/Views/ScrollView', 'ScrollView', 'React');
-    link('React/Views/RefreshControl', 'RefreshControl', 'React');
+    link('Libraries/WebSocket/', 'React');
+    link('React/Base', 'React');
+    link('React/Base/Surface', 'React');
+    link('React/CxxBridge', 'React');
+    link('React/CxxModule', 'React');
+    link('React/CxxUtils', 'React');
+    link('React/DevSupport', 'React');
+    link('React/Inspector', 'React');
+    link('React/I18n', 'React');
+    link('React/Views', 'React');
+    link('React/CoreModules', 'React');
+    link('React/Modules', 'React');
+    link('React/Fabric', 'React');
+    link('React/Profiler', 'React');
+    link('React/CoreModules', 'React');
+    link('React/Runtime', 'React');
+    link('React/Views/ScrollView', 'React');
+    link('React/Views/RefreshControl', 'React');
 
     link(
       'ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported',
-      'ReactApple/',
       'RCTDeprecation',
     );
-    link('Libraries/Required', 'Required', 'RCTRequired');
-    link('Libraries/TypeSafety', 'TypeSafety', 'RCTTypeSafety');
-    link('Libraries/Text', 'Text', 'React');
-    link('Libraries/Image', 'Image', 'React');
-    link('Libraries/Network', 'Network', 'React');
-    link('Libraries/Blob', 'Blob', 'React');
-    link('Libraries/NativeAnimation', 'NativeAnimation', 'React');
-    link('Libraries/LinkingIOS', 'LinkingIOS', 'React');
+    link('Libraries/Required', 'RCTRequired');
+    link('Libraries/TypeSafety', 'RCTTypeSafety');
+    link('Libraries/Text', 'React');
+    link('Libraries/Image', 'React');
+    link('Libraries/Network', 'React');
+    link('Libraries/Blob', 'React');
+    link('Libraries/NativeAnimation', 'React');
+    link('Libraries/LinkingIOS', 'React');
 
-    link('ReactCommon/hermes', 'Hermes', 'reacthermes');
-    link('ReactCommon/hermes', 'Hermes', 'jsireact');
+    link('ReactCommon/hermes', 'reacthermes');
+    link('ReactCommon/hermes', 'jsireact');
 
     link(
       'ReactCommon/react/renderer/imagemanager',
-      'ImageManager',
       'react/renderer/imagemanager',
     );
 
