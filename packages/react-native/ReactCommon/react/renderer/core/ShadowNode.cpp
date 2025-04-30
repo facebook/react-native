@@ -320,13 +320,16 @@ void ShadowNode::transferRuntimeShadowNodeReference(
   destinationShadowNode->runtimeShadowNodeReference_ =
       runtimeShadowNodeReference_;
 
-  updateRuntimeShadowNodeReference(destinationShadowNode);
+  if (!ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+    updateRuntimeShadowNodeReference(destinationShadowNode);
+  }
 }
 
 void ShadowNode::transferRuntimeShadowNodeReference(
     const Shared& destinationShadowNode,
     const ShadowNodeFragment& fragment) const {
-  if (useRuntimeShadowNodeReferenceUpdateOnThread &&
+  if ((ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() ||
+       useRuntimeShadowNodeReferenceUpdateOnThread) &&
       fragment.runtimeShadowNodeReference) {
     transferRuntimeShadowNodeReference(destinationShadowNode);
   }
