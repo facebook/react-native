@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a223b4f79e4612eb193036256bfebc5>>
+ * @generated SignedSource<<33571f99b1f78fbc62cecfca5f8351fa>>
  */
 
 /**
@@ -93,6 +93,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
+  @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
+
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
   @DoNotStrip public fun useEditTextStockAndroidFocusBehavior(): Boolean
@@ -104,6 +106,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
+
+  @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

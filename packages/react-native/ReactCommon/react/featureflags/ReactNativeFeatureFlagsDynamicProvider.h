@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<21aeeeaa1a402f91b616180114887a58>>
+ * @generated SignedSource<<e92353bf22b82344bc6ab97f08ca724c>>
  */
 
 /**
@@ -360,6 +360,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::traceTurboModulePromiseRejectionsOnAndroid();
   }
 
+  bool updateRuntimeShadowNodeReferencesOnCommit() override {
+    auto value = values_["updateRuntimeShadowNodeReferencesOnCommit"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::updateRuntimeShadowNodeReferencesOnCommit();
+  }
+
   bool useAlwaysAvailableJSErrorHandling() override {
     auto value = values_["useAlwaysAvailableJSErrorHandling"];
     if (!value.isNull()) {
@@ -412,6 +421,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useRawPropsJsiValue();
+  }
+
+  bool useShadowNodeStateOnClone() override {
+    auto value = values_["useShadowNodeStateOnClone"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useShadowNodeStateOnClone();
   }
 
   bool useTurboModuleInterop() override {

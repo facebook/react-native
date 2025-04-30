@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e27f8a6852293234595697743315ff8>>
+ * @generated SignedSource<<b263bdcbc1258f7d5c56e69732ba9076>>
  */
 
 /**
@@ -239,6 +239,12 @@ public object ReactNativeFeatureFlags {
   public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = accessor.traceTurboModulePromiseRejectionsOnAndroid()
 
   /**
+   * When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.
+   */
+  @JvmStatic
+  public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = accessor.updateRuntimeShadowNodeReferencesOnCommit()
+
+  /**
    * In Bridgeless mode, use the always available javascript error reporting pipeline.
    */
   @JvmStatic
@@ -273,6 +279,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useRawPropsJsiValue(): Boolean = accessor.useRawPropsJsiValue()
+
+  /**
+   * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
+   */
+  @JvmStatic
+  public fun useShadowNodeStateOnClone(): Boolean = accessor.useShadowNodeStateOnClone()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
