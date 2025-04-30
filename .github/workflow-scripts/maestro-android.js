@@ -115,13 +115,14 @@ async function main() {
   let error = null;
   try {
     //check if MAESTRO_FLOW is a folder
+    const flow = `${MAESTRO_FLOW/text.yml}`;
     if (
-      fs.existsSync(MAESTRO_FLOW) &&
-      fs.lstatSync(MAESTRO_FLOW).isDirectory()
+      fs.existsSync(flow) &&
+      fs.lstatSync(flow).isDirectory()
     ) {
-      await executeFlowInFolder(MAESTRO_FLOW);
+      await executeFlowInFolder(flow);
     } else {
-      await executeFlowWithRetries(MAESTRO_FLOW, 0);
+      await executeFlowWithRetries(flow, 0);
     }
   } catch (err) {
     error = err;
