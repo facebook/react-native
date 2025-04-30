@@ -38,8 +38,15 @@ public abstract class ReactActivity protected constructor() :
    * Returns the name of the main component registered from JavaScript. This is used to schedule
    * rendering of the component. e.g. "MoviesApp"
    */
-  protected open val mainComponentName: String?
-    get() = null
+  protected open fun getMainComponentName(): String? = "HelloWorld"
+
+  /**
+   * Property added for backward compatibility with Kotlin consumers that are using the
+   * .mainComponentName synthetic property.
+   */
+  @get:JvmName("internal_getMainComponentName")
+  protected val mainComponentName: String?
+    get() = getMainComponentName()
 
   /** Called at construction time, override if you have a custom delegate implementation. */
   protected open fun createReactActivityDelegate(): ReactActivityDelegate {
@@ -66,7 +73,7 @@ public abstract class ReactActivity protected constructor() :
     reactActivityDelegate.onDestroy()
   }
 
-  override public fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+  public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
     reactActivityDelegate.onActivityResult(requestCode, resultCode, data)
   }
@@ -92,13 +99,13 @@ public abstract class ReactActivity protected constructor() :
     @Suppress("DEPRECATION") super.onBackPressed()
   }
 
-  override public fun onNewIntent(intent: Intent) {
+  public override fun onNewIntent(intent: Intent) {
     if (!reactActivityDelegate.onNewIntent(intent)) {
       super.onNewIntent(intent)
     }
   }
 
-  override public fun onUserLeaveHint() {
+  public override fun onUserLeaveHint() {
     super.onUserLeaveHint()
     reactActivityDelegate.onUserLeaveHint()
   }
