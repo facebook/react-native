@@ -31,7 +31,6 @@ import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.uimanager.style.Overflow
 import com.facebook.react.views.text.ReactTextViewAccessibilityDelegate.AccessibilityLinks
-import com.facebook.react.views.text.internal.span.ReactClickableSpan
 import java.util.HashMap
 
 @ReactModule(name = PreparedLayoutTextViewManager.REACT_CLASS)
@@ -71,12 +70,10 @@ internal class PreparedLayoutTextViewManager :
       // delegate so that these can be picked up by the accessibility system.
       if (layout.text is Spanned) {
         val spannedText = layout.text as Spanned
-
-        val clickableSpans =
-            spannedText.getSpans(0, layout.text.length, ReactClickableSpan::class.java)
+        val accessibilityLinks = AccessibilityLinks(spannedText)
         view.setTag(
             R.id.accessibility_links,
-            if (clickableSpans.size > 0) AccessibilityLinks(clickableSpans, spannedText) else null)
+            if (accessibilityLinks.size() > 0) accessibilityLinks else null)
         ReactTextViewAccessibilityDelegate.resetDelegate(
             view, view.isFocusable, view.importantForAccessibility)
       }
