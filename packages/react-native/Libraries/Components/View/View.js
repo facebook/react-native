@@ -14,10 +14,10 @@ import TextAncestor from '../../Text/TextAncestor';
 import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 
-export type Props = {
+export type Props = $ReadOnly<{
   ...ViewProps,
-  ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
-};
+  ref?: React.Ref<typeof ViewNativeComponent>,
+}>;
 
 /**
  * The most fundamental component for building a UI, View is a container that
