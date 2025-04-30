@@ -15,8 +15,8 @@ import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 
 export type Props = $ReadOnly<{
+  ref?: React.RefSetter<typeof ViewNativeComponent>,
   ...ViewProps,
-  ref?: React.Ref<typeof ViewNativeComponent>,
 }>;
 
 /**
@@ -27,7 +27,6 @@ export type Props = $ReadOnly<{
  * @see https://reactnative.dev/docs/view
  */
 function View({
-  ref,
   accessibilityElementsHidden,
   accessibilityLabel,
   accessibilityLabelledBy,
@@ -104,7 +103,6 @@ function View({
         ariaHidden === true ? 'no-hide-descendants' : importantForAccessibility
       }
       nativeID={id ?? nativeID}
-      ref={ref}
     />
   );
 
