@@ -72,7 +72,7 @@ RuntimeSamplingProfile::SampleCallStackFrame convertJSFunctionHermesFrame(
     const fhsp::ProfileSampleCallStackJSFunctionFrame& frame) {
   return RuntimeSamplingProfile::SampleCallStackFrame{
       RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
-      frame.hasScriptId() ? frame.getScriptId() : FALLBACK_SCRIPT_ID,
+      frame.getScriptId(),
       frame.getFunctionName(),
       frame.hasUrl() ? std::optional<std::string>{frame.getUrl()}
                      : std::nullopt,
