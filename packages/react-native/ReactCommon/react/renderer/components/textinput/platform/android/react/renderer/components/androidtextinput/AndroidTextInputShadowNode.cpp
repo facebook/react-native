@@ -31,11 +31,17 @@ Size AndroidTextInputShadowNode::measureContent(
     const LayoutConstraints& layoutConstraints) const {
   auto textConstraints = getTextConstraints(layoutConstraints);
 
+  TextLayoutContext textLayoutContext{
+      .pointScaleFactor = layoutContext.pointScaleFactor,
+      .surfaceId = getSurfaceId(),
+  };
+
   if (getStateData().cachedAttributedStringId != 0) {
     auto textSize = textLayoutManager_
                         ->measureCachedSpannableById(
                             getStateData().cachedAttributedStringId,
                             getConcreteProps().paragraphAttributes,
+                            textLayoutContext,
                             textConstraints)
                         .size;
     return layoutConstraints.clamp(textSize);
@@ -58,8 +64,6 @@ Size AndroidTextInputShadowNode::measureContent(
     return {.width = 0, .height = 0};
   }
 
-  TextLayoutContext textLayoutContext;
-  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
   auto textSize = textLayoutManager_
                       ->measure(
                           AttributedStringBox{attributedString},
