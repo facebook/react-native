@@ -5688,17 +5688,13 @@ public final class com/facebook/react/views/imagehelper/ImageSource$Companion {
 }
 
 public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper {
-	public static final field Companion Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper$Companion;
-	public final fun clear ()V
-	public static final fun getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
-	public final fun getResourceDrawable (Landroid/content/Context;Ljava/lang/String;)Landroid/graphics/drawable/Drawable;
-	public final fun getResourceDrawableId (Landroid/content/Context;Ljava/lang/String;)I
-	public final fun getResourceDrawableUri (Landroid/content/Context;Ljava/lang/String;)Landroid/net/Uri;
-}
-
-public final class com/facebook/react/views/imagehelper/ResourceDrawableIdHelper$Companion {
+	public static final field INSTANCE Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
 	public final fun DEPRECATED$getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
-	public final fun getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
+	public static final fun clear ()V
+	public static final fun getInstance ()Lcom/facebook/react/views/imagehelper/ResourceDrawableIdHelper;
+	public static final fun getResourceDrawable (Landroid/content/Context;Ljava/lang/String;)Landroid/graphics/drawable/Drawable;
+	public static final fun getResourceDrawableId (Landroid/content/Context;Ljava/lang/String;)I
+	public static final fun getResourceDrawableUri (Landroid/content/Context;Ljava/lang/String;)Landroid/net/Uri;
 }
 
 public final class com/facebook/react/views/modal/ReactModalHostManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/viewmanagers/ModalHostViewManagerInterface {
