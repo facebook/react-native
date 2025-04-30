@@ -6533,6 +6533,7 @@ public class com/facebook/react/views/text/TextAttributeProps {
 	public fun getEffectiveFontSize ()I
 	public fun getEffectiveLetterSpacing ()F
 	public fun getEffectiveLineHeight ()F
+	public static fun getEllipsizeMode (Ljava/lang/String;)Landroid/text/TextUtils$TruncateAt;
 	public fun getFontFamily ()Ljava/lang/String;
 	public fun getFontFeatureSettings ()Ljava/lang/String;
 	public fun getFontStyle ()I

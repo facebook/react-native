@@ -385,6 +385,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    incorporateMaxLinesDuringAndroidLayout: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Set maxLines and ellipsization during Android layout creation',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'stable',
+    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
