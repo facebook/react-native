@@ -114,18 +114,15 @@ public class com/facebook/react/ReactActivityDelegate {
 	protected fun composeLaunchOptions ()Landroid/os/Bundle;
 	protected fun createRootView ()Lcom/facebook/react/ReactRootView;
 	protected fun getContext ()Landroid/content/Context;
-	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public final fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	protected fun getLaunchOptions ()Landroid/os/Bundle;
-	public fun getMainComponentName ()Ljava/lang/String;
 	protected fun getPlainActivity ()Landroid/app/Activity;
 	protected fun getReactActivity ()Lcom/facebook/react/ReactActivity;
-	protected fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
 	public fun getReactHost ()Lcom/facebook/react/ReactHost;
 	public fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
-	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	protected fun isFabricEnabled ()Z
 	protected fun isWideColorGamutEnabled ()Z
-	protected fun loadApp (Ljava/lang/String;)V
+	public final fun loadApp (Ljava/lang/String;)V
 	public fun onActivityResult (IILandroid/content/Intent;)V
 	public fun onBackPressed ()Z
 	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V

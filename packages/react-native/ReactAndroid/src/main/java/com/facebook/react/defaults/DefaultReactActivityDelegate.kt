@@ -40,5 +40,6 @@ public open class DefaultReactActivityDelegate(
       @Suppress("UNUSED_PARAMETER") concurrentReactEnabled: Boolean,
   ) : this(activity, mainComponentName, fabricEnabled)
 
-  override fun isFabricEnabled(): Boolean = fabricEnabled
+  override val isFabricEnabled: Boolean
+    get() = fabricEnabled
 }

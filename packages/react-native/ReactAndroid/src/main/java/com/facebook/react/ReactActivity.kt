@@ -29,10 +29,10 @@ public abstract class ReactActivity protected constructor() :
     get() = reactActivityDelegate.reactHost
 
   protected val reactNativeHost: ReactNativeHost
-    get() = reactActivityDelegate.reactNativeHost
+    @Suppress("DEPRECATION") get() = reactActivityDelegate.reactNativeHost
 
   protected val reactInstanceManager: ReactInstanceManager
-    get() = reactActivityDelegate.reactInstanceManager
+    @Suppress("DEPRECATION") get() = reactActivityDelegate.reactInstanceManager
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule
