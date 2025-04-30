@@ -104,7 +104,7 @@ let package = Package(
         .reactFeatureflagsNativemodule,
         .reactNativeModuleDom,
         .reactAppDelegate,
-        .reactCodegen,
+        
       ]
     ),
   ],
@@ -559,16 +559,7 @@ let package = Package(
       commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/graphics/platform/ios", "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/hermes", "ReactCommon/jsiexecutor"],
       extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxUtils", "Modules", "Fabric", "CoreModules", "CxxBridge", "Fabric_Mounting", "Fabric_Surface", "Surface", "Image", "Network", "Surface_SurfaceHostingView", "Fabric_Utils", "Runtime", "Hermes_Executor"]
     ),
-
-    .reactNativeTarget(
-      name: .reactCodegen,
-      dependencies: [.reactJsiExecutor, .rctTypesafety, .reactCore, .jsi, .reactTurboModuleCore, .reactTurboModuleBridging, .reactRuntimeApple, .reactGraphics, .reactRendererDebug, .reactFabric, .reactDebug, .reactAppDelegate],
-      path: ".build/codegen/build/generated",
-      extraExcludes: ["ios/RCTAppDependencyProvider.h", "ios/RCTAppDependencyProvider.mm"],
-      commonHeaderPathModules: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/RuntimeExecutor", "ReactCommon/callinvoker", "ReactCommon/react/renderer/graphics/platform/ios", "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/hermes", "ReactCommon/jsiexecutor"],
-      extraGeneratedIncludePaths: ["Base", "ReactApple", "Views", "CxxUtils", "Modules", "Fabric", "CoreModules", "CxxBridge", "Fabric_Mounting", "Fabric_Surface", "Surface", "Image", "Network", "Surface_SurfaceHostingView", "Fabric_Utils", "Runtime", "Hermes_Executor", "ReactCodegen"]
-    ),
-
+    
     .reactNativeTarget(
       name: .reactRCTLinking,
       dependencies: [.jsi],
@@ -660,7 +651,6 @@ extension String {
   static let reactFeatureflagsNativemodule = "React-featureflagsnativemodule"
   static let reactNativeModuleDom = "React-domnativemodule"
   static let reactAppDelegate = "React-RCTAppDelegate"
-  static let reactCodegen = "React-Codegen"
 }
 
 extension Target {
