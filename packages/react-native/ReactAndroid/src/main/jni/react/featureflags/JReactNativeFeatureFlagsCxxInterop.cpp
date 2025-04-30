@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ac6b60d9d2062eda500e291fb2167076>>
+ * @generated SignedSource<<b07fb300852699f3066090549af0b994>>
  */
 
 /**
@@ -228,12 +228,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fuseboxNetworkInspectionEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxNetworkInspectionEnabled");
-    return method(javaProvider_);
-  }
-
-  bool incorporateMaxLinesDuringAndroidLayout() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("incorporateMaxLinesDuringAndroidLayout");
     return method(javaProvider_);
   }
 
@@ -467,11 +461,6 @@ bool JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled(
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::incorporateMaxLinesDuringAndroidLayout(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::incorporateMaxLinesDuringAndroidLayout();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -654,9 +643,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fuseboxNetworkInspectionEnabled",
         JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled),
-      makeNativeMethod(
-        "incorporateMaxLinesDuringAndroidLayout",
-        JReactNativeFeatureFlagsCxxInterop::incorporateMaxLinesDuringAndroidLayout),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

@@ -788,24 +788,4 @@ public class TextAttributeProps {
     }
     return androidHyphenationFrequency;
   }
-
-  public static @Nullable TextUtils.TruncateAt getEllipsizeMode(@Nullable String ellipsizeMode) {
-    @Nullable TextUtils.TruncateAt truncateAt = TextUtils.TruncateAt.START;
-    if (ellipsizeMode != null) {
-      switch (ellipsizeMode) {
-        case "head":
-          truncateAt = TextUtils.TruncateAt.START;
-          break;
-        case "middle":
-          truncateAt = TextUtils.TruncateAt.MIDDLE;
-          break;
-        case "tail":
-          truncateAt = TextUtils.TruncateAt.END;
-          break;
-        case "clip":
-          truncateAt = null;
-      }
-    }
-    return truncateAt;
-  }
 }
