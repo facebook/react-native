@@ -38,7 +38,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
   }
 
   override fun onHostResume() {
-    val newFontScale = reactApplicationContext?.resources?.configuration?.fontScale
+    val newFontScale = reactApplicationContext.resources?.configuration?.fontScale
     if (newFontScale != null && newFontScale != fontScale) {
       fontScale = newFontScale
       emitUpdateDimensionsEvent()
@@ -50,7 +50,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
   override fun onHostDestroy(): Unit = Unit
 
   fun emitUpdateDimensionsEvent() {
-    reactApplicationContext?.let { context ->
+    reactApplicationContext.let { context ->
       if (context.hasActiveReactInstance()) {
         // Don't emit an event to JS if the dimensions haven't changed
         val displayMetrics = getDisplayMetricsWritableMap(fontScale.toDouble())
@@ -71,7 +71,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
 
   override fun invalidate() {
     super.invalidate()
-    reactApplicationContext?.removeLifecycleEventListener(this)
+    reactApplicationContext.removeLifecycleEventListener(this)
   }
 
   public companion object {
