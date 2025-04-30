@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91c1a65790aa5946a354ab8a1966a5f4>>
+ * @generated SignedSource<<1f6d0004d189c283973bc4ee90262d5d>>
  */
 
 /**
@@ -285,6 +285,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useShadowNodeStateOnClone() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useShadowNodeStateOnClone");
+    return method(javaProvider_);
+  }
+
   bool useTurboModuleInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModuleInterop");
@@ -506,6 +512,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue(
   return ReactNativeFeatureFlags::useRawPropsJsiValue();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
@@ -670,6 +681,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useRawPropsJsiValue",
         JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue),
+      makeNativeMethod(
+        "useShadowNodeStateOnClone",
+        JReactNativeFeatureFlagsCxxInterop::useShadowNodeStateOnClone),
       makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),

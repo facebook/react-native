@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e27f8a6852293234595697743315ff8>>
+ * @generated SignedSource<<1de98a4744694ece63a297bb9498aa2e>>
  */
 
 /**
@@ -273,6 +273,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useRawPropsJsiValue(): Boolean = accessor.useRawPropsJsiValue()
+
+  /**
+   * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
+   */
+  @JvmStatic
+  public fun useShadowNodeStateOnClone(): Boolean = accessor.useShadowNodeStateOnClone()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

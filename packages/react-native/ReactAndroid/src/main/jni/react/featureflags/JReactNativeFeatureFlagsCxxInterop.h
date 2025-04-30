@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<610104213a5eba23b797e27377d71b52>>
+ * @generated SignedSource<<a5df9f40f7279fa47e7459e54e668bea>>
  */
 
 /**
@@ -151,6 +151,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useRawPropsJsiValue(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useShadowNodeStateOnClone(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useTurboModuleInterop(

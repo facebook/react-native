@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e80434127379886a001ffcbace6ba619>>
+ * @generated SignedSource<<61276e6e2befe37672ed4a2f3ffe9439>>
  */
 
 /**
@@ -188,6 +188,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useRawPropsJsiValue() override {
+    return false;
+  }
+
+  bool useShadowNodeStateOnClone() override {
     return false;
   }
 

@@ -482,6 +482,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useShadowNodeStateOnClone: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-16',
+        description:
+          'Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {

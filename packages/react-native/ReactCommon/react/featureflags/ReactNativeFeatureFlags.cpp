@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3d4eefc7af1e9d594ade8339c261ca01>>
+ * @generated SignedSource<<a15bd90ba10a29c6a584262d19bc844e>>
  */
 
 /**
@@ -188,6 +188,10 @@ bool ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid() {
 
 bool ReactNativeFeatureFlags::useRawPropsJsiValue() {
   return getAccessor().useRawPropsJsiValue();
+}
+
+bool ReactNativeFeatureFlags::useShadowNodeStateOnClone() {
+  return getAccessor().useShadowNodeStateOnClone();
 }
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {
