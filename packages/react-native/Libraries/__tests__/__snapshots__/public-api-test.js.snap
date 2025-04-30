@@ -417,7 +417,12 @@ declare export function fromBouncinessAndSpeed(
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/animations/Animation.js 1`] = `
-"export type EndResult = { finished: boolean, value?: number, ... };
+"export type EndResult = {
+  finished: boolean,
+  value?: number,
+  offset?: number,
+  ...
+};
 export type EndCallback = (result: EndResult) => void;
 export type AnimationConfig = $ReadOnly<{
   isInteraction?: boolean,

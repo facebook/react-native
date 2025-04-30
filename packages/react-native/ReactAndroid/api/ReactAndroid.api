@@ -444,7 +444,7 @@ public abstract class com/facebook/react/animated/AnimatedNode {
 }
 
 public abstract interface class com/facebook/react/animated/AnimatedNodeValueListener {
-	public abstract fun onValueUpdate (D)V
+	public abstract fun onValueUpdate (DD)V
 }
 
 public final class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
