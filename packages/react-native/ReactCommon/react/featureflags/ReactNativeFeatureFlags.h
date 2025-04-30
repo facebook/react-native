@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28265b23648f7634587376b9f0320f7b>>
+ * @generated SignedSource<<43fcd5c23c1eb9b91d3bc26d5543a4b7>>
  */
 
 /**
@@ -198,11 +198,6 @@ class ReactNativeFeatureFlags {
    * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
-
-  /**
-   * Set maxLines and ellipsization during Android layout creation
-   */
-  RN_EXPORT static bool incorporateMaxLinesDuringAndroidLayout();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
