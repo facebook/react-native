@@ -314,6 +314,10 @@ class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefau
   {
     return true;
   }
+  bool useShadowNodeStateOnClone() override
+  {
+    return true;
+  }
 };
 
 - (void)_setUpFeatureFlags

@@ -17,4 +17,6 @@ public class ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android(
   override fun enableFabricRenderer(): Boolean = bridgelessEnabled || fabricEnabled
 
   override fun useTurboModules(): Boolean = bridgelessEnabled || turboModulesEnabled
+
+  override fun useShadowNodeStateOnClone(): Boolean = true
 }
