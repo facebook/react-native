@@ -2397,14 +2397,6 @@ public final class com/facebook/react/fabric/events/EventBeatManager : com/faceb
 	public fun onBatchEventDispatched ()V
 }
 
-public final class com/facebook/react/fabric/events/FabricEventEmitter : com/facebook/react/uimanager/events/RCTModernEventEmitter {
-	public fun <init> (Lcom/facebook/react/fabric/FabricUIManager;)V
-	public fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
-	public fun receiveEvent (IILjava/lang/String;ZILcom/facebook/react/bridge/WritableMap;I)V
-	public fun receiveEvent (ILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
-	public fun receiveTouches (Ljava/lang/String;Lcom/facebook/react/bridge/WritableArray;Lcom/facebook/react/bridge/WritableArray;)V
-}
-
 public class com/facebook/react/fabric/mounting/MountItemDispatcher {
 	public fun <init> (Lcom/facebook/react/fabric/mounting/MountingManager;Lcom/facebook/react/fabric/mounting/MountItemDispatcher$ItemDispatchListener;)V
 	public fun addMountItem (Lcom/facebook/react/fabric/mounting/mountitems/MountItem;)V
