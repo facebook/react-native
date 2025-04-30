@@ -948,6 +948,12 @@ inline ParagraphAttributes convertRawProp(
       "adjustsFontSizeToFit",
       sourceParagraphAttributes.adjustsFontSizeToFit,
       defaultParagraphAttributes.adjustsFontSizeToFit);
+  paragraphAttributes.minimumFontScale = convertRawProp(
+      context,
+      rawProps,
+      "minimumFontScale",
+      sourceParagraphAttributes.minimumFontScale,
+      defaultParagraphAttributes.minimumFontScale);
   paragraphAttributes.minimumFontSize = convertRawProp(
       context,
       rawProps,
