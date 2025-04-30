@@ -8,7 +8,7 @@
 package com.facebook.react.views.text
 
 import android.text.Layout
-import android.text.Spannable
+import android.text.Spanned
 import android.view.View
 import com.facebook.react.R
 import com.facebook.react.internal.SystraceSection
@@ -69,15 +69,14 @@ internal class PreparedLayoutTextViewManager :
 
       // If this text view contains any clickable spans, set a view tag and reset the accessibility
       // delegate so that these can be picked up by the accessibility system.
-      if (layout.text is Spannable) {
-        val spannableText = layout.text as Spannable
+      if (layout.text is Spanned) {
+        val spannedText = layout.text as Spanned
 
         val clickableSpans =
-            spannableText.getSpans(0, layout.text.length, ReactClickableSpan::class.java)
+            spannedText.getSpans(0, layout.text.length, ReactClickableSpan::class.java)
         view.setTag(
             R.id.accessibility_links,
-            if (clickableSpans.size > 0) AccessibilityLinks(clickableSpans, spannableText)
-            else null)
+            if (clickableSpans.size > 0) AccessibilityLinks(clickableSpans, spannedText) else null)
         ReactTextViewAccessibilityDelegate.resetDelegate(
             view, view.isFocusable, view.importantForAccessibility)
       }
