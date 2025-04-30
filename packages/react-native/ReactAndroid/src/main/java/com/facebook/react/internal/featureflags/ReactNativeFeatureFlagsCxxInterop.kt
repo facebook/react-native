@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<007721988dfdf572f8ac218744341e60>>
+ * @generated SignedSource<<740f29c1fcec976ea9bac59c966cc311>>
  */
 
 /**
@@ -99,8 +99,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useAlwaysAvailableJSErrorHandling(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useEditTextStockAndroidFocusBehavior(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 

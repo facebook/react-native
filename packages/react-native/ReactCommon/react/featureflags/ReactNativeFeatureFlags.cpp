@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<17feaf7e1ce72109e0f99902ac8ad1e2>>
+ * @generated SignedSource<<1d9b3cf2ca0c5e66e601a1d38dc66417>>
  */
 
 /**
@@ -168,10 +168,6 @@ bool ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() {
 
 bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
   return getAccessor().useAlwaysAvailableJSErrorHandling();
-}
-
-bool ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior() {
-  return getAccessor().useEditTextStockAndroidFocusBehavior();
 }
 
 bool ReactNativeFeatureFlags::useFabricInterop() {

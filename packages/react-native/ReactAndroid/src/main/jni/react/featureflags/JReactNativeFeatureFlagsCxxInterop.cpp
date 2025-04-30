@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ac6b60d9d2062eda500e291fb2167076>>
+ * @generated SignedSource<<0fdc78dea868d9a0cb54784164fba4db>>
  */
 
 /**
@@ -255,12 +255,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useEditTextStockAndroidFocusBehavior() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useEditTextStockAndroidFocusBehavior");
-    return method(javaProvider_);
-  }
-
   bool useFabricInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useFabricInterop");
@@ -487,11 +481,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling(
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useEditTextStockAndroidFocusBehavior(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useFabricInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useFabricInterop();
@@ -666,9 +655,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useAlwaysAvailableJSErrorHandling",
         JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling),
-      makeNativeMethod(
-        "useEditTextStockAndroidFocusBehavior",
-        JReactNativeFeatureFlagsCxxInterop::useEditTextStockAndroidFocusBehavior),
       makeNativeMethod(
         "useFabricInterop",
         JReactNativeFeatureFlagsCxxInterop::useFabricInterop),

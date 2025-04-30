@@ -6640,7 +6640,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun onTextContextMenuItem (I)Z
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
 	public fun removeTextChangedListener (Landroid/text/TextWatcher;)V
-	public fun requestFocus (ILandroid/graphics/Rect;)Z
 	public final fun requestFocusFromJS ()V
 	public final fun setAllowFontScaling (Z)V
 	public final fun setAutoFocus (Z)V

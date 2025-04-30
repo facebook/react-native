@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b10c147b3f1753448f599ae4fb43387>>
+ * @generated SignedSource<<b6561ef6b895414a107fa747935fbc2a>>
  */
 
 /**
@@ -94,8 +94,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = false
 
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
-
-  override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
 
   override fun useFabricInterop(): Boolean = true
 

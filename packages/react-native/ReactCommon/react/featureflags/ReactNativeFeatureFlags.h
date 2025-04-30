@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28265b23648f7634587376b9f0320f7b>>
+ * @generated SignedSource<<73e47760924ecdbe1859cd65a6290ddf>>
  */
 
 /**
@@ -218,11 +218,6 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, use the always available javascript error reporting pipeline.
    */
   RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
-
-  /**
-   * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
-   */
-  RN_EXPORT static bool useEditTextStockAndroidFocusBehavior();
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

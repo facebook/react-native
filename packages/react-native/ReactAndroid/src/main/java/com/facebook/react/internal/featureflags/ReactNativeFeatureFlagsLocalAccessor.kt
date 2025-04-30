@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b64966fc245f53645726747ec93a15d1>>
+ * @generated SignedSource<<53de0b81080dd1418add34bfdc02ed88>>
  */
 
 /**
@@ -60,7 +60,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
-  private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
@@ -425,16 +424,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useAlwaysAvailableJSErrorHandling()
       accessedFeatureFlags.add("useAlwaysAvailableJSErrorHandling")
       useAlwaysAvailableJSErrorHandlingCache = cached
-    }
-    return cached
-  }
-
-  override fun useEditTextStockAndroidFocusBehavior(): Boolean {
-    var cached = useEditTextStockAndroidFocusBehaviorCache
-    if (cached == null) {
-      cached = currentProvider.useEditTextStockAndroidFocusBehavior()
-      accessedFeatureFlags.add("useEditTextStockAndroidFocusBehavior")
-      useEditTextStockAndroidFocusBehaviorCache = cached
     }
     return cached
   }
