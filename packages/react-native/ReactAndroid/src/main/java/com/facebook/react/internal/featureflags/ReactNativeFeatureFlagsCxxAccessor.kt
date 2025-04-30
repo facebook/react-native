@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03596dcddbe8976adfcf454b9b35e3c3>>
+ * @generated SignedSource<<65268cf15face782370694a2a5bd8c3f>>
  */
 
 /**
@@ -54,6 +54,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
+  private var incorporateMaxLinesDuringAndroidLayoutCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -368,6 +369,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxNetworkInspectionEnabled()
       fuseboxNetworkInspectionEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun incorporateMaxLinesDuringAndroidLayout(): Boolean {
+    var cached = incorporateMaxLinesDuringAndroidLayoutCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.incorporateMaxLinesDuringAndroidLayout()
+      incorporateMaxLinesDuringAndroidLayoutCache = cached
     }
     return cached
   }

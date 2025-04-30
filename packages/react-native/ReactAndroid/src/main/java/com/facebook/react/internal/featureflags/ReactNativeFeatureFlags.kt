@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62ec58d76b9e14b3e1e4e10e62fc196a>>
+ * @generated SignedSource<<991cfdadfc26e470da425a986d75c766>>
  */
 
 /**
@@ -233,6 +233,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
+
+  /**
+   * Set maxLines and ellipsization during Android layout creation
+   */
+  @JvmStatic
+  public fun incorporateMaxLinesDuringAndroidLayout(): Boolean = accessor.incorporateMaxLinesDuringAndroidLayout()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

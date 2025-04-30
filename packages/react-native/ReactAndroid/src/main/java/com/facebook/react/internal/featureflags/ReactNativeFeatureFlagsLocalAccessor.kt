@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f4ae0172bfb1c4d64213c0cd14320bdd>>
+ * @generated SignedSource<<aa86a9c0807638f1f44ced69462b1d17>>
  */
 
 /**
@@ -58,6 +58,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
+  private var incorporateMaxLinesDuringAndroidLayoutCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -406,6 +407,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.fuseboxNetworkInspectionEnabled()
       accessedFeatureFlags.add("fuseboxNetworkInspectionEnabled")
       fuseboxNetworkInspectionEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun incorporateMaxLinesDuringAndroidLayout(): Boolean {
+    var cached = incorporateMaxLinesDuringAndroidLayoutCache
+    if (cached == null) {
+      cached = currentProvider.incorporateMaxLinesDuringAndroidLayout()
+      accessedFeatureFlags.add("incorporateMaxLinesDuringAndroidLayout")
+      incorporateMaxLinesDuringAndroidLayoutCache = cached
     }
     return cached
   }
