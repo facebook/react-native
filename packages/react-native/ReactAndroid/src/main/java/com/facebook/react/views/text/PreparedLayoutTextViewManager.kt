@@ -192,10 +192,7 @@ internal class PreparedLayoutTextViewManager :
     view.setPadding(left, top, right, bottom)
   }
 
-  override fun getShadowNodeClass(): Class<out LayoutShadowNode> {
-    throw UnsupportedOperationException(
-        "PreparedLayoutTextViewManager does not use legacy arch shadow nodes")
-  }
+  override fun getShadowNodeClass(): Class<out LayoutShadowNode> = LayoutShadowNode::class.java
 
   override fun addView(parent: PreparedLayoutTextView, child: View, index: Int) {
     parent.addView(child, index)
