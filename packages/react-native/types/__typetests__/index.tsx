@@ -517,6 +517,8 @@ export class TouchableHighlightTest extends React.Component {
               (x, y, width, height): number => x + y + width + height,
             );
             ref?.setNativeProps({focusable: false});
+            const {x, y, width, height} = ref?.getBoundingClientRect() ?? {};
+            console.log(x, y, width, height);
           }}
         />
       </>

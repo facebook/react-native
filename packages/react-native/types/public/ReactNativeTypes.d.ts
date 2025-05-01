@@ -7,6 +7,8 @@
  * @format
  */
 
+/// <reference lib="dom" />
+
 import type * as React from 'react';
 
 export type MeasureOnSuccessCallback = (
@@ -109,6 +111,12 @@ export interface NativeMethods {
    * Removes focus from an input or view. This is the opposite of `focus()`.
    */
   blur(): void;
+
+  /**
+   * Returns a DOMRect object providing information about the size of an element
+   * and its position relative to the viewport.
+   */
+  getBoundingClientRect(): DOMRect;
 }
 
 /**
