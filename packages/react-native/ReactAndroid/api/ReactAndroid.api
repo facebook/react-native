@@ -3102,17 +3102,6 @@ public final class com/facebook/react/modules/permissions/PermissionsModule : co
 public final class com/facebook/react/modules/permissions/PermissionsModule$Companion {
 }
 
-public final class com/facebook/react/modules/share/ShareModule : com/facebook/fbreact/specs/NativeShareModuleSpec {
-	public static final field Companion Lcom/facebook/react/modules/share/ShareModule$Companion;
-	public static final field ERROR_INVALID_CONTENT Ljava/lang/String;
-	public static final field NAME Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun share (Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V
-}
-
-public final class com/facebook/react/modules/share/ShareModule$Companion {
-}
-
 public final class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 	public static final field DEVICE_LOCALHOST Ljava/lang/String;
 	public static final field EMULATOR_LOCALHOST Ljava/lang/String;
