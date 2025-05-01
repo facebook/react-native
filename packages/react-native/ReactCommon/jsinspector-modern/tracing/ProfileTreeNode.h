@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <memory>
 #include <utility>
 
 #include <jsinspector-modern/tracing/RuntimeSamplingProfile.h>
@@ -28,14 +27,16 @@ class ProfileTreeNode {
     Other,
   };
 
+  static constexpr uint32_t NO_PARENT = UINT32_MAX;
+
   ProfileTreeNode(
       uint32_t id,
       CodeType codeType,
-      std::shared_ptr<ProfileTreeNode> parent,
-      RuntimeSamplingProfile::SampleCallStackFrame callFrame)
+      RuntimeSamplingProfile::SampleCallStackFrame callFrame,
+      uint32_t parentId = NO_PARENT)
       : id_(id),
         codeType_(codeType),
-        parent_(parent),
+        parentId_(parentId),
         callFrame_(std::move(callFrame)) {}
 
   uint32_t getId() const {
@@ -46,11 +47,12 @@ class ProfileTreeNode {
     return codeType_;
   }
 
-  /**
-   * \return pointer to the parent node, nullptr if this is the root node.
-   */
-  ProfileTreeNode* getParent() const {
-    return parent_.get();
+  inline bool hasParent() const {
+    return parentId_ != NO_PARENT;
+  }
+
+  uint32_t getParentId() const {
+    return parentId_;
   }
 
   /**
@@ -61,36 +63,37 @@ class ProfileTreeNode {
   }
 
   /**
-   * Will only add unique child node.
-   * \return shared pointer to the already existing child node, nullptr if the
-   * added child node is unique.
+   * \return a pointer if the node already contains a child with the same
+   * codeType and callFrame, nullptr otherwise.
    */
-  std::shared_ptr<ProfileTreeNode> addChild(
-      std::shared_ptr<ProfileTreeNode> child) {
-    for (const auto& existingChild : children_) {
-      if (*existingChild == child.get()) {
-        return existingChild;
+  ProfileTreeNode* getIfAlreadyExists(
+      CodeType childCodeType,
+      const RuntimeSamplingProfile::SampleCallStackFrame& childCallFrame) {
+    for (auto& existingChild : children_) {
+      if (existingChild.getCodeType() == childCodeType &&
+          existingChild.getCallFrame() == childCallFrame) {
+        return &existingChild;
       }
     }
 
-    children_.push_back(child);
     return nullptr;
   }
 
-  bool operator==(const ProfileTreeNode* rhs) const {
-    if (this->parent_ != rhs->parent_) {
-      return false;
-    }
-    if (this->codeType_ != rhs->codeType_) {
-      return false;
-    }
-
-    return this->getCallFrame() == rhs->getCallFrame();
+  /**
+   * Creates a ProfileTreeNode and links it as a child to this node.
+   * \return a pointer to the child node.
+   */
+  ProfileTreeNode* addChild(
+      uint32_t childId,
+      CodeType childCodeType,
+      RuntimeSamplingProfile::SampleCallStackFrame childCallFrame) {
+    return &children_.emplace_back(
+        childId, childCodeType, std::move(childCallFrame), id_);
   }
 
  private:
   /**
-   *  Unique id of the node.
+   * Unique id of the node.
    */
   uint32_t id_;
   /**
@@ -99,13 +102,14 @@ class ProfileTreeNode {
    */
   CodeType codeType_;
   /**
-   * Shared pointer to the parent node. Can be nullptr only for root node.
+   * Unique id of the parent node. NO_PARENT if this is root node.
    */
-  std::shared_ptr<ProfileTreeNode> parent_;
+  uint32_t parentId_;
   /**
-   * Lst of shared pointers to children nodes.
+   * List of children nodes, should be unique by codeType and callFrame among
+   * each other.
    */
-  std::vector<std::shared_ptr<ProfileTreeNode>> children_;
+  std::vector<ProfileTreeNode> children_;
   /**
    * Information about the corresponding call frame that is represented by this
    * node.
