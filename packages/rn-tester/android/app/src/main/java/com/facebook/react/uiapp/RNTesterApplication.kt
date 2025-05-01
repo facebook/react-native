@@ -54,14 +54,11 @@ internal class RNTesterApplication : Application(), ReactApplication {
                   name: String,
                   reactContext: ReactApplicationContext
               ): NativeModule? {
-                if (!isNewArchEnabled) {
-                  return null
+                if (SampleLegacyModule.NAME == name) {
+                  return SampleLegacyModule(reactContext)
                 }
                 if (SampleTurboModule.NAME == name) {
                   return SampleTurboModule(reactContext)
-                }
-                if (SampleLegacyModule.NAME == name) {
-                  return SampleLegacyModule(reactContext)
                 }
                 return null
               }
@@ -71,27 +68,23 @@ internal class RNTesterApplication : Application(), ReactApplication {
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
-                    if (isNewArchEnabled) {
-                      mapOf(
-                          SampleTurboModule.NAME to
-                              ReactModuleInfo(
-                                  SampleTurboModule.NAME,
-                                  "SampleTurboModule",
-                                  canOverrideExistingModule = false,
-                                  needsEagerInit = false,
-                                  isCxxModule = false,
-                                  isTurboModule = true),
-                          SampleLegacyModule.NAME to
-                              ReactModuleInfo(
-                                  SampleLegacyModule.NAME,
-                                  "SampleLegacyModule",
-                                  canOverrideExistingModule = false,
-                                  needsEagerInit = false,
-                                  isCxxModule = false,
-                                  isTurboModule = false))
-                    } else {
-                      emptyMap()
-                    }
+                    mapOf(
+                        SampleTurboModule.NAME to
+                            ReactModuleInfo(
+                                SampleTurboModule.NAME,
+                                "SampleTurboModule",
+                                canOverrideExistingModule = false,
+                                needsEagerInit = false,
+                                isCxxModule = false,
+                                isTurboModule = true),
+                        SampleLegacyModule.NAME to
+                            ReactModuleInfo(
+                                SampleLegacyModule.NAME,
+                                "SampleLegacyModule",
+                                canOverrideExistingModule = false,
+                                needsEagerInit = false,
+                                isCxxModule = false,
+                                isTurboModule = false))
                   }
             },
             object : ReactPackage, ViewManagerOnDemandReactPackage {

@@ -58,6 +58,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <activity
+          android:name=".AlertDialogActivity"
+          android:label="Test"
+          android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+          android:launchMode="singleTask"
+          android:windowSoftInputMode="adjustResize"
+          android:theme="@style/Theme.AppCompat.Dialog.Alert">
+        </activity>
+
         <profileable
             android:shell="true"
             tools:targetApi="29" />
