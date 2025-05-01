@@ -23,7 +23,7 @@ import java.net.URI
 public class ForwardingCookieHandler() : CookieHandler() {
 
   @Deprecated("Use the default constructor", ReplaceWith("ForwardingCookieHandler()"))
-  public constructor(@Suppress("UNUSED_PARAMETER") reactContext: ReactContext) : this() {}
+  public constructor(@Suppress("UNUSED_PARAMETER") reactContext: ReactContext) : this()
 
   @Throws(IOException::class)
   override fun get(uri: URI, headers: Map<String, List<String>>): Map<String, List<String>> {
