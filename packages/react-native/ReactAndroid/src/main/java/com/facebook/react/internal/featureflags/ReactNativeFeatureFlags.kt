@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<519e6095d6c91fbbb4225a066c9cbe26>>
+ * @generated SignedSource<<62ec58d76b9e14b3e1e4e10e62fc196a>>
  */
 
 /**
@@ -163,6 +163,12 @@ public object ReactNativeFeatureFlags {
   public fun enableNativeCSSParsing(): Boolean = accessor.enableNativeCSSParsing()
 
   /**
+   * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
+   */
+  @JvmStatic
+  public fun enableNetworkEventReporting(): Boolean = accessor.enableNetworkEventReporting()
+
+  /**
    * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
    */
   @JvmStatic
@@ -173,6 +179,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enablePropsUpdateReconciliationAndroid(): Boolean = accessor.enablePropsUpdateReconciliationAndroid()
+
+  /**
+   * Enables the reporting of network resource timings through `PerformanceObserver`.
+   */
+  @JvmStatic
+  public fun enableResourceTimingAPI(): Boolean = accessor.enableResourceTimingAPI()
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).

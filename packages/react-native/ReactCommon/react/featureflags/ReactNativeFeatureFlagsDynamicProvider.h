@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9749a9af3dff2d030ff401915f46ece>>
+ * @generated SignedSource<<56265417ba766f9a9c39a7a0bc74c1ab>>
  */
 
 /**
@@ -243,6 +243,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableNativeCSSParsing();
   }
 
+  bool enableNetworkEventReporting() override {
+    auto value = values_["enableNetworkEventReporting"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableNetworkEventReporting();
+  }
+
   bool enableNewBackgroundAndBorderDrawables() override {
     auto value = values_["enableNewBackgroundAndBorderDrawables"];
     if (!value.isNull()) {
@@ -259,6 +268,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enablePropsUpdateReconciliationAndroid();
+  }
+
+  bool enableResourceTimingAPI() override {
+    auto value = values_["enableResourceTimingAPI"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableResourceTimingAPI();
   }
 
   bool enableSynchronousStateUpdates() override {
