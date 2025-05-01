@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.events.BatchEventDispatchedListener
  */
 @DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
-public final class EventBeatManager() : HybridClassBase(), BatchEventDispatchedListener {
+internal final class EventBeatManager() : HybridClassBase(), BatchEventDispatchedListener {
   init {
     initHybrid()
   }
@@ -27,7 +27,7 @@ public final class EventBeatManager() : HybridClassBase(), BatchEventDispatchedL
 
   private external fun tick()
 
-  public override fun onBatchEventDispatched() {
+  override fun onBatchEventDispatched() {
     tick()
   }
 

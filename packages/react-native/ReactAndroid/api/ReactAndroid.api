@@ -2392,11 +2392,6 @@ public final class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/f
 	public fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
 
-public final class com/facebook/react/fabric/events/EventBeatManager : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/events/BatchEventDispatchedListener {
-	public fun <init> ()V
-	public fun onBatchEventDispatched ()V
-}
-
 public class com/facebook/react/fabric/mounting/MountItemDispatcher {
 	public fun <init> (Lcom/facebook/react/fabric/mounting/MountingManager;Lcom/facebook/react/fabric/mounting/MountItemDispatcher$ItemDispatchListener;)V
 	public fun addMountItem (Lcom/facebook/react/fabric/mounting/mountitems/MountItem;)V
