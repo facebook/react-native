@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55a526204b386d34058c86183d5b97ac>>
+ * @generated SignedSource<<53e965423f2957b37e0470c607cc45a4>>
  */
 
 /**
@@ -215,6 +215,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
 
   /**
+   * When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.
+   */
+  RN_EXPORT static bool updateRuntimeShadowNodeReferencesOnCommit();
+
+  /**
    * In Bridgeless mode, use the always available javascript error reporting pipeline.
    */
   RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
@@ -243,6 +248,11 @@ class ReactNativeFeatureFlags {
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
    */
   RN_EXPORT static bool useRawPropsJsiValue();
+
+  /**
+   * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
+   */
+  RN_EXPORT static bool useShadowNodeStateOnClone();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

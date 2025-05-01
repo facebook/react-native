@@ -112,7 +112,9 @@ ShadowNode::ShadowNode(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       state_(
           fragment.state ? fragment.state
-                         : sourceShadowNode.getMostRecentState()),
+                         : (ReactNativeFeatureFlags::useShadowNodeStateOnClone()
+                                ? sourceShadowNode.state_
+                                : sourceShadowNode.getMostRecentState())), 
       orderIndex_(sourceShadowNode.orderIndex_),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
@@ -308,20 +310,28 @@ void ShadowNode::setRuntimeShadowNodeReference(
   runtimeShadowNodeReference_ = runtimeShadowNodeReference;
 }
 
-void ShadowNode::transferRuntimeShadowNodeReference(
+void ShadowNode::updateRuntimeShadowNodeReference(
     const Shared& destinationShadowNode) const {
-  destinationShadowNode->runtimeShadowNodeReference_ =
-      runtimeShadowNodeReference_;
-
   if (auto reference = runtimeShadowNodeReference_.lock()) {
     reference->shadowNode = destinationShadowNode;
   }
 }
 
 void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode) const {
+  destinationShadowNode->runtimeShadowNodeReference_ =
+      runtimeShadowNodeReference_;
+
+  if (!ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+    updateRuntimeShadowNodeReference(destinationShadowNode);
+  }
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
     const Shared& destinationShadowNode,
     const ShadowNodeFragment& fragment) const {
-  if (useRuntimeShadowNodeReferenceUpdateOnThread &&
+  if ((ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() ||
+       useRuntimeShadowNodeReferenceUpdateOnThread) &&
       fragment.runtimeShadowNodeReference) {
     transferRuntimeShadowNodeReference(destinationShadowNode);
   }

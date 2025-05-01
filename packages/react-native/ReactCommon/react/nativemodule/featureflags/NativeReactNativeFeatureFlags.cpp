@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<651dc228bd4959a90c82de905a8b6c40>>
+ * @generated SignedSource<<76f1f689940817c1df6ace2f8dd062e7>>
  */
 
 /**
@@ -219,6 +219,11 @@ bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
 }
 
+bool NativeReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit();
+}
+
 bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
@@ -247,6 +252,11 @@ bool NativeReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid(
 bool NativeReactNativeFeatureFlags::useRawPropsJsiValue(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useRawPropsJsiValue();
+}
+
+bool NativeReactNativeFeatureFlags::useShadowNodeStateOnClone(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
 }
 
 bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
