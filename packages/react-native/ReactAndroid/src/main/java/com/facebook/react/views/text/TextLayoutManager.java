@@ -26,12 +26,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
@@ -87,8 +85,6 @@ public class TextLayoutManager {
   public static final short PA_KEY_MINIMUM_FONT_SIZE = 6;
   public static final short PA_KEY_MAXIMUM_FONT_SIZE = 7;
 
-  private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
-
   private static final String TAG = TextLayoutManager.class.getSimpleName();
 
   // Each thread has its own copy of scratch TextPaint so that TextLayoutManager
@@ -111,16 +107,10 @@ public class TextLayoutManager {
       new ConcurrentHashMap<>();
 
   public static void setCachedSpannableForTag(int reactTag, @NonNull Spannable sp) {
-    if (ENABLE_MEASURE_LOGGING) {
-      FLog.e(TAG, "Set cached spannable for tag[" + reactTag + "]: " + sp.toString());
-    }
     sTagToSpannableCache.put(reactTag, sp);
   }
 
   public static void deleteCachedSpannableForTag(int reactTag) {
-    if (ENABLE_MEASURE_LOGGING) {
-      FLog.e(TAG, "Delete cached spannable for tag[" + reactTag + "]");
-    }
     sTagToSpannableCache.remove(reactTag);
   }
 
@@ -851,22 +841,6 @@ public class TextLayoutManager {
 
     float widthInSP = PixelUtil.toDIPFromPixel(calculatedWidth);
     float heightInSP = PixelUtil.toDIPFromPixel(calculatedHeight);
-
-    if (ENABLE_MEASURE_LOGGING) {
-      FLog.e(
-          TAG,
-          "TextMeasure call ('"
-              + text
-              + "'): w: "
-              + calculatedWidth
-              + " px - h: "
-              + calculatedHeight
-              + " px - w : "
-              + widthInSP
-              + " sp - h: "
-              + heightInSP
-              + " sp");
-    }
 
     return YogaMeasureOutput.make(widthInSP, heightInSP);
   }
