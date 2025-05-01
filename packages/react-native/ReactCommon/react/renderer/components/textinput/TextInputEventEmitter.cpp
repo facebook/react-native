@@ -11,6 +11,7 @@ namespace facebook::react {
 
 static jsi::Value textInputMetricsPayload(
     jsi::Runtime& runtime,
+    const std::string& name,
     const TextInputEventEmitter::Metrics& textInputMetrics) {
   auto payload = jsi::Object(runtime);
 
@@ -23,7 +24,7 @@ static jsi::Value textInputMetricsPayload(
 
   payload.setProperty(runtime, "eventCount", textInputMetrics.eventCount);
 
-  {
+  if (name == "selectionChange") {
     auto selection = jsi::Object(runtime);
     selection.setProperty(
         runtime, "start", textInputMetrics.selectionRange.location);
@@ -179,8 +180,8 @@ void TextInputEventEmitter::onScroll(const Metrics& textInputMetrics) const {
 void TextInputEventEmitter::dispatchTextInputEvent(
     const std::string& name,
     const Metrics& textInputMetrics) const {
-  dispatchEvent(name, [textInputMetrics](jsi::Runtime& runtime) {
-    return textInputMetricsPayload(runtime, textInputMetrics);
+  dispatchEvent(name, [name, textInputMetrics](jsi::Runtime& runtime) {
+    return textInputMetricsPayload(runtime, name, textInputMetrics);
   });
 }
 
