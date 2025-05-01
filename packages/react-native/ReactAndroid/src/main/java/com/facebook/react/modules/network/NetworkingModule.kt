@@ -256,6 +256,10 @@ public class NetworkingModule(
       for (handler in uriHandlers) {
         if (handler.supports(uri, responseType)) {
           val res = handler.fetch(uri)
+          // fix: UriHandlers which are not using file:// scheme fail in whatwg-fetch at this line
+          // https://github.com/JakeChampion/fetch/blob/main/fetch.js#L547
+          ResponseUtil.onResponseReceived(
+              reactApplicationContext, requestId, 200, Arguments.createMap(), url)
           ResponseUtil.onDataReceived(reactApplicationContext, requestId, res)
           ResponseUtil.onRequestSuccess(reactApplicationContext, requestId)
           return

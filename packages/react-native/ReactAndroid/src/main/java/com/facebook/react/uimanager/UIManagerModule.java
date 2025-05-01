@@ -42,12 +42,14 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.internal.LegacyArchitectureShadowNodeLogger;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
@@ -155,6 +157,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             mViewManagerRegistry,
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
+
+    if (ReactBuildConfig.DEBUG) {
+      for (ViewManager<?, ?> viewManager : viewManagersList) {
+        LegacyArchitectureShadowNodeLogger.assertUnsupportedViewManager(
+            reactContext, viewManager.getShadowNodeClass(), viewManager.getClass().getSimpleName());
+      }
+    }
 
     reactContext.addLifecycleEventListener(this);
   }

@@ -102,17 +102,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableShadowNodeOnNewArchitectureAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-04-07',
-        description:
-          'Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {
@@ -156,6 +145,26 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableCustomFocusSearchOnClippedElementsAndroid: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'This enables the fabric implementation of focus search so that we can focus clipped elements',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableDoubleMeasurementFixAndroid: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled a subset of components will avoid double measurement on Android.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       metadata: {
@@ -184,6 +193,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    enableFixForParentTagDuringReparenting: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-22',
+        description:
+          'This feature flag enables a fix for reparenting fix in differentiator',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: false,
@@ -257,7 +277,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableNewBackgroundAndBorderDrawables: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-09-24',
         description:
@@ -365,17 +385,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    removeTurboModuleManagerDelegateMutex: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-02-24',
-        description:
-          'When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -383,6 +392,17 @@ const definitions: FeatureFlagDefinitions = {
           'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
         expectedReleaseValue: true,
         purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    updateRuntimeShadowNodeReferencesOnCommit: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-15',
+        description:
+          'When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -444,6 +464,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-12-02',
         description:
           'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    useShadowNodeStateOnClone: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-16',
+        description:
+          'Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

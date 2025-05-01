@@ -8,6 +8,7 @@
 #pragma once
 
 #ifdef ANDROID
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #endif
@@ -66,6 +67,7 @@ class State {
 #ifdef ANDROID
   virtual folly::dynamic getDynamic() const = 0;
   virtual MapBuffer getMapBuffer() const = 0;
+  virtual jni::local_ref<jobject> getJNIReference() const = 0;
   virtual void updateState(folly::dynamic&& data) const = 0;
 #endif
 

@@ -11,6 +11,7 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import type {HostInstance} from 'react-native';
 import type MutationObserverType from 'react-native/src/private/webapis/mutationobserver/MutationObserver';
 import type MutationRecordType from 'react-native/src/private/webapis/mutationobserver/MutationRecord';
 
@@ -72,20 +73,14 @@ describe('MutationObserver', () => {
     });
 
     it('should throw if the `childList` option is not provided', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View ref={nodeRef} />);
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       expect(() => {
         const observer = new MutationObserver(() => {});
@@ -115,20 +110,14 @@ describe('MutationObserver', () => {
     });
 
     it('should throw if the `attributes` option is provided', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View ref={nodeRef} />);
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       expect(() => {
         const observer = new MutationObserver(() => {});
@@ -139,20 +128,14 @@ describe('MutationObserver', () => {
     });
 
     it('should throw if the `attributeFilter` option is provided', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View ref={nodeRef} />);
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       expect(() => {
         const observer = new MutationObserver(() => {});
@@ -163,20 +146,14 @@ describe('MutationObserver', () => {
     });
 
     it('should throw if the `attributeOldValue` option is provided', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View ref={nodeRef} />);
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       expect(() => {
         const observer = new MutationObserver(() => {});
@@ -188,20 +165,14 @@ describe('MutationObserver', () => {
     });
 
     it('should throw if the `characterData` option is provided', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View ref={nodeRef} />);
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       expect(() => {
         const observer = new MutationObserver(() => {});
@@ -212,20 +183,14 @@ describe('MutationObserver', () => {
     });
 
     it('should throw if the `characterDataOldValue` option is provided', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View ref={nodeRef} />);
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       expect(() => {
         const observer = new MutationObserver(() => {});
@@ -236,21 +201,14 @@ describe('MutationObserver', () => {
     });
 
     it('should ignore calls to observe disconnected targets', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            key="node1"
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View key="node1" ref={nodeRef} />);
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       Fantom.runTask(() => {
         root.render(<></>);
@@ -267,21 +225,14 @@ describe('MutationObserver', () => {
     });
 
     it('should report direct children added to and removed from an observed node (childList: true, subtree: false) ', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            key="node1"
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View key="node1" ref={nodeRef} />);
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       const observerCallbackCallArgs = [];
       const observerCallback = (...args: $ReadOnlyArray<mixed>) => {
@@ -293,29 +244,20 @@ describe('MutationObserver', () => {
       // Does not report anything initially
       expect(observerCallbackCallArgs.length).toBe(0);
 
-      let maybeChildNode1, maybeChildNode2;
+      const childNode1Ref = React.createRef<HostInstance>();
+      const childNode2Ref = React.createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(
           <View key="node1">
-            <View
-              key="node1-1"
-              ref={receivedChildNode => {
-                maybeChildNode1 = receivedChildNode;
-              }}
-            />
-            <View
-              key="node1-2"
-              ref={receivedChildNode => {
-                maybeChildNode2 = receivedChildNode;
-              }}
-            />
+            <View key="node1-1" ref={childNode1Ref} />
+            <View key="node1-2" ref={childNode2Ref} />
           </View>,
         );
       });
 
-      const childNode1 = ensureReactNativeElement(maybeChildNode1);
-      const childNode2 = ensureReactNativeElement(maybeChildNode2);
+      const childNode1 = ensureReactNativeElement(childNode1Ref.current);
+      const childNode2 = ensureReactNativeElement(childNode2Ref.current);
 
       expect(observerCallbackCallArgs.length).toBe(1);
       const firstCall = nullthrows(observerCallbackCallArgs.at(-1));
@@ -365,22 +307,18 @@ describe('MutationObserver', () => {
     });
 
     it('should NOT report changes in transitive children when `subtree` is not set to true', () => {
-      let maybeObservedNode;
+      const observedNodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
         root.render(
-          <View
-            key="node1"
-            ref={receivedNode => {
-              maybeObservedNode = receivedNode;
-            }}>
+          <View key="node1" ref={observedNodeRef}>
             <View key="node1-1" />
           </View>,
         );
       });
 
-      const observedNode = ensureReactNativeElement(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(observedNodeRef.current);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -413,22 +351,18 @@ describe('MutationObserver', () => {
     });
 
     it('should report changes in transitive children when `subtree` is set to true', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
         root.render(
-          <View
-            key="node1"
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}>
+          <View key="node1" ref={nodeRef}>
             <View key="node1-1" />
           </View>,
         );
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -437,24 +371,19 @@ describe('MutationObserver', () => {
       // Does not report anything initially
       expect(observerCallback).not.toHaveBeenCalled();
 
-      let maybeNode111;
+      const node111Ref = React.createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1">
-              <View
-                key="node1-1-1"
-                ref={receivedGrandchildNode => {
-                  maybeNode111 = receivedGrandchildNode;
-                }}
-              />
+              <View key="node1-1-1" ref={node111Ref} />
             </View>
           </View>,
         );
       });
 
-      const node111 = ensureReactNativeElement(maybeNode111);
+      const node111 = ensureReactNativeElement(node111Ref.current);
 
       expect(observerCallback).toHaveBeenCalledTimes(1);
       const firstCall = observerCallback.mock.lastCall;
@@ -481,23 +410,19 @@ describe('MutationObserver', () => {
     });
 
     it('should report changes in different parts of the subtree as separate entries (subtree = true)', () => {
-      let maybeNode;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
         root.render(
-          <View
-            key="node1"
-            ref={receivedNode => {
-              maybeNode = receivedNode;
-            }}>
+          <View key="node1" ref={nodeRef}>
             <View key="node1-1" />
             <View key="node1-2" />
           </View>,
         );
       });
 
-      const node = ensureReactNativeElement(maybeNode);
+      const node = ensureReactNativeElement(nodeRef.current);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -506,33 +431,24 @@ describe('MutationObserver', () => {
       // Does not report anything initially
       expect(observerCallback).not.toHaveBeenCalled();
 
-      let maybeNode111, maybeNode121;
+      const node111Ref = React.createRef<HostInstance>();
+      const node121Ref = React.createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1">
-              <View
-                key="node1-1-1"
-                ref={receivedGrandchildNode => {
-                  maybeNode111 = receivedGrandchildNode;
-                }}
-              />
+              <View key="node1-1-1" ref={node111Ref} />
             </View>
             <View key="node1-2">
-              <View
-                key="node1-2-1"
-                ref={receivedGrandchildNode => {
-                  maybeNode121 = receivedGrandchildNode;
-                }}
-              />
+              <View key="node1-2-1" ref={node121Ref} />
             </View>
           </View>,
         );
       });
 
-      const node111 = ensureReactNativeElement(maybeNode111);
-      const node121 = ensureReactNativeElement(maybeNode121);
+      const node111 = ensureReactNativeElement(node111Ref.current);
+      const node121 = ensureReactNativeElement(node121Ref.current);
 
       expect(observerCallback).toHaveBeenCalledTimes(1);
       const firstCall = observerCallback.mock.lastCall;
@@ -566,31 +482,21 @@ describe('MutationObserver', () => {
 
     describe('multiple observers', () => {
       it('should report changes to multiple observers observing different subtrees', () => {
-        let maybeNode1;
-        let maybeNode2;
+        const node1Ref = React.createRef<HostInstance>();
+        const node2Ref = React.createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
             <>
-              <View
-                key="node1"
-                ref={receivedNode => {
-                  maybeNode1 = receivedNode;
-                }}
-              />
-              <View
-                key="node2"
-                ref={receivedNode => {
-                  maybeNode2 = receivedNode;
-                }}
-              />
+              <View key="node1" ref={node1Ref} />
+              <View key="node2" ref={node2Ref} />
             </>,
           );
         });
 
-        const node1 = ensureReactNativeElement(maybeNode1);
-        const node2 = ensureReactNativeElement(maybeNode2);
+        const node1 = ensureReactNativeElement(node1Ref.current);
+        const node2 = ensureReactNativeElement(node2Ref.current);
 
         const observerCallback1 = jest.fn();
         const observer1 = new MutationObserver(observerCallback1);
@@ -604,34 +510,24 @@ describe('MutationObserver', () => {
         expect(observerCallback1).not.toHaveBeenCalled();
         expect(observerCallback2).not.toHaveBeenCalled();
 
-        let maybeChildNode11;
-        let maybeChildNode21;
+        const childNode11Ref = React.createRef<HostInstance>();
+        const childNode21Ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <>
               <View key="node1">
-                <View
-                  key="node1-1"
-                  ref={receivedNode => {
-                    maybeChildNode11 = receivedNode;
-                  }}
-                />
+                <View key="node1-1" ref={childNode11Ref} />
               </View>
               <View key="node2">
-                <View
-                  key="node2-1"
-                  ref={receivedNode => {
-                    maybeChildNode21 = receivedNode;
-                  }}
-                />
+                <View key="node2-1" ref={childNode21Ref} />
               </View>
             </>,
           );
         });
 
-        const childNode11 = ensureReactNativeElement(maybeChildNode11);
-        const childNode21 = ensureReactNativeElement(maybeChildNode21);
+        const childNode11 = ensureReactNativeElement(childNode11Ref.current);
+        const childNode21 = ensureReactNativeElement(childNode21Ref.current);
 
         expect(observerCallback1).toHaveBeenCalledTimes(1);
         const observer1Records1 = ensureMutationRecordArray(
@@ -676,29 +572,20 @@ describe('MutationObserver', () => {
       });
 
       it('should report changes to multiple observers observing the same subtree', () => {
-        let maybeNode1;
-        let maybeNode2;
+        const node1Ref = React.createRef<HostInstance>();
+        const node2Ref = React.createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="node1"
-              ref={receivedNode => {
-                maybeNode1 = receivedNode;
-              }}>
-              <View
-                key="node1-1"
-                ref={receivedNode => {
-                  maybeNode2 = receivedNode;
-                }}
-              />
+            <View key="node1" ref={node1Ref}>
+              <View key="node1-1" ref={node2Ref} />
             </View>,
           );
         });
 
-        const node1 = ensureReactNativeElement(maybeNode1);
-        const node2 = ensureReactNativeElement(maybeNode2);
+        const node1 = ensureReactNativeElement(node1Ref.current);
+        const node2 = ensureReactNativeElement(node2Ref.current);
 
         const observerCallback1 = jest.fn();
         const observer1 = new MutationObserver(observerCallback1);
@@ -712,24 +599,19 @@ describe('MutationObserver', () => {
         expect(observerCallback1).not.toHaveBeenCalled();
         expect(observerCallback2).not.toHaveBeenCalled();
 
-        let maybeChildNode111;
+        const childNode111Ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View key="node1">
               <View key="node1-1">
-                <View
-                  key="node-1-1-1"
-                  ref={receivedNode => {
-                    maybeChildNode111 = receivedNode;
-                  }}
-                />
+                <View key="node-1-1-1" ref={childNode111Ref} />
               </View>
             </View>,
           );
         });
 
-        const childNode111 = ensureReactNativeElement(maybeChildNode111);
+        const childNode111 = ensureReactNativeElement(childNode111Ref.current);
 
         expect(observerCallback1).toHaveBeenCalledTimes(1);
         const observer1Records1 = ensureMutationRecordArray(
@@ -776,31 +658,21 @@ describe('MutationObserver', () => {
 
     describe('multiple observed nodes in the same observer', () => {
       it('should report changes in disjoint observations', () => {
-        let maybeNode1;
-        let maybeNode2;
+        const node1Ref = React.createRef<HostInstance>();
+        const node2Ref = React.createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
             <>
-              <View
-                key="node1"
-                ref={receivedNode => {
-                  maybeNode1 = receivedNode;
-                }}
-              />
-              <View
-                key="node2"
-                ref={receivedNode => {
-                  maybeNode2 = receivedNode;
-                }}
-              />
+              <View key="node1" ref={node1Ref} />
+              <View key="node2" ref={node2Ref} />
             </>,
           );
         });
 
-        const node1 = ensureReactNativeElement(maybeNode1);
-        const node2 = ensureReactNativeElement(maybeNode2);
+        const node1 = ensureReactNativeElement(node1Ref.current);
+        const node2 = ensureReactNativeElement(node2Ref.current);
 
         const observerCallback = jest.fn();
         const observer = new MutationObserver(observerCallback);
@@ -810,34 +682,24 @@ describe('MutationObserver', () => {
         // Does not report anything initially
         expect(observerCallback).not.toHaveBeenCalled();
 
-        let maybeChildNode11;
-        let maybeChildNode21;
+        const childNode11Ref = React.createRef<HostInstance>();
+        const childNode21Ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <>
               <View key="node1">
-                <View
-                  key="node1-1"
-                  ref={receivedNode => {
-                    maybeChildNode11 = receivedNode;
-                  }}
-                />
+                <View key="node1-1" ref={childNode11Ref} />
               </View>
               <View key="node2">
-                <View
-                  key="node2-1"
-                  ref={receivedNode => {
-                    maybeChildNode21 = receivedNode;
-                  }}
-                />
+                <View key="node2-1" ref={childNode21Ref} />
               </View>
             </>,
           );
         });
 
-        const childNode11 = ensureReactNativeElement(maybeChildNode11);
-        const childNode21 = ensureReactNativeElement(maybeChildNode21);
+        const childNode11 = ensureReactNativeElement(childNode11Ref.current);
+        const childNode21 = ensureReactNativeElement(childNode21Ref.current);
 
         expect(observerCallback).toHaveBeenCalledTimes(1);
         const records = ensureMutationRecordArray(
@@ -870,29 +732,20 @@ describe('MutationObserver', () => {
       });
 
       it('should report changes in joint observations', () => {
-        let maybeNode1;
-        let maybeNode11;
+        const node1Ref = React.createRef<HostInstance>();
+        const node11Ref = React.createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="node1"
-              ref={receivedNode => {
-                maybeNode1 = receivedNode;
-              }}>
-              <View
-                key="node1-1"
-                ref={receivedNode => {
-                  maybeNode11 = receivedNode;
-                }}
-              />
+            <View key="node1" ref={node1Ref}>
+              <View key="node1-1" ref={node11Ref} />
             </View>,
           );
         });
 
-        const node1 = ensureReactNativeElement(maybeNode1);
-        const node11 = ensureReactNativeElement(maybeNode11);
+        const node1 = ensureReactNativeElement(node1Ref.current);
+        const node11 = ensureReactNativeElement(node11Ref.current);
 
         const observerCallback = jest.fn();
         const observer = new MutationObserver(observerCallback);
@@ -902,24 +755,19 @@ describe('MutationObserver', () => {
         // Does not report anything initially
         expect(observerCallback).not.toHaveBeenCalled();
 
-        let maybeChildNode111;
+        const childNode111Ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View key="node1">
               <View key="node1-1">
-                <View
-                  key="node1-1-1"
-                  ref={receivedNode => {
-                    maybeChildNode111 = receivedNode;
-                  }}
-                />
+                <View key="node1-1-1" ref={childNode111Ref} />
               </View>
             </View>,
           );
         });
 
-        const childNode111 = ensureReactNativeElement(maybeChildNode111);
+        const childNode111 = ensureReactNativeElement(childNode111Ref.current);
 
         expect(observerCallback).toHaveBeenCalledTimes(1);
         const records = ensureMutationRecordArray(
@@ -950,21 +798,14 @@ describe('MutationObserver', () => {
 
   describe('disconnect()', () => {
     it('should stop observing targets', () => {
-      let maybeObservedNode;
+      const observedNodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            key="node1"
-            ref={receivedNode => {
-              maybeObservedNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View key="node1" ref={observedNodeRef} />);
       });
 
-      const observedNode = ensureReactNativeElement(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(observedNodeRef.current);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -998,21 +839,14 @@ describe('MutationObserver', () => {
     });
 
     it('should correctly unobserve targets that are disconnected after observing', () => {
-      let maybeObservedNode;
+      const observedNodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            key="node1"
-            ref={receivedNode => {
-              maybeObservedNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View key="node1" ref={observedNodeRef} />);
       });
 
-      const observedNode = ensureReactNativeElement(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(observedNodeRef.current);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -1030,21 +864,14 @@ describe('MutationObserver', () => {
     });
 
     it('should correctly unobserve targets that are disconnected before observing', () => {
-      let maybeObservedNode;
+      const observedNodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            key="node1"
-            ref={receivedNode => {
-              maybeObservedNode = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View key="node1" ref={observedNodeRef} />);
       });
 
-      const observedNode = ensureReactNativeElement(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(observedNodeRef.current);
 
       Fantom.runTask(() => {
         root.render(<></>);

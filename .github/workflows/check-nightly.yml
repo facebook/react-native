@@ -30,3 +30,5 @@ jobs:
   test-libraries:
     uses: ./.github/workflows/test-libraries-on-nightlies.yml
     needs: check-nightly
+    secrets:
+      discord_webhook_url: ${{ secrets.NIGHTLY_DISCORD_WEBHOOK }}

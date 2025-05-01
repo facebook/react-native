@@ -48,7 +48,7 @@ runs:
         name: hermes-darwin-bin-${{ inputs.flavor }}
         path: ${{ inputs.hermes-tarball-artifacts-dir }}
     - name: Setup ruby
-      uses: ruby/setup-ruby@v1.170.0
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Prepare IOS Tests

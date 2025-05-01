@@ -20,13 +20,6 @@
 #import "RCTInspectorNetworkReporter.h"
 #import "RCTNetworkPlugins.h"
 
-static BOOL gEnableNetworkingRequestQueue = NO;
-
-RCT_EXTERN void RCTEnableNetworkingRequestQueue(BOOL enabled)
-{
-  gEnableNetworkingRequestQueue = enabled;
-}
-
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
 
 NSString *const RCTNetworkingPHUploadHackScheme = @"ph-upload";
@@ -77,7 +70,7 @@ static NSString *RCTGenerateFormBoundary()
 
 - (RCTURLRequestCancellationBlock)process:(NSArray<NSDictionary *> *)formData callback:(RCTHTTPQueryResult)callback
 {
-  RCTAssertThread([_networker requestQueue], @"process: must be called on request queue");
+  RCTAssertThread(_networker.methodQueue, @"process: must be called on request queue");
 
   if (formData.count == 0) {
     return callback(nil, nil);
@@ -106,7 +99,7 @@ static NSString *RCTGenerateFormBoundary()
 
 - (RCTURLRequestCancellationBlock)handleResult:(NSDictionary<NSString *, id> *)result error:(NSError *)error
 {
-  RCTAssertThread([_networker requestQueue], @"handleResult: must be called on request queue");
+  RCTAssertThread(_networker.methodQueue, @"handleResult: must be called on request queue");
 
   if (error) {
     return _callback(error, nil);
@@ -173,12 +166,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  if (self = [super initWithDisabledObservation]) {
-    if (gEnableNetworkingRequestQueue) {
-      _requestQueue = dispatch_queue_create("com.facebook.react.network.request", DISPATCH_QUEUE_SERIAL);
-    }
-  }
-  return self;
+  return [super initWithDisabledObservation];
 }
 
 - (instancetype)initWithHandlersProvider:
@@ -313,7 +301,7 @@ RCT_EXPORT_MODULE()
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary<NSString *, id> *)query
                                completionBlock:(void (^)(NSURLRequest *request))block
 {
-  RCTAssertThread([self requestQueue], @"buildRequest: must be called on request queue");
+  RCTAssertThread(_methodQueue, @"buildRequest: must be called on request queue");
 
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
@@ -372,7 +360,7 @@ RCT_EXPORT_MODULE()
                                   request.cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
                                 }
 
-                                dispatch_async([self requestQueue], ^{
+                                dispatch_async(self->_methodQueue, ^{
                                   block(request);
                                 });
 
@@ -410,7 +398,7 @@ RCT_EXPORT_MODULE()
                    callback:(RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary<NSString *, id> *result))
                                 callback
 {
-  RCTAssertThread([self requestQueue], @"processDataForHTTPQuery: must be called on request queue");
+  RCTAssertThread(_methodQueue, @"processDataForHTTPQuery: must be called on request queue");
 
   if (!query) {
     return callback(nil, nil);
@@ -439,7 +427,7 @@ RCT_EXPORT_MODULE()
     RCTNetworkTask *task =
         [self networkTaskWithRequest:request
                      completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
-                       dispatch_async([self requestQueue], ^{
+                       dispatch_async(self->_methodQueue, ^{
                          cancellationBlock = callback(
                              error, data ? @{@"body" : data, @"contentType" : RCTNullIfNil(response.MIMEType)} : nil);
                        });
@@ -539,7 +527,7 @@ RCT_EXPORT_MODULE()
         response:(NSURLResponse *)response
          forTask:(RCTNetworkTask *)task
 {
-  RCTAssertThread([self requestQueue], @"sendData: must be called on request queue");
+  RCTAssertThread(_methodQueue, @"sendData: must be called on request queue");
 
   id responseData = nil;
   for (id<RCTNetworkingResponseHandler> handler in _responseHandlers) {
@@ -577,7 +565,7 @@ RCT_EXPORT_MODULE()
     incrementalUpdates:(BOOL)incrementalUpdates
         responseSender:(RCTResponseSenderBlock)responseSender
 {
-  RCTAssertThread([self requestQueue], @"sendRequest: must be called on request queue");
+  RCTAssertThread(_methodQueue, @"sendRequest: must be called on request queue");
   __weak __typeof(self) weakSelf = self;
   __block RCTNetworkTask *task;
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
@@ -679,11 +667,11 @@ RCT_EXPORT_MODULE()
     }
     _tasksByRequestID[task.requestID] = task;
     responseSender(@[ task.requestID ]);
+    [RCTInspectorNetworkReporter reportRequestStart:task.requestID
+                                            request:request
+                                  encodedDataLength:task.response.expectedContentLength];
   }
 
-  [RCTInspectorNetworkReporter reportRequestStart:task.requestID
-                                          request:request
-                                encodedDataLength:task.response.expectedContentLength];
   [task start];
 }
 
@@ -724,9 +712,7 @@ RCT_EXPORT_MODULE()
     return nil;
   }
 
-  RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request
-                                                         handler:handler
-                                                   callbackQueue:[self requestQueue]];
+  RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request handler:handler callbackQueue:_methodQueue];
   task.completionBlock = completionBlock;
   return task;
 }
@@ -746,7 +732,7 @@ RCT_EXPORT_METHOD(sendRequest
   double timeout = query.timeout();
   bool withCredentials = query.withCredentials();
 
-  dispatch_async([self requestQueue], ^{
+  dispatch_async(_methodQueue, ^{
     NSDictionary *queryDict = @{
       @"method" : method,
       @"url" : url,
@@ -775,7 +761,7 @@ RCT_EXPORT_METHOD(sendRequest
 
 RCT_EXPORT_METHOD(abortRequest : (double)requestID)
 {
-  dispatch_async([self requestQueue], ^{
+  dispatch_async(_methodQueue, ^{
     [self->_tasksByRequestID[[NSNumber numberWithDouble:requestID]] cancel];
     [self->_tasksByRequestID removeObjectForKey:[NSNumber numberWithDouble:requestID]];
   });
@@ -783,7 +769,7 @@ RCT_EXPORT_METHOD(abortRequest : (double)requestID)
 
 RCT_EXPORT_METHOD(clearCookies : (RCTResponseSenderBlock)responseSender)
 {
-  dispatch_async([self requestQueue], ^{
+  dispatch_async(_methodQueue, ^{
     NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     if (!storage.cookies.count) {
       responseSender(@[ @NO ]);
@@ -795,11 +781,6 @@ RCT_EXPORT_METHOD(clearCookies : (RCTResponseSenderBlock)responseSender)
     }
     responseSender(@[ @YES ]);
   });
-}
-
-- (dispatch_queue_t)requestQueue
-{
-  return gEnableNetworkingRequestQueue ? _requestQueue : _methodQueue;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

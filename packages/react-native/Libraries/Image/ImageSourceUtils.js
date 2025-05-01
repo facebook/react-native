@@ -52,14 +52,14 @@ export function getImageSourcesFromImageProps(
           // 1x scale is provided in `srcSet` prop so ignore the `src` prop if provided.
           shouldUseSrcForDefaultScale =
             scale === 1 ? false : shouldUseSrcForDefaultScale;
-          sourceList.push({headers: headers, scale, uri, width, height});
+          sourceList.push({headers, scale, uri, width, height});
         }
       }
     });
 
     if (shouldUseSrcForDefaultScale && src != null) {
       sourceList.push({
-        headers: headers,
+        headers,
         scale: 1,
         uri: src,
         width,
@@ -73,6 +73,8 @@ export function getImageSourcesFromImageProps(
     sources = sourceList;
   } else if (src != null) {
     sources = [{uri: src, headers: headers, width, height}];
+  } else if (source != null && source.uri && Object.keys(headers).length > 0) {
+    sources = [{...source, headers}];
   } else {
     sources = source;
   }

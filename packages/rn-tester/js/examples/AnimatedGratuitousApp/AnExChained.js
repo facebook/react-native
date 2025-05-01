@@ -10,8 +10,10 @@
 
 'use strict';
 
-import type {PanResponderGestureState} from 'react-native/Libraries/Interaction/PanResponder';
-import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {
+  GestureResponderEvent,
+  PanResponderGestureState,
+} from 'react-native';
 
 import React from 'react';
 import {Animated, PanResponder, StyleSheet, View} from 'react-native';

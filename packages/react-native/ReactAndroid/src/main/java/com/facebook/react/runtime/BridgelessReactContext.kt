@@ -108,10 +108,8 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   }
 
   override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T? {
-    mInteropModuleRegistry?.let { reg ->
-      if (reg.shouldReturnInteropModule(jsInterface)) {
-        return reg.getInteropModule(jsInterface)
-      }
+    mInteropModuleRegistry?.getInteropModule(jsInterface)?.let {
+      return it
     }
 
     // TODO T189052462: ReactContext caches JavaScriptModule instances

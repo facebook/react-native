@@ -12,7 +12,23 @@
 #endif
 
 #if RNCXX_WITH_PROFILING_PROVIDER
-#include <core/Trace.h>
+#include <hz_tracing/TracingMacros.h>
+
+#define SCOPED_TRACE_CPU_AUTO()                  \
+  HZT_TRACE_SCOPE_AUTO(                          \
+      ::horizon::tracing::TraceLevel::Important, \
+      ::horizon::tracing::EventCategory::Update, \
+      "react_native",                            \
+      ::horizon::tracing::DestinationFlag::Default);
+
+#define SCOPED_TRACE_CPU(name)                   \
+  HZT_TRACE_SCOPE(                               \
+      name,                                      \
+      ::horizon::tracing::TraceLevel::Important, \
+      ::horizon::tracing::EventCategory::Update, \
+      "react_native",                            \
+      ::horizon::tracing::DestinationFlag::Default);
+
 #else
 #ifndef SCOPED_TRACE_CPU_AUTO
 #define SCOPED_TRACE_CPU_AUTO() ((void)0)

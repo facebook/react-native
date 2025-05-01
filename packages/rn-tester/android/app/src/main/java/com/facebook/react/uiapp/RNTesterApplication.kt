@@ -18,7 +18,6 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost
@@ -145,7 +144,6 @@ internal class RNTesterApplication : Application(), ReactApplication {
     }
 
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      LegacyArchitectureLogger.OSS_LEGACY_WARNINGS_ENABLED = true
       load()
     }
   }

@@ -9,7 +9,7 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';

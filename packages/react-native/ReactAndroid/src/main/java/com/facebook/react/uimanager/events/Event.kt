@@ -117,13 +117,18 @@ public abstract class Event<T : Event<T>> {
   /** @return the name of this event as registered in JS */
   public abstract fun getEventName(): String
 
+  /** Property added for backward compatibility with property accessors */
+  @get:JvmName("internal_getEventNameCompat")
+  public val eventName: String
+    get() = getEventName()
+
   public open val eventAnimationDriverMatchSpec: EventAnimationDriverMatchSpec?
     get() {
       if (eventAnimationDriverMatchSpecCached == null) {
         eventAnimationDriverMatchSpecCached =
             object : EventAnimationDriverMatchSpec {
               override fun match(viewTagRhs: Int, eventNameRhs: String): Boolean {
-                return viewTag == viewTagRhs && getEventName() == eventNameRhs
+                return viewTag == viewTagRhs && eventName == eventNameRhs
               }
             }
       }
@@ -137,7 +142,7 @@ public abstract class Event<T : Event<T>> {
    */
   @Deprecated("Prefer to override getEventData instead")
   public open fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, getEventName(), getEventData())
+    rctEventEmitter.receiveEvent(viewTag, eventName, getEventData())
   }
 
   /** Can be overridden by classes when no custom logic for dispatching is needed. */
@@ -181,7 +186,7 @@ public abstract class Event<T : Event<T>> {
       rctEventEmitter.receiveEvent(
           surfaceId,
           viewTag,
-          getEventName(),
+          eventName,
           canCoalesce(),
           getCoalescingKey().toInt(),
           getEventData(),

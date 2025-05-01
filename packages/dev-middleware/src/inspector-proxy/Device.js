@@ -37,7 +37,6 @@ import WS from 'ws';
 const debug = require('debug')('Metro:InspectorProxy');
 
 const PAGES_POLLING_INTERVAL = 1000;
-const MIN_MESSAGE_QUEUE_BYTES_TO_REPORT = 2 * 1024 * 1024; // 2 MiB
 
 const WS_CLOSURE_CODE = {
   NORMAL: 1000,

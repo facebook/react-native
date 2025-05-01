@@ -122,11 +122,7 @@ private object ReactAxOrderHelper {
       }
     }
 
-    if (root is ViewGroup) {
-      for (i in 0 until root.childCount) {
-        traverseAndDisableAxFromExcludedViews(root.getChildAt(i), root)
-      }
-    }
+    traverseAndDisableAxFromExcludedViews(root, root)
 
     return axOrderViews
   }

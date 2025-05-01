@@ -123,6 +123,8 @@ class Root {
 
 export type {Root};
 
+export {NativeEventCategory} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
+
 const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
 
 /**
@@ -348,7 +350,9 @@ export function dispatchNativeEvent(
     enqueueNativeEvent(node, type, payload, options);
   });
 
-  runWorkLoop();
+  if (!flushingQueue) {
+    runWorkLoop();
+  }
 }
 
 export type ScrollEventOptions = {

@@ -10,7 +10,6 @@ package com.facebook.react.utils
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.facebook.react.ReactExtension
-import com.facebook.react.utils.ProjectUtils.areLegacyWarningsEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
@@ -35,8 +34,6 @@ internal object AgpConfiguratorUtils {
                 "boolean",
                 "IS_NEW_ARCHITECTURE_ENABLED",
                 project.isNewArchEnabled(extension).toString())
-            ext.defaultConfig.buildConfigField(
-                "boolean", "LEGACY_WARNINGS_ENABLED", project.areLegacyWarningsEnabled().toString())
             ext.defaultConfig.buildConfigField(
                 "boolean", "IS_HERMES_ENABLED", project.isHermesEnabled.toString())
           }

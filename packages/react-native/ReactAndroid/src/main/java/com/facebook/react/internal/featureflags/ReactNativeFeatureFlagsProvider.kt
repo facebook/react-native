@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e18e064f0b4ac0217b49f0cf5a153e6b>>
+ * @generated SignedSource<<b4a944a07650cf46f90d86419b11bbee>>
  */
 
 /**
@@ -33,8 +33,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
-  @DoNotStrip public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean
-
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
@@ -43,11 +41,17 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
+  @DoNotStrip public fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean
+
+  @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
+
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
+
+  @DoNotStrip public fun enableFixForParentTagDuringReparenting(): Boolean
 
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
@@ -83,9 +87,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
-  @DoNotStrip public fun removeTurboModuleManagerDelegateMutex(): Boolean
-
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
+
+  @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
 
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
@@ -98,6 +102,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
+
+  @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

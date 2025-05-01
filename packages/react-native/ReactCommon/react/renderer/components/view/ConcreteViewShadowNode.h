@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/components/view/HostPlatformViewTraitsInitializer.h>
 #include <react/renderer/components/view/ViewEventEmitter.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/YogaLayoutableShadowNode.h>
@@ -15,6 +16,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
+#include <type_traits>
 
 namespace facebook::react {
 
@@ -27,15 +29,14 @@ template <
     const char* concreteComponentName,
     typename ViewPropsT = ViewProps,
     typename ViewEventEmitterT = ViewEventEmitter,
-    typename StateDataT = StateData,
-    bool usesMapBufferForStateData = false>
+    typename StateDataT = StateData>
+  requires(std::is_base_of_v<ViewProps, ViewPropsT>)
 class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    concreteComponentName,
                                    YogaLayoutableShadowNode,
                                    ViewPropsT,
                                    ViewEventEmitterT,
-                                   StateDataT,
-                                   usesMapBufferForStateData> {
+                                   StateDataT> {
   static_assert(
       std::is_base_of<ViewProps, ViewPropsT>::value,
       "ViewPropsT must be a descendant of ViewProps");
@@ -52,8 +53,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       YogaLayoutableShadowNode,
       ViewPropsT,
       ViewEventEmitterT,
-      StateDataT,
-      usesMapBufferForStateData>;
+      StateDataT>;
 
   ConcreteViewShadowNode(
       const ShadowNodeFragment& fragment,
@@ -116,6 +116,16 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       BaseShadowNode::orderIndex_ = props.zIndex.value_or(0);
     } else {
       BaseShadowNode::orderIndex_ = 0;
+    }
+
+    bool isKeyboardFocusable =
+        HostPlatformViewTraitsInitializer::isKeyboardFocusable(props) ||
+        props.accessible;
+
+    if (isKeyboardFocusable) {
+      BaseShadowNode::traits_.set(ShadowNodeTraits::Trait::KeyboardFocusable);
+    } else {
+      BaseShadowNode::traits_.unset(ShadowNodeTraits::Trait::KeyboardFocusable);
     }
   }
 };

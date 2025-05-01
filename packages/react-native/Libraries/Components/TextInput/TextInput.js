@@ -446,6 +446,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
       */
       if (instance != null) {
         // $FlowFixMe[prop-missing] - See the explanation above.
+        // $FlowFixMe[unsafe-object-assign]
         Object.assign(instance, {
           clear(): void {
             if (inputRef.current != null) {
@@ -675,6 +676,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         ref={(ref: $FlowFixMe)}
         {...otherProps}
         {...eventHandlers}
+        acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
@@ -741,6 +743,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}
         accessible={accessible}
+        acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         autoCapitalize={autoCapitalize}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}

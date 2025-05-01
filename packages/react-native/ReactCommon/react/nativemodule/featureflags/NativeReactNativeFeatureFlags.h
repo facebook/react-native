@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aae70d9cf4ceedb0e43af15d2362fb7d>>
+ * @generated SignedSource<<b5b7e8a4b0eb26b5ceea212700ae6efe>>
  */
 
 /**
@@ -47,8 +47,6 @@ class NativeReactNativeFeatureFlags
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
-  bool disableShadowNodeOnNewArchitectureAndroid(jsi::Runtime& runtime);
-
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
@@ -57,11 +55,17 @@ class NativeReactNativeFeatureFlags
 
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
+  bool enableCustomFocusSearchOnClippedElementsAndroid(jsi::Runtime& runtime);
+
+  bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
+
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
+
+  bool enableFixForParentTagDuringReparenting(jsi::Runtime& runtime);
 
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
@@ -97,9 +101,9 @@ class NativeReactNativeFeatureFlags
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
-  bool removeTurboModuleManagerDelegateMutex(jsi::Runtime& runtime);
-
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
@@ -112,6 +116,8 @@ class NativeReactNativeFeatureFlags
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
+
+  bool useShadowNodeStateOnClone(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 

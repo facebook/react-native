@@ -417,7 +417,12 @@ declare export function fromBouncinessAndSpeed(
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/animations/Animation.js 1`] = `
-"export type EndResult = { finished: boolean, value?: number, ... };
+"export type EndResult = {
+  finished: boolean,
+  value?: number,
+  offset?: number,
+  ...
+};
 export type EndCallback = (result: EndResult) => void;
 export type AnimationConfig = $ReadOnly<{
   isInteraction?: boolean,
@@ -2851,6 +2856,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 type TextInputBaseProps = $ReadOnly<{
+  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
   autoCapitalize?: ?AutoCapitalize,
   autoComplete?: ?(
     | \\"additional-name\\"
@@ -2953,6 +2959,7 @@ type TextInputBaseProps = $ReadOnly<{
   submitBehavior?: ?SubmitBehavior,
   style?: ?TextStyleProp,
   value?: ?Stringish,
+  textAlign?: ?(\\"left\\" | \\"center\\" | \\"right\\"),
 }>;
 export type TextInputProps = $ReadOnly<{
   ...Omit<ViewProps, \\"style\\">,
@@ -3641,6 +3648,7 @@ export type AccessibilityPropsAndroid = $ReadOnly<{
   accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
   \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
   importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
+  screenReaderFocusable?: boolean,
 }>;
 export type AccessibilityPropsIOS = $ReadOnly<{
   accessibilityIgnoresInvertColors?: ?boolean,
@@ -3650,6 +3658,7 @@ export type AccessibilityPropsIOS = $ReadOnly<{
   \\"aria-modal\\"?: ?boolean,
   accessibilityElementsHidden?: ?boolean,
   accessibilityLanguage?: ?Stringish,
+  accessibilityRespondsToUserInteraction?: ?boolean,
 }>;
 export type AccessibilityProps = $ReadOnly<{
   ...AccessibilityPropsAndroid,
@@ -4403,8 +4412,9 @@ exports[`public API should not change unintentionally Libraries/Image/ImageSourc
   +height?: ?number;
   +scale?: ?number;
 }
+export type ImageRequireSource = number;
 export type ImageSource =
-  | number
+  | ImageRequireSource
   | ImageURISource
   | $ReadOnlyArray<ImageURISource>;
 type ImageSourceProperties = {
@@ -5782,7 +5792,7 @@ declare export function isIgnored(value: mixed): boolean;
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDevMenu.js 1`] = `
-"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeDevMenu\\";
+"export * from \\"../../../src/private/devsupport/devmenu/specs/NativeDevMenu\\";
 declare export default typeof NativeDevMenu;
 "
 `;
@@ -6017,18 +6027,6 @@ exports[`public API should not change unintentionally Libraries/Network/fetch.js
 declare export const Headers: typeof global.Headers;
 declare export const Request: typeof global.Request;
 declare export const Response: typeof global.Response;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/index.js 1`] = `
-"export {
-  Colors,
-  Header,
-  HermesBadge,
-  LearnMoreLinks,
-  DebugInstructions,
-  ReloadInstructions,
-};
 "
 `;
 
@@ -6600,6 +6598,11 @@ export interface Spec {
     node: Node | NativeElementReference,
     includeTransform: boolean
   ) => ?[number, number, number, number];
+  +unstable_DefaultEventPriority: number;
+  +unstable_DiscreteEventPriority: number;
+  +unstable_ContinuousEventPriority: number;
+  +unstable_IdleEventPriority: number;
+  +unstable_getCurrentEventPriority: () => number;
 }
 declare export function getFabricUIManager(): ?Spec;
 "
@@ -7225,14 +7228,54 @@ export type DropShadowValue = {
   standardDeviation?: number | string,
   color?: ____ColorValue_Internal,
 };
-export type GradientValue = {
-  type: \\"linearGradient\\",
+type LinearGradientValue = {
+  type: \\"linear-gradient\\",
   direction?: string,
   colorStops: $ReadOnlyArray<{
     color: ____ColorValue_Internal,
     positions?: $ReadOnlyArray<string>,
   }>,
 };
+type RadialExtent =
+  | \\"closest-corner\\"
+  | \\"closest-side\\"
+  | \\"farthest-corner\\"
+  | \\"farthest-side\\";
+export type RadialGradientPosition =
+  | {
+      top: number | string,
+      left: number | string,
+    }
+  | {
+      top: number | string,
+      right: number | string,
+    }
+  | {
+      bottom: number | string,
+      left: number | string,
+    }
+  | {
+      bottom: number | string,
+      right: number | string,
+    };
+export type RadialGradientShape = \\"circle\\" | \\"ellipse\\";
+export type RadialGradientSize =
+  | RadialExtent
+  | {
+      x: string | number,
+      y: string | number,
+    };
+type RadialGradientValue = {
+  type: \\"radial-gradient\\",
+  shape: RadialGradientShape,
+  size: RadialGradientSize,
+  position: RadialGradientPosition,
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    positions?: $ReadOnlyArray<string>,
+  }>,
+};
+export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
 export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
@@ -7304,7 +7347,7 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
   filter?: $ReadOnlyArray<FilterFunction> | string,
   mixBlendMode?: ____BlendMode_Internal,
-  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
+  experimental_backgroundImage?: $ReadOnlyArray<BackgroundImageValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
 }>;
 export type ____ViewStyle_InternalCore = $ReadOnly<{
@@ -7579,19 +7622,32 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "type LinearGradientDirection =
   | { type: \\"angle\\", value: number }
   | { type: \\"keyword\\", value: string };
-type ColorStopColor = ProcessedColorValue | null;
-type ColorStopPosition = number | string | null;
-type ParsedGradientValue = {
-  type: \\"linearGradient\\",
+type LinearGradientBackgroundImage = {
+  type: \\"linear-gradient\\",
   direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ColorStopColor,
     position: ColorStopPosition,
   }>,
 };
+type RadialGradientBackgroundImage = {
+  type: \\"radial-gradient\\",
+  shape: RadialGradientShape,
+  size: RadialGradientSize,
+  position: RadialGradientPosition,
+  colorStops: $ReadOnlyArray<{
+    color: ColorStopColor,
+    position: ColorStopPosition,
+  }>,
+};
+type ColorStopColor = ProcessedColorValue | null;
+type ColorStopPosition = number | string | null;
+type ParsedBackgroundImageValue =
+  | LinearGradientBackgroundImage
+  | RadialGradientBackgroundImage;
 declare export default function processBackgroundImage(
-  backgroundImage: ?($ReadOnlyArray<GradientValue> | string)
-): $ReadOnlyArray<ParsedGradientValue>;
+  backgroundImage: ?($ReadOnlyArray<BackgroundImageValue> | string)
+): $ReadOnlyArray<ParsedBackgroundImageValue>;
 "
 `;
 
@@ -8909,6 +8965,7 @@ export type {
   ImageSourcePropType,
 } from \\"./Libraries/Image/Image\\";
 export type {
+  ImageRequireSource,
   ImageSource,
   ImageURISource,
 } from \\"./Libraries/Image/ImageSource\\";
@@ -8998,9 +9055,12 @@ export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/
 export type { TouchableWithoutFeedbackProps } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
 export type {
+  AccessibilityActionEvent,
   AccessibilityProps,
   AccessibilityRole,
   AccessibilityState,
+  AccessibilityValue,
+  Role,
 } from \\"./Libraries/Components/View/ViewAccessibility\\";
 export type {
   GestureResponderHandlers,
@@ -9064,7 +9124,7 @@ export { default as codegenNativeCommands } from \\"./Libraries/Utilities/codege
 export { default as DeviceEventEmitter } from \\"./Libraries/EventEmitter/RCTDeviceEventEmitter\\";
 export type { DeviceInfoConstants } from \\"./Libraries/Utilities/DeviceInfo\\";
 export { default as DeviceInfo } from \\"./Libraries/Utilities/DeviceInfo\\";
-export { default as DevMenu } from \\"./src/private/devmenu/DevMenu\\";
+export { default as DevMenu } from \\"./src/private/devsupport/devmenu/DevMenu\\";
 export { default as DevSettings } from \\"./Libraries/Utilities/DevSettings\\";
 export type {
   DimensionsPayload,
@@ -9196,6 +9256,7 @@ export type {
   LayoutChangeEvent,
   LayoutRectangle,
   MouseEvent,
+  PointerEvent,
   NativeMouseEvent,
   NativePointerEvent,
   NativeScrollEvent,

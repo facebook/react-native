@@ -85,6 +85,15 @@ HostPlatformViewProps::HostPlatformViewProps(
                     rawProps,
                     "renderToHardwareTextureAndroid",
                     sourceProps.renderToHardwareTextureAndroid,
+                    {})),
+      screenReaderFocusable(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.screenReaderFocusable
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "screenReaderFocusable",
+                    sourceProps.screenReaderFocusable,
                     {})) {}
 
 #define VIEW_EVENT_CASE(eventType)                      \
@@ -119,6 +128,7 @@ void HostPlatformViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(hasTVPreferredFocus);
     RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing);
     RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(screenReaderFocusable);
   }
 }
 

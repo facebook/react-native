@@ -27,13 +27,14 @@
   },
   "dependencies": {
     "@react-native/oss-library-example": "0.80.0-main",
+    "@react-native/new-app-screen": "0.80.0-main",
     "@react-native/popup-menu-android": "0.80.0-main",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "19.0.0",
+    "react": "19.1.0",
     "react-native": "*"
   },
   "codegenConfig": {

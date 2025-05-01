@@ -17,6 +17,7 @@
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
 
 #include "ParagraphState.h"
 
@@ -25,6 +26,22 @@ namespace facebook::react {
 using Content = ParagraphShadowNode::Content;
 
 const char ParagraphComponentName[] = "Paragraph";
+
+void ParagraphShadowNode::initialize() noexcept {
+#ifdef ANDROID
+  if (getConcreteProps().isSelectable) {
+    traits_.set(ShadowNodeTraits::Trait::KeyboardFocusable);
+  }
+#endif
+}
+
+ParagraphShadowNode::ParagraphShadowNode(
+    const ShadowNodeFragment& fragment,
+    const ShadowNodeFamily::Shared& family,
+    ShadowNodeTraits traits)
+    : ConcreteViewShadowNode(fragment, family, traits) {
+  initialize();
+}
 
 ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNode& sourceShadowNode,
@@ -49,6 +66,7 @@ ParagraphShadowNode::ParagraphShadowNode(
     // to stop Yoga from traversing it.
     cleanLayout();
   }
+  initialize();
 }
 
 const Content& ParagraphShadowNode::getContent(
@@ -163,8 +181,11 @@ Size ParagraphShadowNode::measureContent(
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
-  TextLayoutContext textLayoutContext{};
-  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  TextLayoutContext textLayoutContext{
+      .pointScaleFactor = layoutContext.pointScaleFactor,
+      .surfaceId = getSurfaceId(),
+  };
+
   return textLayoutManager_
       ->measure(
           AttributedStringBox{attributedString},
@@ -197,8 +218,18 @@ Float ParagraphShadowNode::baseline(
   }
 
   AttributedStringBox attributedStringBox{attributedString};
-  return textLayoutManager_->baseline(
-      attributedStringBox, getConcreteProps().paragraphAttributes, size);
+
+  if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
+    auto lines =
+        TextLayoutManagerExtended(*textLayoutManager_)
+            .measureLines(
+                attributedStringBox, content.paragraphAttributes, size);
+    return LineMeasurement::baseline(lines);
+  } else {
+    LOG(WARNING)
+        << "Baseline alignment is not supported by the current platform";
+    return 0;
+  }
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
@@ -214,16 +245,24 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   updateStateIfNeeded(content);
 
-  TextLayoutContext textLayoutContext{};
-  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  TextLayoutContext textLayoutContext{
+      .pointScaleFactor = layoutContext.pointScaleFactor,
+      .surfaceId = getSurfaceId(),
+  };
   auto measurement = TextMeasurement{};
 
   AttributedStringBox attributedStringBox{content.attributedString};
 
   if (getConcreteProps().onTextLayout) {
-    auto linesMeasurements = textLayoutManager_->measureLines(
-        attributedStringBox, content.paragraphAttributes, size);
-    getConcreteEventEmitter().onTextLayout(linesMeasurements);
+    if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
+      auto linesMeasurements =
+          TextLayoutManagerExtended(*textLayoutManager_)
+              .measureLines(
+                  attributedStringBox, content.paragraphAttributes, size);
+      getConcreteEventEmitter().onTextLayout(linesMeasurements);
+    } else {
+      LOG(WARNING) << "onTextLayout is not supported by the current platform";
+    }
   }
 
   if (content.attachments.empty()) {

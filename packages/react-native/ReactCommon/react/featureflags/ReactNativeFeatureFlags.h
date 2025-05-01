@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a14062b719f668080a6c64dd34d63c2d>>
+ * @generated SignedSource<<43fcd5c23c1eb9b91d3bc26d5543a4b7>>
  */
 
 /**
@@ -65,11 +65,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool disableMountItemReorderingAndroid();
 
   /**
-   * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
-   */
-  RN_EXPORT static bool disableShadowNodeOnNewArchitectureAndroid();
-
-  /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
    */
   RN_EXPORT static bool enableAccessibilityOrder();
@@ -90,6 +85,16 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableCppPropsIteratorSetter();
 
   /**
+   * This enables the fabric implementation of focus search so that we can focus clipped elements
+   */
+  RN_EXPORT static bool enableCustomFocusSearchOnClippedElementsAndroid();
+
+  /**
+   * When enabled a subset of components will avoid double measurement on Android.
+   */
+  RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
+
+  /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   RN_EXPORT static bool enableEagerRootViewAttachment();
@@ -103,6 +108,11 @@ class ReactNativeFeatureFlags {
    * Enables the use of the Fabric renderer in the whole app.
    */
   RN_EXPORT static bool enableFabricRenderer();
+
+  /**
+   * This feature flag enables a fix for reparenting fix in differentiator
+   */
+  RN_EXPORT static bool enableFixForParentTagDuringReparenting();
 
   /**
    * Enables font scale changes updating layout for measurable nodes.
@@ -190,14 +200,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 
   /**
-   * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
-   */
-  RN_EXPORT static bool removeTurboModuleManagerDelegateMutex();
-
-  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
+
+  /**
+   * When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.
+   */
+  RN_EXPORT static bool updateRuntimeShadowNodeReferencesOnCommit();
 
   /**
    * In Bridgeless mode, use the always available javascript error reporting pipeline.
@@ -228,6 +238,11 @@ class ReactNativeFeatureFlags {
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
    */
   RN_EXPORT static bool useRawPropsJsiValue();
+
+  /**
+   * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
+   */
+  RN_EXPORT static bool useShadowNodeStateOnClone();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

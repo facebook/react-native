@@ -18,7 +18,7 @@ import type {
   Message,
 } from './parseLogBoxLog';
 
-import DebuggerSessionObserver from '../../../src/private/debugging/FuseboxSessionObserver';
+import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';

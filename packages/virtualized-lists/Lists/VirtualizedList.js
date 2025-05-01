@@ -891,6 +891,30 @@ class VirtualizedList extends StateSafePureComponent<
     return key;
   }
 
+  _renderEmptyComponent(
+    element: ExactReactElement_DEPRECATED<any>,
+    inversionStyle: StyleProp<ViewStyle>,
+  ): React.Node {
+    // $FlowFixMe[prop-missing] React.Element internal inspection
+    const isFragment = element.type === React.Fragment;
+
+    if (isFragment) {
+      return element;
+    }
+
+    return React.cloneElement(element, {
+      onLayout: (event: LayoutChangeEvent) => {
+        this._onLayoutEmpty(event);
+        // $FlowFixMe[prop-missing] React.Element internal inspection
+        if (element.props.onLayout) {
+          element.props.onLayout(event);
+        }
+      },
+      // $FlowFixMe[prop-missing] React.Element internal inspection
+      style: StyleSheet.compose(inversionStyle, element.props.style),
+    });
+  }
+
   render(): React.Node {
     this._checkProps(this.props);
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
@@ -956,17 +980,7 @@ class VirtualizedList extends StateSafePureComponent<
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-empty'}
           key="$empty">
-          {React.cloneElement(element, {
-            onLayout: (event: LayoutChangeEvent) => {
-              this._onLayoutEmpty(event);
-              // $FlowFixMe[prop-missing] React.Element internal inspection
-              if (element.props.onLayout) {
-                element.props.onLayout(event);
-              }
-            },
-            // $FlowFixMe[prop-missing] React.Element internal inspection
-            style: StyleSheet.compose(inversionStyle, element.props.style),
-          })}
+          {this._renderEmptyComponent(element, inversionStyle)}
         </VirtualizedListCellContextProvider>,
       );
     }

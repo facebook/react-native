@@ -18,6 +18,7 @@ public object ReactSoftExceptionLogger {
   public object Categories {
     public const val RVG_IS_VIEW_CLIPPED: String = "ReactViewGroup.isViewClipped"
     public const val RVG_ON_VIEW_REMOVED: String = "ReactViewGroup.onViewRemoved"
+    public const val CLIPPING_PROHIBITED_VIEW: String = "ReactClippingProhibitedView"
     public const val SOFT_ASSERTIONS: String = "SoftAssertions"
     public const val SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE: String =
         "SurfaceMountingManager:MissingViewState"

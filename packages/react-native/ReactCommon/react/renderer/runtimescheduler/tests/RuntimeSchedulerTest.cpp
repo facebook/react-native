@@ -717,6 +717,11 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
 
   signalTaskToSync.acquire();
 
+  // Wait until both tasks (the work item and synchronous access request)
+  // are queued before proceeding with test assertions. Without this wait,
+  // the test would be flaky in a multithreaded environment.
+  stubQueue_->waitForTasks(2);
+
   // Normal priority task immediatelly yield in favour of the sync task.
   stubQueue_->tick();
 

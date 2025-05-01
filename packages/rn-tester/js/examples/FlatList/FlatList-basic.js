@@ -12,8 +12,7 @@
 
 import type {Item} from '../../components/ListExampleShared';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type FlatList from 'react-native/Libraries/Lists/FlatList';
-import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {FlatList, ListRenderItemInfo} from 'react-native';
 
 import {
   FooterComponent,

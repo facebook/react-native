@@ -29,11 +29,15 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
                                       ParagraphComponentName,
                                       ParagraphProps,
                                       ParagraphEventEmitter,
-                                      ParagraphState,
-                                      /* usesMapBufferForStateData */ true>,
+                                      ParagraphState>,
                                   public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  ParagraphShadowNode(
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family,
+      ShadowNodeTraits traits);
 
   ParagraphShadowNode(
       const ShadowNode& sourceShadowNode,
@@ -48,6 +52,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
 #ifdef ANDROID
     // Unsetting `FormsStackingContext` trait is essential on Android where we
     // can't mount views inside `TextView`.
+    // T221699219: This should be removed when PreparedLayoutTextView is rolled
+    // out.
     traits.unset(ShadowNodeTraits::Trait::FormsStackingContext);
 #endif
 
@@ -84,6 +90,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   };
 
  private:
+  void initialize() noexcept;
   /*
    * Builds (if needed) and returns a reference to a `Content` object.
    */

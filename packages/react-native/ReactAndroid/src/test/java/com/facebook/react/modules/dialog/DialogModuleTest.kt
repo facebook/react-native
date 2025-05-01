@@ -18,8 +18,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.*
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when` as whenever
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
@@ -182,7 +182,7 @@ class DialogModuleTest {
     // raising an exception
     activity.setTheme(theme)
 
-    val context: ReactApplicationContext = mock(ReactApplicationContext::class.java)
+    val context: ReactApplicationContext = mock<ReactApplicationContext>()
     whenever(context.hasActiveReactInstance()).thenReturn(true)
     whenever(context.currentActivity).thenReturn(activity)
 

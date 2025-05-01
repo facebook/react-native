@@ -91,6 +91,7 @@ TextMeasurement doMeasure(
     const ContextContainer::Shared& contextContainer,
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
+    const TextLayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) {
   const int attachmentCount = countAttachments(attributedString);
   auto env = jni::Environment::current();
@@ -110,7 +111,7 @@ TextMeasurement doMeasure(
 
   auto size = measureAndroidComponent(
       contextContainer,
-      -1, // TODO: we should pass rootTag in
+      layoutContext.surfaceId,
       "RCTText",
       std::move(attributedStringMap),
       std::move(paragraphAttributesMap),
@@ -185,6 +186,7 @@ TextMeasurement TextLayoutManager::measure(
             contextContainer_,
             attributedString,
             paragraphAttributes,
+            layoutContext,
             layoutConstraints);
 
         if (telemetry != nullptr) {
@@ -201,6 +203,7 @@ TextMeasurement TextLayoutManager::measure(
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
     const ParagraphAttributes& paragraphAttributes,
+    const TextLayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
   auto env = jni::Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
@@ -214,7 +217,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 
   auto size = measureAndroidComponent(
       contextContainer_,
-      -1, // TODO: we should pass rootTag in
+      layoutContext.surfaceId,
       "RCTText",
       localDataBuilder.build(),
       toMapBuffer(paragraphAttributes),

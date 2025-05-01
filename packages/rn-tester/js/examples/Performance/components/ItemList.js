@@ -12,7 +12,7 @@
 'use strict';
 
 import type {ItemDataType} from './itemData';
-import type {ScrollEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {ScrollEvent} from 'react-native';
 
 import * as React from 'react';
 import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';

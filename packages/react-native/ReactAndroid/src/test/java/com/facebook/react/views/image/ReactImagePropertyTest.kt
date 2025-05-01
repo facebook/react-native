@@ -38,13 +38,13 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockedStatic
-import org.mockito.Mockito.any
 import org.mockito.Mockito.anyString
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
-import org.mockito.Mockito.never
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
@@ -104,7 +104,7 @@ class ReactImagePropertyTest {
   @Test
   fun testOverlayColor() {
     val viewManager = ReactImageManager()
-    val mockView = mock(ReactImageView::class.java)
+    val mockView = mock<ReactImageView>()
 
     viewManager.setOverlayColor(mockView, null)
     verify(mockView).setOverlayColor(Color.TRANSPARENT)
@@ -147,7 +147,7 @@ class ReactImagePropertyTest {
   @Test
   fun testResizeMode() {
     val viewManager = ReactImageManager()
-    val mockView = mock(ReactImageView::class.java)
+    val mockView = mock<ReactImageView>()
 
     viewManager.setResizeMode(mockView, null)
     verify(mockView).setScaleType(ScalingUtils.ScaleType.CENTER_CROP)
@@ -180,7 +180,7 @@ class ReactImagePropertyTest {
   @Test
   fun testResizeMethod() {
     val viewManager = ReactImageManager()
-    val mockView = mock(ReactImageView::class.java)
+    val mockView = mock<ReactImageView>()
 
     viewManager.setResizeMethod(mockView, null)
     verify(mockView).setResizeMethod(ImageResizeMethod.AUTO)
@@ -210,7 +210,7 @@ class ReactImagePropertyTest {
   @Test
   fun testResizeMultiplier() {
     val viewManager = ReactImageManager()
-    val mockView = mock(ReactImageView::class.java)
+    val mockView = mock<ReactImageView>()
 
     viewManager.setResizeMultiplier(mockView, 0.01f)
     verify(mockView).setResizeMultiplier(0.01f)
@@ -224,7 +224,7 @@ class ReactImagePropertyTest {
   @Test
   fun testHeaders() {
     val viewManager = ReactImageManager()
-    val mockView = mock(ReactImageView::class.java)
+    val mockView = mock<ReactImageView>()
 
     viewManager.setHeaders(mockView, null)
     verify(mockView, never()).setHeaders(any())

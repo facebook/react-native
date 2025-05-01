@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {Permission} from 'react-native/Libraries/PermissionsAndroid/PermissionsAndroid';
+import type {Permission} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';

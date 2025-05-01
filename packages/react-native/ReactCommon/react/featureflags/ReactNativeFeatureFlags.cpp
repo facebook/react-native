@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<543d5f445f026f68976b1d4f8402f12e>>
+ * @generated SignedSource<<da8e7e537e16a1338c7a56b1d17b2c6e>>
  */
 
 /**
@@ -46,10 +46,6 @@ bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
 }
 
-bool ReactNativeFeatureFlags::disableShadowNodeOnNewArchitectureAndroid() {
-  return getAccessor().disableShadowNodeOnNewArchitectureAndroid();
-}
-
 bool ReactNativeFeatureFlags::enableAccessibilityOrder() {
   return getAccessor().enableAccessibilityOrder();
 }
@@ -66,6 +62,14 @@ bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
   return getAccessor().enableCppPropsIteratorSetter();
 }
 
+bool ReactNativeFeatureFlags::enableCustomFocusSearchOnClippedElementsAndroid() {
+  return getAccessor().enableCustomFocusSearchOnClippedElementsAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid() {
+  return getAccessor().enableDoubleMeasurementFixAndroid();
+}
+
 bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
   return getAccessor().enableEagerRootViewAttachment();
 }
@@ -76,6 +80,10 @@ bool ReactNativeFeatureFlags::enableFabricLogs() {
 
 bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
+}
+
+bool ReactNativeFeatureFlags::enableFixForParentTagDuringReparenting() {
+  return getAccessor().enableFixForParentTagDuringReparenting();
 }
 
 bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
@@ -146,12 +154,12 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
   return getAccessor().fuseboxNetworkInspectionEnabled();
 }
 
-bool ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex() {
-  return getAccessor().removeTurboModuleManagerDelegateMutex();
-}
-
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
   return getAccessor().traceTurboModulePromiseRejectionsOnAndroid();
+}
+
+bool ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() {
+  return getAccessor().updateRuntimeShadowNodeReferencesOnCommit();
 }
 
 bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
@@ -176,6 +184,10 @@ bool ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid() {
 
 bool ReactNativeFeatureFlags::useRawPropsJsiValue() {
   return getAccessor().useRawPropsJsiValue();
+}
+
+bool ReactNativeFeatureFlags::useShadowNodeStateOnClone() {
+  return getAccessor().useShadowNodeStateOnClone();
 }
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {

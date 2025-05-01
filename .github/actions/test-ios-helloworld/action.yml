@@ -43,7 +43,7 @@ runs:
     - name: Run yarn
       uses: ./.github/actions/yarn-install
     - name: Setup ruby
-      uses: ruby/setup-ruby@v1.170.0
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Download ReactNativeDependencies

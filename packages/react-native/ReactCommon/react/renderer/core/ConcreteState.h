@@ -14,11 +14,24 @@
 #include <react/renderer/core/State.h>
 
 #ifdef ANDROID
+#include <fbjni/fbjni.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
+
+#ifdef ANDROID
+template <typename StateDataT>
+concept StateDataWithMapBuffer = requires(StateDataT stateData) {
+  { stateData.getMapBuffer() } -> std::same_as<MapBuffer>;
+};
+
+template <typename StateDataT>
+concept StateDataWithJNIReference = requires(StateDataT stateData) {
+  { stateData.getJNIReference() } -> std::same_as<jni::local_ref<jobject>>;
+};
+#endif
 
 /*
  * Concrete and only template implementation of State interface.
@@ -26,7 +39,7 @@ namespace facebook::react {
  * state update transaction. A data object does not need to be copyable but
  * needs to be moveable.
  */
-template <typename DataT, bool usesMapBufferForStateData = false>
+template <typename DataT>
 class ConcreteState : public State {
  public:
   using Shared = std::shared_ptr<const ConcreteState>;
@@ -106,10 +119,18 @@ class ConcreteState : public State {
   }
 
   MapBuffer getMapBuffer() const override {
-    if constexpr (usesMapBufferForStateData) {
+    if constexpr (StateDataWithMapBuffer<DataT>) {
       return getData().getMapBuffer();
     } else {
       return MapBufferBuilder::EMPTY();
+    }
+  }
+
+  jni::local_ref<jobject> getJNIReference() const override {
+    if constexpr (StateDataWithJNIReference<DataT>) {
+      return getData().getJNIReference();
+    } else {
+      return nullptr;
     }
   }
 #endif
