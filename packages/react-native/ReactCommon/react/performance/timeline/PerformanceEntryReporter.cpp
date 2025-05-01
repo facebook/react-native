@@ -7,9 +7,9 @@
 
 #include "PerformanceEntryReporter.h"
 
-#include <cxxreact/JSExecutor.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/timing/primitives.h>
 #include <reactperflogger/ReactPerfettoLogger.h>
 
 #ifdef WITH_PERFETTO
@@ -35,6 +35,10 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
 
 uint64_t timestampToMicroseconds(DOMHighResTimeStamp timestamp) {
   return static_cast<uint64_t>(timestamp * 1000);
+}
+
+double performanceNow() {
+  return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
 }
 
 #if defined(__clang__)
@@ -81,7 +85,7 @@ PerformanceEntryReporter::PerformanceEntryReporter()
 
 DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
   return timeStampProvider_ != nullptr ? timeStampProvider_()
-                                       : JSExecutor::performanceNow();
+                                       : performanceNow();
 }
 
 std::vector<PerformanceEntryType>
