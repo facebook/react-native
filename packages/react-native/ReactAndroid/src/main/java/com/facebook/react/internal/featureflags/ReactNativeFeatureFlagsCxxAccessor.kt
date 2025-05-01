@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a70b3ffda510a41144b061036d4f1d48>>
+ * @generated SignedSource<<03596dcddbe8976adfcf454b9b35e3c3>>
  */
 
 /**
@@ -42,8 +42,10 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
+  private var enableNetworkEventReportingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
+  private var enableResourceTimingAPICache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
@@ -262,6 +264,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableNetworkEventReporting(): Boolean {
+    var cached = enableNetworkEventReportingCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableNetworkEventReporting()
+      enableNetworkEventReportingCache = cached
+    }
+    return cached
+  }
+
   override fun enableNewBackgroundAndBorderDrawables(): Boolean {
     var cached = enableNewBackgroundAndBorderDrawablesCache
     if (cached == null) {
@@ -276,6 +287,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enablePropsUpdateReconciliationAndroid()
       enablePropsUpdateReconciliationAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableResourceTimingAPI(): Boolean {
+    var cached = enableResourceTimingAPICache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableResourceTimingAPI()
+      enableResourceTimingAPICache = cached
     }
     return cached
   }
