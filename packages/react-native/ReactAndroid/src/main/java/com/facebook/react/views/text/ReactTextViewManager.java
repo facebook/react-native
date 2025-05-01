@@ -26,7 +26,6 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.views.text.internal.span.ReactClickableSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.HashMap;
@@ -106,13 +105,10 @@ public class ReactTextViewManager extends ReactTextAnchorViewManager<ReactTextSh
 
       // If this text view contains any clickable spans, set a view tag and reset the accessibility
       // delegate so that these can be picked up by the accessibility system.
-      ReactClickableSpan[] clickableSpans =
-          spannable.getSpans(0, update.getText().length(), ReactClickableSpan.class);
+      ReactTextViewAccessibilityDelegate.AccessibilityLinks accessibilityLinks =
+          new ReactTextViewAccessibilityDelegate.AccessibilityLinks(spannable);
       view.setTag(
-          R.id.accessibility_links,
-          clickableSpans.length > 0
-              ? new ReactTextViewAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable)
-              : null);
+          R.id.accessibility_links, accessibilityLinks.size() > 0 ? accessibilityLinks : null);
       ReactTextViewAccessibilityDelegate.Companion.resetDelegate(
           view, view.isFocusable(), view.getImportantForAccessibility());
     }
