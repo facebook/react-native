@@ -22,6 +22,7 @@ function mockNativeAnimatedHelperAPI() {
     disconnectAnimatedNodeFromView: jest.fn(),
   };
   // $FlowFixMe[cannot-write] - Switch to `jest.spyOn` when supported.
+  // $FlowFixMe[unsafe-object-assign]
   Object.assign(NativeAnimatedHelper.API, mocks);
   return mocks;
 }
