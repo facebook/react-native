@@ -26,4 +26,4 @@ function createFolderIfNotExists(folderPath /*:string*/) {
   return folderPath;
 }
 
-module.exports = {createLink, createFolderIfNotExists};
+module.exports = {createFolderIfNotExists};
