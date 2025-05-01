@@ -91,14 +91,13 @@ RuntimeSamplingProfile::SampleCallStackFrame convertJSFunctionHermesFrame(
 RuntimeSamplingProfile::Sample convertHermesSampleToTracingSample(
     const fhsp::ProfileSample& hermesSample) {
   uint64_t reconciledTimestamp = hermesSample.getTimestamp();
-  const std::vector<fhsp::ProfileSampleCallStackFrame>& hermesSampleCallStack =
-      hermesSample.getCallStack();
+  const auto callStackRange = hermesSample.getCallStackFramesRange();
 
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame>
       reconciledSampleCallStack;
-  reconciledSampleCallStack.reserve(hermesSampleCallStack.size());
+  reconciledSampleCallStack.reserve(hermesSample.getCallStackFramesCount());
 
-  for (const auto& hermesFrame : hermesSampleCallStack) {
+  for (const auto& hermesFrame : callStackRange) {
     if (std::holds_alternative<fhsp::ProfileSampleCallStackSuspendFrame>(
             hermesFrame)) {
       const auto& suspendFrame =
@@ -146,12 +145,11 @@ RuntimeSamplingProfile::Sample convertHermesSampleToTracingSample(
 /* static */ RuntimeSamplingProfile
 HermesRuntimeSamplingProfileSerializer::serializeToTracingSamplingProfile(
     const hermes::sampling_profiler::Profile& hermesProfile) {
-  const std::vector<hermes::sampling_profiler::ProfileSample>& hermesSamples =
-      hermesProfile.getSamples();
+  const auto samplesRange = hermesProfile.getSamplesRange();
   std::vector<RuntimeSamplingProfile::Sample> reconciledSamples;
-  reconciledSamples.reserve(hermesSamples.size());
+  reconciledSamples.reserve(hermesProfile.getSamplesCount());
 
-  for (const auto& hermesSample : hermesSamples) {
+  for (const auto& hermesSample : samplesRange) {
     RuntimeSamplingProfile::Sample reconciledSample =
         convertHermesSampleToTracingSample(hermesSample);
     reconciledSamples.push_back(std::move(reconciledSample));
