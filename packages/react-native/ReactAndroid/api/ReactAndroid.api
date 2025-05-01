@@ -3319,6 +3319,7 @@ public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/re
 }
 
 public abstract class com/facebook/react/runtime/cxxreactpackage/CxxReactPackage {
+	protected field mHybridData Lcom/facebook/jni/HybridData;
 	protected fun <init> (Lcom/facebook/jni/HybridData;)V
 }
 
