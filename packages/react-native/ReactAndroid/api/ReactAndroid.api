@@ -3382,13 +3382,6 @@ public final class com/facebook/react/soloader/OpenSourceMergedSoMapping : com/f
 	public fun mapLibName (Ljava/lang/String;)Ljava/lang/String;
 }
 
-public final class com/facebook/react/touch/JSResponderHandler : com/facebook/react/touch/OnInterceptTouchEventListener {
-	public fun <init> ()V
-	public final fun clearJSResponder ()V
-	public fun onInterceptTouchEvent (Landroid/view/ViewGroup;Landroid/view/MotionEvent;)Z
-	public final fun setJSResponder (ILandroid/view/ViewParent;)V
-}
-
 public abstract interface class com/facebook/react/touch/ReactHitSlopView {
 	public abstract fun getHitSlopRect ()Landroid/graphics/Rect;
 }
