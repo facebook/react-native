@@ -37,11 +37,11 @@ public class ReadableArrayBuilder(
     array.pushNull()
   }
 
-  public fun add(builder: ReadableMapBuilder.() -> Unit) {
+  public fun addMap(builder: ReadableMapBuilder.() -> Unit) {
     array.pushMap(buildReadableMap(builder))
   }
 
-  public fun add(builder: ReadableArrayBuilder.() -> Unit) {
+  public fun addArray(builder: ReadableArrayBuilder.() -> Unit) {
     array.pushArray(buildReadableArray(builder))
   }
 }

@@ -38,11 +38,11 @@ public class ReadableMapBuilder(
     map.putNull(key)
   }
 
-  public fun put(key: String, builder: ReadableMapBuilder.() -> Unit) {
+  public fun putMap(key: String, builder: ReadableMapBuilder.() -> Unit) {
     map.putMap(key, buildReadableMap(builder))
   }
 
-  public fun put(key: String, builder: ReadableArrayBuilder.() -> Unit) {
+  public fun putArray(key: String, builder: ReadableArrayBuilder.() -> Unit) {
     map.putArray(key, buildReadableArray(builder))
   }
 }
