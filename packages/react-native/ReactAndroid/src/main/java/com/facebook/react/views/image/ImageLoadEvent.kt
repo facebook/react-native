@@ -35,7 +35,7 @@ private constructor(
   // enough to fit into short.
   override fun getCoalescingKey(): Short = eventType.toShort()
 
-  override fun getEventData(): WritableMap? =
+  override fun getEventData(): WritableMap =
       Arguments.createMap().apply {
         when (eventType) {
           ON_PROGRESS -> {

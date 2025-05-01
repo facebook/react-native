@@ -25,7 +25,7 @@ internal class ReactTextInputSubmitEditingEvent(
 
   override fun getEventName(): String = EVENT_NAME
 
-  override fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     return Arguments.createMap().apply {
       putInt("target", viewTag)
       putString("text", text)
