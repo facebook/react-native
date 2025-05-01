@@ -19,6 +19,7 @@
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/mounting/TelemetryController.h>
+#import <react/utils/LowPriorityExecutor.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -151,6 +152,12 @@ static void RCTPerformMountInstructions(
   if (self = [super init]) {
     _componentViewRegistry = [RCTComponentViewRegistry new];
   }
+
+  facebook::react::LowPriorityExecutor::setExecutor([](facebook::react::LowPriorityExecutor::WorkItem &&workItem) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+      workItem();
+    });
+  });
 
   return self;
 }

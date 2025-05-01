@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43fcd5c23c1eb9b91d3bc26d5543a4b7>>
+ * @generated SignedSource<<54c5a7534346b4b3db662bc09d3e453c>>
  */
 
 /**
@@ -88,6 +88,11 @@ class ReactNativeFeatureFlags {
    * This enables the fabric implementation of focus search so that we can focus clipped elements
    */
   RN_EXPORT static bool enableCustomFocusSearchOnClippedElementsAndroid();
+
+  /**
+   * Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.
+   */
+  RN_EXPORT static bool enableDestroyShadowTreeRevisionAsync();
 
   /**
    * When enabled a subset of components will avoid double measurement on Android.

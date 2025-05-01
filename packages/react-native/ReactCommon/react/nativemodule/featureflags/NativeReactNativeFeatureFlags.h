@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b5b7e8a4b0eb26b5ceea212700ae6efe>>
+ * @generated SignedSource<<87650231b632053282bfd1fb6635c600>>
  */
 
 /**
@@ -56,6 +56,8 @@ class NativeReactNativeFeatureFlags
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
   bool enableCustomFocusSearchOnClippedElementsAndroid(jsi::Runtime& runtime);
+
+  bool enableDestroyShadowTreeRevisionAsync(jsi::Runtime& runtime);
 
   bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
 
