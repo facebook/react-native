@@ -601,13 +601,6 @@ extension Target {
       CXXSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, ".build/headers/React"))
     ]
 
-    let cSettings : [CSetting] = [
-      .define("DEBUG", .when(configuration: .debug)),
-      .define("USE_HERMES", to: "1"),
-      // TODO: Why doesn't it pick up this when DEBUG is set??
-      .define("RCT_ENABLE_INSPECTOR", to: "1", .when(configuration: .debug))
-    ]
-
     let cxxSettings = [
       .unsafeFlags(["-std=c++20"]),
       .define("DEBUG", .when(configuration: .debug)),
@@ -623,7 +616,6 @@ extension Target {
       exclude: excludes,
       sources: sources,
       publicHeadersPath: publicHeadersPath,
-      cSettings: cSettings,
       cxxSettings: cxxSettings,
       linkerSettings: linkerSettings
     )
