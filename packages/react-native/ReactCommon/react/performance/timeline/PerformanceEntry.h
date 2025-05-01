@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/timing/primitives.h>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -21,7 +22,8 @@ enum class PerformanceEntryType {
   MEASURE = 2,
   EVENT = 3,
   LONGTASK = 4,
-  _NEXT = 5,
+  RESOURCE = 5,
+  _NEXT = 6,
 };
 
 struct AbstractPerformanceEntry {
@@ -51,11 +53,26 @@ struct PerformanceLongTaskTiming : AbstractPerformanceEntry {
       PerformanceEntryType::LONGTASK;
 };
 
+struct PerformanceResourceTiming : AbstractPerformanceEntry {
+  static constexpr PerformanceEntryType entryType =
+      PerformanceEntryType::RESOURCE;
+  /** Aligns with `startTime`. */
+  std::optional<DOMHighResTimeStamp> fetchStart;
+  std::optional<DOMHighResTimeStamp> requestStart;
+  std::optional<DOMHighResTimeStamp> connectStart;
+  std::optional<DOMHighResTimeStamp> connectEnd;
+  std::optional<DOMHighResTimeStamp> responseStart;
+  /** Aligns with `duration`. */
+  std::optional<DOMHighResTimeStamp> responseEnd;
+  std::optional<int> responseStatus;
+};
+
 using PerformanceEntry = std::variant<
     PerformanceMark,
     PerformanceMeasure,
     PerformanceEventTiming,
-    PerformanceLongTaskTiming>;
+    PerformanceLongTaskTiming,
+    PerformanceResourceTiming>;
 
 struct PerformanceEntrySorter {
   bool operator()(const PerformanceEntry& lhs, const PerformanceEntry& rhs) {
