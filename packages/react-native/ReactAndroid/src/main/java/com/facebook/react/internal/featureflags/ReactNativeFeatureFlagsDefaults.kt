@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad976c46e40f6d8a945041388865ec60>>
+ * @generated SignedSource<<f66dbf071a2a3e10ceec18dac72d1e0e>>
  */
 
 /**
@@ -42,6 +42,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableCppPropsIteratorSetter(): Boolean = false
 
   override fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = true
+
+  override fun enableDestroyShadowTreeRevisionAsync(): Boolean = false
 
   override fun enableDoubleMeasurementFixAndroid(): Boolean = false
 

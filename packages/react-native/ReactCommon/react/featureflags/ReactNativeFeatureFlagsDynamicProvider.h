@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9749a9af3dff2d030ff401915f46ece>>
+ * @generated SignedSource<<c9cfec91e54b0d3cd367f68d4bf8665d>>
  */
 
 /**
@@ -133,6 +133,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableCustomFocusSearchOnClippedElementsAndroid();
+  }
+
+  bool enableDestroyShadowTreeRevisionAsync() override {
+    auto value = values_["enableDestroyShadowTreeRevisionAsync"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableDestroyShadowTreeRevisionAsync();
   }
 
   bool enableDoubleMeasurementFixAndroid() override {
