@@ -62,7 +62,7 @@ class RNTarget: BaseTarget {
       dependencies: self.dependencies.reduce([]) { $0 + [$1.name] },
       sources: self.sources,
       publicHeadersPath: self.publicHeadersPath,
-      linkerSettings: linkerSettings,
+      linkerSettings: linkerSettings
     )
   }
 }
@@ -161,14 +161,14 @@ let reactJsInspectorTracing = RNTarget(
   path: "ReactCommon/jsinspector-modern/tracing",
   searchPaths: ["ReactCommon"],
   excludedPaths: ["tests"],
-  dependencies: [reactNativeDependencies, reactFeatureFlags, jsi, reactOSCompat],
+  dependencies: [reactNativeDependencies, reactFeatureFlags, jsi, reactOSCompat]
 )
 
 let reactJsInspectorNetwork = RNTarget(
   name: .reactJsInspectorNetwork,
   path: "ReactCommon/jsinspector-modern/network",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
-  dependencies: [reactNativeDependencies],
+  dependencies: [reactNativeDependencies]
 )
 
 let reactJsInspector = RNTarget(
@@ -176,7 +176,7 @@ let reactJsInspector = RNTarget(
   path: "ReactCommon/jsinspector-modern",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
   excludedPaths: ["tracing", "network", "tests"],
-  dependencies: [reactNativeDependencies, reactFeatureFlags, jsi, reactJsInspectorTracing, reactJsInspectorNetwork],
+  dependencies: [reactNativeDependencies, reactFeatureFlags, jsi, reactJsInspectorTracing, reactJsInspectorNetwork]
 )
 
 let reactCxxReact = RNTarget(
@@ -184,21 +184,21 @@ let reactCxxReact = RNTarget(
   path: "ReactCommon/cxxreact",
   searchPaths: ["ReactCommon", RuntimeExecutorPath, CallInvokerPath],
   excludedPaths: ["tests", "SampleCXXModule.cpp"],
-  dependencies: [reactNativeDependencies, jsi, reactPerfLogger, logger, reactDebug, reactJsInspector],
+  dependencies: [reactNativeDependencies, jsi, reactPerfLogger, logger, reactDebug, reactJsInspector]
 )
 
 let reactJsiExecutor = RNTarget(
   name: .reactJsiExecutor,
   path: "ReactCommon/jsiexecutor",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
-  dependencies: [reactNativeDependencies, jsi, reactPerfLogger, reactCxxReact, reactJsInspector],
+  dependencies: [reactNativeDependencies, jsi, reactPerfLogger, reactCxxReact, reactJsInspector]
 )
 
 let reactJsiTooling = RNTarget(
   name: .reactJsiTooling,
   path: "ReactCommon/jsitooling",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
-  dependencies: [reactNativeDependencies, reactJsInspector, reactJsInspectorTracing, reactCxxReact, jsi],
+  dependencies: [reactNativeDependencies, reactJsInspector, reactJsInspectorTracing, reactCxxReact, jsi]
 )
 
 let reactHermes = RNTarget(
@@ -214,7 +214,7 @@ let reactPerformanceTimeline = RNTarget(
   path: "ReactCommon/react/performance/timeline",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
   excludedPaths: ["tests"],
-  dependencies: [reactNativeDependencies, reactFeatureFlags, reactJsInspectorTracing, reactCxxReact, reactPerfLogger],
+  dependencies: [reactNativeDependencies, reactFeatureFlags, reactJsInspectorTracing, reactCxxReact, reactPerfLogger]
 )
 
 let reactRuntimeScheduler = RNTarget(
@@ -222,7 +222,7 @@ let reactRuntimeScheduler = RNTarget(
   path: "ReactCommon/react/renderer/runtimescheduler",
   searchPaths: ["ReactCommon", RuntimeExecutorPath, CallInvokerPath],
   excludedPaths: ["tests"],
-  dependencies: [reactNativeDependencies, reactFeatureFlags, reactCxxReact, reactPerfLogger, reactPerformanceTimeline, reactRendererConsistency, reactUtils],
+  dependencies: [reactNativeDependencies, reactFeatureFlags, reactCxxReact, reactPerfLogger, reactPerformanceTimeline, reactRendererConsistency, reactUtils]
 )
 
 let reactTurboModuleBridging = RNTarget(
@@ -230,7 +230,7 @@ let reactTurboModuleBridging = RNTarget(
   path: "ReactCommon/react/bridging",
   searchPaths: ["ReactCommon", CallInvokerPath],
   excludedPaths: ["tests"],
-  dependencies: [reactNativeDependencies, reactPerfLogger, reactCxxReact, jsi, logger],
+  dependencies: [reactNativeDependencies, reactPerfLogger, reactCxxReact, jsi, logger]
 )
 
 let reactJsErrorHandler = RNTarget(
@@ -238,7 +238,7 @@ let reactJsErrorHandler = RNTarget(
   path: "ReactCommon/jserrorhandler",
   searchPaths: ["ReactCommon", CallInvokerPath],
   excludedPaths: ["tests"],
-  dependencies: [reactNativeDependencies, jsi, reactCxxReact, reactFeatureFlags, reactDebug, reactTurboModuleBridging],
+  dependencies: [reactNativeDependencies, jsi, reactCxxReact, reactFeatureFlags, reactDebug, reactTurboModuleBridging]
 )
 
 let reactGraphicsApple = RNTarget(
@@ -246,7 +246,7 @@ let reactGraphicsApple = RNTarget(
   path: "ReactCommon/react/renderer/graphics/platform/ios",
   searchPaths: ["ReactCommon"],
   linkedFrameworks: ["UIKit", "CoreGraphics"],
-  dependencies: [reactDebug, jsi, reactUtils, reactNativeDependencies],
+  dependencies: [reactDebug, jsi, reactUtils, reactNativeDependencies]
 )
 
 let reactGraphics = RNTarget(
@@ -254,7 +254,7 @@ let reactGraphics = RNTarget(
   path: "ReactCommon/react/renderer/graphics",
   searchPaths: ["ReactCommon"],
   excludedPaths: ["platform", "tests"],
-  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactRendererDebug, reactUtils, reactGraphicsApple],
+  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactRendererDebug, reactUtils, reactGraphicsApple]
 )
 
 let reactTurboModuleCore = RNTarget(
@@ -262,14 +262,14 @@ let reactTurboModuleCore = RNTarget(
   path: "ReactCommon/react/nativemodule/core",
   searchPaths: ["ReactCommon", CallInvokerPath, "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios"],
   excludedPaths: ["platform/android"],
-  dependencies: [reactNativeDependencies, reactDebug, reactFeatureFlags, reactUtils, reactPerfLogger, reactCxxReact, reactTurboModuleBridging, yoga],
+  dependencies: [reactNativeDependencies, reactDebug, reactFeatureFlags, reactUtils, reactPerfLogger, reactCxxReact, reactTurboModuleBridging, yoga]
 )
 
 let reactTurboModuleCoreDefaults = RNTarget(
   name: .reactTurboModuleCoreDefaults,
   path: "ReactCommon/react/nativemodule/defaults",
   searchPaths: ["ReactCommon", CallInvokerPath, ReactFBReactNativeSpecPath],
-  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactTurboModuleCore],
+  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactTurboModuleCore]
 )
 
 let reactTurboModuleCoreMicrotasks = RNTarget(
@@ -283,35 +283,35 @@ let reactIdleCallbacksNativeModule = RNTarget(
   name: .reactIdleCallbacksNativeModule,
   path: "ReactCommon/react/nativemodule/idlecallbacks",
   searchPaths: ["ReactCommon", CallInvokerPath, RuntimeExecutorPath, ReactFBReactNativeSpecPath],
-  dependencies: [reactNativeDependencies, reactDebug, reactFeatureFlags, reactUtils, reactPerfLogger, reactCxxReact, reactTurboModuleCore],
+  dependencies: [reactNativeDependencies, reactDebug, reactFeatureFlags, reactUtils, reactPerfLogger, reactCxxReact, reactTurboModuleCore]
 )
 
 let reactFeatureflagsNativemodule = RNTarget(
   name: .reactFeatureflagsNativemodule,
   path: "ReactCommon/react/nativemodule/featureflags",
   searchPaths: ["ReactCommon", CallInvokerPath, RuntimeExecutorPath, ReactFBReactNativeSpecPath],
-  dependencies: [reactNativeDependencies, reactDebug, reactFeatureFlags, reactUtils, reactPerfLogger, reactCxxReact, reactTurboModuleCore],
+  dependencies: [reactNativeDependencies, reactDebug, reactFeatureFlags, reactUtils, reactPerfLogger, reactCxxReact, reactTurboModuleCore]
 )
 
 let reactNativeModuleDom = RNTarget(
   name: .reactNativeModuleDom,
   path: "ReactCommon/react/nativemodule/dom",
   searchPaths: ["ReactCommon", CallInvokerPath, RuntimeExecutorPath, ReactFBReactNativeSpecPath, "ReactCommon/react/renderer/components/view/platform/cxx"],
-  dependencies: [reactNativeDependencies, reactDebug, reactFeatureFlags, reactUtils, reactPerfLogger, reactCxxReact, reactTurboModuleCore, yoga, reactGraphicsApple],
+  dependencies: [reactNativeDependencies, reactDebug, reactFeatureFlags, reactUtils, reactPerfLogger, reactCxxReact, reactTurboModuleCore, yoga, reactGraphicsApple]
 )
 
 let rctTypesafety = RNTarget(
   name: .rctTypesafety,
   path: "Libraries/Typesafety",
   searchPaths: ["ReactCommon", FBLazyVectorPath],
-  dependencies: [reactNativeDependencies, yoga],
+  dependencies: [reactNativeDependencies, yoga]
 )
 
 let reactCoreRCTWebsocket = RNTarget(
   name: .reactCoreRCTWebsocket,
   path: "Libraries/WebSocket",
   searchPaths: ["ReactCommon/yoga"],
-  dependencies: [yoga, reactNativeDependencies],
+  dependencies: [yoga, reactNativeDependencies]
 )
 
 let reactCoreModules = RNTarget(
@@ -319,7 +319,7 @@ let reactCoreModules = RNTarget(
   path: "React/CoreModules",
   searchPaths: ["ReactCommon", ReactFBReactNativeSpecPath, FBLazyVectorPath, RuntimeExecutorPath, CallInvokerPath],
   excludedPaths: ["PlatformStubs/RCTStatusBarManager.mm"],
-  dependencies: [reactNativeDependencies, jsi, yoga, reactTurboModuleCore],
+  dependencies: [reactNativeDependencies, jsi, yoga, reactTurboModuleCore]
 )
 
 let reactRuntime = RNTarget(
@@ -327,7 +327,7 @@ let reactRuntime = RNTarget(
   path: "ReactCommon/react/runtime",
   searchPaths: ["ReactCommon", RuntimeExecutorPath, CallInvokerPath],
   excludedPaths: ["tests", "iostests", "platform"],
-  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactCxxReact, reactJsErrorHandler, reactPerformanceTimeline, reactUtils, reactFeatureFlags, reactJsInspector, reactJsiTooling, reactHermes, reactRuntimeScheduler, hermesIncludes],
+  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactCxxReact, reactJsErrorHandler, reactPerformanceTimeline, reactUtils, reactFeatureFlags, reactJsInspector, reactJsiTooling, reactHermes, reactRuntimeScheduler, hermesIncludes]
 )
 
 let reactRuntimeApple = RNTarget(
@@ -335,7 +335,7 @@ let reactRuntimeApple = RNTarget(
   path: "ReactCommon/react/runtime/platform/ios",
   searchPaths: ["ReactCommon", "ReactCommon/react/renderer/graphics/platform/cxx", RuntimeExecutorPath, "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/react/nativemodule/core", CallInvokerPath, ReactFBReactNativeSpecPath, "React/Fabric", FBLazyVectorPath, ".build/artifacts/hermes-\(hermesVersion)-release/destroot/include"],
   excludedPaths: ["ReactCommon/RCTJscInstance.mm"],
-  dependencies: [reactNativeDependencies, jsi, reactPerfLogger, reactCxxReact, rctDeprecation, yoga, reactRuntime, reactRCTFabric, reactCoreModules, hermesIncludes],
+  dependencies: [reactNativeDependencies, jsi, reactPerfLogger, reactCxxReact, rctDeprecation, yoga, reactRuntime, reactRCTFabric, reactCoreModules, hermesIncludes]
 )
 
 let reactCore = RNTarget(
@@ -345,7 +345,7 @@ let reactCore = RNTarget(
   linkedFrameworks: ["CoreServices"],
   excludedPaths: ["Fabric", "Tests", "Resources", "Runtime/RCTJscInstanceFactory.mm", "I18n/strings", "CxxBridge/JSCExecutorFactory.mm", "CoreModules"],
   dependencies: [reactNativeDependencies, reactCxxReact, reactPerfLogger, jsi, reactJsiExecutor, reactUtils, reactFeatureFlags, reactRuntimeScheduler, yoga, reactJsInspector, reactJsiTooling, rctDeprecation, reactCoreRCTWebsocket, reactRCTImage, reactTurboModuleCore, reactRCTText, reactRCTBlob, reactRCTAnimation, reactRCTNetwork, reactFabric],
-  sources: [".", "Runtime/RCTHermesInstanceFactory.mm"],
+  sources: [".", "Runtime/RCTHermesInstanceFactory.mm"]
 )
 
 let reactFabric = RNTarget(
@@ -354,14 +354,14 @@ let reactFabric = RNTarget(
   searchPaths: ["ReactCommon", "ReactCommon/yoga","ReactCommon/react/renderer/components/view", "ReactCommon/react/renderer/components/view/platform/cxx", RuntimeExecutorPath, CallInvokerPath, "ReactCommon/react/renderer/components/text", "ReactCommon/react/renderer/imagemanager/platform/ios"],
   excludedPaths: ["animations/tests", "attributedstring/tests", "core/tests", "components/view/tests", "components/view/platform/android", "mounting/tests", "uimanager/tests", "telemetry/tests", "css", "debug", "graphics", "imagemanager", "mapbuffer", "consistency", "uimanager/consistency/tests", "components/inputaccessory", "components/modal", "components/rncore", "components/safeareaview", "components/scrollview", "components/text", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "components/root/tests"],
   dependencies: [reactNativeDependencies, reactJsiExecutor, rctTypesafety, reactTurboModuleCore, jsi, logger, reactDebug, reactFeatureFlags, reactUtils, reactRuntimeScheduler, reactCxxReact, reactRendererDebug, reactGraphics],
-  sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/scrollview", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "telemetry", "consistency", "leakchecker", "uimanager", "uimanager/consistency"],
+  sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/scrollview", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "telemetry", "consistency", "leakchecker", "uimanager", "uimanager/consistency"]
 )
 
 let reactRCTFabric = RNTarget(
   name: .reactRCTFabric,
   path: "React/Fabric",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", RuntimeExecutorPath, CallInvokerPath, "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/components/textinput/platform/ios", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/imagemanager/platform/ios", "ReactCommon/react/renderer/legacyviewmanagerinterop"],
-  dependencies: [reactNativeDependencies, reactCore, reactRCTImage, yoga, reactRCTText, jsi, reactFabricComponents, reactGraphics, reactImageManager, reactDebug, reactUtils, reactPerformanceTimeline, reactRendererDebug, reactRendererConsistency, reactRuntimeScheduler, reactRCTAnimation, reactJsInspector, reactJsInspectorNetwork, reactJsInspectorTracing, reactFabric, reactFabricImage],
+  dependencies: [reactNativeDependencies, reactCore, reactRCTImage, yoga, reactRCTText, jsi, reactFabricComponents, reactGraphics, reactImageManager, reactDebug, reactUtils, reactPerformanceTimeline, reactRendererDebug, reactRendererConsistency, reactRuntimeScheduler, reactRCTAnimation, reactJsInspector, reactJsInspectorNetwork, reactJsInspectorTracing, reactFabric, reactFabricImage]
 )
 
 let reactFabricComponents = RNTarget(
@@ -370,7 +370,7 @@ let reactFabricComponents = RNTarget(
   searchPaths: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/components/textinput/platform/ios", "ReactCommon/react/renderer/components/textinput/platform/ios", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager", "ReactCommon/react/renderer/textlayoutmanager"],
   excludedPaths: ["components/view/platform/android", "components/scrollview/tests", "components/scrollview/platform/android", "components/textinput/platform/android", "components/text/tests", "textlayoutmanager/tests", "textlayoutmanager/platform/android", "textlayoutmanager/platform/cxx"],
   dependencies: [reactNativeDependencies, reactCore, reactJsiExecutor, reactTurboModuleCore, jsi, logger, reactDebug, reactFeatureFlags, reactUtils, reactRuntimeScheduler, reactCxxReact, yoga, reactRendererDebug, reactGraphics, reactFabric, reactTurboModuleBridging],
-  sources: ["components/inputaccessory", "components/modal", "components/rncore", "components/safeareaview", "components/scrollview", "components/text", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "textlayoutmanager", "textlayoutmanager/platform/ios"],
+  sources: ["components/inputaccessory", "components/modal", "components/rncore", "components/safeareaview", "components/scrollview", "components/text", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "textlayoutmanager", "textlayoutmanager/platform/ios"]
 )
 
 let reactFabricImage = RNTarget(
@@ -378,14 +378,14 @@ let reactFabricImage = RNTarget(
   path: "ReactCommon/react/renderer/components/image",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/imagemanager/platform/ios"],
   excludedPaths: ["tests"],
-  dependencies: [reactNativeDependencies, reactFabric, reactCore, reactJsiExecutor, reactTurboModuleCore, jsi, logger, reactDebug, reactFeatureFlags, reactUtils, reactRuntimeScheduler, reactCxxReact, yoga, reactRendererDebug, reactGraphics, reactTurboModuleBridging, reactImageManagerApple],
+  dependencies: [reactNativeDependencies, reactFabric, reactCore, reactJsiExecutor, reactTurboModuleCore, jsi, logger, reactDebug, reactFeatureFlags, reactUtils, reactRuntimeScheduler, reactCxxReact, yoga, reactRendererDebug, reactGraphics, reactTurboModuleBridging, reactImageManagerApple]
 )
 
 let reactImageManagerApple = RNTarget(
   name: .reactImageManagerApple,
   path: "ReactCommon/react/renderer/imagemanager/platform/ios",
   searchPaths: ["ReactCommon", "ReactCommon/yoga"],
-  dependencies: [reactNativeDependencies, reactGraphics, reactDebug, reactUtils, reactRendererDebug, reactImageManager, reactRCTImage, reactCore, yoga],
+  dependencies: [reactNativeDependencies, reactGraphics, reactDebug, reactUtils, reactRendererDebug, reactImageManager, reactRCTImage, reactCore, yoga]
 )
 
 let reactImageManager = RNTarget(
@@ -393,14 +393,14 @@ let reactImageManager = RNTarget(
   path: "ReactCommon/react/renderer/imagemanager",
   searchPaths: ["ReactCommon", "ReactCommon/yoga"],
   excludedPaths: ["platform", "tests"],
-  dependencies: [reactNativeDependencies, reactGraphics, reactDebug, reactUtils, reactRendererDebug, yoga],
+  dependencies: [reactNativeDependencies, reactGraphics, reactDebug, reactUtils, reactRendererDebug, yoga]
 )
 
 let reactRCTAnimation = RNTarget(
   name: .reactRCTAnimation,
   path: "Libraries/NativeAnimation",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", ReactFBReactNativeSpecPath, FBLazyVectorPath, "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", CallInvokerPath],
-  dependencies: [rctTypesafety, jsi, reactFeatureFlags],
+  dependencies: [rctTypesafety, jsi, reactFeatureFlags]
 )
 
 let reactRCTImage = RNTarget(
@@ -408,7 +408,7 @@ let reactRCTImage = RNTarget(
   path: "Libraries/Image",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", CallInvokerPath, ReactFBReactNativeSpecPath, FBLazyVectorPath],
   linkedFrameworks: ["Accelerate"],
-  dependencies: [rctTypesafety, jsi, reactTurboModuleBridging, reactTurboModuleCore],
+  dependencies: [rctTypesafety, jsi, reactTurboModuleBridging, reactTurboModuleCore]
 )
 
 
@@ -416,35 +416,35 @@ let reactRCTText = RNTarget(
   name: .reactRCTText,
   path: "Libraries/Text",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", CallInvokerPath, ReactFBReactNativeSpecPath, FBLazyVectorPath],
-  dependencies: [yoga],
+  dependencies: [yoga]
 )
 
 let reactRCTBlob = RNTarget(
   name: .reactRCTBlob,
   path: "Libraries/Blob",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", CallInvokerPath, ReactFBReactNativeSpecPath, FBLazyVectorPath],
-  dependencies: [yoga, jsi],
+  dependencies: [yoga, jsi]
 )
 
 let reactRCTNetwork = RNTarget(
   name: .reactRCTNetwork,
   path: "Libraries/Network",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", CallInvokerPath, ReactFBReactNativeSpecPath, FBLazyVectorPath],
-  dependencies: [yoga, jsi],
+  dependencies: [yoga, jsi]
 )
 
 let reactAppDelegate = RNTarget(
   name: .reactAppDelegate,
   path: "Libraries/AppDelegate",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", RuntimeExecutorPath, CallInvokerPath, "ReactCommon/react/renderer/graphics/platform/ios", "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/hermes", "ReactCommon/jsiexecutor"],
-  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactRuntime, reactRCTImage, reactHermes, reactCore, reactFabric, reactTurboModuleCore, hermesIncludes],
+  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactRuntime, reactRCTImage, reactHermes, reactCore, reactFabric, reactTurboModuleCore, hermesIncludes]
 )
 
 let reactRCTLinking = RNTarget(
   name: .reactRCTLinking,
   path: "Libraries/LinkingIOS",
   searchPaths: ["ReactCommon", CallInvokerPath, ReactFBReactNativeSpecPath, FBLazyVectorPath],
-  dependencies: [jsi, reactTurboModuleCore],
+  dependencies: [jsi, reactTurboModuleCore]
 )
 
 let targets =  [
@@ -597,8 +597,7 @@ extension Target {
     dependencies: [String] = [],
     sources: [String]? = nil,
     publicHeadersPath: String? = ".",
-    linkerSettings: [LinkerSetting] = [],
-
+    linkerSettings: [LinkerSetting] = []
   ) -> Target {
     let dependencies = dependencies.map { Dependency.byNameItem(name: $0, condition: nil) }
     let excludes = excludedPaths
