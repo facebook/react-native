@@ -28,6 +28,15 @@ export type RawPerformanceEntry = {
   processingStart?: number,
   processingEnd?: number,
   interactionId?: number,
+
+  // For PerformanceResourceTiming only
+  fetchStart?: number,
+  requestStart?: number,
+  connectStart?: number,
+  connectEnd?: number,
+  responseStart?: number,
+  responseEnd?: number,
+  responseStatus?: string,
 };
 
 export type OpaqueNativeObserverHandle = mixed;

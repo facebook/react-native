@@ -61,6 +61,15 @@ struct NativePerformanceEntry {
   std::optional<DOMHighResTimeStamp> processingStart;
   std::optional<DOMHighResTimeStamp> processingEnd;
   std::optional<PerformanceEntryInteractionId> interactionId;
+
+  // For PerformanceResourceTiming only
+  std::optional<DOMHighResTimeStamp> fetchStart;
+  std::optional<DOMHighResTimeStamp> requestStart;
+  std::optional<DOMHighResTimeStamp> connectStart;
+  std::optional<DOMHighResTimeStamp> connectEnd;
+  std::optional<DOMHighResTimeStamp> responseStart;
+  std::optional<DOMHighResTimeStamp> responseEnd;
+  std::optional<std::string> responseStatus;
 };
 
 template <>

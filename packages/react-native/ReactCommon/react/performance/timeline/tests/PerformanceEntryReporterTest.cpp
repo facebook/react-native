@@ -51,6 +51,7 @@ namespace facebook::react {
       "PerformanceEntryType::MARK",
       "PerformanceEntryType::MEASURE",
       "PerformanceEntryType::EVENT",
+      "PerformanceEntryType::RESOURCE",
   };
 
   return std::visit(
