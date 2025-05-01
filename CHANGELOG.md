@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.79.2
+
+### Added
+
+- **Runtime:** Add useShadowNodeStateOnClone and updateRuntimeShadowNodeReferencesOnCommit ([22a4e060d5](https://github.com/facebook/react-native/commit/22a4e060d5cf6b31d940f39f6e4776c14192d240) by [@lenaic](https://github.com/lenaic))
+
+### Fixed
+
+- **Blob:** Make sure that URLs are parsed following the node specs ([6d8a02a666](https://github.com/facebook/react-native/commit/6d8a02a66606bd0a3931626aff0e76f7c3b31caa) by [@cipolleschi](https://github.com/cipolleschi))
+- **Codegen:** Fix codegen ImageSource require ([4d7c4bd6e8](https://github.com/facebook/react-native/commit/4d7c4bd6e8bf79f069970ca4f54ae3f4c92b80e0) by [@jakex7](https://github.com/jakex7))
+
 ## v0.79.1
 
 ### Changed
