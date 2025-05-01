@@ -11,12 +11,15 @@
 namespace facebook::react {
 
 void PerformanceEntryKeyedBuffer::add(const PerformanceEntry& entry) {
-  auto node = entryMap_.find(entry.name);
+  auto name =
+      std::visit([](const auto& entryData) { return entryData.name; }, entry);
+
+  auto node = entryMap_.find(name);
 
   if (node != entryMap_.end()) {
     node->second.push_back(entry);
   } else {
-    entryMap_.emplace(entry.name, std::vector<PerformanceEntry>{entry});
+    entryMap_.emplace(name, std::vector<PerformanceEntry>{entry});
   }
 }
 

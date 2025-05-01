@@ -8,8 +8,8 @@
 #include "NativePerformance.h"
 
 #include <memory>
-#include <mutex>
 #include <unordered_map>
+#include <variant>
 
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
@@ -47,6 +47,40 @@ void sortEntries(std::vector<PerformanceEntry>& entries) {
       entries.begin(), entries.end(), PerformanceEntrySorter{});
 }
 
+NativePerformanceEntry toNativePerformanceEntry(const PerformanceEntry& entry) {
+  auto nativeEntry = std::visit(
+      [](const auto& entryData) -> NativePerformanceEntry {
+        return {
+            .name = entryData.name,
+            .entryType = entryData.entryType,
+            .startTime = entryData.startTime,
+            .duration = entryData.duration,
+        };
+      },
+      entry);
+
+  if (std::holds_alternative<PerformanceEventTiming>(entry)) {
+    auto eventEntry = std::get<PerformanceEventTiming>(entry);
+    nativeEntry.processingStart = eventEntry.processingStart;
+    nativeEntry.processingEnd = eventEntry.processingEnd;
+    nativeEntry.interactionId = eventEntry.interactionId;
+  }
+
+  return nativeEntry;
+}
+
+std::vector<NativePerformanceEntry> toNativePerformanceEntries(
+    std::vector<PerformanceEntry>& entries) {
+  std::vector<NativePerformanceEntry> result;
+  result.reserve(entries.size());
+
+  for (auto& entry : entries) {
+    result.emplace_back(toNativePerformanceEntry(entry));
+  }
+
+  return result;
+}
+
 const std::array<PerformanceEntryType, 2> ENTRY_TYPES_AVAILABLE_FROM_TIMELINE{
     {PerformanceEntryType::MARK, PerformanceEntryType::MEASURE}};
 
@@ -80,8 +114,8 @@ double NativePerformance::markWithResult(
     jsi::Runtime& rt,
     std::string name,
     std::optional<double> startTime) {
-  auto entry =
-      PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+  auto entry = std::get<PerformanceMark>(
+      PerformanceEntryReporter::getInstance()->reportMark(name, startTime));
   return entry.startTime;
 }
 
@@ -93,8 +127,9 @@ std::tuple<double, double> NativePerformance::measureWithResult(
     std::optional<double> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
-  auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
-      name, startTime, endTime, duration, startMark, endMark);
+  auto entry = std::get<PerformanceMeasure>(
+      PerformanceEntryReporter::getInstance()->reportMeasure(
+          name, startTime, endTime, duration, startMark, endMark));
   return std::tuple{entry.startTime, entry.duration};
 }
 
@@ -122,7 +157,7 @@ void NativePerformance::clearMeasures(
   }
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntries(
+std::vector<NativePerformanceEntry> NativePerformance::getEntries(
     jsi::Runtime& /*rt*/) {
   std::vector<PerformanceEntry> entries;
 
@@ -132,10 +167,10 @@ std::vector<PerformanceEntry> NativePerformance::getEntries(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntriesByName(
+std::vector<NativePerformanceEntry> NativePerformance::getEntriesByName(
     jsi::Runtime& /*rt*/,
     std::string entryName,
     std::optional<PerformanceEntryType> entryType) {
@@ -155,10 +190,10 @@ std::vector<PerformanceEntry> NativePerformance::getEntriesByName(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntriesByType(
+std::vector<NativePerformanceEntry> NativePerformance::getEntriesByType(
     jsi::Runtime& /*rt*/,
     PerformanceEntryType entryType) {
   std::vector<PerformanceEntry> entries;
@@ -169,7 +204,7 @@ std::vector<PerformanceEntry> NativePerformance::getEntriesByType(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
 std::vector<std::pair<std::string, uint32_t>> NativePerformance::getEventCounts(
@@ -304,7 +339,7 @@ void NativePerformance::disconnect(jsi::Runtime& rt, jsi::Object observerObj) {
   observer->disconnect();
 }
 
-std::vector<PerformanceEntry> NativePerformance::takeRecords(
+std::vector<NativePerformanceEntry> NativePerformance::takeRecords(
     jsi::Runtime& rt,
     jsi::Object observerObj,
     bool sort) {
@@ -320,7 +355,7 @@ std::vector<PerformanceEntry> NativePerformance::takeRecords(
   if (sort) {
     sortEntries(records);
   }
-  return records;
+  return toNativePerformanceEntries(records);
 }
 
 std::vector<PerformanceEntryType>

@@ -24,7 +24,7 @@ export type RawPerformanceEntry = {
   startTime: number,
   duration: number,
 
-  // For "event" entries only:
+  // For PerformanceEventTiming only
   processingStart?: number,
   processingEnd?: number,
   interactionId?: number,

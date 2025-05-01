@@ -149,8 +149,8 @@ class PerformanceEntryReporter {
     throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
-  void traceMark(const PerformanceEntry& entry) const;
-  void traceMeasure(const PerformanceEntry& entry) const;
+  void traceMark(const PerformanceMark& entry) const;
+  void traceMeasure(const PerformanceMeasure& entry) const;
 };
 
 } // namespace facebook::react
