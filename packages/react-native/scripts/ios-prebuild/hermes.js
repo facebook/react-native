@@ -29,7 +29,7 @@ async function prepareHermesArtifactsAsync(
     process.cwd(),
     '.build',
     'artifacts',
-    `hermes-${version}-${buildType}`,
+    `hermes`,
   );
   if (fs.existsSync(artifactsPath)) {
     return artifactsPath;
@@ -41,10 +41,6 @@ async function prepareHermesArtifactsAsync(
 
   // download the file pointed to by the URL and store it in the ./.build/artifacts folder on disk
   await downloadAndExtract(url, artifactsPath);
-
-  // Create the dummy.c file
-  const dummyFilePath = path.join(artifactsPath, 'destroot', 'dummy.c');
-  fs.writeFileSync(dummyFilePath, '');
 }
 
 async function downloadAndExtract(url /*:string*/, targetFolder /*:string*/) {
@@ -72,6 +68,9 @@ async function downloadAndExtract(url /*:string*/, targetFolder /*:string*/) {
     file: tarballPath,
     cwd: targetFolder,
   });
+
+  // Delete the tarball after extraction
+  fs.unlinkSync(tarballPath);
 
   console.log('Download and extraction complete.');
 }

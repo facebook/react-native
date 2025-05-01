@@ -10,7 +10,7 @@
  */
 
 const {prepareHermesArtifactsAsync} = require('./ios-prebuild/hermes');
-const {createFolderIfNotExists, createLink} = require('./ios-prebuild/utils');
+const {createFolderIfNotExists} = require('./ios-prebuild/utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -41,9 +41,11 @@ async function main() {
      * @returns {void}
      */
     const link = (fromPath /*:string*/, includePath /*:string*/) => {
-      console.log(`Linking ${fromPath} to ${includePath}...`);
       const source = path.resolve(root, fromPath);
       const target = path.resolve(linksFolder, includePath);
+      console.log(`Linking ${source} to ${target}...`);
+
+      createFolderIfNotExists(target);
 
       // get subfolders in source - make sure we only copy folders with header files
       const entries = fs.readdirSync(source, {withFileTypes: true});
@@ -54,14 +56,24 @@ async function main() {
             (dirent.name.endsWith('.h') || dirent.name.endsWith('.hpp')),
         )
       ) {
-        // Create link for current folder
-        try {
-          createLink(source, target);
-        } catch (e) {
-          console.error(
-            `Failed to create link for ${source} to ${target}: ${e}`,
-          );
-        }
+        // Create link for all header files (*.h, *.hpp) in the source directory
+        entries.forEach(entry => {
+          if (entry.isFile() && /\.(h|hpp)$/.test(entry.name)) {
+            const sourceFile = path.join(source, entry.name);
+            const targetFile = path.join(target, entry.name);
+            // Skip if the file already exists
+            if (fs.existsSync(targetFile)) {
+              return;
+            }
+            try {
+              fs.linkSync(sourceFile, targetFile);
+            } catch (e) {
+              console.error(
+                `Failed to create link for ${sourceFile} to ${targetFile}: ${e}`,
+              );
+            }
+          }
+        });
       }
 
       const subfolders = entries
@@ -71,7 +83,7 @@ async function main() {
 
       // Create links for subfolders
       subfolders.forEach(folder => {
-        link(fromPath + '/' + folder, '', includePath);
+        link(fromPath + '/' + folder, includePath);
       });
     };
 
@@ -107,7 +119,7 @@ async function main() {
     link('React/Runtime', 'React');
     link('React/Views/ScrollView', 'React');
     link('React/Views/RefreshControl', 'React');
-
+    link('Libraries/Text', 'React');
     link(
       'ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported',
       'RCTDeprecation',

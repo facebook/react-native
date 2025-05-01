@@ -9,7 +9,6 @@
 import PackageDescription
 
 let react = "React"
-let hermesVersion = "0.79.1"
 
 class BaseTarget {
   let name: String
@@ -80,14 +79,8 @@ let reactNativeDependencies = BinaryTarget(
 
 let hermesPrebuilt = BinaryTarget(
   name: .hermesPrebuilt,
-  path: ".build/artifacts/hermes-\(hermesVersion)-release/destroot/Library/Frameworks/universal/hermes.xcframework"
-)
-
-let hermesIncludes = RNTarget(
-  name: .hermesIncludes,
-  path: ".build/artifacts/hermes-\(hermesVersion)-release/destroot",
-  searchPaths: [".build/artifacts/hermes-\(hermesVersion)-release/destroot/include"],
-  sources: ["dummy.c"]
+  path: ".build/artifacts/hermes/destroot/Library/Frameworks/universal/hermes.xcframework",
+  searchPaths: [".build/artifacts/hermes/destroot/include"]
 )
 
 let rctDeprecation = RNTarget(name: .rctDeprecation, path: "ReactApple/Libraries/RCTFoundation/RCTDeprecation", searchPaths: ["ReactApple"])
@@ -206,7 +199,7 @@ let reactHermes = RNTarget(
   path: "ReactCommon/hermes",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
   excludedPaths: ["inspector-modern/chrome/tests"],
-  dependencies: [reactNativeDependencies, reactCxxReact, reactJsiExecutor, reactJsInspector, reactJsInspectorTracing, reactPerfLogger, hermesIncludes, hermesPrebuilt, jsi]
+  dependencies: [reactNativeDependencies, reactCxxReact, reactJsiExecutor, reactJsInspector, reactJsInspectorTracing, reactPerfLogger, hermesPrebuilt, jsi]
 )
 
 let reactPerformanceTimeline = RNTarget(
@@ -327,21 +320,21 @@ let reactRuntime = RNTarget(
   path: "ReactCommon/react/runtime",
   searchPaths: ["ReactCommon", RuntimeExecutorPath, CallInvokerPath],
   excludedPaths: ["tests", "iostests", "platform"],
-  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactCxxReact, reactJsErrorHandler, reactPerformanceTimeline, reactUtils, reactFeatureFlags, reactJsInspector, reactJsiTooling, reactHermes, reactRuntimeScheduler, hermesIncludes]
+  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactCxxReact, reactJsErrorHandler, reactPerformanceTimeline, reactUtils, reactFeatureFlags, reactJsInspector, reactJsiTooling, reactHermes, reactRuntimeScheduler, hermesPrebuilt]
 )
 
 let reactRuntimeApple = RNTarget(
   name: .reactRuntimeApple,
   path: "ReactCommon/react/runtime/platform/ios",
-  searchPaths: ["ReactCommon", "ReactCommon/react/renderer/graphics/platform/cxx", RuntimeExecutorPath, "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/react/nativemodule/core", CallInvokerPath, ReactFBReactNativeSpecPath, "React/Fabric", FBLazyVectorPath, ".build/artifacts/hermes-\(hermesVersion)-release/destroot/include"],
+  searchPaths: ["ReactCommon", "ReactCommon/react/renderer/graphics/platform/cxx", RuntimeExecutorPath, "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/react/nativemodule/core", CallInvokerPath, ReactFBReactNativeSpecPath, "React/Fabric", FBLazyVectorPath, ".build/artifacts/hermes/destroot/include"],
   excludedPaths: ["ReactCommon/RCTJscInstance.mm"],
-  dependencies: [reactNativeDependencies, jsi, reactPerfLogger, reactCxxReact, rctDeprecation, yoga, reactRuntime, reactRCTFabric, reactCoreModules, hermesIncludes]
+  dependencies: [reactNativeDependencies, jsi, reactPerfLogger, reactCxxReact, rctDeprecation, yoga, reactRuntime, reactRCTFabric, reactCoreModules, hermesPrebuilt]
 )
 
 let reactCore = RNTarget(
   name: .reactCore,
   path: "React",
-  searchPaths: ["ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", CallInvokerPath, "ReactCommon", ReactFBReactNativeSpecPath, "React/I18n", "React/Profiler", RuntimeExecutorPath, "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/renderer/components/textinput/platform/ios", "ReactCommon/react/renderer/graphics/platform/ios", FBLazyVectorPath, "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/imagemanager/platform/cxx", "ReactCommon/react/renderer/imagemanager/platform/ios", "ReactCommon/hermes", ".build/artifacts/hermes-\(hermesVersion)-release/destroot/include"],
+  searchPaths: ["ReactCommon/yoga", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", CallInvokerPath, "ReactCommon", ReactFBReactNativeSpecPath, "React/I18n", "React/Profiler", RuntimeExecutorPath, "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/renderer/components/textinput/platform/ios", "ReactCommon/react/renderer/graphics/platform/ios", FBLazyVectorPath, "ReactCommon/react/renderer/components/view/platform/cxx", "ReactCommon/react/renderer/textlayoutmanager/platform/ios", "ReactCommon/react/renderer/imagemanager/platform/cxx", "ReactCommon/react/renderer/imagemanager/platform/ios", "ReactCommon/hermes", ".build/artifacts/hermes/destroot/include"],
   linkedFrameworks: ["CoreServices"],
   excludedPaths: ["Fabric", "Tests", "Resources", "Runtime/RCTJscInstanceFactory.mm", "I18n/strings", "CxxBridge/JSCExecutorFactory.mm", "CoreModules"],
   dependencies: [reactNativeDependencies, reactCxxReact, reactPerfLogger, jsi, reactJsiExecutor, reactUtils, reactFeatureFlags, reactRuntimeScheduler, yoga, reactJsInspector, reactJsiTooling, rctDeprecation, reactCoreRCTWebsocket, reactRCTImage, reactTurboModuleCore, reactRCTText, reactRCTBlob, reactRCTAnimation, reactRCTNetwork, reactFabric],
@@ -437,7 +430,7 @@ let reactAppDelegate = RNTarget(
   name: .reactAppDelegate,
   path: "Libraries/AppDelegate",
   searchPaths: ["ReactCommon", "ReactCommon/yoga", RuntimeExecutorPath, CallInvokerPath, "ReactCommon/react/renderer/graphics/platform/ios", "ReactCommon/react/runtime/platform/ios", "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios", "ReactCommon/hermes", "ReactCommon/jsiexecutor"],
-  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactRuntime, reactRCTImage, reactHermes, reactCore, reactFabric, reactTurboModuleCore, hermesIncludes]
+  dependencies: [reactNativeDependencies, jsi, reactJsiExecutor, reactRuntime, reactRCTImage, reactHermes, reactCore, reactFabric, reactTurboModuleCore, hermesPrebuilt]
 )
 
 let reactRCTLinking = RNTarget(
@@ -474,7 +467,6 @@ let targets =  [
   reactFabricImage,
   reactNativeDependencies,
   hermesPrebuilt,
-  hermesIncludes,
   reactJsiTooling,
   reactPerformanceTimeline,
   reactRuntimeScheduler,
@@ -550,7 +542,6 @@ extension String {
   static let reactNativeDependencies = "ReactNativeDependencies"
 
   static let hermesPrebuilt = "hermes-prebuilt"
-  static let hermesIncludes = "hermes-includes"
 
   static let reactJsiTooling = "React-jsitooling"
   static let reactPerformanceTimeline = "React-performancetimeline"
@@ -603,13 +594,6 @@ extension Target {
     let excludes = excludedPaths
     let numOfSlash = path.count { $0 == "/" }
 
-    let cCommonHeaderPaths: [CSetting] = Set(searchPaths).map {
-      CSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, $0))
-    } + [
-      CSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, ".build/headers")),
-      CSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, ".build/headers/React"))
-    ]
-
     let cxxCommonHeaderPaths : [CXXSetting] = Set(searchPaths).map {
       CXXSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, $0))
     } + [
@@ -617,13 +601,12 @@ extension Target {
       CXXSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, ".build/headers/React"))
     ]
 
-    let cSettings = [
+    let cSettings : [CSetting] = [
       .define("DEBUG", .when(configuration: .debug)),
       .define("USE_HERMES", to: "1"),
       // TODO: Why doesn't it pick up this when DEBUG is set??
       .define("RCT_ENABLE_INSPECTOR", to: "1", .when(configuration: .debug))
-    ] +
-    cCommonHeaderPaths
+    ]
 
     let cxxSettings = [
       .unsafeFlags(["-std=c++20"]),
@@ -631,8 +614,7 @@ extension Target {
       .define("USE_HERMES", to: "1"),
       // TODO: Why doesn't it pick up this when DEBUG is set??
       .define("RCT_ENABLE_INSPECTOR", to: "1", .when(configuration: .debug))
-    ] +
-    cxxCommonHeaderPaths
+    ] + cxxCommonHeaderPaths
 
     return .target(
       name: name,
