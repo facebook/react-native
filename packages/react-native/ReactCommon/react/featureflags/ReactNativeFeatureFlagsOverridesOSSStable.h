@@ -29,5 +29,8 @@ class ReactNativeFeatureFlagsOverridesOSSStable
   bool updateRuntimeShadowNodeReferencesOnCommit() override {
     return true;
   }
+  bool useShadowNodeStateOnClone() override {
+    return true;
+  }
 };
 } // namespace facebook::react
