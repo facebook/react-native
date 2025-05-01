@@ -50,9 +50,9 @@ void RCTSetNewArchEnabled(BOOL enabled)
 BOOL RCTAreLegacyLogsEnabled(void)
 {
 #if RCT_DEBUG
-  NSNumber *rctNewArchEnabled =
-      (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"];
-  return rctNewArchEnabled.boolValue;
+  static BOOL legacyLogEnabled =
+      ((NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"]).boolValue;
+  return legacyLogEnabled;
 #else
   return NO;
 #endif
