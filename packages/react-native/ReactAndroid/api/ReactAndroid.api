@@ -1353,6 +1353,22 @@ public abstract interface class com/facebook/react/bridge/ReadableArray {
 	public abstract fun toArrayList ()Ljava/util/ArrayList;
 }
 
+public final class com/facebook/react/bridge/ReadableArrayBuilder {
+	public fun <init> (Lcom/facebook/react/bridge/WritableArray;)V
+	public final fun add (D)V
+	public final fun add (I)V
+	public final fun add (J)V
+	public final fun add (Ljava/lang/String;)V
+	public final fun add (Z)V
+	public final fun addArray (Lkotlin/jvm/functions/Function1;)V
+	public final fun addMap (Lkotlin/jvm/functions/Function1;)V
+	public final fun addNull ()V
+}
+
+public final class com/facebook/react/bridge/ReadableArrayBuilderKt {
+	public static final fun buildReadableArray (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/bridge/ReadableArray;
+}
+
 public abstract interface class com/facebook/react/bridge/ReadableMap {
 	public abstract fun getArray (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
 	public abstract fun getBoolean (Ljava/lang/String;)Z
@@ -1368,6 +1384,22 @@ public abstract interface class com/facebook/react/bridge/ReadableMap {
 	public abstract fun isNull (Ljava/lang/String;)Z
 	public abstract fun keySetIterator ()Lcom/facebook/react/bridge/ReadableMapKeySetIterator;
 	public abstract fun toHashMap ()Ljava/util/HashMap;
+}
+
+public final class com/facebook/react/bridge/ReadableMapBuilder {
+	public fun <init> (Lcom/facebook/react/bridge/WritableMap;)V
+	public final fun put (Ljava/lang/String;D)V
+	public final fun put (Ljava/lang/String;I)V
+	public final fun put (Ljava/lang/String;J)V
+	public final fun put (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun put (Ljava/lang/String;Z)V
+	public final fun putArray (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun putMap (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun putNull (Ljava/lang/String;)V
+}
+
+public final class com/facebook/react/bridge/ReadableMapBuilderKt {
+	public static final fun buildReadableMap (Lkotlin/jvm/functions/Function1;)Lcom/facebook/react/bridge/ReadableMap;
 }
 
 public abstract interface class com/facebook/react/bridge/ReadableMapKeySetIterator {
