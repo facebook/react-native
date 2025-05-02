@@ -15,7 +15,10 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.UnimplementedNativeViewManagerDelegate
 import com.facebook.react.viewmanagers.UnimplementedNativeViewManagerInterface
 
-/** ViewManager for [ReactUnimplementedView] to represent a component that is not yet supported. */
+/**
+ * ViewManager that renders [ReactUnimplementedView] to represent a component that is not properly
+ * implemented or registered.
+ */
 @ReactModule(name = ReactUnimplementedViewManager.REACT_CLASS)
 internal class ReactUnimplementedViewManager :
     ViewGroupManager<ReactUnimplementedView>(),
@@ -32,9 +35,8 @@ internal class ReactUnimplementedViewManager :
   override fun getName(): String = REACT_CLASS
 
   @ReactProp(name = "name")
-  override fun setName(view: ReactUnimplementedView, name: String?): Unit {
-    view.setName(name ?: "<null component name>")
-  }
+  override fun setName(view: ReactUnimplementedView, name: String?): Unit =
+      view.setName(name ?: "<null component name>")
 
   internal companion object {
     const val REACT_CLASS: String = "UnimplementedNativeView"
