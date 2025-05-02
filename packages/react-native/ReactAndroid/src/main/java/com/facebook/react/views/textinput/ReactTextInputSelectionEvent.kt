@@ -30,7 +30,7 @@ internal class ReactTextInputSelectionEvent(
 
   override fun getEventName(): String = EVENT_NAME
 
-  override fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     val selectionData =
         Arguments.createMap().apply {
           putInt("end", selectionEnd)

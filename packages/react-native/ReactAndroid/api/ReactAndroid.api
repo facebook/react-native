@@ -3008,19 +3008,19 @@ public final class com/facebook/react/modules/network/NetworkingModule : com/fac
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/String;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/String;Lokhttp3/OkHttpClient;Ljava/util/List;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)V
-	public final fun abortRequest (D)V
-	public final fun addListener (Ljava/lang/String;)V
+	public fun abortRequest (D)V
+	public fun addListener (Ljava/lang/String;)V
 	public final fun addRequestBodyHandler (Lcom/facebook/react/modules/network/NetworkingModule$RequestBodyHandler;)V
 	public final fun addResponseHandler (Lcom/facebook/react/modules/network/NetworkingModule$ResponseHandler;)V
 	public final fun addUriHandler (Lcom/facebook/react/modules/network/NetworkingModule$UriHandler;)V
-	public final fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
-	public final fun initialize ()V
-	public final fun invalidate ()V
-	public final fun removeListeners (D)V
+	public fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
+	public fun initialize ()V
+	public fun invalidate ()V
+	public fun removeListeners (D)V
 	public final fun removeRequestBodyHandler (Lcom/facebook/react/modules/network/NetworkingModule$RequestBodyHandler;)V
 	public final fun removeResponseHandler (Lcom/facebook/react/modules/network/NetworkingModule$ResponseHandler;)V
 	public final fun removeUriHandler (Lcom/facebook/react/modules/network/NetworkingModule$UriHandler;)V
-	public final fun sendRequest (Ljava/lang/String;Ljava/lang/String;DLcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZ)V
+	public fun sendRequest (Ljava/lang/String;Ljava/lang/String;DLcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZ)V
 	public final fun sendRequestInternal (Ljava/lang/String;Ljava/lang/String;ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZIZ)V
 	public static final fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
 }

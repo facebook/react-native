@@ -53,7 +53,7 @@ class AbstractLayoutAnimationTest {
               y: Int,
               width: Int,
               height: Int
-          ): Animation? {
+          ): Animation {
             return mock()
           }
         }
@@ -102,7 +102,7 @@ class AbstractLayoutAnimationTest {
               y: Int,
               width: Int,
               height: Int
-          ): Animation? = mock()
+          ): Animation = mock()
         }
 
     val result = invalidAnimation.createAnimation(view, 0, 0, 100, 100)
@@ -126,7 +126,7 @@ class AbstractLayoutAnimationTest {
               y: Int,
               width: Int,
               height: Int
-          ): Animation? = mock()
+          ): Animation = mock()
         }
 
     val exception =

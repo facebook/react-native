@@ -39,7 +39,7 @@ public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
 
   override fun getEventName(): String = "topLayout"
 
-  override fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     val layout =
         Arguments.createMap().apply {
           putDouble("x", toDIPFromPixel(x.toFloat()).toDouble())
