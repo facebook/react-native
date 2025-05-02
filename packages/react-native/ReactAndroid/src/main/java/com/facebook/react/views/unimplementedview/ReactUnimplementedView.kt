@@ -12,26 +12,29 @@ import android.graphics.Color
 import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
+import com.facebook.react.common.build.ReactBuildConfig
 
 internal class ReactUnimplementedView(context: Context) : LinearLayout(context) {
 
-  private val textView: AppCompatTextView
+  private val textView: AppCompatTextView = AppCompatTextView(context)
 
   init {
-    textView = AppCompatTextView(context)
-    textView.layoutParams =
-        LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT)
+    textView.layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
     textView.setGravity(Gravity.CENTER)
     textView.setTextColor(Color.WHITE)
+    textView.text = ""
 
-    setBackgroundColor(0x55ff0000)
-    setGravity(Gravity.CENTER_HORIZONTAL)
-    setOrientation(LinearLayout.VERTICAL)
+    if (ReactBuildConfig.DEBUG) {
+      setBackgroundColor(0x55ff0000)
+    }
+    gravity = Gravity.CENTER_HORIZONTAL
+    orientation = VERTICAL
     addView(textView)
   }
 
   internal fun setName(name: String) {
-    textView.setText("'$name' is not Fabric compatible yet.")
+    if (ReactBuildConfig.DEBUG) {
+      textView.text = "'$name' is not registered."
+    }
   }
 }
