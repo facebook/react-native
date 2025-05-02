@@ -24,7 +24,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.style.BorderColors
@@ -544,10 +543,10 @@ internal class BorderDrawable(
   private fun computeBorderInsets(): RectF {
     borderInsets?.resolve(layoutDirection, context)?.let {
       return RectF(
-          if (it.left.isNaN()) 0f else it.left.dpToPx(),
-          if (it.top.isNaN()) 0f else it.top.dpToPx(),
-          if (it.right.isNaN()) 0f else it.right.dpToPx(),
-          if (it.bottom.isNaN()) 0f else it.bottom.dpToPx(),
+          if (it.left.isNaN()) 0f else it.left,
+          if (it.top.isNaN()) 0f else it.top,
+          if (it.right.isNaN()) 0f else it.right,
+          if (it.bottom.isNaN()) 0f else it.bottom,
       )
     }
     return RectF(0f, 0f, 0f, 0f)
