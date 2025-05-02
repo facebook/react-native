@@ -26,6 +26,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
@@ -695,22 +696,54 @@ public class TextLayoutManager {
             width,
             height,
             reactTextViewManagerCallback);
-    Spanned text = (Spanned) layout.getText();
-
-    if (text == null) {
-      return 0;
-    }
 
     int maximumNumberOfLines =
         paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
-    int calculatedLineCount =
-        maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
-            ? layout.getLineCount()
-            : Math.min(maximumNumberOfLines, layout.getLineCount());
+    Spanned text = (Spanned) layout.getText();
 
+    int calculatedLineCount = calculateLineCount(layout, maximumNumberOfLines);
+    float calculatedWidth =
+        calculateWidth(layout, text, width, widthYogaMeasureMode, calculatedLineCount);
+    float calculatedHeight =
+        calculateHeight(layout, text, height, heightYogaMeasureMode, calculatedLineCount);
+
+    if (attachmentsPositions != null) {
+      int attachmentIndex = 0;
+      int lastAttachmentFoundInSpan;
+
+      AttachmentMetrics metrics = new AttachmentMetrics();
+      for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
+        lastAttachmentFoundInSpan =
+            nextAttachmentMetrics(layout, text, calculatedWidth, calculatedLineCount, i, metrics);
+        if (metrics.wasFound) {
+          attachmentsPositions[attachmentIndex] = PixelUtil.toDIPFromPixel(metrics.top);
+          attachmentsPositions[attachmentIndex + 1] = PixelUtil.toDIPFromPixel(metrics.left);
+          attachmentIndex += 2;
+        }
+      }
+    }
+
+    float widthInSP = PixelUtil.toDIPFromPixel(calculatedWidth);
+    float heightInSP = PixelUtil.toDIPFromPixel(calculatedHeight);
+
+    return YogaMeasureOutput.make(widthInSP, heightInSP);
+  }
+
+  private static int calculateLineCount(Layout layout, int maximumNumberOfLines) {
+    return maximumNumberOfLines == ReactConstants.UNSET || maximumNumberOfLines == 0
+        ? layout.getLineCount()
+        : Math.min(maximumNumberOfLines, layout.getLineCount());
+  }
+
+  private static float calculateWidth(
+      Layout layout,
+      Spanned text,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      int calculatedLineCount) {
     // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
     // text that is wrapping), compute width using the longest line.
     float calculatedWidth = 0;
@@ -741,7 +774,15 @@ public class TextLayoutManager {
     if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
       calculatedWidth = (float) Math.ceil(calculatedWidth);
     }
+    return calculatedWidth;
+  }
 
+  private static float calculateHeight(
+      Layout layout,
+      Spanned text,
+      float height,
+      YogaMeasureMode heightYogaMeasureMode,
+      int calculatedLineCount) {
     float calculatedHeight = height;
     if (heightYogaMeasureMode != YogaMeasureMode.EXACTLY) {
       // StaticLayout only seems to change its height in response to maxLines when ellipsizing, so
@@ -751,98 +792,113 @@ public class TextLayoutManager {
         calculatedHeight = height;
       }
     }
+    return calculatedHeight;
+  }
 
+  private static class AttachmentMetrics {
+    boolean wasFound;
+    float top;
+    float left;
+    float width;
+    float height;
+  }
+
+  private static int nextAttachmentMetrics(
+      Layout layout,
+      Spanned text,
+      float calculatedWidth,
+      int calculatedLineCount,
+      int i,
+      AttachmentMetrics metrics) {
     // Calculate the positions of the attachments (views) that will be rendered inside the
     // Spanned Text. The following logic is only executed when a text contains views inside.
     // This follows a similar logic than used in pre-fabric (see ReactTextView.onLayout method).
-    int attachmentIndex = 0;
-    int lastAttachmentFoundInSpan;
-    for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
-      lastAttachmentFoundInSpan =
-          text.nextSpanTransition(i, text.length(), TextInlineViewPlaceholderSpan.class);
-      TextInlineViewPlaceholderSpan[] placeholders =
-          text.getSpans(i, lastAttachmentFoundInSpan, TextInlineViewPlaceholderSpan.class);
-      for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
-        int start = text.getSpanStart(placeholder);
-        int line = layout.getLineForOffset(start);
-        boolean isLineTruncated = layout.getEllipsisCount(line) > 0;
-        boolean isAttachmentTruncated =
-            line > calculatedLineCount
-                || (isLineTruncated
-                    && start >= layout.getLineStart(line) + layout.getEllipsisStart(line));
-        int attachmentPosition = attachmentIndex * 2;
-        if (isAttachmentTruncated) {
-          attachmentsPositions[attachmentPosition] = Float.NaN;
-          attachmentsPositions[attachmentPosition + 1] = Float.NaN;
-          attachmentIndex++;
-        } else {
-          float placeholderWidth = placeholder.getWidth();
-          float placeholderHeight = placeholder.getHeight();
-          // Calculate if the direction of the placeholder character is Right-To-Left.
-          boolean isRtlChar = layout.isRtlCharAt(start);
-          boolean isRtlParagraph = layout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
-          float placeholderLeftPosition;
-          // There's a bug on Samsung devices where calling getPrimaryHorizontal on
-          // the last offset in the layout will result in an endless loop. Work around
-          // this bug by avoiding getPrimaryHorizontal in that case.
-          if (start == text.length() - 1) {
-            boolean endsWithNewLine =
-                text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
-            float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
-            placeholderLeftPosition =
-                isRtlParagraph
-                    // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
-                    // incorrect
-                    // values when the paragraph is RTL and `setSingleLine(true)`.
-                    ? calculatedWidth - lineWidth
-                    : layout.getLineRight(line) - placeholderWidth;
-          } else {
-            // The direction of the paragraph may not be exactly the direction the string is
-            // heading
-            // in at the
-            // position of the placeholder. So, if the direction of the character is the same
-            // as the
-            // paragraph
-            // use primary, secondary otherwise.
-            boolean characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar;
-            placeholderLeftPosition =
-                characterAndParagraphDirectionMatch
-                    ? layout.getPrimaryHorizontal(start)
-                    : layout.getSecondaryHorizontal(start);
-            if (isRtlParagraph && !isRtlChar) {
-              // Adjust `placeholderLeftPosition` to work around an Android bug.
-              // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
-              // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
-              // `getLineRight` return incorrect values. Their return values seem to be off
-              // by the same number of pixels so subtracting these values cancels out the
-              // error.
-              //
-              // The result is equivalent to bugless versions of
-              // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
-              placeholderLeftPosition =
-                  calculatedWidth - (layout.getLineRight(line) - placeholderLeftPosition);
-            }
-            if (isRtlChar) {
-              placeholderLeftPosition -= placeholderWidth;
-            }
-          }
-          // Vertically align the inline view to the baseline of the line of text.
-          float placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight;
+    int lastAttachmentFoundInSpan =
+        text.nextSpanTransition(i, text.length(), TextInlineViewPlaceholderSpan.class);
+    TextInlineViewPlaceholderSpan[] placeholders =
+        text.getSpans(i, lastAttachmentFoundInSpan, TextInlineViewPlaceholderSpan.class);
 
-          // The attachment array returns the positions of each of the attachments as
-          attachmentsPositions[attachmentPosition] =
-              PixelUtil.toDIPFromPixel(placeholderTopPosition);
-          attachmentsPositions[attachmentPosition + 1] =
-              PixelUtil.toDIPFromPixel(placeholderLeftPosition);
-          attachmentIndex++;
-        }
-      }
+    if (placeholders.length == 0) {
+      metrics.wasFound = false;
+      return lastAttachmentFoundInSpan;
     }
 
-    float widthInSP = PixelUtil.toDIPFromPixel(calculatedWidth);
-    float heightInSP = PixelUtil.toDIPFromPixel(calculatedHeight);
+    Assertions.assertCondition(placeholders.length == 1);
+    TextInlineViewPlaceholderSpan placeholder = placeholders[0];
 
-    return YogaMeasureOutput.make(widthInSP, heightInSP);
+    int start = text.getSpanStart(placeholder);
+    int line = layout.getLineForOffset(start);
+    boolean isLineTruncated = layout.getEllipsisCount(line) > 0;
+    boolean isAttachmentTruncated =
+        line > calculatedLineCount
+            || (isLineTruncated
+                && start >= layout.getLineStart(line) + layout.getEllipsisStart(line));
+    if (isAttachmentTruncated) {
+      metrics.top = Float.NaN;
+      metrics.left = Float.NaN;
+    } else {
+      float placeholderWidth = placeholder.getWidth();
+      float placeholderHeight = placeholder.getHeight();
+      // Calculate if the direction of the placeholder character is Right-To-Left.
+      boolean isRtlChar = layout.isRtlCharAt(start);
+      boolean isRtlParagraph = layout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
+      float placeholderLeftPosition;
+      // There's a bug on Samsung devices where calling getPrimaryHorizontal on
+      // the last offset in the layout will result in an endless loop. Work around
+      // this bug by avoiding getPrimaryHorizontal in that case.
+      if (start == text.length() - 1) {
+        boolean endsWithNewLine =
+            text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
+        float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
+        placeholderLeftPosition =
+            isRtlParagraph
+                // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
+                // incorrect
+                // values when the paragraph is RTL and `setSingleLine(true)`.
+                ? calculatedWidth - lineWidth
+                : layout.getLineRight(line) - placeholderWidth;
+      } else {
+        // The direction of the paragraph may not be exactly the direction the string is
+        // heading
+        // in at the
+        // position of the placeholder. So, if the direction of the character is the same
+        // as the
+        // paragraph
+        // use primary, secondary otherwise.
+        boolean characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar;
+        placeholderLeftPosition =
+            characterAndParagraphDirectionMatch
+                ? layout.getPrimaryHorizontal(start)
+                : layout.getSecondaryHorizontal(start);
+        if (isRtlParagraph && !isRtlChar) {
+          // Adjust `placeholderLeftPosition` to work around an Android bug.
+          // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
+          // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
+          // `getLineRight` return incorrect values. Their return values seem to be off
+          // by the same number of pixels so subtracting these values cancels out the
+          // error.
+          //
+          // The result is equivalent to bugless versions of
+          // `getPrimaryHorizontal`/`getSecondaryHorizontal`.
+          placeholderLeftPosition =
+              calculatedWidth - (layout.getLineRight(line) - placeholderLeftPosition);
+        }
+        if (isRtlChar) {
+          placeholderLeftPosition -= placeholderWidth;
+        }
+      }
+      // Vertically align the inline view to the baseline of the line of text.
+      float placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight;
+
+      // The attachment array returns the positions of each of the attachments as
+      metrics.top = placeholderTopPosition;
+      metrics.left = placeholderLeftPosition;
+    }
+
+    metrics.wasFound = true;
+    metrics.width = placeholder.getWidth();
+    metrics.height = placeholder.getHeight();
+    return lastAttachmentFoundInSpan;
   }
 
   public static WritableArray measureLines(
