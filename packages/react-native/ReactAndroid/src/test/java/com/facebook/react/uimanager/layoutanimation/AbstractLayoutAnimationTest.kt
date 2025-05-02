@@ -16,6 +16,7 @@ import android.view.animation.LinearInterpolator
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.IllegalViewOperationException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.After
 import org.junit.Assert.assertThrows
 import org.junit.Before
@@ -53,9 +54,7 @@ class AbstractLayoutAnimationTest {
               y: Int,
               width: Int,
               height: Int
-          ): Animation {
-            return mock()
-          }
+          ): Animation = mock()
         }
   }
 
@@ -129,11 +128,9 @@ class AbstractLayoutAnimationTest {
           ): Animation = mock()
         }
 
-    val exception =
-        assertThrows(IllegalViewOperationException::class.java) {
-          invalidAnimation.initializeFromConfig(config, 300)
-        }
-    assertThat(exception.message).contains("Invalid layout animation")
+    assertThatThrownBy { invalidAnimation.initializeFromConfig(config, 300) }
+        .isInstanceOf(IllegalViewOperationException::class.java)
+        .hasMessageContaining("Invalid layout animation")
   }
 
   @Test
