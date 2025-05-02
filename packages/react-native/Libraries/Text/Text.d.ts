@@ -211,6 +211,15 @@ export interface TextProps
    * Controls how touch events are handled. Similar to `View`'s `pointerEvents`.
    */
   pointerEvents?: ViewStyle['pointerEvents'] | undefined;
+
+  /**
+   * Insets for press retention.
+   * Example: { top: 20, left: 20, bottom: 20, right: 20 }
+   */
+  pressRetentionOffset?:
+   | {top: number; left: number; bottom: number; right: number}
+   | undefined;
+
 }
 
 /**
