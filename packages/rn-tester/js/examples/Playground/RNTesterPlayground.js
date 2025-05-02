@@ -12,24 +12,100 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
-import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  Button,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  useColorScheme,
+  View,
+  NativeModules,
+  AppState,
+  Text,
+  EmitterSubscription,
+  NativeEventEmitter,
+} from 'react-native';
 
-function Playground() {
+const {EVENT_A, EVENT_B} = NativeModules.SampleLegacyModule.getConstants();
+
+function Playground(): React.JSX.Element {
+  const isDarkMode = useColorScheme() === 'dark';
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  useEffect(() => {
+    var subscriptions: EmitterSubscription[] = [];
+    subscriptions.push(
+      AppState.addEventListener('change', nextAppState => {
+        appState.current = nextAppState;
+        setAppStateVisible(appState.current);
+        console.log('AppState', appState.current);
+      }),
+    );
+
+    const eventEmitter = new NativeEventEmitter(
+      NativeModules.SampleLegacyModule,
+    );
+    subscriptions.push(
+      eventEmitter.addListener(EVENT_A, message => {
+        console.log('Event A: ', message);
+      }),
+    );
+    subscriptions.push(
+      eventEmitter.addListener(EVENT_B, async message => {
+        await sleep(500);
+        console.log('Event B: ', message);
+      }),
+    );
+
+    return () => {
+      subscriptions.forEach(s => s.remove());
+    };
+  }, []);
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? 'black' : 'white',
+  };
+
   return (
-    <View style={styles.container}>
-      <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
-      </RNTesterText>
-    </View>
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        <Text>Current state is: {appStateVisible}</Text>
+        <View
+          style={{
+            backgroundColor: isDarkMode ? 'black' : 'white',
+          }}>
+          <Button
+            title="Press me"
+            onPress={async () => {
+              console.log('\n');
+              await sleep(500);
+              console.log('Timer works before Activity');
+              NativeModules.SampleLegacyModule.alert(
+                'Native Alert',
+                'Custom Android Activity',
+              );
+              console.log('Custom activity started');
+              await sleep(500);
+              console.log('Timer works after async');
+            }}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-  },
-});
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export default ({
   title: 'Playground',

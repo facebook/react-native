@@ -7,6 +7,7 @@
 
 package com.facebook.fbreact.specs
 
+import android.content.Intent
 import android.widget.Toast
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.Arguments
@@ -14,6 +15,7 @@ import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
@@ -24,6 +26,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uiapp.AlertDialogActivity
 
 @ReactModule(name = SampleLegacyModule.NAME)
 public class SampleLegacyModule(private val context: ReactApplicationContext) :
@@ -241,15 +244,7 @@ public class SampleLegacyModule(private val context: ReactApplicationContext) :
   }
 
   override fun getConstants(): Map<String, Any> {
-    val result: MutableMap<String, Any> = mutableMapOf()
-    val activity = context.currentActivity
-    if (activity != null) {
-      result["const2"] = 390
-    }
-    result["const1"] = true
-    result["const3"] = "something"
-    log("constantsToExport", "", result)
-    return result
+    return hashMapOf("EVENT_A" to EVENT_A, "EVENT_B" to EVENT_B)
   }
 
   private fun log(method: String, input: Any?, output: Any?) {
@@ -267,11 +262,40 @@ public class SampleLegacyModule(private val context: ReactApplicationContext) :
 
   override fun invalidate(): Unit = Unit
 
-  override fun getName(): String {
-    return NAME
-  }
-
   public companion object {
     public const val NAME: String = "SampleLegacyModule"
+
+    public const val EVENT_A: String = "message1"
+    public const val EVENT_B: String = "message2"
+
+    private var currentContext: ReactApplicationContext? = null
+
+    public fun sendEvent(name: String, body: String) {
+      currentContext?.getJSModule(ReactContext.RCTDeviceEventEmitter::class.java)?.emit(name, body)
+    }
+  }
+
+  @ReactMethod
+  public fun addListener(eventName: String?) {
+    /* No JS events expected */
+  }
+
+  @ReactMethod
+  public fun removeListeners(count: Int?) {
+    /* No JS events expected */
+  }
+
+  override fun getName(): String {
+    return "ForcedAlert"
+  }
+
+  @ReactMethod
+  public fun alert(title: String?, message: String?) {
+    val dialogIntent = Intent(reactApplicationContext, AlertDialogActivity::class.java)
+    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    dialogIntent.putExtra("title", title)
+    dialogIntent.putExtra("message", message)
+    context.startActivity(dialogIntent)
+    currentContext = context
   }
 }
