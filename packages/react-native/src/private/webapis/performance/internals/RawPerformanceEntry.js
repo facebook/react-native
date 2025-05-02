@@ -24,6 +24,7 @@ export const RawPerformanceEntryTypeValues = {
   MEASURE: 2,
   EVENT: 3,
   LONGTASK: 4,
+  RESOURCE: 5,
 };
 
 export function rawToPerformanceEntry(
@@ -95,6 +96,8 @@ export function performanceEntryTypeToRaw(
       return RawPerformanceEntryTypeValues.EVENT;
     case 'longtask':
       return RawPerformanceEntryTypeValues.LONGTASK;
+    case 'resource':
+      return RawPerformanceEntryTypeValues.RESOURCE;
     default:
       // Verify exhaustive check with Flow
       (type: empty);

@@ -109,6 +109,7 @@ class PerformanceEntryReporter {
   PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
   PerformanceEntryKeyedBuffer measureBuffer_;
+  PerformanceEntryKeyedBuffer resourceBuffer_;
 
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
@@ -127,6 +128,8 @@ class PerformanceEntryReporter {
         return measureBuffer_;
       case PerformanceEntryType::LONGTASK:
         return longTaskBuffer_;
+      case PerformanceEntryType::RESOURCE:
+        return resourceBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
@@ -143,6 +146,8 @@ class PerformanceEntryReporter {
         return measureBuffer_;
       case PerformanceEntryType::LONGTASK:
         return longTaskBuffer_;
+      case PerformanceEntryType::RESOURCE:
+        return resourceBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }

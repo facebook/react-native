@@ -65,6 +65,16 @@ NativePerformanceEntry toNativePerformanceEntry(const PerformanceEntry& entry) {
     nativeEntry.processingEnd = eventEntry.processingEnd;
     nativeEntry.interactionId = eventEntry.interactionId;
   }
+  if (std::holds_alternative<PerformanceResourceTiming>(entry)) {
+    auto resourceEntry = std::get<PerformanceResourceTiming>(entry);
+    nativeEntry.fetchStart = resourceEntry.fetchStart;
+    nativeEntry.requestStart = resourceEntry.requestStart;
+    nativeEntry.connectStart = resourceEntry.connectStart;
+    nativeEntry.connectEnd = resourceEntry.connectEnd;
+    nativeEntry.responseStart = resourceEntry.responseStart;
+    nativeEntry.responseEnd = resourceEntry.responseEnd;
+    nativeEntry.responseStatus = resourceEntry.responseStatus;
+  }
 
   return nativeEntry;
 }
