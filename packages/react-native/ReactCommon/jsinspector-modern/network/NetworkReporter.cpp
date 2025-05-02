@@ -15,8 +15,6 @@
 #include <folly/dynamic.h>
 #include <jsinspector-modern/cdp/CdpJson.h>
 #endif
-#include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/performance/timeline/PerformanceEntryReporter.h>
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
 #include <chrono>
@@ -29,7 +27,7 @@ namespace facebook::react::jsinspector_modern {
 namespace {
 
 /**
- * Get the current Unix timestamp in seconds (µs precision, CDP format).
+ * Get the current Unix timestamp in seconds (µs precision).
  */
 double getCurrentUnixTimestampSeconds() {
   auto now = std::chrono::system_clock::now().time_since_epoch();
@@ -76,23 +74,7 @@ void NetworkReporter::reportRequestStart(
     const std::string& requestId,
     const RequestInfo& requestInfo,
     int encodedDataLength,
-    const std::optional<ResponseInfo>& redirectResponse) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
-
-    // All builds: Annotate PerformanceResourceTiming metadata
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      perfTimingsBuffer_.emplace(
-          requestId,
-          ResourceTimingData{
-              .url = requestInfo.url,
-              .fetchStart = now,
-              .requestStart = now,
-          });
-    }
-  }
-
+    const std::optional<ResponseInfo>& redirectResponse) const {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
@@ -125,20 +107,8 @@ void NetworkReporter::reportRequestStart(
 #endif
 }
 
-void NetworkReporter::reportConnectionTiming(const std::string& requestId) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
-
-    // All builds: Annotate PerformanceResourceTiming metadata
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        it->second.connectStart = now;
-      }
-    }
-  }
-
+void NetworkReporter::reportConnectionTiming(
+    const std::string& /*requestId*/) const {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
@@ -166,21 +136,7 @@ void NetworkReporter::reportRequestFailed(
 void NetworkReporter::reportResponseStart(
     const std::string& requestId,
     const ResponseInfo& responseInfo,
-    int encodedDataLength) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
-
-    // All builds: Annotate PerformanceResourceTiming metadata
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        it->second.responseStart = now;
-        it->second.responseStatus = responseInfo.statusCode;
-      }
-    }
-  }
-
+    int encodedDataLength) const {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
@@ -203,21 +159,8 @@ void NetworkReporter::reportResponseStart(
 #endif
 }
 
-void NetworkReporter::reportDataReceived(const std::string& requestId) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
-
-    // All builds: Annotate PerformanceResourceTiming metadata
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        it->second.connectEnd = now;
-        it->second.responseStart = now;
-      }
-    }
-  }
-
+void NetworkReporter::reportDataReceived(
+    const std::string& /*requestId*/) const {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
@@ -231,30 +174,7 @@ void NetworkReporter::reportDataReceived(const std::string& requestId) {
 
 void NetworkReporter::reportResponseEnd(
     const std::string& requestId,
-    int encodedDataLength) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
-
-    // All builds: Report PerformanceResourceTiming event
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        auto& eventData = it->second;
-        PerformanceEntryReporter::getInstance()->reportResourceTiming(
-            eventData.url,
-            eventData.fetchStart,
-            eventData.requestStart,
-            eventData.connectStart.value_or(now),
-            eventData.connectEnd.value_or(now),
-            eventData.responseStart.value_or(now),
-            now,
-            eventData.responseStatus);
-        perfTimingsBuffer_.erase(requestId);
-      }
-    }
-  }
-
+    int encodedDataLength) const {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {

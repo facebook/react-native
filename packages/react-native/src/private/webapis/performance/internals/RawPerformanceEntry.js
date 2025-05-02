@@ -77,8 +77,6 @@ export function rawToPerformanceEntryType(
       return 'event';
     case RawPerformanceEntryTypeValues.LONGTASK:
       return 'longtask';
-    case RawPerformanceEntryTypeValues.RESOURCE:
-      return 'resource';
     default:
       throw new TypeError(
         `rawToPerformanceEntryType: unexpected performance entry type received: ${type}`,

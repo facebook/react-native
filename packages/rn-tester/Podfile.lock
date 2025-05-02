@@ -1706,10 +1706,7 @@ PODS:
     - glog
     - RCT-Folly
     - RCT-Folly/Fabric
-    - React-featureflags
     - React-jsinspectorcdp
-    - React-performancetimeline
-    - React-timing
     - SocketRocket
   - React-jsinspectortracing (1000.0.0):
     - boost
@@ -2602,7 +2599,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 569425f7cd2c3e005a17e5211843e541c11d6916
   React-jsinspector: 885e8180e898f07e4d7df29e2681a89e69d736d3
   React-jsinspectorcdp: 5fb266e5f23d3a2819ba848e9d4d0b6b00f95934
-  React-jsinspectornetwork: 1655a81f3fe14789df41e063bd56dd130cc3562a
+  React-jsinspectornetwork: 207422b56a7918e83c94c207570849f83ab9052a
   React-jsinspectortracing: 80e9418ac67630c76f15ef06534087037a822330
   React-jsitooling: 0c28fbc10441f8b63f4c6bf443cb36416500ce2b
   React-jsitracing: ce443686f52538d1033ce7db1e7d643e866262f0

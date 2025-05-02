@@ -24,5 +24,4 @@ target_include_directories(jsinspector_network PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(jsinspector_network
         folly_runtime
         jsinspector_cdp
-        react_performance_timeline
-        react_timing)
+)

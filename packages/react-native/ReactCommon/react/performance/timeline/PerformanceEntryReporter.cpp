@@ -30,10 +30,6 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
       PerformanceEntryType::LONGTASK,
   };
 
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    supportedEntryTypes.emplace_back(PerformanceEntryType::RESOURCE);
-  }
-
   return supportedEntryTypes;
 }
 
@@ -291,37 +287,6 @@ void PerformanceEntryReporter::reportLongTask(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
-}
-
-PerformanceResourceTiming PerformanceEntryReporter::reportResourceTiming(
-    const std::string& url,
-    DOMHighResTimeStamp fetchStart,
-    DOMHighResTimeStamp requestStart,
-    std::optional<DOMHighResTimeStamp> connectStart,
-    std::optional<DOMHighResTimeStamp> connectEnd,
-    DOMHighResTimeStamp responseStart,
-    DOMHighResTimeStamp responseEnd,
-    const std::optional<int>& responseStatus) {
-  const auto entry = PerformanceResourceTiming{
-      {.name = url, .startTime = fetchStart},
-      fetchStart,
-      requestStart,
-      connectStart,
-      connectEnd,
-      responseStart,
-      responseEnd,
-      responseStatus,
-  };
-
-  // Add to buffers & notify observers
-  {
-    std::unique_lock lock(buffersMutex_);
-    resourceTimingBuffer_.add(entry);
-  }
-
-  observerRegistry_->queuePerformanceEntry(entry);
-
-  return entry;
 }
 
 void PerformanceEntryReporter::traceMark(const PerformanceMark& entry) const {

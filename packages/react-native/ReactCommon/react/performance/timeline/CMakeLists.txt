@@ -18,5 +18,4 @@ target_include_directories(react_performance_timeline PUBLIC ${REACT_COMMON_DIR}
 target_link_libraries(react_performance_timeline
         jsinspector_tracing
         reactperflogger
-        react_featureflags
         react_timing)

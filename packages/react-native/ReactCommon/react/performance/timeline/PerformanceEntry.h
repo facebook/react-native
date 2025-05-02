@@ -57,8 +57,8 @@ struct PerformanceResourceTiming : AbstractPerformanceEntry {
   static constexpr PerformanceEntryType entryType =
       PerformanceEntryType::RESOURCE;
   /** Aligns with `startTime`. */
-  DOMHighResTimeStamp fetchStart;
-  DOMHighResTimeStamp requestStart;
+  std::optional<DOMHighResTimeStamp> fetchStart;
+  std::optional<DOMHighResTimeStamp> requestStart;
   std::optional<DOMHighResTimeStamp> connectStart;
   std::optional<DOMHighResTimeStamp> connectEnd;
   std::optional<DOMHighResTimeStamp> responseStart;
