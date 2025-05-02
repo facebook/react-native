@@ -113,6 +113,25 @@ class JSI_EXPORT UUID {
   uint64_t low;
 };
 
+/// Base interface that all JSI interfaces inherit from. Users should not try to
+/// manipulate this base type directly, and should use castInterface to get the
+/// appropriate subtype.
+struct JSI_EXPORT ICast {
+  /// If the current object can be cast into the interface specified by \p
+  /// interfaceUUID, return a pointer to the object. Otherwise, return a null
+  /// pointer.
+  /// The returned interface has the same lifetime as the underlying object. It
+  /// does not need to be released when not needed.
+  virtual ICast* castInterface(const UUID& interfaceUUID) = 0;
+
+ protected:
+  /// Interfaces are not destructible, thus the destructor is intentionally
+  /// protected to prevent delete calls on the interface.
+  /// Additionally, the destructor is non-virtual to reduce the vtable
+  /// complexity from inheritance.
+  ~ICast() = default;
+};
+
 /// Base class for buffers of data or bytecode that need to be passed to the
 /// runtime. The buffer is expected to be fully immutable, so the result of
 /// size(), data(), and the contents of the pointer returned by data() must not
@@ -251,9 +270,11 @@ class JSI_EXPORT NativeState {
 /// in a non-Runtime-managed object, and not clean it up before the Runtime
 /// is shut down.  If your lifecycle is such that avoiding this is hard,
 /// you will probably need to do use your own locks.
-class JSI_EXPORT Runtime {
+class JSI_EXPORT Runtime : public ICast {
  public:
   virtual ~Runtime();
+
+  ICast* castInterface(const UUID& interfaceUUID) override;
 
   /// Evaluates the given JavaScript \c buffer.  \c sourceURL is used
   /// to annotate the stack trace if there is an exception.  The
@@ -1739,6 +1760,32 @@ class JSI_EXPORT JSError : public JSIException {
   std::string message_;
   std::string stack_;
 };
+
+/// Helper function to cast the object pointed to by \p ptr into an interface
+/// specified by \c U. If cast is successful, return a pointer to the object
+/// as a raw pointer of \c U. Otherwise, return nullptr.
+/// The returned interface same lifetime as the object referenced by \p ptr.
+template <typename U, typename T>
+U* castInterface(T* ptr) {
+  if (ptr) {
+    return static_cast<U*>(ptr->castInterface(U::uuid));
+  }
+  return nullptr;
+};
+
+/// Helper function to cast the object managed by the shared_ptr \p ptr into an
+/// interface specified by \c U. If the cast is successful, return a shared_ptr
+/// of type \c U to the object. Otherwise, return an empty pointer.
+/// The returned shared_ptr shares ownership of the object with \p ptr.
+template <typename U, typename T>
+std::shared_ptr<U> dynamicInterfaceCast(T&& ptr) {
+  auto* p = ptr->castInterface(U::uuid);
+  U* res = static_cast<U*>(p);
+  if (res) {
+    return std::shared_ptr<U>(std::forward<T>(ptr), res);
+  }
+  return nullptr;
+}
 
 } // namespace jsi
 } // namespace facebook
