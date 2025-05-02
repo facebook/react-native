@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e246cdb6a10fd895477220446080a342>>
+ * @generated SignedSource<<9aead6f81a34e5c7ad93ebceed4dad54>>
  * @flow strict
  */
 
@@ -80,6 +80,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
+  incorporateMaxLinesDuringAndroidLayout: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
@@ -293,6 +294,10 @@ export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fu
  * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
  */
 export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', false);
+/**
+ * Set maxLines and ellipsization during Android layout creation
+ */
+export const incorporateMaxLinesDuringAndroidLayout: Getter<boolean> = createNativeFlagGetter('incorporateMaxLinesDuringAndroidLayout', true);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

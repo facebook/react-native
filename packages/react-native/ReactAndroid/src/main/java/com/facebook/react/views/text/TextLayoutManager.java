@@ -19,6 +19,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import android.view.View;
@@ -32,6 +33,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
@@ -385,6 +387,8 @@ public class TextLayoutManager {
       int hyphenationFrequency,
       Layout.Alignment alignment,
       int justificationMode,
+      @Nullable TextUtils.TruncateAt ellipsizeMode,
+      int maxNumberOfLines,
       TextPaint paint) {
     Layout layout;
 
@@ -413,6 +417,12 @@ public class TextLayoutManager {
               .setHyphenationFrequency(hyphenationFrequency)
               .setTextDirection(
                   isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
+
+      if (ReactNativeFeatureFlags.incorporateMaxLinesDuringAndroidLayout()) {
+        if (maxNumberOfLines != ReactConstants.UNSET && maxNumberOfLines != 0) {
+          builder.setEllipsize(ellipsizeMode).setMaxLines(maxNumberOfLines);
+        }
+      }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
@@ -446,6 +456,12 @@ public class TextLayoutManager {
               .setHyphenationFrequency(hyphenationFrequency)
               .setTextDirection(
                   isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
+
+      if (ReactNativeFeatureFlags.incorporateMaxLinesDuringAndroidLayout()) {
+        if (maxNumberOfLines != ReactConstants.UNSET && maxNumberOfLines != 0) {
+          builder.setEllipsize(ellipsizeMode).setMaxLines(maxNumberOfLines);
+        }
+      }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         builder.setJustificationMode(justificationMode);
@@ -536,6 +552,12 @@ public class TextLayoutManager {
         paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
+    @Nullable
+    TextUtils.TruncateAt ellipsizeMode =
+        paragraphAttributes.contains(PA_KEY_ELLIPSIZE_MODE)
+            ? TextAttributeProps.getEllipsizeMode(
+                paragraphAttributes.getString(PA_KEY_ELLIPSIZE_MODE))
+            : null;
 
     @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
     Layout.Alignment alignment = getTextAlignment(attributedString, text, alignmentAttr);
@@ -573,6 +595,8 @@ public class TextLayoutManager {
         hyphenationFrequency,
         alignment,
         justificationMode,
+        ellipsizeMode,
+        maximumNumberOfLines,
         paint);
   }
 
@@ -602,6 +626,8 @@ public class TextLayoutManager {
             hyphenationFrequency,
             alignment,
             justificationMode,
+            null,
+            ReactConstants.UNSET,
             paint);
 
     // Minimum font size is 4pts to match the iOS implementation.
@@ -654,6 +680,8 @@ public class TextLayoutManager {
               hyphenationFrequency,
               alignment,
               justificationMode,
+              null,
+              ReactConstants.UNSET,
               paint);
     }
   }
@@ -677,7 +705,7 @@ public class TextLayoutManager {
             width,
             height,
             reactTextViewManagerCallback);
-    Spannable text = (Spannable) layout.getText();
+    Spanned text = (Spanned) layout.getText();
 
     if (text == null) {
       return 0;
@@ -726,6 +754,8 @@ public class TextLayoutManager {
 
     float calculatedHeight = height;
     if (heightYogaMeasureMode != YogaMeasureMode.EXACTLY) {
+      // StaticLayout only seems to change its height in response to maxLines when ellipsizing, so
+      // we must truncate
       calculatedHeight = layout.getLineBottom(calculatedLineCount - 1);
       if (heightYogaMeasureMode == YogaMeasureMode.AT_MOST && calculatedHeight > height) {
         calculatedHeight = height;
