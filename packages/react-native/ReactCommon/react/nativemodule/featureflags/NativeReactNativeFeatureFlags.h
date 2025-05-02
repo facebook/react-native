@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8497861e92cb78ab7b2bae7ac3c3e200>>
+ * @generated SignedSource<<1c0248c3eda43cc89a61b3e3ff8b4345>>
  */
 
 /**
@@ -112,8 +112,6 @@ class NativeReactNativeFeatureFlags
   bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
-
-  bool useEditTextStockAndroidFocusBehavior(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 
