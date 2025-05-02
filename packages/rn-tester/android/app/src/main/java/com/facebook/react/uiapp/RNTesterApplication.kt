@@ -53,45 +53,35 @@ internal class RNTesterApplication : Application(), ReactApplication {
               override fun getModule(
                   name: String,
                   reactContext: ReactApplicationContext
-              ): NativeModule? {
-                if (!isNewArchEnabled) {
-                  return null
-                }
-                if (SampleTurboModule.NAME == name) {
-                  return SampleTurboModule(reactContext)
-                }
-                if (SampleLegacyModule.NAME == name) {
-                  return SampleLegacyModule(reactContext)
-                }
-                return null
-              }
+              ): NativeModule? =
+                  when {
+                    SampleTurboModule.NAME == name -> SampleTurboModule(reactContext)
+                    SampleLegacyModule.NAME == name -> SampleLegacyModule(reactContext)
+                    else -> null
+                  }
 
               // Note: Specialized annotation processor for @ReactModule isn't configured in OSS
               // yet. For now, hardcode this information, though it's not necessary for most
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
-                    if (isNewArchEnabled) {
-                      mapOf(
-                          SampleTurboModule.NAME to
-                              ReactModuleInfo(
-                                  SampleTurboModule.NAME,
-                                  "SampleTurboModule",
-                                  canOverrideExistingModule = false,
-                                  needsEagerInit = false,
-                                  isCxxModule = false,
-                                  isTurboModule = true),
-                          SampleLegacyModule.NAME to
-                              ReactModuleInfo(
-                                  SampleLegacyModule.NAME,
-                                  "SampleLegacyModule",
-                                  canOverrideExistingModule = false,
-                                  needsEagerInit = false,
-                                  isCxxModule = false,
-                                  isTurboModule = false))
-                    } else {
-                      emptyMap()
-                    }
+                    mapOf(
+                        SampleTurboModule.NAME to
+                            ReactModuleInfo(
+                                SampleTurboModule.NAME,
+                                "SampleTurboModule",
+                                canOverrideExistingModule = false,
+                                needsEagerInit = false,
+                                isCxxModule = false,
+                                isTurboModule = true),
+                        SampleLegacyModule.NAME to
+                            ReactModuleInfo(
+                                SampleLegacyModule.NAME,
+                                "SampleLegacyModule",
+                                canOverrideExistingModule = false,
+                                needsEagerInit = false,
+                                isCxxModule = false,
+                                isTurboModule = false))
                   }
             },
             object : ReactPackage, ViewManagerOnDemandReactPackage {
