@@ -8,9 +8,8 @@
 #pragma once
 
 #include <react/timing/primitives.h>
-#include <optional>
 #include <string>
-#include <unordered_set>
+#include <variant>
 
 namespace facebook::react {
 
@@ -25,28 +24,50 @@ enum class PerformanceEntryType {
   _NEXT = 5,
 };
 
-struct PerformanceEntry {
+struct AbstractPerformanceEntry {
   std::string name;
-  PerformanceEntryType entryType;
   DOMHighResTimeStamp startTime;
   DOMHighResTimeStamp duration = 0;
-
-  // For "event" entries only:
-  std::optional<DOMHighResTimeStamp> processingStart;
-  std::optional<DOMHighResTimeStamp> processingEnd;
-  std::optional<PerformanceEntryInteractionId> interactionId;
 };
 
-constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
-    (size_t)PerformanceEntryType::_NEXT - 1; // Valid types start from 1.
+struct PerformanceMark : AbstractPerformanceEntry {
+  static constexpr PerformanceEntryType entryType = PerformanceEntryType::MARK;
+};
+
+struct PerformanceMeasure : AbstractPerformanceEntry {
+  static constexpr PerformanceEntryType entryType =
+      PerformanceEntryType::MEASURE;
+};
+
+struct PerformanceEventTiming : AbstractPerformanceEntry {
+  static constexpr PerformanceEntryType entryType = PerformanceEntryType::EVENT;
+  DOMHighResTimeStamp processingStart;
+  DOMHighResTimeStamp processingEnd;
+  PerformanceEntryInteractionId interactionId;
+};
+
+struct PerformanceLongTaskTiming : AbstractPerformanceEntry {
+  static constexpr PerformanceEntryType entryType =
+      PerformanceEntryType::LONGTASK;
+};
+
+using PerformanceEntry = std::variant<
+    PerformanceMark,
+    PerformanceMeasure,
+    PerformanceEventTiming,
+    PerformanceLongTaskTiming>;
 
 struct PerformanceEntrySorter {
   bool operator()(const PerformanceEntry& lhs, const PerformanceEntry& rhs) {
-    if (lhs.startTime != rhs.startTime) {
-      return lhs.startTime < rhs.startTime;
-    } else {
-      return lhs.duration < rhs.duration;
-    }
+    return std::visit(
+        [](const auto& left, const auto& right) {
+          if (left.startTime != right.startTime) {
+            return left.startTime < right.startTime;
+          }
+          return left.duration < right.duration;
+        },
+        lhs,
+        rhs);
   }
 };
 
