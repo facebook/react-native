@@ -88,6 +88,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
           pointerEvents: true,
           isInvertedVirtualizedList: true,
+          isReversedVirtualizedList: true,
         },
       }
     : {
@@ -136,6 +137,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           disableIntervalMomentum: true,
           indicatorStyle: true,
           inverted: true,
+          isReversedVirtualizedList: true,
           keyboardDismissMode: true,
           maintainVisibleContentPosition: true,
           maximumZoomScale: true,
