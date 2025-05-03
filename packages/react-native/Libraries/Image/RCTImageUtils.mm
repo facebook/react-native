@@ -9,6 +9,8 @@
 
 #import <tgmath.h>
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 
@@ -339,10 +341,10 @@ NSData *__nullable RCTGetImageData(UIImage *image, float quality)
   CFMutableDataRef imageData = CFDataCreateMutable(NULL, 0);
   if (RCTImageHasAlpha(cgImage)) {
     // get png data
-    destination = CGImageDestinationCreateWithData(imageData, kUTTypePNG, 1, NULL);
+    destination = CGImageDestinationCreateWithData(imageData, (__bridge CFStringRef)[UTTypePNG identifier], 1, NULL);
   } else {
     // get jpeg data
-    destination = CGImageDestinationCreateWithData(imageData, kUTTypeJPEG, 1, NULL);
+    destination = CGImageDestinationCreateWithData(imageData, (__bridge CFStringRef)[UTTypeJPEG identifier], 1, NULL);
     [properties setValue:@(quality) forKey:(id)kCGImageDestinationLossyCompressionQuality];
   }
   if (!destination) {
