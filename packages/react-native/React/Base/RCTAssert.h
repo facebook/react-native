@@ -157,7 +157,7 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
 /**
  * Convenience macro to assert which thread is currently running (DEBUG mode only)
  */
-#ifdef DEBUG
+#ifdef defined(DEBUG) && DEBUG
 
 #define RCTAssertThread(thread, ...)                                                                                  \
   _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") RCTAssert(       \
