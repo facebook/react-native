@@ -125,10 +125,10 @@ async function buildBundleWithConfig(
     await bundleImpl.save(bundle, args, console.info);
 
     // Save the assets of the bundle
+    // $FlowFixMe[prop-missing] Fixed by release of Metro 0.82.3
     const outputAssets = await server.getAssets({
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       ...requestOpts,
-      bundleType: 'todo',
     });
 
     // When we're done saving bundle output and the assets, we're done.
