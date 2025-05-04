@@ -13,8 +13,10 @@ import {ThemedText, useTheme} from './Theme';
 import * as React from 'react';
 import {
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -29,6 +31,11 @@ export type NewAppScreenProps = $ReadOnly<{
   templateFileName?: string,
 }>;
 
+const statusBarHeightOffset = Platform.select({
+  android: StatusBar.currentHeight || 0,
+  default: 0,
+});
+
 export default function NewAppScreen({
   templateFileName = 'App.tsx',
 }: NewAppScreenProps): React.Node {
@@ -39,7 +46,7 @@ export default function NewAppScreen({
   return (
     <SafeAreaView style={{backgroundColor: colors.background}}>
       <ScrollView>
-        <View style={styles.container}>
+        <View style={[styles.container, {paddingTop: statusBarHeightOffset}]}>
           <View style={styles.header}>
             <Image
               style={styles.logo}
