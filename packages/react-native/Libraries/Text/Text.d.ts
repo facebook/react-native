@@ -213,8 +213,7 @@ export interface TextProps
   pointerEvents?: ViewStyle['pointerEvents'] | undefined;
 
   /**
-   * Insets for press retention.
-   * Example: { top: 20, left: 20, bottom: 20, right: 20 }
+   * Defines how far your touch may move off of the button, before deactivating the button
    */
   pressRetentionOffset?:
    | {top: number; left: number; bottom: number; right: number}
