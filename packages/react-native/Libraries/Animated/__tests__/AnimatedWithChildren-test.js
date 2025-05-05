@@ -11,11 +11,13 @@
 describe('AnimatedWithChildren', () => {
   let AnimatedWithChildren;
   let AnimatedValue;
+  let AnimatedTransform;
 
   beforeEach(() => {
     jest.resetModules();
     AnimatedWithChildren = require('../nodes/AnimatedWithChildren').default;
     AnimatedValue = require('../nodes/AnimatedValue').default;
+    AnimatedTransform = require('../nodes/AnimatedTransform').default;
   });
 
   it('adds a child to the children array when it is not already present', () => {
@@ -58,17 +60,24 @@ describe('AnimatedWithChildren', () => {
     expect(parent.__getChildren().length).toBe(0);
   });
 
-  it('safely ignores removal calls for non-existent children in the children array', () => {
-    const parent = new AnimatedWithChildren();
-    const child = new AnimatedValue(0);
+  it('maintains 1:1 relationship between addChild and removeChild when the same value is reused', () => {
+    const value = new AnimatedValue(0);
+    const initialChildCount = value.__getChildren().length;
+    expect(initialChildCount).toBe(0);
 
-    parent.__addChild(child);
-    expect(parent.__getChildren().length).toBe(1);
+    const transform = [
+      { translateX: value },
+      { translateY: value },
+    ];
 
-    parent.__removeChild(child);
-    expect(parent.__getChildren().length).toBe(0);
+    const animatedTransform = AnimatedTransform.from(transform);
+    animatedTransform.__attach();
 
-    expect(() => parent.__removeChild(child)).not.toThrow();
-    expect(parent.__getChildren().length).toBe(0);
+    const childCountAfterAttach = value.__getChildren().length;
+    expect(childCountAfterAttach).toBeGreaterThan(initialChildCount);
+
+    animatedTransform.__detach();
+
+    expect(value.__getChildren().length).toBe(initialChildCount);
   });
 });
