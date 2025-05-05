@@ -753,9 +753,19 @@ public class TextLayoutManager {
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
         boolean endsWithNewLine =
             text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-        if (!endsWithNewLine && lineIndex + 1 < layout.getLineCount()) {
-          calculatedWidth = width;
-          break;
+        // Line-wrapping or ellipsizing to truncate should result in taking the full available width
+        // of the container, instead of width after line-breaking/ellipsizing.
+        if (ReactNativeFeatureFlags.incorporateMaxLinesDuringAndroidLayout()) {
+          if ((!endsWithNewLine && lineIndex + 1 < layout.getLineCount())
+              || layout.getEllipsisCount(lineIndex) > 0) {
+            calculatedWidth = width;
+            break;
+          }
+        } else {
+          if (!endsWithNewLine && lineIndex + 1 < layout.getLineCount()) {
+            calculatedWidth = width;
+            break;
+          }
         }
         float lineWidth =
             endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
