@@ -68,6 +68,7 @@
 /// <reference path="modules/BatchedBridge.d.ts" />
 /// <reference path="modules/Codegen.d.ts" />
 /// <reference path="modules/Devtools.d.ts" />
+// dtslint:skip no-bad-reference
 /// <reference path="../src/types/globals.d.ts" />
 
 export * from '../Libraries/ActionSheetIOS/ActionSheetIOS';
