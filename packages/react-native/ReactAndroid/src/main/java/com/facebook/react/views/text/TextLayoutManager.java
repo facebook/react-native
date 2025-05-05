@@ -31,6 +31,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
@@ -503,7 +504,8 @@ public class TextLayoutManager {
     }
   }
 
-  private static Layout createLayout(
+  @UnstableReactNativeAPI
+  public static Layout createLayout(
       @NonNull Context context,
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
@@ -730,6 +732,47 @@ public class TextLayoutManager {
     float heightInSP = PixelUtil.toDIPFromPixel(calculatedHeight);
 
     return YogaMeasureOutput.make(widthInSP, heightInSP);
+  }
+
+  @UnstableReactNativeAPI
+  public static float[] measurePreparedLayout(
+      PreparedLayout preparedLayout,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      float height,
+      YogaMeasureMode heightYogaMeasureMode) {
+    Layout layout = preparedLayout.getLayout();
+    Spanned text = (Spanned) layout.getText();
+    int maximumNumberOfLines = preparedLayout.getMaximumNumberOfLines();
+
+    int calculatedLineCount = calculateLineCount(layout, maximumNumberOfLines);
+    float calculatedWidth =
+        calculateWidth(layout, text, width, widthYogaMeasureMode, calculatedLineCount);
+    float calculatedHeight =
+        calculateHeight(layout, text, height, heightYogaMeasureMode, calculatedLineCount);
+
+    ArrayList<Float> retList = new ArrayList<>();
+    retList.add(PixelUtil.toDIPFromPixel(calculatedWidth));
+    retList.add(PixelUtil.toDIPFromPixel(calculatedHeight));
+
+    AttachmentMetrics metrics = new AttachmentMetrics();
+    int lastAttachmentFoundInSpan;
+    for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
+      lastAttachmentFoundInSpan =
+          nextAttachmentMetrics(layout, text, calculatedWidth, calculatedLineCount, i, metrics);
+      if (metrics.wasFound) {
+        retList.add(PixelUtil.toDIPFromPixel(metrics.top));
+        retList.add(PixelUtil.toDIPFromPixel(metrics.left));
+        retList.add(PixelUtil.toDIPFromPixel(metrics.width));
+        retList.add(PixelUtil.toDIPFromPixel(metrics.height));
+      }
+    }
+
+    float[] ret = new float[retList.size()];
+    for (int i = 0; i < retList.size(); i++) {
+      ret[i] = retList.get(i);
+    }
+    return ret;
   }
 
   private static int calculateLineCount(Layout layout, int maximumNumberOfLines) {

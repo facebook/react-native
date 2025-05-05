@@ -2392,12 +2392,14 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun initialize ()V
 	public fun invalidate ()V
 	public fun markActiveTouchForTag (II)V
+	public fun measurePreparedLayout (Lcom/facebook/react/views/text/PreparedLayout;FFFF)[F
 	public fun onAllAnimationsComplete ()V
 	public fun onAnimationStarted ()V
 	public fun onHostDestroy ()V
 	public fun onHostPause ()V
 	public fun onHostResume ()V
 	public fun onRequestEventBeat ()V
+	public fun prepareLayout (ILcom/facebook/react/common/mapbuffer/ReadableMapBuffer;Lcom/facebook/react/common/mapbuffer/ReadableMapBuffer;FF)Lcom/facebook/react/views/text/PreparedLayout;
 	public fun prependUIBlock (Lcom/facebook/react/fabric/interop/UIBlock;)V
 	public fun profileNextBatch ()V
 	public fun receiveEvent (IILjava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V

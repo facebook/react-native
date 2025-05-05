@@ -22,11 +22,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.text.Layout;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -49,6 +51,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -86,6 +89,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.SynchronousEventReceiver;
+import com.facebook.react.views.text.PreparedLayout;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -646,6 +650,49 @@ public class FabricUIManager
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
         attachmentsPositions);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  public PreparedLayout prepareLayout(
+      int surfaceId,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float maxWidth,
+      float maxHeight) {
+    SurfaceMountingManager surfaceMountingManager =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareLayout");
+    Layout layout =
+        TextLayoutManager.createLayout(
+            Preconditions.checkNotNull(surfaceMountingManager.getContext()),
+            attributedString,
+            paragraphAttributes,
+            PixelUtil.toPixelFromDIP(maxWidth),
+            PixelUtil.toPixelFromDIP(maxHeight),
+            null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
+
+    int maximumNumberOfLines =
+        paragraphAttributes.contains(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
+            : ReactConstants.UNSET;
+
+    return new PreparedLayout(layout, maximumNumberOfLines);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  public float[] measurePreparedLayout(
+      PreparedLayout preparedLayout,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight) {
+    return TextLayoutManager.measurePreparedLayout(
+        preparedLayout,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight));
   }
 
   /**

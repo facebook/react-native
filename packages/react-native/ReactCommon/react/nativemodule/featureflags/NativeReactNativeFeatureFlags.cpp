@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82e2e7118453787377248101925b56d1>>
+ * @generated SignedSource<<cf54fabb5023a846cadd14482ea80999>>
  */
 
 /**
@@ -167,6 +167,11 @@ bool NativeReactNativeFeatureFlags::enableNetworkEventReporting(
 bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
+}
+
+bool NativeReactNativeFeatureFlags::enablePreparedTextLayout(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enablePreparedTextLayout();
 }
 
 bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(

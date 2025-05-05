@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b941543bc6f12dbb0e12ac2ae0042186>>
+ * @generated SignedSource<<8b135b02d868914f6b3487f09e8955ff>>
  */
 
 /**
@@ -163,6 +163,11 @@ class ReactNativeFeatureFlags {
    * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
    */
   RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
+
+  /**
+   * Enables caching text layout artifacts for later reuse
+   */
+  RN_EXPORT static bool enablePreparedTextLayout();
 
   /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.

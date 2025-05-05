@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ffadd7912aed2d95b0c6199aa8902690>>
+ * @generated SignedSource<<cf12cdfdfb343e79247379b5549ae92a>>
  */
 
 /**
@@ -72,6 +72,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableNetworkEventReporting(): Boolean = false
 
   override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
+
+  override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 

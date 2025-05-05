@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9cc33ba9f5ef67d6c98700d772bbc0de>>
+ * @generated SignedSource<<ef056e269a4ed514c18ebaed89885661>>
  */
 
 /**
@@ -125,6 +125,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableNewBackgroundAndBorderDrawables() override {
     return true;
+  }
+
+  bool enablePreparedTextLayout() override {
+    return false;
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {

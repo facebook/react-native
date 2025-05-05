@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fc8743f0fb9cb153412a1e81f585f07d>>
+ * @generated SignedSource<<6667fc8e4fdd2db0b54c908155b110cf>>
  * @flow strict
  */
 
@@ -71,6 +71,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableNativeCSSParsing: Getter<boolean>,
   enableNetworkEventReporting: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
+  enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableResourceTimingAPI: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
@@ -258,6 +259,10 @@ export const enableNetworkEventReporting: Getter<boolean> = createNativeFlagGett
  * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
  */
 export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', true);
+/**
+ * Enables caching text layout artifacts for later reuse
+ */
+export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter('enablePreparedTextLayout', false);
 /**
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */

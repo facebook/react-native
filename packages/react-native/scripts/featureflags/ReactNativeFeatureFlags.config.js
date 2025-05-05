@@ -308,6 +308,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enablePreparedTextLayout: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-01',
+        description: 'Enables caching text layout artifacts for later reuse',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enablePropsUpdateReconciliationAndroid: {
       defaultValue: false,
       metadata: {

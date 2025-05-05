@@ -7,12 +7,16 @@
 
 #pragma once
 
+#include <react/jni/SafeReleaseJniRef.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>
+#include <react/renderer/textlayoutmanager/JPreparedLayout.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextMeasureCache.h>
 #include <react/utils/ContextContainer.h>
+
+#include <fbjni/fbjni.h>
 #include <memory>
 
 namespace facebook::react {
@@ -25,6 +29,8 @@ class TextLayoutManager;
  */
 class TextLayoutManager {
  public:
+  using PreparedLayout = SafeReleaseJniRef<jni::global_ref<JPreparedLayout>>;
+
   TextLayoutManager(const ContextContainer::Shared& contextContainer);
 
   /*
@@ -66,6 +72,24 @@ class TextLayoutManager {
       const AttributedStringBox& attributedStringBox,
       const ParagraphAttributes& paragraphAttributes,
       const Size& size) const;
+
+  /**
+   * Create a platform representation of fully laid out text, to later be
+   * reused.
+   */
+  PreparedLayout prepareLayout(
+      const AttributedString& attributedString,
+      const ParagraphAttributes& paragraphAttributes,
+      const TextLayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const;
+
+  /**
+   * Derive text and attachment measurements from a PreparedLayout.
+   */
+  TextMeasurement measurePreparedLayout(
+      const PreparedLayout& layout,
+      const TextLayoutContext& layoutContext,
+      const LayoutConstraints& layoutConstraints) const;
 
  private:
   std::shared_ptr<const ContextContainer> contextContainer_;

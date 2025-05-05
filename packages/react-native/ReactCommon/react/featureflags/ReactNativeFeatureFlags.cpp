@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<74f22c6a0302a9923e99d2455d84e231>>
+ * @generated SignedSource<<8410561a80edd67b4528181b1f8557fe>>
  */
 
 /**
@@ -124,6 +124,10 @@ bool ReactNativeFeatureFlags::enableNetworkEventReporting() {
 
 bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
   return getAccessor().enableNewBackgroundAndBorderDrawables();
+}
+
+bool ReactNativeFeatureFlags::enablePreparedTextLayout() {
+  return getAccessor().enablePreparedTextLayout();
 }
 
 bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
