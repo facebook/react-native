@@ -911,7 +911,7 @@ static RCTImageLoaderCancellationBlock RCTLoadImageURLFromLoader(
 {
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:url];
   if ([loadHandler respondsToSelector:@selector(shouldEnablePerfLogging)]) {
-    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler shouldEnablePerfLogging];
+    return [(id<RCTImageLoaderLoggable>)loadHandler shouldEnablePerfLogging];
   }
   return NO;
 }
