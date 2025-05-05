@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5b145ee103cf6b40e13d33c88cd52777>>
+ * @generated SignedSource<<5dc41059d71d3a345be45a6a233b05a0>>
  */
 
 /**
@@ -34,6 +34,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
+  private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
@@ -166,6 +167,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableCustomFocusSearchOnClippedElementsAndroid()
       accessedFeatureFlags.add("enableCustomFocusSearchOnClippedElementsAndroid")
       enableCustomFocusSearchOnClippedElementsAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableDestroyShadowTreeRevisionAsync(): Boolean {
+    var cached = enableDestroyShadowTreeRevisionAsyncCache
+    if (cached == null) {
+      cached = currentProvider.enableDestroyShadowTreeRevisionAsync()
+      accessedFeatureFlags.add("enableDestroyShadowTreeRevisionAsync")
+      enableDestroyShadowTreeRevisionAsyncCache = cached
     }
     return cached
   }

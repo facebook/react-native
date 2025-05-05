@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c89831646046b10c7b2a40e14deb3d1a>>
+ * @generated SignedSource<<d566c157b7db07e235bada071067f11d>>
  */
 
 /**
@@ -96,6 +96,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableCustomFocusSearchOnClippedElementsAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCustomFocusSearchOnClippedElementsAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableDestroyShadowTreeRevisionAsync() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableDestroyShadowTreeRevisionAsync");
     return method(javaProvider_);
   }
 
@@ -363,6 +369,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCustomFocusSearchOnClippedElement
   return ReactNativeFeatureFlags::enableCustomFocusSearchOnClippedElementsAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableDestroyShadowTreeRevisionAsync(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableDestroyShadowTreeRevisionAsync();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableDoubleMeasurementFixAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid();
@@ -599,6 +610,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCustomFocusSearchOnClippedElementsAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableCustomFocusSearchOnClippedElementsAndroid),
+      makeNativeMethod(
+        "enableDestroyShadowTreeRevisionAsync",
+        JReactNativeFeatureFlagsCxxInterop::enableDestroyShadowTreeRevisionAsync),
       makeNativeMethod(
         "enableDoubleMeasurementFixAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableDoubleMeasurementFixAndroid),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fab0bb6a5cd8a2b8366e8184659188c0>>
+ * @generated SignedSource<<fc8743f0fb9cb153412a1e81f585f07d>>
  * @flow strict
  */
 
@@ -56,6 +56,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
+  enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
   enableDoubleMeasurementFixAndroid: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
@@ -197,6 +198,10 @@ export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGet
  * This enables the fabric implementation of focus search so that we can focus clipped elements
  */
 export const enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean> = createNativeFlagGetter('enableCustomFocusSearchOnClippedElementsAndroid', true);
+/**
+ * Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.
+ */
+export const enableDestroyShadowTreeRevisionAsync: Getter<boolean> = createNativeFlagGetter('enableDestroyShadowTreeRevisionAsync', false);
 /**
  * When enabled a subset of components will avoid double measurement on Android.
  */
