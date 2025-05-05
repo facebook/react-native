@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<31638ef8ac6992a354785b74af8fbe0d>>
+ * @generated SignedSource<<453f8c0a593b173c197fcf54ed834a1b>>
  */
 
 /**
@@ -179,6 +179,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableNewBackgroundAndBorderDrawables(): Boolean = accessor.enableNewBackgroundAndBorderDrawables()
+
+  /**
+   * Enables caching text layout artifacts for later reuse
+   */
+  @JvmStatic
+  public fun enablePreparedTextLayout(): Boolean = accessor.enablePreparedTextLayout()
 
   /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.

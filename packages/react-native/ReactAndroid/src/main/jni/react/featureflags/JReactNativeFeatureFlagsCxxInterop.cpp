@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d566c157b7db07e235bada071067f11d>>
+ * @generated SignedSource<<49dbfe02e06cc5d6b12683ed91ea1d13>>
  */
 
 /**
@@ -186,6 +186,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableNewBackgroundAndBorderDrawables() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNewBackgroundAndBorderDrawables");
+    return method(javaProvider_);
+  }
+
+  bool enablePreparedTextLayout() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePreparedTextLayout");
     return method(javaProvider_);
   }
 
@@ -444,6 +450,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables(
   return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enablePreparedTextLayout(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enablePreparedTextLayout();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
@@ -655,6 +666,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableNewBackgroundAndBorderDrawables",
         JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables),
+      makeNativeMethod(
+        "enablePreparedTextLayout",
+        JReactNativeFeatureFlagsCxxInterop::enablePreparedTextLayout),
       makeNativeMethod(
         "enablePropsUpdateReconciliationAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid),

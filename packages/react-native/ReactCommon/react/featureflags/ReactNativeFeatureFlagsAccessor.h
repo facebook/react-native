@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<31b5c2776ad91fd0d3bd2cfc3672575b>>
+ * @generated SignedSource<<2736c730fcd0b82717faa0fea527d007>>
  */
 
 /**
@@ -57,6 +57,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableNativeCSSParsing();
   bool enableNetworkEventReporting();
   bool enableNewBackgroundAndBorderDrawables();
+  bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
   bool enableResourceTimingAPI();
   bool enableSynchronousStateUpdates();
@@ -89,7 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -116,6 +117,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
   std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;
+  std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableResourceTimingAPI_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
