@@ -438,5 +438,9 @@ export type {
 export type {HostComponent} from './src/private/types/HostComponent';
 export type {ColorSchemeName} from './src/private/specs_DEPRECATED/modules/NativeAppearance';
 export type {ErrorUtils} from './Libraries/vendor/core/ErrorUtils';
+export type {
+  PublicRootInstance,
+  PublicTextInstance,
+} from './Libraries/ReactPrivate/ReactNativePrivateInterface';
 
 // #endregion
