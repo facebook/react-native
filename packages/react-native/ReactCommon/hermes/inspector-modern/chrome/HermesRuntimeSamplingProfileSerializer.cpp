@@ -76,12 +76,13 @@ RuntimeSamplingProfile::SampleCallStackFrame convertJSFunctionHermesFrame(
       frame.getFunctionName(),
       frame.hasUrl() ? std::optional<std::string>{frame.getUrl()}
                      : std::nullopt,
-      frame.hasLineNumber() ? std::optional<uint32_t>{frame.getLineNumber() - 1}
-                            // Hermes VM keeps line numbers as 1-based. Convert
-                            // to 0-based.
-                            : std::nullopt,
-      frame.hasColumnNumber()
-          ? std::optional<uint32_t>{frame.getColumnNumber() - 1}
+      frame.hasFunctionLineNumber()
+          ? std::optional<uint32_t>{frame.getFunctionLineNumber() - 1}
+          // Hermes VM keeps line numbers as 1-based. Convert
+          // to 0-based.
+          : std::nullopt,
+      frame.hasFunctionColumnNumber()
+          ? std::optional<uint32_t>{frame.getFunctionColumnNumber() - 1}
           // Hermes VM keeps column numbers as 1-based. Convert to
           // 0-based.
           : std::nullopt,
