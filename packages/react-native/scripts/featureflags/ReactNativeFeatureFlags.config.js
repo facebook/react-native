@@ -155,6 +155,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableDestroyShadowTreeRevisionAsync: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-29',
+        description:
+          'Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableDoubleMeasurementFixAndroid: {
       defaultValue: false,
       metadata: {
