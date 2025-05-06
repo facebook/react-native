@@ -7580,29 +7580,52 @@ export type ____ViewStyle_InternalOverrides = $ReadOnly<{}>;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/private/_TransformStyle.js 1`] = `
-"export type ____TransformStyle_Internal = $ReadOnly<{
+"type KeysOfUnion<T> = T extends any ? $Keys<T> : empty;
+type ValueOfUnion<T, K> = T extends any
+  ? K extends $Keys<T>
+    ? T[K]
+    : empty
+  : empty;
+type MergeUnion<T> = {
+  [K in KeysOfUnion<T>]?: ValueOfUnion<T, K>,
+};
+type MaximumOneOf<T: { ... }> = $Values<{
+  [K in keyof T]: $Exact<{
+    [P in keyof T]?: P extends K ? T[P] : empty,
+  }>,
+}>;
+export type ____TransformStyle_Internal = $ReadOnly<{
   transform?:
     | $ReadOnlyArray<
-        | { +perspective: number | AnimatedNode }
-        | { +rotate: string | AnimatedNode }
-        | { +rotateX: string | AnimatedNode }
-        | { +rotateY: string | AnimatedNode }
-        | { +rotateZ: string | AnimatedNode }
-        | { +scale: number | AnimatedNode }
-        | { +scaleX: number | AnimatedNode }
-        | { +scaleY: number | AnimatedNode }
-        | { +translateX: number | string | AnimatedNode }
-        | { +translateY: number | string | AnimatedNode }
-        | {
-            +translate:
-              | [number | string | AnimatedNode, number | string | AnimatedNode]
-              | AnimatedNode,
-          }
-        | { +skewX: string | AnimatedNode }
-        | { +skewY: string | AnimatedNode }
-        | {
-            +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-          },
+        $ReadOnly<
+          MaximumOneOf<
+            MergeUnion<
+              | { +perspective: number | AnimatedNode }
+              | { +rotate: string | AnimatedNode }
+              | { +rotateX: string | AnimatedNode }
+              | { +rotateY: string | AnimatedNode }
+              | { +rotateZ: string | AnimatedNode }
+              | { +scale: number | AnimatedNode }
+              | { +scaleX: number | AnimatedNode }
+              | { +scaleY: number | AnimatedNode }
+              | { +translateX: number | string | AnimatedNode }
+              | { +translateY: number | string | AnimatedNode }
+              | {
+                  +translate:
+                    | [
+                        number | string | AnimatedNode,
+                        number | string | AnimatedNode,
+                      ]
+                    | AnimatedNode,
+                }
+              | { +skewX: string | AnimatedNode }
+              | { +skewY: string | AnimatedNode }
+              | {
+                  +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+                },
+            >,
+          >,
+        >,
       >
     | string,
   transformOrigin?:
