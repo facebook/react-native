@@ -122,6 +122,7 @@ class ShadowNodeFamily final {
    */
   Tag getTag() const;
 
+  jsi::Value getInstanceHandle(jsi::Runtime& runtime) const;
   InstanceHandle::Shared getInstanceHandle() const;
   void setInstanceHandle(InstanceHandle::Shared& instanceHandle) const;
 
