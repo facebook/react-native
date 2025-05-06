@@ -216,10 +216,6 @@ class UIManager final : public ShadowTreeDelegate {
   void removeEventListener(
       const std::shared_ptr<const EventListener>& listener);
 
-#pragma mark - Set on surface start callback
-  void setOnSurfaceStartCallback(
-      UIManagerDelegate::OnSurfaceStartCallback&& callback);
-
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
