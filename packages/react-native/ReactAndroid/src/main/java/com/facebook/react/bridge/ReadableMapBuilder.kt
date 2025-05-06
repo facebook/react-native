@@ -51,6 +51,14 @@ public class ReadableMapBuilder(private val map: WritableMap) {
     map.putNull(key)
   }
 
+  public fun put(key: String, value: ReadableMap) {
+    map.putMap(key, value)
+  }
+
+  public fun put(key: String, value: ReadableArray) {
+    map.putArray(key, value)
+  }
+
   public fun putMap(key: String, builder: ReadableMapBuilder.() -> Unit) {
     map.putMap(key, buildReadableMap(builder))
   }
