@@ -131,7 +131,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
     _launchOptions = launchOptions;
 
-    if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+    if (true) {
       [[NSNotificationCenter defaultCenter] addObserver:self
                                                selector:@selector(_handleMemoryWarning)
                                                    name:UIApplicationDidReceiveMemoryWarningNotification
@@ -145,7 +145,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)dealloc
 {
-  if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+  if (true) {
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidReceiveMemoryWarningNotification
                                                   object:nil];
