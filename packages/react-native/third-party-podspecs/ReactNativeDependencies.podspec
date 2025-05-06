@@ -49,9 +49,10 @@ Pod::Spec.new do |spec|
     mkdir -p Headers
     XCFRAMEWORK_PATH=$(find "$CURRENT_PATH" -type d -name "ReactNativeDependencies.xcframework")
     HEADERS_PATH=$(find "$XCFRAMEWORK_PATH" -type d -name "Headers" | head -n 1)
-    rsync -a "$HEADERS_PATH/" Headers
+    cp -R "$HEADERS_PATH/" Headers
     mkdir -p framework/packages/react-native
-    rsync -a --remove-source-files "$XCFRAMEWORK_PATH/.." framework/packages/react-native/
+    cp -R "$XCFRAMEWORK_PATH/.." framework/packages/react-native/
+    find "$XCFRAMEWORK_PATH/.." -type f -exec rm {} +
     find "$CURRENT_PATH" -type d -empty -delete
   CMD
 
