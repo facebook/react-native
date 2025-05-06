@@ -1334,6 +1334,9 @@ public final class com/facebook/react/bridge/ReactSoftExceptionLogger$Categories
 	public static final field SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE Ljava/lang/String;
 }
 
+public abstract interface annotation class com/facebook/react/bridge/ReactSoftExceptionLogger$CategoryMode : java/lang/annotation/Annotation {
+}
+
 public abstract interface class com/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener {
 	public abstract fun logSoftException (Ljava/lang/String;Ljava/lang/Throwable;)V
 }
