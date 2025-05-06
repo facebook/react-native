@@ -47,6 +47,9 @@ Pod::Spec.new do |s|
   end
 
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
+  add_dependency(s, "React-featureflags")
+  s.dependency "React-performancetimeline"
+  s.dependency "React-timing"
 
   add_rn_third_party_dependencies(s)
 end
