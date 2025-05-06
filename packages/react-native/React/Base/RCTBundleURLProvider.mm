@@ -388,7 +388,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 
 - (BOOL)enableDev
 {
-  return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableDevKey];
+  return NO;
 }
 
 - (BOOL)enableMinification
