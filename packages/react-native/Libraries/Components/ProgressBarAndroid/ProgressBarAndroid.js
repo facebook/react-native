@@ -17,6 +17,12 @@ import Platform from '../../Utilities/Platform';
 
 export type {ProgressBarAndroidProps};
 
+/**
+ * ProgressBarAndroid has been extracted from react-native core and will be removed in a future release.
+ * It can now be installed and imported from `@react-native-community/progress-bar-android` instead of 'react-native'.
+ * @see https://github.com/react-native-community/progress-bar-android
+ * @deprecated
+ */
 let ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<ProgressBarAndroidNativeComponentType>,
