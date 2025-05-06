@@ -94,6 +94,11 @@ class KeyboardAvoidingView extends React.Component<
       return 0;
     }
 
+    // On the Android platform, the keyboard height is 0 during the keyboard close event.
+    if (Platform.OS === 'android' && keyboardFrame?.height === 0) {
+      return 0;
+    }
+
     const keyboardY =
       keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
 
