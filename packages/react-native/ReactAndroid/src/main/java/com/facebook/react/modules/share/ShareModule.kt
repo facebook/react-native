@@ -13,6 +13,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 
 /** Intent module. Launch other activities or open URLs. */
@@ -48,10 +49,11 @@ internal class ShareModule(reactContext: ReactApplicationContext) :
       if (currentActivity != null) {
         currentActivity.startActivity(chooser)
       } else {
-        getReactApplicationContext().startActivity(chooser)
+        reactApplicationContext.startActivity(chooser)
       }
-      val result = Arguments.createMap()
-      result.putString("action", ACTION_SHARED)
+      val result = buildReadableMap {
+        put("action", ACTION_SHARED)
+      }
       promise.resolve(result)
     } catch (e: Exception) {
       promise.reject(ERROR_UNABLE_TO_OPEN_DIALOG, "Failed to open share dialog")
