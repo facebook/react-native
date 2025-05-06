@@ -76,6 +76,14 @@ Tag ShadowNodeFamily::getTag() const {
   return tag_;
 }
 
+jsi::Value ShadowNodeFamily::getInstanceHandle(jsi::Runtime& runtime) const {
+  if (instanceHandle_ == nullptr) {
+    return jsi::Value::null();
+  }
+
+  return instanceHandle_->getInstanceHandle(runtime);
+}
+
 InstanceHandle::Shared ShadowNodeFamily::getInstanceHandle() const {
   return instanceHandle_;
 }

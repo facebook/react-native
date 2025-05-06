@@ -27,6 +27,7 @@ import defineLazyObjectProperty from '../Utilities/defineLazyObjectProperty';
 
 export type NodeSet = Array<Node>;
 export type NodeProps = {...};
+export opaque type ShadowNodeFamilyReference = mixed;
 export interface Spec {
   +createNode: (
     reactTag: number,
@@ -40,6 +41,7 @@ export interface Spec {
   +cloneNodeWithNewProps: (node: Node, newProps: NodeProps) => Node;
   +cloneNodeWithNewChildrenAndProps: (node: Node, newProps: NodeProps) => Node;
   +createChildSet: (rootTag: RootTag) => NodeSet;
+  +createShadowNodeFamilyReference: (node: Node) => ShadowNodeFamilyReference;
   +appendChild: (parentNode: Node, child: Node) => Node;
   +appendChildToSet: (childSet: NodeSet, child: Node) => void;
   +completeRoot: (rootTag: RootTag, childSet: NodeSet) => void;
@@ -111,6 +113,7 @@ const CACHED_PROPERTIES = [
   'cloneNodeWithNewProps',
   'cloneNodeWithNewChildrenAndProps',
   'createChildSet',
+  'createShadowNodeFamilyReference',
   'appendChild',
   'appendChildToSet',
   'completeRoot',

@@ -42,6 +42,16 @@ inline static ShadowNode::Shared shadowNodeFromValue(
       ->shadowNode;
 }
 
+inline static ShadowNodeFamily::Shared shadowNodeFamilyFromValue(
+    jsi::Runtime& runtime,
+    const jsi::Value& value) {
+  if (value.isNull()) {
+    return nullptr;
+  }
+
+  return value.getObject(runtime).getNativeState<ShadowNodeFamily>(runtime);
+}
+
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
     ShadowNode::Shared shadowNode,
@@ -57,6 +67,17 @@ inline static jsi::Value valueFromShadowNode(
 
   jsi::Object obj(runtime);
   obj.setNativeState(runtime, std::move(wrappedShadowNode));
+  return obj;
+}
+
+inline static jsi::Value valueFromShadowNodeFamily(
+    jsi::Runtime& runtime,
+    ShadowNodeFamily::Shared shadowNodeFamily) {
+  jsi::Object obj(runtime);
+  // Need to const_cast since JSI only allows non-const pointees
+  obj.setNativeState(
+      runtime,
+      std::const_pointer_cast<ShadowNodeFamily>(std::move(shadowNodeFamily)));
   return obj;
 }
 

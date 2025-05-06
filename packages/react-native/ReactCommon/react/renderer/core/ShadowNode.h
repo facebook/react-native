@@ -159,6 +159,8 @@ class ShadowNode : public Sealable,
 
   const ShadowNodeFamily& getFamily() const;
 
+  ShadowNodeFamily::Shared getFamilyShared() const;
+
 #pragma mark - Mutating Methods
 
   virtual void appendChild(const Shared& child);

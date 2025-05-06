@@ -8,7 +8,7 @@
 #pragma once
 
 #include <react/renderer/components/root/RootShadowNode.h>
-#include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/core/ShadowNodeFamily.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Rect.h>
 #include <memory>
@@ -20,7 +20,7 @@ using IntersectionObserverObserverId = int32_t;
 
 struct IntersectionObserverEntry {
   IntersectionObserverObserverId intersectionObserverId;
-  ShadowNode::Shared shadowNode;
+  ShadowNodeFamily::Shared shadowNodeFamily;
   Rect targetRect;
   Rect rootRect;
   Rect intersectionRect;
@@ -28,13 +28,19 @@ struct IntersectionObserverEntry {
   // TODO(T156529385) Define `DOMHighResTimeStamp` as an alias for `double` and
   // use it here.
   double time;
+
+  bool sameShadowNodeFamily(
+      const ShadowNodeFamily& otherShadowNodeFamily) const {
+    return std::addressof(*shadowNodeFamily) ==
+        std::addressof(otherShadowNodeFamily);
+  }
 };
 
 class IntersectionObserver {
  public:
   IntersectionObserver(
       IntersectionObserverObserverId intersectionObserverId,
-      ShadowNode::Shared targetShadowNode,
+      ShadowNodeFamily::Shared targetShadowNodeFamily,
       std::vector<Float> thresholds,
       std::optional<std::vector<Float>> rootThresholds = std::nullopt);
 
@@ -51,8 +57,10 @@ class IntersectionObserver {
     return intersectionObserverId_;
   }
 
-  const ShadowNode& getTargetShadowNode() const {
-    return *targetShadowNode_;
+  bool isTargetShadowNodeFamily(
+      const ShadowNodeFamily& shadowNodeFamily) const {
+    return std::addressof(*targetShadowNodeFamily_) ==
+        std::addressof(shadowNodeFamily);
   }
 
   std::vector<Float> getThresholds() const {
@@ -75,7 +83,7 @@ class IntersectionObserver {
       double time);
 
   IntersectionObserverObserverId intersectionObserverId_;
-  ShadowNode::Shared targetShadowNode_;
+  ShadowNodeFamily::Shared targetShadowNodeFamily_;
   std::vector<Float> thresholds_;
   std::optional<std::vector<Float>> rootThresholds_;
   mutable IntersectionObserverState state_ =

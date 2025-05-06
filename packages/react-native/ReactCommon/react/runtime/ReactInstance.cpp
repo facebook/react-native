@@ -586,6 +586,23 @@ void ReactInstance::initializeRuntime(
                   args[1].getObject(runtime).getFunction(runtime));
               return jsi::Value::undefined();
             }));
+    
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$trimMemory",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(
+                runtime, "RN$trimMemory"),
+            0,
+            [this](
+                jsi::Runtime& rt,
+                const jsi::Value& /*thisVal*/,
+                const jsi::Value* /*args*/,
+                size_t /*count*/) {
+                  this->handleMemoryPressureJs(15);
+              return jsi::Value::undefined();
+            }));
 
     timerManager_->attachGlobals(runtime);
 
