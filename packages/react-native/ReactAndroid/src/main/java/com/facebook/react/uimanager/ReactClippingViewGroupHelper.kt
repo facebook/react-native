@@ -13,7 +13,7 @@ import javax.annotation.concurrent.NotThreadSafe
 
 /**
  * Provides implementation of common tasks for view and it's view manager supporting property
- * [removeClippedSubviews].
+ * [com.facebook.react.uimanager.ReactClippingViewGroup.removeClippedSubviews].
  */
 @NotThreadSafe
 public object ReactClippingViewGroupHelper {
@@ -23,7 +23,7 @@ public object ReactClippingViewGroupHelper {
   private val helperRect: Rect = Rect()
 
   /**
-   * Can be used by view that support [removeClippedSubviews] property to calculate area that given
+   * Can be used by view that support [com.facebook.react.uimanager.ReactClippingViewGroup.removeClippedSubviews] property to calculate area that given
    * [view] should be clipped to based on the clipping rectangle of it's parent in case when parent
    * is also set to clip it's children.
    *

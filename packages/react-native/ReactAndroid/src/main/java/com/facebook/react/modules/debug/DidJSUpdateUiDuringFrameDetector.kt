@@ -16,8 +16,8 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 /**
  * Debug object that listens to bridge busy/idle events and UiManagerModule dispatches and uses it
  * to calculate whether JS was able to update the UI during a given frame. After being installed on
- * a [ReactBridge] and a [UIManagerModule], [.getDidJSHitFrameAndCleanup] should be called once per
- * frame via a [Choreographer.FrameCallback].
+ * a [ReactBridge] and a [com.facebook.react.uimanager.UIManagerModule], [.getDidJSHitFrameAndCleanup] should be called once per
+ * frame via a [android.view.Choreographer.FrameCallback].
  */
 internal class DidJSUpdateUiDuringFrameDetector :
     NotThreadSafeBridgeIdleDebugListener, NotThreadSafeViewHierarchyUpdateDebugListener {
@@ -53,9 +53,9 @@ internal class DidJSUpdateUiDuringFrameDetector :
   }
 
   /**
-   * Designed to be called from a [Choreographer.FrameCallback.doFrame] call.
+   * Designed to be called from a [android.view.Choreographer.FrameCallback.doFrame] call.
    *
-   * There are two 'success' cases that will cause [.getDidJSHitFrameAndCleanup] to return true for
+   * There are two 'success' cases that will cause [getDidJSHitFrameAndCleanup] to return true for
    * a given frame:
    * 1. UIManagerModule finished dispatching a batched UI update on the UI thread during the frame.
    *    This means that during the next hierarchy traversal, new UI will be drawn if needed (good).
@@ -67,8 +67,8 @@ internal class DidJSUpdateUiDuringFrameDetector :
    * NB: This call can only be called once for a given frame time range because it cleans up events
    * it recorded for that frame.
    *
-   * NB2: This makes the assumption that onViewHierarchyUpdateEnqueued is called from the
-   * [ ][UIManagerModule.onBatchComplete], e.g. while the bridge is still considered busy, which
+   * NB2: This makes the assumption that [onViewHierarchyUpdateEnqueued] is called from the
+   * [com.facebook.react.uimanager.UIManagerModule.onBatchComplete], e.g. while the bridge is still considered busy, which
    * means there is no race condition where the bridge has gone idle but a hierarchy update is
    * waiting to be enqueued.
    *

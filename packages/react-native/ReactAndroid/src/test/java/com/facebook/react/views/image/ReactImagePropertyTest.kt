@@ -48,7 +48,7 @@ import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Verify that [ScalingUtils] properties are being applied correctly by [ReactImageManager]. */
+/** Verify that [com.facebook.drawee.drawable.ScalingUtils] properties are being applied correctly by [ReactImageManager]. */
 @RunWith(RobolectricTestRunner::class)
 class ReactImagePropertyTest {
 

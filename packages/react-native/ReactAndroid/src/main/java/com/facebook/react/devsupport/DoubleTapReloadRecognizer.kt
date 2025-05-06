@@ -14,7 +14,7 @@ import android.view.View
 import android.widget.EditText
 
 /**
- * A class allows recognizing double key tap of "R", used to reload JS in [AbstractReactActivity],
+ * A class allows recognizing double key tap of "R", used to reload JS in [com.facebook.react.ReactDelegate],
  * [RedBoxDialogSurfaceDelegate] and [com.facebook.react.ReactActivity].
  */
 public class DoubleTapReloadRecognizer {

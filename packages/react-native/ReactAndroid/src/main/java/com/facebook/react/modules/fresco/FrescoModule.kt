@@ -145,7 +145,7 @@ constructor(
      * Get the default Fresco configuration builder. Allows adding of configuration options in
      * addition to the default values.
      *
-     * @return [ImagePipelineConfig.Builder] that has been initialized with default values
+     * @return [com.facebook.imagepipeline.core.ImagePipelineConfig.Builder] that has been initialized with default values
      */
     @JvmStatic
     public fun getDefaultConfigBuilder(context: ReactContext): ImagePipelineConfig.Builder {
