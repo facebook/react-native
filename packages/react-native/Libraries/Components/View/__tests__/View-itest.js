@@ -168,3 +168,29 @@ describe('margin style', () => {
     );
   });
 });
+
+describe('accessibilityRole', () => {
+  it('is propagated to the mounting layer', () => {
+    const root = Fantom.createRoot();
+
+    Fantom.runTask(() => {
+      root.render(<View accessibilityRole={'button'} accessible={true} />);
+    });
+
+    expect(
+      root.getRenderedOutput({props: ['accessibilityRole']}).toJSX(),
+    ).toEqual(<rn-view accessibilityRole="button" />);
+  });
+
+  it('does not unflatten view', () => {
+    const root = Fantom.createRoot();
+
+    Fantom.runTask(() => {
+      root.render(<View accessibilityRole={'button'} />);
+    });
+
+    expect(
+      root.getRenderedOutput({props: ['accessibilityRole']}).toJSX(),
+    ).toEqual(null);
+  });
+});
