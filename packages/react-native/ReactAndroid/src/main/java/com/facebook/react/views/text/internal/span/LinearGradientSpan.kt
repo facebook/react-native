@@ -12,6 +12,9 @@ public class LinearGradientSpan(
 ) : CharacterStyle(), ReactSpan,
     UpdateAppearance {
     public override fun updateDrawState(tp: TextPaint) {
+        // without setting the paint color, the gradient appears "faded" if no foreground color span is also applied
+        // https://stackoverflow.com/a/52289927
+        tp.setColor(colors[0])
         val textShader: Shader =
             LinearGradient(
                 start,

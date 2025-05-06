@@ -170,15 +170,12 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
     int end = sb.length();
     if (end >= start) {
-      if (textShadowNode.mIsColorSet || textShadowNode.mGradientColors != null) {
-        if (textShadowNode.mGradientColors != null && textShadowNode.mGradientColors.length >= 2) {
+      if (textShadowNode.mIsColorSet) {
+        ops.add(new SetSpanOperation(start, end, new ReactForegroundColorSpan(textShadowNode.mColor)));
+      }
+      if (textShadowNode.mGradientColors != null && textShadowNode.mGradientColors.length >= 2) {
           int effectiveFontSize = textAttributes.getEffectiveFontSize();
-          ops.add(
-                  new SetSpanOperation(start, end, new LinearGradientSpan(start * effectiveFontSize, textShadowNode.mGradientColors)));
-        } else {
-          ops.add(
-                  new SetSpanOperation(start, end, new ReactForegroundColorSpan(textShadowNode.mColor)));
-        }
+          ops.add(new SetSpanOperation(start, end, new LinearGradientSpan(start * effectiveFontSize, textShadowNode.mGradientColors)));
       }
       if (textShadowNode.mIsBackgroundColorSet) {
         ops.add(
