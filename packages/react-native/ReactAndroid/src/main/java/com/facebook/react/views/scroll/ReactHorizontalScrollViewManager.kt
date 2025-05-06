@@ -178,7 +178,7 @@ constructor(private val fpsListener: FpsListener? = null) :
     }
   }
 
-  @Deprecated("Use different receiveCommand overloads")
+  @Deprecated("Use receiveCommand with String commandId instead", ReplaceWith("receiveCommand(scrollView, commandId, args)"))
   override fun receiveCommand(
       scrollView: ReactHorizontalScrollView,
       commandId: Int,

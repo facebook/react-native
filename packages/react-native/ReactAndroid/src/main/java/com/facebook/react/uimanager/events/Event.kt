@@ -52,7 +52,7 @@ public abstract class Event<T : Event<T>> {
 
   protected constructor()
 
-  @Deprecated("Use constructor with explicit surfaceId instead")
+  @Deprecated("Use constructor with explicit surfaceId instead", ReplaceWith("Event(surfaceId, viewTag)"))
   protected constructor(viewTag: Int) {
     init(viewTag)
   }
@@ -61,7 +61,7 @@ public abstract class Event<T : Event<T>> {
     init(surfaceId, viewTag)
   }
 
-  @Deprecated("Use version with explicit surfaceId instead")
+  @Deprecated("Use version with explicit surfaceId instead", ReplaceWith("init(surfaceId, viewTag)"))
   protected fun init(viewTag: Int) {
     init(-1, viewTag)
   }
