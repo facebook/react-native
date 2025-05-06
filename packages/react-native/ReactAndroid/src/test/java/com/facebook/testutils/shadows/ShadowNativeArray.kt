@@ -16,7 +16,7 @@ import org.robolectric.shadow.api.Shadow
 
 // Mockito can't mock native methods, so shadow the entire class instead
 @Implements(NativeArray::class)
-public open class ShadowNativeArray {
+open class ShadowNativeArray {
   var backingArray: JavaOnlyArray = JavaOnlyArray()
 
   @Deprecated(
@@ -24,17 +24,17 @@ public open class ShadowNativeArray {
       ReplaceWith(
           "ShadowReadableNativeArray", "com.facebook.testutils.shadows.ShadowReadableNativeArray"))
   @Implements(ReadableNativeArray::class)
-  public class Readable : ShadowNativeArray() {}
+  class Readable : ShadowNativeArray()
 
   @Deprecated(
       "Use ShadowWritableNativeArray",
       ReplaceWith(
           "ShadowWritableNativeArray", "com.facebook.testutils.shadows.ShadowWritableNativeArray"))
   @Implements(WritableNativeArray::class)
-  public class Writable : ShadowNativeArray() {}
+  class Writable : ShadowNativeArray()
 
-  public companion object {
-    public fun getContents(array: NativeArray): List<Any?> =
+  companion object {
+    fun getContents(array: NativeArray): List<Any?> =
         (Shadow.extract(array) as ShadowNativeArray).backingArray.toArrayList()
   }
 }

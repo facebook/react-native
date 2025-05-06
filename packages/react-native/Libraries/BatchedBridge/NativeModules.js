@@ -65,6 +65,7 @@ function genModule(
       module[methodName] = genMethod(moduleID, methodID, methodType);
     });
 
+  // $FlowFixMe[unsafe-object-assign]
   Object.assign(module, constants);
 
   if (module.getConstants == null) {
@@ -173,6 +174,7 @@ function updateErrorWithErrorData(
   /* $FlowFixMe[class-object-subtyping] added when improving typing for this
    * parameters */
   // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[unsafe-object-assign]
   return Object.assign(error, errorData || {});
 }
 

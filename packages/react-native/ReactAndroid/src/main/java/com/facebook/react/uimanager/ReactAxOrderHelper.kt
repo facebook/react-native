@@ -9,6 +9,7 @@ package com.facebook.react.uimanager
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.react.R
 import com.facebook.react.bridge.ReadableArray
@@ -90,7 +91,11 @@ private object ReactAxOrderHelper {
   ): Array<View?> {
     val axOrderViews = arrayOfNulls<View?>(axOrderIds.size)
 
-    fun traverseAndDisableAxFromExcludedViews(view: View, parent: View) {
+    fun traverseAndDisableAxFromExcludedViews(
+        view: View,
+        parent: View,
+        hasCooptingAncestor: Boolean
+    ) {
       val nativeId = view.getTag(R.id.view_tag_native_id) as String?
 
       val isIncluded = nativeId != null && axOrderSet.contains(nativeId)
@@ -101,32 +106,40 @@ private object ReactAxOrderHelper {
             view, view.isFocusable, view.importantForAccessibility)
       }
 
+      // There is a strange bug with TalkBack where if a focused view has nothing to announce, and
+      // there are no accessibility node's below it, then it will run OCR model on its bounds and
+      // announce any text it sees. Also, if there is a TextView below the View backing the node,
+      // it will announce that text too. This can happen frequently with our implementation here
+      // we change importantForAccessibility for TextView's that are not included in
+      // accessibilityOrder thus kicking off the logic described. To avoid this double announcement
+      // we just do not set importantForAccessibility on TextView's in the case where someone is
+      // coopting them. We will not focus the text since they got coopted.
       if (isIncluded) {
         axOrderViews[axOrderIds.indexOf(nativeId)] = view
-      } else {
+      } else if (!(view is TextView && hasCooptingAncestor)) {
         // Save original state before disabling
         view.setTag(R.id.original_important_for_ax, view.importantForAccessibility)
         view.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
       }
 
+      val wantsToCoopt = isIncluded && view.contentDescription.isNullOrEmpty()
+
       if (view is ViewGroup) {
-        // Continue to try to disable children if this view is not included and is focusable.
-        // This view being focusable means it's an element, and not a container which means its
-        // presence doesn't imply all its children should be focusable. And if its not included we
-        // still want to attempt to disable the children of the container
+        // Continue to try to disable children if this view is not included and is
+        // focusable. This view being focusable means it's an element, and not a container which
+        // means its presence doesn't imply all its children should be focusable. And if its not
+        // included we still want to attempt to disable the children of the container
         if (!isIncluded || view.isFocusable()) {
           for (i in 0 until view.childCount) {
-            traverseAndDisableAxFromExcludedViews(view.getChildAt(i), parent)
+            traverseAndDisableAxFromExcludedViews(view.getChildAt(i), parent, wantsToCoopt)
           }
         }
       }
     }
 
-    if (root is ViewGroup) {
-      for (i in 0 until root.childCount) {
-        traverseAndDisableAxFromExcludedViews(root.getChildAt(i), root)
-      }
-    }
+    // Technically we don't know if there is a coopting ancestor here, as it could be above the root
+    // but those cases should be fairly rare
+    traverseAndDisableAxFromExcludedViews(root, root, false)
 
     return axOrderViews
   }

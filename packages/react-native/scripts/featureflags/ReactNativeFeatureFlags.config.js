@@ -102,17 +102,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableShadowNodeOnNewArchitectureAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-04-07',
-        description:
-          'Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {
@@ -156,6 +145,37 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableCustomFocusSearchOnClippedElementsAndroid: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'This enables the fabric implementation of focus search so that we can focus clipped elements',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableDestroyShadowTreeRevisionAsync: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-29',
+        description:
+          'Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableDoubleMeasurementFixAndroid: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled a subset of components will avoid double measurement on Android.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       metadata: {
@@ -184,6 +204,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    enableFixForParentTagDuringReparenting: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-22',
+        description:
+          'This feature flag enables a fix for reparenting fix in differentiator',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: false,
@@ -235,16 +266,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableLongTaskAPI: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableMainQueueModulesOnIOS: {
       defaultValue: false,
       metadata: {
@@ -266,12 +287,32 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableNewBackgroundAndBorderDrawables: {
+    enableNetworkEventReporting: {
       defaultValue: false,
+      metadata: {
+        description:
+          'Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableNewBackgroundAndBorderDrawables: {
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-09-24',
         description:
           'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enablePreparedTextLayout: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-01',
+        description: 'Enables caching text layout artifacts for later reuse',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -288,11 +329,11 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableReportEventPaintTime: {
+    enableResourceTimingAPI: {
       defaultValue: false,
       metadata: {
         description:
-          'Report paint time inside the Event Timing API implementation (PerformanceObserver).',
+          'Enables the reporting of network resource timings through `PerformanceObserver`.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -364,17 +405,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-08-27',
-        description:
-          'Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'stable',
-    },
     fuseboxEnabledRelease: {
       defaultValue: false,
       metadata: {
@@ -396,16 +426,15 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    removeTurboModuleManagerDelegateMutex: {
-      defaultValue: false,
+    incorporateMaxLinesDuringAndroidLayout: {
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-02-24',
         description:
-          'When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used',
+          'Set maxLines and ellipsization during Android layout creation',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'stable',
     },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
@@ -417,21 +446,22 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    updateRuntimeShadowNodeReferencesOnCommit: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-15',
+        description:
+          'When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useAlwaysAvailableJSErrorHandling: {
       defaultValue: false,
       metadata: {
         description:
           'In Bridgeless mode, use the always available javascript error reporting pipeline.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    useEditTextStockAndroidFocusBehavior: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -480,6 +510,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useShadowNodeStateOnClone: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-16',
+        description:
+          'Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {
@@ -523,17 +564,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-02-05',
         description:
           'Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    avoidAnimatedRefInvalidation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-03-12',
-        description:
-          'Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

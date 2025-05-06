@@ -365,7 +365,7 @@ export interface ScrollViewPropsIOS {
 
   /**
    * When true the scroll view bounces when it reaches the end of the
-   * content if the content is larger then the scroll view along the axis of
+   * content if the content is larger than the scroll view along the axis of
    * the scroll direction. When false it disables all bouncing even if
    * the `alwaysBounce*` props are true. The default value is true.
    */
@@ -869,7 +869,7 @@ export class ScrollView extends ScrollViewBase {
    * This function sends props straight to native. They will not participate in
    * future diff process - this means that if you do not include them in the
    * next render, they will remain active (see [Direct
-   * Manipulation](https://reactnative.dev/docs/direct-manipulation)).
+   * Manipulation](https://reactnative.dev/docs/the-new-architecture/direct-manipulation-new-architecture)).
    */
   setNativeProps(nativeProps: object): void;
 }

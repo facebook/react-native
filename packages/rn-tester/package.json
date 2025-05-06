@@ -19,7 +19,7 @@
     "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
     "clean-android": "rm -rf android/app/build",
     "prepare-ios": "node ./cli.js bootstrap ios",
-    "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock",
+    "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock RNTesterPods.xcworkspace/ ../react-native-codegen/lib/",
     "e2e-build-android": "../../gradlew :packages:rn-tester:android:app:installHermesRelease -PreactNativeArchitectures=arm64-v8a",
     "e2e-build-ios": "./scripts/maestro-build-ios.sh",
     "e2e-test-android": "maestro test .maestro/ -e APP_ID=com.facebook.react.uiapp",
@@ -27,13 +27,14 @@
   },
   "dependencies": {
     "@react-native/oss-library-example": "0.80.0-main",
+    "@react-native/new-app-screen": "0.80.0-main",
     "@react-native/popup-menu-android": "0.80.0-main",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "19.0.0",
+    "react": "19.1.0",
     "react-native": "*"
   },
   "codegenConfig": {

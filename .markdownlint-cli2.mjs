@@ -11,6 +11,7 @@ import relativeLinksRule from 'markdownlint-rule-relative-links';
 
 const config = {
   config: {
+    default: false,
     'heading-increment': true,
     'no-reversed-links': true,
     'no-missing-space-atx': true,
@@ -35,7 +36,7 @@ const config = {
     'relative-links': true,
   },
   globs: ['**/__docs__/*.md'],
-  ignores: ['**/node_modules'],
+  ignores: ['**/node_modules', '__docs__/README-template.md'],
   customRules: [relativeLinksRule],
 };
 

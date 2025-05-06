@@ -22,7 +22,7 @@ internal class ShowEvent(surfaceId: Int, viewTag: Int) : Event<ShowEvent>(surfac
 
   override fun getEventName(): String = EVENT_NAME
 
-  override fun getEventData(): WritableMap? = Arguments.createMap()
+  override fun getEventData(): WritableMap = Arguments.createMap()
 
   companion object {
     const val EVENT_NAME: String = "topShow"

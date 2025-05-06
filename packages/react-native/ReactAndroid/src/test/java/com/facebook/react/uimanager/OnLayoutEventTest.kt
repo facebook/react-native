@@ -58,7 +58,7 @@ class OnLayoutEventTest {
   fun testGetEventName_shouldReturnCorrectEventName() {
     val event = OnLayoutEvent.obtain(1, 1, 10, 20, 100, 200)
 
-    assertThat(event.eventName).isEqualTo("topLayout")
+    assertThat(event.getEventName()).isEqualTo("topLayout")
   }
 
   @Test

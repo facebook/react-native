@@ -12,6 +12,7 @@
 
 import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
+import * as RNTesterListFbInternal from './RNTesterListFbInternal';
 import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
 const Components: Array<RNTesterModuleInfo> = [
@@ -154,6 +155,7 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'OSSLibraryExample',
     module: require('../examples/OSSLibraryExample/OSSLibraryExample'),
   },
+  ...RNTesterListFbInternal.Components,
 ];
 
 const APIs: Array<RNTesterModuleInfo> = ([
@@ -227,15 +229,6 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/DisplayContents/DisplayContentsExample')
       .default,
   },
-  // Only show the link for the example if the API is available.
-  // $FlowExpectedError[cannot-resolve-name]
-  typeof IntersectionObserver === 'function'
-    ? {
-        key: 'IntersectionObserver',
-        category: 'UI',
-        module: require('../examples/IntersectionObserver/IntersectionObserverIndex'),
-      }
-    : null,
   {
     key: 'InvalidPropsExample',
     module: require('../examples/InvalidProps/InvalidPropsExample'),
@@ -256,14 +249,6 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'LinkingExample',
     module: require('../examples/Linking/LinkingExample'),
   },
-  // $FlowExpectedError[cannot-resolve-name]
-  typeof MutationObserver === 'function'
-    ? {
-        key: 'MutationObserver',
-        category: 'UI',
-        module: require('../examples/MutationObserver/MutationObserverIndex'),
-      }
-    : null,
   {
     key: 'NativeAnimationsExample',
     module: require('../examples/NativeAnimation/NativeAnimationsExample'),
@@ -317,8 +302,14 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/Filter/FilterExample'),
   },
   {
-    key: 'LinearGradient',
+    key: 'LinearGradientExample',
+    category: 'UI',
     module: require('../examples/LinearGradient/LinearGradientExample'),
+  },
+  {
+    key: 'RadialGradientExample',
+    category: 'UI',
+    module: require('../examples/RadialGradient/RadialGradientExample'),
   },
   {
     key: 'MixBlendModeExample',
@@ -348,11 +339,7 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'XHRExample',
     module: require('../examples/XHR/XHRExample'),
   },
-  {
-    key: 'PerformanceApiExample',
-    category: 'Basic',
-    module: require('../examples/Performance/PerformanceApiExample'),
-  },
+  ...RNTesterListFbInternal.APIs,
 ]: Array<?RNTesterModuleInfo>).filter(Boolean);
 
 if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {

@@ -10,7 +10,7 @@
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
 import type {EventOccurrence, EventTrackerProps} from './PointerEventSupport';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ViewProps} from 'react-native';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import {EventTracker, mkEvent} from './PointerEventSupport';

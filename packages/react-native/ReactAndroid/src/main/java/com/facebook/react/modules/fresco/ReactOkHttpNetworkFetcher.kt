@@ -17,7 +17,7 @@ import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class ReactOkHttpNetworkFetcher(private val okHttpClient: OkHttpClient) :
+internal class ReactOkHttpNetworkFetcher(okHttpClient: OkHttpClient) :
     OkHttpNetworkFetcher(okHttpClient) {
   private fun getHeaders(readableMap: ReadableMap?): Map<String, String>? {
     if (readableMap == null) {

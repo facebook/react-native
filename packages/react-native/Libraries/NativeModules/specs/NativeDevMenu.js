@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../../src/private/specs_DEPRECATED/modules/NativeDevMenu';
-import NativeDevMenu from '../../../src/private/specs_DEPRECATED/modules/NativeDevMenu';
+export * from '../../../src/private/devsupport/devmenu/specs/NativeDevMenu';
+import NativeDevMenu from '../../../src/private/devsupport/devmenu/specs/NativeDevMenu';
 export default NativeDevMenu;

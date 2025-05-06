@@ -1807,7 +1807,6 @@ PODS:
     - glog
     - RCT-Folly
     - RCT-Folly/Fabric
-    - React-cxxreact
     - React-featureflags
     - React-jsinspectortracing
     - React-perflogger
@@ -1968,6 +1967,7 @@ PODS:
     - RCT-Folly/Fabric
     - RCTTypeSafety
     - React-Core/RCTNetworkHeaders
+    - React-featureflags
     - React-jsi
     - React-jsinspectorcdp
     - React-jsinspectornetwork
@@ -2392,6 +2392,7 @@ DEPENDENCIES:
   - ReactCommon-Samples (from `../react-native/ReactCommon/react/nativemodule/samples`)
   - ReactCommon/turbomodule/core (from `../react-native/ReactCommon`)
   - ScreenshotManager (from `NativeModuleExample`)
+  - SocketRocket (~> 0.7.1)
   - Yoga (from `../react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -2567,7 +2568,7 @@ SPEC CHECKSUMS:
   FBLazyVector: d3c2dd739a63c1a124e775df075dc7c517a719cb
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
-  hermes-engine: 4be07099027e1372268b255c29525480cddcd356
+  hermes-engine: 5a9adf9081befbac6b81bc0c81522430a7eb7da1
   MyNativeView: 649cc955b283053e5832e8d45c2a20597daa94cd
   NativeCxxModuleExample: d9bac8e847a427f0a40b0c9fb066ab102b3aefd0
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
@@ -2585,7 +2586,7 @@ SPEC CHECKSUMS:
   React-defaultsnativemodule: 47959b704240e39c6b401d3e3fe1da114b271ac6
   React-domnativemodule: b6dd0c3be3e4514052f68d0b5a94a8d06e0f14fd
   React-Fabric: 06175f348d6df210e7545ee513e38fe1709a6d82
-  React-FabricComponents: 86f8fef5d74fad3f4a642c044d4baf6558be74b9
+  React-FabricComponents: ace73c8cc991f299d9b3aa9556cd5b6e86a8b8e6
   React-FabricImage: ff9dc6afafc92e0da3f3d33d96ec40317bb8ec10
   React-featureflags: 595651ea13c63a9f77f06d9a1973b665b4a28b7e
   React-featureflagsnativemodule: f5f69151bc4c2945003fc502ebaecee7fda02c42
@@ -2600,7 +2601,7 @@ SPEC CHECKSUMS:
   React-jsinspectorcdp: 5fb266e5f23d3a2819ba848e9d4d0b6b00f95934
   React-jsinspectornetwork: 207422b56a7918e83c94c207570849f83ab9052a
   React-jsinspectortracing: 80e9418ac67630c76f15ef06534087037a822330
-  React-jsitooling: b1af12acbfcb039bf87f8f2a82bde3a79c2ddade
+  React-jsitooling: 0c28fbc10441f8b63f4c6bf443cb36416500ce2b
   React-jsitracing: ce443686f52538d1033ce7db1e7d643e866262f0
   React-logger: 116c3ae5a9906671d157aa00882a5ee75a5a7ebc
   React-Mapbuffer: fc937cfa41140d7724c559c3d16c50dd725361c8
@@ -2608,16 +2609,16 @@ SPEC CHECKSUMS:
   React-NativeModulesApple: d3aec3f4d3cb80507777e1feeba3bdc70f9504a0
   React-oscompat: 7133e0e945cda067ae36b22502df663d73002864
   React-perflogger: ada3cdf3dfc8b7cd1fabe3c91b672e23981611ab
-  React-performancetimeline: 3de39e3c3deb17b2fc4d252578b63f215ea087c3
+  React-performancetimeline: e7d5849d89ee39557dcd56dfb6e7b0d49003d925
   React-RCTActionSheet: 1bf8cc8086ad1c15da3407dfb7bc9dd94dc7595d
   React-RCTAnimation: 263593e66c89bf810604b1ace15dfa382a1ca2df
   React-RCTAppDelegate: 3d35d7226338009b22d1cf9621eaa827acb8fd1d
   React-RCTBlob: 7b76230c53fe87d305eeeb250b0aae031bb6cbae
-  React-RCTFabric: 78b6aec5985ef438a9c088032c0e89d2bd77b3ba
+  React-RCTFabric: a43fc393b6e505fd60a7fea43edbdcf609f33bf0
   React-RCTFBReactNativeSpec: 503491a0584dc29f03ef9f8ed366794604cd59ef
   React-RCTImage: de404b6b0ebe53976a97e3a0dee819c83e12977b
   React-RCTLinking: 06742cfad41c506091403a414370743a4ed75af3
-  React-RCTNetwork: f8f7ac330958ac85300827267390bc8decc06ba0
+  React-RCTNetwork: b4577eec0092c16d8996e415e4cac7a372d6d362
   React-RCTPushNotification: ea11178d499696516e0ff9ae335edbe99b06f94b
   React-RCTRuntime: 07b41aed797e8d950ada851c6363ecf931335663
   React-RCTSettings: d3c2dd305ec81f7faf42762ec598d57f07fd43be
@@ -2645,4 +2646,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 8591f96a513620a2a83a0b9a125ad3fa32ea1369
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

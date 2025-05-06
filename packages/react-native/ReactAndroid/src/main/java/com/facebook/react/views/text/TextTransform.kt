@@ -11,7 +11,7 @@ import java.text.BreakIterator
 import java.util.Locale
 
 /** Types of text transforms for CustomTextTransformSpan */
-public enum class TextTransform {
+internal enum class TextTransform {
 
   NONE,
   UPPERCASE,
@@ -19,9 +19,9 @@ public enum class TextTransform {
   CAPITALIZE,
   UNSET;
 
-  public companion object {
+  companion object {
     @JvmStatic
-    public fun apply(text: String?, textTransform: TextTransform?): String? =
+    fun apply(text: String?, textTransform: TextTransform?): String? =
         text?.applyTextTransform(textTransform)
 
     @JvmStatic
@@ -30,7 +30,7 @@ public enum class TextTransform {
   }
 }
 
-public fun String.applyTextTransform(textTransform: TextTransform?): String {
+internal fun String.applyTextTransform(textTransform: TextTransform?): String {
   return when (textTransform) {
     TextTransform.UPPERCASE -> uppercase(Locale.getDefault())
     TextTransform.LOWERCASE -> lowercase(Locale.getDefault())

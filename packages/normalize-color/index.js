@@ -143,11 +143,24 @@ function normalizeColor(color) {
   }
 
   if ((match = matchers.hwb.exec(color))) {
+    if (match[5] !== undefined) {
+      // hwb(H W B / A) notation
+      return (
+        (hwbToRgb(
+          parse360(match[5]), // h
+          parsePercentage(match[6]), // w
+          parsePercentage(match[7]), // b
+        ) |
+          parse1(match[8])) >>> // a
+        0
+      );
+    }
+    // hwb(H W B) notation
     return (
       (hwbToRgb(
-        parse360(match[1]), // h
-        parsePercentage(match[2]), // w
-        parsePercentage(match[3]), // b
+        parse360(match[2]), // h
+        parsePercentage(match[3]), // w
+        parsePercentage(match[4]), // b
       ) |
         0x000000ff) >>> // a
       0
@@ -255,7 +268,13 @@ function getMatchers() {
           callWithSlashSeparator(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) +
           ')',
       ),
-      hwb: new RegExp('hwb' + callModern(NUMBER, PERCENTAGE, PERCENTAGE)),
+      hwb: new RegExp(
+        'hwb(' +
+          callModern(NUMBER, PERCENTAGE, PERCENTAGE) +
+          '|' +
+          callWithSlashSeparator(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) +
+          ')',
+      ),
       hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex4: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex6: /^#([0-9a-fA-F]{6})$/,

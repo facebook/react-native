@@ -1,16 +1,16 @@
 # IntersectionObserver
 
-- [Main doc](../../../../../../../__docs__/README.md)
+[🏠 Home](../../../../../../../__docs__/README.md)
 
 This directory contains the React Native implementation of the
 [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver).
 
-## Usage
+## 🚀 Usage
 
 `IntersectionObserver` is meant to be used from JavaScript, exposed as a global
 class.
 
-## Design
+## 📐 Design
 
 This is the high-level design of the IntersectionObserver API:
 
@@ -32,7 +32,7 @@ for the given surface. If there are, we just wait for the transaction to be
 mounted and use the mount hook to report the initial notification. If there
 aren't, we dispatch the notification immediately.
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of this
 

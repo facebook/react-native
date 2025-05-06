@@ -12,6 +12,9 @@ import android.content.Context
 import android.view.View
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.SurfaceHandlerBinding
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlagsDefaults
 import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.testutils.shadows.ShadowNativeLoader
@@ -20,8 +23,8 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -44,6 +47,9 @@ class ReactSurfaceTest {
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
+    ReactNativeFeatureFlags.override(ReactNativeNewArchitectureFeatureFlagsDefaults())
+
     eventDispatcher = mock()
     context = Robolectric.buildActivity(Activity::class.java).create().get()
 
@@ -122,7 +128,7 @@ class ReactSurfaceTest {
     reactSurface.attach(reactHost)
     reactSurface.updateLayoutSpecs(measureSpecWidth, measureSpecHeight, 2, 3)
     verify(surfaceHandler)
-        .setLayoutConstraints(measureSpecWidth, measureSpecHeight, 2, 3, true, false, 1.0f)
+        .setLayoutConstraints(measureSpecWidth, measureSpecHeight, 2, 3, true, false, 1.0f, 1.0f)
   }
 
   @Test

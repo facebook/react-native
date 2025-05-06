@@ -8,8 +8,7 @@
  * @flow
  */
 
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PointerEvent, ViewProps} from 'react-native';
 
 import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';

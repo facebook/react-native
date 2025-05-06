@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f1e4de5196d3bd22b774e1da6202e88>>
+ * @generated SignedSource<<6667fc8e4fdd2db0b54c908155b110cf>>
  * @flow strict
  */
 
@@ -30,7 +30,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
-  avoidAnimatedRefInvalidation: Getter<boolean>,
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
@@ -52,42 +51,46 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
-  disableShadowNodeOnNewArchitectureAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
+  enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
+  enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
+  enableDoubleMeasurementFixAndroid: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
+  enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
-  enableLongTaskAPI: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
+  enableNetworkEventReporting: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
+  enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
-  enableReportEventPaintTime: Getter<boolean>,
+  enableResourceTimingAPI: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
-  fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
-  removeTurboModuleManagerDelegateMutex: Getter<boolean>,
+  incorporateMaxLinesDuringAndroidLayout: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
+  updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
-  useEditTextStockAndroidFocusBehavior: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRawPropsJsiValue: Getter<boolean>,
+  useShadowNodeStateOnClone: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
 }>;
@@ -106,11 +109,6 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
  */
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
-
-/**
- * Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.
- */
-export const avoidAnimatedRefInvalidation: Getter<boolean> = createJavaScriptFlagGetter('avoidAnimatedRefInvalidation', false);
 
 /**
  * Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.
@@ -182,10 +180,6 @@ export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlag
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
 /**
- * Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android
- */
-export const disableShadowNodeOnNewArchitectureAndroid: Getter<boolean> = createNativeFlagGetter('disableShadowNodeOnNewArchitectureAndroid', true);
-/**
  * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
  */
 export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter('enableAccessibilityOrder', false);
@@ -202,6 +196,18 @@ export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGet
  */
 export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGetter('enableCppPropsIteratorSetter', false);
 /**
+ * This enables the fabric implementation of focus search so that we can focus clipped elements
+ */
+export const enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean> = createNativeFlagGetter('enableCustomFocusSearchOnClippedElementsAndroid', true);
+/**
+ * Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.
+ */
+export const enableDestroyShadowTreeRevisionAsync: Getter<boolean> = createNativeFlagGetter('enableDestroyShadowTreeRevisionAsync', false);
+/**
+ * When enabled a subset of components will avoid double measurement on Android.
+ */
+export const enableDoubleMeasurementFixAndroid: Getter<boolean> = createNativeFlagGetter('enableDoubleMeasurementFixAndroid', false);
+/**
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
 export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGetter('enableEagerRootViewAttachment', false);
@@ -213,6 +219,10 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
  * Enables the use of the Fabric renderer in the whole app.
  */
 export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
+/**
+ * This feature flag enables a fix for reparenting fix in differentiator
+ */
+export const enableFixForParentTagDuringReparenting: Getter<boolean> = createNativeFlagGetter('enableFixForParentTagDuringReparenting', false);
 /**
  * Enables font scale changes updating layout for measurable nodes.
  */
@@ -234,10 +244,6 @@ export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlag
  */
 export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
 /**
- * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
- */
-export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
-/**
  * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
  */
 export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
@@ -246,17 +252,25 @@ export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGett
  */
 export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('enableNativeCSSParsing', false);
 /**
+ * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
+ */
+export const enableNetworkEventReporting: Getter<boolean> = createNativeFlagGetter('enableNetworkEventReporting', false);
+/**
  * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
  */
-export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', false);
+export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', true);
+/**
+ * Enables caching text layout artifacts for later reuse
+ */
+export const enablePreparedTextLayout: Getter<boolean> = createNativeFlagGetter('enablePreparedTextLayout', false);
 /**
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */
 export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNativeFlagGetter('enablePropsUpdateReconciliationAndroid', false);
 /**
- * Report paint time inside the Event Timing API implementation (PerformanceObserver).
+ * Enables the reporting of network resource timings through `PerformanceObserver`.
  */
-export const enableReportEventPaintTime: Getter<boolean> = createNativeFlagGetter('enableReportEventPaintTime', false);
+export const enableResourceTimingAPI: Getter<boolean> = createNativeFlagGetter('enableResourceTimingAPI', false);
 /**
  * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
  */
@@ -282,10 +296,6 @@ export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGette
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
 /**
- * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
- */
-export const fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMountingCoordinatorReportedPendingTransactionsOnAndroid', true);
-/**
  * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
  */
 export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledRelease', false);
@@ -294,21 +304,21 @@ export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fu
  */
 export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', false);
 /**
- * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
+ * Set maxLines and ellipsization during Android layout creation
  */
-export const removeTurboModuleManagerDelegateMutex: Getter<boolean> = createNativeFlagGetter('removeTurboModuleManagerDelegateMutex', false);
+export const incorporateMaxLinesDuringAndroidLayout: Getter<boolean> = createNativeFlagGetter('incorporateMaxLinesDuringAndroidLayout', true);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */
 export const traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean> = createNativeFlagGetter('traceTurboModulePromiseRejectionsOnAndroid', false);
 /**
+ * When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.
+ */
+export const updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean> = createNativeFlagGetter('updateRuntimeShadowNodeReferencesOnCommit', false);
+/**
  * In Bridgeless mode, use the always available javascript error reporting pipeline.
  */
 export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFlagGetter('useAlwaysAvailableJSErrorHandling', false);
-/**
- * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
- */
-export const useEditTextStockAndroidFocusBehavior: Getter<boolean> = createNativeFlagGetter('useEditTextStockAndroidFocusBehavior', true);
 /**
  * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
  */
@@ -325,6 +335,10 @@ export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeF
  * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
  */
 export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', false);
+/**
+ * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
+ */
+export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', false);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */

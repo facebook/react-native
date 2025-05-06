@@ -22,11 +22,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.text.Layout;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.core.util.Preconditions;
+import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -48,6 +51,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -64,6 +68,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -84,6 +89,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.SynchronousEventReceiver;
+import com.facebook.react.views.text.PreparedLayout;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,11 +124,11 @@ public class FabricUIManager
         long transactionEndDuration = commitPoint.getTransactionEndDuration();
         long batchExecutionDuration = commitPoint.getBatchExecutionDuration();
 
-        DevToolsReactPerfLogger.mStreamingCommitStats.add(commitDuration);
-        DevToolsReactPerfLogger.mStreamingLayoutStats.add(layoutDuration);
-        DevToolsReactPerfLogger.mStreamingDiffStats.add(diffDuration);
-        DevToolsReactPerfLogger.mStreamingTransactionEndStats.add(transactionEndDuration);
-        DevToolsReactPerfLogger.mStreamingBatchExecutionStats.add(batchExecutionDuration);
+        DevToolsReactPerfLogger.streamingCommitStats.add(commitDuration);
+        DevToolsReactPerfLogger.streamingLayoutStats.add(layoutDuration);
+        DevToolsReactPerfLogger.streamingDiffStats.add(diffDuration);
+        DevToolsReactPerfLogger.streamingTransactionEndStats.add(transactionEndDuration);
+        DevToolsReactPerfLogger.streamingBatchExecutionStats.add(batchExecutionDuration);
 
         FLog.i(
             TAG,
@@ -135,25 +141,25 @@ public class FabricUIManager
                 + " - Mounting: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n",
             commitPoint.getCommitNumber(),
             commitDuration,
-            DevToolsReactPerfLogger.mStreamingCommitStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingCommitStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingCommitStats.getMax(),
+            DevToolsReactPerfLogger.streamingCommitStats.getAverage(),
+            DevToolsReactPerfLogger.streamingCommitStats.getMedian(),
+            DevToolsReactPerfLogger.streamingCommitStats.getMax(),
             layoutDuration,
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getMax(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getAverage(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getMedian(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getMax(),
             diffDuration,
-            DevToolsReactPerfLogger.mStreamingDiffStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingDiffStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingDiffStats.getMax(),
+            DevToolsReactPerfLogger.streamingDiffStats.getAverage(),
+            DevToolsReactPerfLogger.streamingDiffStats.getMedian(),
+            DevToolsReactPerfLogger.streamingDiffStats.getMax(),
             transactionEndDuration,
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMax(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getAverage(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getMedian(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getMax(),
             batchExecutionDuration,
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMax());
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getAverage(),
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getMedian(),
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getMax());
       };
 
   static {
@@ -188,6 +194,8 @@ public class FabricUIManager
   private volatile boolean mDestroyed = false;
 
   private boolean mDriveCxxAnimations = false;
+
+  private boolean mDriveCxxNativeAnimated = ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
@@ -257,6 +265,52 @@ public class FabricUIManager
     Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
+  }
+
+  /**
+   * Find the next focusable element's id and position relative to the parent from the shadow tree
+   * based on the current focusable element and the direction.
+   *
+   * @return A NextFocusableNode object where the 'id' is the reactId/Tag of the next focusable
+   *     view, returns null if no view could be found
+   */
+  public @Nullable Integer findNextFocusableElement(
+      int parentTag, int focusedTag, @FocusRealDirection int direction) {
+    if (mBinding == null) {
+      return null;
+    }
+
+    int generalizedDirection;
+
+    switch (direction) {
+      case View.FOCUS_DOWN:
+        generalizedDirection = 0;
+        break;
+      case View.FOCUS_UP:
+        generalizedDirection = 1;
+        break;
+      case View.FOCUS_RIGHT:
+        generalizedDirection = 2;
+        break;
+      case View.FOCUS_LEFT:
+        generalizedDirection = 3;
+        break;
+      default:
+        return null;
+    }
+
+    int serializedNextFocusableNodeMetrics =
+        mBinding.findNextFocusableElement(parentTag, focusedTag, generalizedDirection);
+
+    if (serializedNextFocusableNodeMetrics == -1) {
+      return null;
+    }
+
+    return serializedNextFocusableNodeMetrics;
+  }
+
+  public @Nullable int[] getRelativeAncestorList(int rootTag, int childTag) {
+    return mBinding != null ? mBinding.getRelativeAncestorList(rootTag, childTag) : null;
   }
 
   @Override
@@ -368,7 +422,7 @@ public class FabricUIManager
 
       ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
     }
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropEventEmitter interopEventEmitter = new InteropEventEmitter(mReactApplicationContext);
       mReactApplicationContext.internal_registerInteropModule(
           RCTEventEmitter.class, interopEventEmitter);
@@ -435,7 +489,7 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void addUIBlock(UIBlock block) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.addUIBlock(block);
     }
@@ -446,7 +500,7 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void prependUIBlock(UIBlock block) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.prependUIBlock(block);
     }
@@ -596,6 +650,49 @@ public class FabricUIManager
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
         attachmentsPositions);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  public PreparedLayout prepareLayout(
+      int surfaceId,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float maxWidth,
+      float maxHeight) {
+    SurfaceMountingManager surfaceMountingManager =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareLayout");
+    Layout layout =
+        TextLayoutManager.createLayout(
+            Preconditions.checkNotNull(surfaceMountingManager.getContext()),
+            attributedString,
+            paragraphAttributes,
+            PixelUtil.toPixelFromDIP(maxWidth),
+            PixelUtil.toPixelFromDIP(maxHeight),
+            null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
+
+    int maximumNumberOfLines =
+        paragraphAttributes.contains(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
+            : ReactConstants.UNSET;
+
+    return new PreparedLayout(layout, maximumNumberOfLines);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  public float[] measurePreparedLayout(
+      PreparedLayout preparedLayout,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight) {
+    return TextLayoutManager.measurePreparedLayout(
+        preparedLayout,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight));
   }
 
   /**
@@ -1074,7 +1171,7 @@ public class FabricUIManager
       final int reactTag,
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
       // overload of dispatchCommand. Otherwise, we use the string overload.
       // and the events won't be correctly dispatched.
@@ -1372,7 +1469,7 @@ public class FabricUIManager
       // There is a race condition here between getting/setting
       // `mDriveCxxAnimations` which shouldn't matter; it's safe to call
       // the mBinding method, unless mBinding has gone away.
-      if (mDriveCxxAnimations && mBinding != null) {
+      if ((mDriveCxxAnimations || mDriveCxxNativeAnimated) && mBinding != null) {
         mBinding.driveCxxAnimations();
       }
 

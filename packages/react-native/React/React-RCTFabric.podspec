@@ -71,6 +71,7 @@ Pod::Spec.new do |s|
   ])
   add_dependency(s, "React-FabricComponents", :additional_framework_paths => [
     "react/renderer/textlayoutmanager/platform/ios",
+    "react/renderer/components/text/platform/cxx",
     "react/renderer/components/textinput/platform/ios",
   ]);
 

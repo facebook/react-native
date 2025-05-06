@@ -35,7 +35,7 @@ import com.facebook.react.views.image.ReactCallerContextFactory
 import com.facebook.react.views.imagehelper.ImageSource
 
 @ReactModule(name = NativeImageLoaderAndroidSpec.NAME)
-public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventListener {
+internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventListener {
   private var _imagePipeline: ImagePipeline? = null
 
   private val enqueuedRequestMonitor = Any()
@@ -51,18 +51,15 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
       _imagePipeline = value
     }
 
-  public constructor(reactContext: ReactApplicationContext) : super(reactContext) {
+  constructor(reactContext: ReactApplicationContext) : super(reactContext) {
     this.callerContext = this
   }
 
-  public constructor(
-      reactContext: ReactApplicationContext,
-      callerContext: Any?
-  ) : super(reactContext) {
+  constructor(reactContext: ReactApplicationContext, callerContext: Any?) : super(reactContext) {
     this.callerContext = callerContext
   }
 
-  public constructor(
+  constructor(
       reactContext: ReactApplicationContext,
       imagePipeline: ImagePipeline,
       callerContextFactory: ReactCallerContextFactory
@@ -80,7 +77,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    *   when there is an error
    */
   @ReactMethod
-  public override fun getSize(uriString: String?, promise: Promise) {
+  override fun getSize(uriString: String?, promise: Promise) {
     if (uriString.isNullOrEmpty()) {
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
@@ -129,11 +126,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    *   when there is an error
    */
   @ReactMethod
-  public override fun getSizeWithHeaders(
-      uriString: String?,
-      headers: ReadableMap?,
-      promise: Promise
-  ) {
+  override fun getSizeWithHeaders(uriString: String?, headers: ReadableMap?, promise: Promise) {
     if (uriString.isNullOrEmpty()) {
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
@@ -184,11 +177,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    * @param promise the promise that is fulfilled when the image is successfully prefetched or
    *   rejected when there is an error
    */
-  public override fun prefetchImage(
-      uriString: String?,
-      requestIdAsDouble: Double,
-      promise: Promise
-  ) {
+  override fun prefetchImage(uriString: String?, requestIdAsDouble: Double, promise: Promise) {
     val requestId = requestIdAsDouble.toInt()
     if (uriString.isNullOrEmpty()) {
       promise.reject(ERROR_INVALID_URI, "Cannot prefetch an image for an empty URI")
@@ -227,13 +216,13 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
     prefetchSource.subscribe(prefetchSubscriber, CallerThreadExecutor.getInstance())
   }
 
-  public override fun abortRequest(requestId: Double) {
+  override fun abortRequest(requestId: Double) {
     val request = removeRequest(requestId.toInt())
     request?.close()
   }
 
   @ReactMethod
-  public override fun queryCache(uris: ReadableArray, promise: Promise) {
+  override fun queryCache(uris: ReadableArray, promise: Promise) {
     // perform cache interrogation in async task as disk cache checks are expensive
     @Suppress("DEPRECATION", "StaticFieldLeak")
     object : GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
@@ -287,11 +276,11 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
     }
   }
 
-  public companion object {
+  companion object {
     private const val ERROR_INVALID_URI = "E_INVALID_URI"
     private const val ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE"
     private const val ERROR_GET_SIZE_FAILURE = "E_GET_SIZE_FAILURE"
 
-    public const val NAME: String = "ImageLoader"
+    const val NAME: String = "ImageLoader"
   }
 }

@@ -64,7 +64,7 @@ constructor(
 
   private fun computeLocalUri(context: Context): Uri {
     _isResource = true
-    return ResourceDrawableIdHelper.instance.getResourceDrawableUri(context, source)
+    return ResourceDrawableIdHelper.getResourceDrawableUri(context, source)
   }
 
   public companion object {

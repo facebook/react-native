@@ -49,7 +49,7 @@ constexpr enum AccessibilityTraits operator&(
 }
 
 struct AccessibilityAction {
-  std::string name{""};
+  std::string name;
   std::optional<std::string> label{};
 };
 

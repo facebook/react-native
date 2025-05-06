@@ -15,6 +15,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 0x0000ffff00000000 COALESCING_KEY_MASK = 0xffff000000000000
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
+@InteropLegacyArchitecture
 public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListener {
 
   private static final Comparator<Event> EVENT_COMPARATOR =
@@ -119,8 +121,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
-      Systrace.startAsyncFlow(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT, event.getEventName(), event.getUniqueID());
     }
     maybePostFrameCallbackFromNonUI();
   }
@@ -261,20 +262,20 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
         post();
       }
 
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ScheduleDispatchFrameCallback");
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ScheduleDispatchFrameCallback");
       try {
         moveStagedEventsToDispatchQueue();
 
         if (!mHasDispatchScheduled) {
           mHasDispatchScheduled = true;
           Systrace.startAsyncFlow(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+              Systrace.TRACE_TAG_REACT,
               "ScheduleDispatchFrameCallback",
               mHasDispatchScheduledCount.get());
           mReactContext.runOnJSQueueThread(mDispatchEventsRunnable);
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(Systrace.TRACE_TAG_REACT);
       }
     }
 
@@ -318,10 +319,10 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
     @Override
     public void run() {
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchEventsRunnable");
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "DispatchEventsRunnable");
       try {
         Systrace.endAsyncFlow(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+            Systrace.TRACE_TAG_REACT,
             "ScheduleDispatchFrameCallback",
             mHasDispatchScheduledCount.getAndIncrement());
         mHasDispatchScheduled = false;
@@ -339,7 +340,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
                 continue;
               }
               Systrace.endAsyncFlow(
-                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
+                  Systrace.TRACE_TAG_REACT, event.getEventName(), event.getUniqueID());
 
               event.dispatchModern(mReactEventEmitter);
               event.dispose();
@@ -352,7 +353,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
           listener.onBatchEventDispatched();
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(Systrace.TRACE_TAG_REACT);
       }
     }
   }

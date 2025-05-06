@@ -48,7 +48,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * message is only displayed if the user has revoked this permission once before, and if the
    * permission dialog will be shown to the user (the user can choose to not be shown that dialog
    * again). For devices before Android M, this always returns false. See
-   * [permissionAwareActivity.shouldShowRequestPermissionRationale].
+   * [PermissionAwareActivity.shouldShowRequestPermissionRationale].
    */
   public override fun shouldShowRequestPermissionRationale(
       permission: String,

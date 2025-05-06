@@ -1,19 +1,19 @@
 # _Subsystem name_
 
-- [Main doc](../__docs__/README.md)
+[🏠 Home](path/to/main/__docs__/README.md)
 
 _Description of the subsystem with the necessary context._
 
-## Usage
+## 🚀 Usage
 
 _Explanation of how the subsystem is used._
 
-## Design
+## 📐 Design
 
 _Explain how the subsystem is designed, relevant implementation details, etc.
 Ideally include an Excalidraw diagram._
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of
 

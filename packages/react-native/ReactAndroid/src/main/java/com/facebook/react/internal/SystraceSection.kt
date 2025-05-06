@@ -14,10 +14,10 @@ import com.facebook.systrace.Systrace
  */
 internal class SystraceSection(sectionName: String) : AutoCloseable {
   init {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, sectionName)
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, sectionName)
   }
 
   override fun close() {
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+    Systrace.endSection(Systrace.TRACE_TAG_REACT)
   }
 }

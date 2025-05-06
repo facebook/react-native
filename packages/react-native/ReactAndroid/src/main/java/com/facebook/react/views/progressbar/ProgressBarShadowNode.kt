@@ -10,6 +10,7 @@ package com.facebook.react.views.progressbar
 import android.util.SparseIntArray
 import android.view.View
 import android.view.ViewGroup
+import com.facebook.react.common.annotations.LegacyArchitectureShadowNodeWithCxxImpl
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.annotations.ReactProp
@@ -23,6 +24,7 @@ import com.facebook.yoga.YogaNode
  * ReactProgressBarViewManager manages how this style is applied to the ProgressBar.
  */
 @LegacyArchitecture
+@LegacyArchitectureShadowNodeWithCxxImpl
 internal class ProgressBarShadowNode : LayoutShadowNode(), YogaMeasureFunction {
   private val height: SparseIntArray = SparseIntArray()
   private val width: SparseIntArray = SparseIntArray()

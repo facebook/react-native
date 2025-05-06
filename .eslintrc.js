@@ -36,6 +36,12 @@ module.exports = {
       },
     },
     {
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      rules: {
+        '@react-native/no-deep-imports': 0,
+      },
+    },
+    {
       files: [
         './packages/react-native/**/*.{js,flow}',
         './packages/assets/registry.js',
@@ -76,6 +82,7 @@ module.exports = {
         'lint/require-extends-error': 2,
         'lint/no-react-node-imports': 2,
         'lint/no-react-default-imports': 2,
+        'lint/no-react-named-type-imports': 2,
       },
     },
     {

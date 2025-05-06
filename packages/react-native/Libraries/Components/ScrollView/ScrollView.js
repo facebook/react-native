@@ -26,11 +26,11 @@ import type {ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 import {
   HScrollContentViewNativeComponent,
   HScrollViewNativeComponent,
-} from '../../../src/private/components/HScrollViewNativeComponents';
+} from '../../../src/private/components/scrollview/HScrollViewNativeComponents';
 import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
-} from '../../../src/private/components/VScrollViewNativeComponents';
+} from '../../../src/private/components/scrollview/VScrollViewNativeComponents';
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -1165,6 +1165,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       // they are callable from the ref.
 
       // $FlowFixMe[prop-missing] - Known issue with appending custom methods.
+      // $FlowFixMe[unsafe-object-assign]
       const publicInstance: PublicScrollViewInstance = Object.assign(
         nativeInstance,
         {

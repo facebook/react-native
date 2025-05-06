@@ -81,7 +81,19 @@ export class URL {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
       this._url = url;
-      if (!this._url.endsWith('/')) {
+      if (this._url.includes('#')) {
+        const split = this._url.split('#');
+        const beforeHash = split[0];
+        const website = beforeHash.split('://')[1];
+        if (!website.includes('/')) {
+          this._url = split.join('/#');
+        }
+      }
+
+      if (
+        !this._url.endsWith('/') &&
+        !(this._url.includes('?') || this._url.includes('#'))
+      ) {
         this._url += '/';
       }
     } else {

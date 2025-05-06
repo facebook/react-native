@@ -56,20 +56,28 @@ struct RawEvent {
      * Forces continuous type for the event. Regardless if continuous event
      * isn't ongoing.
      */
-    Continuous = 4
+    Continuous = 4,
+
+    /*
+     * Priority for events that can be processed in idle times or in the
+     * background.
+     */
+    Idle = 5,
   };
 
   RawEvent(
       std::string type,
       SharedEventPayload eventPayload,
       SharedEventTarget eventTarget,
-      Category category = Category::Unspecified);
+      Category category = Category::Unspecified,
+      bool isUnique = false);
 
   std::string type;
   SharedEventPayload eventPayload;
   SharedEventTarget eventTarget;
   Category category;
   EventTag loggingTag{0};
+  bool isUnique{false};
 
   // The client may specify a platform-specific timestamp for the event start
   // time, for example when MotionEvent was triggered on the Android native

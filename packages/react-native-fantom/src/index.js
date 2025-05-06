@@ -123,6 +123,8 @@ class Root {
 
 export type {Root};
 
+export {NativeEventCategory} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
+
 const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
 
 /**
@@ -348,7 +350,9 @@ export function dispatchNativeEvent(
     enqueueNativeEvent(node, type, payload, options);
   });
 
-  runWorkLoop();
+  if (!flushingQueue) {
+    runWorkLoop();
+  }
 }
 
 export type ScrollEventOptions = {
@@ -560,6 +564,20 @@ if (typeof global.EventTarget === 'undefined') {
   console.warn(
     'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
   );
+}
+
+/**
+ * Returns a function that returns the current reference count for the supplied
+ * element's shadow node. If the reference count is zero, that means the shadow
+ * node has been deallocated.
+ *
+ * @param node The node for which to create a reference counting function.
+ */
+export function createShadowNodeReferenceCounter(
+  node: ReactNativeElement,
+): () => number {
+  let shadowNode = getNativeNodeReference(node);
+  return NativeFantom.createShadowNodeReferenceCounter(shadowNode);
 }
 
 /**

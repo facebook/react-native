@@ -95,6 +95,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
       headerSearchPaths: ['include'],
       linkedLibraries: ['c++'],
       cxxCompilerFlags: [`-std=${CPP_STANDARD}`],
+      defines: [{name: 'DEFINES_MODULE', value: 'YES'}],
     },
   },
   {
@@ -159,6 +160,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'SocketRocket/Internal/Security',
         'SocketRocket/Internal/Utilities',
       ],
+      defines: [{name: 'DEFINES_MODULE', value: 'YES'}],
     },
   },
   {

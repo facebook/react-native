@@ -11,7 +11,7 @@
 /* eslint-disable no-alert */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {ModalProps} from 'react-native/Libraries/Modal/Modal';
+import type {ModalProps} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';

@@ -25,7 +25,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListAdapter
 import android.widget.TextView
@@ -86,6 +85,7 @@ public abstract class DevSupportManagerBase(
     public var devLoadingViewManager: DevLoadingViewManager?,
     private var pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
 ) : DevSupportManager {
+
   public interface CallbackWithBundleLoader {
     public fun onSuccess(bundleLoader: JSBundleLoader)
 
@@ -341,20 +341,10 @@ public abstract class DevSupportManagerBase(
             return@DevOptionHandler
           }
 
-          val input = EditText(context)
-          input.hint = "localhost:8081"
-
-          val bundleLocationDialog =
-              AlertDialog.Builder(context)
-                  .setTitle(applicationContext.getString(R.string.catalyst_change_bundle_location))
-                  .setView(input)
-                  .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                    val host = input.text.toString()
-                    devSettings.packagerConnectionSettings.debugServerHost = host
-                    handleReloadJS()
-                  }
-                  .create()
-          bundleLocationDialog.show()
+          ChangeBundleLocationDialog.show(context, devSettings) { host: String ->
+            devSettings.packagerConnectionSettings.debugServerHost = host
+            handleReloadJS()
+          }
         }
 
     options[applicationContext.getString(R.string.catalyst_inspector_toggle)] = DevOptionHandler {

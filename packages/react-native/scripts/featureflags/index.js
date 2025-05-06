@@ -32,7 +32,7 @@ if (require.main === module) {
       break;
     default:
       console.error(
-        'Usage: node featureflags.js [--update|--verify-unchanged]',
+        'Usage: node featureflags.js [--update|--verify-unchanged|--print]',
       );
       process.exit(1);
   }

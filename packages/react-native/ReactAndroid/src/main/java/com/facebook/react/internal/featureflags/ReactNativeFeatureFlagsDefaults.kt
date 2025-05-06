@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b2ce97a43a2fdf285fe860183207474b>>
+ * @generated SignedSource<<cf12cdfdfb343e79247379b5549ae92a>>
  */
 
 /**
@@ -33,8 +33,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
-  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = true
-
   override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
@@ -43,11 +41,19 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableCppPropsIteratorSetter(): Boolean = false
 
+  override fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = true
+
+  override fun enableDestroyShadowTreeRevisionAsync(): Boolean = false
+
+  override fun enableDoubleMeasurementFixAndroid(): Boolean = false
+
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
+
+  override fun enableFixForParentTagDuringReparenting(): Boolean = false
 
   override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
 
@@ -59,17 +65,19 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
-  override fun enableLongTaskAPI(): Boolean = false
-
   override fun enableMainQueueModulesOnIOS(): Boolean = false
 
   override fun enableNativeCSSParsing(): Boolean = false
 
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
+  override fun enableNetworkEventReporting(): Boolean = false
+
+  override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
+
+  override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
-  override fun enableReportEventPaintTime(): Boolean = false
+  override fun enableResourceTimingAPI(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
@@ -83,19 +91,17 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
-  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = true
-
   override fun fuseboxEnabledRelease(): Boolean = false
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
-  override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
+  override fun incorporateMaxLinesDuringAndroidLayout(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
-  override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
+  override fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = false
 
-  override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
+  override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
   override fun useFabricInterop(): Boolean = true
 
@@ -104,6 +110,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
   override fun useRawPropsJsiValue(): Boolean = false
+
+  override fun useShadowNodeStateOnClone(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 

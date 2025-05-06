@@ -154,6 +154,15 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityIgnoresInvertColors",
                     sourceProps.accessibilityIgnoresInvertColors,
                     false)),
+      accessibilityRespondsToUserInteraction(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.accessibilityRespondsToUserInteraction
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityRespondsToUserInteraction",
+                    sourceProps.accessibilityRespondsToUserInteraction,
+                    {})),
       onAccessibilityTap(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.onAccessibilityTap
@@ -266,6 +275,7 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityViewIsModal);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityElementsHidden);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityIgnoresInvertColors);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityRespondsToUserInteraction);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityTap);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityMagicTap);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityEscape);
@@ -294,7 +304,11 @@ void AccessibilityProps::setProp(
 SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
   const auto& defaultProps = AccessibilityProps();
   return SharedDebugStringConvertibleList{
-      debugStringConvertibleItem("testId", testId, defaultProps.testId),
+      debugStringConvertibleItem("testID", testId, defaultProps.testId),
+      debugStringConvertibleItem(
+          "accessibilityRole",
+          accessibilityRole,
+          defaultProps.accessibilityRole),
   };
 }
 #endif // RN_DEBUG_STRING_CONVERTIBLE

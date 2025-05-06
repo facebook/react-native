@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ImageURISource} from 'react-native/Libraries/Image/ImageSource';
+import type {ImageURISource} from 'react-native';
 
 import * as React from 'react';
 import {useEffect, useState} from 'react';

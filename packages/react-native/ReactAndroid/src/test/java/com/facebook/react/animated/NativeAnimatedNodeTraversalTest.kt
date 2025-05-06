@@ -35,14 +35,14 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.MockedStatic
-import org.mockito.Mockito.atMost
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.Mockito.`when` as whenever
+import org.mockito.kotlin.atMost
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
 /** Tests the animated nodes graph traversal algorithm from {@link NativeAnimatedNodesManager}. */
@@ -70,7 +70,7 @@ class NativeAnimatedNodeTraversalTest {
 
     frameTimeNanos = INITIAL_FRAME_TIME_NANOS
 
-    reactApplicationContextMock = mock(ReactApplicationContext::class.java)
+    reactApplicationContextMock = mock<ReactApplicationContext>()
     whenever(reactApplicationContextMock.hasActiveReactInstance()).thenAnswer { true }
     whenever(reactApplicationContextMock.hasCatalystInstance()).thenAnswer { true }
     whenever(reactApplicationContextMock.catalystInstance).thenAnswer { catalystInstanceMock }
@@ -78,14 +78,14 @@ class NativeAnimatedNodeTraversalTest {
       uiManagerMock
     }
 
-    catalystInstanceMock = mock(CatalystInstance::class.java)
+    catalystInstanceMock = mock<CatalystInstance>()
     whenever(reactApplicationContextMock.getFabricUIManager()).thenAnswer { uiManagerMock }
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java)).thenAnswer {
       uiManagerMock
     }
 
-    uiManagerMock = mock(UIManagerModule::class.java)
-    eventDispatcherMock = mock(EventDispatcher::class.java)
+    uiManagerMock = mock<UIManagerModule>()
+    eventDispatcherMock = mock<EventDispatcher>()
     whenever(uiManagerMock.eventDispatcher).thenAnswer { eventDispatcherMock }
     whenever(uiManagerMock.constants).thenAnswer {
       mapOf("customDirectEventTypes" to emptyMap<Any, Any>())
@@ -144,7 +144,7 @@ class NativeAnimatedNodeTraversalTest {
 
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         1, 1, JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1.0), animationCallback)
 
@@ -168,7 +168,7 @@ class NativeAnimatedNodeTraversalTest {
 
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.5, 1.0, 0.5, 0.0)
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         1,
         1,
@@ -201,7 +201,7 @@ class NativeAnimatedNodeTraversalTest {
     createSimpleAnimatedViewWithOpacity()
 
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         1,
         1,
@@ -231,8 +231,8 @@ class NativeAnimatedNodeTraversalTest {
     createSimpleAnimatedViewWithOpacity()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
 
-    val animationCallback: Callback = mock(Callback::class.java)
-    val valueListener: AnimatedNodeValueListener = mock(AnimatedNodeValueListener::class.java)
+    val animationCallback: Callback = mock<Callback>()
+    val valueListener: AnimatedNodeValueListener = mock<AnimatedNodeValueListener>()
 
     nativeAnimatedNodesManager.startListeningToAnimatedNodeValue(nodeId, valueListener)
     nativeAnimatedNodesManager.startAnimatingNode(
@@ -242,7 +242,7 @@ class NativeAnimatedNodeTraversalTest {
         animationCallback)
 
     nativeAnimatedNodesManager.runUpdates(nextFrameTime())
-    verify(valueListener).onValueUpdate(eq(0.0))
+    verify(valueListener).onValueUpdate(eq(0.0), eq(0.0))
 
     nativeAnimatedNodesManager.stopListeningToAnimatedNodeValue(nodeId)
 
@@ -258,8 +258,8 @@ class NativeAnimatedNodeTraversalTest {
     createSimpleAnimatedViewWithOpacity()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
 
-    val animationCallback: Callback = mock(Callback::class.java)
-    val valueListener: AnimatedNodeValueListener = mock(AnimatedNodeValueListener::class.java)
+    val animationCallback: Callback = mock<Callback>()
+    val valueListener: AnimatedNodeValueListener = mock<AnimatedNodeValueListener>()
 
     nativeAnimatedNodesManager.startListeningToAnimatedNodeValue(nodeId, valueListener)
     nativeAnimatedNodesManager.startAnimatingNode(
@@ -271,7 +271,7 @@ class NativeAnimatedNodeTraversalTest {
     for (i in 0 until frames.size()) {
       reset(valueListener)
       nativeAnimatedNodesManager.runUpdates(nextFrameTime())
-      verify(valueListener).onValueUpdate(eq(frames.getDouble(i)))
+      verify(valueListener).onValueUpdate(eq(frames.getDouble(i)), eq(0.0))
     }
 
     reset(valueListener)
@@ -285,7 +285,7 @@ class NativeAnimatedNodeTraversalTest {
   ) {
     createSimpleAnimatedViewWithOpacity()
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
 
     nativeAnimatedNodesManager.startAnimatingNode(1, 1, config, animationCallback)
 
@@ -381,7 +381,7 @@ class NativeAnimatedNodeTraversalTest {
   fun testSpringAnimationLoopsFiveTimes() {
     createSimpleAnimatedViewWithOpacity()
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         1,
         1,
@@ -460,7 +460,7 @@ class NativeAnimatedNodeTraversalTest {
   fun testDecayAnimation() {
     createSimpleAnimatedViewWithOpacity()
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         1,
         1,
@@ -510,7 +510,7 @@ class NativeAnimatedNodeTraversalTest {
   fun testDecayAnimationLoopsFiveTimes() {
     createSimpleAnimatedViewWithOpacity()
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         1,
         1,
@@ -563,7 +563,7 @@ class NativeAnimatedNodeTraversalTest {
     createSimpleAnimatedViewWithOpacity()
 
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 1.0)
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         1, 1, JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1.0), animationCallback)
 
@@ -620,7 +620,7 @@ class NativeAnimatedNodeTraversalTest {
   fun testAdditionNode() {
     createAnimatedGraphWithAdditionNode()
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 1.0)
     nativeAnimatedNodesManager.startAnimatingNode(
         1,
@@ -663,7 +663,7 @@ class NativeAnimatedNodeTraversalTest {
     createAnimatedGraphWithAdditionNode()
 
     // Start animating only the first addition input node
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 1.0)
     nativeAnimatedNodesManager.startAnimatingNode(
         1,
@@ -700,7 +700,7 @@ class NativeAnimatedNodeTraversalTest {
   fun testViewReceiveUpdatesWhenOneOfAnimationHasFinished() {
     createAnimatedGraphWithAdditionNode()
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
 
     // Start animating for the first addition input node, will have 2 frames only
     val firstFrames: JavaOnlyArray = JavaOnlyArray.of(0.0, 1.0)
@@ -758,7 +758,7 @@ class NativeAnimatedNodeTraversalTest {
     nativeAnimatedNodesManager.connectAnimatedNodes(4, 5)
     nativeAnimatedNodesManager.connectAnimatedNodeToView(5, 50)
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 1.0)
     nativeAnimatedNodesManager.startAnimatingNode(
         1, 1, JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 2.0), animationCallback)
@@ -796,7 +796,7 @@ class NativeAnimatedNodeTraversalTest {
     createSimpleAnimatedViewWithOpacity()
 
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         404,
         1,
@@ -842,7 +842,7 @@ class NativeAnimatedNodeTraversalTest {
     nativeAnimatedNodesManager.createAnimatedNode(
         tag, JavaOnlyMap.of("type", "value", "value", 1.0, "offset", 0.0))
 
-    val saveValueCallbackMock: Callback = mock(Callback::class.java)
+    val saveValueCallbackMock: Callback = mock<Callback>()
 
     nativeAnimatedNodesManager.getValue(tag, saveValueCallbackMock)
 
@@ -877,7 +877,7 @@ class NativeAnimatedNodeTraversalTest {
     nativeAnimatedNodesManager.connectAnimatedNodes(3, 4)
     nativeAnimatedNodesManager.connectAnimatedNodeToView(4, 50)
 
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
     nativeAnimatedNodesManager.startAnimatingNode(
         1,
@@ -899,23 +899,21 @@ class NativeAnimatedNodeTraversalTest {
     verifyNoMoreInteractions(uiManagerMock)
   }
 
-  private fun createScrollEvent(tag: Int, value: Double): Event<Event<*>> {
-    return object : Event<Event<*>>(tag) {
+  private class TestScrollEvent(private val tag: Int, private val value: Double) :
+      Event<TestScrollEvent>(tag) {
 
-      override fun getEventName(): String {
-        return "topScroll"
-      }
+    override fun getEventName(): String {
+      return "topScroll"
+    }
 
-      @Override
-      @Deprecated(
-          "Deprecated in Java",
-          ReplaceWith("rctEventEmitter.receiveEvent(tag, \"topScroll\", JavaOnlyMap.of(\"contentOffset\", JavaOnlyMap.of(\"y\", value)))"))
-      override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-        rctEventEmitter.receiveEvent(
-            tag, "topScroll", JavaOnlyMap.of("contentOffset", JavaOnlyMap.of("y", value)))
-      }
+    @Deprecated("Deprecated in Java")
+    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
+      rctEventEmitter.receiveEvent(
+          tag, "topScroll", JavaOnlyMap.of("contentOffset", JavaOnlyMap.of("y", value)))
     }
   }
+
+  private fun createScrollEvent(tag: Int, value: Double): Event<*> = TestScrollEvent(tag, value)
 
   @Test
   fun testNativeAnimatedEventDoUpdate() {
@@ -1013,7 +1011,7 @@ class NativeAnimatedNodeTraversalTest {
     nativeAnimatedNodesManager.connectAnimatedNodeToView(propsNodeTag, viewTag)
 
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.5, 1.0)
-    val animationCallback: Callback = mock(Callback::class.java)
+    val animationCallback: Callback = mock<Callback>()
     nativeAnimatedNodesManager.startAnimatingNode(
         1, 1, JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 0.0), animationCallback)
 

@@ -9,10 +9,12 @@ package com.facebook.react.bridge;
 
 import android.app.Activity;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext} instance.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
 
   public ReactContextBaseJavaModule() {

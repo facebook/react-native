@@ -19,7 +19,10 @@ function createReplaceDefaultExportName(filePath: string): PluginObj<mixed> {
         const moduleName = fileName.split('.')[0];
 
         if (node.node.name === '$$EXPORT_DEFAULT_DECLARATION$$') {
-          node.node.name = `${moduleName}_DEFAULT`;
+          // Prefixing with $$ prevents the TS LSP server from (incorrectly)
+          // discovering identifiers outside of package.json "exports" in
+          // autocomplete.
+          node.node.name = `$$${moduleName}`;
         }
       },
     },

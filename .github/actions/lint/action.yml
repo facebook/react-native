@@ -29,6 +29,9 @@ runs:
     - name: Lint java
       shell: bash
       run: ./.github/workflow-scripts/exec_swallow_error.sh yarn lint-java --check
+    - name: Lint file structure
+      shell: bash
+      run: ./.github/workflow-scripts/lint_files.sh
     - name: Verify not committing repo after running build
       shell: bash
       run: yarn run build --check

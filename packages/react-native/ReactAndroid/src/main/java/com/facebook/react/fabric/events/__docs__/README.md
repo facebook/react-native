@@ -1,15 +1,15 @@
 # Android event dispatching
 
-- [Main doc](../../../../../../../../../../../../__docs__/README.md)
+[🏠 Home](../../../../../../../../../../../../__docs__/README.md)
 
 This directory contains Kotlin classes specific to Android event dispatching in
 the new architecture.
 
-## Design
+## 📐 Design
 
 ![Diagram showing how an event is processed in the new architecture](./life-of-an-event.excalidraw.svg)
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of
 

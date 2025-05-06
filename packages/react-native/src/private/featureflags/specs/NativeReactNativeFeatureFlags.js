@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6baa33822323f25f949c627f7baedf68>>
+ * @generated SignedSource<<4bf477efaec82ad8e9e4b1bc17705fd2>>
  * @flow strict
  */
 
@@ -29,42 +29,46 @@ export interface Spec extends TurboModule {
   +cxxNativeAnimatedEnabled?: () => boolean;
   +disableMainQueueSyncDispatchIOS?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
-  +disableShadowNodeOnNewArchitectureAndroid?: () => boolean;
   +enableAccessibilityOrder?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
+  +enableCustomFocusSearchOnClippedElementsAndroid?: () => boolean;
+  +enableDestroyShadowTreeRevisionAsync?: () => boolean;
+  +enableDoubleMeasurementFixAndroid?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
+  +enableFixForParentTagDuringReparenting?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableJSRuntimeGCOnMemoryPressureOnIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
-  +enableLongTaskAPI?: () => boolean;
   +enableMainQueueModulesOnIOS?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
+  +enableNetworkEventReporting?: () => boolean;
   +enableNewBackgroundAndBorderDrawables?: () => boolean;
+  +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
-  +enableReportEventPaintTime?: () => boolean;
+  +enableResourceTimingAPI?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
-  +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
-  +removeTurboModuleManagerDelegateMutex?: () => boolean;
+  +incorporateMaxLinesDuringAndroidLayout?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
+  +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
-  +useEditTextStockAndroidFocusBehavior?: () => boolean;
   +useFabricInterop?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useOptimizedEventBatchingOnAndroid?: () => boolean;
   +useRawPropsJsiValue?: () => boolean;
+  +useShadowNodeStateOnClone?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
 }

@@ -40,7 +40,7 @@ jobs:
           hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
 
   build_hermesc_apple:
-    runs-on: macos-13
+    runs-on: macos-14
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -80,7 +80,7 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermes_macos:
-    runs-on: macos-13
+    runs-on: macos-14
     needs: [build_apple_slices_hermes, prepare_hermes_workspace]
     env:
       HERMES_WS_DIR: /tmp/hermes

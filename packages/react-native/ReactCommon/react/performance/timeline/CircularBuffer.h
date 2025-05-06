@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
-#include "PerformanceEntry.h"
 
 namespace facebook::react {
 

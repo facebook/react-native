@@ -77,11 +77,11 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
-  PerformanceEntry reportMark(
+  PerformanceMark reportMark(
       const std::string& name,
       const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
 
-  PerformanceEntry reportMeasure(
+  PerformanceMeasure reportMeasure(
       const std::string& name,
       double startTime,
       double endTime,
@@ -109,6 +109,7 @@ class PerformanceEntryReporter {
   PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
   PerformanceEntryKeyedBuffer measureBuffer_;
+  PerformanceEntryKeyedBuffer resourceBuffer_;
 
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
@@ -127,6 +128,8 @@ class PerformanceEntryReporter {
         return measureBuffer_;
       case PerformanceEntryType::LONGTASK:
         return longTaskBuffer_;
+      case PerformanceEntryType::RESOURCE:
+        return resourceBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
@@ -143,14 +146,16 @@ class PerformanceEntryReporter {
         return measureBuffer_;
       case PerformanceEntryType::LONGTASK:
         return longTaskBuffer_;
+      case PerformanceEntryType::RESOURCE:
+        return resourceBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
     throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
-  void traceMark(const PerformanceEntry& entry) const;
-  void traceMeasure(const PerformanceEntry& entry) const;
+  void traceMark(const PerformanceMark& entry) const;
+  void traceMeasure(const PerformanceMeasure& entry) const;
 };
 
 } // namespace facebook::react

@@ -606,144 +606,23 @@ export default {
    * See https://reactnative.dev/docs/animated#node
    */
   Node: AnimatedNode,
-
-  /**
-   * Animates a value from an initial velocity to zero based on a decay
-   * coefficient.
-   *
-   * See https://reactnative.dev/docs/animated#decay
-   */
   decay,
-  /**
-   * Animates a value along a timed easing curve. The Easing module has tons of
-   * predefined curves, or you can use your own function.
-   *
-   * See https://reactnative.dev/docs/animated#timing
-   */
   timing,
-  /**
-   * Animates a value according to an analytical spring model based on
-   * damped harmonic oscillation.
-   *
-   * See https://reactnative.dev/docs/animated#spring
-   */
   spring,
-
-  /**
-   * Creates a new Animated value composed from two Animated values added
-   * together.
-   *
-   * See https://reactnative.dev/docs/animated#add
-   */
   add,
-
-  /**
-   * Creates a new Animated value composed by subtracting the second Animated
-   * value from the first Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#subtract
-   */
   subtract,
-
-  /**
-   * Creates a new Animated value composed by dividing the first Animated value
-   * by the second Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#divide
-   */
   divide,
-
-  /**
-   * Creates a new Animated value composed from two Animated values multiplied
-   * together.
-   *
-   * See https://reactnative.dev/docs/animated#multiply
-   */
   multiply,
-
-  /**
-   * Creates a new Animated value that is the (non-negative) modulo of the
-   * provided Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#modulo
-   */
   modulo,
-
-  /**
-   * Create a new Animated value that is limited between 2 values. It uses the
-   * difference between the last value so even if the value is far from the
-   * bounds it will start changing when the value starts getting closer again.
-   *
-   * See https://reactnative.dev/docs/animated#diffclamp
-   */
   diffClamp,
-
-  /**
-   * Starts an animation after the given delay.
-   *
-   * See https://reactnative.dev/docs/animated#delay
-   */
   delay,
-  /**
-   * Starts an array of animations in order, waiting for each to complete
-   * before starting the next. If the current running animation is stopped, no
-   * following animations will be started.
-   *
-   * See https://reactnative.dev/docs/animated#sequence
-   */
   sequence,
-  /**
-   * Starts an array of animations all at the same time. By default, if one
-   * of the animations is stopped, they will all be stopped. You can override
-   * this with the `stopTogether` flag.
-   *
-   * See https://reactnative.dev/docs/animated#parallel
-   */
   parallel,
-  /**
-   * Array of animations may run in parallel (overlap), but are started in
-   * sequence with successive delays.  Nice for doing trailing effects.
-   *
-   * See https://reactnative.dev/docs/animated#stagger
-   */
   stagger,
-  /**
-   * Loops a given animation continuously, so that each time it reaches the
-   * end, it resets and begins again from the start.
-   *
-   * See https://reactnative.dev/docs/animated#loop
-   */
   loop,
-
-  /**
-   * Takes an array of mappings and extracts values from each arg accordingly,
-   * then calls `setValue` on the mapped outputs.
-   *
-   * See https://reactnative.dev/docs/animated#event
-   */
   event,
-
-  /**
-   * Make any React component Animatable.  Used to create `Animated.View`, etc.
-   *
-   * See https://reactnative.dev/docs/animated#createanimatedcomponent
-   */
   createAnimatedComponent,
-
-  /**
-   * Imperative API to attach an animated value to an event on a view. Prefer
-   * using `Animated.event` with `useNativeDrive: true` if possible.
-   *
-   * See https://reactnative.dev/docs/animated#attachnativeevent
-   */
   attachNativeEvent,
-
-  /**
-   * Advanced imperative API for snooping on animated events that are passed in
-   * through props. Use values directly where possible.
-   *
-   * See https://reactnative.dev/docs/animated#forkevent
-   */
   forkEvent,
   unforkEvent,
 

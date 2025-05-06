@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 
@@ -25,6 +26,7 @@ import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
  *
  * This class is constructed both by Paper's EventDispatcherImpl and the FabricEventDispatcher.
  */
+@InteropLegacyArchitecture
 internal class EventEmitterImpl(
     private val reactContext: ReactApplicationContext,
 ) : RCTModernEventEmitter {
