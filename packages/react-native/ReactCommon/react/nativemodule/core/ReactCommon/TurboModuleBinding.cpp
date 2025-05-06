@@ -128,6 +128,26 @@ void TurboModuleBinding::install(
     return;
   }
 
+  defineReadOnlyGlobal(
+      runtime,
+      "RN$clearLongLivedObjectCollection",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(
+              runtime, "RN$clearLongLivedObjectCollection"),
+          0,
+          [longLivedObjectCollection](
+              jsi::Runtime& rt,
+              const jsi::Value& /*thisVal*/,
+              const jsi::Value* /*args*/,
+              size_t /*count*/) {
+            LongLivedObjectCollection::get(rt).clear();
+            if (longLivedObjectCollection) {
+              longLivedObjectCollection->clear();
+            }
+            return jsi::Value::undefined();
+          }));
+
   defineReadOnlyGlobal(runtime, "RN$UnifiedNativeModuleProxy", true);
   defineReadOnlyGlobal(
       runtime,
