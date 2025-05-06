@@ -41,12 +41,6 @@ void InspectorFlags::dangerouslyDisableFuseboxForTest() {
   fuseboxDisabledForTest_ = true;
 }
 
-#if defined(REACT_NATIVE_DEBUGGER_ENABLED) && \
-    defined(REACT_NATIVE_DEBUGGER_FORCE_DISABLE)
-#error \
-    "Cannot define both REACT_NATIVE_DEBUGGER_ENABLED and REACT_NATIVE_DEBUGGER_FORCE_DISABLE"
-#endif
-
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
