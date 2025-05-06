@@ -12,7 +12,6 @@
 package com.facebook.react.runtime
 
 import android.content.res.AssetManager
-import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptModule
@@ -26,14 +25,16 @@ import com.facebook.react.bridge.RuntimeScheduler
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.common.annotations.VisibleForTesting
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder
 
-@DoNotStrip
 @Deprecated(
     message =
         "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+@LegacyArchitecture
 internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : CatalystInstance {
 
   override fun handleMemoryPressure(level: Int) {
@@ -68,7 +69,6 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
     throw UnsupportedOperationException("Unimplemented method 'hasRunJSBundle'")
   }
 
-  @DoNotStrip
   override fun invokeCallback(callbackID: Int, arguments: NativeArrayInterface) {
     throw UnsupportedOperationException("Unimplemented method 'invokeCallback'")
   }
@@ -171,5 +171,11 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
           "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   override fun getFabricUIManager(): UIManager {
     throw UnsupportedOperationException("Unimplemented method 'getFabricUIManager'")
+  }
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture("BridgelessCatalystInstance")
+    }
   }
 }
