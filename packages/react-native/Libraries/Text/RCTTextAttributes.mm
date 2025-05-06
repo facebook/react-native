@@ -305,6 +305,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
       }
       
       if([cgColors count] > 0) {
+          [cgColors addObject:cgColors[0]];
           CAGradientLayer *gradient = [CAGradientLayer layer];
           // this pattern width corresponds roughly to desktop's pattern width
           int patternWidth = 100;
