@@ -93,6 +93,9 @@ interface Spec extends TurboModule {
   validateEmptyMessageQueue: () => void;
   getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
   reportTestSuiteResultsJSON: (results: string) => void;
+  createShadowNodeReferenceCounter(
+    shadowNode: mixed /* ShadowNode */,
+  ): () => number;
   saveJSMemoryHeapSnapshot: (filePath: string) => void;
 }
 

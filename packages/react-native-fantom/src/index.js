@@ -567,6 +567,20 @@ if (typeof global.EventTarget === 'undefined') {
 }
 
 /**
+ * Returns a function that returns the current reference count for the supplied
+ * element's shadow node. If the reference count is zero, that means the shadow
+ * node has been deallocated.
+ *
+ * @param node The node for which to create a reference counting function.
+ */
+export function createShadowNodeReferenceCounter(
+  node: ReactNativeElement,
+): () => number {
+  let shadowNode = getNativeNodeReference(node);
+  return NativeFantom.createShadowNodeReferenceCounter(shadowNode);
+}
+
+/**
  * Saves a heap snapshot after forcing garbage collection.
  *
  * The heapsnapshot is saved to the filename supplied as an argument.
