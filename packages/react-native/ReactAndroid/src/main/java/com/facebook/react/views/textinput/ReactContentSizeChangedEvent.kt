@@ -9,6 +9,7 @@ package com.facebook.react.views.textinput
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
@@ -32,11 +33,10 @@ internal class ReactContentSizeChangedEvent(
   override fun getEventName(): String = EVENT_NAME
 
   override fun getEventData(): WritableMap {
-    val contentSize =
-        Arguments.createMap().apply {
-          putDouble("width", contentWidth.toDouble())
-          putDouble("height", contentHeight.toDouble())
-        }
+    val contentSize = buildReadableMap {
+      put("width", contentWidth.toDouble())
+      put("height", contentHeight.toDouble())
+    }
 
     return Arguments.createMap().apply {
       putMap("contentSize", contentSize)
