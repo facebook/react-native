@@ -305,6 +305,10 @@ SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
   const auto& defaultProps = AccessibilityProps();
   return SharedDebugStringConvertibleList{
       debugStringConvertibleItem("testID", testId, defaultProps.testId),
+      debugStringConvertibleItem(
+          "accessibilityRole",
+          accessibilityRole,
+          defaultProps.accessibilityRole),
   };
 }
 #endif // RN_DEBUG_STRING_CONVERTIBLE
