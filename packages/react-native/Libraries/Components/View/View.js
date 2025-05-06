@@ -113,4 +113,7 @@ function View({
   return actualView;
 }
 
-export default View;
+export default View as component(
+  ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
+  ...props: ViewProps
+);
