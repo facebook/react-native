@@ -235,6 +235,24 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "createShadowNodeFamilyReference") {
+    auto paramCount = 1;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto node = shadowNodeFromValue(runtime, arguments[0]);
+          return valueFromShadowNodeFamily(runtime, node->getFamilyShared());
+        });
+  }
+
   if (methodName == "setIsJSResponder") {
     auto paramCount = 3;
     return jsi::Function::createFromHostFunction(
