@@ -64,6 +64,7 @@
     "./src/*": null,
     "./third-party-podspecs/*": null,
     "./types/*": null,
+    "./types_generated/*": null,
     "./package.json": "./package.json"
   },
   "jest-junit": {
