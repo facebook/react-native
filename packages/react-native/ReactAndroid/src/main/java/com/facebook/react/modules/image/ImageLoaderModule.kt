@@ -7,8 +7,9 @@
 
 package com.facebook.react.modules.image
 
-import android.net.Uri
 import android.util.SparseArray
+import androidx.core.net.toUri
+import androidx.core.util.size
 import com.facebook.common.executors.CallerThreadExecutor
 import com.facebook.common.references.CloseableReference
 import com.facebook.datasource.BaseDataSubscriber
@@ -20,7 +21,6 @@ import com.facebook.imagepipeline.core.ImagePipeline
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.imagepipeline.request.ImageRequestBuilder
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.GuardedAsyncTask
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
@@ -28,7 +28,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.views.image.ReactCallerContextFactory
@@ -82,7 +82,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
     }
-    val source = ImageSource(getReactApplicationContext(), uriString)
+    val source = ImageSource(reactApplicationContext, uriString)
     val request: ImageRequest = ImageRequestBuilder.newBuilderWithSource(source.uri).build()
     val dataSource: DataSource<CloseableReference<CloseableImage>> =
         this.imagePipeline.fetchDecodedImage(request, this.callerContext)
@@ -96,9 +96,10 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
             if (ref != null) {
               try {
                 val image: CloseableImage = ref.get()
-                val sizes: WritableMap = Arguments.createMap()
-                sizes.putInt("width", image.width)
-                sizes.putInt("height", image.height)
+                val sizes = buildReadableMap {
+                  put("width", image.width)
+                  put("height", image.height)
+                }
                 promise.resolve(sizes)
               } catch (e: Exception) {
                 promise.reject(ERROR_GET_SIZE_FAILURE, e)
@@ -131,7 +132,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
     }
-    val source = ImageSource(getReactApplicationContext(), uriString)
+    val source = ImageSource(reactApplicationContext, uriString)
     val imageRequestBuilder: ImageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(source.uri)
     val request: ImageRequest =
@@ -148,9 +149,10 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
             if (ref != null) {
               try {
                 val image: CloseableImage = ref.get()
-                val sizes: WritableMap = Arguments.createMap()
-                sizes.putInt("width", image.width)
-                sizes.putInt("height", image.height)
+                val sizes = buildReadableMap {
+                  put("width", image.width)
+                  put("height", image.height)
+                }
                 promise.resolve(sizes)
               } catch (e: Exception) {
                 promise.reject(ERROR_GET_SIZE_FAILURE, e)
@@ -183,7 +185,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot prefetch an image for an empty URI")
       return
     }
-    val uri = Uri.parse(uriString)
+    val uri = uriString.toUri()
     val request: ImageRequest = ImageRequestBuilder.newBuilderWithSource(uri).build()
     val prefetchSource: DataSource<Void?> =
         this.imagePipeline.prefetchToDiskCache(request, this.callerContext)
@@ -225,18 +227,19 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
   override fun queryCache(uris: ReadableArray, promise: Promise) {
     // perform cache interrogation in async task as disk cache checks are expensive
     @Suppress("DEPRECATION", "StaticFieldLeak")
-    object : GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
+    object : GuardedAsyncTask<Void, Void>(reactApplicationContext) {
           override fun doInBackgroundGuarded(vararg params: Void) {
-            val result: WritableMap = Arguments.createMap()
-            val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
-            for (i in 0 until uris.size()) {
-              val uriString = uris.getString(i)
-              if (!uriString.isNullOrEmpty()) {
-                val uri = Uri.parse(uriString)
-                if (imagePipeline.isInBitmapMemoryCache(uri)) {
-                  result.putString(uriString, "memory")
-                } else if (imagePipeline.isInDiskCacheSync(uri)) {
-                  result.putString(uriString, "disk")
+            val result = buildReadableMap {
+              val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
+              repeat(uris.size()) {
+                val uriString = uris.getString(it)
+                if (!uriString.isNullOrEmpty()) {
+                  val uri = uriString.toUri()
+                  if (imagePipeline.isInBitmapMemoryCache(uri)) {
+                    put(uriString, "memory")
+                  } else if (imagePipeline.isInDiskCacheSync(uri)) {
+                    put(uriString, "disk")
+                  }
                 }
               }
             }
@@ -266,7 +269,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
     // cancel all requests
     synchronized(enqueuedRequestMonitor) {
       var i = 0
-      val size: Int = enqueuedRequests.size()
+      val size: Int = enqueuedRequests.size
       while (i < size) {
         val enqueuedRequest: DataSource<Void?> = enqueuedRequests.valueAt(i)
         enqueuedRequest.close()
