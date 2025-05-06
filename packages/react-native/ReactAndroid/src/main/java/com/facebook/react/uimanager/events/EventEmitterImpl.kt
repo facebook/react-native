@@ -42,7 +42,7 @@ internal class EventEmitterImpl(
 
   @Deprecated(
       "Please use RCTModernEventEmitter instead",
-      ReplaceWith("RCTModernEventEmitter.receiveEvent(-1, targetTag, eventName, params)"))
+      ReplaceWith("RCTModernEventEmitter.receiveEvent(surfaceId, targetTag, eventName, params)"))
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) {
     receiveEvent(-1, targetTag, eventName, params)
   }
