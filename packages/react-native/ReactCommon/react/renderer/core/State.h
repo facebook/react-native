@@ -34,9 +34,7 @@ class State {
    * type-erasured arguments impossible.
    */
   explicit State(StateData::Shared data, const State& previousState);
-  explicit State(
-      StateData::Shared data,
-      const ShadowNodeFamily::Shared& family);
+  explicit State(StateData::Shared data, ShadowNodeFamily::Weak family);
 
  public:
   virtual ~State() = default;
