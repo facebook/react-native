@@ -86,7 +86,7 @@ internal class PreparedLayoutTextViewManager :
       stateWrapper: StateWrapper
   ): Any? = (stateWrapper as? ReferenceStateWrapper)?.stateDataReference
 
-  override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any>? {
+  override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
     val eventTypeConstants = baseEventTypeConstants ?: HashMap()
     eventTypeConstants.put("topTextLayout", mapOf("registrationName" to "onTextLayout"))

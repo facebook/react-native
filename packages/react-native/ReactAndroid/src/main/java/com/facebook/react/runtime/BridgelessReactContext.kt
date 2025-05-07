@@ -136,7 +136,7 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
       reactHost.hasNativeModule(nativeModuleInterface)
 
-  override fun getNativeModules(): MutableCollection<NativeModule>? = reactHost.nativeModules
+  override fun getNativeModules(): MutableCollection<NativeModule> = reactHost.nativeModules
 
   override fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? =
       reactHost.getNativeModule(nativeModuleInterface)

@@ -26,7 +26,7 @@ internal class ReactRawTextManager : ViewManager<View, ReactRawTextShadowNode>()
   public override fun createViewInstance(context: ThemedReactContext): ReactTextView =
       throw IllegalStateException("Attempt to create a native view for RCTRawText")
 
-  override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? =
+  override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View =
       throw IllegalStateException("Attempt to recycle a native view for RCTRawText")
 
   override fun updateExtraData(view: View, extraData: Any): Unit = Unit

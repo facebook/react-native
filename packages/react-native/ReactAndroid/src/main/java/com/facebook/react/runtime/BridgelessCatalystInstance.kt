@@ -125,14 +125,14 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
   public override val runtimeExecutor: RuntimeExecutor?
     get() = reactHost.getRuntimeExecutor()
 
-  public override val runtimeScheduler: RuntimeScheduler?
+  public override val runtimeScheduler: RuntimeScheduler
     get() = throw UnsupportedOperationException("Unimplemented method 'getRuntimeScheduler'")
 
   public override fun extendNativeModules(modules: NativeModuleRegistry) {
     throw UnsupportedOperationException("Unimplemented method 'extendNativeModules'")
   }
 
-  public override val sourceURL: String?
+  public override val sourceURL: String
     get() = throw UnsupportedOperationException("Unimplemented method 'getSourceURL'")
 
   override fun addBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener) {
