@@ -190,7 +190,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
   }
 
   private val animatedFrameCallback: GuardedFrameCallback
-  private val reactChoreographer: ReactChoreographer = ReactChoreographer.getInstance()
+  private val reactChoreographer: ReactChoreographer? = ReactChoreographer.getInstance()
 
   private val operations = ConcurrentOperationQueue()
   private val preOperations = ConcurrentOperationQueue()
