@@ -37,6 +37,20 @@ describe('updateReactNativeArtifacts', () => {
       ) {
         return 'VERSION_NAME=1000.0.0\n';
       }
+
+      if (
+        filePath ===
+        path.join(
+          REPO_ROOT,
+          'packages/react-native/scripts/codegen/__tests__/__snapshots__/generate-artifacts-executor-test.js.snap',
+        )
+      ) {
+        return `
+version = "1000.0.0\\
+other text
+version = "1000.0.0\\
+        `;
+      }
     });
   });
 

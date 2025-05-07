@@ -1,0 +1,10 @@
+## Summary:
+This change fixes the script that updates the RN Version to also update the Codegen snapshots so that they are in sync with the current version of React Native.
+It also updates the Snapshot as it was failing in rc.0
+
+## Changelog:
+[Internal] - Fixed script that updates the react native versions
+
+## Test Plan:
+Tested locally by running `node ./scripts/releases/set-rn-artifacts-version --built-type release --to-version 0.80.0-rc.0` and verifying that the snapshot file was getting updated. I then run the `yarn test  
+generate-artifacts-executor-test.js` command to verify that the tests were passing.
