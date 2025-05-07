@@ -1657,20 +1657,6 @@ public abstract interface class com/facebook/react/bridge/queue/ReactQueueConfig
 	public abstract fun getUIQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
 }
 
-public final class com/facebook/react/bridge/queue/ReactQueueConfigurationImpl : com/facebook/react/bridge/queue/ReactQueueConfiguration {
-	public static final field Companion Lcom/facebook/react/bridge/queue/ReactQueueConfigurationImpl$Companion;
-	public synthetic fun <init> (Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun create (Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationImpl;
-	public fun destroy ()V
-	public fun getJSQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
-	public fun getNativeModulesQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
-	public fun getUIQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
-}
-
-public final class com/facebook/react/bridge/queue/ReactQueueConfigurationImpl$Companion {
-	public final fun create (Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationImpl;
-}
-
 public final class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec {
 	public static final field Companion Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Companion;
 	public fun <init> (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)V
