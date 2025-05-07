@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.image
 
+import android.net.Uri
 import android.util.SparseArray
 import androidx.core.net.toUri
 import androidx.core.util.size
@@ -82,7 +83,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
     }
-    val source = ImageSource(reactApplicationContext, uriString)
+    val source = ImageSource(getReactApplicationContext(), uriString)
     val request: ImageRequest = ImageRequestBuilder.newBuilderWithSource(source.uri).build()
     val dataSource: DataSource<CloseableReference<CloseableImage>> =
         this.imagePipeline.fetchDecodedImage(request, this.callerContext)
@@ -185,7 +186,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot prefetch an image for an empty URI")
       return
     }
-    val uri = uriString.toUri()
+    val uri = Uri.parse(uriString)
     val request: ImageRequest = ImageRequestBuilder.newBuilderWithSource(uri).build()
     val prefetchSource: DataSource<Void?> =
         this.imagePipeline.prefetchToDiskCache(request, this.callerContext)
@@ -227,7 +228,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
   override fun queryCache(uris: ReadableArray, promise: Promise) {
     // perform cache interrogation in async task as disk cache checks are expensive
     @Suppress("DEPRECATION", "StaticFieldLeak")
-    object : GuardedAsyncTask<Void, Void>(reactApplicationContext) {
+    object : GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
           override fun doInBackgroundGuarded(vararg params: Void) {
             val result = buildReadableMap {
               val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
