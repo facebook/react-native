@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.events.BatchEventDispatchedListener
  */
 @DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
-internal final class EventBeatManager() : HybridClassBase(), BatchEventDispatchedListener {
+internal class EventBeatManager : HybridClassBase(), BatchEventDispatchedListener {
   init {
     initHybrid()
   }
