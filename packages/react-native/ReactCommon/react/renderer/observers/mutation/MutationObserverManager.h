@@ -26,9 +26,7 @@ class MutationObserverManager final : public UIManagerCommitHook {
       bool observeSubtree,
       const UIManager& uiManager);
 
-  void unobserve(
-      MutationObserverId mutationObserverId,
-      const ShadowNode& shadowNode);
+  void unobserveAll(MutationObserverId mutationObserverId);
 
   void connect(
       UIManager& uiManager,

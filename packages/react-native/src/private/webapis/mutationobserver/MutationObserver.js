@@ -15,6 +15,7 @@ import type MutationRecord from './MutationRecord';
 
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
 import * as MutationObserverManager from './internals/MutationObserverManager';
+import nullthrows from 'nullthrows';
 
 export type MutationObserverCallback = (
   mutationRecords: $ReadOnlyArray<MutationRecord>,
@@ -42,6 +43,7 @@ export interface MutationObserverInit {
  */
 export default class MutationObserver {
   _callback: MutationObserverCallback;
+  // TODO: delete in the next version.
   _observationTargets: Set<ReactNativeElement> = new Set();
   _mutationObserverId: ?MutationObserverId;
 
@@ -115,19 +117,13 @@ export default class MutationObserver {
 
     const mutationObserverId = this._getOrCreateMutationObserverId();
 
-    // As per the spec, if the target is already being observed, we "reset"
-    // the observation and only use the last options used.
-    if (this._observationTargets.has(target)) {
-      MutationObserverManager.unobserve(mutationObserverId, target);
-    }
-
     const didStartObserving = MutationObserverManager.observe({
       mutationObserverId,
       target,
       subtree: Boolean(options?.subtree),
     });
 
-    if (didStartObserving) {
+    if (didStartObserving && !MutationObserverManager.unobserveAll) {
       this._observationTargets.add(target);
     }
   }
@@ -142,9 +138,16 @@ export default class MutationObserver {
       return;
     }
 
-    for (const target of this._observationTargets.keys()) {
-      MutationObserverManager.unobserve(mutationObserverId, target);
-      this._observationTargets.delete(target);
+    if (MutationObserverManager.unobserveAll) {
+      MutationObserverManager.unobserveAll(mutationObserverId);
+    } else if (MutationObserverManager.unobserve) {
+      for (const target of this._observationTargets.keys()) {
+        nullthrows(MutationObserverManager.unobserve)(
+          mutationObserverId,
+          target,
+        );
+      }
+      this._observationTargets.clear();
     }
 
     MutationObserverManager.unregisterObserver(mutationObserverId);
