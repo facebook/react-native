@@ -313,7 +313,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   // `paragraphOwningShadowNode` is owning pointer to`paragraphShadowNode`
   // (besides the initial case when `paragraphShadowNode == this`), we need
   // this only to keep it in memory for a while.
-  auto paragraphOwningShadowNode = ShadowNode::Unshared{};
+  auto paragraphOwningShadowNode = std::shared_ptr<ShadowNode>{};
 
   react_native_assert(
       content.attachments.size() == measurement.attachments.size());
@@ -327,7 +327,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       continue;
     }
 
-    auto clonedShadowNode = ShadowNode::Unshared{};
+    auto clonedShadowNode = std::shared_ptr<ShadowNode>{};
 
     paragraphOwningShadowNode = paragraphShadowNode->cloneTree(
         attachment.shadowNode->getFamily(),

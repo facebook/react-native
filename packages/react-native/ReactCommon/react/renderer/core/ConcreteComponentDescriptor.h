@@ -76,7 +76,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNode;
   }
 
-  ShadowNode::Unshared cloneShadowNode(
+  std::shared_ptr<ShadowNode> cloneShadowNode(
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment) const override {
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
