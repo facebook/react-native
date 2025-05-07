@@ -130,6 +130,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private int mScrollEventThrottle = 0;
   private @Nullable View mContentView;
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
+  private int mFadingEdgeLengthStart = 0;
+  private int mFadingEdgeLengthEnd = 0;
 
   private final Rect mTempRect = new Rect();
 
@@ -282,6 +284,44 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  public int getFadingEdgeLengthStart() {
+    return mFadingEdgeLengthStart;
+  }
+
+  public int getFadingEdgeLengthEnd() {
+    return mFadingEdgeLengthEnd;
+  }
+
+  public void setFadingEdgeLengthStart(int start) {
+    mFadingEdgeLengthStart = start;
+    invalidate();
+  }
+
+  public void setFadingEdgeLengthEnd(int end) {
+    mFadingEdgeLengthEnd = end;
+    invalidate();
+  }
+
+  @Override
+  protected float getLeftFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    int value =
+        getLayoutDirection() == LAYOUT_DIRECTION_RTL
+            ? mFadingEdgeLengthEnd
+            : mFadingEdgeLengthStart;
+    return (value / max);
+  }
+
+  @Override
+  protected float getRightFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    int value =
+        getLayoutDirection() == LAYOUT_DIRECTION_RTL
+            ? mFadingEdgeLengthStart
+            : mFadingEdgeLengthEnd;
+    return (value / max);
   }
 
   public void setOverflow(@Nullable String overflow) {

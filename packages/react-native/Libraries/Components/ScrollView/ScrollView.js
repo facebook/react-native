@@ -372,17 +372,20 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
    */
   persistentScrollbar?: ?boolean,
   /**
-   * Fades out the edges of the scroll content.
+   * Controls the fading effect at the edges of the scroll content.
    *
-   * If the value is greater than 0, the fading edges will be set accordingly
-   * to the current scroll direction and position,
-   * indicating if there is more content to show.
+   * A value greater than 0 will apply the fading effect, indicating more content is available
+   * to scroll.
+   *
+   * You can specify a single number to apply the same fading length to both edges.
+   * Alternatively, use an object with `start` and `end` properties to set different
+   * fading lengths for the start and end of the scroll content.
    *
    * The default value is 0.
    *
    * @platform android
    */
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | {start: number, end: number},
 }>;
 
 type StickyHeaderComponentType = component(

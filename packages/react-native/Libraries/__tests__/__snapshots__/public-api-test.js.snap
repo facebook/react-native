@@ -2018,7 +2018,7 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
   scrollPerfTag?: ?string,
   overScrollMode?: ?(\\"auto\\" | \\"always\\" | \\"never\\"),
   persistentScrollbar?: ?boolean,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
 }>;
 type StickyHeaderComponentType = component(
   ref?: React.RefSetter<
@@ -2157,7 +2157,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   directionalLockEnabled?: ?boolean,
   disableIntervalMomentum?: ?boolean,
   endFillColor?: ?ColorValue,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
   indicatorStyle?: ?(\\"default\\" | \\"black\\" | \\"white\\"),
   isInvertedVirtualizedList?: ?boolean,
   keyboardDismissMode?: ?(\\"none\\" | \\"on-drag\\" | \\"interactive\\"),
@@ -4934,7 +4934,7 @@ type OptionalProps<ItemT> = {
   keyExtractor?: ?(item: ItemT, index: number) => string,
   numColumns?: number,
   removeClippedSubviews?: boolean,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
   strictMode?: boolean,
 };
 type FlatListBaseProps<ItemT> = {
