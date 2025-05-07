@@ -8,20 +8,19 @@
 #pragma once
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
-#include <react/renderer/uimanager/UIManager.h>
 
 namespace facebook::react {
 
 struct FantomForcedCloneCommitHook;
 
-class NativeFantomForcedCloneCommitHook
-    : public NativeFantomForcedCloneCommitHookCxxSpec<
-          NativeFantomForcedCloneCommitHook> {
+class NativeFantomTestSpecificMethods
+    : public NativeFantomTestSpecificMethodsCxxSpec<
+          NativeFantomTestSpecificMethods> {
  public:
-  explicit NativeFantomForcedCloneCommitHook(
+  explicit NativeFantomTestSpecificMethods(
       std::shared_ptr<CallInvoker> jsInvoker);
 
-  void setup(jsi::Runtime& runtime);
+  void registerForcedCloneCommitHook(jsi::Runtime& runtime);
 
  private:
   std::shared_ptr<FantomForcedCloneCommitHook> fantomForcedCloneCommitHook_{};
