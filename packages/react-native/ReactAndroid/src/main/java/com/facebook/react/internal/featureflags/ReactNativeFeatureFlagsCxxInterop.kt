@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d0b02395a08331bca956ea600602a31>>
+ * @generated SignedSource<<95358914a3bb384370c92d1cf7799157>>
  */
 
 /**
@@ -61,6 +61,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableFixForParentTagDuringReparenting(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFontScaleChangesUpdatingLayout(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableGracefulUnregisteredComponentFailureAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 

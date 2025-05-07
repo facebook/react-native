@@ -227,6 +227,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableGracefulUnregisteredComponentFailureAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-07',
+        description:
+          'Enables gracefuly failure when an unregistered component is rendered in Android.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
       metadata: {

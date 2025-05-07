@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8b135b02d868914f6b3487f09e8955ff>>
+ * @generated SignedSource<<28a469bce1a0280a46a059187b27f017>>
  */
 
 /**
@@ -123,6 +123,11 @@ class ReactNativeFeatureFlags {
    * Enables font scale changes updating layout for measurable nodes.
    */
   RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
+
+  /**
+   * Enables gracefuly failure when an unregistered component is rendered in Android.
+   */
+  RN_EXPORT static bool enableGracefulUnregisteredComponentFailureAndroid();
 
   /**
    * iOS Views will clip to their padding box vs border box
