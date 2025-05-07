@@ -1321,31 +1321,6 @@ public class com/facebook/react/bridge/ReactNoCrashSoftException : java/lang/Run
 	public fun <init> (Ljava/lang/Throwable;)V
 }
 
-public final class com/facebook/react/bridge/ReactSoftExceptionLogger {
-	public static final field INSTANCE Lcom/facebook/react/bridge/ReactSoftExceptionLogger;
-	public static final fun addListener (Lcom/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener;)V
-	public static final fun clearListeners ()V
-	public static final fun logSoftException (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static final fun logSoftExceptionVerbose (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public static final fun removeListener (Lcom/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener;)V
-}
-
-public final class com/facebook/react/bridge/ReactSoftExceptionLogger$Categories {
-	public static final field CLIPPING_PROHIBITED_VIEW Ljava/lang/String;
-	public static final field INSTANCE Lcom/facebook/react/bridge/ReactSoftExceptionLogger$Categories;
-	public static final field RVG_IS_VIEW_CLIPPED Ljava/lang/String;
-	public static final field RVG_ON_VIEW_REMOVED Ljava/lang/String;
-	public static final field SOFT_ASSERTIONS Ljava/lang/String;
-	public static final field SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE Ljava/lang/String;
-}
-
-public abstract interface annotation class com/facebook/react/bridge/ReactSoftExceptionLogger$CategoryMode : java/lang/annotation/Annotation {
-}
-
-public abstract interface class com/facebook/react/bridge/ReactSoftExceptionLogger$ReactSoftExceptionListener {
-	public abstract fun logSoftException (Ljava/lang/String;Ljava/lang/Throwable;)V
-}
-
 public abstract interface class com/facebook/react/bridge/ReadableArray {
 	public abstract fun getArray (I)Lcom/facebook/react/bridge/ReadableArray;
 	public abstract fun getBoolean (I)Z
