@@ -16,7 +16,7 @@ import com.facebook.react.uimanager.events.RCTModernEventEmitter
 import com.facebook.systrace.Systrace
 
 internal class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTModernEventEmitter {
-  @Deprecated("Deprecated in Java", ReplaceWith("receiveEvent(ViewUtil.NO_SURFACE_ID, targetTag, eventName, params)"))
+  @Deprecated("Use receiveEvent with surfaceId instead.", ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"))
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?): Unit {
     receiveEvent(ViewUtil.NO_SURFACE_ID, targetTag, eventName, params)
   }
