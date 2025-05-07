@@ -132,39 +132,23 @@ export default class MutationObserver {
     }
   }
 
-  _unobserve(target: ReactNativeElement): void {
-    if (!(target instanceof ReactNativeElement)) {
-      throw new TypeError(
-        "Failed to execute 'observe' on 'MutationObserver': parameter 1 is not of type 'ReactNativeElement'.",
-      );
-    }
-
-    if (!this._observationTargets.has(target)) {
-      return;
-    }
-
-    const mutationObserverId = this._mutationObserverId;
-    if (mutationObserverId == null) {
-      return;
-    }
-
-    MutationObserverManager.unobserve(mutationObserverId, target);
-    this._observationTargets.delete(target);
-
-    if (this._observationTargets.size === 0) {
-      MutationObserverManager.unregisterObserver(mutationObserverId);
-      this._mutationObserverId = null;
-    }
-  }
-
   /**
    * Tells the observer to stop watching for mutations.
    * The observer can be reused by calling its `observe()` method again.
    */
   disconnect(): void {
-    for (const target of this._observationTargets.keys()) {
-      this._unobserve(target);
+    const mutationObserverId = this._mutationObserverId;
+    if (mutationObserverId == null) {
+      return;
     }
+
+    for (const target of this._observationTargets.keys()) {
+      MutationObserverManager.unobserve(mutationObserverId, target);
+      this._observationTargets.delete(target);
+    }
+
+    MutationObserverManager.unregisterObserver(mutationObserverId);
+    this._mutationObserverId = null;
   }
 
   _getOrCreateMutationObserverId(): MutationObserverId {
