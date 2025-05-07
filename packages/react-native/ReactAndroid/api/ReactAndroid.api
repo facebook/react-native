@@ -921,9 +921,14 @@ public abstract interface class com/facebook/react/bridge/JavaScriptModule {
 }
 
 public final class com/facebook/react/bridge/JavaScriptModuleRegistry {
+	public static final field Companion Lcom/facebook/react/bridge/JavaScriptModuleRegistry$Companion;
 	public fun <init> ()V
-	public static fun getJSModuleName (Ljava/lang/Class;)Ljava/lang/String;
-	public fun getJavaScriptModule (Lcom/facebook/react/bridge/CatalystInstance;Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
+	public static final fun getJSModuleName (Ljava/lang/Class;)Ljava/lang/String;
+	public final fun getJavaScriptModule (Lcom/facebook/react/bridge/CatalystInstance;Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
+}
+
+public final class com/facebook/react/bridge/JavaScriptModuleRegistry$Companion {
+	public final fun getJSModuleName (Ljava/lang/Class;)Ljava/lang/String;
 }
 
 public final class com/facebook/react/bridge/JsonWriterHelper {
