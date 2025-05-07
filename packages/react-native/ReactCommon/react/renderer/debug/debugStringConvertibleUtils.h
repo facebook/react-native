@@ -7,11 +7,9 @@
 
 #pragma once
 
-#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
