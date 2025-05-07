@@ -1474,13 +1474,6 @@ public final class com/facebook/react/bridge/RuntimeExecutor : com/facebook/jni/
 public final class com/facebook/react/bridge/RuntimeScheduler : com/facebook/jni/HybridClassBase {
 }
 
-public final class com/facebook/react/bridge/SoftAssertions {
-	public static final field INSTANCE Lcom/facebook/react/bridge/SoftAssertions;
-	public static final fun assertCondition (ZLjava/lang/String;)V
-	public static final fun assertNotNull (Ljava/lang/Object;)Ljava/lang/Object;
-	public static final fun assertUnreachable (Ljava/lang/String;)V
-}
-
 public abstract interface class com/facebook/react/bridge/UIManager : com/facebook/react/bridge/PerformanceCounter {
 	public abstract fun addRootView (Landroid/view/View;Lcom/facebook/react/bridge/WritableMap;)I
 	public abstract fun addUIManagerEventListener (Lcom/facebook/react/bridge/UIManagerListener;)V
