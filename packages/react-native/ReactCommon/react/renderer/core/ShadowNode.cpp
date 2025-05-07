@@ -133,7 +133,7 @@ ShadowNode::ShadowNode(
   }
 }
 
-ShadowNode::Unshared ShadowNode::clone(
+std::shared_ptr<ShadowNode> ShadowNode::clone(
     const ShadowNodeFragment& fragment) const {
   const auto& family = *family_;
   const auto& componentDescriptor = family.componentDescriptor_;
@@ -340,14 +340,14 @@ ShadowNodeFamily::Shared ShadowNode::getFamilyShared() const {
   return family_;
 }
 
-ShadowNode::Unshared ShadowNode::cloneTree(
+std::shared_ptr<ShadowNode> ShadowNode::cloneTree(
     const ShadowNodeFamily& shadowNodeFamily,
-    const std::function<ShadowNode::Unshared(const ShadowNode& oldShadowNode)>&
-        callback) const {
+    const std::function<std::shared_ptr<ShadowNode>(
+        const ShadowNode& oldShadowNode)>& callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.empty()) {
-    return ShadowNode::Unshared{nullptr};
+    return std::shared_ptr<ShadowNode>{nullptr};
   }
 
   auto& parent = ancestors.back();
