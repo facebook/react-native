@@ -1691,23 +1691,6 @@ public final class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec$C
 	public final fun createDefault ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
 }
 
-public final class com/facebook/react/common/DebugServerException : java/lang/RuntimeException {
-	public static final field Companion Lcom/facebook/react/common/DebugServerException$Companion;
-	public fun <init> (Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public final fun getOriginalMessage ()Ljava/lang/String;
-	public static final fun makeGeneric (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)Lcom/facebook/react/common/DebugServerException;
-	public static final fun makeGeneric (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)Lcom/facebook/react/common/DebugServerException;
-	public static final fun parse (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/common/DebugServerException;
-}
-
-public final class com/facebook/react/common/DebugServerException$Companion {
-	public final fun makeGeneric (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)Lcom/facebook/react/common/DebugServerException;
-	public final fun makeGeneric (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)Lcom/facebook/react/common/DebugServerException;
-	public final fun parse (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/common/DebugServerException;
-}
-
 public class com/facebook/react/common/JavascriptException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun getExtraDataAsJson ()Ljava/lang/String;

@@ -16,9 +16,9 @@ import org.json.JSONObject
  * Tracks errors connecting to or received from the debug server. The debug server returns errors as
  * json objects. This exception represents that error.
  */
-public class DebugServerException : RuntimeException {
+internal class DebugServerException : RuntimeException {
 
-  public val originalMessage: String
+  val originalMessage: String
 
   private constructor(
       description: String,
@@ -29,18 +29,18 @@ public class DebugServerException : RuntimeException {
     originalMessage = description
   }
 
-  public constructor(description: String) : super(description) {
+  constructor(description: String) : super(description) {
     originalMessage = description
   }
 
-  public constructor(
+  constructor(
       detailMessage: String,
       throwable: Throwable?,
   ) : super(detailMessage, throwable) {
     originalMessage = detailMessage
   }
 
-  public companion object {
+  companion object {
     private val GENERIC_ERROR_MESSAGE =
         """
         |
@@ -57,11 +57,11 @@ public class DebugServerException : RuntimeException {
             .trimMargin()
 
     @JvmStatic
-    public fun makeGeneric(url: String, reason: String, t: Throwable?): DebugServerException =
+    fun makeGeneric(url: String, reason: String, t: Throwable?): DebugServerException =
         makeGeneric(url, reason, "", t)
 
     @JvmStatic
-    public fun makeGeneric(
+    fun makeGeneric(
         url: String,
         reason: String,
         extra: String,
@@ -80,7 +80,7 @@ public class DebugServerException : RuntimeException {
      */
     @JvmStatic
     @Suppress("UNUSED_PARAMETER")
-    public fun parse(url: String?, str: String?): DebugServerException? {
+    fun parse(url: String?, str: String?): DebugServerException? {
       if (str.isNullOrEmpty()) {
         return null
       }
