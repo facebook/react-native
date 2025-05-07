@@ -9,8 +9,7 @@
 
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/ShadowNode.h>
-#include <memory>
-#include <utility>
+#include <react/renderer/core/ShadowNodeFamily.h>
 
 namespace facebook::react {
 
@@ -25,7 +24,7 @@ struct MutationRecord {
 
 class MutationObserver {
  public:
-  MutationObserver(MutationObserverId intersectionObserverId);
+  explicit MutationObserver(MutationObserverId mutationObserverId);
 
   // delete copy constructor
   MutationObserver(const MutationObserver&) = delete;
@@ -39,10 +38,9 @@ class MutationObserver {
   // allow move assignment
   MutationObserver& operator=(MutationObserver&&) = default;
 
-  void observe(ShadowNode::Shared targetShadowNode, bool observeSubtree);
-  void unobserve(const ShadowNode& targetShadowNode);
-
-  bool isObserving() const;
+  void observe(
+      std::shared_ptr<const ShadowNodeFamily> targetShadowNodeFamily,
+      bool observeSubtree);
 
   void recordMutations(
       const RootShadowNode& oldRootShadowNode,
@@ -51,13 +49,15 @@ class MutationObserver {
 
  private:
   MutationObserverId mutationObserverId_;
-  std::vector<ShadowNode::Shared> deeplyObservedShadowNodes_;
-  std::vector<ShadowNode::Shared> shallowlyObservedShadowNodes_;
+  std::vector<std::shared_ptr<const ShadowNodeFamily>>
+      deeplyObservedShadowNodeFamilies_;
+  std::vector<std::shared_ptr<const ShadowNodeFamily>>
+      shallowlyObservedShadowNodeFamilies_;
 
   using SetOfShadowNodePointers = std::unordered_set<const ShadowNode*>;
 
   void recordMutationsInTarget(
-      ShadowNode::Shared targetShadowNode,
+      const ShadowNodeFamily& targetShadowNodeFamily,
       const RootShadowNode& oldRootShadowNode,
       const RootShadowNode& newRootShadowNode,
       bool observeSubtree,
