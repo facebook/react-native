@@ -211,27 +211,27 @@ internal class ReactInstance(
           // 2. genericBubblingEventTypes.
           // 3. genericDirectEventTypes.
           // We want to match this beahavior.
-          DefaultEventTypesProvider {
-            Arguments.makeNativeMap(UIManagerModuleConstantsHelper.getDefaultExportableEventTypes())
-          },
+        {
+          Arguments.makeNativeMap(UIManagerModuleConstantsHelper.getDefaultExportableEventTypes())
+        },
           ConstantsForViewManagerProvider { viewManagerName: String ->
             val viewManager =
                 viewManagerResolver.getViewManager(viewManagerName)
                     ?: return@ConstantsForViewManagerProvider null
             getConstantsForViewManager(viewManager, customDirectEvents)
           },
-          ConstantsProvider {
-            val viewManagers: List<ViewManager<*, *>> =
-                ArrayList(viewManagerResolver.eagerViewManagerMap.values)
-            val constants = createConstants(viewManagers, customDirectEvents)
+        {
+          val viewManagers: List<ViewManager<*, *>> =
+              ArrayList(viewManagerResolver.eagerViewManagerMap.values)
+          val constants = createConstants(viewManagers, customDirectEvents)
 
-            val lazyViewManagers = viewManagerResolver.lazyViewManagerNames
-            if (!lazyViewManagers.isEmpty()) {
-              constants["ViewManagerNames"] = ArrayList(lazyViewManagers)
-              constants["LazyViewManagersEnabled"] = true
-            }
-            Arguments.makeNativeMap(constants)
-          })
+          val lazyViewManagers = viewManagerResolver.lazyViewManagerNames
+          if (!lazyViewManagers.isEmpty()) {
+            constants["ViewManagerNames"] = ArrayList(lazyViewManagers)
+            constants["LazyViewManagersEnabled"] = true
+          }
+          Arguments.makeNativeMap(constants)
+        })
     }
 
     val eventBeatManager = EventBeatManager()
