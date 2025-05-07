@@ -24,9 +24,9 @@ import com.facebook.react.common.SystemClock.uptimeMillis
  * future and it is highly recommended to use only `getEventData`.
  *
  * Old, pre-Fabric Events only used viewTag as the identifier, but Fabric needs surfaceId as well as
- * viewTag. You may use [UIManagerHelper.getSurfaceId] on a Fabric-managed View to get the
- * surfaceId. Fabric will work without surfaceId - making [Event] backwards-compatible - but Events
- * without SurfaceId are slightly slower to propagate.
+ * viewTag. You may use [com.facebook.react.uimanager.UIManagerHelper.getSurfaceId] on a
+ * Fabric-managed View to get the surfaceId. Fabric will work without surfaceId - making [Event]
+ * backwards-compatible - but Events without SurfaceId are slightly slower to propagate.
  */
 public abstract class Event<T : Event<T>> {
   public var isInitialized: Boolean = false

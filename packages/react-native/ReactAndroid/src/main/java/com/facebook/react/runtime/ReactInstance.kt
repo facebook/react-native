@@ -79,8 +79,8 @@ import kotlin.collections.Collection
 import kotlin.jvm.JvmStatic
 
 /**
- * A replacement for [com.facebook.react.CatalystInstance] responsible for creating and managing a
- * React Native instance
+ * A replacement for [com.facebook.react.bridge.CatalystInstance] responsible for creating and
+ * managing a React Native instance
  */
 @ThreadSafe
 @DoNotStrip
