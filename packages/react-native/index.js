@@ -9,7 +9,6 @@
  */
 
 // flowlint unsafe-getters-setters:off
-/* eslint-disable lint/no-commonjs-exports */
 
 'use strict';
 'use client';
