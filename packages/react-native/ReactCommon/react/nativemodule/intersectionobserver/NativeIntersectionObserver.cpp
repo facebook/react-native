@@ -37,7 +37,7 @@ void NativeIntersectionObserver::observe(
 
   intersectionObserverManager_.observe(
       intersectionObserverId,
-      shadowNode,
+      shadowNode->getFamilyShared(),
       thresholds,
       rootThresholds,
       uiManager);
@@ -48,7 +48,8 @@ void NativeIntersectionObserver::unobserve(
     IntersectionObserverObserverId intersectionObserverId,
     jsi::Object targetShadowNode) {
   auto shadowNode = shadowNodeFromValue(runtime, std::move(targetShadowNode));
-  intersectionObserverManager_.unobserve(intersectionObserverId, *shadowNode);
+  intersectionObserverManager_.unobserve(
+      intersectionObserverId, shadowNode->getFamilyShared());
 }
 
 void NativeIntersectionObserver::connect(
