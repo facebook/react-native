@@ -371,7 +371,27 @@ ScrollViewProps::ScrollViewProps(
                     rawProps,
                     "isInvertedVirtualizedList",
                     sourceProps.isInvertedVirtualizedList,
-                    {})) {}
+                    {})),
+      sendMomentumEvents(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.sendMomentumEvents
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "sendMomentumEvents",
+                    sourceProps.sendMomentumEvents,
+                    true)),
+      nestedScrollEnabled(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.nestedScrollEnabled
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "nestedScrollEnabled",
+                    sourceProps.nestedScrollEnabled,
+                    true))
+
+{}
 
 void ScrollViewProps::setProp(
     const PropsParserContext& context,
@@ -424,6 +444,8 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(contentInsetAdjustmentBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollToOverflowEnabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(isInvertedVirtualizedList);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(sendMomentumEvents);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(nestedScrollEnabled);
   }
 }
 
@@ -558,7 +580,15 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
           debugStringConvertibleItem(
               "isInvertedVirtualizedList",
               snapToEnd,
-              defaultScrollViewProps.isInvertedVirtualizedList)};
+              defaultScrollViewProps.isInvertedVirtualizedList),
+          debugStringConvertibleItem(
+              "sendMomentumEvents",
+              sendMomentumEvents,
+              defaultScrollViewProps.sendMomentumEvents),
+          debugStringConvertibleItem(
+              "nestedScrollEnabled",
+              nestedScrollEnabled,
+              defaultScrollViewProps.nestedScrollEnabled)};
 }
 #endif
 
