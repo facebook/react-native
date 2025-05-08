@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text
 
-import android.text.Layout
 import android.text.Spanned
 import android.view.View
 import com.facebook.react.R
@@ -63,7 +62,7 @@ internal class PreparedLayoutTextViewManager :
 
   override fun updateExtraData(view: PreparedLayoutTextView, extraData: Any) {
     SystraceSection("PreparedLayoutTextViewManager.updateExtraData").use { _ ->
-      val layout = extraData as Layout
+      val layout = (extraData as PreparedLayout).layout
       view.layout = layout
 
       // If this text view contains any clickable spans, set a view tag and reset the accessibility
