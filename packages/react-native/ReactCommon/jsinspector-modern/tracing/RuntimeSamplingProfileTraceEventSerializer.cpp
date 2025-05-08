@@ -14,12 +14,12 @@ namespace {
 
 // Right now we only emit single Profile. We might revisit this decision in the
 // future, once we support multiple VMs being sampled at the same time.
-const uint16_t PROFILE_ID = 1;
+constexpr uint16_t PROFILE_ID = 1;
 
 /// Fallback script ID for artificial call frames, such as (root), (idle) or
 /// (program). Required for emulating the payload in a format that is expected
 /// by Chrome DevTools.
-const uint32_t FALLBACK_SCRIPT_ID = 0;
+constexpr uint32_t FALLBACK_SCRIPT_ID = 0;
 
 uint64_t formatTimePointToUnixTimestamp(
     std::chrono::steady_clock::time_point timestamp) {
@@ -29,15 +29,13 @@ uint64_t formatTimePointToUnixTimestamp(
 }
 
 TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
-    std::shared_ptr<ProfileTreeNode> node) {
-  ProfileTreeNode* nodeParent = node->getParent();
+    const ProfileTreeNode& node) {
   const RuntimeSamplingProfile::SampleCallStackFrame& callFrame =
-      node->getCallFrame();
+      node.getCallFrame();
   auto traceEventCallFrame =
       TraceEventProfileChunk::CPUProfile::Node::CallFrame{
-          node->getCodeType() == ProfileTreeNode::CodeType::JavaScript
-              ? "JS"
-              : "other",
+          node.getCodeType() == ProfileTreeNode::CodeType::JavaScript ? "JS"
+                                                                      : "other",
           callFrame.getScriptId(),
           callFrame.getFunctionName(),
           callFrame.hasUrl() ? std::optional<std::string>(callFrame.getUrl())
@@ -50,10 +48,10 @@ TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
               : std::nullopt};
 
   return TraceEventProfileChunk::CPUProfile::Node{
-      node->getId(),
+      node.getId(),
       traceEventCallFrame,
-      nodeParent != nullptr ? std::optional<uint32_t>(nodeParent->getId())
-                            : std::nullopt};
+      node.hasParent() ? std::optional<uint32_t>(node.getParentId())
+                       : std::nullopt};
 }
 
 RuntimeSamplingProfile::SampleCallStackFrame createArtificialCallFrame(
@@ -71,42 +69,14 @@ RuntimeSamplingProfile::SampleCallStackFrame createGarbageCollectorCallFrame() {
       "(garbage collector)"};
 };
 
-std::shared_ptr<ProfileTreeNode> createNode(
-    NodeIdGenerator& nodeIdGenerator,
-    ProfileTreeNode::CodeType codeType,
-    std::shared_ptr<ProfileTreeNode> parent,
-    const RuntimeSamplingProfile::SampleCallStackFrame& callFrame) {
-  return std::make_shared<ProfileTreeNode>(
-      nodeIdGenerator.getNext(), codeType, parent, callFrame);
-}
-
-std::shared_ptr<ProfileTreeNode> createArtificialNode(
-    NodeIdGenerator& nodeIdGenerator,
-    std::shared_ptr<ProfileTreeNode> parent,
-    std::string callFrameName) {
-  RuntimeSamplingProfile::SampleCallStackFrame callFrame =
-      createArtificialCallFrame(std::move(callFrameName));
-
-  return createNode(
-      nodeIdGenerator, ProfileTreeNode::CodeType::Other, parent, callFrame);
-}
-
-std::shared_ptr<ProfileTreeNode> createRootNode(
-    NodeIdGenerator& nodeIdGenerator) {
-  return createArtificialNode(nodeIdGenerator, nullptr, "(root)");
-}
-
-std::shared_ptr<ProfileTreeNode> createProgramNode(
-    NodeIdGenerator& nodeIdGenerator,
-    std::shared_ptr<ProfileTreeNode> rootNode) {
-  return createArtificialNode(nodeIdGenerator, rootNode, "(program)");
-}
-
-std::shared_ptr<ProfileTreeNode> createIdleNode(
-    NodeIdGenerator& nodeIdGenerator,
-    std::shared_ptr<ProfileTreeNode> rootNode) {
-  return createArtificialNode(nodeIdGenerator, rootNode, "(idle)");
-}
+class ProfileTreeRootNode : public ProfileTreeNode {
+ public:
+  explicit ProfileTreeRootNode(uint32_t id)
+      : ProfileTreeNode(
+            id,
+            CodeType::Other,
+            createArtificialCallFrame("(root)")) {}
+};
 
 } // namespace
 
@@ -148,45 +118,48 @@ void RuntimeSamplingProfileTraceEventSerializer::bufferProfileChunkTraceEvent(
           chunk.threadId,
           chunk.timestamp,
           TraceEventProfileChunk{
-              TraceEventProfileChunk::CPUProfile{
-                  traceEventNodes, chunk.samples},
-              TraceEventProfileChunk::TimeDeltas{chunk.timeDeltas},
+              .cpuProfile =
+                  TraceEventProfileChunk::CPUProfile{
+                      traceEventNodes, chunk.samples},
+              .timeDeltas =
+                  TraceEventProfileChunk::TimeDeltas{chunk.timeDeltas},
           }));
 }
 
 void RuntimeSamplingProfileTraceEventSerializer::processCallStack(
     const std::vector<RuntimeSamplingProfile::SampleCallStackFrame>& callStack,
     ProfileChunk& chunk,
-    std::shared_ptr<ProfileTreeNode> rootNode,
-    std::shared_ptr<ProfileTreeNode> idleNode,
+    ProfileTreeNode& rootNode,
+    uint32_t idleNodeId,
     long long samplesTimeDelta,
     NodeIdGenerator& nodeIdGenerator) {
   if (callStack.empty()) {
-    chunkEmptySample(chunk, idleNode->getId(), samplesTimeDelta);
+    chunkEmptySample(chunk, idleNodeId, samplesTimeDelta);
     return;
   }
 
-  auto previousNode = rootNode;
+  ProfileTreeNode* previousNode = &rootNode;
   for (auto it = callStack.rbegin(); it != callStack.rend(); ++it) {
     const RuntimeSamplingProfile::SampleCallStackFrame& callFrame = *it;
     bool isGarbageCollectorFrame = callFrame.getKind() ==
         RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector;
+
+    ProfileTreeNode::CodeType childCodeType = isGarbageCollectorFrame
+        ? ProfileTreeNode::CodeType::Other
+        : ProfileTreeNode::CodeType::JavaScript;
     // We don't need real garbage collector call frame, we change it to
     // what Chrome DevTools expects.
-    auto currentNode = createNode(
-        nodeIdGenerator,
-        isGarbageCollectorFrame ? ProfileTreeNode::CodeType::Other
-                                : ProfileTreeNode::CodeType::JavaScript,
-        previousNode,
-        isGarbageCollectorFrame ? createGarbageCollectorCallFrame()
-                                : callFrame);
+    RuntimeSamplingProfile::SampleCallStackFrame childCallFrame =
+        isGarbageCollectorFrame ? createGarbageCollectorCallFrame() : callFrame;
 
-    auto alreadyExistingNode = previousNode->addChild(currentNode);
-    if (alreadyExistingNode != nullptr) {
-      previousNode = alreadyExistingNode;
+    ProfileTreeNode* maybeExistingChild =
+        previousNode->getIfAlreadyExists(childCodeType, childCallFrame);
+    if (maybeExistingChild != nullptr) {
+      previousNode = maybeExistingChild;
     } else {
-      chunk.nodes.push_back(currentNode);
-      previousNode = currentNode;
+      previousNode = previousNode->addChild(
+          nodeIdGenerator.getNext(), childCodeType, childCallFrame);
+      chunk.nodes.push_back(*previousNode);
     }
   }
 
@@ -218,20 +191,28 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   sendProfileTraceEvent(
       firstChunkThreadId, PROFILE_ID, tracingStartUnixTimestamp);
 
-  NodeIdGenerator nodeIdGenerator{};
-  auto rootNode = createRootNode(nodeIdGenerator);
-  auto programNode = createProgramNode(nodeIdGenerator, rootNode);
-  auto idleNode = createIdleNode(nodeIdGenerator, rootNode);
-  rootNode->addChild(programNode);
-  rootNode->addChild(idleNode);
-
   // There could be any number of new nodes in this chunk. Empty if all nodes
   // are already emitted in previous chunks.
   ProfileChunk chunk{
       profileChunkSize_, firstChunkThreadId, currentChunkUnixTimestamp};
+
+  NodeIdGenerator nodeIdGenerator{};
+
+  ProfileTreeRootNode rootNode(nodeIdGenerator.getNext());
   chunk.nodes.push_back(rootNode);
-  chunk.nodes.push_back(programNode);
-  chunk.nodes.push_back(idleNode);
+
+  ProfileTreeNode* programNode = rootNode.addChild(
+      nodeIdGenerator.getNext(),
+      ProfileTreeNode::CodeType::Other,
+      createArtificialCallFrame("(program)"));
+  chunk.nodes.push_back(*programNode);
+
+  ProfileTreeNode* idleNode = rootNode.addChild(
+      nodeIdGenerator.getNext(),
+      ProfileTreeNode::CodeType::Other,
+      createArtificialCallFrame("(idle)"));
+  chunk.nodes.push_back(*idleNode);
+  uint32_t idleNodeId = idleNode->getId();
 
   for (const auto& sample : samples) {
     uint64_t currentSampleThreadId = sample.getThreadId();
@@ -255,7 +236,7 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
         sample.getCallStack(),
         chunk,
         rootNode,
-        idleNode,
+        idleNodeId,
         currentSampleUnixTimestamp - previousSampleUnixTimestamp,
         nodeIdGenerator);
 

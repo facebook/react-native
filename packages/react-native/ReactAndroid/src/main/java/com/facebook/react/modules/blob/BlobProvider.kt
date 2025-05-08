@@ -18,7 +18,7 @@ import java.io.IOException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-public final class BlobProvider : ContentProvider() {
+public class BlobProvider : ContentProvider() {
   private val executor: ExecutorService = Executors.newSingleThreadExecutor()
 
   override fun onCreate(): Boolean = true

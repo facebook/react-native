@@ -205,6 +205,7 @@ const validAttributesForNonEventProps = {
   accessibilityValue: true,
   experimental_accessibilityOrder: true,
   importantForAccessibility: true,
+  screenReaderFocusable: true,
   role: true,
   rotation: true,
   scaleX: true,

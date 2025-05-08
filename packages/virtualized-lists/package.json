@@ -19,11 +19,23 @@
   "engines": {
     "node": ">=18"
   },
+  "exports": {
+    ".": {
+      "types": "./types_generated/index.d.ts",
+      "default": "./index.js"
+    },
+    "./*": {
+      "types": null,
+      "default": "./*.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "index.js",
     "index.d.ts",
     "Lists",
     "README.md",
+    "types_generated",
     "Utilities",
     "!**/__docs__/**",
     "!**/__fixtures__/**",
@@ -35,7 +47,7 @@
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "react-test-renderer": "19.0.0"
+    "react-test-renderer": "19.1.0"
   },
   "peerDependencies": {
     "@types/react": "^19.0.0",

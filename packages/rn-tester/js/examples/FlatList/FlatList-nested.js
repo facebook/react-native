@@ -11,8 +11,8 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {ListRenderItemInfo} from 'react-native';
 import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
-import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';

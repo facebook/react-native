@@ -17,6 +17,7 @@
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
 
 #include "ParagraphState.h"
 
@@ -164,15 +165,23 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
 Size ParagraphShadowNode::measureContent(
     const LayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
+  if constexpr (TextLayoutManagerExtended::supportsPreparedLayout()) {
+    for (const auto& preparedLayout : preparedLayouts_) {
+      if (preparedLayout.layoutConstraints == layoutConstraints) {
+        return preparedLayout.measureSize;
+      }
+    }
+  }
+
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
   auto attributedString = content.attributedString;
   if (attributedString.isEmpty()) {
-    // Note: `zero-width space` is insufficient in some cases (e.g. when we need
-    // to measure the "height" of the font).
-    // TODO T67606511: We will redefine the measurement of empty strings as part
-    // of T67606511
+    // Note: `zero-width space` is insufficient in some cases (e.g. when we
+    // need to measure the "height" of the font).
+    // TODO T67606511: We will redefine the measurement of empty strings as
+    // part of T67606511
     auto string = BaseTextShadowNode::getEmptyPlaceholder();
     auto textAttributes = TextAttributes::defaultTextAttributes();
     textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
@@ -180,8 +189,33 @@ Size ParagraphShadowNode::measureContent(
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
-  TextLayoutContext textLayoutContext{};
-  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  TextLayoutContext textLayoutContext{
+      .pointScaleFactor = layoutContext.pointScaleFactor,
+      .surfaceId = getSurfaceId(),
+  };
+
+  if constexpr (TextLayoutManagerExtended::supportsPreparedLayout()) {
+    if (ReactNativeFeatureFlags::enablePreparedTextLayout()) {
+      TextLayoutManagerExtended tme(*textLayoutManager_);
+
+      auto preparedLayout = tme.prepareLayout(
+          attributedString,
+          content.paragraphAttributes,
+          textLayoutContext,
+          layoutConstraints);
+      auto mesaurements = tme.measurePreparedLayout(
+          preparedLayout, textLayoutContext, layoutConstraints);
+
+      preparedLayouts_.push_back(PreparedLayoutResult{
+          layoutConstraints,
+          mesaurements.size,
+          // PreparedLayout is not trivially copyable on all platforms
+          // NOLINTNEXTLINE(performance-move-const-arg)
+          std::move(preparedLayout)});
+      return mesaurements.size;
+    }
+  }
+
   return textLayoutManager_
       ->measure(
           AttributedStringBox{attributedString},
@@ -202,10 +236,10 @@ Float ParagraphShadowNode::baseline(
   auto attributedString = content.attributedString;
 
   if (attributedString.isEmpty()) {
-    // Note: `zero-width space` is insufficient in some cases (e.g. when we need
-    // to measure the "height" of the font).
-    // TODO T67606511: We will redefine the measurement of empty strings as part
-    // of T67606511
+    // Note: `zero-width space` is insufficient in some cases (e.g. when we
+    // need to measure the "height" of the font).
+    // TODO T67606511: We will redefine the measurement of empty strings as
+    // part of T67606511
     auto string = BaseTextShadowNode::getEmptyPlaceholder();
     auto textAttributes = TextAttributes::defaultTextAttributes();
     textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
@@ -214,8 +248,18 @@ Float ParagraphShadowNode::baseline(
   }
 
   AttributedStringBox attributedStringBox{attributedString};
-  return textLayoutManager_->baseline(
-      attributedStringBox, getConcreteProps().paragraphAttributes, size);
+
+  if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
+    auto lines =
+        TextLayoutManagerExtended(*textLayoutManager_)
+            .measureLines(
+                attributedStringBox, content.paragraphAttributes, size);
+    return LineMeasurement::baseline(lines);
+  } else {
+    LOG(WARNING)
+        << "Baseline alignment is not supported by the current platform";
+    return 0;
+  }
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
@@ -231,16 +275,24 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   updateStateIfNeeded(content);
 
-  TextLayoutContext textLayoutContext{};
-  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  TextLayoutContext textLayoutContext{
+      .pointScaleFactor = layoutContext.pointScaleFactor,
+      .surfaceId = getSurfaceId(),
+  };
   auto measurement = TextMeasurement{};
 
   AttributedStringBox attributedStringBox{content.attributedString};
 
   if (getConcreteProps().onTextLayout) {
-    auto linesMeasurements = textLayoutManager_->measureLines(
-        attributedStringBox, content.paragraphAttributes, size);
-    getConcreteEventEmitter().onTextLayout(linesMeasurements);
+    if constexpr (TextLayoutManagerExtended::supportsLineMeasurement()) {
+      auto linesMeasurements =
+          TextLayoutManagerExtended(*textLayoutManager_)
+              .measureLines(
+                  attributedStringBox, content.paragraphAttributes, size);
+      getConcreteEventEmitter().onTextLayout(linesMeasurements);
+    } else {
+      LOG(WARNING) << "onTextLayout is not supported by the current platform";
+    }
   }
 
   if (content.attachments.empty()) {
@@ -259,9 +311,9 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   //  `paragraphShadowNode` that represents clones of `this` object.
   auto paragraphShadowNode = static_cast<ParagraphShadowNode*>(this);
   // `paragraphOwningShadowNode` is owning pointer to`paragraphShadowNode`
-  // (besides the initial case when `paragraphShadowNode == this`), we need this
-  // only to keep it in memory for a while.
-  auto paragraphOwningShadowNode = ShadowNode::Unshared{};
+  // (besides the initial case when `paragraphShadowNode == this`), we need
+  // this only to keep it in memory for a while.
+  auto paragraphOwningShadowNode = std::shared_ptr<ShadowNode>{};
 
   react_native_assert(
       content.attachments.size() == measurement.attachments.size());
@@ -275,7 +327,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       continue;
     }
 
-    auto clonedShadowNode = ShadowNode::Unshared{};
+    auto clonedShadowNode = std::shared_ptr<ShadowNode>{};
 
     paragraphOwningShadowNode = paragraphShadowNode->cloneTree(
         attachment.shadowNode->getFamily(),
@@ -291,7 +343,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
     const auto& attachmentMeasurement = measurement.attachments[i];
     if (attachmentMeasurement.isClipped) {
       layoutableShadowNode.setLayoutMetrics(
-          LayoutMetrics{.displayType = DisplayType::None});
+          LayoutMetrics{.frame = {}, .displayType = DisplayType::None});
       continue;
     }
 
@@ -311,15 +363,15 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
     layoutableShadowNode.layoutTree(
         attachmentLayoutContext, attachmentLayoutConstrains);
 
-    // Altering the origin of the `ShadowNode` (which is defined by text layout,
-    // not by internal styles and state).
+    // Altering the origin of the `ShadowNode` (which is defined by text
+    // layout, not by internal styles and state).
     auto attachmentLayoutMetrics = layoutableShadowNode.getLayoutMetrics();
     attachmentLayoutMetrics.frame.origin = attachmentOrigin;
     layoutableShadowNode.setLayoutMetrics(attachmentLayoutMetrics);
   }
 
-  // If we ended up cloning something, we need to update the list of children to
-  // reflect the changes that we made.
+  // If we ended up cloning something, we need to update the list of children
+  // to reflect the changes that we made.
   if (paragraphShadowNode != this) {
     this->children_ =
         static_cast<const ParagraphShadowNode*>(paragraphShadowNode)->children_;

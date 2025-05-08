@@ -429,8 +429,8 @@ class CustomView extends React.Component {
 class Welcome extends React.Component<
   ElementProps<View> & {color: string; bgColor?: null | undefined | string}
 > {
-  rootViewRef = React.createRef<View>();
-  customViewRef = React.createRef<CustomView>();
+  rootViewRef = React.createRef<React.ComponentRef<typeof View>>();
+  customViewRef = React.createRef<React.ComponentRef<typeof CustomView>>();
 
   testNativeMethods() {
     if (this.rootViewRef.current != null) {
@@ -498,7 +498,7 @@ function TouchableTest() {
 }
 
 export class TouchableHighlightTest extends React.Component {
-  buttonRef = React.createRef<React.ElementRef<typeof TouchableHighlight>>();
+  buttonRef = React.createRef<React.ComponentRef<typeof TouchableHighlight>>();
 
   render() {
     return (
@@ -525,7 +525,7 @@ export class TouchableHighlightTest extends React.Component {
 }
 
 export class TouchableOpacityTest extends React.Component {
-  buttonRef = React.createRef<React.ElementRef<typeof TouchableOpacity>>();
+  buttonRef = React.createRef<React.ComponentRef<typeof TouchableOpacity>>();
 
   render() {
     return (
@@ -720,7 +720,7 @@ export class PressableTest extends React.Component<{}> {
 }
 
 // App State
-function appStateListener(state: string) {
+function appStateListener(state?: string) {
   console.log('New state: ' + state);
 }
 
@@ -1575,7 +1575,7 @@ class BridgedComponentTest extends React.Component {
 }
 
 const SafeAreaViewTest = () => {
-  const viewRef = React.createRef<React.ElementRef<typeof View>>();
+  const viewRef = React.createRef<React.ComponentRef<typeof View>>();
 
   return (
     <>
@@ -1600,7 +1600,7 @@ const SafeAreaViewTest = () => {
 };
 
 const SwitchRefTest = () => {
-  const switchRef = React.createRef<React.ElementRef<typeof Switch>>();
+  const switchRef = React.createRef<React.ComponentRef<typeof Switch>>();
 
   return (
     <>
@@ -2103,7 +2103,7 @@ const AccessibilityCustomActionsTest = () => {
 
 // DrawerLayoutAndroidTest
 export class DrawerLayoutAndroidTest extends React.Component {
-  drawerRef = React.createRef<DrawerLayoutAndroid>();
+  drawerRef = React.createRef<React.ComponentRef<typeof DrawerLayoutAndroid>>();
 
   readonly styles = StyleSheet.create({
     container: {

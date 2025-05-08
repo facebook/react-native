@@ -248,8 +248,7 @@ std::shared_ptr<const ShadowNode> SurfaceHandler::dirtyMeasurableNodesRecursive(
       ShadowNodeFragment::childrenPlaceholder();
 
   if (nodeHasChildren) {
-    ShadowNode::UnsharedListOfShared newChildrenMutable = nullptr;
-
+    std::shared_ptr<ShadowNode::ListOfShared> newChildrenMutable = nullptr;
     for (size_t i = 0; i < node->getChildren().size(); i++) {
       const auto& child = node->getChildren()[i];
 

@@ -35,6 +35,13 @@ struct LineMeasurement {
   LineMeasurement(const folly::dynamic& data);
 
   bool operator==(const LineMeasurement& rhs) const;
+
+  static inline Float baseline(const std::vector<LineMeasurement>& lines) {
+    if (!lines.empty()) {
+      return lines[0].ascender;
+    }
+    return 0;
+  }
 };
 
 using LinesMeasurements = std::vector<LineMeasurement>;

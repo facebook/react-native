@@ -133,7 +133,7 @@ ShadowNode::ShadowNode(
   }
 }
 
-ShadowNode::Unshared ShadowNode::clone(
+std::shared_ptr<ShadowNode> ShadowNode::clone(
     const ShadowNodeFragment& fragment) const {
   const auto& family = *family_;
   const auto& componentDescriptor = family.componentDescriptor_;
@@ -191,12 +191,7 @@ const SharedEventEmitter& ShadowNode::getEventEmitter() const {
 }
 
 jsi::Value ShadowNode::getInstanceHandle(jsi::Runtime& runtime) const {
-  auto instanceHandle = family_->instanceHandle_;
-  if (instanceHandle == nullptr) {
-    return jsi::Value::null();
-  }
-
-  return instanceHandle->getInstanceHandle(runtime);
+  return family_->getInstanceHandle(runtime);
 }
 
 Tag ShadowNode::getTag() const {
@@ -341,14 +336,18 @@ const ShadowNodeFamily& ShadowNode::getFamily() const {
   return *family_;
 }
 
-ShadowNode::Unshared ShadowNode::cloneTree(
+ShadowNodeFamily::Shared ShadowNode::getFamilyShared() const {
+  return family_;
+}
+
+std::shared_ptr<ShadowNode> ShadowNode::cloneTree(
     const ShadowNodeFamily& shadowNodeFamily,
-    const std::function<ShadowNode::Unshared(const ShadowNode& oldShadowNode)>&
-        callback) const {
+    const std::function<std::shared_ptr<ShadowNode>(
+        const ShadowNode& oldShadowNode)>& callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.empty()) {
-    return ShadowNode::Unshared{nullptr};
+    return std::shared_ptr<ShadowNode>{nullptr};
   }
 
   auto& parent = ancestors.back();

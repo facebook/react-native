@@ -102,17 +102,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableShadowNodeOnNewArchitectureAndroid: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-04-07',
-        description:
-          'Disables the use of ShadowNode (to calculate ViewConfigs) on apps that are fully running on the new architecture on Android',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {
@@ -153,6 +142,37 @@ const definitions: FeatureFlagDefinitions = {
           'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
         expectedReleaseValue: true,
         purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableCustomFocusSearchOnClippedElementsAndroid: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'This enables the fabric implementation of focus search so that we can focus clipped elements',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableDestroyShadowTreeRevisionAsync: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-29',
+        description:
+          'Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableDoubleMeasurementFixAndroid: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled a subset of components will avoid double measurement on Android.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
       },
       ossReleaseStage: 'none',
     },
@@ -267,12 +287,32 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableNetworkEventReporting: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
     enableNewBackgroundAndBorderDrawables: {
       defaultValue: true,
       metadata: {
         dateAdded: '2024-09-24',
         description:
           'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enablePreparedTextLayout: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-01',
+        description: 'Enables caching text layout artifacts for later reuse',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -286,6 +326,16 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableResourceTimingAPI: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables the reporting of network resource timings through `PerformanceObserver`.',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -376,6 +426,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    incorporateMaxLinesDuringAndroidLayout: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Set maxLines and ellipsization during Android layout creation',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'stable',
+    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -402,16 +462,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'In Bridgeless mode, use the always available javascript error reporting pipeline.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    useEditTextStockAndroidFocusBehavior: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.',
         expectedReleaseValue: true,
         purpose: 'release',
       },

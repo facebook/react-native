@@ -16,11 +16,27 @@ namespace facebook::react {
 [[maybe_unused]] static bool operator==(
     const PerformanceEntry& lhs,
     const PerformanceEntry& rhs) {
-  return lhs.name == rhs.name && lhs.entryType == rhs.entryType &&
-      lhs.startTime == rhs.startTime && lhs.duration == rhs.duration &&
-      lhs.processingStart == rhs.processingStart &&
-      lhs.processingEnd == rhs.processingEnd &&
-      lhs.interactionId == rhs.interactionId;
+  return std::visit(
+      [&](const auto& left, const auto& right) {
+        bool baseMatch = left.name == right.name &&
+            left.entryType == right.entryType &&
+            left.startTime == right.startTime &&
+            left.duration == right.duration;
+
+        if (baseMatch && left.entryType == PerformanceEntryType::EVENT) {
+          auto leftEventTiming = std::get<PerformanceEventTiming>(lhs);
+          auto rightEventTiming = std::get<PerformanceEventTiming>(rhs);
+
+          return leftEventTiming.processingStart ==
+              rightEventTiming.processingStart &&
+              leftEventTiming.processingEnd == rightEventTiming.processingEnd &&
+              leftEventTiming.interactionId == rightEventTiming.interactionId;
+        }
+
+        return baseMatch;
+      },
+      lhs,
+      rhs);
 }
 } // namespace facebook::react
 
@@ -127,15 +143,9 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveTakeRecords) {
   reporter->reportMark("test3", 30);
 
   const std::vector<PerformanceEntry> expected = {
-      {.name = "test1",
-       .entryType = PerformanceEntryType::MARK,
-       .startTime = 10},
-      {.name = "test2",
-       .entryType = PerformanceEntryType::MARK,
-       .startTime = 20},
-      {.name = "test3",
-       .entryType = PerformanceEntryType::MARK,
-       .startTime = 30},
+      PerformanceMark{{.name = "test1", .startTime = 10}},
+      PerformanceMark{{.name = "test2", .startTime = 20}},
+      PerformanceMark{{.name = "test3", .startTime = 30}},
   };
 
   ASSERT_EQ(expected, observer->takeRecords());
@@ -157,24 +167,9 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveDurationThreshold) {
   reporter->reportEvent("test3", 0, 60, 0, 0, 0);
 
   const std::vector<PerformanceEntry> expected = {
-      {.name = "test1",
-       .entryType = PerformanceEntryType::EVENT,
-       .duration = 50,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0},
-      {.name = "test2",
-       .entryType = PerformanceEntryType::EVENT,
-       .duration = 100,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0},
-      {.name = "test3",
-       .entryType = PerformanceEntryType::EVENT,
-       .duration = 60,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0},
+      PerformanceEventTiming{{.name = "test1", .duration = 50}, 0, 0, 0},
+      PerformanceEventTiming{{.name = "test2", .duration = 100}, 0, 0, 0},
+      PerformanceEventTiming{{.name = "test3", .duration = 60}, 0, 0, 0},
   };
 
   ASSERT_EQ(expected, observer->takeRecords());
@@ -197,27 +192,13 @@ TEST(PerformanceObserver, PerformanceObserverTestObserveBuffered) {
       PerformanceEntryType::EVENT, {.buffered = true, .durationThreshold = 50});
 
   const std::vector<PerformanceEntry> expected = {
-      {.name = "test1",
-       .entryType = PerformanceEntryType::EVENT,
-       .startTime = 0,
-       .duration = 50,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0},
-      {.name = "test2",
-       .entryType = PerformanceEntryType::EVENT,
-       .startTime = 0,
-       .duration = 100,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0},
-      {.name = "test4",
-       .entryType = PerformanceEntryType::EVENT,
-       .startTime = 0,
-       .duration = 100,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0}};
+      PerformanceEventTiming{
+          {.name = "test1", .startTime = 0, .duration = 50}, 0, 0, 0},
+      PerformanceEventTiming{
+          {.name = "test2", .startTime = 0, .duration = 100}, 0, 0, 0},
+      PerformanceEventTiming{
+          {.name = "test4", .startTime = 0, .duration = 100}, 0, 0, 0},
+  };
 
   ASSERT_EQ(expected, observer->takeRecords());
 
@@ -242,27 +223,13 @@ TEST(PerformanceObserver, PerformanceObserverTestMultiple) {
   reporter->reportEvent("event3", 0, 60, 0, 0, 0);
 
   const std::vector<PerformanceEntry> expected1 = {
-      {.name = "event1",
-       .entryType = PerformanceEntryType::EVENT,
-       .duration = 100,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0},
-      {.name = "event3",
-       .entryType = PerformanceEntryType::EVENT,
-       .duration = 60,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0},
+      PerformanceEventTiming{{.name = "event1", .duration = 100}, 0, 0, 0},
+      PerformanceEventTiming{{.name = "event3", .duration = 60}, 0, 0, 0},
   };
 
   const std::vector<PerformanceEntry> expected2 = {
-      {.name = "event1",
-       .entryType = PerformanceEntryType::EVENT,
-       .duration = 100,
-       .processingStart = 0,
-       .processingEnd = 0,
-       .interactionId = 0}};
+      PerformanceEventTiming{{.name = "event1", .duration = 100}, 0, 0, 0},
+  };
 
   ASSERT_EQ(expected1, observer1->takeRecords());
   ASSERT_EQ(expected2, observer2->takeRecords());

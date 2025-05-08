@@ -12,11 +12,9 @@ import com.facebook.react.model.ModelPackageJson
 import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
 import com.facebook.react.utils.PropertyUtils.HERMES_ENABLED
-import com.facebook.react.utils.PropertyUtils.LEGACY_WARNINGS_ENABLED
 import com.facebook.react.utils.PropertyUtils.NEW_ARCH_ENABLED
 import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_ENABLED
-import com.facebook.react.utils.PropertyUtils.SCOPED_LEGACY_WARNINGS_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_NEW_ARCH_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_USE_THIRD_PARTY_JSC
@@ -33,13 +31,6 @@ internal object ProjectUtils {
         project.property(NEW_ARCH_ENABLED).toString().toBoolean()) ||
         (project.hasProperty(SCOPED_NEW_ARCH_ENABLED) &&
             project.property(SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())
-  }
-
-  internal fun Project.areLegacyWarningsEnabled(): Boolean {
-    return (project.hasProperty(LEGACY_WARNINGS_ENABLED) &&
-        project.property(LEGACY_WARNINGS_ENABLED).toString().toBoolean()) ||
-        (project.hasProperty(SCOPED_LEGACY_WARNINGS_ENABLED) &&
-            project.property(SCOPED_LEGACY_WARNINGS_ENABLED).toString().toBoolean())
   }
 
   internal val Project.isHermesEnabled: Boolean

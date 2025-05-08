@@ -10,7 +10,6 @@ package com.facebook.react.views.text
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Bundle
-import android.text.Spannable
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ClickableSpan
@@ -270,11 +269,13 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
     return null
   }
 
-  public class AccessibilityLinks(spans: Array<ClickableSpan?>, text: Spannable) {
+  public class AccessibilityLinks(text: Spanned) {
     private val links: List<AccessibleLink>
 
     init {
       val accessibleLinks = mutableListOf<AccessibleLink>()
+      val spans = text.getSpans(0, text.length, ClickableSpan::class.java)
+      spans.sortBy { text.getSpanStart(it) }
       for (i in spans.indices) {
         val span = spans[i]
         val start = text.getSpanStart(span)
@@ -288,14 +289,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
         link.description = text.subSequence(start, end).toString()
         link.start = start
         link.end = end
-
-        // ID is the reverse of what is expected, since the ClickableSpans are returned in reverse
-        // order due to being added in reverse order. If we don't do this, focus will move to the
-        // last link first and move backwards.
-        //
-        // If this approach becomes unreliable, we should instead look at their start position and
-        // order them manually.
-        link.id = spans.size - 1 - i
+        link.id = i
         accessibleLinks.add(link)
       }
       links = accessibleLinks

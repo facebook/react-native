@@ -14,6 +14,7 @@
 #include <react/renderer/core/State.h>
 
 #ifdef ANDROID
+#include <fbjni/fbjni.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
@@ -24,6 +25,11 @@ namespace facebook::react {
 template <typename StateDataT>
 concept StateDataWithMapBuffer = requires(StateDataT stateData) {
   { stateData.getMapBuffer() } -> std::same_as<MapBuffer>;
+};
+
+template <typename StateDataT>
+concept StateDataWithJNIReference = requires(StateDataT stateData) {
+  { stateData.getJNIReference() } -> std::same_as<jni::local_ref<jobject>>;
 };
 #endif
 
@@ -43,17 +49,15 @@ class ConcreteState : public State {
   /*
    * Creates an updated `State` object with given previous one and `data`.
    */
-  explicit ConcreteState(const SharedData& data, const State& previousState)
-      : State(data, previousState) {}
+  explicit ConcreteState(SharedData data, const State& previousState)
+      : State(std::move(data), previousState) {}
 
   /*
    * Creates a first-of-its-family `State` object with given `family` and
    * `data`.
    */
-  explicit ConcreteState(
-      const SharedData& data,
-      const ShadowNodeFamily::Shared& family)
-      : State(data, family) {}
+  explicit ConcreteState(SharedData data, ShadowNodeFamily::Weak family)
+      : State(std::move(data), std::move(family)) {}
 
   ~ConcreteState() override = default;
 
@@ -117,6 +121,14 @@ class ConcreteState : public State {
       return getData().getMapBuffer();
     } else {
       return MapBufferBuilder::EMPTY();
+    }
+  }
+
+  jni::local_ref<jobject> getJNIReference() const override {
+    if constexpr (StateDataWithJNIReference<DataT>) {
+      return getData().getJNIReference();
+    } else {
+      return nullptr;
     }
   }
 #endif

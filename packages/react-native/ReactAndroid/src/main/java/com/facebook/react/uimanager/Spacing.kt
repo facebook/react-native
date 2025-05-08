@@ -19,9 +19,9 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
   private var valueFlags = 0
   private var hasAliasesSet = false
 
-  public constructor() : this(0f, newFullSpacingArray()) {}
+  public constructor() : this(0f, newFullSpacingArray())
 
-  public constructor(defaultValue: Float) : this(defaultValue, newFullSpacingArray()) {}
+  public constructor(defaultValue: Float) : this(defaultValue, newFullSpacingArray())
 
   /**
    * Copy constructor.

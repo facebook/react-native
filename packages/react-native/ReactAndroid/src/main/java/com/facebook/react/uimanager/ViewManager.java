@@ -409,11 +409,12 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    */
   public Map<String, String> getNativeProps() {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
-        && ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
-        && ReactNativeFeatureFlags.disableShadowNodeOnNewArchitectureAndroid()) {
+        && ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+      // TODO: review if we need to check fabricInterop here
       return ViewManagerPropertyUpdater.getNativeProps(getClass(), null);
+    } else {
+      return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
     }
-    return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }
 
   /**

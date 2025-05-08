@@ -76,12 +76,11 @@ public class ViewGroupDrawingOrderHelper(private val viewGroup: ViewGroup) {
       }
 
       // Sort the views by zIndex
-      viewsToSort.sortWith(
-          Comparator { view1, view2 ->
-            val view1ZIndex = ViewGroupManager.getViewZIndex(view1) ?: 0
-            val view2ZIndex = ViewGroupManager.getViewZIndex(view2) ?: 0
-            view1ZIndex - view2ZIndex
-          })
+      viewsToSort.sortWith { view1, view2 ->
+        val view1ZIndex = ViewGroupManager.getViewZIndex(view1) ?: 0
+        val view2ZIndex = ViewGroupManager.getViewZIndex(view2) ?: 0
+        view1ZIndex - view2ZIndex
+      }
 
       currentDrawingOrderIndices = IntArray(childCount)
       for (i in 0 until childCount) {

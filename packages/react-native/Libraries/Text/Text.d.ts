@@ -211,6 +211,13 @@ export interface TextProps
    * Controls how touch events are handled. Similar to `View`'s `pointerEvents`.
    */
   pointerEvents?: ViewStyle['pointerEvents'] | undefined;
+
+  /**
+   * Defines how far your touch may move off of the button, before deactivating the button.
+   */
+  pressRetentionOffset?:
+    | {top: number; left: number; bottom: number; right: number}
+    | undefined;
 }
 
 /**

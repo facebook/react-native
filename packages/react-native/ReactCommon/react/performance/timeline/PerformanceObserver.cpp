@@ -8,13 +8,18 @@
 #include "PerformanceObserver.h"
 #include "PerformanceEntryReporter.h"
 
+#include <variant>
+
 namespace facebook::react {
 
 void PerformanceObserver::handleEntry(const PerformanceEntry& entry) {
-  if (observedTypes_.contains(entry.entryType)) {
+  auto entryType = std::visit(
+      [](const auto& entryData) { return entryData.entryType; }, entry);
+
+  if (observedTypes_.contains(entryType)) {
     // https://www.w3.org/TR/event-timing/#should-add-performanceeventtiming
-    if (entry.entryType == PerformanceEntryType::EVENT &&
-        entry.duration < durationThreshold_) {
+    if (std::holds_alternative<PerformanceEventTiming>(entry) &&
+        std::get<PerformanceEventTiming>(entry).duration < durationThreshold_) {
       // The entries duration is lower than the desired reporting threshold,
       // skip
       return;

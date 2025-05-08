@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
 import {

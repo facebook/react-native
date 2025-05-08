@@ -23,7 +23,8 @@ internal class EventAnimationDriver(
     private val eventPath: List<String>,
     @JvmField internal var valueNode: ValueAnimatedNode
 ) : RCTModernEventEmitter {
-  @Deprecated("Deprecated in Java")
+  @Deprecated(
+      "Deprecated in Java", ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"))
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) =
       receiveEvent(-1, targetTag, eventName, params)
 

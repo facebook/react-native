@@ -101,7 +101,7 @@ NativeIntersectionObserver::convertToNativeModuleEntry(
 
   NativeIntersectionObserverEntry nativeModuleEntry = {
       entry.intersectionObserverId,
-      (*entry.shadowNode).getInstanceHandle(runtime),
+      (*entry.shadowNodeFamily).getInstanceHandle(runtime),
       targetRect,
       rootRect,
       intersectionRect,

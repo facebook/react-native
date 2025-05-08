@@ -417,7 +417,12 @@ declare export function fromBouncinessAndSpeed(
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/animations/Animation.js 1`] = `
-"export type EndResult = { finished: boolean, value?: number, ... };
+"export type EndResult = {
+  finished: boolean,
+  value?: number,
+  offset?: number,
+  ...
+};
 export type EndCallback = (result: EndResult) => void;
 export type AnimationConfig = $ReadOnly<{
   isInteraction?: boolean,
@@ -3643,6 +3648,7 @@ export type AccessibilityPropsAndroid = $ReadOnly<{
   accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
   \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
   importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
+  screenReaderFocusable?: boolean,
 }>;
 export type AccessibilityPropsIOS = $ReadOnly<{
   accessibilityIgnoresInvertColors?: ?boolean,
@@ -3652,6 +3658,7 @@ export type AccessibilityPropsIOS = $ReadOnly<{
   \\"aria-modal\\"?: ?boolean,
   accessibilityElementsHidden?: ?boolean,
   accessibilityLanguage?: ?Stringish,
+  accessibilityRespondsToUserInteraction?: ?boolean,
 }>;
 export type AccessibilityProps = $ReadOnly<{
   ...AccessibilityPropsAndroid,
@@ -6023,18 +6030,6 @@ declare export const Response: typeof global.Response;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NewAppScreen/index.js 1`] = `
-"export {
-  Colors,
-  Header,
-  HermesBadge,
-  LearnMoreLinks,
-  DebugInstructions,
-  ReloadInstructions,
-};
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Performance/Systrace.js 1`] = `
 "type EventName = string | (() => string);
 type EventArgs = ?{ [string]: string };
@@ -6603,6 +6598,11 @@ export interface Spec {
     node: Node | NativeElementReference,
     includeTransform: boolean
   ) => ?[number, number, number, number];
+  +unstable_DefaultEventPriority: number;
+  +unstable_DiscreteEventPriority: number;
+  +unstable_ContinuousEventPriority: number;
+  +unstable_IdleEventPriority: number;
+  +unstable_getCurrentEventPriority: () => number;
 }
 declare export function getFabricUIManager(): ?Spec;
 "
@@ -7580,29 +7580,52 @@ export type ____ViewStyle_InternalOverrides = $ReadOnly<{}>;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/private/_TransformStyle.js 1`] = `
-"export type ____TransformStyle_Internal = $ReadOnly<{
+"type KeysOfUnion<T> = T extends any ? $Keys<T> : empty;
+type ValueOfUnion<T, K> = T extends any
+  ? K extends $Keys<T>
+    ? T[K]
+    : empty
+  : empty;
+type MergeUnion<T> = {
+  [K in KeysOfUnion<T>]?: ValueOfUnion<T, K>,
+};
+type MaximumOneOf<T: { ... }> = $Values<{
+  [K in keyof T]: $Exact<{
+    [P in keyof T]?: P extends K ? T[P] : empty,
+  }>,
+}>;
+export type ____TransformStyle_Internal = $ReadOnly<{
   transform?:
     | $ReadOnlyArray<
-        | { +perspective: number | AnimatedNode }
-        | { +rotate: string | AnimatedNode }
-        | { +rotateX: string | AnimatedNode }
-        | { +rotateY: string | AnimatedNode }
-        | { +rotateZ: string | AnimatedNode }
-        | { +scale: number | AnimatedNode }
-        | { +scaleX: number | AnimatedNode }
-        | { +scaleY: number | AnimatedNode }
-        | { +translateX: number | string | AnimatedNode }
-        | { +translateY: number | string | AnimatedNode }
-        | {
-            +translate:
-              | [number | string | AnimatedNode, number | string | AnimatedNode]
-              | AnimatedNode,
-          }
-        | { +skewX: string | AnimatedNode }
-        | { +skewY: string | AnimatedNode }
-        | {
-            +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-          },
+        $ReadOnly<
+          MaximumOneOf<
+            MergeUnion<
+              | { +perspective: number | AnimatedNode }
+              | { +rotate: string | AnimatedNode }
+              | { +rotateX: string | AnimatedNode }
+              | { +rotateY: string | AnimatedNode }
+              | { +rotateZ: string | AnimatedNode }
+              | { +scale: number | AnimatedNode }
+              | { +scaleX: number | AnimatedNode }
+              | { +scaleY: number | AnimatedNode }
+              | { +translateX: number | string | AnimatedNode }
+              | { +translateY: number | string | AnimatedNode }
+              | {
+                  +translate:
+                    | [
+                        number | string | AnimatedNode,
+                        number | string | AnimatedNode,
+                      ]
+                    | AnimatedNode,
+                }
+              | { +skewX: string | AnimatedNode }
+              | { +skewY: string | AnimatedNode }
+              | {
+                  +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+                },
+            >,
+          >,
+        >,
       >
     | string,
   transformOrigin?:
@@ -9256,6 +9279,7 @@ export type {
   LayoutChangeEvent,
   LayoutRectangle,
   MouseEvent,
+  PointerEvent,
   NativeMouseEvent,
   NativePointerEvent,
   NativeScrollEvent,
@@ -9280,6 +9304,10 @@ export type {
 export type { HostComponent } from \\"./src/private/types/HostComponent\\";
 export type { ColorSchemeName } from \\"./src/private/specs_DEPRECATED/modules/NativeAppearance\\";
 export type { ErrorUtils } from \\"./Libraries/vendor/core/ErrorUtils\\";
+export type {
+  PublicRootInstance,
+  PublicTextInstance,
+} from \\"./Libraries/ReactPrivate/ReactNativePrivateInterface\\";
 "
 `;
 
@@ -9695,7 +9723,12 @@ declare export default class Performance {
 
 exports[`public API should not change unintentionally src/private/webapis/performance/PerformanceEntry.js 1`] = `
 "export type DOMHighResTimeStamp = number;
-export type PerformanceEntryType = \\"mark\\" | \\"measure\\" | \\"event\\" | \\"longtask\\";
+export type PerformanceEntryType =
+  | \\"mark\\"
+  | \\"measure\\"
+  | \\"event\\"
+  | \\"longtask\\"
+  | \\"resource\\";
 export type PerformanceEntryJSON = {
   name: string,
   entryType: PerformanceEntryType,

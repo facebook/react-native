@@ -542,10 +542,11 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
       FLog.d(NAME, "queue startListeningToAnimatedNodeValue: $tag")
     }
 
-    val listener = AnimatedNodeValueListener { value ->
+    val listener = AnimatedNodeValueListener { value, offset ->
       val onAnimatedValueData = Arguments.createMap()
       onAnimatedValueData.putInt("tag", tag)
       onAnimatedValueData.putDouble("value", value)
+      onAnimatedValueData.putDouble("offset", offset)
 
       val reactApplicationContext = reactApplicationContextIfActiveOrWarn
       reactApplicationContext?.emitDeviceEvent("onAnimatedValueUpdate", onAnimatedValueData)
@@ -976,10 +977,11 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
 
                 BatchExecutionOpCodes.OP_START_LISTENING_TO_ANIMATED_NODE_VALUE -> {
                   val tag = opsAndArgs.getInt(i++)
-                  val listener = AnimatedNodeValueListener { value ->
+                  val listener = AnimatedNodeValueListener { value, offset ->
                     val onAnimatedValueData = Arguments.createMap()
                     onAnimatedValueData.putInt("tag", tag)
                     onAnimatedValueData.putDouble("value", value)
+                    onAnimatedValueData.putDouble("offset", offset)
 
                     val reactApplicationContext = reactApplicationContextIfActiveOrWarn
                     reactApplicationContext?.emitDeviceEvent(
@@ -1014,7 +1016,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
                         opsAndArgs.getInt(i++), opsAndArgs.getDouble(i++))
 
                 BatchExecutionOpCodes.OP_CODE_SET_ANIMATED_NODE_OFFSET ->
-                    animatedNodesManager.setAnimatedNodeValue(
+                    animatedNodesManager.setAnimatedNodeOffset(
                         opsAndArgs.getInt(i++), opsAndArgs.getDouble(i++))
 
                 BatchExecutionOpCodes.OP_CODE_FLATTEN_ANIMATED_NODE_OFFSET ->

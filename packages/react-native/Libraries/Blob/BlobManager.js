@@ -110,6 +110,7 @@ class BlobManager {
   static createFromOptions(options: BlobData): Blob {
     BlobRegistry.register(options.blobId);
     // $FlowFixMe[prop-missing]
+    // $FlowFixMe[unsafe-object-assign]
     return Object.assign(Object.create(Blob.prototype), {
       data:
         // Reuse the collector instance when creating from an existing blob.

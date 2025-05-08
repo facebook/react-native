@@ -21,8 +21,8 @@ State::State(StateData::Shared data, const State& previousState)
       data_(std::move(data)),
       revision_(previousState.revision_ + 1){};
 
-State::State(StateData::Shared data, const ShadowNodeFamily::Shared& family)
-    : family_(family),
+State::State(StateData::Shared data, ShadowNodeFamily::Weak family)
+    : family_(std::move(family)),
       data_(std::move(data)),
       revision_{State::initialRevisionValue} {};
 

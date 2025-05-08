@@ -51,6 +51,7 @@ exports.examples = [
   {
     title: 'Basic Radial Gradient',
     description: 'Basic radial gradient with default settings',
+    name: 'radial-gradient-1',
     render(): React.Node {
       return (
         <GradientBox
@@ -66,6 +67,7 @@ exports.examples = [
   {
     title: 'Radial Gradient with position',
     description: 'Radial gradient at a specific position',
+    name: 'radial-gradient-2',
     render(): React.Node {
       return (
         <GradientBox
@@ -81,6 +83,7 @@ exports.examples = [
   {
     title: 'Radial Gradient with size',
     description: 'Radial gradient with different sizes',
+    name: 'radial-gradient-3',
     render(): React.Node {
       return (
         <GradientBox
@@ -95,6 +98,7 @@ exports.examples = [
   },
   {
     title: 'Multiple Color Stops',
+    name: 'radial-gradient-4',
     render(): React.Node {
       return (
         <GradientBox
@@ -109,6 +113,7 @@ exports.examples = [
   },
   {
     title: 'Radial gradient with object style syntax',
+    name: 'radial-gradient-5',
     render(): React.Node {
       return (
         <GradientBox
@@ -133,6 +138,7 @@ exports.examples = [
   },
   {
     title: 'Radial Gradient with uniform border style',
+    name: 'radial-gradient-6',
     render(): React.Node {
       return (
         <GradientBox
@@ -148,6 +154,7 @@ exports.examples = [
   },
   {
     title: 'Radial Gradient with non uniform border style',
+    name: 'radial-gradient-7',
     render(): React.Node {
       return (
         <GradientBox
@@ -170,6 +177,7 @@ exports.examples = [
   },
   {
     title: 'Elliptical Radial Gradient',
+    name: 'radial-gradient-8',
     render(): React.Node {
       return (
         <GradientBox
@@ -184,6 +192,7 @@ exports.examples = [
   },
   {
     title: 'Radial Gradient with Platform colors',
+    name: 'radial-gradient-9',
     render(): React.Node {
       return (
         <GradientBox
@@ -214,6 +223,7 @@ exports.examples = [
   },
   {
     title: 'Transition hint with percentages',
+    name: 'radial-gradient-10',
     render(): React.Node {
       return (
         <GradientBox
@@ -227,6 +237,7 @@ exports.examples = [
   },
   {
     title: 'Multiple radial gradients',
+    name: 'radial-gradient-11',
     render(): React.Node {
       return (
         <GradientBox

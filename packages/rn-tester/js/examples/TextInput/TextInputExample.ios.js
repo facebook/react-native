@@ -14,7 +14,7 @@ import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
-import type {KeyboardTypeOptions} from 'react-native/Libraries/Components/TextInput/TextInput';
+import type {KeyboardTypeOptions} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';

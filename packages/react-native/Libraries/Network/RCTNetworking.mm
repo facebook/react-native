@@ -16,6 +16,7 @@
 #import <React/RCTUtils.h>
 
 #import <React/RCTHTTPRequestHandler.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import "RCTInspectorNetworkReporter.h"
 #import "RCTNetworkPlugins.h"
@@ -588,10 +589,12 @@ RCT_EXPORT_MODULE()
     id responseURL = response.URL ? response.URL.absoluteString : [NSNull null];
     NSArray<id> *responseJSON = @[ task.requestID, @(status), headers, responseURL ];
 
-    [RCTInspectorNetworkReporter reportResponseStart:task.requestID
-                                            response:response
-                                          statusCode:status
-                                             headers:headers];
+    if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
+      [RCTInspectorNetworkReporter reportResponseStart:task.requestID
+                                              response:response
+                                            statusCode:status
+                                               headers:headers];
+    }
     [weakSelf sendEventWithName:@"didReceiveNetworkResponse" body:responseJSON];
   };
 
@@ -650,7 +653,9 @@ RCT_EXPORT_MODULE()
     NSArray *responseJSON =
         @[ task.requestID, RCTNullIfNil(error.localizedDescription), error.code == kCFURLErrorTimedOut ? @YES : @NO ];
 
-    [RCTInspectorNetworkReporter reportResponseEnd:task.requestID encodedDataLength:data.length];
+    if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
+      [RCTInspectorNetworkReporter reportResponseEnd:task.requestID encodedDataLength:data.length];
+    }
     [strongSelf sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
     [strongSelf->_tasksByRequestID removeObjectForKey:task.requestID];
   };
@@ -667,11 +672,13 @@ RCT_EXPORT_MODULE()
     }
     _tasksByRequestID[task.requestID] = task;
     responseSender(@[ task.requestID ]);
+    if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
+      [RCTInspectorNetworkReporter reportRequestStart:task.requestID
+                                              request:request
+                                    encodedDataLength:task.response.expectedContentLength];
+    }
   }
 
-  [RCTInspectorNetworkReporter reportRequestStart:task.requestID
-                                          request:request
-                                encodedDataLength:task.response.expectedContentLength];
   [task start];
 }
 

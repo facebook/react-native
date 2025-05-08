@@ -10,9 +10,9 @@
  */
 
 import type {Config} from '@react-native-community/cli-types';
+import type {TerminalReporter} from 'metro';
 import type {Reporter} from 'metro/src/lib/reporting';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
-import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
 
 import createDevMiddlewareLogger from '../../utils/createDevMiddlewareLogger';
 import isDevServerRunning from '../../utils/isDevServerRunning';
@@ -176,7 +176,9 @@ async function runServer(
   await version.logIfUpdateAvailable(cliConfig, terminalReporter);
 }
 
-function getReporterImpl(customLogReporterPath?: string): TerminalReporter {
+function getReporterImpl(
+  customLogReporterPath?: string,
+): Class<TerminalReporter> {
   if (customLogReporterPath == null) {
     return require('metro/src/lib/TerminalReporter');
   }

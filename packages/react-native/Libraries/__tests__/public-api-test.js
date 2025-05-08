@@ -34,7 +34,6 @@ const JS_LIBRARIES_FILES_PATTERN = 'Libraries/**/*.{js,flow}';
 const JS_LIBRARIES_FILES_IGNORE_PATTERNS = [
   ...SHARED_PATTERNS,
   'Libraries/Core/setUp*',
-  'Libraries/NewAppScreen/components/**',
   // Non source files
   'Libraries/Renderer/implementations/**',
   'Libraries/Renderer/shims/**',

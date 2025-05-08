@@ -81,7 +81,7 @@
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
     "flow-api-translator": "0.28.1",
-    "flow-bin": "^0.268.0",
+    "flow-bin": "^0.269.1",
     "glob": "^7.1.1",
     "hermes-eslint": "0.28.1",
     "hermes-transform": "0.28.1",
@@ -93,16 +93,16 @@
     "jest-snapshot": "^29.7.0",
     "markdownlint-cli2": "^0.17.2",
     "markdownlint-rule-relative-links": "^3.0.0",
-    "metro-babel-register": "^0.82.0",
-    "metro-memory-fs": "^0.82.0",
-    "metro-transform-plugins": "^0.82.0",
+    "metro-babel-register": "^0.82.3",
+    "metro-memory-fs": "^0.82.3",
+    "metro-transform-plugins": "^0.82.3",
     "micromatch": "^4.0.4",
     "node-fetch": "^2.2.0",
     "nullthrows": "^1.1.1",
     "prettier": "2.8.8",
     "prettier-plugin-hermes-parser": "0.28.1",
-    "react": "19.0.0",
-    "react-test-renderer": "19.0.0",
+    "react": "19.1.0",
+    "react-test-renderer": "19.1.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
@@ -112,6 +112,6 @@
     "ws": "^6.2.3"
   },
   "resolutions": {
-    "react-is": "19.0.0"
+    "react-is": "19.1.0"
   }
 }

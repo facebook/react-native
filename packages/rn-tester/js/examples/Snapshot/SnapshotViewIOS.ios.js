@@ -10,8 +10,7 @@
 
 'use strict';
 
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {NativeSyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {NativeSyntheticEvent, ViewProps} from 'react-native';
 
 const React = require('react');
 const {NativeModules, StyleSheet, UIManager, View} = require('react-native');

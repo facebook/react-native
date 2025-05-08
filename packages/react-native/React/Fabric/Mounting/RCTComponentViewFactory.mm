@@ -55,8 +55,9 @@ void RCTInstallNativeComponentRegistryBinding(facebook::jsi::Runtime &runtime)
 {
   auto hasComponentProvider = [](const std::string &name) -> bool {
     auto globalComponentViewFactory = [RCTComponentViewFactory currentComponentViewFactory];
-    [globalComponentViewFactory _registerComponentIfPossible:name];
-    return [globalComponentViewFactory _wasComponentRegistered:name];
+    auto actualName = componentNameByReactViewName(name);
+    [globalComponentViewFactory _registerComponentIfPossible:actualName];
+    return [globalComponentViewFactory _wasComponentRegistered:actualName];
   };
   bindHasComponentProvider(runtime, std::move(hasComponentProvider));
 }

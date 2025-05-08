@@ -49,9 +49,13 @@ void RCTSetNewArchEnabled(BOOL enabled)
 
 BOOL RCTAreLegacyLogsEnabled(void)
 {
-  NSNumber *rctNewArchEnabled =
-      (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"];
-  return rctNewArchEnabled.boolValue;
+#if RCT_DEBUG
+  static BOOL legacyLogEnabled =
+      ((NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTLegacyWarningsEnabled"]).boolValue;
+  return legacyLogEnabled;
+#else
+  return NO;
+#endif
 }
 
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)

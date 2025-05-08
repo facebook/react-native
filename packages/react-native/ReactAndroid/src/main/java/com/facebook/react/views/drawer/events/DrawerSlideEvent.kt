@@ -29,7 +29,7 @@ internal class DrawerSlideEvent : Event<DrawerSlideEvent> {
 
   override fun getEventName(): String = EVENT_NAME
 
-  protected override fun getEventData(): WritableMap? {
+  protected override fun getEventData(): WritableMap {
     val eventData: WritableMap = Arguments.createMap()
     eventData.putDouble("offset", getOffset().toDouble())
     return eventData

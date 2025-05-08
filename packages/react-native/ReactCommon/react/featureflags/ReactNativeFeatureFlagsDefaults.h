@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<02eee4ab43643c5b4a77a041775da76f>>
+ * @generated SignedSource<<ef056e269a4ed514c18ebaed89885661>>
  */
 
 /**
@@ -47,10 +47,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool disableShadowNodeOnNewArchitectureAndroid() override {
-    return true;
-  }
-
   bool enableAccessibilityOrder() override {
     return false;
   }
@@ -64,6 +60,18 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableCppPropsIteratorSetter() override {
+    return false;
+  }
+
+  bool enableCustomFocusSearchOnClippedElementsAndroid() override {
+    return true;
+  }
+
+  bool enableDestroyShadowTreeRevisionAsync() override {
+    return false;
+  }
+
+  bool enableDoubleMeasurementFixAndroid() override {
     return false;
   }
 
@@ -111,11 +119,23 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableNetworkEventReporting() override {
+    return false;
+  }
+
   bool enableNewBackgroundAndBorderDrawables() override {
     return true;
   }
 
+  bool enablePreparedTextLayout() override {
+    return false;
+  }
+
   bool enablePropsUpdateReconciliationAndroid() override {
+    return false;
+  }
+
+  bool enableResourceTimingAPI() override {
     return false;
   }
 
@@ -151,6 +171,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool incorporateMaxLinesDuringAndroidLayout() override {
+    return true;
+  }
+
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     return false;
   }
@@ -161,10 +185,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useAlwaysAvailableJSErrorHandling() override {
     return false;
-  }
-
-  bool useEditTextStockAndroidFocusBehavior() override {
-    return true;
   }
 
   bool useFabricInterop() override {

@@ -24,6 +24,7 @@ void IntersectionObserverManager::observe(
   TraceSection s("IntersectionObserverManager::observe");
 
   auto surfaceId = shadowNode->getSurfaceId();
+  auto shadowNodeFamily = shadowNode->getFamilyShared();
 
   // The actual observer lives in the array, so we need to create it there and
   // then get a reference. Otherwise we only update its state in a copy.
@@ -36,7 +37,7 @@ void IntersectionObserverManager::observe(
     auto& observers = observersBySurfaceId_[surfaceId];
     observers.emplace_back(IntersectionObserver{
         intersectionObserverId,
-        shadowNode,
+        shadowNodeFamily,
         std::move(thresholds),
         std::move(rootThresholds)});
     observer = &observers.back();
@@ -80,6 +81,8 @@ void IntersectionObserverManager::unobserve(
     const ShadowNode& shadowNode) {
   TraceSection s("IntersectionObserverManager::unobserve");
 
+  auto& shadowNodeFamily = shadowNode.getFamily();
+
   {
     std::unique_lock lock(observersMutex_);
 
@@ -96,11 +99,10 @@ void IntersectionObserverManager::unobserve(
         std::remove_if(
             observers.begin(),
             observers.end(),
-            [intersectionObserverId, &shadowNode](const auto& observer) {
+            [intersectionObserverId, &shadowNodeFamily](const auto& observer) {
               return observer.getIntersectionObserverId() ==
                   intersectionObserverId &&
-                  ShadowNode::sameFamily(
-                         observer.getTargetShadowNode(), shadowNode);
+                  observer.isTargetShadowNodeFamily(shadowNodeFamily);
             }),
         observers.end());
 
@@ -116,9 +118,9 @@ void IntersectionObserverManager::unobserve(
         std::remove_if(
             pendingEntries_.begin(),
             pendingEntries_.end(),
-            [intersectionObserverId, &shadowNode](const auto& entry) {
+            [intersectionObserverId, &shadowNodeFamily](const auto& entry) {
               return entry.intersectionObserverId == intersectionObserverId &&
-                  ShadowNode::sameFamily(*entry.shadowNode, shadowNode);
+                  entry.sameShadowNodeFamily(shadowNodeFamily);
             }),
         pendingEntries_.end());
   }

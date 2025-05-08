@@ -30,7 +30,8 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes& rhs) const {
              rhs.includeFontPadding,
              rhs.android_hyphenationFrequency) &&
       floatEquality(minimumFontSize, rhs.minimumFontSize) &&
-      floatEquality(maximumFontSize, rhs.maximumFontSize);
+      floatEquality(maximumFontSize, rhs.maximumFontSize) &&
+      floatEquality(minimumFontScale, rhs.minimumFontScale);
 }
 
 bool ParagraphAttributes::operator!=(const ParagraphAttributes& rhs) const {
