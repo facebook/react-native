@@ -7,6 +7,7 @@
 
 package com.facebook.react.uiapp
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -16,8 +17,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.FBRNTesterEndToEndHelper
 import com.facebook.react.ReactActivity
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.facebook.react.views.common.ContextUtils
 import java.io.FileDescriptor
 import java.io.PrintWriter
 
@@ -43,13 +46,24 @@ internal class RNTesterActivity : ReactActivity() {
         if (this::initialProps.isInitialized) initialProps else Bundle()
   }
 
+  // set background color so it will show below transparent system bars on forced edge-to-edge
+  private fun maybeUpdateBackgroundColor() {
+    val color = when(ContextUtils.isDarkMode(this)) {
+      true -> Color.parseColor("#0b0600")
+      false -> Color.parseColor("#f3f8ff")
+    }
+
+    UiThreadUtil.runOnUiThread {
+      this.window?.setBackgroundDrawable(ColorDrawable(color))
+    }
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     fullyDrawnReporter.addReporter()
+    maybeUpdateBackgroundColor()
 
-    // set background color so it will show below transparent system bars on forced edge-to-edge
-    this.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
     // register insets listener to update margins on the ReactRootView to avoid overlap w/ system
     // bars
     getReactDelegate()?.getReactRootView()?.let { rootView ->
@@ -67,6 +81,11 @@ internal class RNTesterActivity : ReactActivity() {
       }
       ViewCompat.setOnApplyWindowInsetsListener(rootView, windowInsetsListener)
     }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    maybeUpdateBackgroundColor()
   }
 
   override fun createReactActivityDelegate() = RNTesterActivityDelegate(this, mainComponentName)

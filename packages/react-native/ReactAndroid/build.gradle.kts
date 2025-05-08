@@ -487,6 +487,11 @@ fun enableWarningsAsErrors(): Boolean {
   return value?.toString()?.toBoolean() ?: false
 }
 
+fun isEdgeToEdgeEnabled(): Boolean {
+  val value = rootProject.properties["edgeToEdgeEnabled"]
+  return value?.toString()?.toBoolean() ?: false
+}
+
 repositories {
   // Normally RNGP will set repositories for all modules,
   // but when consumed from source, we need to re-declare
@@ -530,6 +535,7 @@ android {
     consumerProguardFiles("proguard-rules.pro")
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
+    buildConfigField("boolean", "IS_EDGE_TO_EDGE_ENABLED", isEdgeToEdgeEnabled().toString())
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
     buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
     buildConfigField("boolean", "ENABLE_PERFETTO", "false")
