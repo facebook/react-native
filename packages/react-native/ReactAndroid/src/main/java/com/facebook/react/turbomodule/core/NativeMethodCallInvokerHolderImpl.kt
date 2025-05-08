@@ -19,4 +19,4 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
  */
 @FrameworkAPI
 public class NativeMethodCallInvokerHolderImpl private constructor() :
-    HybridClassBase(), NativeMethodCallInvokerHolder {}
+    HybridClassBase(), NativeMethodCallInvokerHolder

@@ -57,7 +57,7 @@ public class ReactStylesDiffMap(props: ReadableMap) {
 
   public fun getMap(name: String): ReadableMap? = backingMap.getMap(name)
 
-  public fun getDynamic(name: String): Dynamic? = backingMap.getDynamic(name)
+  public fun getDynamic(name: String): Dynamic = backingMap.getDynamic(name)
 
   override fun toString(): String = "{ ${javaClass.simpleName}: $backingMap }"
 }
