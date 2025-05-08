@@ -23,9 +23,11 @@ import type IntersectionObserver, {
   IntersectionObserverCallback,
 } from '../IntersectionObserver';
 import type IntersectionObserverEntry from '../IntersectionObserverEntry';
+import type {NativeIntersectionObserverToken} from '../specs/NativeIntersectionObserver';
 
 import * as Systrace from '../../../../../Libraries/Performance/Systrace';
 import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {
   getInstanceHandle,
   getNativeNodeReference,
@@ -73,6 +75,26 @@ const targetToShadowNodeMap: WeakMap<
   ReactNativeElement,
   ReturnType<typeof getNativeNodeReference>,
 > = new WeakMap();
+
+const targetToTokenMap: WeakMap<
+  ReactNativeElement,
+  NativeIntersectionObserverToken,
+> = new WeakMap();
+
+let modernNativeIntersectionObserver =
+  NativeIntersectionObserver == null
+    ? null
+    : NativeIntersectionObserver.observeV2 == null ||
+        NativeIntersectionObserver.unobserveV2 == null
+      ? null
+      : {
+          observe: NativeIntersectionObserver.observeV2,
+          unobserve: NativeIntersectionObserver.unobserveV2,
+        };
+
+if (!ReactNativeFeatureFlags.utilizeTokensInIntersectionObserver()) {
+  modernNativeIntersectionObserver = null;
+}
 
 /**
  * Registers the given intersection observer and returns a unique ID for it,
@@ -153,20 +175,32 @@ export function observe({
   // access it even after the instance handle has been unmounted.
   setTargetForInstanceHandle(instanceHandle, target);
 
-  // Same for the mapping between the target and its shadow node.
-  targetToShadowNodeMap.set(target, targetNativeNodeReference);
+  if (modernNativeIntersectionObserver == null) {
+    // Same for the mapping between the target and its shadow node.
+    targetToShadowNodeMap.set(target, targetNativeNodeReference);
+  }
 
   if (!isConnected) {
     NativeIntersectionObserver.connect(notifyIntersectionObservers);
     isConnected = true;
   }
 
-  NativeIntersectionObserver.observe({
-    intersectionObserverId,
-    targetShadowNode: targetNativeNodeReference,
-    thresholds: registeredObserver.observer.thresholds,
-    rootThresholds: registeredObserver.observer.rnRootThresholds,
-  });
+  if (modernNativeIntersectionObserver == null) {
+    NativeIntersectionObserver.observe({
+      intersectionObserverId,
+      targetShadowNode: targetNativeNodeReference,
+      thresholds: registeredObserver.observer.thresholds,
+      rootThresholds: registeredObserver.observer.rnRootThresholds,
+    });
+  } else {
+    const token = modernNativeIntersectionObserver.observe({
+      intersectionObserverId,
+      targetShadowNode: targetNativeNodeReference,
+      thresholds: registeredObserver.observer.thresholds,
+      rootThresholds: registeredObserver.observer.rnRootThresholds,
+    });
+    targetToTokenMap.set(target, token);
+  }
 
   return true;
 }
@@ -190,18 +224,33 @@ export function unobserve(
     return;
   }
 
-  const targetNativeNodeReference = targetToShadowNodeMap.get(target);
-  if (targetNativeNodeReference == null) {
-    console.error(
-      'IntersectionObserverManager: could not find registration data for target',
-    );
-    return;
-  }
+  if (modernNativeIntersectionObserver == null) {
+    const targetNativeNodeReference = targetToShadowNodeMap.get(target);
+    if (targetNativeNodeReference == null) {
+      console.error(
+        'IntersectionObserverManager: could not find registration data for target',
+      );
+      return;
+    }
 
-  NativeIntersectionObserver.unobserve(
-    intersectionObserverId,
-    targetNativeNodeReference,
-  );
+    NativeIntersectionObserver.unobserve(
+      intersectionObserverId,
+      targetNativeNodeReference,
+    );
+  } else {
+    const targetToken = targetToTokenMap.get(target);
+    if (targetToken == null) {
+      console.error(
+        'IntersectionObserverManager: could not find registration data for target',
+      );
+      return;
+    }
+
+    modernNativeIntersectionObserver.unobserve(
+      intersectionObserverId,
+      targetToken,
+    );
+  }
 }
 
 /**

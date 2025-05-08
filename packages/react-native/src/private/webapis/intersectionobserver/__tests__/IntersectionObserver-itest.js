@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags utilizeTokensInIntersectionObserver:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
@@ -844,8 +845,7 @@ describe('IntersectionObserver', () => {
       });
     });
 
-    // TODO (T223234714): Fix memory leak and enable this test.
-    it.skip('should not retain initial children of observed targets', () => {
+    it('should not retain initial children of observed targets', () => {
       const root = Fantom.createRoot();
       observer = new IntersectionObserver(() => {});
 
