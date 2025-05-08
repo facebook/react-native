@@ -288,16 +288,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableReportEventPaintTime: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Report paint time inside the Event Timing API implementation (PerformanceObserver).',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableSynchronousStateUpdates: {
       defaultValue: false,
       metadata: {

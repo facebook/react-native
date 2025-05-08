@@ -36,6 +36,11 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   ParagraphShadowNode(
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family,
+      ShadowNodeTraits traits);
+
+  ParagraphShadowNode(
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment);
 
@@ -84,6 +89,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   };
 
  private:
+  void initialize() noexcept;
   /*
    * Builds (if needed) and returns a reference to a `Content` object.
    */

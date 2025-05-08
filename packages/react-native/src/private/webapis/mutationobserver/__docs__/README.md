@@ -5,12 +5,12 @@
 This directory contains the React Native implementation of the
 [MutationObserver API](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver).
 
-## Usage
+## 🚀 Usage
 
 `MutationObserver` is meant to be used from JavaScript, exposed as a global
 class.
 
-## Design
+## 📐 Design
 
 This is the high-level design of the MutationObserver API:
 
@@ -24,7 +24,7 @@ changes in the tree, and detects mutations using the before/after revisions. It
 relies on referential equality of the shadow nodes for performance
 optimizations.
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of this
 

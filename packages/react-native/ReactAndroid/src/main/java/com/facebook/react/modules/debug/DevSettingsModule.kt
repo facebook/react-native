@@ -72,4 +72,8 @@ public class DevSettingsModule(
   override fun removeListeners(count: Double) {
     // iOS only
   }
+
+  public companion object {
+    public const val NAME: String = NativeDevSettingsSpec.NAME
+  }
 }

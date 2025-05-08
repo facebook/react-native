@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<11405ae072b317c7196d26fa2ecb8816>>
+ * @generated SignedSource<<494191fec99c98fa4095e5fb23b3db27>>
  */
 
 /**
@@ -82,8 +82,6 @@ class NativeReactNativeFeatureFlags
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
-
-  bool enableReportEventPaintTime(jsi::Runtime& runtime);
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 

@@ -13,13 +13,12 @@
 const rule = require('../no-deep-imports.js');
 const {publicAPIMapping} = require('../utils.js');
 const ESLintTester = require('./eslint-tester.js');
-const path = require('path');
 
 const eslintTester = new ESLintTester();
 
 test('resolve all public API paths', () => {
   for (const subpath of Object.keys(publicAPIMapping)) {
-    require.resolve(path.join('react-native', subpath));
+    require.resolve('react-native/' + subpath);
   }
 });
 

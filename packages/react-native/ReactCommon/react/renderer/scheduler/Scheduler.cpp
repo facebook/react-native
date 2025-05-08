@@ -59,9 +59,7 @@ Scheduler::Scheduler(
   runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
       uiManager->getShadowTreeRevisionConsistencyManager());
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
-  }
+  runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
 
   auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
@@ -137,26 +135,22 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    uiManager->registerMountHook(*eventPerformanceLogger_);
-  }
+  uiManager->registerMountHook(*eventPerformanceLogger_);
 }
 
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    auto weakRuntimeScheduler =
-        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-            RuntimeSchedulerKey);
-    auto runtimeScheduler = weakRuntimeScheduler.has_value()
-        ? weakRuntimeScheduler.value().lock()
-        : nullptr;
+  auto weakRuntimeScheduler =
+      contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+          RuntimeSchedulerKey);
+  auto runtimeScheduler = weakRuntimeScheduler.has_value()
+      ? weakRuntimeScheduler.value().lock()
+      : nullptr;
 
-    if (runtimeScheduler) {
-      runtimeScheduler->setEventTimingDelegate(nullptr);
-    }
+  if (runtimeScheduler) {
+    runtimeScheduler->setEventTimingDelegate(nullptr);
   }
 
   for (auto& commitHook : commitHooks_) {

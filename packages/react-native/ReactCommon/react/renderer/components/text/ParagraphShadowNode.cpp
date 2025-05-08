@@ -10,6 +10,7 @@
 #include <cmath>
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
@@ -25,19 +26,46 @@ using Content = ParagraphShadowNode::Content;
 
 const char ParagraphComponentName[] = "Paragraph";
 
+void ParagraphShadowNode::initialize() noexcept {
+#ifdef ANDROID
+  if (getConcreteProps().isSelectable) {
+    traits_.set(ShadowNodeTraits::Trait::KeyboardFocusable);
+  }
+#endif
+}
+
+ParagraphShadowNode::ParagraphShadowNode(
+    const ShadowNodeFragment& fragment,
+    const ShadowNodeFamily::Shared& family,
+    ShadowNodeTraits traits)
+    : ConcreteViewShadowNode(fragment, family, traits) {
+  initialize();
+}
+
 ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
   auto& sourceParagraphShadowNode =
       static_cast<const ParagraphShadowNode&>(sourceShadowNode);
+  auto& state = getStateData();
+  const auto& sourceContent = sourceParagraphShadowNode.content_;
+
   if (!fragment.children && !fragment.props &&
-      sourceParagraphShadowNode.getIsLayoutClean()) {
+      sourceParagraphShadowNode.getIsLayoutClean() &&
+      (!ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() ||
+       (sourceContent.has_value() &&
+        sourceContent.value()
+                .attributedString.getBaseTextAttributes()
+                .fontSizeMultiplier ==
+            state.attributedString.getBaseTextAttributes()
+                .fontSizeMultiplier))) {
     // This ParagraphShadowNode was cloned but did not change
     // in a way that affects its layout. Let's mark it clean
     // to stop Yoga from traversing it.
     cleanLayout();
   }
+  initialize();
 }
 
 const Content& ParagraphShadowNode::getContent(
