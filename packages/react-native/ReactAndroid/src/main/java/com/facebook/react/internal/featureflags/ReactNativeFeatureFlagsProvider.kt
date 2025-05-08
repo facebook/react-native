@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2482f57e0652cfaa4806b5333c50ad9f>>
+ * @generated SignedSource<<d3ac43cad11c74d7f7ee12e776f99282>>
  */
 
 /**
@@ -102,6 +102,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
 
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
+
+  @DoNotStrip public fun useAndroidTextLayoutWidthDirectly(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 

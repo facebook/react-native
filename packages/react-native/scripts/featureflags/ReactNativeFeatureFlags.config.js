@@ -467,6 +467,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useAndroidTextLayoutWidthDirectly: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Trust the width of a text layout we create, instead of re-deriving it from its contents',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'stable',
+    },
     useFabricInterop: {
       defaultValue: true,
       metadata: {

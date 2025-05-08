@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8410561a80edd67b4528181b1f8557fe>>
+ * @generated SignedSource<<42a15fd8d0ea1cfe23bc3f98627a9090>>
  */
 
 /**
@@ -184,6 +184,10 @@ bool ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() {
 
 bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
   return getAccessor().useAlwaysAvailableJSErrorHandling();
+}
+
+bool ReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly() {
+  return getAccessor().useAndroidTextLayoutWidthDirectly();
 }
 
 bool ReactNativeFeatureFlags::useFabricInterop() {

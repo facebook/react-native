@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c81ed8a06c192eb4007219d163650e5>>
+ * @generated SignedSource<<a6fc25aa098ac76ba77e53c5a1dfec58>>
  */
 
 /**
@@ -64,6 +64,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
+  private var useAndroidTextLayoutWidthDirectlyCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
@@ -468,6 +469,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useAlwaysAvailableJSErrorHandling()
       accessedFeatureFlags.add("useAlwaysAvailableJSErrorHandling")
       useAlwaysAvailableJSErrorHandlingCache = cached
+    }
+    return cached
+  }
+
+  override fun useAndroidTextLayoutWidthDirectly(): Boolean {
+    var cached = useAndroidTextLayoutWidthDirectlyCache
+    if (cached == null) {
+      cached = currentProvider.useAndroidTextLayoutWidthDirectly()
+      accessedFeatureFlags.add("useAndroidTextLayoutWidthDirectly")
+      useAndroidTextLayoutWidthDirectlyCache = cached
     }
     return cached
   }
