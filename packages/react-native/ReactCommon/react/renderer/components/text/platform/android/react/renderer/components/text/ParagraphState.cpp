@@ -8,9 +8,13 @@
 #include "ParagraphState.h"
 
 #include <react/renderer/components/text/conversions.h>
+#include <react/renderer/core/ConcreteState.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
 namespace facebook::react {
+
+static_assert(StateDataWithMapBuffer<ParagraphState>);
+static_assert(StateDataWithJNIReference<ParagraphState>);
 
 folly::dynamic ParagraphState::getDynamic() const {
   LOG(FATAL) << "ParagraphState may only be serialized to MapBuffer";
@@ -18,6 +22,10 @@ folly::dynamic ParagraphState::getDynamic() const {
 
 MapBuffer ParagraphState::getMapBuffer() const {
   return toMapBuffer(*this);
+}
+
+jni::local_ref<jobject> ParagraphState::getJNIReference() const {
+  return jni::make_local(measuredLayout.preparedLayout.get());
 }
 
 } // namespace facebook::react
