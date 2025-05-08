@@ -18,6 +18,7 @@
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
+#include <react/utils/FloatComparison.h>
 
 #include "ParagraphState.h"
 
@@ -143,13 +144,35 @@ void ParagraphShadowNode::setTextLayoutManager(
   textLayoutManager_ = std::move(textLayoutManager);
 }
 
+template <typename ParagraphStateT>
+void ParagraphShadowNode::updateStateIfNeeded(
+    const Content& content,
+    const MeasuredPreparedLayout& layout) {
+  ensureUnsealed();
+
+  auto& state = static_cast<const ParagraphStateT&>(getStateData());
+
+  react_native_assert(textLayoutManager_);
+
+  if (state.measuredLayout.measurement.size == layout.measurement.size &&
+      state.attributedString == content.attributedString &&
+      state.paragraphAttributes == content.paragraphAttributes) {
+    return;
+  }
+
+  setStateData(ParagraphStateT{
+      content.attributedString,
+      content.paragraphAttributes,
+      textLayoutManager_,
+      layout});
+}
+
 void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
   ensureUnsealed();
 
   auto& state = getStateData();
 
   react_native_assert(textLayoutManager_);
-
   if (state.attributedString == content.attributedString) {
     return;
   }
@@ -160,15 +183,44 @@ void ParagraphShadowNode::updateStateIfNeeded(const Content& content) {
       textLayoutManager_});
 }
 
+MeasuredPreparedLayout* ParagraphShadowNode::findUsableLayout() {
+  MeasuredPreparedLayout* ret = nullptr;
+
+  if constexpr (TextLayoutManagerExtended::supportsPreparedLayout()) {
+    // We consider the layout to be reusable, if our content measurement,
+    // combined with padding/border (not snapped) exactly corresponds to the
+    // measurement of the node, before layout rounding. We may not find a
+    // compatible layout, such as if Yoga already knew the dimensions (an
+    // exact width/height was given), or if our content measurement was
+    // adjusted by a constraint (like min-size).
+    auto expectedContentWidth = YGNodeLayoutGetRawWidth(&yogaNode_) -
+        layoutMetrics_.contentInsets.left - layoutMetrics_.contentInsets.right;
+    auto expectedContentHeight = YGNodeLayoutGetRawHeight(&yogaNode_) -
+        layoutMetrics_.contentInsets.top - layoutMetrics_.contentInsets.bottom;
+
+    for (auto& prevLayout : measuredLayouts_) {
+      if (floatEquality(
+              prevLayout.measurement.size.width, expectedContentWidth) &&
+          floatEquality(
+              prevLayout.measurement.size.height, expectedContentHeight)) {
+        ret = &prevLayout;
+        break;
+      }
+    }
+  }
+
+  return ret;
+}
+
 #pragma mark - LayoutableShadowNode
 
 Size ParagraphShadowNode::measureContent(
     const LayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
   if constexpr (TextLayoutManagerExtended::supportsPreparedLayout()) {
-    for (const auto& preparedLayout : preparedLayouts_) {
-      if (preparedLayout.layoutConstraints == layoutConstraints) {
-        return preparedLayout.measureSize;
+    for (const auto& layout : measuredLayouts_) {
+      if (layout.layoutConstraints == layoutConstraints) {
+        return layout.measurement.size;
       }
     }
   }
@@ -203,16 +255,16 @@ Size ParagraphShadowNode::measureContent(
           content.paragraphAttributes,
           textLayoutContext,
           layoutConstraints);
-      auto mesaurements = tme.measurePreparedLayout(
+      auto measurement = tme.measurePreparedLayout(
           preparedLayout, textLayoutContext, layoutConstraints);
 
-      preparedLayouts_.push_back(PreparedLayoutResult{
+      measuredLayouts_.push_back(MeasuredPreparedLayout{
           layoutConstraints,
-          mesaurements.size,
+          measurement,
           // PreparedLayout is not trivially copyable on all platforms
           // NOLINTNEXTLINE(performance-move-const-arg)
           std::move(preparedLayout)});
-      return mesaurements.size;
+      return measurement.size;
     }
   }
 
@@ -266,21 +318,54 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   ensureUnsealed();
 
   auto layoutMetrics = getLayoutMetrics();
-  auto size = layoutMetrics.getContentFrame().size;
 
-  auto layoutConstraints =
-      LayoutConstraints{size, size, layoutMetrics.layoutDirection};
+  auto size = ReactNativeFeatureFlags::enablePreparedTextLayout()
+    ? Size{.width = YGNodeLayoutGetRawWidth(&yogaNode_) -
+                    layoutMetrics.contentInsets.left -
+                    layoutMetrics.contentInsets.right,
+           .height = YGNodeLayoutGetRawHeight(&yogaNode_) -
+                      layoutMetrics.contentInsets.top -
+                      layoutMetrics.contentInsets.bottom}
+    : layoutMetrics.getContentFrame().size;
+
+  LayoutConstraints layoutConstraints{
+      size, size, layoutMetrics.layoutDirection};
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
-  updateStateIfNeeded(content);
+  auto measuredLayout = findUsableLayout();
+
+  if constexpr (
+      TextLayoutManagerExtended::supportsPreparedLayout() &&
+      std::is_constructible_v<
+          ParagraphState,
+          decltype(content.attributedString),
+          decltype(content.paragraphAttributes),
+          decltype(textLayoutManager_),
+          decltype(*measuredLayout)>) {
+    if (ReactNativeFeatureFlags::enablePreparedTextLayout()) {
+      // We may not have a reusable layout, like if Yoga knew exact dimensions
+      // for the paragraph. Measure now, if this is the case.
+      // T223634461: This would ideally happen lazily, in case the view may be
+      // culled
+      if (measuredLayout == nullptr) {
+        measureContent(layoutContext, layoutConstraints);
+        measuredLayout = findUsableLayout();
+      }
+      react_native_assert(measuredLayout);
+      updateStateIfNeeded<ParagraphState>(content, *measuredLayout);
+
+    } else {
+      updateStateIfNeeded(content);
+    }
+  } else {
+    updateStateIfNeeded(content);
+  }
 
   TextLayoutContext textLayoutContext{
       .pointScaleFactor = layoutContext.pointScaleFactor,
       .surfaceId = getSurfaceId(),
   };
-  auto measurement = TextMeasurement{};
-
   AttributedStringBox attributedStringBox{content.attributedString};
 
   if (getConcreteProps().onTextLayout) {
@@ -301,11 +386,12 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   }
 
   // Only measure if attachments are not empty.
-  measurement = textLayoutManager_->measure(
-      attributedStringBox,
-      content.paragraphAttributes,
-      textLayoutContext,
-      layoutConstraints);
+  auto measurement = measuredLayout ? measuredLayout->measurement
+                                    : textLayoutManager_->measure(
+                                          attributedStringBox,
+                                          content.paragraphAttributes,
+                                          textLayoutContext,
+                                          layoutConstraints);
 
   //  Iterating on attachments, we clone shadow nodes and moving
   //  `paragraphShadowNode` that represents clones of `this` object.
