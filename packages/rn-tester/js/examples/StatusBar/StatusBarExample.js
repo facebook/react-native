@@ -207,38 +207,6 @@ class StatusBarBackgroundColorExample extends React.Component<
   }
 }
 
-class StatusBarTranslucentExample extends React.Component<
-  {...},
-  $FlowFixMeState,
-> {
-  state: $FlowFixMe | {translucent: boolean} = {
-    translucent: false,
-  };
-
-  _onChangeTranslucent = () => {
-    this.setState({
-      translucent: !this.state.translucent,
-    });
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <StatusBar translucent={this.state.translucent} />
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={this._onChangeTranslucent}>
-          <View style={styles.button}>
-            <RNTesterText style={styles.buttonText}>
-              translucent: {this.state.translucent ? 'true' : 'false'}
-            </RNTesterText>
-          </View>
-        </TouchableHighlight>
-      </View>
-    );
-  }
-}
-
 class StatusBarStaticIOSExample extends React.Component<{...}> {
   render(): React.Node {
     return (
@@ -480,13 +448,6 @@ exports.examples = [
     title: 'StatusBar background color',
     render(): React.Node {
       return <StatusBarBackgroundColorExample />;
-    },
-    platform: 'android',
-  },
-  {
-    title: 'StatusBar translucent',
-    render(): React.Node {
-      return <StatusBarTranslucentExample />;
     },
     platform: 'android',
   },

@@ -55,8 +55,6 @@ function ModalPresentation() {
     animationType: 'none',
     transparent: false,
     hardwareAccelerated: false,
-    statusBarTranslucent: false,
-    navigationBarTranslucent: false,
     presentationStyle: Platform.select({
       ios: 'fullScreen',
       default: undefined,
@@ -72,8 +70,6 @@ function ModalPresentation() {
   });
   const presentationStyle = props.presentationStyle;
   const hardwareAccelerated = props.hardwareAccelerated;
-  const statusBarTranslucent = props.statusBarTranslucent;
-  const navigationBarTranslucent = props.navigationBarTranslucent;
   const backdropColor = props.backdropColor;
   const backgroundColor = useContext(RNTesterThemeContext).BackgroundColor;
 
@@ -87,36 +83,6 @@ function ModalPresentation() {
 
   const controls = (
     <>
-      <View style={styles.inlineBlock}>
-        <RNTesterText style={styles.title}>
-          Status Bar Translucent 🟢
-        </RNTesterText>
-        <Switch
-          value={statusBarTranslucent}
-          onValueChange={enabled =>
-            setProps(prev => ({
-              ...prev,
-              statusBarTranslucent: enabled,
-              navigationBarTranslucent: false,
-            }))
-          }
-        />
-      </View>
-      <View style={styles.inlineBlock}>
-        <RNTesterText style={styles.title}>
-          Navigation Bar Translucent 🟢
-        </RNTesterText>
-        <Switch
-          value={navigationBarTranslucent}
-          onValueChange={enabled => {
-            setProps(prev => ({
-              ...prev,
-              statusBarTranslucent: enabled,
-              navigationBarTranslucent: enabled,
-            }));
-          }}
-        />
-      </View>
       <View style={styles.inlineBlock}>
         <RNTesterText style={styles.title}>
           Hardware Acceleration 🟢
