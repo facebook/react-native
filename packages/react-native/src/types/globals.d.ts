@@ -43,19 +43,19 @@ declare global {
    *
    * @see https://github.com/facebook/react-native/issues/934
    */
-  const originalXMLHttpRequest: any;
+  var originalXMLHttpRequest: any;
 
-  const __BUNDLE_START_TIME__: number;
-  const ErrorUtils: ErrorUtils;
+  var __BUNDLE_START_TIME__: number;
+  var ErrorUtils: ErrorUtils;
 
   /**
    * This variable is set to true when react-native is running in Dev mode
    * @example
    * if (__DEV__) console.log('Running in dev mode')
    */
-  const __DEV__: boolean;
+  var __DEV__: boolean;
 
-  const HermesInternal: null | {};
+  var HermesInternal: null | {};
 
   // #region Timer Functions
 
