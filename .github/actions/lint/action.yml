@@ -50,3 +50,6 @@ runs:
     - name: Lint markdown
       shell: bash
       run: yarn run lint-markdown
+    - name: Validate typegen
+      shell: bash
+      run: yarn build-types
