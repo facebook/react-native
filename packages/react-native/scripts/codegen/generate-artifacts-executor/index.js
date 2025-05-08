@@ -35,8 +35,10 @@ const {
   cleanupEmptyFilesAndFolders,
   codegenLog,
   findCodegenEnabledLibraries,
+  findDisabledLibrariesByPlatform,
   pkgJsonIncludesGeneratedCode,
   readPkgJsonInDirectory,
+  readReactNativeConfig,
 } = require('./utils');
 const path = require('path');
 
@@ -83,9 +85,14 @@ function execute(
       buildCodegenIfNeeded();
     }
 
-    const libraries = findCodegenEnabledLibraries(pkgJson, projectRoot);
+    const reactNativeConfig = readReactNativeConfig(projectRoot);
+    const codegenEnabledLibraries = findCodegenEnabledLibraries(
+      pkgJson,
+      projectRoot,
+      reactNativeConfig,
+    );
 
-    if (libraries.length === 0) {
+    if (codegenEnabledLibraries.length === 0) {
       codegenLog('No codegen-enabled libraries found.', true);
       return;
     }
@@ -94,6 +101,18 @@ function execute(
       targetPlatform === 'all' ? supportedPlatforms : [targetPlatform];
 
     for (const platform of platforms) {
+      const disabledLibraries = findDisabledLibrariesByPlatform(
+        reactNativeConfig,
+        platform,
+      );
+      const libraries = codegenEnabledLibraries.filter(
+        ({name}) => !disabledLibraries.includes(name),
+      );
+
+      if (!libraries.length) {
+        continue;
+      }
+
       const outputPath = computeOutputPath(
         projectRoot,
         baseOutputPath,
