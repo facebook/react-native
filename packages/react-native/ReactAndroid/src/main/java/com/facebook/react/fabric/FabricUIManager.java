@@ -654,11 +654,14 @@ public class FabricUIManager
 
   @AnyThread
   @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
   public PreparedLayout prepareLayout(
       int surfaceId,
       ReadableMapBuffer attributedString,
       ReadableMapBuffer paragraphAttributes,
+      float minWidth,
       float maxWidth,
+      float minHeight,
       float maxHeight) {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareLayout");
@@ -667,8 +670,9 @@ public class FabricUIManager
             Preconditions.checkNotNull(surfaceMountingManager.getContext()),
             attributedString,
             paragraphAttributes,
-            PixelUtil.toPixelFromDIP(maxWidth),
-            PixelUtil.toPixelFromDIP(maxHeight),
+            getYogaSize(minWidth, maxWidth),
+            getYogaMeasureMode(minWidth, maxWidth),
+            getYogaSize(minHeight, maxHeight),
             null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
 
     int maximumNumberOfLines =
@@ -681,6 +685,7 @@ public class FabricUIManager
 
   @AnyThread
   @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
   public float[] measurePreparedLayout(
       PreparedLayout preparedLayout,
       float minWidth,

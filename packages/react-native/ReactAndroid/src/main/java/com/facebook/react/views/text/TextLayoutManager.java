@@ -52,7 +52,6 @@ import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.SetSpanOperation;
 import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import java.util.ArrayList;
@@ -390,8 +389,7 @@ public class TextLayoutManager {
     boolean isScriptRTL = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, 0, spanLength);
 
     if (boring == null
-        && (unconstrainedWidth
-            || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
+        && (unconstrainedWidth || (!Float.isNaN(desiredWidth) && desiredWidth <= width))) {
       // Is used when the width is not known and the text is not boring, ie. if it contains
       // unicode characters.
 
@@ -510,6 +508,7 @@ public class TextLayoutManager {
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
       float width,
+      YogaMeasureMode widthYogaMeasureMode,
       float height,
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     Spannable text =
@@ -582,7 +581,7 @@ public class TextLayoutManager {
         text,
         boring,
         width,
-        YogaMeasureMode.EXACTLY,
+        widthYogaMeasureMode,
         includeFontPadding,
         textBreakStrategy,
         hyphenationFrequency,
@@ -696,6 +695,7 @@ public class TextLayoutManager {
             attributedString,
             paragraphAttributes,
             width,
+            widthYogaMeasureMode,
             height,
             reactTextViewManagerCallback);
 
@@ -961,7 +961,14 @@ public class TextLayoutManager {
       float width,
       float height) {
     Layout layout =
-        createLayout(context, attributedString, paragraphAttributes, width, height, null);
+        createLayout(
+            context,
+            attributedString,
+            paragraphAttributes,
+            width,
+            YogaMeasureMode.EXACTLY,
+            height,
+            null);
     return FontMetricsUtil.getFontMetrics(
         layout.getText(), layout, Preconditions.checkNotNull(sTextPaintInstance.get()), context);
   }
