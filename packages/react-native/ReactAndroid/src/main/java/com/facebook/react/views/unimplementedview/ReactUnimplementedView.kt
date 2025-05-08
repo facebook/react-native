@@ -13,8 +13,12 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 
-internal class ReactUnimplementedView(context: Context) : LinearLayout(context) {
+internal class ReactUnimplementedView(
+    context: Context,
+    private val onError: ((message: String) -> Unit)
+) : LinearLayout(context) {
 
   private val textView: AppCompatTextView = AppCompatTextView(context)
 
@@ -33,8 +37,12 @@ internal class ReactUnimplementedView(context: Context) : LinearLayout(context) 
   }
 
   internal fun setName(name: String) {
+    val errorMessage = "'$name' is not registered."
     if (ReactBuildConfig.DEBUG) {
-      textView.text = "'$name' is not registered."
+      textView.text = errorMessage
+    }
+    if (ReactNativeFeatureFlags.enableGracefulUnregisteredComponentFailureAndroid()) {
+      onError(errorMessage)
     }
   }
 }

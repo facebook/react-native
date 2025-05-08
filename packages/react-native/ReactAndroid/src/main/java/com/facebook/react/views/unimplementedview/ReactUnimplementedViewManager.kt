@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.unimplementedview
 
+import com.facebook.common.logging.FLog
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
@@ -20,7 +21,11 @@ import com.facebook.react.viewmanagers.UnimplementedNativeViewManagerInterface
  * implemented or registered.
  */
 @ReactModule(name = ReactUnimplementedViewManager.REACT_CLASS)
-internal class ReactUnimplementedViewManager :
+internal class ReactUnimplementedViewManager(
+    private val onError: ((message: String) -> Unit) = { message: String ->
+      FLog.e(REACT_CLASS, message)
+    }
+) :
     ViewGroupManager<ReactUnimplementedView>(),
     UnimplementedNativeViewManagerInterface<ReactUnimplementedView> {
 
@@ -30,7 +35,7 @@ internal class ReactUnimplementedViewManager :
   public override fun getDelegate(): ViewManagerDelegate<ReactUnimplementedView> = delegate
 
   override fun createViewInstance(reactContext: ThemedReactContext): ReactUnimplementedView =
-      ReactUnimplementedView(reactContext)
+      ReactUnimplementedView(reactContext, onError)
 
   override fun getName(): String = REACT_CLASS
 
