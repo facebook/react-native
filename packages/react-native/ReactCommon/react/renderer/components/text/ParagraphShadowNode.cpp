@@ -19,7 +19,7 @@
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
 
-#include "ParagraphState.h"
+#include <react/renderer/components/text/ParagraphState.h>
 
 namespace facebook::react {
 

@@ -108,7 +108,7 @@ async function main() {
     // Temporary hardcoded hermes version to make the script work
     // We will make it right in a future diff.
     // TODO: T223708709
-    await prepareHermesArtifactsAsync('0.80.0-rc.0', 'release');
+    await prepareHermesArtifactsAsync('0.80.0-rc.0', 'debug');
 
     // LINKING
     link('Libraries/WebSocket/', 'React');
