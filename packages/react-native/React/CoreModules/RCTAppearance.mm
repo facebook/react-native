@@ -127,11 +127,6 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
   return _currentColorScheme;
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, isEdgeToEdge)
-{
-  return @(true);
-}
-
 - (void)appearanceChanged:(NSNotification *)notification
 {
   NSDictionary *userInfo = [notification userInfo];

@@ -10,8 +10,6 @@ package com.facebook.react.modules.appearance
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import com.facebook.fbreact.specs.NativeAppearanceSpec
-import com.facebook.react.BuildConfig
-import com.facebook.react.ReactActivity
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
@@ -68,9 +66,6 @@ constructor(
       }
     }
   }
-
-  public override fun isEdgeToEdge(): Boolean =
-    BuildConfig.IS_EDGE_TO_EDGE_ENABLED
 
   /** Stub */
   public override fun addListener(eventName: String): Unit = Unit

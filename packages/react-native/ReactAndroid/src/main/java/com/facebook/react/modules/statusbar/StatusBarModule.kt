@@ -72,12 +72,6 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
           "StatusBarModule: Ignored status bar change, current activity is null.")
       return
     }
-    if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
-      FLog.w(
-        ReactConstants.TAG,
-        "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
-      return
-    }
     UiThreadUtil.runOnUiThread(
         object : GuardedRunnable(reactApplicationContext) {
           override fun runGuarded() {
@@ -104,12 +98,6 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
       FLog.w(
           ReactConstants.TAG,
           "StatusBarModule: Ignored status bar change, current activity is null.")
-      return
-    }
-    if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
-      FLog.w(
-        ReactConstants.TAG,
-        "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
       return
     }
     UiThreadUtil.runOnUiThread(

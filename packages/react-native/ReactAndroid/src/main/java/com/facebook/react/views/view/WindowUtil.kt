@@ -17,6 +17,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.facebook.react.BuildConfig
 import com.facebook.react.views.common.ContextUtils
 
+internal val LightNavigationBarColor = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+
 @Suppress("DEPRECATION")
 internal fun Window.setStatusBarTranslucency(isTranslucent: Boolean) {
   // If the status bar is translucent hook into the window insets calculations
@@ -46,7 +49,7 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarHide() {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
     // Ensure the content extends into the cutout area
     attributes.layoutInDisplayCutoutMode =
         WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
@@ -58,7 +61,7 @@ private fun Window.statusBarHide() {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarShow() {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
     attributes.layoutInDisplayCutoutMode =
         WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
     setDecorFitsSystemWindows(true)
@@ -82,9 +85,8 @@ internal fun Window.enableEdgeToEdge() {
   navigationBarColor =
     when {
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isDarkMode ->
-        Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
-      else -> Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isDarkMode -> LightNavigationBarColor
+      else -> DarkNavigationBarColor
     }
 
   WindowInsetsControllerCompat(this, this.decorView).run {
@@ -99,8 +101,4 @@ internal fun Window.enableEdgeToEdge() {
         else -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
       }
   }
-}
-
-internal fun Window.disableEdgeToEdge() {
-  WindowCompat.setDecorFitsSystemWindows(this, true)
 }
