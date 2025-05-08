@@ -17,14 +17,13 @@ IntersectionObserverManager::IntersectionObserverManager() = default;
 
 void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
-    const ShadowNode::Shared& shadowNode,
+    const ShadowNodeFamily::Shared& shadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds,
     const UIManager& uiManager) {
   TraceSection s("IntersectionObserverManager::observe");
 
-  auto surfaceId = shadowNode->getSurfaceId();
-  auto shadowNodeFamily = shadowNode->getFamilyShared();
+  auto surfaceId = shadowNodeFamily->getSurfaceId();
 
   // The actual observer lives in the array, so we need to create it there and
   // then get a reference. Otherwise we only update its state in a copy.
@@ -78,15 +77,13 @@ void IntersectionObserverManager::observe(
 
 void IntersectionObserverManager::unobserve(
     IntersectionObserverObserverId intersectionObserverId,
-    const ShadowNode& shadowNode) {
+    const ShadowNodeFamily::Shared& shadowNodeFamily) {
   TraceSection s("IntersectionObserverManager::unobserve");
-
-  auto& shadowNodeFamily = shadowNode.getFamily();
 
   {
     std::unique_lock lock(observersMutex_);
 
-    auto surfaceId = shadowNode.getSurfaceId();
+    auto surfaceId = shadowNodeFamily->getSurfaceId();
 
     auto observersIt = observersBySurfaceId_.find(surfaceId);
     if (observersIt == observersBySurfaceId_.end()) {
@@ -102,7 +99,7 @@ void IntersectionObserverManager::unobserve(
             [intersectionObserverId, &shadowNodeFamily](const auto& observer) {
               return observer.getIntersectionObserverId() ==
                   intersectionObserverId &&
-                  observer.isTargetShadowNodeFamily(shadowNodeFamily);
+                  observer.isTargetShadowNodeFamily(*shadowNodeFamily);
             }),
         observers.end());
 
@@ -120,7 +117,7 @@ void IntersectionObserverManager::unobserve(
             pendingEntries_.end(),
             [intersectionObserverId, &shadowNodeFamily](const auto& entry) {
               return entry.intersectionObserverId == intersectionObserverId &&
-                  entry.sameShadowNodeFamily(shadowNodeFamily);
+                  entry.sameShadowNodeFamily(*shadowNodeFamily);
             }),
         pendingEntries_.end());
   }
