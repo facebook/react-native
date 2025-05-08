@@ -105,8 +105,8 @@ using namespace facebook::react;
   _paragraphAttributes = newParagraphProps.paragraphAttributes;
   _textView.paragraphAttributes = _paragraphAttributes;
 
-  if (newParagraphProps.isSelectable != oldParagraphProps.isSelectable) {
-    if (newParagraphProps.isSelectable) {
+  if (newParagraphProps.selectable != oldParagraphProps.selectable) {
+    if (newParagraphProps.selectable) {
       [self enableContextMenu];
     } else {
       [self disableContextMenu];
@@ -329,14 +329,14 @@ using namespace facebook::react;
 - (BOOL)canBecomeFirstResponder
 {
   const auto &paragraphProps = static_cast<const ParagraphProps &>(*_props);
-  return paragraphProps.isSelectable;
+  return paragraphProps.selectable;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   const auto &paragraphProps = static_cast<const ParagraphProps &>(*_props);
 
-  if (paragraphProps.isSelectable && action == @selector(copy:)) {
+  if (paragraphProps.selectable && action == @selector(copy:)) {
     return YES;
   }
 
