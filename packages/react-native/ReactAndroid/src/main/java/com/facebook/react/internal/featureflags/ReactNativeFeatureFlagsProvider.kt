@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2482f57e0652cfaa4806b5333c50ad9f>>
+ * @generated SignedSource<<33ecc2f26b06289f69a759b1f92602b8>>
  */
 
 /**
@@ -56,6 +56,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableFixForParentTagDuringReparenting(): Boolean
 
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
+
+  @DoNotStrip public fun enableGracefulUnregisteredComponentFailureAndroid(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<453f8c0a593b173c197fcf54ed834a1b>>
+ * @generated SignedSource<<0d36e8bfd1d3d3ab4c70d012fda838a3>>
  */
 
 /**
@@ -131,6 +131,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFontScaleChangesUpdatingLayout(): Boolean = accessor.enableFontScaleChangesUpdatingLayout()
+
+  /**
+   * Enables gracefuly failure when an unregistered component is rendered in Android.
+   */
+  @JvmStatic
+  public fun enableGracefulUnregisteredComponentFailureAndroid(): Boolean = accessor.enableGracefulUnregisteredComponentFailureAndroid()
 
   /**
    * iOS Views will clip to their padding box vs border box
