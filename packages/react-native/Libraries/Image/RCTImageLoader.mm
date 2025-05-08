@@ -8,6 +8,7 @@
 #import <mach/mach_time.h>
 #import <objc/runtime.h>
 #import <atomic>
+#import <future>
 
 #import <ImageIO/ImageIO.h>
 
@@ -18,6 +19,7 @@
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
 #import <React/RCTImageUtils.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
@@ -43,6 +45,29 @@ static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLRespo
   NSError *error = [NSError errorWithDomain:originalError.domain code:originalError.code userInfo:_userInfo];
 
   return error;
+}
+
+template <typename T>
+using Block = T (^)(void);
+
+template <typename T>
+std::shared_future<T> runOnMainQueue(Block<T> block)
+{
+  __block std::promise<T> promise;
+  RCTExecuteOnMainQueue(^{
+    @try {
+      try {
+        T result = block();
+        promise.set_value(result);
+      } catch (...) {
+        promise.set_exception(std::current_exception());
+      }
+    } @catch (NSException *exception) {
+      auto cppException = std::runtime_error([exception.description UTF8String]);
+      promise.set_exception(std::make_exception_ptr(cppException));
+    }
+  });
+  return promise.get_future().share();
 }
 
 @interface RCTImageLoader () <NativeImageLoaderIOSSpec, RCTImageLoaderWithAttributionProtocol>
@@ -84,6 +109,7 @@ static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLRespo
   NSUInteger _activeBytes;
   std::mutex _loadersMutex;
   __weak id<RCTImageRedirectProtocol> _redirectDelegate;
+  std::shared_future<CGSize> _screenSize;
 }
 
 @synthesize bridge = _bridge;
@@ -107,6 +133,9 @@ RCT_EXPORT_MODULE()
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
 {
   if (self = [super init]) {
+    _screenSize = runOnMainQueue(^{
+      return RCTScreenSize();
+    });
     _redirectDelegate = redirectDelegate;
     _isLoaderSetup = NO;
   }
@@ -1000,15 +1029,19 @@ static RCTImageLoaderCancellationBlock RCTLoadImageURLFromLoader(
       // Mark these bytes as in-use
       self->_activeBytes += decodedImageBytes;
 
+      __block std::shared_future<CGFloat> screenScale = runOnMainQueue(^{
+        return RCTScreenScale();
+      });
+
       // Do actual decompression on a concurrent background queue
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (!std::atomic_load(cancelled.get())) {
           // Decompress the image data (this may be CPU and memory intensive)
-          UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
+          UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode, screenScale.get());
 
 #if RCT_DEV
           CGSize imagePixelSize = RCTSizeInPixels(image.size, image.scale);
-          CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
+          CGSize screenPixelSize = RCTSizeInPixels(self->_screenSize.get(), screenScale.get());
           if (imagePixelSize.width * imagePixelSize.height > screenPixelSize.width * screenPixelSize.height) {
             RCTLogInfo(
                 @"[PERF ASSETS] Loading image at size %@, which is larger "
