@@ -1136,19 +1136,6 @@ public final class com/facebook/react/bridge/ReactCxxErrorHandler {
 	public static final fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
 }
 
-public class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget : java/lang/AutoCloseable {
-	public fun <init> (Lcom/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate;)V
-	public fun close ()V
-	public fun sendDebuggerResumeCommand ()V
-}
-
-public abstract interface class com/facebook/react/bridge/ReactInstanceManagerInspectorTarget$TargetDelegate {
-	public abstract fun getMetadata ()Ljava/util/Map;
-	public abstract fun loadNetworkResource (Ljava/lang/String;Lcom/facebook/react/devsupport/inspector/InspectorNetworkRequestListener;)V
-	public abstract fun onReload ()V
-	public abstract fun onSetPausedInDebuggerMessage (Ljava/lang/String;)V
-}
-
 public class com/facebook/react/bridge/ReactMarker {
 	public fun <init> ()V
 	public static fun addFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
