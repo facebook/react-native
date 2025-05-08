@@ -5,12 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
-
-#include <react/renderer/graphics/Size.h>
+#include <react/renderer/components/modal/ModalHostViewUtils.h>
+#include "JReactModalHostView.h"
 
 namespace facebook::react {
 
-Size RCTModalHostViewScreenSize(void);
+Size RCTModalHostViewScreenSize(void) {
+  return JReactModalHostView::getDisplayMetrics();
+}
 
 } // namespace facebook::react
