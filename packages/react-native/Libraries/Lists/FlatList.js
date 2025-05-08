@@ -145,7 +145,7 @@ type OptionalProps<ItemT> = {
   /**
    * See `ScrollView` for flow type and further documentation.
    */
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | {start: number, end: number},
   /**
    * Enable an optimization to memoize the item renderer to prevent unnecessary rerenders.
    */

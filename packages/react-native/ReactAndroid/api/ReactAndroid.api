@@ -5752,14 +5752,18 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun focusSearch (Landroid/view/View;I)Landroid/view/View;
 	public fun getChildVisibleRect (Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;)Z
 	public fun getClippingRect (Landroid/graphics/Rect;)V
+	public fun getFadingEdgeLengthEnd ()I
+	public fun getFadingEdgeLengthStart ()I
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
 	public fun getFlingExtrapolatedDistance (I)I
 	public fun getLastScrollDispatchTime ()J
+	protected fun getLeftFadingEdgeStrength ()F
 	public fun getOverflow ()Ljava/lang/String;
 	public fun getOverflowInset ()Landroid/graphics/Rect;
 	public fun getPointerEvents ()Lcom/facebook/react/uimanager/PointerEvents;
 	public fun getReactScrollViewScrollState ()Lcom/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState;
 	public fun getRemoveClippedSubviews ()Z
+	protected fun getRightFadingEdgeStrength ()F
 	public fun getScrollEnabled ()Z
 	public fun getScrollEventThrottle ()I
 	public fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
@@ -5793,6 +5797,8 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun setDecelerationRate (F)V
 	public fun setDisableIntervalMomentum (Z)V
 	public fun setEndFillColor (I)V
+	public fun setFadingEdgeLengthEnd (I)V
+	public fun setFadingEdgeLengthStart (I)V
 	public fun setLastScrollDispatchTime (J)V
 	public fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;)V
 	public fun setOverflow (Ljava/lang/String;)V
@@ -5842,7 +5848,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager : 
 	public final fun setContentOffset (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
 	public final fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;F)V
 	public final fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Z)V
-	public final fun setFadingEdgeLength (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;I)V
+	public final fun setFadingEdgeLength (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Lcom/facebook/react/bridge/Dynamic;)V
 	public final fun setHorizontal (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Z)V
 	public final fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
 	public final fun setNestedScrollEnabled (Lcom/facebook/react/views/scroll/ReactHorizontalScrollView;Z)V
@@ -5879,8 +5885,11 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun flashScrollIndicators ()V
 	public fun fling (I)V
 	public fun focusSearch (Landroid/view/View;I)Landroid/view/View;
+	protected fun getBottomFadingEdgeStrength ()F
 	public fun getChildVisibleRect (Landroid/view/View;Landroid/graphics/Rect;Landroid/graphics/Point;)Z
 	public fun getClippingRect (Landroid/graphics/Rect;)V
+	public fun getFadingEdgeLengthEnd ()I
+	public fun getFadingEdgeLengthStart ()I
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
 	public fun getFlingExtrapolatedDistance (I)I
 	public fun getLastScrollDispatchTime ()J
@@ -5892,6 +5901,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun getScrollEnabled ()Z
 	public fun getScrollEventThrottle ()I
 	public fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
+	protected fun getTopFadingEdgeStrength ()F
 	protected fun handleInterceptedTouchEvent (Landroid/view/MotionEvent;)V
 	public fun isPartiallyScrolledInView (Landroid/view/View;)Z
 	protected fun onAttachedToWindow ()V
@@ -5922,6 +5932,8 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun setDecelerationRate (F)V
 	public fun setDisableIntervalMomentum (Z)V
 	public fun setEndFillColor (I)V
+	public fun setFadingEdgeLengthEnd (I)V
+	public fun setFadingEdgeLengthStart (I)V
 	public fun setLastScrollDispatchTime (J)V
 	public fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/MaintainVisibleScrollPositionHelper$Config;)V
 	public fun setOverflow (Ljava/lang/String;)V
@@ -6097,7 +6109,7 @@ public class com/facebook/react/views/scroll/ReactScrollViewManager : com/facebo
 	public final fun setContentOffset (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
 	public final fun setDecelerationRate (Lcom/facebook/react/views/scroll/ReactScrollView;F)V
 	public final fun setDisableIntervalMomentum (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
-	public final fun setFadingEdgeLength (Lcom/facebook/react/views/scroll/ReactScrollView;I)V
+	public final fun setFadingEdgeLength (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/Dynamic;)V
 	public final fun setHorizontal (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
 	public final fun setIsInvertedVirtualizedList (Lcom/facebook/react/views/scroll/ReactScrollView;Z)V
 	public final fun setMaintainVisibleContentPosition (Lcom/facebook/react/views/scroll/ReactScrollView;Lcom/facebook/react/bridge/ReadableMap;)V
