@@ -54,7 +54,6 @@ import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.enableEdgeToEdge
-import com.facebook.react.views.view.disableEdgeToEdge
 import java.util.Objects
 
 /**
@@ -343,10 +342,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
     get() =
         FrameLayout(context).apply {
           addView(dialogRootViewGroup)
-          if (!statusBarTranslucent) {
-            // this is needed to prevent content hiding behind systems bars < API 30
-            this.fitsSystemWindows = true
-          }
         }
 
   /**
@@ -375,13 +370,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
       }
 
-      // Navigation bar cannot be translucent without status bar being translucent too
-      if (navigationBarTranslucent) {
-        dialogWindow.enableEdgeToEdge()
-      } else {
-        dialogWindow.disableEdgeToEdge()
-        dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
-      }
+      dialogWindow.enableEdgeToEdge()
 
       if (transparent) {
         dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)

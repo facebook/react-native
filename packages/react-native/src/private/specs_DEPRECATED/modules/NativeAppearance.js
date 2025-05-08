@@ -21,7 +21,6 @@ export type AppearancePreferences = {
 export interface Spec extends TurboModule {
   +getColorScheme: () => ?ColorSchemeName;
   +setColorScheme: (colorScheme: ColorSchemeName) => void;
-  +isEdgeToEdge: () => boolean;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;

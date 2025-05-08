@@ -27,7 +27,6 @@ const AppContainer = require('../ReactNative/AppContainer').default;
 const I18nManager = require('../ReactNative/I18nManager').default;
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet').default;
-const Appearance = require('../Utilities/Appearance');
 const Platform = require('../Utilities/Platform').default;
 
 const VirtualizedListContextResetter =
@@ -185,13 +184,11 @@ function confirmProps(props: ModalProps) {
         `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
       );
     }
-    if (
-      props.navigationBarTranslucent === true &&
-      props.statusBarTranslucent !== true
-    ) {
-      console.warn(
-        'Modal with translucent navigation bar and without translucent status bar is not supported.',
-      );
+    if (typeof props.statusBarTranslucent === "boolean") {
+      console.warn('`statusBarTranslucent` is deprecated and no longer has any effect');
+    }
+    if (typeof props.navigationBarTranslucent === "boolean") {
+      console.warn('`navigationBarTranslucent` is deprecated and no longer has any effect');
     }
   }
 }
@@ -273,8 +270,6 @@ class Modal extends React.Component<ModalProps, ModalState> {
       return null;
     }
 
-    const isEdgeToEdge = Appearance.isEdgeToEdge();
-
     const containerStyles = {
       backgroundColor:
         this.props.transparent === true
@@ -320,10 +315,8 @@ class Modal extends React.Component<ModalProps, ModalState> {
         onDismiss={onDismiss}
         ref={this.props.modalRef}
         visible={this.props.visible}
-        statusBarTranslucent={isEdgeToEdge || this.props.statusBarTranslucent}
-        navigationBarTranslucent={
-          isEdgeToEdge || this.props.navigationBarTranslucent
-        }
+        statusBarTranslucent={this.props.statusBarTranslucent}
+        navigationBarTranslucent={this.props.navigationBarTranslucent}
         identifier={this._identifier}
         style={styles.modal}
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters

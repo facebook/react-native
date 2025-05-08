@@ -825,18 +825,16 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onConfigurationChanged(Context updatedContext) {
-    if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
-      UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            Activity currentActivity = getCurrentActivity();
-            if (currentActivity != null) {
-              WindowUtilKt.enableEdgeToEdge(currentActivity.getWindow());
-            }
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          Activity currentActivity = getCurrentActivity();
+          if (currentActivity != null) {
+            WindowUtilKt.enableEdgeToEdge(currentActivity.getWindow());
           }
-        });
-    }
+        }
+      });
 
     ReactContext currentReactContext = getCurrentReactContext();
     if (currentReactContext != null) {
