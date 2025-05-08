@@ -15,6 +15,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsProvider
 
 /**
  * A utility class that serves as an entry point for users setup the New Architecture.
@@ -64,6 +65,18 @@ public object DefaultNewArchitectureEntryPoint {
     privateTurboModulesEnabled = turboModulesEnabled
     privateConcurrentReactEnabled = fabricEnabled
     privateBridgelessEnabled = bridgelessEnabled
+
+    DefaultSoLoader.maybeLoadSoLibrary()
+  }
+
+  @JvmStatic
+  public fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
+    ReactNativeFeatureFlags.override(featureFlags)
+
+    privateFabricEnabled = featureFlags.enableFabricRenderer()
+    privateTurboModulesEnabled = featureFlags.useTurboModules()
+    privateConcurrentReactEnabled = featureFlags.enableFabricRenderer()
+    privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
 
     DefaultSoLoader.maybeLoadSoLibrary()
   }
