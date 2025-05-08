@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c81ed8a06c192eb4007219d163650e5>>
+ * @generated SignedSource<<5b9e7dc6c273440e92f0501f5270a9c9>>
  */
 
 /**
@@ -41,6 +41,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFabricRendererCache: Boolean? = null
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
+  private var enableGracefulUnregisteredComponentFailureAndroidCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
@@ -238,6 +239,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableFontScaleChangesUpdatingLayout()
       accessedFeatureFlags.add("enableFontScaleChangesUpdatingLayout")
       enableFontScaleChangesUpdatingLayoutCache = cached
+    }
+    return cached
+  }
+
+  override fun enableGracefulUnregisteredComponentFailureAndroid(): Boolean {
+    var cached = enableGracefulUnregisteredComponentFailureAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableGracefulUnregisteredComponentFailureAndroid()
+      accessedFeatureFlags.add("enableGracefulUnregisteredComponentFailureAndroid")
+      enableGracefulUnregisteredComponentFailureAndroidCache = cached
     }
     return cached
   }
