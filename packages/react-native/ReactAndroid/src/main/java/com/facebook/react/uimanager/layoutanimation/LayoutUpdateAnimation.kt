@@ -21,7 +21,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
-  internal override fun isValid(): Boolean = mDurationMs > 0
+  internal override fun isValid(): Boolean = durationMs > 0
 
   internal override fun createAnimationImpl(
       view: View,
@@ -51,7 +51,7 @@ internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
     private const val USE_TRANSLATE_ANIMATION = false
 
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "LayoutUpdateAnimation", LegacyArchitectureLogLevel.WARNING)
     }
   }

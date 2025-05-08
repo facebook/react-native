@@ -53,7 +53,8 @@ export type AccessibilityRole =
   | 'webview'
   | 'drawerlayout'
   | 'slidingdrawer'
-  | 'iconmenu';
+  | 'iconmenu'
+  | string;
 
 // Role types for web
 export type Role =
@@ -257,6 +258,14 @@ export type AccessibilityPropsAndroid = $ReadOnly<{
    * See https://reactnative.dev/docs/view#importantforaccessibility
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
+
+  /**
+   * Enables the view to be screen reader focusable, not keyboard focusable. This has lower priority
+   * than focusable or accessible props.
+   *
+   * @platform android
+   */
+  screenReaderFocusable?: boolean,
 }>;
 
 export type AccessibilityPropsIOS = $ReadOnly<{
@@ -319,6 +328,14 @@ export type AccessibilityPropsIOS = $ReadOnly<{
    * @platform ios
    */
   accessibilityLanguage?: ?Stringish,
+
+  /**
+   * Blocks the user from interacting with the component through keyboard while still allowing
+   * screen reader to interact with it if this View is still accessible.
+   *
+   * @platform ios
+   */
+  accessibilityRespondsToUserInteraction?: ?boolean,
 }>;
 
 export type AccessibilityProps = $ReadOnly<{
@@ -356,6 +373,13 @@ export type AccessibilityProps = $ReadOnly<{
    * https://github.com/facebook/react-native/issues/34424
    */
   'aria-label'?: ?Stringish,
+
+  /**
+   * Defines the order in which descendant elements receive accessibility focus.
+   * The elements in the array represent nativeID values for the respective
+   * descendant elements.
+   */
+  experimental_accessibilityOrder?: ?Array<string>,
 
   /**
    * Indicates to accessibility services to treat UI component like a specific role.

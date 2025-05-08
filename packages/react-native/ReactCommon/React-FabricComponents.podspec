@@ -16,32 +16,21 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-folly_dep_name = folly_config[:dep_name]
-
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
 react_native_path = ".."
 
 Pod::Spec.new do |s|
 
   header_search_path = [
-    "\"$(PODS_ROOT)/boost\"",
     "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
-    "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
-    "\"$(PODS_ROOT)/DoubleConversion\"",
-    "\"$(PODS_ROOT)/fast_float/include\"",
-    "\"$(PODS_ROOT)/fmt/include\"",
   ]
 
   if ENV['USE_FRAMEWORKS']
     header_search_path = header_search_path + [
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
+      "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/text/platform/cxx\"",
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
     ]
   end
@@ -66,18 +55,12 @@ Pod::Spec.new do |s|
     s.module_name             = 'React_FabricComponents'
   end
 
-  s.dependency folly_dep_name, folly_version
-
   s.dependency "React-jsiexecutor"
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-jsi"
   s.dependency "React-logger"
-  s.dependency "glog"
-  s.dependency "DoubleConversion"
-  s.dependency "fast_float"
-  s.dependency "fmt", "11.0.2"
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-featureflags"
@@ -94,35 +77,28 @@ Pod::Spec.new do |s|
   ])
 
   depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   s.subspec "components" do |ss|
 
     ss.subspec "inputaccessory" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/inputaccessory/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/inputaccessory/tests"
       sss.header_dir           = "react/renderer/components/inputaccessory"
     end
 
     ss.subspec "modal" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/modal/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/modal/tests"
       sss.header_dir           = "react/renderer/components/modal"
     end
 
     ss.subspec "rncore" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/rncore"
     end
 
     ss.subspec "safeareaview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/safeareaview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/safeareaview/tests"
       sss.header_dir           = "react/renderer/components/safeareaview"
@@ -130,25 +106,19 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "scrollview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/scrollview/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/scrollview"
 
     end
 
     ss.subspec "text" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/text/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/text/tests"
+      sss.source_files         = "react/renderer/components/text/*.{m,mm,cpp,h}",
+                                 "react/renderer/components/text/platform/cxx/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/text"
 
     end
 
     ss.subspec "iostextinput" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}",
                                  "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
@@ -156,16 +126,12 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "textinput" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/textinput"
 
     end
 
     ss.subspec "unimplementedview" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/unimplementedview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/unimplementedview/tests"
       sss.header_dir           = "react/renderer/components/unimplementedview"
@@ -174,9 +140,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "textlayoutmanager" do |ss|
-    ss.dependency             folly_dep_name, folly_version
     ss.dependency             "React-Fabric"
-    ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/textlayoutmanager/platform/ios/**/*.{m,mm,cpp,h}",
                               "react/renderer/textlayoutmanager/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/textlayoutmanager/tests",

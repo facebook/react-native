@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/ReactPrimitives.h>

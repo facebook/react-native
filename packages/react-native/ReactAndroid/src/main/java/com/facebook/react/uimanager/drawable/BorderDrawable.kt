@@ -490,6 +490,14 @@ internal class BorderDrawable(
       colorRight: Int,
       colorBottom: Int
   ): Int {
+    // If any of the border colors are translucent then we can't use the fast path.
+    if (Color.alpha(colorLeft) < 255 ||
+        Color.alpha(colorTop) < 255 ||
+        Color.alpha(colorRight) < 255 ||
+        Color.alpha(colorBottom) < 255) {
+      return 0
+    }
+
     val andSmear =
         ((if (borderLeft > 0) colorLeft else ALL_BITS_SET) and
             (if (borderTop > 0) colorTop else ALL_BITS_SET) and
@@ -1053,7 +1061,7 @@ internal class BorderDrawable(
    * Multiplies the color with the given alpha.
    *
    * @param color color to be multiplied
-   * @param alpha value between 0 and 255
+   * @param rawAlpha value between 0 and 255
    * @return multiplied color
    */
   private fun multiplyColorAlpha(color: Int, rawAlpha: Int): Int {

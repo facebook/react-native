@@ -70,7 +70,7 @@ export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
 export type NativeProps = $ReadOnly<{
   // This allows us to inherit everything from ViewProps except for style (see below)
   // This must be commented for Fabric codegen to work.
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
+  ...Omit<ViewProps, 'style'>,
 
   /**
    * Android props after this
@@ -658,6 +658,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     },
   },
   validAttributes: {
+    acceptDragAndDropTypes: true,
     maxFontSizeMultiplier: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,

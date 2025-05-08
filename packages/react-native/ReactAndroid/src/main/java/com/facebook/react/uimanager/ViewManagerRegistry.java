@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Map;
  * Class that stores the mapping between native view name used in JS and the corresponding instance
  * of {@link ViewManager}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ViewManagerRegistry implements ComponentCallbacks2 {
 
   private final Map<String, ViewManager> mViewManagers;
@@ -75,10 +77,11 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
       if (viewManager != null) return viewManager;
 
       throw new IllegalViewOperationException(
-          "ViewManagerResolver returned null for either "
+          "Can't find ViewManager '"
               + className
-              + " or "
+              + "' nor '"
               + rctViewManagerName
+              + "' in ViewManagerRegistry"
               + ", existing names are: "
               + mViewManagerResolver.getViewManagerNames());
     }
@@ -86,8 +89,10 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
   }
 
   private @Nullable ViewManager getViewManagerFromResolver(String className) {
-    @Nullable ViewManager viewManager;
-    viewManager = mViewManagerResolver.getViewManager(className);
+    @Nullable ViewManager viewManager = null;
+    if (mViewManagerResolver != null) {
+      viewManager = mViewManagerResolver.getViewManager(className);
+    }
     if (viewManager != null) {
       mViewManagers.put(className, viewManager);
     }

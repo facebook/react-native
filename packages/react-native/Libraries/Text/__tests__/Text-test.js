@@ -11,7 +11,7 @@
 'use strict';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
-import React from 'react';
+import * as React from 'react';
 
 const render = require('../../../jest/renderer');
 const Text = require('../Text').default;

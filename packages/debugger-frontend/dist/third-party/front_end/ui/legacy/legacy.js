@@ -17,7 +17,7 @@ import*as e from"../../core/common/common.js";import*as t from"../../core/i18n/i
           ${Vi(xo(yo.closeDialog),t,{jslogContext:"dismiss"})}
         </div>
         ${null!=n?this.#o(n):null}
-      `,this.contentElement,{host:this})}static show(e){const t=new ws("remote-debnugging-terminated");t.setSizeBehavior("MeasureContent"),t.setDimmed(!0),new So(e,(()=>t.hide())).show(t.contentElement),t.show(),r.rnPerfMetrics.remoteDebuggingTerminated(e)}#o(e){return Io`
+      `,this.contentElement,{host:this})}static show(e,t){const n=new ws("remote-debnugging-terminated");n.setSizeBehavior("MeasureContent"),n.setDimmed(!0),new So(e,(()=>n.hide())).show(n.contentElement),n.show(),r.rnPerfMetrics.remoteDebuggingTerminated(t)}#o(e){return Io`
       <div class="remote-debugging-terminated-feedback-container">
         <div class="remote-debugging-terminated-feedback-label">${xo(yo.sendFeedbackMessage)}</div>
         ${Vi(xo(yo.sendFeedback),(()=>{r.InspectorFrontendHost.InspectorFrontendHostInstance.openInNewTab(e)}),{jslogContext:"sendFeedback"})}

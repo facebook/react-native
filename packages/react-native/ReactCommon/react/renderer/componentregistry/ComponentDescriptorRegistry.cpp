@@ -10,6 +10,7 @@
 #include "componentNameByReactViewName.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticComponentDescriptor.h>
 #include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerAutomaticShadowNode.h>
@@ -83,11 +84,30 @@ const ComponentDescriptor& ComponentDescriptorRegistry::at(
   }
 
   if (it == _registryByName.end()) {
-    auto componentDescriptor = std::make_shared<
-        const UnstableLegacyViewManagerAutomaticComponentDescriptor>(
-        parameters_, unifiedComponentName);
-    registerComponentDescriptor(componentDescriptor);
-    return *_registryByName.find(unifiedComponentName)->second;
+    if (ReactNativeFeatureFlags::useFabricInterop()) {
+      // When interop is enabled, if the component is not found we rely on
+      // UnstableLegacyViewManagerAutomaticComponentDescriptor to support legacy
+      // components in new architecture.
+      auto componentDescriptor = std::make_shared<
+          const UnstableLegacyViewManagerAutomaticComponentDescriptor>(
+          parameters_, unifiedComponentName);
+      registerComponentDescriptor(componentDescriptor);
+      return *_registryByName.find(unifiedComponentName)->second;
+    } else {
+      // When interop is disabled, if the component is not found we rely on
+      // fallbackComponentDescriptor (default:
+      // UnimplementedNativeViewComponentDescriptor).
+      // UnimplementedNativeViewComponentDescriptor displays a View in debug
+      // mode to alert the developer that the component is not properly
+      // configured, and an empty view in release mode.
+      if (_fallbackComponentDescriptor == nullptr) {
+        throw std::invalid_argument(
+            ("Unable to find componentDescriptor for " + unifiedComponentName)
+                .c_str());
+      } else {
+        return *_fallbackComponentDescriptor.get();
+      }
+    }
   }
 
   return *it->second;

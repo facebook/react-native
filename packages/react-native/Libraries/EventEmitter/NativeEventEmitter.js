@@ -24,7 +24,12 @@ interface NativeModule {
   removeListeners(count: number): void;
 }
 
-export type {EventSubscription};
+/** @deprecated Use `EventSubscription` instead. */
+type EmitterSubscription = EventSubscription;
+
+export type {EventSubscription, EmitterSubscription};
+/** @deprecated Use `EventSubscription` instead. */
+export type NativeEventSubscription = EventSubscription;
 
 // $FlowFixMe[unclear-type] unclear type of events
 type UnsafeObject = Object;
@@ -80,7 +85,7 @@ export default class NativeEventEmitter<
 
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context?: mixed,
   ): EventSubscription {
     this._nativeModule?.addListener(eventType);
@@ -104,7 +109,7 @@ export default class NativeEventEmitter<
 
   emit<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    ...args: $ElementType<TEventToArgsMap, TEvent>
+    ...args: TEventToArgsMap[TEvent]
   ): void {
     // Generally, `RCTDeviceEventEmitter` is directly invoked. But this is
     // included for completeness.

@@ -10,6 +10,7 @@
 
 import type {RNTesterModuleInfo, ScreenTypes} from './types/RNTesterTypes';
 
+import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
@@ -26,7 +27,6 @@ import {
   getExamplesListWithRecentlyUsed,
   initialNavigationState,
 } from './utils/testerStateUtils';
-import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import * as React from 'react';
 import {
   BackHandler,
@@ -36,6 +36,7 @@ import {
   StyleSheet,
   View,
   useColorScheme,
+  useWindowDimensions,
 } from 'react-native';
 import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
@@ -75,7 +76,10 @@ const RNTesterApp = ({
     activeModuleExampleKey,
     screen,
     recentlyUsed,
+    hadDeepLink,
   } = state;
+
+  const isScreenTiny = useWindowDimensions().height < 600;
 
   const examplesList = React.useMemo(
     () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
@@ -153,7 +157,7 @@ const RNTesterApp = ({
       // *  rntester://example/<moduleKey>
       // *  rntester://example/<moduleKey>/<exampleKey>
       const match =
-        /^rntester:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
+        /^rntester(-legacy)?:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
           url,
         );
       if (!match) {
@@ -163,8 +167,8 @@ const RNTesterApp = ({
         return;
       }
 
-      const rawModuleKey = match[1];
-      const exampleKey = match[2];
+      const rawModuleKey = match[2];
+      const exampleKey = match[3];
 
       // For tooling compatibility, allow all these variants for each module key:
       const validModuleKeys = [
@@ -265,16 +269,21 @@ const RNTesterApp = ({
   const activeExampleList =
     screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
 
+  // Hide chrome if we don't have much screen space and are showing UI for tests
+  const shouldHideChrome = isScreenTiny && hadDeepLink;
+
   return (
     <RNTesterThemeContext.Provider value={theme}>
-      <RNTTitleBar
-        title={title}
-        theme={theme}
-        documentationURL={activeModule?.documentationURL}>
-        {activeModule && BackButtonComponent ? (
-          <BackButtonComponent onBack={handleBackPress} />
-        ) : undefined}
-      </RNTTitleBar>
+      {!shouldHideChrome && (
+        <RNTTitleBar
+          title={title}
+          theme={theme}
+          documentationURL={activeModule?.documentationURL}>
+          {activeModule && BackButtonComponent ? (
+            <BackButtonComponent onBack={handleBackPress} />
+          ) : undefined}
+        </RNTTitleBar>
+      )}
       <View
         style={StyleSheet.compose(styles.container, {
           backgroundColor: theme.GroupedBackgroundColor,
@@ -292,13 +301,15 @@ const RNTesterApp = ({
           />
         )}
       </View>
-      <View style={styles.bottomNavbar}>
-        <RNTesterNavBar
-          screen={screen || Screens.COMPONENTS}
-          isExamplePageOpen={!!activeModule}
-          handleNavBarPress={handleNavBarPress}
-        />
-      </View>
+      {!shouldHideChrome && (
+        <View style={styles.bottomNavbar}>
+          <RNTesterNavBar
+            screen={screen || Screens.COMPONENTS}
+            isExamplePageOpen={!!activeModule}
+            handleNavBarPress={handleNavBarPress}
+          />
+        </View>
+      )}
       <ReportFullyDrawnView />
     </RNTesterThemeContext.Provider>
   );

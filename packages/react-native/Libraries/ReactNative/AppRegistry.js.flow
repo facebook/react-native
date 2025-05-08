@@ -20,7 +20,4 @@ export type {
   RootViewStyleProvider,
 } from './AppRegistry.flow';
 
-export * as default from './AppRegistryImpl';
-
-// This export is only for the purpose of generated TS definitions being correct.
 export * as AppRegistry from './AppRegistryImpl';

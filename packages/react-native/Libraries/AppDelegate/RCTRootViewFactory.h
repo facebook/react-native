@@ -212,6 +212,15 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
 
 #pragma mark - RCTRootViewFactory Helpers
 
+/**
+ * Initialize React Host/Bridge without creating a view.
+ *
+ * Use it to speed up later viewWithModuleName: calls.
+ *
+ * @parameter: launchOptions  - a dictionary with a set of options.
+ */
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions;
+
 - (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 
 @end

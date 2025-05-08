@@ -215,7 +215,8 @@ std::string simpleBasename(const std::string& path) {
 void ReactInstance::loadScript(
     std::unique_ptr<const JSBigString> script,
     const std::string& sourceURL,
-    std::function<void(jsi::Runtime& runtime)>&& completion) {
+    std::function<void(jsi::Runtime& runtime)>&& beforeLoad,
+    std::function<void(jsi::Runtime& runtime)>&& afterLoad) {
   auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
@@ -226,7 +227,11 @@ void ReactInstance::loadScript(
                                    weakBufferedRuntimeExecuter =
                                        std::weak_ptr<BufferedRuntimeExecutor>(
                                            bufferedRuntimeExecutor_),
-                                   completion](jsi::Runtime& runtime) {
+                                   beforeLoad,
+                                   afterLoad](jsi::Runtime& runtime) {
+    if (beforeLoad) {
+      beforeLoad(runtime);
+    }
     TraceSection s("ReactInstance::loadScript");
     bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
     if (hasLogger) {
@@ -255,8 +260,8 @@ void ReactInstance::loadScript(
             weakBufferedRuntimeExecuter.lock()) {
       strongBufferedRuntimeExecuter->flush();
     }
-    if (completion) {
-      completion(runtime);
+    if (afterLoad) {
+      afterLoad(runtime);
     }
   });
 }

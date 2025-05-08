@@ -10,6 +10,7 @@
 #import <React/RCTInitializing.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
 #import <React/RCTNativeAnimatedTurboModule.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import "RCTAnimationPlugins.h"
 
@@ -50,7 +51,9 @@ RCT_EXPORT_MODULE();
 {
   // _surfacePresenter set in setSurfacePresenter:
   _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:nil surfacePresenter:_surfacePresenter];
-  [_surfacePresenter addObserver:self];
+  if (!facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+    [_surfacePresenter addObserver:self];
+  }
   [[self.moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
 }
 
@@ -59,7 +62,9 @@ RCT_EXPORT_MODULE();
   [super invalidate];
   [_nodesManager stopAnimationLoop];
   [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
-  [_surfacePresenter removeObserver:self];
+  if (!facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+    [_surfacePresenter removeObserver:self];
+  }
 }
 
 /*
@@ -73,52 +78,42 @@ RCT_EXPORT_MODULE();
 
 #pragma mark-- API
 
-RCT_EXPORT_METHOD(startOperationBatch)
-{
-  // TODO T71377585
-}
+RCT_EXPORT_METHOD(startOperationBatch) {}
 
 RCT_EXPORT_METHOD(finishOperationBatch)
 {
-  // TODO T71377585
+  // This method is only called from JS when animatedShouldSignalBatch is enabled.
+  [self flushOperationQueues];
 }
 
 RCT_EXPORT_METHOD(createAnimatedNode : (double)tag config : (NSDictionary<NSString *, id> *)config)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager createAnimatedNode:[NSNumber numberWithDouble:tag] config:config];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager createAnimatedNode:[NSNumber numberWithDouble:tag] config:config];
+  }];
 }
 
 RCT_EXPORT_METHOD(updateAnimatedNodeConfig : (double)tag config : (NSDictionary<NSString *, id> *)config)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager updateAnimatedNodeConfig:[NSNumber numberWithDouble:tag] config:config];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager updateAnimatedNodeConfig:[NSNumber numberWithDouble:tag] config:config];
+  }];
 }
 
 RCT_EXPORT_METHOD(connectAnimatedNodes : (double)parentTag childTag : (double)childTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager connectAnimatedNodes:[NSNumber numberWithDouble:parentTag]
-                                childTag:[NSNumber numberWithDouble:childTag]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager connectAnimatedNodes:[NSNumber numberWithDouble:parentTag]
+                              childTag:[NSNumber numberWithDouble:childTag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(disconnectAnimatedNodes : (double)parentTag childTag : (double)childTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager disconnectAnimatedNodes:[NSNumber numberWithDouble:parentTag]
-                                   childTag:[NSNumber numberWithDouble:childTag]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager disconnectAnimatedNodes:[NSNumber numberWithDouble:parentTag]
+                                 childTag:[NSNumber numberWithDouble:childTag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(startAnimatingNode
@@ -127,126 +122,94 @@ RCT_EXPORT_METHOD(startAnimatingNode
                   : (NSDictionary<NSString *, id> *)config endCallback
                   : (RCTResponseSenderBlock)callBack)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId]
-                               nodeTag:[NSNumber numberWithDouble:nodeTag]
-                                config:config
-                           endCallback:callBack];
-    }];
-
-    [self flushOperationQueues];
-  });
+  [self queueFlushedOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId]
+                             nodeTag:[NSNumber numberWithDouble:nodeTag]
+                              config:config
+                         endCallback:callBack];
+  }];
 }
 
 RCT_EXPORT_METHOD(stopAnimation : (double)animationId)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager stopAnimation:[NSNumber numberWithDouble:animationId]];
-    }];
-    [self flushOperationQueues];
-  });
+  [self queueFlushedOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager stopAnimation:[NSNumber numberWithDouble:animationId]];
+  }];
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeValue : (double)nodeTag value : (double)value)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager setAnimatedNodeValue:[NSNumber numberWithDouble:nodeTag] value:[NSNumber numberWithDouble:value]];
-    }];
-    // In Bridge, flushing of native animations is done from RCTCxxBridge batchDidComplete().
-    // Since RCTCxxBridge doesn't exist in Bridgeless, and components are not remounted in Fabric for native animations,
-    // flush here for changes in Animated.Value for Animated.event.
-    [self flushOperationQueues];
-  });
+  [self queueFlushedOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager setAnimatedNodeValue:[NSNumber numberWithDouble:nodeTag] value:[NSNumber numberWithDouble:value]];
+  }];
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeOffset : (double)nodeTag offset : (double)offset)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager setAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]
-                                   offset:[NSNumber numberWithDouble:offset]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager setAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag] offset:[NSNumber numberWithDouble:offset]];
+  }];
 }
 
 RCT_EXPORT_METHOD(flattenAnimatedNodeOffset : (double)nodeTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager flattenAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager flattenAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(extractAnimatedNodeOffset : (double)nodeTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager extractAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager extractAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(connectAnimatedNodeToView : (double)nodeTag viewTag : (double)viewTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      // viewName is not used when node is managed by Fabric, and nodes are always managed by Fabric in Bridgeless.
-      [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag]
-                                      viewTag:[NSNumber numberWithDouble:viewTag]
-                                     viewName:nil];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    // viewName is not used when node is managed by Fabric, and nodes are always managed by Fabric in Bridgeless.
+    [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag]
+                                    viewTag:[NSNumber numberWithDouble:viewTag]
+                                   viewName:nil];
+  }];
 }
 
 RCT_EXPORT_METHOD(disconnectAnimatedNodeFromView : (double)nodeTag viewTag : (double)viewTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager disconnectAnimatedNodeFromView:[NSNumber numberWithDouble:nodeTag]
-                                           viewTag:[NSNumber numberWithDouble:viewTag]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager disconnectAnimatedNodeFromView:[NSNumber numberWithDouble:nodeTag]
+                                         viewTag:[NSNumber numberWithDouble:viewTag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(restoreDefaultValues : (double)nodeTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addPreOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager restoreDefaultValues:[NSNumber numberWithDouble:nodeTag]];
-    }];
-  });
+  [self queuePreOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager restoreDefaultValues:[NSNumber numberWithDouble:nodeTag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(dropAnimatedNode : (double)tag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager dropAnimatedNode:[NSNumber numberWithDouble:tag]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager dropAnimatedNode:[NSNumber numberWithDouble:tag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(startListeningToAnimatedNodeValue : (double)tag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    __weak id<RCTValueAnimatedNodeObserver> valueObserver = self;
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager startListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag] valueObserver:valueObserver];
-    }];
-  });
+  __weak id<RCTValueAnimatedNodeObserver> valueObserver = self;
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager startListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag] valueObserver:valueObserver];
+  }];
 }
 
 RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue : (double)tag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager stopListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager stopListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(addAnimatedEventToView
@@ -261,13 +224,11 @@ RCT_EXPORT_METHOD(addAnimatedEventToView
     eventMappingDict[@"animatedValueTag"] = @(*eventMapping.animatedValueTag());
   }
 
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager addAnimatedEventToView:[NSNumber numberWithDouble:viewTag]
-                                 eventName:eventName
-                              eventMapping:eventMappingDict];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager addAnimatedEventToView:[NSNumber numberWithDouble:viewTag]
+                               eventName:eventName
+                            eventMapping:eventMappingDict];
+  }];
 }
 
 RCT_EXPORT_METHOD(removeAnimatedEventFromView
@@ -275,22 +236,18 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView
                   : (nonnull NSString *)eventName animatedNodeTag
                   : (double)animatedNodeTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager removeAnimatedEventFromView:[NSNumber numberWithDouble:viewTag]
-                                      eventName:eventName
-                                animatedNodeTag:[NSNumber numberWithDouble:animatedNodeTag]];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager removeAnimatedEventFromView:[NSNumber numberWithDouble:viewTag]
+                                    eventName:eventName
+                              animatedNodeTag:[NSNumber numberWithDouble:animatedNodeTag]];
+  }];
 }
 
 RCT_EXPORT_METHOD(getValue : (double)nodeTag saveValueCallback : (RCTResponseSenderBlock)saveValueCallback)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-      [nodesManager getValue:[NSNumber numberWithDouble:nodeTag] saveCallback:saveValueCallback];
-    }];
-  });
+  [self queueOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager getValue:[NSNumber numberWithDouble:nodeTag] saveCallback:saveValueCallback];
+  }];
 }
 
 RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArgs)
@@ -299,6 +256,43 @@ RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArg
 }
 
 #pragma mark-- Batch handling
+
+- (void)queueFlushedOperationBlock:(AnimatedOperation)operation
+{
+  if (facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+    [self addOperationBlock:operation];
+  } else {
+    dispatch_async(RCTGetUIManagerQueue(), ^{
+      [self addOperationBlock:operation];
+      // In Bridge, flushing of native animations is done from RCTCxxBridge batchDidComplete().
+      // Since RCTCxxBridge doesn't exist in Bridgeless, and components are not remounted in Fabric for native
+      // animations, flush here for changes in Animated.Value for Animated.event.
+      [self flushOperationQueues];
+    });
+  }
+}
+
+- (void)queueOperationBlock:(AnimatedOperation)operation
+{
+  if (facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+    [self addOperationBlock:operation];
+  } else {
+    dispatch_async(RCTGetUIManagerQueue(), ^{
+      [self addOperationBlock:operation];
+    });
+  }
+}
+
+- (void)queuePreOperationBlock:(AnimatedOperation)operation
+{
+  if (facebook::react::ReactNativeFeatureFlags::animatedShouldSignalBatch()) {
+    [self addPreOperationBlock:operation];
+  } else {
+    dispatch_async(RCTGetUIManagerQueue(), ^{
+      [self addPreOperationBlock:operation];
+    });
+  }
+}
 
 - (void)addOperationBlock:(AnimatedOperation)operation
 {

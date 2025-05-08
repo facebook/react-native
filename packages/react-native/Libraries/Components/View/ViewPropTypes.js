@@ -15,17 +15,18 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
+  GestureResponderEvent,
   LayoutChangeEvent,
   LayoutRectangle,
   MouseEvent,
   PointerEvent,
-  GestureResponderEvent,
 } from '../../Types/CoreEventTypes';
 import type {
   AccessibilityActionEvent,
   AccessibilityProps,
 } from './ViewAccessibility';
-import type {Node} from 'react';
+
+import * as React from 'react';
 
 export type ViewLayout = LayoutRectangle;
 export type ViewLayoutEvent = LayoutChangeEvent;
@@ -345,6 +346,51 @@ export type ViewPropsAndroid = $ReadOnly<{
   onClick?: ?(event: GestureResponderEvent) => mixed,
 }>;
 
+export type TVViewPropsIOS = $ReadOnly<{
+  /**
+   * *(Apple TV only)* When set to true, this view will be focusable
+   * and navigable using the Apple TV remote.
+   *
+   * @platform ios
+   */
+  isTVSelectable?: boolean,
+
+  /**
+   * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
+   *
+   * @platform ios
+   */
+  hasTVPreferredFocus?: boolean,
+
+  /**
+   * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+   *
+   * @platform ios
+   */
+  tvParallaxShiftDistanceX?: number,
+
+  /**
+   * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
+   *
+   * @platform ios
+   */
+  tvParallaxShiftDistanceY?: number,
+
+  /**
+   * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
+   *
+   * @platform ios
+   */
+  tvParallaxTiltAngle?: number,
+
+  /**
+   * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
+   *
+   * @platform ios
+   */
+  tvParallaxMagnification?: number,
+}>;
+
 export type ViewPropsIOS = $ReadOnly<{
   /**
    * Whether this `View` should be rendered as a bitmap before compositing.
@@ -357,7 +403,7 @@ export type ViewPropsIOS = $ReadOnly<{
 }>;
 
 type ViewBaseProps = $ReadOnly<{
-  children?: Node,
+  children?: React.Node,
   style?: ?ViewStyleProp,
 
   /**

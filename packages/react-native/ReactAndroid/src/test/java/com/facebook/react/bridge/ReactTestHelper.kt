@@ -16,8 +16,8 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec
 import com.facebook.react.uimanager.UIManagerModule
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when` as whenever
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.robolectric.RuntimeEnvironment
 
 /** Utility for creating pre-configured instances of core react components for tests. */
@@ -42,10 +42,10 @@ object ReactTestHelper {
             .build()
     val reactQueueConfiguration: ReactQueueConfiguration =
         ReactQueueConfigurationImpl.create(spec) { e -> throw RuntimeException(e) }
-    val reactInstance: CatalystInstance = mock(CatalystInstance::class.java)
+    val reactInstance: CatalystInstance = mock<CatalystInstance>()
     whenever(reactInstance.reactQueueConfiguration).thenReturn(reactQueueConfiguration)
     whenever(reactInstance.getNativeModule(UIManagerModule::class.java))
-        .thenReturn(mock(UIManagerModule::class.java))
+        .thenReturn(mock<UIManagerModule>())
     whenever(reactInstance.isDestroyed).thenReturn(false)
     return reactInstance
   }

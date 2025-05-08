@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29cdbefbe02064df4fb65388e64f95a4>>
+ * @generated SignedSource<<8b135b02d868914f6b3487f09e8955ff>>
  */
 
 /**
@@ -50,12 +50,27 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool animatedShouldSignalBatch();
 
   /**
-   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   * Use a C++ implementation of Native Animated instead of the platform implementation.
+   */
+  RN_EXPORT static bool cxxNativeAnimatedEnabled();
+
+  /**
+   * Disable sync dispatch on the main queue on iOS
+   */
+  RN_EXPORT static bool disableMainQueueSyncDispatchIOS();
+
+  /**
+   * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
 
   /**
-   * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+   * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
+   */
+  RN_EXPORT static bool enableAccessibilityOrder();
+
+  /**
+   * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
@@ -68,6 +83,21 @@ class ReactNativeFeatureFlags {
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   RN_EXPORT static bool enableCppPropsIteratorSetter();
+
+  /**
+   * This enables the fabric implementation of focus search so that we can focus clipped elements
+   */
+  RN_EXPORT static bool enableCustomFocusSearchOnClippedElementsAndroid();
+
+  /**
+   * Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.
+   */
+  RN_EXPORT static bool enableDestroyShadowTreeRevisionAsync();
+
+  /**
+   * When enabled a subset of components will avoid double measurement on Android.
+   */
+  RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
@@ -85,14 +115,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricRenderer();
 
   /**
+   * This feature flag enables a fix for reparenting fix in differentiator
+   */
+  RN_EXPORT static bool enableFixForParentTagDuringReparenting();
+
+  /**
+   * Enables font scale changes updating layout for measurable nodes.
+   */
+  RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
+
+  /**
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
-
-  /**
-   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
-   */
-  RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
    * Trigger JS runtime GC on memory pressure event on iOS
@@ -110,9 +145,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
 
   /**
-   * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
+   * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
    */
-  RN_EXPORT static bool enableLongTaskAPI();
+  RN_EXPORT static bool enableMainQueueModulesOnIOS();
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
@@ -120,9 +155,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableNativeCSSParsing();
 
   /**
+   * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
+   */
+  RN_EXPORT static bool enableNetworkEventReporting();
+
+  /**
    * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
    */
   RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
+
+  /**
+   * Enables caching text layout artifacts for later reuse
+   */
+  RN_EXPORT static bool enablePreparedTextLayout();
 
   /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
@@ -130,19 +175,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
 
   /**
-   * Report paint time inside the Event Timing API implementation (PerformanceObserver).
+   * Enables the reporting of network resource timings through `PerformanceObserver`.
    */
-  RN_EXPORT static bool enableReportEventPaintTime();
+  RN_EXPORT static bool enableResourceTimingAPI();
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
    */
   RN_EXPORT static bool enableSynchronousStateUpdates();
-
-  /**
-   * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
-   */
-  RN_EXPORT static bool enableUIConsistency();
 
   /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
@@ -165,19 +205,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableViewRecyclingForView();
 
   /**
-   * Fixes a bug in Differentiator where parent views may be referenced before they're created
-   */
-  RN_EXPORT static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
-
-  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
-
-  /**
-   * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
-   */
-  RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
@@ -190,19 +220,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 
   /**
-   * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
+   * Set maxLines and ellipsization during Android layout creation
    */
-  RN_EXPORT static bool lazyAnimationCallbacks();
-
-  /**
-   * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
-   */
-  RN_EXPORT static bool removeTurboModuleManagerDelegateMutex();
-
-  /**
-   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
-   */
-  RN_EXPORT static bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
+  RN_EXPORT static bool incorporateMaxLinesDuringAndroidLayout();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
@@ -210,14 +230,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
 
   /**
+   * When enabled, runtime shadow node references will be updated during the commit. This allows running RSNRU from any thread without corrupting the renderer state.
+   */
+  RN_EXPORT static bool updateRuntimeShadowNodeReferencesOnCommit();
+
+  /**
    * In Bridgeless mode, use the always available javascript error reporting pipeline.
    */
   RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
-
-  /**
-   * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
-   */
-  RN_EXPORT static bool useEditTextStockAndroidFocusBehavior();
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
@@ -238,6 +258,11 @@ class ReactNativeFeatureFlags {
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
    */
   RN_EXPORT static bool useRawPropsJsiValue();
+
+  /**
+   * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
+   */
+  RN_EXPORT static bool useShadowNodeStateOnClone();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
@@ -291,7 +316,7 @@ class ReactNativeFeatureFlags {
    * This is **dangerous** because it can introduce consistency issues that will
    * be much harder to debug. For example, it could hide the fact that feature
    * flags are read before you set the values you want to use everywhere. It
-   * could also cause a workflow to suddently have different feature flags for
+   * could also cause a workflow to suddenly have different feature flags for
    * behaviors that were configured with different values before.
    *
    * Please see the documentation of `dangerouslyReset` for additional details.

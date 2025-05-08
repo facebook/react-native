@@ -11,7 +11,7 @@
 // adapted from https://github.com/web-platform-tests/wpt/blob/master/pointerevents/pointerevent_pointermove.html
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
-import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PointerEvent} from 'react-native';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import {useTestEventHandler} from './PointerEventSupport';

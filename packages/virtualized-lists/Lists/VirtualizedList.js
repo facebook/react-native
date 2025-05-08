@@ -17,12 +17,13 @@ import type {
   Separators,
   VirtualizedListProps,
 } from './VirtualizedListProps';
-import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   LayoutChangeEvent,
   ScrollEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+  ScrollResponderType,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
@@ -315,7 +316,7 @@ class VirtualizedList extends StateSafePureComponent<
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
-      return findNodeHandle(this._scrollRef);
+      return findNodeHandle<$FlowFixMe>(this._scrollRef);
     }
   }
 
@@ -769,7 +770,7 @@ class VirtualizedList extends StateSafePureComponent<
     stickyIndicesFromProps: Set<number>,
     first: number,
     last: number,
-    inversionStyle: ViewStyleProp,
+    inversionStyle: StyleProp<ViewStyle>,
   ) {
     const {
       CellRendererComponent,
@@ -890,6 +891,30 @@ class VirtualizedList extends StateSafePureComponent<
     return key;
   }
 
+  _renderEmptyComponent(
+    element: ExactReactElement_DEPRECATED<any>,
+    inversionStyle: StyleProp<ViewStyle>,
+  ): React.Node {
+    // $FlowFixMe[prop-missing] React.Element internal inspection
+    const isFragment = element.type === React.Fragment;
+
+    if (isFragment) {
+      return element;
+    }
+
+    return React.cloneElement(element, {
+      onLayout: (event: LayoutChangeEvent) => {
+        this._onLayoutEmpty(event);
+        // $FlowFixMe[prop-missing] React.Element internal inspection
+        if (element.props.onLayout) {
+          element.props.onLayout(event);
+        }
+      },
+      // $FlowFixMe[prop-missing] React.Element internal inspection
+      style: StyleSheet.compose(inversionStyle, element.props.style),
+    });
+  }
+
   render(): React.Node {
     this._checkProps(this.props);
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
@@ -955,17 +980,7 @@ class VirtualizedList extends StateSafePureComponent<
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-empty'}
           key="$empty">
-          {React.cloneElement(element, {
-            onLayout: (event: LayoutChangeEvent) => {
-              this._onLayoutEmpty(event);
-              // $FlowFixMe[prop-missing] React.Element internal inspection
-              if (element.props.onLayout) {
-                element.props.onLayout(event);
-              }
-            },
-            // $FlowFixMe[prop-missing] React.Element internal inspection
-            style: StyleSheet.compose(inversionStyle, element.props.style),
-          })}
+          {this._renderEmptyComponent(element, inversionStyle)}
         </VirtualizedListCellContextProvider>,
       );
     }
@@ -1118,7 +1133,10 @@ class VirtualizedList extends StateSafePureComponent<
           (
             this.props.renderScrollComponent ||
             this._defaultRenderScrollComponent
-          )(scrollProps) as ExactReactElement_DEPRECATED<any>,
+          )(
+            // $FlowExpectedError[prop-missing] scrollProps is a superset of ScrollViewProps
+            scrollProps,
+          ) as ExactReactElement_DEPRECATED<any>,
           {
             ref: this._captureScrollRef,
           },

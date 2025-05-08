@@ -10,6 +10,8 @@
 
 import type {ErrorUtilsT} from '@react-native/js-polyfills/error-guard';
 
+export type ErrorUtils = ErrorUtilsT;
+
 /**
  * The particular require runtime that we are using looks for a global
  * `ErrorUtils` object and if it exists, then it requires modules with the

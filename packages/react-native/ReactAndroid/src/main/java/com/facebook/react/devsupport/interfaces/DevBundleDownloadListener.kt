@@ -12,5 +12,5 @@ public interface DevBundleDownloadListener {
 
   public fun onProgress(status: String?, done: Int?, total: Int?)
 
-  public fun onFailure(cause: Exception?)
+  public fun onFailure(cause: Exception)
 }

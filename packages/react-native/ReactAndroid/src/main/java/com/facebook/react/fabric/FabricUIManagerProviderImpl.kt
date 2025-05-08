@@ -38,17 +38,13 @@ public class FabricUIManagerProviderImpl(
    * @throws IllegalStateException If runtimeExecutor or runtimeScheduler is null.
    */
   override fun createUIManager(context: ReactApplicationContext): UIManager {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.create")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "FabricUIManagerProviderImpl.create")
     val eventBeatManager = EventBeatManager()
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.createUIManager")
-
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "FabricUIManagerProviderImpl.createUIManager")
     val fabricUIManager = FabricUIManager(context, viewManagerRegistry, eventBeatManager)
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+    Systrace.endSection(Systrace.TRACE_TAG_REACT)
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManagerProviderImpl.registerBinding")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "FabricUIManagerProviderImpl.registerBinding")
     val binding = FabricUIManagerBinding()
 
     val catalystInstance = context.catalystInstance
@@ -65,9 +61,8 @@ public class FabricUIManagerProviderImpl(
               " runtimeScheduler must not be null")
     }
 
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
-
+    Systrace.endSection(Systrace.TRACE_TAG_REACT)
+    Systrace.endSection(Systrace.TRACE_TAG_REACT)
     return fabricUIManager
   }
 }

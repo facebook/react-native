@@ -12,12 +12,13 @@
 import 'react-native/Libraries/Core/InitializeCore';
 
 import type {Root} from '@react-native/fantom';
+import type {HostInstance} from 'react-native';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Modal, ScrollView, Text, TextInput, View} from 'react-native';
+import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -37,6 +38,38 @@ function getActualViewportDimensions(root: Root): {
 }
 
 describe('Fantom', () => {
+  describe('scheduleTask', () => {
+    it('does not run task immediately', () => {
+      let didRun = false;
+
+      Fantom.scheduleTask(() => {
+        didRun = true;
+      });
+
+      expect(didRun).toBe(false);
+
+      Fantom.runWorkLoop();
+
+      expect(didRun).toBe(true);
+    });
+
+    it('can be scheduled from within another task', () => {
+      let didInnerTaskRun = false;
+
+      Fantom.scheduleTask(() => {
+        Fantom.scheduleTask(() => {
+          didInnerTaskRun = true;
+        });
+      });
+
+      expect(didInnerTaskRun).toBe(false);
+
+      Fantom.runWorkLoop();
+
+      expect(didInnerTaskRun).toBe(true);
+    });
+  });
+
   describe('runTask', () => {
     it('should run a task synchronously', () => {
       const task = jest.fn();
@@ -389,22 +422,16 @@ describe('Fantom', () => {
   describe('runOnUIThread + enqueueNativeEvent', () => {
     it('sends event without payload', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
 
       let focusEvent = jest.fn();
 
+      const ref = React.createRef<HostInstance>();
+
       Fantom.runTask(() => {
-        root.render(
-          <TextInput
-            onFocus={focusEvent}
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<TextInput onFocus={focusEvent} ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
@@ -419,112 +446,108 @@ describe('Fantom', () => {
 
       expect(focusEvent).toHaveBeenCalledTimes(1);
     });
-  });
 
-  it('sends event with payload', () => {
-    const root = Fantom.createRoot();
-    let maybeNode;
-    const onChange = jest.fn();
+    it('sends event with payload', () => {
+      const root = Fantom.createRoot();
+      const ref = React.createRef<HostInstance>();
+      const onChange = jest.fn();
 
-    Fantom.runTask(() => {
-      root.render(
-        <TextInput
-          onChange={event => {
-            onChange(event.nativeEvent);
-          }}
-          ref={node => {
-            maybeNode = node;
-          }}
-        />,
-      );
-    });
-
-    const element = ensureInstance(maybeNode, ReactNativeElement);
-
-    Fantom.runOnUIThread(() => {
-      Fantom.enqueueNativeEvent(element, 'change', {
-        text: 'Hello World',
+      Fantom.runTask(() => {
+        root.render(
+          <TextInput
+            onChange={event => {
+              onChange(event.nativeEvent);
+            }}
+            ref={ref}
+          />,
+        );
       });
-    });
 
-    Fantom.runWorkLoop();
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
-    expect(onChange).toHaveBeenCalledTimes(1);
-    const [entry] = onChange.mock.lastCall;
-    expect(entry.text).toEqual('Hello World');
-  });
-
-  it('it batches events with isUnique option', () => {
-    const root = Fantom.createRoot();
-    let maybeNode;
-    const onScroll = jest.fn();
-
-    Fantom.runTask(() => {
-      root.render(
-        <ScrollView
-          onScroll={event => {
-            onScroll(event.nativeEvent);
-          }}
-          ref={node => {
-            maybeNode = node;
-          }}
-        />,
-      );
-    });
-
-    const element = ensureInstance(maybeNode, ReactNativeElement);
-
-    Fantom.runOnUIThread(() => {
-      Fantom.enqueueNativeEvent(element, 'scroll', {
-        contentOffset: {
-          x: 0,
-          y: 1,
-        },
+      Fantom.runOnUIThread(() => {
+        Fantom.enqueueNativeEvent(element, 'change', {
+          text: 'Hello World',
+        });
       });
-      Fantom.enqueueNativeEvent(
-        element,
-        'scroll',
-        {
-          contentOffset: {
-            x: 0,
-            y: 2,
+
+      Fantom.runWorkLoop();
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const [entry] = onChange.mock.lastCall;
+      expect(entry.text).toEqual('Hello World');
+    });
+
+    it('it batches events with isUnique option', () => {
+      const root = Fantom.createRoot();
+      const ref = React.createRef<HostInstance>();
+      const onScroll = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            onScroll={event => {
+              onScroll(event.nativeEvent);
+            }}
+            ref={ref}
+          />,
+        );
+      });
+
+      const element = ensureInstance(ref.current, ReactNativeElement);
+
+      Fantom.runOnUIThread(() => {
+        Fantom.enqueueNativeEvent(
+          element,
+          'scroll',
+          {
+            contentOffset: {
+              x: 0,
+              y: 1,
+            },
           },
-        },
-        {
-          isUnique: true,
-        },
-      );
-    });
+          {
+            isUnique: true,
+          },
+        );
+        Fantom.enqueueNativeEvent(
+          element,
+          'scroll',
+          {
+            contentOffset: {
+              x: 0,
+              y: 2,
+            },
+          },
+          {
+            isUnique: true,
+          },
+        );
+      });
 
-    Fantom.runWorkLoop();
+      Fantom.runWorkLoop();
 
-    expect(onScroll).toHaveBeenCalledTimes(1);
-    const [entry] = onScroll.mock.lastCall;
-    expect(entry.contentOffset).toEqual({
-      x: 0,
-      y: 2,
+      expect(onScroll).toHaveBeenCalledTimes(1);
+      const [entry] = onScroll.mock.lastCall;
+      expect(entry.contentOffset).toEqual({
+        x: 0,
+        y: 2,
+      });
     });
   });
 
   describe('dispatchNativeEvent', () => {
     it('flushes the event and runs the work loop', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = React.createRef<HostInstance>();
 
       let focusEvent = jest.fn();
 
       Fantom.runTask(() => {
-        root.render(
-          <TextInput
-            onFocus={focusEvent}
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<TextInput onFocus={focusEvent} ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
@@ -534,39 +557,33 @@ describe('Fantom', () => {
     });
   });
 
-  describe('scrollTo', () => {
+  describe('enqueueScrollEvent', () => {
     it('throws error if called on node that is not scroll view', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = React.createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<View ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(() => {
         Fantom.runOnUIThread(() => {
-          Fantom.scrollTo(element, {
+          Fantom.enqueueScrollEvent(element, {
             x: 0,
             y: 1,
           });
         });
       }).toThrow(
-        'Exception in HostFunction: scrollTo() can only be called on <ScrollView />',
+        'Exception in HostFunction: enqueueScrollEvent() can only be called on <ScrollView />',
       );
     });
 
     it('delivers onScroll event and affects position of elements on screen', () => {
       const root = Fantom.createRoot();
-      let maybeScrollViewNode;
-      let maybeNode;
+      const viewRef = React.createRef<HostInstance>();
+      const scrollViewRef = React.createRef<HostInstance>();
       const onScroll = jest.fn();
 
       Fantom.runTask(() => {
@@ -575,26 +592,19 @@ describe('Fantom', () => {
             onScroll={event => {
               onScroll(event.nativeEvent);
             }}
-            ref={node => {
-              maybeScrollViewNode = node;
-            }}>
-            <View
-              style={{width: 1, height: 2, top: 3}}
-              ref={node => {
-                maybeNode = node;
-              }}
-            />
+            ref={scrollViewRef}>
+            <View style={{width: 1, height: 2, top: 3}} ref={viewRef} />
           </ScrollView>,
         );
       });
 
       const scrollViewElement = ensureInstance(
-        maybeScrollViewNode,
+        scrollViewRef.current,
         ReactNativeElement,
       );
 
       Fantom.runOnUIThread(() => {
-        Fantom.scrollTo(scrollViewElement, {
+        Fantom.enqueueScrollEvent(scrollViewElement, {
           x: 0,
           y: 1,
         });
@@ -604,7 +614,96 @@ describe('Fantom', () => {
 
       expect(onScroll).toHaveBeenCalledTimes(1);
 
-      const viewElement = ensureInstance(maybeNode, ReactNativeElement);
+      const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+      let rect;
+
+      viewElement.measure((x, y, width, height, pageX, pageY) => {
+        rect = {
+          x,
+          y,
+          width,
+          height,
+          pageX,
+          pageY,
+        };
+      });
+
+      expect(rect).toEqual({
+        x: 0,
+        y: 3,
+        width: 1,
+        height: 2,
+        pageY: 2,
+        pageX: 0,
+      });
+
+      const boundingClientRect = viewElement.getBoundingClientRect();
+      expect(boundingClientRect.x).toBe(0);
+      expect(boundingClientRect.y).toBe(2);
+      expect(boundingClientRect.width).toBe(1);
+      expect(boundingClientRect.height).toBe(2);
+
+      root.destroy();
+    });
+  });
+
+  describe('scrollTo', () => {
+    it('throws error if called on node that is not scroll view', () => {
+      const root = Fantom.createRoot();
+      const ref = React.createRef<HostInstance>();
+
+      Fantom.runTask(() => {
+        root.render(<View ref={ref} />);
+      });
+
+      const element = ensureInstance(ref.current, ReactNativeElement);
+
+      expect(() => {
+        Fantom.scrollTo(element, {
+          x: 0,
+          y: 1,
+        });
+      }).toThrow(
+        'Exception in HostFunction: enqueueScrollEvent() can only be called on <ScrollView />',
+      );
+    });
+
+    it('delivers onScroll event and affects position of elements on screen', () => {
+      const root = Fantom.createRoot();
+      const scrollViewRef = React.createRef<HostInstance>();
+      const viewRef = React.createRef<HostInstance>();
+      const onScroll = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            onScroll={event => {
+              onScroll(event.nativeEvent);
+            }}
+            ref={scrollViewRef}>
+            <View style={{width: 1, height: 2, top: 3}} ref={viewRef} />
+          </ScrollView>,
+        );
+      });
+
+      const scrollViewElement = ensureInstance(
+        scrollViewRef.current,
+        ReactNativeElement,
+      );
+
+      expect(scrollViewElement.scrollTop).toBe(0);
+
+      Fantom.scrollTo(scrollViewElement, {
+        x: 0,
+        y: 1,
+      });
+
+      expect(scrollViewElement.scrollTop).toBe(1);
+
+      expect(onScroll).toHaveBeenCalledTimes(1);
+
+      const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
 
       let rect;
 
@@ -660,22 +759,17 @@ describe('Fantom', () => {
       expect(onLayout).toHaveBeenCalledTimes(1);
     });
   });
+
   describe('enqueueModalSizeUpdate', () => {
     it('throws error if called on node that is not <Modal />', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = React.createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<View ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(() => {
         Fantom.runOnUIThread(() => {
@@ -697,7 +791,7 @@ describe('Fantom', () => {
       Fantom.runTask(() => {
         root.render(
           <Modal
-            ref={(node: ?React.ElementRef<typeof Modal>) => {
+            ref={(node: ?HostInstance) => {
               maybeModalNode = node;
             }}>
             <View

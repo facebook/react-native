@@ -12,9 +12,10 @@ import android.os.Looper
 import android.os.Message
 
 /** Handler that can catch and dispatch Exceptions to an Exception handler. */
-public class MessageQueueThreadHandler
-constructor(looper: Looper, private val exceptionHandler: QueueThreadExceptionHandler) :
-    Handler(looper) {
+internal class MessageQueueThreadHandler(
+    looper: Looper,
+    private val exceptionHandler: QueueThreadExceptionHandler
+) : Handler(looper) {
   override fun dispatchMessage(msg: Message) {
     try {
       super.dispatchMessage(msg)

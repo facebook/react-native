@@ -132,7 +132,7 @@ UIColor *_Nullable UIColorFromComponentsColor(const facebook::react::ColorCompon
   return uiColor;
 }
 
-int32_t hashFromUIColor(const std::shared_ptr<void> &uiColor)
+std::size_t hashFromUIColor(const std::shared_ptr<void> &uiColor)
 {
   if (uiColor == nullptr) {
     return 0;
@@ -229,7 +229,7 @@ float Color::getChannel(int channelId) const
   return static_cast<float>(rgba[channelId]);
 }
 
-int32_t Color::getUIColorHash() const
+std::size_t Color::getUIColorHash() const
 {
   return uiColorHashValue_;
 }

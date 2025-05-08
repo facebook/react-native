@@ -11,6 +11,7 @@ import android.app.Activity
 import com.facebook.react.MemoryPressureRouter
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.LifecycleState
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -24,9 +25,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.MockedConstruction
 import org.mockito.Mockito.mockConstruction
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -41,7 +42,7 @@ import org.robolectric.annotation.Config
 /** Tests [ReactHostImpl] */
 @RunWith(RobolectricTestRunner::class)
 @Config(shadows = [ShadowSoLoader::class])
-@OptIn(UnstableReactNativeAPI::class)
+@OptIn(UnstableReactNativeAPI::class, FrameworkAPI::class)
 class ReactHostTest {
   private lateinit var reactHostDelegate: ReactHostDelegate
   private lateinit var reactHost: ReactHostImpl

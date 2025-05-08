@@ -15,5 +15,13 @@
     "normalize-colors",
     "react-native"
   ],
-  "bugs": "https://github.com/facebook/react-native/issues"
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "files": [
+    "index.js",
+    "README.md",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ]
 }

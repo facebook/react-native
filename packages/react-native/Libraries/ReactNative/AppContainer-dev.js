@@ -27,8 +27,8 @@ import * as React from 'react';
 
 const {useEffect, useState, useCallback} = React;
 
-const reactDevToolsHook: ReactDevToolsGlobalHook =
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+const reactDevToolsHook: ReactDevToolsGlobalHook = (window: $FlowFixMe)
+  .__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 // Required for React DevTools to view / edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.
@@ -53,7 +53,8 @@ const InspectorDeferred = ({
 }: InspectorDeferredProps) => {
   // D39382967 adds a require cycle: InitializeCore -> AppContainer -> Inspector -> InspectorPanel -> ScrollView -> InitializeCore
   // We can't remove it yet, fallback to dynamic require for now. This is the only reason why this logic is in a separate function.
-  const Inspector = require('../../src/private/inspector/Inspector').default;
+  const Inspector =
+    require('../../src/private/devsupport/devmenu/elementinspector/Inspector').default;
 
   return (
     <Inspector
@@ -74,7 +75,7 @@ const ReactDevToolsOverlayDeferred = ({
   reactDevToolsAgent,
 }: ReactDevToolsOverlayDeferredProps) => {
   const ReactDevToolsOverlay =
-    require('../../src/private/inspector/ReactDevToolsOverlay').default;
+    require('../../src/private/devsupport/devmenu/elementinspector/ReactDevToolsOverlay').default;
 
   return (
     <ReactDevToolsOverlay

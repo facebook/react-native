@@ -20,5 +20,6 @@ const VirtualizedSectionList: VirtualizedSectionListType =
 export type {
   SectionBase,
   ScrollToLocationParamsType,
+  VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
 export default VirtualizedSectionList;

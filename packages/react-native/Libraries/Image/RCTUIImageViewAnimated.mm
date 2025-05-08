@@ -123,11 +123,9 @@ static NSUInteger RCTDeviceFreeMemory(void)
     if ([self paused]) {
       [self start];
     }
-
-    [self.layer setNeedsDisplay];
-  } else {
-    super.image = image;
   }
+
+  super.image = image;
 }
 
 #pragma mark - Private

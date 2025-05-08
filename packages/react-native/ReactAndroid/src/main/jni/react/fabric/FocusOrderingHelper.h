@@ -19,14 +19,14 @@ enum class FocusDirection {
 
 class FocusOrderingHelper {
  public:
-  static void traverseAndUpdateNextFocusableElementMetrics(
+  static void traverseAndUpdateNextFocusableElement(
       const ShadowNode::Shared& parentShadowNode,
       const ShadowNode::Shared& focusedShadowNode,
       const ShadowNode::Shared& currNode,
       FocusDirection focusDirection,
       const UIManager& uimanager,
-      float& currentDelta,
-      float& nextDelta,
+      Rect sourceRect,
+      std::optional<Rect>& nextRect,
       ShadowNode::Shared& nextNode);
 
   static ShadowNode::Shared findShadowNodeByTagRecursively(
@@ -34,9 +34,5 @@ class FocusOrderingHelper {
       Tag tag);
 
   static std::optional<FocusDirection> resolveFocusDirection(int direction);
-
-  static std::tuple<float, float> initScrollDeltas(
-      FocusDirection focusDirection,
-      Point refPoint);
 };
 } // namespace facebook::react

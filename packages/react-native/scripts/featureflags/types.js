@@ -18,7 +18,7 @@ export type FeatureFlagDefinitions = $ReadOnly<{
 /**
  * OSSReleaseStageValue is used to determine the value of a feature flag in different release stages:
  * - none: the value of the feature flag will be `defaultValue` on all releases.
- * - experimental: the value of the feature flag will be `expectedReleaseValue` on experimental releases and `defaultValue` on canaray and stable releases.
+ * - experimental: the value of the feature flag will be `expectedReleaseValue` on experimental releases and `defaultValue` on canary and stable releases.
  * - canary: the value of the feature flag will be `expectedReleaseValue` on experimental and canary releases and `defaultValue` on stable releases.
  * - stable: the value of the feature flag will be `expectedReleaseValue` on all releases.
  */
@@ -55,7 +55,7 @@ export type FeatureFlagMetadata =
   | $ReadOnly<{
       purpose: 'experimentation',
       /**
-       * Aproximate date when the flag was added.
+       * Approximate date when the flag was added.
        * Used to help prioritize feature flags that need to be cleaned up.
        */
       dateAdded: string,

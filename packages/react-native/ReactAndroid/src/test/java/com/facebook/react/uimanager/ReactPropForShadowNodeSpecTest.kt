@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager
 
 import android.view.View
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.facebook.testutils.shadows.ShadowSoLoader
@@ -20,9 +21,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockedStatic
-import org.mockito.Mockito.any
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -39,14 +40,13 @@ class ReactPropForShadowNodeSpecTest {
 
   @Before
   fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
     yogaNodeFactory = mockStatic(YogaNodeFactory::class.java)
-    yogaNodeFactory
-        .`when`<YogaNode> { YogaNodeFactory.create(any()) }
-        .thenReturn(mock(YogaNode::class.java))
+    yogaNodeFactory.`when`<YogaNode> { YogaNodeFactory.create(any()) }.thenReturn(mock<YogaNode>())
     yogaConfigFactory = mockStatic(YogaConfigFactory::class.java)
     yogaConfigFactory
         .`when`<YogaConfig> { YogaConfigFactory.create() }
-        .thenReturn(mock(YogaConfig::class.java))
+        .thenReturn(mock<YogaConfig>())
   }
 
   @After()

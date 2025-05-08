@@ -273,6 +273,13 @@ export interface AccessibilityPropsAndroid {
     | 'no'
     | 'no-hide-descendants'
     | undefined;
+
+  /**
+   * Enables the view to be screen reader focusable, not keyboard focusable.
+   *
+   * @platform android
+   */
+  screenReaderFocusable?: boolean | undefined;
 }
 
 export interface AccessibilityPropsIOS {
@@ -334,6 +341,14 @@ export interface AccessibilityPropsIOS {
    * @platform ios
    */
   accessibilityLargeContentTitle?: string | undefined;
+
+  /**
+   * Blocks the user from interacting with the component through keyboard while still allowing
+   * screen reader to interact with it if this View is still accessible.
+   *
+   * @platform ios
+   */
+  accessibilityRespondsToUserInteraction?: boolean | undefined;
 }
 
 export type Role =

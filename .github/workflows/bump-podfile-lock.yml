@@ -1,0 +1,41 @@
+name: Bump Podfile.lock
+
+on:
+  workflow_call: # this directive allow us to call this workflow from other workflows
+
+jobs:
+  bump-podfile-lock:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Configure git
+        run: |
+          git config --local user.email "bot@reactnative.dev"
+          git config --local user.name "React Native Bot"
+      - name: Extract branch name
+        run: |
+          TAG="${{ github.ref_name }}";
+          BRANCH_NAME=$(echo "$TAG" | sed -E 's/v([0-9]+\.[0-9]+)\.[0-9]+(-rc\.[0-9]+)?/\1-stable/')
+          echo "Branch Name is $BRANCH_NAME"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+      - name: Checkout release branch
+        run: |
+          git checkout "$BRANCH_NAME"
+          git fetch
+          git pull origin "$BRANCH_NAME"
+      - name: Bump podfile.lock
+        run: |
+          cd packages/rn-tester
+          bundle install
+          bundle exec pod update hermes-engine --no-repo-update
+      - name: Commit changes
+        run: |
+          git add packages/rn-tester/Podfile.lock
+          git commit -m "[LOCAL] Bump Podfile.lock"
+          git push origin "$BRANCH_NAME"

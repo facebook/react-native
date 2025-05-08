@@ -13,10 +13,11 @@ import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.GenerateAutolinkingNewArchitecturesFileTask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
+import com.facebook.react.tasks.GenerateEntryPointTask
 import com.facebook.react.tasks.GeneratePackageListTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
-import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
+import com.facebook.react.utils.AgpConfiguratorUtils.configureDevServerLocation
 import com.facebook.react.utils.AgpConfiguratorUtils.configureNamespaceForLibraries
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
@@ -70,7 +71,7 @@ class ReactPlugin : Plugin<Project> {
 
       configureReactNativeNdk(project, extension)
       configureBuildConfigFieldsForApp(project, extension)
-      configureDevPorts(project)
+      configureDevServerLocation(project)
       configureBackwardCompatibilityReactMap(project)
       configureJavaToolChains(project)
 
@@ -248,6 +249,16 @@ class ReactPlugin : Plugin<Project> {
               task.generatedOutputDirectory.set(generatedAutolinkingJavaDir)
             }
 
+    // We add a task called generateAutolinkingPackageList to do not clash with the existing task
+    // called generatePackageList. This can to be renamed once we unlink the rn <-> cli
+    // dependency.
+    val generateEntryPointTask =
+        project.tasks.register(
+            "generateReactNativeEntryPoint", GenerateEntryPointTask::class.java) { task ->
+              task.autolinkInputFile.set(rootGeneratedAutolinkingFile)
+              task.generatedOutputDirectory.set(generatedAutolinkingJavaDir)
+            }
+
     if (project.isNewArchEnabled(extension)) {
       // For New Arch, we also need to generate code for C++ Autolinking
       val generateAutolinkingNewArchitectureFilesTask =
@@ -262,9 +273,12 @@ class ReactPlugin : Plugin<Project> {
           .dependsOn(generateAutolinkingNewArchitectureFilesTask)
     }
 
-    // We let generateAutolinkingPackageList depend on the preBuild task so it's executed before
+    // We let generateAutolinkingPackageList and generateEntryPoint depend on the preBuild task so
+    // it's executed before
     // everything else.
-    project.tasks.named("preBuild", Task::class.java).dependsOn(generatePackageListTask)
+    project.tasks
+        .named("preBuild", Task::class.java)
+        .dependsOn(generatePackageListTask, generateEntryPointTask)
 
     // We tell Android Gradle Plugin that inside /build/generated/autolinking/src/main/java there
     // are sources to be compiled as well.

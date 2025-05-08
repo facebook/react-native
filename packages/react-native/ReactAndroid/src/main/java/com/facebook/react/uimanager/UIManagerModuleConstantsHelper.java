@@ -13,7 +13,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +39,7 @@ public class UIManagerModuleConstantsHelper {
    * registered on the JS side with the help of {@code UIManagerModule.getConstantsForViewManager}.
    */
   /* package */ static Map<String, Object> createConstants(ViewManagerResolver resolver) {
-    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
+    Map<String, Object> constants = UIManagerModuleConstants.constants;
     constants.put("ViewManagerNames", new ArrayList<>(resolver.getViewManagerNames()));
     constants.put("LazyViewManagersEnabled", true);
     return constants;
@@ -47,8 +47,8 @@ public class UIManagerModuleConstantsHelper {
 
   public static Map<String, Object> getDefaultExportableEventTypes() {
     return MapBuilder.<String, Object>of(
-        BUBBLING_EVENTS_KEY, UIManagerModuleConstants.getBubblingEventTypeConstants(),
-        DIRECT_EVENTS_KEY, UIManagerModuleConstants.getDirectEventTypeConstants());
+        BUBBLING_EVENTS_KEY, UIManagerModuleConstants.bubblingEventTypeConstants,
+        DIRECT_EVENTS_KEY, UIManagerModuleConstants.directEventTypeConstants);
   }
 
   private static void validateDirectEventNames(
@@ -86,17 +86,19 @@ public class UIManagerModuleConstantsHelper {
    * into the map of {@link UIManagerModule} base constants that is stored in {@link
    * UIManagerModuleConstants}. TODO(6845124): Create a test for this
    */
-  /* package */ static Map<String, Object> createConstants(
+  // NOTE: When converted to Kotlin this method should be `internal` due to
+  // visibility restriction for `ReactInstance`
+  public static Map<String, Object> createConstants(
       List<ViewManager> viewManagers,
       @Nullable Map<String, Object> allBubblingEventTypes,
       @Nullable Map<String, Object> allDirectEventTypes) {
-    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
+    Map<String, Object> constants = UIManagerModuleConstants.constants;
 
     // Generic/default event types:
     // All view managers are capable of dispatching these events.
     // They will be automatically registered with React Fiber.
-    Map genericBubblingEventTypes = UIManagerModuleConstants.getBubblingEventTypeConstants();
-    Map genericDirectEventTypes = UIManagerModuleConstants.getDirectEventTypeConstants();
+    Map genericBubblingEventTypes = UIManagerModuleConstants.bubblingEventTypeConstants;
+    Map genericDirectEventTypes = UIManagerModuleConstants.directEventTypeConstants;
 
     // Cumulative event types:
     // View manager specific event types are collected as views are loaded.
@@ -124,7 +126,9 @@ public class UIManagerModuleConstantsHelper {
     return constants;
   }
 
-  /* package */ static Map<String, Object> createConstantsForViewManager(
+  // NOTE: When converted to Kotlin this method should be `internal` due to
+  // visibility restriction for `ReactInstance`
+  public static Map<String, Object> createConstantsForViewManager(
       ViewManager viewManager,
       @Nullable Map defaultBubblingEvents,
       @Nullable Map defaultDirectEvents,
@@ -134,8 +138,8 @@ public class UIManagerModuleConstantsHelper {
 
     Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
     if (viewManagerBubblingEvents != null) {
-      if (ReactNativeFeatureFlags.enableFabricRenderer()
-          && ReactNativeFeatureFlags.useFabricInterop()) {
+      if (ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer()
+          && ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
         // For Fabric, events needs to be fired with a "top" prefix.
         // For the sake of Fabric Interop, here we normalize events adding "top" in their
         // name if the user hasn't provided it.
@@ -151,8 +155,8 @@ public class UIManagerModuleConstantsHelper {
     Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
     validateDirectEventNames(viewManager.getName(), viewManagerDirectEvents);
     if (viewManagerDirectEvents != null) {
-      if (ReactNativeFeatureFlags.enableFabricRenderer()
-          && ReactNativeFeatureFlags.useFabricInterop()) {
+      if (ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer()
+          && ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
         // For Fabric, events needs to be fired with a "top" prefix.
         // For the sake of Fabric Interop, here we normalize events adding "top" in their
         // name if the user hasn't provided it.

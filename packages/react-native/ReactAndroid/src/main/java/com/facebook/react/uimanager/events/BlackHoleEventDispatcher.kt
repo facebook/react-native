@@ -13,11 +13,11 @@ import com.facebook.common.logging.FLog
  * A singleton class that overrides [EventDispatcher] with no-op methods, to be used by callers that
  * expect an EventDispatcher when the instance doesn't exist.
  */
-internal class BlackHoleEventDispatcher private constructor() : EventDispatcher {
+internal object BlackHoleEventDispatcher : EventDispatcher {
   override fun dispatchEvent(event: Event<*>) {
     FLog.d(
         "BlackHoleEventDispatcher",
-        "Trying to emit event to JS, but the React instance isn't ready. Event: ${event.eventName}")
+        "Trying to emit event to JS, but the React instance isn't ready. Event: ${event.getEventName()}")
   }
 
   override fun dispatchAllEvents(): Unit = Unit
@@ -31,20 +31,6 @@ internal class BlackHoleEventDispatcher private constructor() : EventDispatcher 
   override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener): Unit =
       Unit
 
-  @Deprecated("Deprecated in Java")
-  @Suppress("DEPRECATION")
-  override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTEventEmitter): Unit = Unit
-
-  override fun registerEventEmitter(uiManagerType: Int, eventEmitter: RCTModernEventEmitter): Unit =
-      Unit
-
-  override fun unregisterEventEmitter(uiManagerType: Int): Unit = Unit
-
+  @Deprecated("Private API, should only be used when the concrete implementation is known.")
   override fun onCatalystInstanceDestroyed(): Unit = Unit
-
-  companion object {
-    private val eventDispatcher: EventDispatcher = BlackHoleEventDispatcher()
-
-    @JvmStatic fun get(): EventDispatcher = eventDispatcher
-  }
 }

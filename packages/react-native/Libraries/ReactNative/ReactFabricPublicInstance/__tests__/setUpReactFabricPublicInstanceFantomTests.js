@@ -15,7 +15,7 @@ import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactN
 import TextInputState from '../../../Components/TextInput/TextInputState';
 import View from '../../../Components/View/View';
 import ReactFabricHostComponent from '../ReactFabricHostComponent';
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 

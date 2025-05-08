@@ -9,16 +9,16 @@
  */
 
 import type {ExtendedError} from '../../../../Libraries/Core/ExtendedError';
-import type {Component as ReactComponent} from 'react';
 
 import ExceptionsManager, {
   SyntheticError,
 } from '../../../../Libraries/Core/ExceptionsManager';
+import * as React from 'react';
 
 type ErrorInfo = {
   +componentStack?: ?string,
   // $FlowFixMe[unclear-type] unknown props and state.
-  +errorBoundary?: ?ReactComponent<any, any>,
+  +errorBoundary?: ?React.Component<any, any>,
 };
 
 function getExtendedError(

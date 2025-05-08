@@ -12,12 +12,12 @@ import com.facebook.systrace.Systrace
 /**
  * Helper to guarantee firing Systrace begin and end markers around a try with resources statement.
  */
-public class SystraceSection(sectionName: String) : AutoCloseable {
+internal class SystraceSection(sectionName: String) : AutoCloseable {
   init {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, sectionName)
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, sectionName)
   }
 
   override fun close() {
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+    Systrace.endSection(Systrace.TRACE_TAG_REACT)
   }
 }

@@ -20,10 +20,10 @@ import com.facebook.react.uimanager.IllegalViewOperationException
 internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
   abstract fun isReverse(): Boolean
 
-  override fun isValid(): Boolean = mDurationMs > 0 && mAnimatedProperty != null
+  override fun isValid(): Boolean = durationMs > 0 && animatedProperty != null
 
   override fun createAnimationImpl(view: View, x: Int, y: Int, width: Int, height: Int): Animation {
-    mAnimatedProperty?.let {
+    animatedProperty?.let {
       return when (it) {
         AnimatedPropertyType.OPACITY -> {
           val fromValue = if (isReverse()) view.alpha else 0.0f
@@ -78,7 +78,7 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "BaseLayoutAnimation", LegacyArchitectureLogLevel.WARNING)
     }
   }

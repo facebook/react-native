@@ -14,17 +14,6 @@
 
 namespace facebook::react {
 
-// We can't define this as type std::mutex because it gives error: declaration
-// requires a global destructor.
-inline std::mutex* mainThreadMutex = nullptr;
-
-inline std::mutex& getMainThreadMutex() {
-  if (mainThreadMutex == nullptr) {
-    mainThreadMutex = new std::mutex();
-  }
-  return *mainThreadMutex;
-}
-
 /*
  * Takes a function and calls it with a reference to a Runtime. The function
  * will be called when it is safe to do so (i.e. it ensures non-concurrent
@@ -63,7 +52,6 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
   std::mutex mutex2;
   std::mutex mutex3;
 
-  std::lock_guard<std::mutex> lock(getMainThreadMutex());
   mutex1.lock();
   mutex2.lock();
   mutex3.lock();

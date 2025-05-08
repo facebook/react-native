@@ -17,6 +17,8 @@ import StyleSheet from '../StyleSheet/StyleSheet';
 import Image from './Image';
 import * as React from 'react';
 
+export type {ImageBackgroundProps} from './ImageProps';
+
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
  *

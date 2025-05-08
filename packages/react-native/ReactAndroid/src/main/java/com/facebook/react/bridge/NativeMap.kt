@@ -17,7 +17,7 @@ public abstract class NativeMap : HybridClassBase() {
 
   private companion object {
     init {
-      ReactBridge.staticInit()
+      ReactNativeJniCommonSoLoader.staticInit()
     }
   }
 }

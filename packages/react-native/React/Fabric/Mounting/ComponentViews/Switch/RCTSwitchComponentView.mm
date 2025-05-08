@@ -60,7 +60,7 @@ using namespace facebook::react;
   const auto &newSwitchProps = static_cast<const SwitchProps &>(*props);
 
   // `value`
-  if (oldSwitchProps.value != newSwitchProps.value) {
+  if (!_isInitialValueSet || oldSwitchProps.value != newSwitchProps.value) {
     BOOL shouldAnimate = _isInitialValueSet == YES;
     [_switchView setOn:newSwitchProps.value animated:shouldAnimate];
   }
@@ -99,6 +99,18 @@ using namespace facebook::react;
 
   static_cast<const SwitchEventEmitter &>(*_eventEmitter)
       .onChange(SwitchEventEmitter::OnChange{.value = static_cast<bool>(sender.on)});
+}
+
+// UISwitch is the accessibility element not this view. If this is YES we block
+// accessibility on the switch itself
+- (BOOL)isAccessibilityElement
+{
+  return NO;
+}
+
+- (NSObject *)accessibilityElement
+{
+  return _switchView;
 }
 
 #pragma mark - Native Commands

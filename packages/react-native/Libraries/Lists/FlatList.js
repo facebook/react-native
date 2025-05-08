@@ -22,7 +22,7 @@ import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import View from '../Components/View/View';
 import VirtualizedLists from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
-import React from 'react';
+import * as React from 'react';
 
 const StyleSheet = require('../StyleSheet/StyleSheet').default;
 const deepDiffer = require('../Utilities/differ/deepDiffer').default;
@@ -184,17 +184,14 @@ type FlatListBaseProps<ItemT> = {
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
 export type FlatListProps<ItemT> = {
-  ...$Diff<
+  ...Omit<
     VirtualizedListProps,
-    {
-      data: $PropertyType<VirtualizedListProps, 'data'>,
-      getItem: $PropertyType<VirtualizedListProps, 'getItem'>,
-      getItemCount: $PropertyType<VirtualizedListProps, 'getItemCount'>,
-      getItemLayout: $PropertyType<VirtualizedListProps, 'getItemLayout'>,
-      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
-      keyExtractor: $PropertyType<VirtualizedListProps, 'keyExtractor'>,
-      ...
-    },
+    | 'data'
+    | 'getItem'
+    | 'getItemCount'
+    | 'getItemLayout'
+    | 'renderItem'
+    | 'keyExtractor',
   >,
   ...FlatListBaseProps<ItemT>,
   ...

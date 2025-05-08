@@ -35,4 +35,5 @@ const MessageQueueTestConfig = {
   remoteModuleConfig: remoteModulesConfig,
 };
 
+// eslint-disable-next-line lint/no-commonjs-exports
 module.exports = MessageQueueTestConfig;

@@ -17,10 +17,10 @@ import type {
 } from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {
   HostInstance,
-  LegacyHostInstanceMethods,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
+  NativeMethods,
 } from '../../../types/HostInstance';
 import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
@@ -60,10 +60,7 @@ const noop = () => {};
 // was slower than this method because the engine has to create an object than
 // we then discard to create a new one.
 
-class ReactNativeElement
-  extends ReadOnlyElement
-  implements LegacyHostInstanceMethods
-{
+class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;
   __internalInstanceHandle: InstanceHandle;

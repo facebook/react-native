@@ -8,8 +8,7 @@
  * @format
  */
 
-import type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
-import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {ColorValue, ImageSource} from 'react-native';
 
 import * as React from 'react';
 import {Appearance} from 'react-native';
@@ -133,8 +132,8 @@ export const RNTesterDarkTheme = {
   NavBarComponentsInactiveIcon: require('./../assets/bottom-nav-components-icon-dark.png'),
   NavBarAPIsActiveIcon: require('./../assets/bottom-nav-apis-icon-light.png'),
   NavBarAPIsInactiveIcon: require('./../assets/bottom-nav-apis-icon-dark.png'),
-  NavBarPlaygroundActiveIcon: require('./../assets/bottom-nav-playgrounds-icon-dark.png'),
-  NavBarPlaygroundInactiveIcon: require('./../assets/bottom-nav-playgrounds-icon-light.png'),
+  NavBarPlaygroundActiveIcon: require('./../assets/bottom-nav-playgrounds-icon-light.png'),
+  NavBarPlaygroundInactiveIcon: require('./../assets/bottom-nav-playgrounds-icon-dark.png'),
 };
 
 export const themes = {light: RNTesterLightTheme, dark: RNTesterDarkTheme};

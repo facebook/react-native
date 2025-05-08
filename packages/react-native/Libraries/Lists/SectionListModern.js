@@ -14,21 +14,27 @@ import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
   ScrollToLocationParamsType,
   SectionBase as _SectionBase,
+  SectionData,
   VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
-import type {ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
 import VirtualizedLists from '@react-native/virtualized-lists';
-import React, {forwardRef, useImperativeHandle, useRef} from 'react';
+import * as React from 'react';
+import {forwardRef, useImperativeHandle, useRef} from 'react';
 
 const VirtualizedSectionList = VirtualizedLists.VirtualizedSectionList;
 
-type Item = any;
+type DefaultSectionT = {
+  [key: string]: any,
+};
 
-export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
+export type SectionBase<
+  SectionItemT,
+  SectionT = DefaultSectionT,
+> = _SectionBase<SectionItemT, SectionT>;
 
-type RequiredProps<SectionT: SectionBase<any>> = {
+type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
   /**
    * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist).
    *
@@ -40,17 +46,17 @@ type RequiredProps<SectionT: SectionBase<any>> = {
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
-  sections: $ReadOnlyArray<SectionT>,
+  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
 };
 
-type OptionalProps<SectionT: SectionBase<any>> = {
+type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
   renderItem?: (info: {
-    item: Item,
+    item: ItemT,
     index: number,
-    section: SectionT,
+    section: SectionData<ItemT, SectionT>,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -81,7 +87,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * falls back to using the index, like react does. Note that this sets keys for each item, but
    * each overall section still needs its own key.
    */
-  keyExtractor?: ?(item: Item, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   /**
    * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
    * content.
@@ -95,28 +101,13 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   removeClippedSubviews?: boolean,
 };
 
-export type Props<SectionT: SectionBase<any>> = $ReadOnly<{
-  ...$Diff<
-    VirtualizedSectionListProps<SectionT>,
-    {
-      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, 'getItem'>,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        'getItemCount',
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        'renderItem',
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        'keyExtractor',
-      >,
-      ...
-    },
+export type Props<ItemT, SectionT = DefaultSectionT> = $ReadOnly<{
+  ...Omit<
+    VirtualizedSectionListProps<ItemT, SectionT>,
+    'getItem' | 'getItemCount' | 'renderItem' | 'keyExtractor',
   >,
-  ...RequiredProps<SectionT>,
-  ...OptionalProps<SectionT>,
+  ...RequiredProps<ItemT, SectionT>,
+  ...OptionalProps<ItemT, SectionT>,
 }>;
 
 /**
@@ -176,14 +167,14 @@ export type Props<SectionT: SectionBase<any>> = $ReadOnly<{
  */
 const SectionList: component(
   ref?: React.RefSetter<any>,
-  ...Props<SectionBase<any>>
-) = forwardRef<Props<SectionBase<any>>, any>((props, ref) => {
+  ...Props<any, DefaultSectionT>
+) = forwardRef<Props<any, DefaultSectionT>, any>((props, ref) => {
   const propsWithDefaults = {
     stickySectionHeadersEnabled: Platform.OS === 'ios',
     ...props,
   };
 
-  const wrapperRef = useRef<?ElementRef<typeof VirtualizedSectionList>>();
+  const wrapperRef = useRef<?React.ElementRef<typeof VirtualizedSectionList>>();
 
   useImperativeHandle(
     ref,

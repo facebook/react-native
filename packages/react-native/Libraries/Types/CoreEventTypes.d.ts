@@ -33,11 +33,16 @@ interface TextLayoutLine {
 }
 
 /**
- * @see TextProps.onTextLayout
+ * @deprecated Use `TextLayoutEvent` instead.
  */
 export interface TextLayoutEventData extends TargetedEvent {
   lines: TextLayoutLine[];
 }
+
+/**
+ * @see TextProps.onTextLayout
+ */
+export type TextLayoutEvent = NativeSyntheticEvent<TextLayoutEventData>;
 
 // Similar to React.SyntheticEvent except for nativeEvent
 export interface NativeSyntheticEvent<T>

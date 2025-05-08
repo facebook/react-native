@@ -14,14 +14,14 @@ import android.text.TextPaint
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableArray
 
-public object FontMetricsUtil {
+internal object FontMetricsUtil {
 
   private const val CAP_HEIGHT_MEASUREMENT_TEXT = "T"
   private const val X_HEIGHT_MEASUREMENT_TEXT = "x"
   private const val AMPLIFICATION_FACTOR = 100f
 
   @JvmStatic
-  public fun getFontMetrics(
+  fun getFontMetrics(
       text: CharSequence,
       layout: Layout,
       paint: TextPaint,

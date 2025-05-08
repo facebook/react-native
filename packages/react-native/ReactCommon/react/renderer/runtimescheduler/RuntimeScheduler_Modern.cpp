@@ -9,7 +9,7 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/TraceSection.h>
-#include <jsinspector-modern/tracing/EventLoopTaskReporter.h>
+#include <jsinspector-modern/tracing/EventLoopReporter.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/timing/primitives.h>
@@ -124,9 +124,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
 bool RuntimeScheduler_Modern::getShouldYield() noexcept {
   std::shared_lock lock(schedulingMutex_);
 
-  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-    markYieldingOpportunity(now_());
-  }
+  markYieldingOpportunity(now_());
 
   return syncTaskRequests_ > 0 ||
       (!taskQueue_.empty() && taskQueue_.top().get() != currentTask_);
@@ -309,8 +307,8 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     Task& task,
     RuntimeSchedulerTimePoint taskStartTime) {
   TraceSection s("RuntimeScheduler::runEventLoopTick");
-  [[maybe_unused]] jsinspector_modern::tracing::EventLoopTaskReporter
-      performanceReporter;
+  jsinspector_modern::tracing::EventLoopReporter performanceReporter(
+      jsinspector_modern::tracing::EventLoopPhase::Task);
 
   ScopedShadowTreeRevisionLock revisionLock(
       shadowTreeRevisionConsistencyManager_);
@@ -318,11 +316,8 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   currentTask_ = &task;
   currentPriority_ = task.priority;
 
-  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-    lastYieldingOpportunity_ = taskStartTime;
-    longestPeriodWithoutYieldingOpportunity_ =
-        std::chrono::milliseconds::zero();
-  }
+  lastYieldingOpportunity_ = taskStartTime;
+  longestPeriodWithoutYieldingOpportunity_ = std::chrono::milliseconds::zero();
 
   auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
   executeTask(runtime, task, didUserCallbackTimeout);
@@ -330,11 +325,9 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   // "Perform a microtask checkpoint" step.
   performMicrotaskCheckpoint(runtime);
 
-  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-    auto taskEndTime = now_();
-    markYieldingOpportunity(taskEndTime);
-    reportLongTasks(task, taskStartTime, taskEndTime);
-  }
+  auto taskEndTime = now_();
+  markYieldingOpportunity(taskEndTime);
+  reportLongTasks(task, taskStartTime, taskEndTime);
 
   // "Update the rendering" step.
   updateRendering();
@@ -350,8 +343,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
 void RuntimeScheduler_Modern::updateRendering() {
   TraceSection s("RuntimeScheduler::updateRendering");
 
-  if (eventTimingDelegate_ != nullptr &&
-      ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+  if (eventTimingDelegate_ != nullptr) {
     eventTimingDelegate_->dispatchPendingEventTimingEntries(
         surfaceIdsWithPendingRenderingUpdates_);
   }
@@ -403,11 +395,13 @@ void RuntimeScheduler_Modern::executeTask(
  */
 void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
     jsi::Runtime& runtime) {
-  TraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
-
   if (performingMicrotaskCheckpoint_) {
     return;
   }
+
+  TraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
+  jsinspector_modern::tracing::EventLoopReporter performanceReporter(
+      jsinspector_modern::tracing::EventLoopPhase::Microtasks);
 
   performingMicrotaskCheckpoint_ = true;
   OnScopeExit restoreFlag([&]() { performingMicrotaskCheckpoint_ = false; });

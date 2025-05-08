@@ -8,7 +8,7 @@
  * @flow
  */
 
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ViewProps} from 'react-native';
 
 import {useMemo} from 'react';
 

@@ -13,12 +13,28 @@
 import typeof ProgressBarAndroidNativeComponentType from './ProgressBarAndroidNativeComponent';
 import type {ProgressBarAndroidProps} from './ProgressBarAndroidTypes';
 
+import Platform from '../../Utilities/Platform';
+
 export type {ProgressBarAndroidProps};
 
-export default require('../UnimplementedViews/UnimplementedView')
-  .default as $FlowFixMe as component(
+/**
+ * ProgressBarAndroid has been extracted from react-native core and will be removed in a future release.
+ * It can now be installed and imported from `@react-native-community/progress-bar-android` instead of 'react-native'.
+ * @see https://github.com/react-native-community/progress-bar-android
+ * @deprecated
+ */
+let ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<ProgressBarAndroidNativeComponentType>,
   >,
   ...props: ProgressBarAndroidProps
 );
+
+if (Platform.OS === 'android') {
+  ProgressBarAndroid = require('./ProgressBarAndroid').default;
+} else {
+  ProgressBarAndroid = require('../UnimplementedViews/UnimplementedView')
+    .default as $FlowFixMe;
+}
+
+export default ProgressBarAndroid;

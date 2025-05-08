@@ -16,17 +16,12 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
-header_search_paths = [
-    "\"$(PODS_ROOT)/RCT-Folly\"",
-    "\"$(PODS_TARGET_SRCROOT)\"",
-    "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
-]
-
 Pod::Spec.new do |s|
+  source_files = "*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
+  header_search_paths = [
+    "\"$(PODS_TARGET_SRCROOT)/../../\"",
+  ]
+
   s.name                   = "React-utils"
   s.version                = version
   s.summary                = "-"  # TODO
@@ -35,24 +30,25 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h,mm}"
-  s.compiler_flags         = folly_compiler_flags
+  s.source_files           = source_files
   s.header_dir             = "react/utils"
   s.exclude_files          = "tests"
-  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-                               "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-                               "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_utils"
     s.header_mappings_dir  = "../.."
+    header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
 
-  s.dependency "RCT-Folly", folly_version
+  s.pod_target_xcconfig    = { "USE_HEADERMAP" => "NO",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+                               "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                               "DEFINES_MODULE" => "YES" }
+
   s.dependency "React-jsi", version
-  s.dependency "glog"
 
   depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   add_dependency(s, "React-debug")
 end

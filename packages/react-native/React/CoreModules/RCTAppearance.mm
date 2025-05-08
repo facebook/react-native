@@ -10,7 +10,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventEmitter.h>
-#import <React/RCTTraitCollectionProxy.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -18,8 +17,6 @@ using namespace facebook::react;
 
 NSString *const RCTAppearanceColorSchemeLight = @"light";
 NSString *const RCTAppearanceColorSchemeDark = @"dark";
-
-static BOOL sIsAppearancePreferenceSet = NO;
 
 static BOOL sAppearancePreferenceEnabled = YES;
 void RCTEnableAppearancePreference(BOOL enabled)
@@ -65,11 +62,6 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     return RCTAppearanceColorSchemeLight;
   }
 
-  if (appearances[@(traitCollection.userInterfaceStyle)]) {
-    sIsAppearancePreferenceSet = YES;
-    return appearances[@(traitCollection.userInterfaceStyle)];
-  }
-
   if (!traitCollection) {
     traitCollection = [UITraitCollection currentTraitCollection];
   }
@@ -90,7 +82,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 - (instancetype)init
 {
   if ((self = [super init])) {
-    UITraitCollection *traitCollection = [RCTTraitCollectionProxy sharedInstance].currentTraitCollection;
+    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
@@ -104,7 +96,7 @@ RCT_EXPORT_MODULE(Appearance)
 
 + (BOOL)requiresMainQueueSetup
 {
-  return NO;
+  return YES;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -132,10 +124,6 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-  if (!sIsAppearancePreferenceSet) {
-    UITraitCollection *traitCollection = [RCTTraitCollectionProxy sharedInstance].currentTraitCollection;
-    _currentColorScheme = RCTColorSchemePreference(traitCollection);
-  }
   return _currentColorScheme;
 }
 

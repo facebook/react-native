@@ -10,13 +10,22 @@
 
 'use strict';
 
-import type {DangerouslyImpreciseStyleProp} from './StyleSheet';
-import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
+import type AnimatedNode from '../Animated/nodes/AnimatedNode';
+import type {
+  ____DangerouslyImpreciseAnimatedStyleProp_Internal,
+  ____FlattenStyleProp_Internal,
+} from './StyleSheetTypes';
 
-function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
+type NonAnimatedNodeObject<TStyleProp> = TStyleProp extends AnimatedNode
+  ? empty
+  : TStyleProp;
+
+function flattenStyle<
+  TStyleProp: ____DangerouslyImpreciseAnimatedStyleProp_Internal,
+>(
   style: ?TStyleProp,
   // $FlowFixMe[underconstrained-implicit-instantiation]
-): ?____FlattenStyleProp_Internal<TStyleProp> {
+): ?NonAnimatedNodeObject<____FlattenStyleProp_Internal<TStyleProp>> {
   if (style === null || typeof style !== 'object') {
     return undefined;
   }
@@ -35,6 +44,7 @@ function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
       for (const key in computedStyle) {
         // $FlowFixMe[incompatible-use]
         // $FlowFixMe[invalid-computed-prop]
+        // $FlowFixMe[prop-missing]
         result[key] = computedStyle[key];
       }
     }

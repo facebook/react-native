@@ -21,10 +21,7 @@
 #include <hermes/inspector/chrome/CDPHandler.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
 
-namespace facebook {
-namespace hermes {
-namespace inspector_modern {
-namespace chrome {
+namespace facebook::hermes::inspector_modern::chrome {
 
 /*
  * ConnectionDemux keeps track of all debuggable Hermes runtimes (called
@@ -60,9 +57,6 @@ class ConnectionDemux {
   std::shared_ptr<std::unordered_set<std::string>> inspectedContexts_;
 };
 
-} // namespace chrome
-} // namespace inspector_modern
-} // namespace hermes
-} // namespace facebook
+} // namespace facebook::hermes::inspector_modern::chrome
 
 #endif // HERMES_ENABLE_DEBUGGER

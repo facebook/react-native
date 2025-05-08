@@ -10,15 +10,17 @@ package com.facebook.react.devsupport
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler.*
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler.ProcessedError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 @OptIn(UnstableReactNativeAPI::class)
 class StackTraceHelperTest {
+
   @Test
   fun testParseAlternateFormatStackFrameWithMethod() {
     val frame = StackTraceHelper.convertJsStackTrace("at func1 (/path/to/file.js:2:18)").get(0)
+    checkNotNull(frame)
     assertThat(frame.method).isEqualTo("func1")
     assertThat(frame.fileName).isEqualTo("file.js")
     assertThat(frame.line).isEqualTo(2)
@@ -28,6 +30,7 @@ class StackTraceHelperTest {
   @Test
   fun testParseStackFrameWithMethod() {
     val frame = StackTraceHelper.convertJsStackTrace("render@Test.bundle:1:2000").get(0)
+    checkNotNull(frame)
     assertThat(frame.method).isEqualTo("render")
     assertThat(frame.fileName).isEqualTo("Test.bundle")
     assertThat(frame.line).isEqualTo(1)
@@ -37,6 +40,7 @@ class StackTraceHelperTest {
   @Test
   fun testParseStackFrameWithoutMethod() {
     val frame = StackTraceHelper.convertJsStackTrace("Test.bundle:1:2000").get(0)
+    checkNotNull(frame)
     assertThat(frame.method).isEqualTo("(unknown)")
     assertThat(frame.fileName).isEqualTo("Test.bundle")
     assertThat(frame.line).isEqualTo(1)
@@ -46,8 +50,9 @@ class StackTraceHelperTest {
   @Test
   fun testParseStackFrameWithInvalidFrame() {
     val frame = StackTraceHelper.convertJsStackTrace("Test.bundle:ten:twenty").get(0)
+    checkNotNull(frame)
     assertThat(frame.method).isEqualTo("Test.bundle:ten:twenty")
-    assertThat(frame.fileName).isEqualTo("")
+    assertThat(frame.fileName).isEqualTo(null)
     assertThat(frame.line).isEqualTo(-1)
     assertThat(frame.column).isEqualTo(-1)
   }
@@ -55,8 +60,9 @@ class StackTraceHelperTest {
   @Test
   fun testParseStackFrameWithNativeCodeFrame() {
     val frame = StackTraceHelper.convertJsStackTrace("forEach@[native code]").get(0)
+    checkNotNull(frame)
     assertThat(frame.method).isEqualTo("forEach@[native code]")
-    assertThat(frame.fileName).isEqualTo("")
+    assertThat(frame.fileName).isEqualTo(null)
     assertThat(frame.line).isEqualTo(-1)
     assertThat(frame.column).isEqualTo(-1)
   }
@@ -79,48 +85,50 @@ class StackTraceHelperTest {
     }
   }
 
-  private fun assertStackFrameMap(
-      map: ReadableMap?,
-      filename: String,
-      methodName: String,
-      lineNumber: Int,
-      columnNumber: Int
-  ) {
-    checkNotNull(map)
-    assertThat(map.getString("file")).isEqualTo(filename)
-    assertThat(map.getString("methodName")).isEqualTo(methodName)
-    assertThat(map.getDouble("lineNumber").toInt()).isEqualTo(lineNumber)
-    assertThat(map.getDouble("column").toInt()).isEqualTo(columnNumber)
-  }
+  companion object {
+    private fun getProcessedErrorTestData(): ProcessedError {
+      val frame1 =
+          object : ProcessedError.StackFrame {
+            override val file = "file1"
+            override val methodName = "method1"
+            override val lineNumber = 1
+            override val column = 10
+          }
 
-  private fun getProcessedErrorTestData(): ProcessedError {
-    val frame1 =
-        object : ProcessedError.StackFrame {
-          override val file = "file1"
-          override val methodName = "method1"
-          override val lineNumber = 1
-          override val column = 10
-        }
+      val frame2 =
+          object : ProcessedError.StackFrame {
+            override val file = "file2"
+            override val methodName = "method2"
+            override val lineNumber = 2
+            override val column = 20
+          }
 
-    val frame2 =
-        object : ProcessedError.StackFrame {
-          override val file = "file2"
-          override val methodName = "method2"
-          override val lineNumber = 2
-          override val column = 20
-        }
+      val frames = listOf(frame1, frame2)
 
-    val frames = listOf(frame1, frame2)
+      return object : ProcessedError {
+        override val message = "error message"
+        override val originalMessage = null
+        override val name = null
+        override val componentStack = null
+        override val stack = frames
+        override val id = 123
+        override val isFatal = true
+        override val extraData = JavaOnlyMap()
+      }
+    }
 
-    return object : ProcessedError {
-      override val message = "error message"
-      override val originalMessage = null
-      override val name = null
-      override val componentStack = null
-      override val stack = frames
-      override val id = 123
-      override val isFatal = true
-      override val extraData = JavaOnlyMap()
+    private fun assertStackFrameMap(
+        map: ReadableMap?,
+        filename: String,
+        methodName: String,
+        lineNumber: Int,
+        columnNumber: Int
+    ) {
+      checkNotNull(map)
+      assertThat(map.getString("file")).isEqualTo(filename)
+      assertThat(map.getString("methodName")).isEqualTo(methodName)
+      assertThat(map.getDouble("lineNumber").toInt()).isEqualTo(lineNumber)
+      assertThat(map.getDouble("column").toInt()).isEqualTo(columnNumber)
     }
   }
 }

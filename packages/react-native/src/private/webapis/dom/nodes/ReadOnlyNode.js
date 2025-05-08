@@ -188,25 +188,12 @@ export default class ReadOnlyNode {
   }
 
   getRootNode(): ReadOnlyNode {
-    if (ReactNativeFeatureFlags.enableDOMDocumentAPI()) {
-      if (this.isConnected) {
-        // If this is the document node, then the root node is itself.
-        return this.ownerDocument ?? this;
-      }
-
-      return this;
-    } else {
-      // eslint-disable-next-line consistent-this
-      let lastKnownParent: ReadOnlyNode = this;
-      let nextPossibleParent: ?ReadOnlyNode = this.parentNode;
-
-      while (nextPossibleParent != null) {
-        lastKnownParent = nextPossibleParent;
-        nextPossibleParent = nextPossibleParent.parentNode;
-      }
-
-      return lastKnownParent;
+    if (this.isConnected) {
+      // If this is the document node, then the root node is itself.
+      return this.ownerDocument ?? this;
     }
+
+    return this;
   }
 
   hasChildNodes(): boolean {

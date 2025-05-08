@@ -207,7 +207,7 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     FontWeight& result) {
-  react_native_expect(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>() || value.hasType<int>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "normal") {
@@ -236,7 +236,34 @@ inline void fromRawValue(
       result = FontWeight::Weight900;
     } else {
       LOG(ERROR) << "Unsupported FontWeight value: " << string;
-      react_native_expect(false);
+      // sane default for prod
+      result = FontWeight::Regular;
+    }
+    return;
+  }
+
+  if (value.hasType<int>()) {
+    auto numeric = (int)value;
+    if (numeric == 100) {
+      result = FontWeight::Weight100;
+    } else if (numeric == 200) {
+      result = FontWeight::Weight200;
+    } else if (numeric == 300) {
+      result = FontWeight::Weight300;
+    } else if (numeric == 400) {
+      result = FontWeight::Weight400;
+    } else if (numeric == 500) {
+      result = FontWeight::Weight500;
+    } else if (numeric == 600) {
+      result = FontWeight::Weight600;
+    } else if (numeric == 700) {
+      result = FontWeight::Weight700;
+    } else if (numeric == 800) {
+      result = FontWeight::Weight800;
+    } else if (numeric == 900) {
+      result = FontWeight::Weight900;
+    } else {
+      LOG(ERROR) << "Unsupported FontWeight value: " << numeric;
       // sane default for prod
       result = FontWeight::Regular;
     }
@@ -921,6 +948,12 @@ inline ParagraphAttributes convertRawProp(
       "adjustsFontSizeToFit",
       sourceParagraphAttributes.adjustsFontSizeToFit,
       defaultParagraphAttributes.adjustsFontSizeToFit);
+  paragraphAttributes.minimumFontScale = convertRawProp(
+      context,
+      rawProps,
+      "minimumFontScale",
+      sourceParagraphAttributes.minimumFontScale,
+      defaultParagraphAttributes.minimumFontScale);
   paragraphAttributes.minimumFontSize = convertRawProp(
       context,
       rawProps,

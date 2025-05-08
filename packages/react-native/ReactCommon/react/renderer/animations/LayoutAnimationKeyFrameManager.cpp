@@ -13,7 +13,6 @@
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animations/conversions.h>
 #include <react/renderer/animations/utils.h>
 #include <react/renderer/components/image/ImageProps.h>
@@ -392,14 +391,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 if (keyframe.type == AnimationConfigurationType::Update &&
                     mutation.newChildShadowView.tag > 0) {
                   keyframe.viewPrev = mutation.newChildShadowView;
-                  if (ReactNativeFeatureFlags::
-                          fixDifferentiatorEmittingUpdatesWithWrongParentTag()) {
-                    keyframe.parentTag = mutation.parentTag;
-                    react_native_assert(
-                        keyframe.finalMutationsForKeyFrame.size() == 1);
-                    keyframe.finalMutationsForKeyFrame[0].parentTag =
-                        mutation.parentTag;
-                  }
+                  keyframe.parentTag = mutation.parentTag;
+                  react_native_assert(
+                      keyframe.finalMutationsForKeyFrame.size() == 1);
+                  keyframe.finalMutationsForKeyFrame[0].parentTag =
+                      mutation.parentTag;
                 }
               }
             }

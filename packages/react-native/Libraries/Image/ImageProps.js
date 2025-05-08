@@ -21,26 +21,35 @@ import type {
   LayoutChangeEvent,
   NativeSyntheticEvent,
 } from '../Types/CoreEventTypes';
-import typeof Image from './Image';
 import type {ImageResizeMode} from './ImageResizeMode';
 import type {ImageSource, ImageURISource} from './ImageSource';
-import type {ElementRef, Node, RefSetter} from 'react';
+import type {ImageType} from './ImageTypes.flow';
+
+import * as React from 'react';
 
 export type ImageSourcePropType = ImageSource;
 
-/**
- * @see ImagePropsIOS.onProgress
- */
-export type ImageProgressEventDataIOS = {
+type ImageProgressEventDataIOS = {
   loaded: number,
   total: number,
 };
 
-export type ImageErrorEventData = {
+/**
+ * @see ImagePropsIOS.onProgress
+ */
+export type ImageProgressEventIOS = NativeSyntheticEvent<
+  $ReadOnly<ImageProgressEventDataIOS>,
+>;
+
+type ImageErrorEventData = {
   error: string,
 };
 
-export type ImageLoadEventData = {
+export type ImageErrorEvent = NativeSyntheticEvent<
+  $ReadOnly<ImageErrorEventData>,
+>;
+
+type ImageLoadEventData = {
   source: {
     height: number,
     width: number,
@@ -70,9 +79,7 @@ export type ImagePropsIOS = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/image#onprogress
    */
-  onProgress?: ?(
-    event: NativeSyntheticEvent<$ReadOnly<ImageProgressEventDataIOS>>,
-  ) => void,
+  onProgress?: ?(event: ImageProgressEventIOS) => void,
 }>;
 
 export type ImagePropsAndroid = $ReadOnly<{
@@ -121,7 +128,7 @@ export type ImagePropsAndroid = $ReadOnly<{
 }>;
 
 export type ImagePropsBase = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
+  ...Omit<ViewProps, 'style'>,
   /**
    * When true, indicates the image is an accessibility element.
    *
@@ -201,9 +208,7 @@ export type ImagePropsBase = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/image#onerror
    */
-  onError?: ?(
-    event: NativeSyntheticEvent<$ReadOnly<ImageErrorEventData>>,
-  ) => void,
+  onError?: ?(event: ImageErrorEvent) => void,
 
   /**
    * onLayout function
@@ -341,7 +346,7 @@ export type ImageProps = $ReadOnly<{
 
 export type ImageBackgroundProps = $ReadOnly<{
   ...ImageProps,
-  children?: Node,
+  children?: React.Node,
 
   /**
    * Style applied to the outer View component
@@ -362,5 +367,5 @@ export type ImageBackgroundProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/imagebackground#imageref
    */
-  imageRef?: RefSetter<ElementRef<Image>>,
+  imageRef?: React.RefSetter<React.ElementRef<ImageType>>,
 }>;

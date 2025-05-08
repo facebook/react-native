@@ -9,8 +9,8 @@ package com.facebook.react.uimanager;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
-import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
+import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
@@ -42,12 +42,14 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.internal.LegacyArchitectureShadowNodeLogger;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
@@ -89,7 +91,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "UIManagerModule", LegacyArchitectureLogLevel.WARNING);
   }
 
@@ -127,7 +129,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcherImpl(reactContext);
     mModuleConstants = createConstants(viewManagerResolver);
-    mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
+    mCustomDirectEvents = UIManagerModuleConstants.directEventTypeConstants;
     mViewManagerRegistry = new ViewManagerRegistry(viewManagerResolver);
     mUIImplementation =
         new UIImplementation(
@@ -155,6 +157,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             mViewManagerRegistry,
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
+
+    if (ReactBuildConfig.DEBUG) {
+      for (ViewManager<?, ?> viewManager : viewManagersList) {
+        LegacyArchitectureShadowNodeLogger.assertUnsupportedViewManager(
+            reactContext, viewManager.getShadowNodeClass(), viewManager.getClass().getSimpleName());
+      }
+    }
 
     reactContext.addLifecycleEventListener(this);
   }
@@ -184,8 +193,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public void initialize() {
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
     getReactApplicationContext().registerComponentCallbacks(mViewManagerRegistry);
-    mEventDispatcher.registerEventEmitter(
-        DEFAULT, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
 
   @Override
@@ -237,13 +244,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   private static Map<String, Object> createConstants(ViewManagerResolver viewManagerResolver) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
         .arg("Lazy", true)
         .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(viewManagerResolver);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
@@ -253,14 +260,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       @Nullable Map<String, Object> customBubblingEvents,
       @Nullable Map<String, Object> customDirectEvents) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
         .arg("Lazy", false)
         .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(
           viewManagers, customBubblingEvents, customDirectEvents);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
@@ -278,7 +285,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public static @Nullable WritableMap getConstantsForViewManager(
       ViewManager viewManager, Map<String, Object> customDirectEvents) {
     SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.getConstantsForViewManager")
+            Systrace.TRACE_TAG_REACT, "UIManagerModule.getConstantsForViewManager")
         .arg("ViewManager", viewManager.getName())
         .arg("Lazy", true)
         .flush();
@@ -291,7 +298,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       }
       return null;
     } finally {
-      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT).flush();
     }
   }
 
@@ -365,7 +372,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Override
   public <T extends View> int addRootView(final T rootView, WritableMap initialProps) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
 
@@ -378,7 +385,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(Systrace.TRACE_TAG_REACT);
     return tag;
   }
 
@@ -675,7 +682,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     int batchId = mBatchId;
     mBatchId++;
 
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchCompleteUI")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "onBatchCompleteUI")
         .arg("BatchId", batchId)
         .flush();
     for (UIManagerModuleListener listener : mListeners) {
@@ -692,7 +699,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         mUIImplementation.dispatchViewUpdates(batchId);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -851,7 +858,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Override
   public void receiveEvent(
       int surfaceId, int reactTag, String eventName, @Nullable WritableMap event) {
-    assert ViewUtil.getUIManagerType(reactTag) == DEFAULT;
+    assert ViewUtil.getUIManagerType(reactTag) == LEGACY;
     getReactApplicationContext()
         .getJSModule(RCTEventEmitter.class)
         .receiveEvent(reactTag, eventName, event);

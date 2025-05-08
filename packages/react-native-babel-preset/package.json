@@ -2,7 +2,6 @@
   "name": "@react-native/babel-preset",
   "version": "0.80.0-main",
   "description": "Babel preset for React Native applications",
-  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/facebook/react-native.git"
@@ -13,6 +12,18 @@
     "react-native"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "README.md",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ],
   "dependencies": {
     "@babel/core": "^7.25.2",
     "@babel/plugin-proposal-export-default-from": "^7.24.7",
@@ -56,14 +67,11 @@
     "@babel/plugin-transform-unicode-regex": "^7.24.7",
     "@babel/template": "^7.25.0",
     "@react-native/babel-plugin-codegen": "0.80.0-main",
-    "babel-plugin-syntax-hermes-parser": "0.25.1",
+    "babel-plugin-syntax-hermes-parser": "0.28.1",
     "babel-plugin-transform-flow-enums": "^0.0.2",
     "react-refresh": "^0.14.0"
   },
   "peerDependencies": {
     "@babel/core": "*"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }

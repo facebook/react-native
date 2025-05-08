@@ -17,7 +17,7 @@ import AndroidSwipeRefreshLayoutNativeComponent, {
 import PullToRefreshViewNativeComponent, {
   Commands as PullToRefreshCommands,
 } from './PullToRefreshViewNativeComponent';
-import React from 'react';
+import * as React from 'react';
 
 const Platform = require('../../Utilities/Platform').default;
 

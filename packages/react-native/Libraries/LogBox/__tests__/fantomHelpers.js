@@ -9,12 +9,12 @@
  * @oncall react_native
  */
 
-import ensureInstance from '../../../src/private/utilities/ensureInstance';
+import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import ReadOnlyElement from '../../../src/private/webapis/dom/nodes/ReadOnlyElement';
 import View from '../../Components/View/View';
 import AppContainer from '../../ReactNative/AppContainer';
 import LogBoxInspectorContainer from '../LogBoxInspectorContainer';
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 

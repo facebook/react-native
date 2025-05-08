@@ -17,20 +17,22 @@ import static com.facebook.react.uimanager.UIManagerHelper.PADDING_BOTTOM_INDEX;
 import static com.facebook.react.uimanager.UIManagerHelper.PADDING_END_INDEX;
 import static com.facebook.react.uimanager.UIManagerHelper.PADDING_START_INDEX;
 import static com.facebook.react.uimanager.UIManagerHelper.PADDING_TOP_INDEX;
-import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.text.Layout;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.ColorPropConverter;
@@ -49,6 +51,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -64,8 +67,8 @@ import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
-import com.facebook.react.interfaces.fabric.SurfaceHandler;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -86,6 +89,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.SynchronousEventReceiver;
+import com.facebook.react.views.text.PreparedLayout;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,6 +104,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
  * only called through the JNI from Cxx so it appears that most of this class is "unused".
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
 public class FabricUIManager
@@ -109,7 +114,7 @@ public class FabricUIManager
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
-  public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
+  public @Nullable DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   private static final DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener FABRIC_PERF_LOGGER =
       commitPoint -> {
@@ -119,11 +124,11 @@ public class FabricUIManager
         long transactionEndDuration = commitPoint.getTransactionEndDuration();
         long batchExecutionDuration = commitPoint.getBatchExecutionDuration();
 
-        DevToolsReactPerfLogger.mStreamingCommitStats.add(commitDuration);
-        DevToolsReactPerfLogger.mStreamingLayoutStats.add(layoutDuration);
-        DevToolsReactPerfLogger.mStreamingDiffStats.add(diffDuration);
-        DevToolsReactPerfLogger.mStreamingTransactionEndStats.add(transactionEndDuration);
-        DevToolsReactPerfLogger.mStreamingBatchExecutionStats.add(batchExecutionDuration);
+        DevToolsReactPerfLogger.streamingCommitStats.add(commitDuration);
+        DevToolsReactPerfLogger.streamingLayoutStats.add(layoutDuration);
+        DevToolsReactPerfLogger.streamingDiffStats.add(diffDuration);
+        DevToolsReactPerfLogger.streamingTransactionEndStats.add(transactionEndDuration);
+        DevToolsReactPerfLogger.streamingBatchExecutionStats.add(batchExecutionDuration);
 
         FLog.i(
             TAG,
@@ -136,25 +141,25 @@ public class FabricUIManager
                 + " - Mounting: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n",
             commitPoint.getCommitNumber(),
             commitDuration,
-            DevToolsReactPerfLogger.mStreamingCommitStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingCommitStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingCommitStats.getMax(),
+            DevToolsReactPerfLogger.streamingCommitStats.getAverage(),
+            DevToolsReactPerfLogger.streamingCommitStats.getMedian(),
+            DevToolsReactPerfLogger.streamingCommitStats.getMax(),
             layoutDuration,
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingLayoutStats.getMax(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getAverage(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getMedian(),
+            DevToolsReactPerfLogger.streamingLayoutStats.getMax(),
             diffDuration,
-            DevToolsReactPerfLogger.mStreamingDiffStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingDiffStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingDiffStats.getMax(),
+            DevToolsReactPerfLogger.streamingDiffStats.getAverage(),
+            DevToolsReactPerfLogger.streamingDiffStats.getMedian(),
+            DevToolsReactPerfLogger.streamingDiffStats.getMax(),
             transactionEndDuration,
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMax(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getAverage(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getMedian(),
+            DevToolsReactPerfLogger.streamingTransactionEndStats.getMax(),
             batchExecutionDuration,
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getAverage(),
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMedian(),
-            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMax());
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getAverage(),
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getMedian(),
+            DevToolsReactPerfLogger.streamingBatchExecutionStats.getMax());
       };
 
   static {
@@ -162,27 +167,24 @@ public class FabricUIManager
   }
 
   @Nullable private FabricUIManagerBinding mBinding;
-  @NonNull private final ReactApplicationContext mReactApplicationContext;
-  @NonNull private final MountingManager mMountingManager;
-  @NonNull private final EventDispatcher mEventDispatcher;
-  @NonNull private final MountItemDispatcher mMountItemDispatcher;
-  @NonNull private final ViewManagerRegistry mViewManagerRegistry;
+  private final ReactApplicationContext mReactApplicationContext;
+  private final MountingManager mMountingManager;
+  private final FabricEventDispatcher mEventDispatcher;
+  private final MountItemDispatcher mMountItemDispatcher;
+  private final ViewManagerRegistry mViewManagerRegistry;
 
-  @NonNull private final BatchEventDispatchedListener mBatchEventDispatchedListener;
+  private final BatchEventDispatchedListener mBatchEventDispatchedListener;
 
-  @NonNull
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
 
   private boolean mMountNotificationScheduled = false;
-  private final List<Integer> mMountedSurfaceIds = new ArrayList<>();
+  private List<Integer> mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
 
   @ThreadConfined(UI)
-  @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
   @ThreadConfined(UI)
-  @NonNull
   private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
 
   /**
@@ -192,6 +194,8 @@ public class FabricUIManager
   private volatile boolean mDestroyed = false;
 
   private boolean mDriveCxxAnimations = false;
+
+  private boolean mDriveCxxNativeAnimated = ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
@@ -220,15 +224,15 @@ public class FabricUIManager
   @Nullable private InteropUIBlockListener mInteropUIBlockListener;
 
   public FabricUIManager(
-      @NonNull ReactApplicationContext reactContext,
-      @NonNull ViewManagerRegistry viewManagerRegistry,
-      @NonNull BatchEventDispatchedListener batchEventDispatchedListener) {
+      ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagerRegistry,
+      BatchEventDispatchedListener batchEventDispatchedListener) {
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
     mReactApplicationContext = reactContext;
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
     mMountItemDispatcher =
         new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
-    mEventDispatcher = new FabricEventDispatcher(reactContext);
+    mEventDispatcher = new FabricEventDispatcher(reactContext, new FabricEventEmitter(this));
     mBatchEventDispatchedListener = batchEventDispatchedListener;
     mReactApplicationContext.addLifecycleEventListener(this);
 
@@ -240,7 +244,8 @@ public class FabricUIManager
   @UiThread
   @ThreadConfined(UI)
   @Deprecated
-  public <T extends View> int addRootView(final T rootView, final WritableMap initialProps) {
+  public <T extends View> int addRootView(
+      final T rootView, final @Nullable WritableMap initialProps) {
     ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
@@ -257,6 +262,7 @@ public class FabricUIManager
     if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
   }
@@ -266,10 +272,9 @@ public class FabricUIManager
    * based on the current focusable element and the direction.
    *
    * @return A NextFocusableNode object where the 'id' is the reactId/Tag of the next focusable
-   *     view, and 'deltaScroll' is the scroll delta needed to make the view visible on the screen.
-   *     Returns null if no valid node is found.
+   *     view, returns null if no view could be found
    */
-  public @Nullable NextFocusableNode findNextFocusableElementMetrics(
+  public @Nullable Integer findNextFocusableElement(
       int parentTag, int focusedTag, @FocusRealDirection int direction) {
     if (mBinding == null) {
       return null;
@@ -294,16 +299,18 @@ public class FabricUIManager
         return null;
     }
 
-    @Nullable
-    float[] serializedNextFocusableNodeMetrics =
-        mBinding.findNextFocusableElementMetrics(parentTag, focusedTag, generalizedDirection);
+    int serializedNextFocusableNodeMetrics =
+        mBinding.findNextFocusableElement(parentTag, focusedTag, generalizedDirection);
 
-    if (serializedNextFocusableNodeMetrics == null) {
+    if (serializedNextFocusableNodeMetrics == -1) {
       return null;
     }
 
-    return new NextFocusableNode(
-        (int) serializedNextFocusableNodeMetrics[0], serializedNextFocusableNodeMetrics[1]);
+    return serializedNextFocusableNodeMetrics;
+  }
+
+  public @Nullable int[] getRelativeAncestorList(int rootTag, int childTag) {
+    return mBinding != null ? mBinding.getRelativeAncestorList(rootTag, childTag) : null;
   }
 
   @Override
@@ -312,7 +319,7 @@ public class FabricUIManager
   public <T extends View> int startSurface(
       final T rootView,
       final String moduleName,
-      final WritableMap initialProps,
+      final @Nullable WritableMap initialProps,
       int widthMeasureSpec,
       int heightMeasureSpec) {
     final int rootTag = ((ReactRoot) rootView).getRootViewTag();
@@ -331,6 +338,7 @@ public class FabricUIManager
     Point viewportOffset =
         UiThreadUtil.isOnUiThread() ? RootViewUtil.getViewportOffset(rootView) : new Point(0, 0);
 
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.startSurfaceWithConstraints(
         rootTag,
         moduleName,
@@ -347,22 +355,20 @@ public class FabricUIManager
   }
 
   public void startSurface(
-      final SurfaceHandler surfaceHandler, final Context context, final @Nullable View rootView) {
+      final SurfaceHandlerBinding surfaceHandler,
+      final Context context,
+      final @Nullable View rootView) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
 
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
-
-    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
-      throw new IllegalArgumentException("Invalid SurfaceHandler");
-    }
-    mBinding.startSurfaceWithSurfaceHandler(
-        rootTag, (SurfaceHandlerBinding) surfaceHandler, rootView != null);
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
+    mBinding.startSurfaceWithSurfaceHandler(rootTag, surfaceHandler, rootView != null);
   }
 
-  public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
+  public void attachRootView(final SurfaceHandlerBinding surfaceHandler, final View rootView) {
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext,
@@ -374,7 +380,7 @@ public class FabricUIManager
     surfaceHandler.setMountable(true);
   }
 
-  public void stopSurface(final SurfaceHandler surfaceHandler) {
+  public void stopSurface(final SurfaceHandlerBinding surfaceHandler) {
     if (!surfaceHandler.isRunning()) {
       ReactSoftExceptionLogger.logSoftException(
           FabricUIManager.TAG,
@@ -383,10 +389,8 @@ public class FabricUIManager
     }
 
     mMountingManager.stopSurface(surfaceHandler.getSurfaceId());
-    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
-      throw new IllegalArgumentException("Invalid SurfaceHandler");
-    }
-    mBinding.stopSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
+    mBinding.stopSurfaceWithSurfaceHandler(surfaceHandler);
   }
 
   /** Method called when an event has been dispatched on the C++ side. */
@@ -405,12 +409,12 @@ public class FabricUIManager
     // Communicate stopSurface to Cxx - causes an empty ShadowTree to be committed,
     // but all mounting instructions will be ignored because stopSurface was called
     // on the MountingManager
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.stopSurface(surfaceID);
   }
 
   @Override
   public void initialize() {
-    mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mBatchEventDispatchedListener);
     if (ReactNativeFeatureFlags.enableFabricLogs()) {
       mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
@@ -418,7 +422,7 @@ public class FabricUIManager
 
       ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
     }
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropEventEmitter interopEventEmitter = new InteropEventEmitter(mReactApplicationContext);
       mReactApplicationContext.internal_registerInteropModule(
           RCTEventEmitter.class, interopEventEmitter);
@@ -445,7 +449,7 @@ public class FabricUIManager
     mDestroyed = true;
 
     mEventDispatcher.removeBatchEventDispatchedListener(mBatchEventDispatchedListener);
-    mEventDispatcher.unregisterEventEmitter(FABRIC);
+    mEventDispatcher.invalidate();
 
     mReactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
     mViewManagerRegistry.invalidate();
@@ -456,18 +460,12 @@ public class FabricUIManager
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
 
-    mBinding.unregister();
+    if (mBinding != null) {
+      mBinding.unregister();
+    }
     mBinding = null;
 
     ViewManagerPropertyUpdater.clear();
-
-    // When StaticViewConfigs is enabled, FabriUIManager is
-    // responsible for initializing and deallocating EventDispatcher. StaticViewConfigs is enabled
-    // only in Bridgeless for now.
-    // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
-    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
-      mEventDispatcher.onCatalystInstanceDestroyed();
-    }
   }
 
   @Override
@@ -491,7 +489,7 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void addUIBlock(UIBlock block) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.addUIBlock(block);
     }
@@ -502,13 +500,12 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void prependUIBlock(UIBlock block) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.prependUIBlock(block);
     }
   }
 
-  @NonNull
   private InteropUIBlockListener getInteropUIBlockListener() {
     if (mInteropUIBlockListener == null) {
       mInteropUIBlockListener = new InteropUIBlockListener();
@@ -595,6 +592,8 @@ public class FabricUIManager
         return 0;
       }
       context = surfaceMountingManager.getContext();
+      Assertions.assertNotNull(
+          context, "Context in SurfaceMountingManager is null. surfaceId: " + surfaceId);
     } else {
       context = mReactApplicationContext;
     }
@@ -633,6 +632,8 @@ public class FabricUIManager
         return 0;
       }
       context = surfaceMountingManager.getContext();
+      Assertions.assertNotNull(
+          context, "Context in SurfaceMountingManager is null. surfaceId: " + surfaceId);
     } else {
       context = mReactApplicationContext;
     }
@@ -649,6 +650,49 @@ public class FabricUIManager
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
         attachmentsPositions);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  public PreparedLayout prepareLayout(
+      int surfaceId,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float maxWidth,
+      float maxHeight) {
+    SurfaceMountingManager surfaceMountingManager =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareLayout");
+    Layout layout =
+        TextLayoutManager.createLayout(
+            Preconditions.checkNotNull(surfaceMountingManager.getContext()),
+            attributedString,
+            paragraphAttributes,
+            PixelUtil.toPixelFromDIP(maxWidth),
+            PixelUtil.toPixelFromDIP(maxHeight),
+            null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
+
+    int maximumNumberOfLines =
+        paragraphAttributes.contains(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
+            : ReactConstants.UNSET;
+
+    return new PreparedLayout(layout, maximumNumberOfLines);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  public float[] measurePreparedLayout(
+      PreparedLayout preparedLayout,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight) {
+    return TextLayoutManager.measurePreparedLayout(
+        preparedLayout,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight));
   }
 
   /**
@@ -687,8 +731,7 @@ public class FabricUIManager
   @Override
   @UiThread
   @ThreadConfined(UI)
-  public void synchronouslyUpdateViewOnUIThread(
-      final int reactTag, @NonNull final ReadableMap props) {
+  public void synchronouslyUpdateViewOnUIThread(final int reactTag, final ReadableMap props) {
     UiThreadUtil.assertOnUiThread();
 
     int commitNumber = mCurrentSynchronousCommitNumber++;
@@ -719,7 +762,7 @@ public class FabricUIManager
     MountItem synchronousMountItem =
         new MountItem() {
           @Override
-          public void execute(@NonNull MountingManager mountingManager) {
+          public void execute(MountingManager mountingManager) {
             try {
               mountingManager.updateProps(reactTag, props);
             } catch (Exception ex) {
@@ -737,7 +780,6 @@ public class FabricUIManager
             return View.NO_ID;
           }
 
-          @NonNull
           @Override
           public String toString() {
             String propsString =
@@ -842,10 +884,14 @@ public class FabricUIManager
     // calls scheduleMountItems with a BatchMountItem.
     long scheduleMountItemStartTime = SystemClock.uptimeMillis();
     boolean isBatchMountItem = mountItem instanceof BatchMountItem;
-    boolean shouldSchedule =
-        (isBatchMountItem && !((BatchMountItem) mountItem).isBatchEmpty())
-            || (!isBatchMountItem && mountItem != null);
-
+    boolean shouldSchedule = false;
+    if (isBatchMountItem) {
+      BatchMountItem batchMountItem = (BatchMountItem) mountItem;
+      Assertions.assertNotNull(batchMountItem, "BatchMountItem is null");
+      shouldSchedule = !batchMountItem.isBatchEmpty();
+    } else {
+      shouldSchedule = mountItem != null;
+    }
     // In case of sync rendering, this could be called on the UI thread. Otherwise,
     // it should ~always be called on the JS thread.
     for (UIManagerListener listener : mListeners) {
@@ -861,6 +907,7 @@ public class FabricUIManager
     }
 
     if (shouldSchedule) {
+      Assertions.assertNotNull(mountItem, "MountItem is null");
       mMountItemDispatcher.addMountItem(mountItem);
       Runnable runnable =
           new GuardedRunnable(mReactApplicationContext) {
@@ -957,6 +1004,7 @@ public class FabricUIManager
       doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(context);
     }
 
+    Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.setConstraints(
         surfaceId,
         getMinSize(widthMeasureSpec),
@@ -970,7 +1018,7 @@ public class FabricUIManager
   }
 
   @Override
-  public View resolveView(int reactTag) {
+  public @Nullable View resolveView(int reactTag) {
     UiThreadUtil.assertOnUiThread();
 
     SurfaceMountingManager surfaceManager = mMountingManager.getSurfaceManagerForView(reactTag);
@@ -1016,7 +1064,7 @@ public class FabricUIManager
   public void receiveEvent(
       int surfaceId,
       int reactTag,
-      @NonNull String eventName,
+      String eventName,
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory,
@@ -1069,7 +1117,6 @@ public class FabricUIManager
   }
 
   @Override
-  @NonNull
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
   }
@@ -1124,7 +1171,7 @@ public class FabricUIManager
       final int reactTag,
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
-    if (ReactNativeFeatureFlags.useFabricInterop()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useFabricInterop()) {
       // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
       // overload of dispatchCommand. Otherwise, we use the string overload.
       // and the events won't be correctly dispatched.
@@ -1182,7 +1229,7 @@ public class FabricUIManager
     mMountItemDispatcher.addMountItem(
         new MountItem() {
           @Override
-          public void execute(@NonNull MountingManager mountingManager) {
+          public void execute(MountingManager mountingManager) {
             SurfaceMountingManager surfaceMountingManager =
                 mountingManager.getSurfaceManager(surfaceId);
             if (surfaceMountingManager != null) {
@@ -1199,7 +1246,6 @@ public class FabricUIManager
             return surfaceId;
           }
 
-          @NonNull
           @SuppressLint("DefaultLocale")
           @Override
           public String toString() {
@@ -1216,7 +1262,7 @@ public class FabricUIManager
     mMountItemDispatcher.addMountItem(
         new MountItem() {
           @Override
-          public void execute(@NonNull MountingManager mountingManager) {
+          public void execute(MountingManager mountingManager) {
             mountingManager.clearJSResponder();
           }
 
@@ -1225,7 +1271,6 @@ public class FabricUIManager
             return View.NO_ID;
           }
 
-          @NonNull
           @Override
           public String toString() {
             return "CLEAR_JS_RESPONDER";
@@ -1300,12 +1345,15 @@ public class FabricUIManager
 
       // Collect surface IDs for all the mount items
       for (MountItem mountItem : mountItems) {
-        if (mountItem != null && !mMountedSurfaceIds.contains(mountItem.getSurfaceId())) {
-          mMountedSurfaceIds.add(mountItem.getSurfaceId());
+        if (mountItem != null
+            && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
+          mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
         }
       }
 
-      if (!mMountNotificationScheduled && !mMountedSurfaceIds.isEmpty()) {
+      if (!mMountNotificationScheduled && !mSurfaceIdsWithPendingMountNotification.isEmpty()) {
+        mMountNotificationScheduled = true;
+
         // Notify mount when the effects are visible and prevent mount hooks to
         // delay paint.
         UiThreadUtil.getUiThreadHandler()
@@ -1315,17 +1363,19 @@ public class FabricUIManager
                   public void run() {
                     mMountNotificationScheduled = false;
 
+                    // Create a copy in case mount hooks trigger more mutations
+                    final List<Integer> surfaceIdsToReportMount =
+                        mSurfaceIdsWithPendingMountNotification;
+                    mSurfaceIdsWithPendingMountNotification = new ArrayList<>();
+
                     final @Nullable FabricUIManagerBinding binding = mBinding;
                     if (binding == null || mDestroyed) {
-                      mMountedSurfaceIds.clear();
                       return;
                     }
 
-                    for (int surfaceId : mMountedSurfaceIds) {
+                    for (int surfaceId : surfaceIdsToReportMount) {
                       binding.reportMount(surfaceId);
                     }
-
-                    mMountedSurfaceIds.clear();
                   }
                 });
       }
@@ -1369,7 +1419,7 @@ public class FabricUIManager
     @ThreadConfined(UI)
     private boolean mIsScheduled = false;
 
-    private DispatchUIFrameCallback(@NonNull ReactContext reactContext) {
+    private DispatchUIFrameCallback(ReactContext reactContext) {
       super(reactContext);
     }
 
@@ -1419,7 +1469,7 @@ public class FabricUIManager
       // There is a race condition here between getting/setting
       // `mDriveCxxAnimations` which shouldn't matter; it's safe to call
       // the mBinding method, unless mBinding has gone away.
-      if (mDriveCxxAnimations && mBinding != null) {
+      if ((mDriveCxxAnimations || mDriveCxxNativeAnimated) && mBinding != null) {
         mBinding.driveCxxAnimations();
       }
 
@@ -1438,7 +1488,7 @@ public class FabricUIManager
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         mIsMountingEnabled = false;
-        throw new RuntimeException("Exception thrown when executing UIFrameGuarded", ex);
+        throw ex;
       } finally {
         schedule();
       }

@@ -11,7 +11,6 @@ import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.uimanager.style.CornerRadii
 import java.lang.NumberFormatException
 
 public enum class LengthPercentageType {
@@ -37,7 +36,7 @@ public data class LengthPercentage(
         }
         ReadableType.String -> {
           val s = dynamic.asString()
-          if (s.endsWith("%")) {
+          if (s != null && s.endsWith("%")) {
             try {
               val value = s.substring(0, s.length - 1).toFloat()
               if (value >= 0f) {
@@ -60,14 +59,6 @@ public data class LengthPercentage(
         }
       }
     }
-  }
-
-  public fun resolve(width: Float, height: Float): CornerRadii {
-    if (type == LengthPercentageType.PERCENT) {
-      return CornerRadii((value / 100) * width, (value / 100) * height)
-    }
-
-    return CornerRadii(value, value)
   }
 
   public fun resolve(referenceLength: Float): Float {

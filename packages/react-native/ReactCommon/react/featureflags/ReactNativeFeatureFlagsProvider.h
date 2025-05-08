@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0845c9b1618ac1e18ce4aeb5d03a70f5>>
+ * @generated SignedSource<<7ad3c1ab9913ee5b20d0f6217580a14c>>
  */
 
 /**
@@ -27,44 +27,49 @@ class ReactNativeFeatureFlagsProvider {
 
   virtual bool commonTestFlag() = 0;
   virtual bool animatedShouldSignalBatch() = 0;
+  virtual bool cxxNativeAnimatedEnabled() = 0;
+  virtual bool disableMainQueueSyncDispatchIOS() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
+  virtual bool enableAccessibilityOrder() = 0;
   virtual bool enableAccumulatedUpdatesInRawPropsAndroid() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
   virtual bool enableCppPropsIteratorSetter() = 0;
+  virtual bool enableCustomFocusSearchOnClippedElementsAndroid() = 0;
+  virtual bool enableDestroyShadowTreeRevisionAsync() = 0;
+  virtual bool enableDoubleMeasurementFixAndroid() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
   virtual bool enableFabricLogs() = 0;
   virtual bool enableFabricRenderer() = 0;
+  virtual bool enableFixForParentTagDuringReparenting() = 0;
+  virtual bool enableFontScaleChangesUpdatingLayout() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
-  virtual bool enableImagePrefetchingAndroid() = 0;
   virtual bool enableJSRuntimeGCOnMemoryPressureOnIOS() = 0;
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
-  virtual bool enableLongTaskAPI() = 0;
+  virtual bool enableMainQueueModulesOnIOS() = 0;
   virtual bool enableNativeCSSParsing() = 0;
+  virtual bool enableNetworkEventReporting() = 0;
   virtual bool enableNewBackgroundAndBorderDrawables() = 0;
+  virtual bool enablePreparedTextLayout() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
-  virtual bool enableReportEventPaintTime() = 0;
+  virtual bool enableResourceTimingAPI() = 0;
   virtual bool enableSynchronousStateUpdates() = 0;
-  virtual bool enableUIConsistency() = 0;
   virtual bool enableViewCulling() = 0;
   virtual bool enableViewRecycling() = 0;
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
-  virtual bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
-  virtual bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
-  virtual bool lazyAnimationCallbacks() = 0;
-  virtual bool removeTurboModuleManagerDelegateMutex() = 0;
-  virtual bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() = 0;
+  virtual bool incorporateMaxLinesDuringAndroidLayout() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
+  virtual bool updateRuntimeShadowNodeReferencesOnCommit() = 0;
   virtual bool useAlwaysAvailableJSErrorHandling() = 0;
-  virtual bool useEditTextStockAndroidFocusBehavior() = 0;
   virtual bool useFabricInterop() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRawPropsJsiValue() = 0;
+  virtual bool useShadowNodeStateOnClone() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
 };

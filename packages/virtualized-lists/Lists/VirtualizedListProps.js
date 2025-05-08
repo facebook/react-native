@@ -13,14 +13,15 @@ import type {
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from './ViewabilityHelper';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
   LayoutChangeEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+  ScrollViewProps,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import * as React from 'react';
-import {typeof ScrollView} from 'react-native';
 
 export type Item = any;
 
@@ -45,7 +46,7 @@ export type CellRendererProps<ItemT> = $ReadOnly<{
   item: ItemT,
   onFocusCapture?: (event: FocusEvent) => void,
   onLayout?: (event: LayoutChangeEvent) => void,
-  style: ViewStyleProp,
+  style: StyleProp<ViewStyle>,
 }>;
 
 export type ListRenderItem<ItemT> = (
@@ -169,7 +170,7 @@ type OptionalProps = {
   /**
    * Styling for internal View for ListFooterComponent
    */
-  ListFooterComponentStyle?: ViewStyleProp,
+  ListFooterComponentStyle?: StyleProp<ViewStyle>,
   /**
    * Rendered at the top of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -178,7 +179,7 @@ type OptionalProps = {
   /**
    * Styling for internal View for ListHeaderComponent
    */
-  ListHeaderComponentStyle?: ViewStyleProp,
+  ListHeaderComponentStyle?: StyleProp<ViewStyle>,
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness may suffer because rendering content may
@@ -258,7 +259,7 @@ type OptionalProps = {
   /**
    * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
    */
-  renderScrollComponent?: (props: Object) => React.MixedElement,
+  renderScrollComponent?: (props: ScrollViewProps) => React.MixedElement,
   /**
    * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
@@ -284,7 +285,7 @@ type OptionalProps = {
 };
 
 export type VirtualizedListProps = {
-  ...React.ElementConfig<ScrollView>,
+  ...ScrollViewProps,
   ...RequiredProps,
   ...OptionalProps,
 };

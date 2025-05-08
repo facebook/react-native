@@ -7,43 +7,38 @@
  * @format
  */
 
-import codegenNativeComponent, {
-  NativeComponentType,
-} from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import {
-  WithDefault,
-  Double,
-  Float,
-  Int32,
-  UnsafeObject,
-  BubblingEventHandler,
-  DirectEventHandler,
-} from 'react-native/Libraries/Types/CodegenTypes';
-import type {ViewProps} from 'react-native';
+  CodegenTypes,
+  HostComponent,
+  ViewProps,
+  codegenNativeCommands,
+  codegenNativeComponent,
+} from 'react-native';
 
 type Event = Readonly<{
-  value: Double;
+  value: CodegenTypes.Double;
 }>;
 
 interface NativeProps extends ViewProps {
   string?: string | undefined;
   number?: number | undefined;
   boolean?: boolean | undefined;
-  default?: WithDefault<'option1' | 'option2', 'option1'> | undefined;
-  double?: Double | undefined;
-  float?: Float | undefined;
-  int32?: Int32 | undefined;
-  unsafeObject?: UnsafeObject | undefined;
-  onBubblingEventHandler?: BubblingEventHandler<Event> | undefined;
-  onDirectEventHandler?: DirectEventHandler<Event> | undefined;
+  default?:
+    | CodegenTypes.WithDefault<'option1' | 'option2', 'option1'>
+    | undefined;
+  double?: CodegenTypes.Double | undefined;
+  float?: CodegenTypes.Float | undefined;
+  int32?: CodegenTypes.Int32 | undefined;
+  unsafeObject?: CodegenTypes.UnsafeObject | undefined;
+  onBubblingEventHandler?: CodegenTypes.BubblingEventHandler<Event> | undefined;
+  onDirectEventHandler?: CodegenTypes.DirectEventHandler<Event> | undefined;
 }
 
-export type SampleViewType = NativeComponentType<NativeProps>;
+export type SampleViewType = HostComponent<NativeProps>;
 
 interface NativeCommands {
   changeBackgroundColor: (
-    viewRef: React.ElementRef<SampleViewType>,
+    viewRef: React.ComponentRef<SampleViewType>,
     color: string,
   ) => void;
 }

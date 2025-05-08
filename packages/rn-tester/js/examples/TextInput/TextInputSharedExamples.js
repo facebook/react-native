@@ -11,7 +11,7 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {TextStyle} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
@@ -69,13 +69,6 @@ const styles = StyleSheet.create({
   },
   focusedUncontrolled: {
     margin: -2,
-  },
-  screenshotArea: {
-    position: 'absolute',
-    top: -5,
-    left: 120,
-    right: -5,
-    bottom: -5,
   },
   wrappedText: {
     maxWidth: 300,
@@ -781,8 +774,7 @@ function TextStylesContainer({examples}: TextStylesContainerProps) {
         onPress={() => setOffset((offset + 1) % MAX_CYCLES)}>
         Cycle {offset + 1}/{MAX_CYCLES}
       </RNTesterButton>
-      <View>
-        <View testID="styles-screenshot-area" style={styles.screenshotArea} />
+      <View testID="text-styles">
         {examples.map(({name, multiline, textStyles}) => (
           <WithLabel label={name} key={name}>
             {multiline ? (
@@ -1257,6 +1249,40 @@ module.exports = ([
             </Text>
             generic generic generic
           </AutogrowingTextInputExample>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Drag and drop',
+    render: function (): React.Node {
+      return (
+        <View>
+          <ExampleTextInput
+            experimental_acceptDragAndDropTypes={[]}
+            placeholder="Does not accept drag drops"
+          />
+          <ExampleTextInput
+            experimental_acceptDragAndDropTypes={
+              Platform.OS === 'android' ? ['text/plain'] : ['public.plain-text']
+            }
+            placeholder="Only accepts plaintext drag drops"
+          />
+          <ExampleTextInput
+            experimental_acceptDragAndDropTypes={
+              Platform.OS === 'android' ? ['text/plain'] : ['public.plain-text']
+            }
+            multiline={true}
+            numberOfLines={3}
+            placeholder="Only accepts plaintext drag drops"
+            style={{
+              height: 60,
+            }}
+          />
+          <ExampleTextInput
+            experimental_acceptDragAndDropTypes={null}
+            placeholder="Accepts all drag drops"
+          />
         </View>
       );
     },

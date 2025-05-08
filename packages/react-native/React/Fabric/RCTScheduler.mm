@@ -68,6 +68,12 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
   }
 
+  void schedulerShouldSynchronouslyUpdateViewOnUIThread(facebook::react::Tag tag, const folly::dynamic &props) override
+  {
+    // Does nothing.
+    // This delegate method is not currently used on iOS.
+  }
+
  private:
   void *scheduler_;
 };

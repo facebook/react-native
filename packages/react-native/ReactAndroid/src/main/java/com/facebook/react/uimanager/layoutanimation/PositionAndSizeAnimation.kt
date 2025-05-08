@@ -12,6 +12,7 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
+import java.lang.ref.WeakReference
 
 /**
  * Animation responsible for updating size and position of a view. We can't use scaling as view
@@ -20,13 +21,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  * ScaleAnimation and TranslateAnimation.
  */
 @LegacyArchitecture
-internal class PositionAndSizeAnimation(
-    private val view: View,
-    x: Int,
-    y: Int,
-    width: Int,
-    height: Int
-) : Animation(), LayoutHandlingAnimation {
+internal class PositionAndSizeAnimation(view: View, x: Int, y: Int, width: Int, height: Int) :
+    Animation(), LayoutHandlingAnimation {
+  private val viewRef = WeakReference(view)
   private var startX = 0f
   private var startY = 0f
   private var deltaX = 0f
@@ -41,15 +38,17 @@ internal class PositionAndSizeAnimation(
   }
 
   override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-    val newX = startX + deltaX * interpolatedTime
-    val newY = startY + deltaY * interpolatedTime
-    val newWidth = startWidth + deltaWidth * interpolatedTime
-    val newHeight = startHeight + deltaHeight * interpolatedTime
-    view.layout(
-        Math.round(newX),
-        Math.round(newY),
-        Math.round(newX + newWidth),
-        Math.round(newY + newHeight))
+    viewRef.get()?.let { view ->
+      val newX = startX + deltaX * interpolatedTime
+      val newY = startY + deltaY * interpolatedTime
+      val newWidth = startWidth + deltaWidth * interpolatedTime
+      val newHeight = startHeight + deltaHeight * interpolatedTime
+      view.layout(
+          Math.round(newX),
+          Math.round(newY),
+          Math.round(newX + newWidth),
+          Math.round(newY + newHeight))
+    }
   }
 
   override fun onLayoutUpdate(x: Int, y: Int, width: Int, height: Int) {
@@ -58,26 +57,31 @@ internal class PositionAndSizeAnimation(
     calculateAnimation(x, y, width, height)
   }
 
+  override fun isValid(): Boolean {
+    return viewRef.get() != null
+  }
+
   override fun willChangeBounds(): Boolean {
     return true
   }
 
   private fun calculateAnimation(x: Int, y: Int, width: Int, height: Int) {
-    startX = view.x - view.translationX
-    startY = view.y - view.translationY
-    startWidth = view.width
-    startHeight = view.height
+    viewRef.get()?.let { view ->
+      startX = view.x - view.translationX
+      startY = view.y - view.translationY
+      startWidth = view.width
+      startHeight = view.height
 
-    deltaX = x - startX
-    deltaY = y - startY
-    deltaWidth = width - startWidth
-    deltaHeight = height - startHeight
+      deltaX = x - startX
+      deltaY = y - startY
+      deltaWidth = width - startWidth
+      deltaHeight = height - startHeight
+    }
   }
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-          "PositionAndSizeAnimation")
+      LegacyArchitectureLogger.assertLegacyArchitecture("PositionAndSizeAnimation")
     }
   }
 }

@@ -25,7 +25,7 @@ public object ViewUtil {
       if (viewTag % 2 == 0) {
         UIManagerType.FABRIC
       } else {
-        UIManagerType.DEFAULT
+        UIManagerType.LEGACY
       }
 
   /**
@@ -55,8 +55,8 @@ public object ViewUtil {
     // by RN and is essentially a random number.
     // At some point it would be great to pass the SurfaceContext here instead.
     @UIManagerType
-    val uiManagerType = if (surfaceId == -1) UIManagerType.DEFAULT else UIManagerType.FABRIC
-    if (uiManagerType == UIManagerType.DEFAULT && !isRootTag(viewTag)) {
+    val uiManagerType = if (surfaceId == -1) UIManagerType.LEGACY else UIManagerType.FABRIC
+    if (uiManagerType == UIManagerType.LEGACY && !isRootTag(viewTag)) {
       // TODO (T123064648): Some events for Fabric still didn't have the surfaceId set, so if it's
       // not a React RootView, double check if the tag belongs to Fabric.
       if (viewTag % 2 == 0) {

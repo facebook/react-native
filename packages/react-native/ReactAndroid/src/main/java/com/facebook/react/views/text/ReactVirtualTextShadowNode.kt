@@ -7,7 +7,10 @@
 
 package com.facebook.react.views.text
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
 /** A virtual text node. */
+@LegacyArchitecture
 internal class ReactVirtualTextShadowNode : ReactBaseTextShadowNode() {
 
   override fun isVirtual(): Boolean = true

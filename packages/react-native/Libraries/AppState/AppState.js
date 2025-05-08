@@ -107,7 +107,7 @@ class AppStateImpl {
    */
   addEventListener<K: AppStateEvent>(
     type: K,
-    handler: (...$ElementType<AppStateEventDefinitions, K>) => void,
+    handler: (...AppStateEventDefinitions[K]) => void,
   ): EventSubscription {
     const emitter = this._emitter;
     if (emitter == null) {

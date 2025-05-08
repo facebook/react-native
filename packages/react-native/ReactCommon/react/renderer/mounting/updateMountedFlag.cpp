@@ -7,6 +7,8 @@
 
 #include "updateMountedFlag.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+
 namespace facebook::react {
 void updateMountedFlag(
     const ShadowNode::ListOfShared& oldChildren,
@@ -46,6 +48,10 @@ void updateMountedFlag(
 
     newChild->setMounted(true);
     oldChild->setMounted(false);
+
+    if (ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+      newChild->updateRuntimeShadowNodeReference(newChild);
+    }
 
     updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
   }

@@ -39,7 +39,7 @@ import java.util.Collection;
 @LegacyArchitecture
 public class BridgeReactContext extends ReactApplicationContext {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "BridgeReactContext", LegacyArchitectureLogLevel.WARNING);
   }
 
@@ -105,9 +105,11 @@ public class BridgeReactContext extends ReactApplicationContext {
       }
       throw new IllegalStateException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
     }
-    if (mInteropModuleRegistry != null
-        && mInteropModuleRegistry.shouldReturnInteropModule(jsInterface)) {
-      return mInteropModuleRegistry.getInteropModule(jsInterface);
+    if (mInteropModuleRegistry != null) {
+      T jsModule = mInteropModuleRegistry.getInteropModule(jsInterface);
+      if (jsModule != null) {
+        return jsModule;
+      }
     }
     return mCatalystInstance.getJSModule(jsInterface);
   }

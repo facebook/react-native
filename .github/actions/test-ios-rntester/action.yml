@@ -48,7 +48,7 @@ runs:
         name: hermes-darwin-bin-${{ inputs.flavor }}
         path: ${{ inputs.hermes-tarball-artifacts-dir }}
     - name: Setup ruby
-      uses: ruby/setup-ruby@v1.170.0
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Prepare IOS Tests
@@ -92,6 +92,14 @@ runs:
         else
           echo 'No Hermes tarball found.'
         fi
+    - name: Download ReactNativeDependencies
+      uses: actions/download-artifact@v4
+      with:
+        name: ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz
+        path: /tmp/third-party/
+    - name: Print third-party folder
+      shell: bash
+      run: ls -lR /tmp/third-party
     - name: Setup xcode build cache
       uses: ./.github/actions/setup-xcode-build-cache
       with:
@@ -118,6 +126,7 @@ runs:
           export RCT_NEW_ARCH_ENABLED=0
         fi
 
+        export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
         cd packages/rn-tester
 
         bundle install

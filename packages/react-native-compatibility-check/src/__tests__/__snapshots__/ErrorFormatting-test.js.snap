@@ -196,7 +196,7 @@ Object {
         Object {
           "errorCode": "addedUnionCases",
           "message": "NativeComponent.sizes: Union added items, but native will not expect/support them
-  -- position 3 huge",
+  -- position 2 huge",
         },
       ],
     },
@@ -237,7 +237,7 @@ Object {
         Object {
           "errorCode": "addedUnionCases",
           "message": "NativeComponent.size: Union added items, but native will not expect/support them
-  -- position 3 huge",
+  -- position 1 huge",
         },
       ],
     },
@@ -709,7 +709,7 @@ Object {
         Object {
           "errorCode": "addedUnionCases",
           "message": "NativeModuleTest.exampleFunction parameter 0: Union added items, but native will not expect/support them
-  -- position 4 d",
+  -- position 3 d",
         },
       ],
     },
@@ -725,20 +725,10 @@ Object {
       "framework": "ReactNative",
       "incompatibleSpecs": Array [
         Object {
-          "errorCode": "incompatibleTypes",
-          "message": "NativeModuleTest: Object contained a property with a type mismatch
-  -- exampleFunction: has conflicting type changes
-      --new: (a: (a | b | c), b: number)=>void
-      --old: (a: (a | '0' | '1' | 'a long string'), b: number)=>void
-      Parameter at index 0 did not match
-          --new: (a: (a | b | c), b: number)=>void
-          --old: (a: (a | '0' | '1' | 'a long string'), b: number)=>void
-          Subtype of union at position 1 did not match
-              --new: (a | b | c)
-              --old: (a | '0' | '1' | 'a long string')
-              String literals are not equal
-                  --new: b
-                  --old: '0'",
+          "errorCode": "addedUnionCases",
+          "message": "NativeModuleTest.exampleFunction parameter 0: Union added items, but native will not expect/support them
+  -- position 1 b
+  -- position 2 c",
         },
       ],
     },
@@ -756,7 +746,7 @@ Object {
         Object {
           "errorCode": "removedUnionCases",
           "message": "NativeModuleTest.getConstants.exampleConstant: Union removed items, but native may still provide them
-  -- position 4 d",
+  -- position 3 d",
         },
       ],
     },

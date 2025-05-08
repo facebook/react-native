@@ -17,25 +17,25 @@ import com.facebook.react.uimanager.ViewManager
  * nodes, any type of native view operation will throw an [IllegalStateException].
  */
 @ReactModule(name = ReactRawTextManager.REACT_CLASS)
-public class ReactRawTextManager : ViewManager<View, ReactRawTextShadowNode>() {
+internal class ReactRawTextManager : ViewManager<View, ReactRawTextShadowNode>() {
 
-  public override fun getName(): String {
+  override fun getName(): String {
     return REACT_CLASS
   }
 
   public override fun createViewInstance(context: ThemedReactContext): ReactTextView =
       throw IllegalStateException("Attempt to create a native view for RCTRawText")
 
-  protected override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? =
+  override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View =
       throw IllegalStateException("Attempt to recycle a native view for RCTRawText")
 
-  public override fun updateExtraData(view: View, extraData: Any): Unit = Unit
+  override fun updateExtraData(view: View, extraData: Any): Unit = Unit
 
-  public override fun getShadowNodeClass(): Class<ReactRawTextShadowNode> {
+  override fun getShadowNodeClass(): Class<ReactRawTextShadowNode> {
     return ReactRawTextShadowNode::class.java
   }
 
-  public override fun createShadowNodeInstance(): ReactRawTextShadowNode {
+  override fun createShadowNodeInstance(): ReactRawTextShadowNode {
     return ReactRawTextShadowNode()
   }
 

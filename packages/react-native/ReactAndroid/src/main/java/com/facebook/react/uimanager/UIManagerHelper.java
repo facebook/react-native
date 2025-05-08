@@ -22,6 +22,9 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherProvider;
@@ -30,7 +33,7 @@ import com.facebook.react.uimanager.events.EventDispatcherProvider;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class UIManagerHelper {
 
-  private static final String TAG = UIManagerHelper.class.getName();
+  private static final String TAG = "UIManagerHelper";
   public static final int PADDING_START_INDEX = 0;
   public static final int PADDING_END_INDEX = 1;
   public static final int PADDING_TOP_INDEX = 2;
@@ -57,7 +60,7 @@ public class UIManagerHelper {
       ReactContext context,
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
-    if (context.isBridgeless()) {
+    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE || context.isBridgeless()) {
       @Nullable UIManager uiManager = context.getFabricUIManager();
       if (uiManager == null) {
         ReactSoftExceptionLogger.logSoftException(
@@ -69,6 +72,14 @@ public class UIManagerHelper {
       return uiManager;
     }
 
+    // The following code is compiled-out when `context.isBridgeless() == true &&
+    // ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true ` because:
+    // - BridgelessReactContext.isBridgeless() is set to true statically
+    // - BridgeReactContext is compiled-out when UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true
+    //
+    // To detect a potential regression we add the following assertion ERROR
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "UIManagerHelper.getUIManager(context, uiManagerType)", LegacyArchitectureLogLevel.ERROR);
     if (!context.hasCatalystInstance()) {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
@@ -181,7 +192,7 @@ public class UIManagerHelper {
     int reactTag = view.getId();
 
     // In non-Fabric we don't have (or use) SurfaceId
-    if (getUIManagerType(reactTag) == UIManagerType.DEFAULT) {
+    if (getUIManagerType(reactTag) == UIManagerType.LEGACY) {
       return -1;
     }
 

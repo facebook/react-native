@@ -38,7 +38,7 @@ jobs:
           hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
 
   build_hermesc_apple:
-    runs-on: macos-13
+    runs-on: macos-14
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -77,7 +77,7 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermes_macos:
-    runs-on: macos-13
+    runs-on: macos-14
     needs: [build_apple_slices_hermes, prepare_hermes_workspace]
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -230,3 +230,25 @@ jobs:
             const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
             const version = "${{ github.ref_name }}";
             await verifyReleaseOnNpm(version, isLatest());
+      - name: Verify that artifacts are on Maven
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {verifyArtifactsAreOnMaven} = require('./.github/workflow-scripts/verifyArtifactsAreOnMaven.js');
+            const version = "${{ github.ref_name }}";
+            await verifyArtifactsAreOnMaven(version);
+
+  generate_changelog:
+    needs: build_npm_package
+    uses: ./.github/workflows/generate-changelog.yml
+    secrets: inherit
+
+  bump_podfile_lock:
+    needs: build_npm_package
+    uses: ./.github/workflows/bump-podfile-lock.yml
+    secrets: inherit
+
+  create_draft_release:
+    needs: generate_changelog
+    uses: ./.github/workflows/create-draft-release.yml
+    secrets: inherit

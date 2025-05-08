@@ -8,6 +8,7 @@
  * @flow strict-local
  */
 
+import typeof CustomEvent from '../../src/private/webapis/dom/events/CustomEvent';
 import typeof BatchedBridge from '../BatchedBridge/BatchedBridge';
 import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
 import typeof TextInputState from '../Components/TextInput/TextInputState';
@@ -15,7 +16,6 @@ import typeof ExceptionsManager from '../Core/ExceptionsManager';
 import typeof RawEventEmitter from '../Core/RawEventEmitter';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
-import typeof CustomEvent from '../Events/CustomEvent';
 import typeof {
   createPublicInstance,
   createPublicRootInstance,
@@ -41,7 +41,7 @@ export type {
   HostInstance as PublicInstance,
 
   // These types are only necessary for Paper
-  LegacyHostInstanceMethods as LegacyPublicInstance,
+  NativeMethods as LegacyPublicInstance,
   MeasureOnSuccessCallback,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
@@ -99,7 +99,7 @@ module.exports = {
     return require('../Core/RawEventEmitter').default;
   },
   get CustomEvent(): CustomEvent {
-    return require('../Events/CustomEvent').default;
+    return require('../../src/private/webapis/dom/events/CustomEvent').default;
   },
   get createAttributePayload(): createAttributePayload {
     return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')

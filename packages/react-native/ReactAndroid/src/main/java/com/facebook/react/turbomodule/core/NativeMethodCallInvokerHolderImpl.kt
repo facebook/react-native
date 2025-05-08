@@ -7,10 +7,8 @@
 
 package com.facebook.react.turbomodule.core
 
-import com.facebook.jni.HybridData
-import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.jni.HybridClassBase
 import com.facebook.react.common.annotations.FrameworkAPI
-import com.facebook.react.internal.turbomodule.core.NativeModuleSoLoader
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder
 
 /**
@@ -20,12 +18,5 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
  * TurboModuleManager::initHybrid.
  */
 @FrameworkAPI
-public class NativeMethodCallInvokerHolderImpl
-private constructor(@field:DoNotStrip private val mHybridData: HybridData) :
-    NativeMethodCallInvokerHolder {
-  private companion object {
-    init {
-      NativeModuleSoLoader.maybeLoadSoLibrary()
-    }
-  }
-}
+public class NativeMethodCallInvokerHolderImpl private constructor() :
+    HybridClassBase(), NativeMethodCallInvokerHolder

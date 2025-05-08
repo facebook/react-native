@@ -15,6 +15,7 @@ export type Rect = $ReadOnly<{
   top?: ?number,
 }>;
 
+export type Insets = Rect;
 export type RectOrSize = Rect | number;
 
 export function createSquare(size: number): Rect {

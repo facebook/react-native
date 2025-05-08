@@ -45,7 +45,7 @@ function getCDPLogPrefix(destination: CDPMessageDestination): string {
 
 export default class CDPMessagesLogging {
   #cdpMessagesLoggingBatchingFn: {
-    [CDPMessageDestination]: () => void,
+    [CDPMessageDestination]: (message: string) => void,
   } = {
     DebuggerToProxy: () => {},
     ProxyToDebugger: () => {},
@@ -60,31 +60,38 @@ export default class CDPMessagesLogging {
   }
 
   #initializeThrottledCDPMessageLogging(): void {
-    const batchingCounters: {[CDPMessageDestination]: number} = {
-      DebuggerToProxy: 0,
-      ProxyToDebugger: 0,
-      DeviceToProxy: 0,
-      ProxyToDevice: 0,
+    const batchingCounters: {
+      [CDPMessageDestination]: {count: number, size: number},
+    } = {
+      DebuggerToProxy: {count: 0, size: 0},
+      ProxyToDebugger: {count: 0, size: 0},
+      DeviceToProxy: {count: 0, size: 0},
+      ProxyToDevice: {count: 0, size: 0},
     };
 
     Object.keys(batchingCounters).forEach(destination => {
       let timeout: Timeout | null = null;
 
-      this.#cdpMessagesLoggingBatchingFn[destination] = () => {
+      this.#cdpMessagesLoggingBatchingFn[destination] = (message: string) => {
         if (timeout == null) {
           timeout = setTimeout<$ReadOnlyArray<CDPMessageDestination>>(() => {
             debug(
-              '%s %s CDP messages %s in the last %ss.',
+              '%s %s CDP messages of size %s MB %s in the last %ss.',
               getCDPLogPrefix(destination),
-              String(batchingCounters[destination]).padStart(5),
+              String(batchingCounters[destination].count).padStart(4),
+              String(
+                (batchingCounters[destination].size / (1024 * 1024)).toFixed(2),
+              ).padStart(6),
               destination.startsWith('Proxy') ? '  sent  ' : 'received',
               CDP_MESSAGES_BATCH_DEBUGGING_THROTTLE_MS / 1000,
             );
-            batchingCounters[destination] = 0;
+            batchingCounters[destination].count = 0;
+            batchingCounters[destination].size = 0;
             timeout = null;
           }, CDP_MESSAGES_BATCH_DEBUGGING_THROTTLE_MS).unref();
         }
-        batchingCounters[destination]++;
+        batchingCounters[destination].count++;
+        batchingCounters[destination].size += message.length;
       };
     });
   }
@@ -94,7 +101,7 @@ export default class CDPMessagesLogging {
       debugCDPMessages('%s message: %s', getCDPLogPrefix(destination), message);
     }
     if (debug.enabled) {
-      this.#cdpMessagesLoggingBatchingFn[destination]();
+      this.#cdpMessagesLoggingBatchingFn[destination](message);
     }
   }
 }

@@ -24,7 +24,8 @@ import type {
   PointerEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
-import type {Node} from 'react';
+
+import * as React from 'react';
 
 export type PressRetentionOffset = $ReadOnly<{
   top: number,
@@ -169,7 +170,7 @@ type TextBaseProps = $ReadOnly<{
    */
   'aria-labelledby'?: ?string,
 
-  children?: ?Node,
+  children?: ?React.Node,
 
   /**
    * When `numberOfLines` is set, this prop defines how text will be

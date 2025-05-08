@@ -23,7 +23,10 @@ import {
 } from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
-export type TextInputChangeEventData = $ReadOnly<{
+/**
+ * @see TextInputProps.onChange
+ */
+type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
@@ -45,7 +48,7 @@ export type TextInputEvent = NativeSyntheticEvent<
   }>,
 >;
 
-export type TextInputContentSizeChangeEventData = $ReadOnly<{
+type TextInputContentSizeChangeEventData = $ReadOnly<{
   target: number,
   contentSize: $ReadOnly<{
     width: number,
@@ -53,62 +56,83 @@ export type TextInputContentSizeChangeEventData = $ReadOnly<{
   }>,
 }>;
 
+/**
+ * @see TextInputProps.onContentSizeChange
+ */
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 
-export type TargetEvent = $ReadOnly<{
+type TargetEvent = $ReadOnly<{
   target: number,
+  ...
 }>;
 
-export type TextInputFocusEventData = TargetEvent;
+type TextInputFocusEventData = TargetEvent;
 
+/**
+ * @see TextInputProps.onBlur
+ */
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+
+/**
+ * @see TextInputProps.onFocus
+ */
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
-type Selection = $ReadOnly<{
+export type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
 
-export type TextInputSelectionChangeEventData = $ReadOnly<{
+type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
+  ...
 }>;
 
+/**
+ * @see TextInputProps.onSelectionChange
+ */
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 
-export type TextInputKeyPressEventData = $ReadOnly<{
+type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
   eventCount: number,
+  ...
 }>;
 
+/**
+ * @see TextInputProps.onKeyPress
+ */
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
+
+type TextInputEndEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+  ...
+}>;
 
 /**
  * @see TextInputProps.onEndEditing
  */
-export type TextInputEndEditingEventData = $ReadOnly<{
+export type TextInputEndEditingEvent =
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
+
+type TextInputSubmitEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
+  ...
 }>;
-
-export type TextInputEndEditingEvent =
-  NativeSyntheticEvent<TextInputEndEditingEventData>;
 
 /**
  * @see TextInputProps.onSubmitEditing
  */
-export type TextInputSubmitEditingEventData = $ReadOnly<{
-  ...TargetEvent,
-  eventCount: number,
-  text: string,
-}>;
-
 export type TextInputSubmitEditingEvent =
   NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 
@@ -489,10 +513,26 @@ export type TextInputAndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 
-export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
-  ...TextInputIOSProps,
-  ...TextInputAndroidProps,
+type TextInputBaseProps = $ReadOnly<{
+  /**
+   * When provided, the text input will only accept drag and drop events for the specified
+   * types. If null or not provided, the text input will accept all types of drag and drop events.
+   * An empty array will accept no drag and drop events.
+   * Defaults to null.
+   *
+   * On Android, types must correspond to MIME types from ClipData:
+   * https://developer.android.com/reference/android/content/ClipData
+   * (e.g. "text/plain" or "image/*")
+   *
+   * On iOS, types must correspond to UTIs:
+   * https://developer.apple.com/documentation/uniformtypeidentifiers
+   * (e.g. "public.plain-text" or "public.image")
+   *
+   * *NOTE*: This prop is experimental and its API may change in the future. Use at your own risk.
+   *
+   * @see https://developer.android.com/reference/android/content/ClipData for more information on MIME types
+   */
+  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
 
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
@@ -778,31 +818,10 @@ export type TextInputProps = $ReadOnly<{
   onChange?: ?(e: TextInputChangeEvent) => mixed,
 
   /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   * Callback that is called when the text input's text changes.
-   *
-   * @platform ios
-   */
-  unstable_onChangeSync?: ?(e: TextInputChangeEvent) => mixed,
-
-  /**
    * Callback that is called when the text input's text changes.
    * Changed text is passed as an argument to the callback handler.
    */
   onChangeText?: ?(text: string) => mixed,
-
-  /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   * Callback that is called when the text input's text changes.
-   * Changed text is passed as an argument to the callback handler.
-   *
-   * @platform ios
-   */
-  unstable_onChangeTextSync?: ?(text: string) => mixed,
 
   /**
    * Callback that is called when the text input's content size changes.
@@ -831,21 +850,6 @@ export type TextInputProps = $ReadOnly<{
    * Fires before `onChange` callbacks.
    */
   onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
-
-  /**
-   * DANGER: this API is not stable and will change in the future.
-   *
-   * Callback will be called on the main thread and may result in dropped frames.
-   *
-   * Callback that is called when a key is pressed.
-   * This will be called with `{ nativeEvent: { key: keyValue } }`
-   * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
-   * the typed-in character otherwise including `' '` for space.
-   * Fires before `onChange` callbacks.
-   *
-   * @platform ios
-   */
-  unstable_onKeyPressSync?: ?(e: TextInputKeyPressEvent) => mixed,
 
   /**
    * Called when a single tap gesture is detected.
@@ -1021,6 +1025,18 @@ export type TextInputProps = $ReadOnly<{
    * unwanted edits without flicker.
    */
   value?: ?Stringish,
+
+  /**
+   * Align the input text to the left, center, or right sides of the input field.
+   */
+  textAlign?: ?('left' | 'center' | 'right'),
+}>;
+
+export type TextInputProps = $ReadOnly<{
+  ...Omit<ViewProps, 'style'>,
+  ...TextInputIOSProps,
+  ...TextInputAndroidProps,
+  ...TextInputBaseProps,
 }>;
 
 export interface TextInputInstance extends HostInstance {

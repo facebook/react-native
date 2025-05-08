@@ -68,6 +68,7 @@ ${Object.entries(definitions.common)
   }`;
     }
   })
+  .filter(Boolean)
   .join('\n\n')}
 };
 

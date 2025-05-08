@@ -7,7 +7,6 @@
 
 package com.facebook.react.modules.accessibilityinfo
 
-import android.annotation.TargetApi
 import android.content.ContentResolver
 import android.content.Context
 import android.database.ContentObserver
@@ -30,7 +29,6 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeAccessibilityInfoSpec.NAME)
 internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     NativeAccessibilityInfoSpec(context), LifecycleEventListener {
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactTouchExplorationStateChangeListener :
       AccessibilityManager.TouchExplorationStateChangeListener {
     override fun onTouchExplorationStateChanged(enabled: Boolean) {
@@ -41,7 +39,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   // Android can listen for accessibility service enable with `accessibilityStateChange`, but
   // `accessibilityState` conflicts with React Native props and confuses developers. Therefore, the
   // name `accessibilityServiceChange` is used here instead.
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactAccessibilityServiceChangeListener :
       AccessibilityManager.AccessibilityStateChangeListener {
     override fun onAccessibilityStateChanged(enabled: Boolean) {
@@ -101,7 +98,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     grayscaleModeEnabled = isGrayscaleEnabledValue
   }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isReduceMotionEnabledValue: Boolean
     get() {
       // Disabling animations in developer settings will set the animation scale to "0.0"
@@ -109,12 +105,21 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       val rawValue =
           Settings.Global.getString(contentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE)
 
-      // Parse the value as a float so we can check for a single value.
-      val parsedValue = rawValue?.toFloat() ?: 1f
-      return parsedValue == 0f
+      if (rawValue == null) {
+        return false
+      }
+
+      try {
+        // In some locales, the decimal separator is a comma instead of a dot,
+        // but "toFloat" would crash failing to conver these.
+        val parsedValue = rawValue.replace(',', '.').toFloat()
+        return parsedValue == 0f
+      } catch (e: NumberFormatException) {
+        // If the value is not a valid number, we assume reduced motion is not enabled
+        return false
+      }
     }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isInvertColorsEnabledValue: Boolean
     get() {
       try {
@@ -125,7 +130,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       }
     }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isGrayscaleEnabledValue: Boolean
     get() {
       try {
@@ -140,7 +144,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       }
     }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isHighTextContrastEnabledValue: Boolean
     get() {
       return Settings.Secure.getInt(
@@ -243,7 +246,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onHostResume() {
     accessibilityManager?.addTouchExplorationStateChangeListener(
         touchExplorationStateChangeListener)
@@ -262,7 +264,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     updateAndSendGrayscaleModeChangeEvent()
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onHostPause() {
     accessibilityManager?.removeTouchExplorationStateChangeListener(
         touchExplorationStateChangeListener)

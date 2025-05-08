@@ -102,6 +102,12 @@ class PerformanceTracer {
   void reportEventLoopTask(uint64_t start, uint64_t end);
 
   /**
+   * Record Microtasks phase of the Event Loop tick. Will be represented as a
+   * "Run Microtasks" block under a task.
+   */
+  void reportEventLoopMicrotasks(uint64_t start, uint64_t end);
+
+  /**
    * Create and serialize Profile Trace Event.
    * \return serialized Trace Event that represents a Profile for CDT.
    */
@@ -126,7 +132,7 @@ class PerformanceTracer {
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
-  folly::dynamic serializeTraceEvent(TraceEvent event) const;
+  folly::dynamic serializeTraceEvent(const TraceEvent& event) const;
 
   bool tracing_{false};
   uint64_t processId_;

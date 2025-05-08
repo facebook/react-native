@@ -10,7 +10,6 @@
 #include "AndroidEventBeat.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
-#include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
 #include "FocusOrderingHelper.h"
 
@@ -62,8 +61,7 @@ void FabricUIManagerBinding::drainPreallocateViewsQueue() {
 }
 
 void FabricUIManagerBinding::reportMount(SurfaceId surfaceId) {
-  if (ReactNativeFeatureFlags::
-          fixMountingCoordinatorReportedPendingTransactionsOnAndroid()) {
+  {
     // This is a fix for `MountingCoordinator::hasPendingTransactions` on
     // Android, which otherwise would report no pending transactions
     // incorrectly. This is due to the push model used on Android and can be
@@ -173,7 +171,9 @@ void FabricUIManagerBinding::startSurface(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  surfaceHandler.setProps(initialProps->consume());
+  if (initialProps != nullptr) {
+    surfaceHandler.setProps(initialProps->consume());
+  }
   surfaceHandler.constraintLayout({}, layoutContext);
 
   scheduler->registerSurface(surfaceHandler);
@@ -196,111 +196,101 @@ void FabricUIManagerBinding::startSurface(
   }
 }
 
-jfloatArray FabricUIManagerBinding::findNextFocusableElementMetrics(
+jint FabricUIManagerBinding::findNextFocusableElement(
     jint parentTag,
     jint focusedTag,
     jint direction) {
-  /*
-   * Holds the values of the next focusable element
-   * [0] - tag
-   * [1] - delta
-   */
-  std::array<float, 2> nodeValues{-1, -1};
-
-  JNIEnv* env = jni::Environment::current();
-
   ShadowNode::Shared nextNode;
-
-  auto nodeValuesSize = static_cast<jsize>(nodeValues.size());
-  jfloatArray result = env->NewFloatArray(nodeValuesSize);
 
   std::optional<FocusDirection> focusDirection =
       FocusOrderingHelper::resolveFocusDirection(direction);
 
   if (!focusDirection.has_value()) {
-    return nullptr;
+    return -1;
   }
 
-  ShadowNode::Shared parentShadowNode;
-  ShadowNode::Shared focusedShadowNode;
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
-  parentShadowNode = uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
+  ShadowNode::Shared parentShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
 
   if (parentShadowNode == nullptr) {
-    return nullptr;
+    return -1;
   }
 
-  focusedShadowNode = FocusOrderingHelper::findShadowNodeByTagRecursively(
-      parentShadowNode, focusedTag);
+  ShadowNode::Shared focusedShadowNode =
+      FocusOrderingHelper::findShadowNodeByTagRecursively(
+          parentShadowNode, focusedTag);
 
   if (focusedShadowNode == nullptr) {
-    return nullptr;
+    return -1;
   }
 
   LayoutMetrics childLayoutMetrics = uimanager->getRelativeLayoutMetrics(
       *focusedShadowNode, parentShadowNode.get(), {.includeTransform = true});
 
-  /*
-   * Set currentDelta to the origin of the focused node
-   * Set nextDelta to the max int value in the direction we want to go (down =
-   * INT_MIN, up = INT_MAX)
-   */
-  auto [currentDelta, nextDelta] = FocusOrderingHelper::initScrollDeltas(
-      focusDirection.value(), childLayoutMetrics.frame.origin);
+  Rect sourceRect = childLayoutMetrics.frame;
 
   /*
    * Traverse the tree recursively to find the next focusable element in the
    * given direction
    */
-  FocusOrderingHelper::traverseAndUpdateNextFocusableElementMetrics(
+  std::optional<Rect> nextRect = std::nullopt;
+  FocusOrderingHelper::traverseAndUpdateNextFocusableElement(
       parentShadowNode,
       focusedShadowNode,
       parentShadowNode,
       focusDirection.value(),
       *uimanager,
-      currentDelta,
-      nextDelta,
+      sourceRect,
+      nextRect,
       nextNode);
 
   if (nextNode == nullptr) {
+    return -1;
+  }
+
+  return nextNode->getTag();
+}
+
+jintArray FabricUIManagerBinding::getRelativeAncestorList(
+    jint rootTag,
+    jint childTag) {
+  JNIEnv* env = jni::Environment::current();
+
+  std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
+
+  ShadowNode::Shared childShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(childTag);
+  ShadowNode::Shared rootShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(rootTag);
+
+  if (childShadowNode == nullptr || rootShadowNode == nullptr) {
     return nullptr;
   }
 
-  LayoutMetrics nextNodeLayoutMetrics = uimanager->getRelativeLayoutMetrics(
-      *nextNode, parentShadowNode.get(), {.includeTransform = true});
+  ShadowNode::AncestorList ancestorList =
+      childShadowNode->getFamily().getAncestors(*rootShadowNode);
 
-  LayoutMetrics parentNodeLayoutMetrics = uimanager->getRelativeLayoutMetrics(
-      *parentShadowNode, nullptr, {.includeTransform = true});
-
-  nodeValues[0] = static_cast<float>(nextNode->getTag());
-
-  /*
-   * In the end we want to scroll enough to make the next node visible
-   * When going up or right we want delta to be the origin of the next node
-   * When going down or left we want delta to be the end of the next node
-   */
-  switch (focusDirection.value()) {
-    case FocusDirection::FocusDown:
-      nextDelta = (nextNodeLayoutMetrics.frame.origin.y -
-                   parentNodeLayoutMetrics.frame.size.height) +
-          nextNodeLayoutMetrics.frame.size.height;
-      nodeValues[1] = nextDelta;
-      break;
-    case FocusDirection::FocusRight:
-      nextDelta = (nextNodeLayoutMetrics.frame.origin.x -
-                   parentNodeLayoutMetrics.frame.size.width) +
-          nextNodeLayoutMetrics.frame.size.width;
-      nodeValues[1] = nextDelta;
-      break;
-    case FocusDirection::FocusLeft:
-    case FocusDirection::FocusUp:
-      nodeValues[1] = nextDelta;
-      break;
+  if (ancestorList.empty() || ancestorList.size() < 2) {
+    return nullptr;
   }
 
-  // Build the jfloatArray with the updates nodeValues
-  env->SetFloatArrayRegion(result, 0, nodeValuesSize, nodeValues.data());
+  // ignore the first ancestor as it is the rootShadowNode itself
+  std::vector<int> ancestorTags;
+  for (auto it = std::next(ancestorList.begin()); it != ancestorList.end();
+       ++it) {
+    auto& ancestor = *it;
+    if (ancestor.first.get().getTraits().check(
+            ShadowNodeTraits::Trait::FormsStackingContext)) {
+      ancestorTags.push_back(ancestor.first.get().getTag());
+    }
+  }
+
+  jintArray result = env->NewIntArray(static_cast<jint>(ancestorTags.size()));
+
+  env->SetIntArrayRegion(
+      result, 0, static_cast<jint>(ancestorTags.size()), ancestorTags.data());
 
   return result;
 }
@@ -351,7 +341,9 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  surfaceHandler.setProps(initialProps->consume());
+  if (initialProps != nullptr) {
+    surfaceHandler.setProps(initialProps->consume());
+  }
   surfaceHandler.constraintLayout(constraints, context);
 
   scheduler->registerSurface(surfaceHandler);
@@ -428,6 +420,14 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
         << this << ", surfaceId: " << surfaceHandler.getSurfaceId() << ").";
   }
 
+  // This is necessary to make sure we remove the surface handler from the
+  // registry before invalidating it. Otherwise, we can access an invalid
+  // reference in `reportMount`.
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    surfaceHandlerRegistry_.erase(surfaceHandler.getSurfaceId());
+  }
+
   surfaceHandler.stop();
 
   auto scheduler = getScheduler();
@@ -437,11 +437,6 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
     return;
   }
   scheduler->unregisterSurface(surfaceHandler);
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.erase(surfaceHandler.getSurfaceId());
-  }
 
   auto mountingManager = getMountingManager("unregisterSurface");
   if (!mountingManager) {
@@ -605,9 +600,7 @@ void FabricUIManagerBinding::schedulerDidFinishTransaction(
     // the trees to determine the mutations to run on the host platform),
     // but we have to due to current limitations in the Android implementation.
     auto mountingTransaction = mountingCoordinator->pullTransaction(
-        // Indicate that the transaction will be performed asynchronously
-        ReactNativeFeatureFlags::
-            fixMountingCoordinatorReportedPendingTransactionsOnAndroid());
+        /* willPerformAsynchronously = */ true);
     if (!mountingTransaction.has_value()) {
       return;
     }
@@ -720,6 +713,14 @@ void FabricUIManagerBinding::schedulerDidSetIsJSResponder(
       shadowView, isJSResponder, blockNativeResponder);
 }
 
+void FabricUIManagerBinding::schedulerShouldSynchronouslyUpdateViewOnUIThread(
+    Tag tag,
+    const folly::dynamic& props) {
+  if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() && mountingManager_) {
+    mountingManager_->synchronouslyUpdateViewOnUIThread(tag, props);
+  }
+}
+
 void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {
@@ -767,8 +768,11 @@ void FabricUIManagerBinding::registerNatives() {
           "stopSurfaceWithSurfaceHandler",
           FabricUIManagerBinding::stopSurfaceWithSurfaceHandler),
       makeNativeMethod(
-          "findNextFocusableElementMetrics",
-          FabricUIManagerBinding::findNextFocusableElementMetrics),
+          "findNextFocusableElement",
+          FabricUIManagerBinding::findNextFocusableElement),
+      makeNativeMethod(
+          "getRelativeAncestorList",
+          FabricUIManagerBinding::getRelativeAncestorList),
   });
 }
 

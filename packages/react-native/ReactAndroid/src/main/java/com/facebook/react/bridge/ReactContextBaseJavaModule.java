@@ -9,24 +9,13 @@ package com.facebook.react.bridge;
 
 import android.app.Activity;
 import androidx.annotation.Nullable;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
-import com.facebook.react.common.annotations.internal.LegacyArchitecture;
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext} instance.
  */
-@DeprecatedInNewArchitecture(
-    message =
-        "ReactContextBaseJavaModule will be deprecated in new Architecture of React Native, use"
-            + " BaseJavaModule instead")
-@LegacyArchitecture
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
-  static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "ReactContextBaseJavaModule", LegacyArchitectureLogLevel.WARNING);
-  }
 
   public ReactContextBaseJavaModule() {
     super(null);
@@ -45,9 +34,10 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
    * <p>For example, never store the value returned by this method in a member variable. Instead,
    * call this method whenever you actually need the Activity and make sure to check for {@code
    * null}.
+   *
+   * @deprecated "Use 'getReactApplicationContext.getCurrentActivity() instead."
    */
-  @DeprecatedInNewArchitecture(
-      message = "Use 'getReactApplicationContext.getCurrentActivity() instead.")
+  @Deprecated(forRemoval = true, since = "0.80.0")
   protected @Nullable final Activity getCurrentActivity() {
     return getReactApplicationContext().getCurrentActivity();
   }

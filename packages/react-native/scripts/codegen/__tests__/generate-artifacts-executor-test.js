@@ -10,7 +10,7 @@
 
 'use strict';
 
-const fixtures = require('../__test_fixtures__/fixtures');
+const fixtures = require('../__fixtures__/fixtures');
 const {execute} = require('../generate-artifacts-executor');
 const {
   extractSupportedApplePlatforms,
@@ -29,7 +29,7 @@ const packageJson = JSON.stringify({
 });
 
 describe('execute', () => {
-  const appDir = path.join(__dirname, '../__test_fixtures__/test-app');
+  const appDir = path.join(__dirname, '../__fixtures__/test-app');
   const outputDir = path.join(appDir, 'temp');
 
   beforeAll(() => {
@@ -51,6 +51,8 @@ describe('execute', () => {
     'RCTThirdPartyComponentsProvider.mm',
     'ReactAppDependencyProvider.podspec',
     'ReactCodegen.podspec',
+    'RCTUnstableModulesRequiringMainQueueSetupProvider.h',
+    'RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
   ].forEach(file => {
     it(`"${file}" should match snapshot`, () => {
       const generatedFileDir = path.join(outputDir, 'build/generated/ios');
@@ -134,7 +136,7 @@ describe('extractSupportedApplePlatforms', () => {
     const myDependency = 'test-library';
     const myDependencyPath = path.join(
       __dirname,
-      `../__test_fixtures__/${myDependency}`,
+      `../__fixtures__/${myDependency}`,
     );
     let platforms = extractSupportedApplePlatforms(
       myDependency,
@@ -152,7 +154,7 @@ describe('extractSupportedApplePlatforms', () => {
     const myDependency = 'test-library-2';
     const myDependencyPath = path.join(
       __dirname,
-      `../__test_fixtures__/${myDependency}`,
+      `../__fixtures__/${myDependency}`,
     );
     let platforms = extractSupportedApplePlatforms(
       myDependency,

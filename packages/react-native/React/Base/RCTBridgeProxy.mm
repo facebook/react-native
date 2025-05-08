@@ -475,7 +475,7 @@ using namespace facebook;
 
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
-  [self logError:@"This methid is unsupported." cmd:invocation.selector];
+  [self logError:@"This method is unsupported." cmd:invocation.selector];
 }
 
 /**

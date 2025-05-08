@@ -228,8 +228,8 @@ export abstract class FlatListComponent<
    * Provides a reference to the underlying host component
    */
   getNativeScrollRef: () =>
-    | React.ElementRef<typeof View>
-    | React.ElementRef<typeof ScrollViewComponent>
+    | React.ComponentRef<typeof View>
+    | React.ComponentRef<typeof ScrollViewComponent>
     | null
     | undefined;
 

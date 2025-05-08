@@ -15,7 +15,6 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.EventCategoryDef
 import com.facebook.react.uimanager.events.RCTModernEventEmitter
-import com.facebook.react.uimanager.events.TouchEvent
 
 /** Handles updating a [ValueAnimatedNode] when an event gets dispatched. */
 internal class EventAnimationDriver(
@@ -24,7 +23,8 @@ internal class EventAnimationDriver(
     private val eventPath: List<String>,
     @JvmField internal var valueNode: ValueAnimatedNode
 ) : RCTModernEventEmitter {
-  @Deprecated("Deprecated in Java")
+  @Deprecated(
+      "Deprecated in Java", ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"))
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) =
       receiveEvent(-1, targetTag, eventName, params)
 
@@ -43,11 +43,6 @@ internal class EventAnimationDriver(
       touches: WritableArray,
       changedIndices: WritableArray
   ) {
-    throw UnsupportedOperationException("receiveTouches is not support by native animated events")
-  }
-
-  @Deprecated("Deprecated in Java")
-  override fun receiveTouches(event: TouchEvent) {
     throw UnsupportedOperationException("receiveTouches is not support by native animated events")
   }
 

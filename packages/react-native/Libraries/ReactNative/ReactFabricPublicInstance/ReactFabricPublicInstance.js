@@ -71,10 +71,7 @@ function getReadOnlyTextClass(): Class<ReadOnlyTextT> {
 }
 
 export function createPublicRootInstance(rootTag: RootTag): PublicRootInstance {
-  if (
-    ReactNativeFeatureFlags.enableAccessToHostTreeInFabric() &&
-    ReactNativeFeatureFlags.enableDOMDocumentAPI()
-  ) {
+  if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
     const ReactNativeDocumentModule = getReactNativeDocumentModule();
 
     // $FlowExpectedError[incompatible-return]

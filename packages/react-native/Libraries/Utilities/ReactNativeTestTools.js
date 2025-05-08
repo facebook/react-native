@@ -13,7 +13,7 @@
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
 
 import TouchableWithoutFeedback from '../Components/Touchable/TouchableWithoutFeedback';
-import React from 'react';
+import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 
 const Switch = require('../Components/Switch/Switch').default;
@@ -22,7 +22,7 @@ const View = require('../Components/View/View').default;
 const Text = require('../Text/Text').default;
 const {VirtualizedList} = require('@react-native/virtualized-lists').default;
 
-export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
+export type ReactTestInstance = ReactTestRendererType['root'];
 export type Predicate = (node: ReactTestInstance) => boolean;
 /* $FlowFixMe[value-as-type] (>=0.125.1 site=react_native_fb) This comment
  * suppresses an error found when Flow v0.125.1 was deployed. To see the error,

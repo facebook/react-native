@@ -7,6 +7,7 @@
 
 #include "TurboModuleBinding.h"
 
+#include <ReactCommon/TurboModuleWithJSIBindings.h>
 #include <cxxreact/TraceSection.h>
 #include <react/utils/jsi-utils.h>
 #include <stdexcept>
@@ -156,6 +157,7 @@ jsi::Value TurboModuleBinding::getModule(
     module = moduleProvider_(moduleName);
   }
   if (module) {
+    TurboModuleWithJSIBindings::installJSIBindings(module, runtime);
     // What is jsRepresentation? A cache for the TurboModule's properties
     // Henceforth, always return the cache (i.e: jsRepresentation) to JavaScript
     //

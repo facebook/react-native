@@ -10,14 +10,19 @@
 
 declare export class URLSearchParams {
   _searchParams: Array<[string, string]>;
-  constructor(params?: Record<string, string>): void;
+  constructor(
+    params?: Record<string, string> | string | Array<[string, string]>,
+  ): void;
   append(key: string, value: string): void;
-  delete(name: string): empty;
-  get(name: string): empty;
-  getAll(name: string): empty;
-  has(name: string): empty;
-  set(name: string, value: string): empty;
-  sort(): empty;
+  delete(name: string): void;
+  get(name: string): string;
+  getAll(name: string): Array<string>;
+  has(name: string): boolean;
+  set(name: string, value: string): void;
+  sort(): void;
   @@iterator(): Iterator<[string, string]>;
   toString(): string;
+  keys(): Iterator<string>;
+  values(): Iterator<string>;
+  entries(): Iterator<[string, string]>;
 }

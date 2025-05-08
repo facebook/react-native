@@ -33,12 +33,12 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       componentsRegistry: ComponentFactory,
   )
 
-  external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap)
+  external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap?)
 
   external fun startSurfaceWithConstraints(
       surfaceId: Int,
       moduleName: String,
-      initialProps: NativeMap,
+      initialProps: NativeMap?,
       minWidth: Float,
       maxWidth: Float,
       minHeight: Float,
@@ -55,11 +55,9 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       isMountable: Boolean
   )
 
-  external fun findNextFocusableElementMetrics(
-      parentTag: Int,
-      focusedTag: Int,
-      direction: Int
-  ): FloatArray
+  external fun findNextFocusableElement(parentTag: Int, focusedTag: Int, direction: Int): Int
+
+  external fun getRelativeAncestorList(rootTag: Int, childTag: Int): IntArray
 
   external fun stopSurface(surfaceId: Int)
 

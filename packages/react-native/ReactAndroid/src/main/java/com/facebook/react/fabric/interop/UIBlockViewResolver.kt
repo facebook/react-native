@@ -15,8 +15,8 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
  *
  * Users can invoke [resolveView] on this instance to get an Android [View] from the view tag.
  *
- * @deprecated When developing new libraries for Fabric you should instead use [UIManagerListener]
- *   or View Commands to achieve a same results.
+ * @deprecated When developing new libraries for Fabric you should instead use
+ *   [com.facebook.react.bridge.UIManagerListener] or View Commands to achieve a same results.
  */
 @UnstableReactNativeAPI
 @Deprecated("Use UIManagerListener or View Commands instead of addUIBlock and prependUIBlock.")

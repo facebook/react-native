@@ -54,7 +54,8 @@ const DEFAULT_MODE: FantomTestConfigMode =
 const FANTOM_FLAG_FORMAT = /^(\w+):(\w+)$/;
 
 const FANTOM_BENCHMARK_FILENAME_RE = /[Bb]enchmark-itest\./g;
-const FANTOM_BENCHMARK_SUITE_RE = /\nFantom\.unstable_benchmark(\s*)\.suite\(/g;
+const FANTOM_BENCHMARK_SUITE_RE =
+  /\n(Fantom\.)?unstable_benchmark(\s*)\.suite\(/g;
 
 /**
  * Extracts the Fantom configuration from the test file, specified as part of
@@ -91,7 +92,6 @@ export default function getFantomTestConfig(
       common: {},
       jsOnly: {
         enableAccessToHostTreeInFabric: true,
-        enableDOMDocumentAPI: true,
       },
       reactInternal: {},
     },

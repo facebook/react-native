@@ -6,7 +6,6 @@
  */
 
 #include "HostTarget.h"
-#include "CdpJson.h"
 #include "HostAgent.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
@@ -14,6 +13,7 @@
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorFlags.h>
+#include <jsinspector-modern/cdp/CdpJson.h>
 
 #include <folly/dynamic.h>
 #include <folly/json.h>

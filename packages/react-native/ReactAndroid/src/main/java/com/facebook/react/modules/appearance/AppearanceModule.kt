@@ -54,8 +54,8 @@ constructor(
     // Attempt to use the Activity context first in order to get the most up to date
     // scheme. This covers the scenario when AppCompatDelegate.setDefaultNightMode()
     // is called directly (which can occur in Brownfield apps for example).
-    val activity = getCurrentActivity()
-    return colorSchemeForCurrentConfiguration(activity ?: getReactApplicationContext())
+    val activity = reactApplicationContext.getCurrentActivity()
+    return colorSchemeForCurrentConfiguration(activity ?: reactApplicationContext)
   }
 
   public override fun setColorScheme(style: String) {

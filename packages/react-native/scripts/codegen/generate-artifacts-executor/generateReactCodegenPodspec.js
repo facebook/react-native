@@ -60,7 +60,7 @@ function getInputFiles(appPath, appPkgJSon) {
     )[0];
   const jsFiles = '-name "Native*.js" -or -name "*NativeComponent.js"';
   const tsFiles = '-name "Native*.ts" -or -name "*NativeComponent.ts"';
-  const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f \\( ${jsFiles} -or ${tsFiles} \\)`;
+  const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f -not -path "*/__mocks__/*" -and \\( ${jsFiles} -or ${tsFiles} \\)`;
   const list = String(execSync(findCommand))
     .trim()
     .split('\n')
@@ -78,9 +78,9 @@ RCT_SCRIPT_POD_INSTALLATION_ROOT=$(pwd)
 popd >/dev/null
 
 export RCT_SCRIPT_RN_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${path.relative(outputPath, REACT_NATIVE_PACKAGE_ROOT_FOLDER)}"
-export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${relativeAppPath.length === 0 ? '.' : relativeAppPath}",
-export RCT_SCRIPT_OUTPUT_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT",
-export RCT_SCRIPT_TYPE="withCodegenDiscovery",
+export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${relativeAppPath.length === 0 ? '.' : relativeAppPath}"
+export RCT_SCRIPT_OUTPUT_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT"
+export RCT_SCRIPT_TYPE="withCodegenDiscovery"
 
 SCRIPT_PHASES_SCRIPT="$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh"
 WITH_ENVIRONMENT="$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh"

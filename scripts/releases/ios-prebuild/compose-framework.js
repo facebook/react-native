@@ -9,13 +9,13 @@
  * @oncall react_native
  */
 
+const {HEADERS_FOLDER, TARGET_FOLDER} = require('./constants');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 /*::
 import type { Dependency, Platform } from './types';
-import {exec} from "child_process";
 */
 
 /**
@@ -64,6 +64,9 @@ async function createFramework(
   // Copy bundles into the framework
   copyBundles(scheme, dependencies, output, frameworkPaths);
 
+  // Copy headers to the framework - start by building the Header folder
+  await copyHeaders(scheme, dependencies, rootFolder);
+
   // Copy Symbols to symbols folder
   const symbolPaths = frameworkPaths.map(framework =>
     path.join(framework, `${scheme}.framework.dSYM`),
@@ -79,6 +82,40 @@ async function createFramework(
 }
 
 /**
+ * Copies headers needed from the package to a Header folder that we'll pass to
+ * each framework arch type
+ */
+async function copyHeaders(
+  scheme /*: string */,
+  dependencies /*: $ReadOnlyArray<Dependency> */,
+  rootFolder /*: string */,
+) {
+  console.log('Copying header files for dependencies...');
+
+  // Create and clean the header folder
+  const headeDestinationFolder = path.join(
+    rootFolder,
+    `${scheme}.xcframework`,
+    'Headers',
+  );
+  fs.rmSync(headeDestinationFolder, {force: true, recursive: true});
+  fs.mkdirSync(headeDestinationFolder, {recursive: true});
+
+  // Now we can go through all dependencies and copy header files for each depencendy
+  dependencies.forEach(dep => {
+    const depHeaders = path.join(
+      rootFolder,
+      dep.name,
+      TARGET_FOLDER,
+      HEADERS_FOLDER,
+    );
+
+    // Copy all header files from the dependency to headerTempFolder
+    execSync(`cp -r ${depHeaders}/* ${headeDestinationFolder}/`);
+  });
+}
+
+/**
  * Copies the bundles in the source frameworks to the target xcframework inside the xcframework's Resources folder
  */
 function copyBundles(
@@ -88,14 +125,12 @@ function copyBundles(
   frameworkPaths /*:Array<string>*/,
 ) {
   console.log('Copying bundles to the framework...');
-
   // Let's precalculate the target folder. It is the xcframework's output folder with
   // all its targets.
   const targetArchFolders = fs
     .readdirSync(outputFolder)
     .map(p => path.join(outputFolder, p))
     .filter(p => fs.statSync(p).isDirectory());
-
   // For each framework (in frameworkPaths), copy the bundles from the source folder.
   // A bundle is the name of the framework + _ + target name + .bundle. We can
   // check if the target has a bundle by checking if it defines one or more resources.
@@ -105,7 +140,6 @@ function copyBundles(
       if (!resources || resources.length === 0) {
         return;
       }
-
       // Get bundle source folder
       const bundleName = `${scheme}_${dep.name}.bundle`;
       const sourceBundlePath = path.join(frameworkPath, bundleName);
@@ -115,19 +149,11 @@ function copyBundles(
           const targetBundlePath = path.join(
             targetArchFolder,
             `${scheme}.framework`,
-            'Resources',
+            bundleName,
           );
-          if (
-            !fs.existsSync(path.join(targetArchFolder, `${scheme}.framework`))
-          ) {
-            console.warn("Target Bundle path doesn't exist", targetBundlePath);
-          }
-          if (!fs.existsSync(path.dirname(sourceBundlePath))) {
-            console.warn("Source bundle doesn't exist", sourceBundlePath);
-          }
 
           // A bundle is a directory, so we need to copy the whole directory
-          execSync(`cp -r ${sourceBundlePath} ${targetBundlePath}`);
+          execSync(`cp -r "${sourceBundlePath}/" "${targetBundlePath}"`);
         });
       } else {
         console.warn(`Bundle ${sourceBundlePath} not found`);

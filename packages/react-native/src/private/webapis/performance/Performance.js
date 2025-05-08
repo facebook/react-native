@@ -226,9 +226,7 @@ export default class Performance {
    * Returns a double, measured in milliseconds.
    * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
    */
-  now(): DOMHighResTimeStamp {
-    return getCurrentTimeStamp();
-  }
+  now: () => DOMHighResTimeStamp = getCurrentTimeStamp;
 
   /**
    * An extension that allows to get back to JS all currently logged marks/measures

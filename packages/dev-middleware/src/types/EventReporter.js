@@ -33,6 +33,10 @@ export type DebuggerSessionIDs = {
   pageId: string | null,
 };
 
+export type ConnectionUptime = {
+  connectionUptime: number,
+};
+
 export type ReportableEvent =
   | {
       type: 'launch_debugger_frontend',
@@ -64,6 +68,7 @@ export type ReportableEvent =
       responseOrigin: 'proxy' | 'device',
       timeSinceStart: number | null,
       ...DebuggerSessionIDs,
+      ...ConnectionUptime,
       frontendUserAgent: string | null,
       prefersFuseboxFrontend: boolean | null,
       ...
@@ -85,31 +90,39 @@ export type ReportableEvent =
       type: 'fusebox_console_notice',
     }
   | {
+      type: 'no_debug_pages_for_device',
+      ...DebuggerSessionIDs,
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',
       message: string,
       error: string,
       errorStack: string,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'debugger_high_ping' | 'device_high_ping',
       duration: number,
-      isIdle: boolean,
+      timeSinceLastCommunication: number | null,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'debugger_timeout' | 'device_timeout',
       duration: number,
-      isIdle: boolean,
+      timeSinceLastCommunication: number | null,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'debugger_connection_closed' | 'device_connection_closed',
       code: number,
       reason: string,
-      isIdle: boolean,
+      timeSinceLastCommunication: number | null,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
@@ -117,12 +130,7 @@ export type ReportableEvent =
       eventLoopUtilization: number,
       maxEventLoopDelayPercent: number,
       duration: number,
-      ...DebuggerSessionIDs,
-    }
-  | {
-      type: 'device_high_message_queue',
-      maxCDPMessageQueueSize: number,
-      maxCDPMessageQueueMemory: number,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     };
 

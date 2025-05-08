@@ -30,7 +30,6 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/metro-runtime/.+\\.js$',
     '/node_modules/@babel/runtime/.+\\.js$',
     '/node_modules/@react-native/js-polyfills/.+\\.js$',
-    '/node_modules/event-target-shim/.+\\.js$',
     '/node_modules/invariant/.+\\.js$',
     '/node_modules/react-devtools-core/.+\\.js$',
     '/node_modules/react-native/index.js$',

@@ -165,8 +165,7 @@ static void calculateShadowViewMutationsFlattener(
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
-    const CullingContext& oldCullingContext,
-    const CullingContext& newCullingContext);
+    const CullingContext& cullingContext);
 
 /**
  * Updates the subtrees of any matched ShadowViewNodePair. This handles
@@ -222,8 +221,7 @@ static void updateMatchedPairSubtrees(
           oldPair.shadowView.tag,
           nullptr,
           nullptr,
-          oldCullingContextCopy,
-          newCullingContextCopy);
+          oldCullingContextCopy);
     }
     // Unflattening
     else {
@@ -257,7 +255,6 @@ static void updateMatchedPairSubtrees(
           parentTag,
           nullptr,
           nullptr,
-          oldCullingContextCopy,
           newCullingContextCopy);
 
       // If old nodes were not visited, we know that we can delete
@@ -423,12 +420,11 @@ static void calculateShadowViewMutationsFlattener(
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
-    const CullingContext& oldCullingContext,
-    const CullingContext& newCullingContext) {
+    const CullingContext& cullingContext) {
   // Step 1: iterate through entire tree
   std::vector<ShadowViewNodePair*> treeChildren =
       sliceChildShadowNodeViewPairsFromViewNodePair(
-          node, scope, false, newCullingContext);
+          node, scope, false, cullingContext);
 
   DEBUG_LOGS({
     LOG(ERROR) << "Differ Flattener: "
@@ -616,23 +612,17 @@ static void calculateShadowViewMutationsFlattener(
             ShadowViewMutation::UpdateMutation(
                 oldTreeNodePair.shadowView,
                 newTreeNodePair.shadowView,
-                ReactNativeFeatureFlags::
-                        fixDifferentiatorEmittingUpdatesWithWrongParentTag()
-                    ? parentTagForUpdate
-                    : node.shadowView.tag));
+                parentTagForUpdate));
       }
 
       auto adjustedOldCullingContext =
-          oldCullingContext.adjustCullingContextIfNeeded(oldTreeNodePair);
+          cullingContext.adjustCullingContextIfNeeded(oldTreeNodePair);
       auto adjustedNewCullingContext =
-          newCullingContext.adjustCullingContextIfNeeded(newTreeNodePair);
+          cullingContext.adjustCullingContextIfNeeded(newTreeNodePair);
 
       // Update children if appropriate.
       if (!oldTreeNodePair.flattened && !newTreeNodePair.flattened) {
-        if (oldTreeNodePair.shadowNode != newTreeNodePair.shadowNode ||
-            oldCullingContext != newCullingContext) {
-          // TODO(T217775046): Find a test case for oldCullingContext !=
-          // newCullingContext condition above.
+        if (oldTreeNodePair.shadowNode != newTreeNodePair.shadowNode) {
           ViewNodePairScope innerScope{};
           auto oldGrandChildPairs =
               sliceChildShadowNodeViewPairsFromViewNodePair(
@@ -666,8 +656,6 @@ static void calculateShadowViewMutationsFlattener(
         // Case 1: child mode is the same as parent.
         // This is a flatten-flatten, or unflatten-unflatten.
         if (childReparentMode == reparentMode) {
-          // TODO(T217775046): Find a test case for this branch of view
-          // flattening + culling.
           calculateShadowViewMutationsFlattener(
               scope,
               childReparentMode,
@@ -682,12 +670,9 @@ static void calculateShadowViewMutationsFlattener(
                    : parentTag),
               subVisitedNewMap,
               subVisitedOldMap,
-              adjustedOldCullingContext,
-              adjustedNewCullingContext);
+              cullingContext.adjustCullingContextIfNeeded(treeChildPair));
         } else {
           // Get flattened nodes from either new or old tree
-          // TODO(T217775046): Find a test case for this branch of view
-          // flattening + culling.
           auto flattenedNodes = sliceChildShadowNodeViewPairsFromViewNodePair(
               (childReparentMode == ReparentMode::Flatten ? newTreeNodePair
                                                           : oldTreeNodePair),
@@ -714,51 +699,48 @@ static void calculateShadowViewMutationsFlattener(
             }
           }
 
-          // Unflatten parent, flatten child
           if (childReparentMode == ReparentMode::Flatten) {
+            // Unflatten parent, flatten child
+            react_native_assert(reparentMode == ReparentMode::Unflatten);
+            auto fixedParentTagForUpdate =
+                ReactNativeFeatureFlags::
+                    enableFixForParentTagDuringReparenting()
+                ? newTreeNodePair.shadowView.tag
+                : parentTag;
             // Flatten old tree into new list
             // At the end of this loop we still want to know which of these
             // children are visited, so we reuse the `newRemainingPairs` map.
-            // TODO(T217775046): Find a test case for this branch of view
-            // flattening + culling.
             calculateShadowViewMutationsFlattener(
                 scope,
                 ReparentMode::Flatten,
                 mutationContainer,
-                (reparentMode == ReparentMode::Flatten
-                     ? parentTag
-                     : newTreeNodePair.shadowView.tag),
+                newTreeNodePair.shadowView.tag,
                 unvisitedRecursiveChildPairs,
                 oldTreeNodePair,
-                (reparentMode == ReparentMode::Flatten
-                     ? oldTreeNodePair.shadowView.tag
-                     : parentTag),
+                fixedParentTagForUpdate,
                 subVisitedNewMap,
                 subVisitedOldMap,
-                adjustedOldCullingContext,
                 adjustedNewCullingContext);
-          }
-          // Flatten parent, unflatten child
-          else {
+          } else {
+            // Flatten parent, unflatten child
+            react_native_assert(reparentMode == ReparentMode::Flatten);
             // Unflatten old list into new tree
-            // TODO(T217775046): Find a test case for this branch of view
-            // flattening + culling.
+            auto fixedParentTagForUpdate =
+                ReactNativeFeatureFlags::
+                    enableFixForParentTagDuringReparenting()
+                ? parentTagForUpdate
+                : oldTreeNodePair.shadowView.tag;
             calculateShadowViewMutationsFlattener(
                 scope,
-                ReparentMode::Unflatten,
+                /* reparentMode */ ReparentMode::Unflatten,
                 mutationContainer,
-                (reparentMode == ReparentMode::Flatten
-                     ? parentTag
-                     : newTreeNodePair.shadowView.tag),
-                unvisitedRecursiveChildPairs,
-                newTreeNodePair,
-                (reparentMode == ReparentMode::Flatten
-                     ? oldTreeNodePair.shadowView.tag
-                     : parentTag),
-                subVisitedNewMap,
-                subVisitedOldMap,
-                adjustedOldCullingContext,
-                adjustedNewCullingContext);
+                parentTag,
+                /* unvisitedOtherNodes */ unvisitedRecursiveChildPairs,
+                /* node */ newTreeNodePair,
+                /* parentTagForUpdate */ fixedParentTagForUpdate,
+                /* parentSubVisitedOtherNewNodes */ subVisitedNewMap,
+                /* parentSubVisitedOtherOldNodes */ subVisitedOldMap,
+                /* cullingContext */ adjustedOldCullingContext);
 
             // If old nodes were not visited, we know that we can delete them
             // now. They will be removed from the hierarchy by the outermost
@@ -843,10 +825,8 @@ static void calculateShadowViewMutationsFlattener(
       continue;
     }
 
-    auto adjustedOldCullingContext =
-        oldCullingContext.adjustCullingContextIfNeeded(treeChildPair);
-    auto adjustedNewCullingContext =
-        newCullingContext.adjustCullingContextIfNeeded(treeChildPair);
+    auto adjustedCullingContext =
+        cullingContext.adjustCullingContextIfNeeded(treeChildPair);
 
     if (reparentMode == ReparentMode::Flatten) {
       mutationContainer.deleteMutations.push_back(
@@ -854,17 +834,15 @@ static void calculateShadowViewMutationsFlattener(
 
       if (!treeChildPair.flattened) {
         ViewNodePairScope innerScope{};
-        // TODO(T217775046): Find a test case for this branch of view
-        // flattening + culling.
         calculateShadowViewMutations(
             innerScope,
             mutationContainer.destructiveDownwardMutations,
             treeChildPair.shadowView.tag,
             sliceChildShadowNodeViewPairsFromViewNodePair(
-                treeChildPair, innerScope, false, adjustedOldCullingContext),
+                treeChildPair, innerScope, false, adjustedCullingContext),
             {},
-            adjustedOldCullingContext,
-            newCullingContext);
+            adjustedCullingContext,
+            {});
       }
     } else {
       mutationContainer.createMutations.push_back(
@@ -872,17 +850,15 @@ static void calculateShadowViewMutationsFlattener(
 
       if (!treeChildPair.flattened) {
         ViewNodePairScope innerScope{};
-        // TODO(T217775046): Find a test case for this branch of view
-        // flattening + culling.
         calculateShadowViewMutations(
             innerScope,
             mutationContainer.downwardMutations,
             treeChildPair.shadowView.tag,
             {},
             sliceChildShadowNodeViewPairsFromViewNodePair(
-                treeChildPair, innerScope, false, adjustedNewCullingContext),
-            oldCullingContext,
-            adjustedNewCullingContext);
+                treeChildPair, innerScope, false, adjustedCullingContext),
+            {},
+            adjustedCullingContext);
       }
     }
   }

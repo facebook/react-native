@@ -104,6 +104,7 @@ async function buildBundleWithConfig(
     dev: args.dev,
     minify: args.minify !== undefined ? args.minify : !args.dev,
     platform: args.platform,
+    // $FlowFixMe[incompatible-type] Remove suppression after Metro 0.82.3
     unstable_transformProfile: args.unstableTransformProfile,
     customResolverOptions,
   };
@@ -125,6 +126,7 @@ async function buildBundleWithConfig(
     await bundleImpl.save(bundle, args, console.info);
 
     // Save the assets of the bundle
+    // $FlowFixMe[prop-missing] Remove suppression after Metro 0.82.3
     const outputAssets = await server.getAssets({
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       ...requestOpts,

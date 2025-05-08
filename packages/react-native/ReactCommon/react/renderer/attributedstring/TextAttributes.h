@@ -95,7 +95,6 @@ class TextAttributes : public DebugStringConvertible {
 #pragma mark - Operators
 
   bool operator==(const TextAttributes& rhs) const;
-  bool operator!=(const TextAttributes& rhs) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -142,7 +141,8 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.isPressable,
         textAttributes.layoutDirection,
         textAttributes.accessibilityRole,
-        textAttributes.role);
+        textAttributes.role,
+        textAttributes.textAlignVertical);
   }
 };
 } // namespace std

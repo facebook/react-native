@@ -11,7 +11,7 @@
 'use strict';
 
 import type {Item} from '../../components/ListExampleShared';
-import type {SectionBase} from 'react-native/Libraries/Lists/SectionList';
+import type {SectionBase} from 'react-native';
 
 import {
   FooterComponent,
@@ -143,8 +143,9 @@ const renderItemComponent =
 
 const onScrollToIndexFailed = (info: {
   index: number,
-  c: number,
+  highestMeasuredFrameIndex: number,
   averageItemLength: number,
+  ...
 }) => {
   console.warn('onScrollToIndexFailed. See comment in callback', info);
   /**
@@ -317,6 +318,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
           )
         }
         onEndReachedThreshold={0}
+        // $FlowFixMe[incompatible-type] - incompatible redenerItem type
         sections={filteredSectionData}
         style={styles.list}
         viewabilityConfig={VIEWABILITY_CONFIG}

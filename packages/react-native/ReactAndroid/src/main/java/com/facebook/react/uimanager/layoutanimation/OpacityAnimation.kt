@@ -14,38 +14,42 @@ import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
+import java.lang.ref.WeakReference
 
 /**
  * Animation responsible for updating opacity of a view. It should ideally use hardware texture to
  * optimize rendering performances.
  */
 @LegacyArchitecture
-internal class OpacityAnimation(
-    private val view: View,
-    private val startOpacity: Float,
-    endOpacity: Float
-) : Animation() {
+internal class OpacityAnimation(view: View, private val startOpacity: Float, endOpacity: Float) :
+    Animation() {
+  private val viewRef = WeakReference(view)
   private val deltaOpacity = endOpacity - startOpacity
 
   init {
     setAnimationListener(OpacityAnimationListener(view))
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "OpacityAnimation", LegacyArchitectureLogLevel.WARNING)
   }
 
-  class OpacityAnimationListener(private val view: View) : Animation.AnimationListener {
+  class OpacityAnimationListener(view: View) : Animation.AnimationListener {
+    private val viewRef = WeakReference(view)
     private var layerTypeChanged = false
 
     override fun onAnimationStart(animation: Animation) {
-      if (view.hasOverlappingRendering() && view.layerType == View.LAYER_TYPE_NONE) {
-        layerTypeChanged = true
-        view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      viewRef.get()?.let { view ->
+        if (view.hasOverlappingRendering() && view.layerType == View.LAYER_TYPE_NONE) {
+          layerTypeChanged = true
+          view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        }
       }
     }
 
     override fun onAnimationEnd(animation: Animation) {
-      if (layerTypeChanged) {
-        view.setLayerType(View.LAYER_TYPE_NONE, null)
+      viewRef.get()?.let { view ->
+        if (layerTypeChanged) {
+          view.setLayerType(View.LAYER_TYPE_NONE, null)
+        }
       }
     }
 
@@ -56,7 +60,7 @@ internal class OpacityAnimation(
 
   @VisibleForTesting
   public override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-    view.alpha = startOpacity + deltaOpacity * interpolatedTime
+    viewRef.get()?.let { view -> view.alpha = startOpacity + deltaOpacity * interpolatedTime }
   }
 
   override fun willChangeBounds(): Boolean {

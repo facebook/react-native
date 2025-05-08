@@ -5,12 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
-#import <react/runtime/JSRuntimeFactoryCAPI.h>
-
 #pragma once
 
 NS_ASSUME_NONNULL_BEGIN
+
+// Forward declarations for umbrella headers.
+// In implementations, import `<react/runtime/JSRuntimeFactoryCAPI.h>` to obtain the actual type.
+typedef void *JSRuntimeFactoryRef;
 
 @protocol RCTJSRuntimeConfiguratorProtocol
 

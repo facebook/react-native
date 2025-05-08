@@ -8,15 +8,15 @@
  * @format
  */
 
-import type {Image} from './ImageTypes.flow';
+import type {ImageType} from './ImageTypes.flow';
 
 export type {
-  ImageProgressEventDataIOS,
+  ImageProgressEventIOS,
   ImagePropsIOS,
   ImagePropsAndroid,
   ImageSourcePropType,
-  ImageLoadEventData,
-  ImageErrorEventData,
+  ImageLoadEvent,
+  ImageErrorEvent,
   ImagePropsBase,
   ImageProps,
   ImageBackgroundProps,
@@ -24,4 +24,4 @@ export type {
 
 export type {ImageResolvedAssetSource, ImageSize} from './ImageTypes.flow';
 
-declare export default Image;
+declare export default ImageType;

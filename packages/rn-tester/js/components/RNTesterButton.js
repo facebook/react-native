@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from 'react-native';
 
 import React from 'react';
 import {Pressable, StyleSheet, Text} from 'react-native';

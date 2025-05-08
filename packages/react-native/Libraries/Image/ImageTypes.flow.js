@@ -83,6 +83,6 @@ export type AbstractImageIOS = component(
 
 export type ImageIOS = AbstractImageIOS & ImageComponentStaticsIOS;
 
-export type Image = ImageIOS | ImageAndroid;
+export type ImageType = ImageIOS | ImageAndroid;
 
 export type {ImageProps} from './ImageProps';

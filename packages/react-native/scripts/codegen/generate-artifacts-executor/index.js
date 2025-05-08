@@ -28,12 +28,17 @@ const {
 const {generateReactCodegenPodspec} = require('./generateReactCodegenPodspec');
 const {generateSchemaInfos} = require('./generateSchemaInfos');
 const {
+  generateUnstableModulesRequiringMainQueueSetupProvider,
+} = require('./generateUnstableModulesRequiringMainQueueSetupProvider');
+const {
   buildCodegenIfNeeded,
   cleanupEmptyFilesAndFolders,
   codegenLog,
   findCodegenEnabledLibraries,
+  findDisabledLibrariesByPlatform,
   pkgJsonIncludesGeneratedCode,
   readPkgJsonInDirectory,
+  readReactNativeConfig,
 } = require('./utils');
 const path = require('path');
 
@@ -80,9 +85,14 @@ function execute(
       buildCodegenIfNeeded();
     }
 
-    const libraries = findCodegenEnabledLibraries(pkgJson, projectRoot);
+    const reactNativeConfig = readReactNativeConfig(projectRoot);
+    const codegenEnabledLibraries = findCodegenEnabledLibraries(
+      pkgJson,
+      projectRoot,
+      reactNativeConfig,
+    );
 
-    if (libraries.length === 0) {
+    if (codegenEnabledLibraries.length === 0) {
       codegenLog('No codegen-enabled libraries found.', true);
       return;
     }
@@ -91,6 +101,18 @@ function execute(
       targetPlatform === 'all' ? supportedPlatforms : [targetPlatform];
 
     for (const platform of platforms) {
+      const disabledLibraries = findDisabledLibrariesByPlatform(
+        reactNativeConfig,
+        platform,
+      );
+      const libraries = codegenEnabledLibraries.filter(
+        ({name}) => !disabledLibraries.includes(name),
+      );
+
+      if (!libraries.length) {
+        continue;
+      }
+
       const outputPath = computeOutputPath(
         projectRoot,
         baseOutputPath,
@@ -110,19 +132,23 @@ function execute(
         );
       }
 
-      if (source === 'app') {
-        // These components are only required by apps, not by libraries
+      if (source === 'app' && platform !== 'android') {
+        // These components are only required by apps, not by libraries and are Apple specific.
         generateRCTThirdPartyComponents(libraries, outputPath);
         generateRCTModuleProviders(projectRoot, pkgJson, libraries, outputPath);
         generateCustomURLHandlers(libraries, outputPath);
+        generateUnstableModulesRequiringMainQueueSetupProvider(
+          libraries,
+          outputPath,
+        );
         generateAppDependencyProvider(outputPath);
+        generateReactCodegenPodspec(
+          projectRoot,
+          pkgJson,
+          outputPath,
+          baseOutputPath,
+        );
       }
-      generateReactCodegenPodspec(
-        projectRoot,
-        pkgJson,
-        outputPath,
-        baseOutputPath,
-      );
 
       cleanupEmptyFilesAndFolders(outputPath);
     }

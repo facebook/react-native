@@ -41,6 +41,7 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -66,6 +67,7 @@ import com.facebook.systrace.Systrace;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -487,8 +489,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       FLog.i(TAG, "onScrollChanged[%d] x %d y %d oldx %d oldy %d", getId(), x, y, oldX, oldY);
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.onScrollChanged");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactHorizontalScrollView.onScrollChanged");
     try {
       super.onScrollChanged(x, y, oldX, oldY);
 
@@ -504,7 +505,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             mOnScrollDispatchHelper.getYFlingVelocity());
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -776,10 +777,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
-    @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, true);
+    if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, true);
 
-    if (nextfocusableView != null) {
-      return nextfocusableView;
+      if (nextfocusableView != null) {
+        return nextfocusableView;
+      }
     }
 
     return super.focusSearch(focused, direction);
@@ -787,22 +790,26 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void updateClippingRect() {
+    updateClippingRect(null);
+  }
+
+  @Override
+  public void updateClippingRect(@Nullable Set<Integer> excludedViewId) {
     if (!mRemoveClippedSubviews) {
       return;
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.updateClippingRect");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactHorizontalScrollView.updateClippingRect");
     try {
       Assertions.assertNotNull(mClippingRect);
 
       ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
       View contentView = getContentView();
       if (contentView instanceof ReactClippingViewGroup) {
-        ((ReactClippingViewGroup) contentView).updateClippingRect();
+        ((ReactClippingViewGroup) contentView).updateClippingRect(excludedViewId);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 

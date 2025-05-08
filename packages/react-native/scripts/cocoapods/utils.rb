@@ -51,7 +51,9 @@ class ReactNativePodsUtils
 
     def self.set_gcc_preprocessor_definition_for_debugger(installer)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-RCTNetwork", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-RCTNetwork", :debug)
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -291,7 +293,8 @@ class ReactNativePodsUtils
     # Add a new dependency to an existing spec, configuring also the headers search paths
     def self.add_dependency(spec, dependency_name, base_folder_for_frameworks, framework_name, additional_paths: [], version: nil, subspec_dependency: nil)
         # Update Search Path
-        optional_current_search_path = spec.to_hash["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"]
+        current_pod_target_xcconfig = spec.to_hash["pod_target_xcconfig"] ? spec.to_hash["pod_target_xcconfig"] : {}
+        optional_current_search_path = current_pod_target_xcconfig["HEADER_SEARCH_PATHS"]
         current_search_paths = (optional_current_search_path != nil ? optional_current_search_path : "")
             .split(" ")
         create_header_search_path_for_frameworks(base_folder_for_frameworks, dependency_name, framework_name, additional_paths)
@@ -299,7 +302,6 @@ class ReactNativePodsUtils
                 wrapped_path = "\"#{path}\""
                 current_search_paths << wrapped_path
             }
-        current_pod_target_xcconfig = spec.to_hash["pod_target_xcconfig"]
         current_pod_target_xcconfig["HEADER_SEARCH_PATHS"] = current_search_paths.join(" ")
         spec.pod_target_xcconfig = current_pod_target_xcconfig
 

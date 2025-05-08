@@ -54,7 +54,8 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './headers',
       headerSearchPaths: ['src'],
-      compilerFlags: ['-Wno-shorten-64-to-32', '-Wno-everything'],
+      cCompilerFlags: ['-Wno-shorten-64-to-32'],
+      cxxCompilerFlags: ['-Wno-shorten-64-to-32', `-std=${CPP_STANDARD}`],
       defines: [
         {name: 'DEFINES_MODULE', value: 'YES'},
         {name: 'USE_HEADERMAP', value: 'NO'},
@@ -76,7 +77,6 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './headers',
       headerSearchPaths: ['src'],
-      compilerFlags: ['-Wno-everything'],
     },
   },
   {
@@ -94,7 +94,8 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
       publicHeaderFiles: './include',
       headerSearchPaths: ['include'],
       linkedLibraries: ['c++'],
-      compilerFlags: ['-Wno-everything', `-std=${CPP_STANDARD}`],
+      cxxCompilerFlags: [`-std=${CPP_STANDARD}`],
+      defines: [{name: 'DEFINES_MODULE', value: 'YES'}],
     },
   },
   {
@@ -112,7 +113,8 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './',
       headerSearchPaths: ['./'],
-      compilerFlags: ['-Wno-everything'],
+      cCompilerFlags: ['-Wno-documentation'],
+      cxxCompilerFlags: ['-Wno-documentation', `-std=${CPP_STANDARD}`],
     },
   },
   {
@@ -130,7 +132,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './include',
       headerSearchPaths: ['include'],
-      compilerFlags: ['-Wno-everything', `-std=${CPP_STANDARD}`],
+      cxxCompilerFlags: [`-std=${CPP_STANDARD}`],
       linkedLibraries: ['c++'],
     },
   },
@@ -158,13 +160,14 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'SocketRocket/Internal/Security',
         'SocketRocket/Internal/Utilities',
       ],
-      compilerFlags: ['-Wno-everything'],
+      defines: [{name: 'DEFINES_MODULE', value: 'YES'}],
     },
   },
   {
     name: 'folly',
     version: '0.9.0',
-    disabled: false,
+    prepareScript:
+      'echo "#pragma once\n\n#define FOLLY_MOBILE 1\n#define FOLLY_HAVE_PTHREAD 1\n#define FOLLY_USE_LIBCPP 1\n#define FOLLY_CFG_NO_COROUTINES 1\n#define FOLLY_HAVE_CLOCK_GETTIME 1 \n\n#pragma clang diagnostic ignored \\""-Wcomma\\""" > ./folly/folly-config.h',
     url: new URL(
       'https://github.com/facebook/folly/archive/refs/tags/v2024.11.18.00.tar.gz',
     ),
@@ -244,8 +247,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'folly/portability/*.h',
         'folly/system/*.h',
       ],
-      // TODO: When including this we get "failed to scan dependencies" error
-      // resources: ['../third-party-podspecs/RCT-Folly/PrivacyInfo.xcprivacy'],
+      resources: ['../third-party-podspecs/RCT-Folly/PrivacyInfo.xcprivacy'],
     },
     dependencies: [
       'glog',
@@ -258,22 +260,16 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './',
       headerSearchPaths: ['./'],
-      compilerFlags: [
-        '-Wno-everything',
-        `-std=${CPP_STANDARD}`,
+      cCompilerFlags: ['-faligned-new', '-Wno-shorten-64-to-32', '-Wno-comma'],
+      cxxCompilerFlags: [
         '-faligned-new',
         '-Wno-shorten-64-to-32',
         '-Wno-comma',
+        `-std=${CPP_STANDARD}`,
       ],
       defines: [
         {name: 'USE_HEADERMAP', value: 'NO'},
         {name: 'DEFINES_MODULE', value: 'YES'},
-        {name: 'FOLLY_NO_CONFIG'},
-        {name: 'FOLLY_MOBILE', value: '1'},
-        {name: 'FOLLY_HAVE_PTHREAD', value: '1'},
-        {name: 'FOLLY_USE_LIBCPP', value: '1'},
-        {name: 'FOLLY_CFG_NO_COROUTINES', value: '1'},
-        {name: 'FOLLY_HAVE_CLOCK_GETTIME', value: '1'},
       ],
       linkedLibraries: ['c++abi'],
       linkerSettings: ['-Wl,-U,_jump_fcontext', '-Wl,-U,_make_fcontext'],

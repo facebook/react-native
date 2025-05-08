@@ -85,7 +85,7 @@ class EventEmitter {
 
   void dispatchEvent(
       std::string type,
-      const folly::dynamic& payload,
+      folly::dynamic&& payload,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
@@ -93,8 +93,7 @@ class EventEmitter {
       SharedEventPayload payload,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
-  void dispatchUniqueEvent(std::string type, const folly::dynamic& payload)
-      const;
+  void dispatchUniqueEvent(std::string type, folly::dynamic&& payload) const;
 
   void dispatchUniqueEvent(
       std::string type,

@@ -817,10 +817,11 @@ const buildModuleSchema = (
       const isEventEmitter =
         language === 'TypeScript'
           ? property?.type === 'TSPropertySignature' &&
-            property?.typeAnnotation?.typeAnnotation?.typeName?.name ===
-              'EventEmitter'
+            parser.getTypeAnnotationName(
+              property?.typeAnnotation?.typeAnnotation,
+            ) === 'EventEmitter'
           : property?.value?.type === 'GenericTypeAnnotation' &&
-            property?.value?.id?.name === 'EventEmitter';
+            parser.getTypeAnnotationName(property?.value) === 'EventEmitter';
       return tryParse(() => ({
         aliasMap,
         enumMap,
@@ -1085,7 +1086,7 @@ function buildPropSchema(
   parser: Parser,
 ): ?NamedShape<PropTypeAnnotation> {
   const getSchemaInfoFN = parser.getGetSchemaInfoFN();
-  const info = getSchemaInfoFN(property, types);
+  const info = getSchemaInfoFN(property, types, parser);
   if (info == null) {
     return null;
   }

@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+export type {DeviceInfoConstants} from './NativeDeviceInfo';
+
 import NativeDeviceInfo from './NativeDeviceInfo';
 
 export default NativeDeviceInfo;

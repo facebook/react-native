@@ -31,13 +31,21 @@ module.exports = {
         'ft-flow/define-flow-type': 0,
         'ft-flow/use-flow-type': 0,
         'lint/sort-imports': 1,
-        // flow handles this check for us, so it's not required
+        // Flow handles these checks for us, so they aren't required
         'no-undef': 0,
+        'no-unreachable': 0,
+      },
+    },
+    {
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      rules: {
+        '@react-native/no-deep-imports': 0,
       },
     },
     {
       files: [
-        './packages/react-native/**/*.{js,flow}',
+        './packages/react-native/Libraries/**/*.{js,flow}',
+        './packages/react-native/src/**/*.{js,flow}',
         './packages/assets/registry.js',
       ],
       parser: 'hermes-eslint',
@@ -74,6 +82,9 @@ module.exports = {
         'lint/no-haste-imports': 2,
         'lint/no-react-native-imports': 2,
         'lint/require-extends-error': 2,
+        'lint/no-react-node-imports': 2,
+        'lint/no-react-default-imports': 2,
+        'lint/no-react-named-type-imports': 2,
       },
     },
     {

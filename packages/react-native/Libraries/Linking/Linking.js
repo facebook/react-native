@@ -34,7 +34,7 @@ class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
    */
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
+    listener: (...LinkingEventDefinitions[K]) => mixed,
   ): EventSubscription {
     return this.addListener(eventType, listener);
   }

@@ -16,26 +16,17 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] != "0"
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED=1" : "")
 hermes_flag = (use_hermes ? " -DUSE_HERMES=1" : "")
 use_third_party_jsc_flag = ENV['USE_THIRD_PARTY_JSC'] == '1' ? " -DUSE_THIRD_PARTY_JSC=1" : ""
-other_cflags = "$(inherited) " + folly_compiler_flags + new_arch_enabled_flag + hermes_flag  + use_third_party_jsc_flag
+other_cflags = "$(inherited) " + new_arch_enabled_flag + hermes_flag + use_third_party_jsc_flag
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/../../ReactCommon",
   "$(PODS_ROOT)/Headers/Private/React-Core",
-  "$(PODS_ROOT)/boost",
-  "$(PODS_ROOT)/DoubleConversion",
-  "$(PODS_ROOT)/fast_float/include",
-  "$(PODS_ROOT)/fmt/include",
-  "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
   "$(PODS_ROOT)/Headers/Public/React-RCTFabric",
@@ -68,7 +59,6 @@ Pod::Spec.new do |s|
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_ROOT)/Headers/Private/Yoga\""}
 
   s.dependency "React-Core"
-  s.dependency "RCT-Folly", folly_version
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "React-RCTNetwork"
@@ -93,4 +83,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RCTRuntime", :framework_name => "RCTRuntime")
 
   depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 end

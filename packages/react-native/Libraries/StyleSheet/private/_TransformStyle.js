@@ -10,6 +10,25 @@
 
 import type AnimatedNode from '../../Animated/nodes/AnimatedNode';
 
+// Helper types to enforce that a single key is used in a transform object
+// after generating a TypeScript definition file from the Flow types.
+// $FlowExpectedError[unclear-type]
+type KeysOfUnion<T> = T extends any ? $Keys<T> : empty;
+// $FlowExpectedError[unclear-type]
+type ValueOfUnion<T, K> = T extends any
+  ? K extends $Keys<T>
+    ? T[K]
+    : empty
+  : empty;
+type MergeUnion<T> = {
+  [K in KeysOfUnion<T>]?: ValueOfUnion<T, K>,
+};
+type MaximumOneOf<T: {...}> = $Values<{
+  [K in keyof T]: $Exact<{
+    [P in keyof T]?: P extends K ? T[P] : empty,
+  }>,
+}>;
+
 export type ____TransformStyle_Internal = $ReadOnly<{
   /**
    * `transform` accepts an array of transformation objects. Each object specifies
@@ -29,27 +48,36 @@ export type ____TransformStyle_Internal = $ReadOnly<{
    */
   transform?:
     | $ReadOnlyArray<
-        | {+perspective: number | AnimatedNode}
-        | {+rotate: string | AnimatedNode}
-        | {+rotateX: string | AnimatedNode}
-        | {+rotateY: string | AnimatedNode}
-        | {+rotateZ: string | AnimatedNode}
-        | {+scale: number | AnimatedNode}
-        | {+scaleX: number | AnimatedNode}
-        | {+scaleY: number | AnimatedNode}
-        | {+translateX: number | AnimatedNode}
-        | {+translateY: number | AnimatedNode}
-        | {
-            +translate:
-              | [number | AnimatedNode, number | AnimatedNode]
-              | AnimatedNode,
-          }
-        | {+skewX: string | AnimatedNode}
-        | {+skewY: string | AnimatedNode}
-        // TODO: what is the actual type it expects?
-        | {
-            +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-          },
+        $ReadOnly<
+          MaximumOneOf<
+            MergeUnion<
+              | {+perspective: number | AnimatedNode}
+              | {+rotate: string | AnimatedNode}
+              | {+rotateX: string | AnimatedNode}
+              | {+rotateY: string | AnimatedNode}
+              | {+rotateZ: string | AnimatedNode}
+              | {+scale: number | AnimatedNode}
+              | {+scaleX: number | AnimatedNode}
+              | {+scaleY: number | AnimatedNode}
+              | {+translateX: number | string | AnimatedNode}
+              | {+translateY: number | string | AnimatedNode}
+              | {
+                  +translate:
+                    | [
+                        number | string | AnimatedNode,
+                        number | string | AnimatedNode,
+                      ]
+                    | AnimatedNode,
+                }
+              | {+skewX: string | AnimatedNode}
+              | {+skewY: string | AnimatedNode}
+              // TODO: what is the actual type it expects?
+              | {
+                  +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+                },
+            >,
+          >,
+        >,
       >
     | string,
   /**

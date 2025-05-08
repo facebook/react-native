@@ -23,7 +23,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
-import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
+import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType
@@ -316,7 +316,7 @@ public object ReactScrollViewHelper {
       FLog.i(
           TAG, "updateFabricScrollState[%d] scrollX %d scrollY %d", scrollView.id, scrollX, scrollY)
     }
-    if (ViewUtil.getUIManagerType(scrollView.id) == UIManagerType.DEFAULT) {
+    if (ViewUtil.getUIManagerType(scrollView.id) == UIManagerType.LEGACY) {
       return
     }
     // NOTE: if the state wrapper is null, we shouldn't even update
@@ -476,8 +476,9 @@ public object ReactScrollViewHelper {
     val absDir = resolveAbsoluteDirection(direction, horizontal, host.getLayoutDirection())
 
     /*
-     * Check if we can focus the next element in the absolute direction within the ScrollView,
-     * if we can't, look into the shadow tree to find the next focusable element
+     * Check if we can focus the next element in the absolute direction within the ScrollView this
+     * would mean the view is not clipped, if we can't, look into the shadow tree to find the next
+     * focusable element
      */
     val ff = FocusFinder.getInstance()
     val result = ff.findNextFocus(host, focused, absDir)
@@ -486,48 +487,28 @@ public object ReactScrollViewHelper {
       return result
     }
 
-    /*
-     * Attempt to focus the next focusable but clipped element on the list if there is one, since
-     * the view is clipped it is not currently in the hierarchy so we scroll it into view and then
-     * focus it.
-     */
-    return findNextClippedElement(host, focused, absDir, host.context as ReactContext)
-  }
-
-  /**
-   * Attempts to focus the next element in the specified direction within the scrollView.
-   *
-   * @return true if a new element was successfully focused, otherwise false.
-   */
-  @JvmStatic
-  public fun findNextClippedElement(
-      scrollView: ViewGroup,
-      focused: View,
-      @FocusRealDirection direction: Int,
-      context: ReactContext,
-  ): View? {
-    val uimanager = UIManagerHelper.getUIManager(context, UIManagerType.FABRIC) ?: return null
-
-    val nextFocusableViewMetrics =
-        (uimanager as FabricUIManager).findNextFocusableElementMetrics(
-            scrollView.id, focused.id, direction)
-
-    if (nextFocusableViewMetrics != null) {
-
-      when (direction) {
-        View.FOCUS_UP,
-        View.FOCUS_DOWN -> {
-          scrollView.scrollBy(0, toPixelFromDIP(nextFocusableViewMetrics.deltaScroll).toInt())
-        }
-        View.FOCUS_RIGHT,
-        View.FOCUS_LEFT -> {
-          scrollView.scrollBy(toPixelFromDIP(nextFocusableViewMetrics.deltaScroll).toInt(), 0)
-        }
-        else -> return null
-      }
-      return scrollView.findViewById(nextFocusableViewMetrics.id)
+    if (host !is ReactClippingViewGroup) {
+      return null
     }
-    return null
+
+    val uimanager =
+        UIManagerHelper.getUIManager(host.context as ReactContext, UIManagerType.FABRIC)
+            ?: return null
+
+    val nextFocusableViewId =
+        (uimanager as FabricUIManager).findNextFocusableElement(
+            host.getChildAt(0).id, focused.id, absDir) ?: return null
+
+    val ancestorIdList =
+        uimanager
+            .getRelativeAncestorList(host.getChildAt(0).id, nextFocusableViewId)
+            ?.toMutableSet() ?: return null
+
+    ancestorIdList.add(nextFocusableViewId)
+
+    host.updateClippingRect(ancestorIdList)
+
+    return host.findViewById(nextFocusableViewId)
   }
 
   @JvmStatic
@@ -585,7 +566,7 @@ public object ReactScrollViewHelper {
     }
   }
 
-  public class ReactScrollViewScrollState() {
+  public class ReactScrollViewScrollState {
 
     /** Get the position after current animation is finished */
     public val finalAnimatedPositionScroll: Point = Point()

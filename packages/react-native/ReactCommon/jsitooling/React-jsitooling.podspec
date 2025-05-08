@@ -16,20 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
-
-header_search_paths = [
-  "\"$(PODS_ROOT)/boost\"",
-  "\"$(PODS_ROOT)/RCT-Folly\"",
-  "\"$(PODS_ROOT)/DoubleConversion\"",
-  "\"$(PODS_ROOT)/fast_float/include\"",
-  "\"$(PODS_ROOT)/fmt/include\""
-]
-
 Pod::Spec.new do |s|
   s.name                   = "React-jsitooling"
   s.version                = version
@@ -40,7 +26,6 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "react/runtime/*.{cpp,h}"
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "react/runtime"
 
   if ENV['USE_FRAMEWORKS']
@@ -48,16 +33,16 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "./"
   end
 
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
-                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
+  s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+    "DEFINES_MODULE" => "YES",
+  }
 
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
-  s.dependency "RCT-Folly", folly_version
-  s.dependency "DoubleConversion"
-  s.dependency "fast_float"
-  s.dependency "fmt", "11.0.2"
-  s.dependency "glog"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
+
+  add_rn_third_party_dependencies(s)
 end

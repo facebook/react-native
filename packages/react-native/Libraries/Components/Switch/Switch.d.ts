@@ -38,6 +38,9 @@ export interface SwitchPropsIOS extends ViewProps {
   tintColor?: ColorValue | undefined;
 }
 
+/**
+ * @deprecated Use `SwitchChangeEvent` instead.
+ */
 export interface SwitchChangeEventData extends TargetedEvent {
   value: boolean;
 }

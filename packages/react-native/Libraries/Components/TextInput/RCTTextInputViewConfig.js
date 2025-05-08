@@ -12,10 +12,7 @@ import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 
 import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfigIgnore';
 
-type PartialViewConfigWithoutName = $Rest<
-  PartialViewConfig,
-  {uiViewClassName: string},
->;
+type PartialViewConfigWithoutName = Omit<PartialViewConfig, 'uiViewClassName'>;
 
 const RCTTextInputViewConfig = {
   bubblingEventTypes: {
@@ -93,6 +90,7 @@ const RCTTextInputViewConfig = {
     },
   },
   validAttributes: {
+    acceptDragAndDropTypes: true,
     dynamicTypeRamp: true,
     fontSize: true,
     fontWeight: true,

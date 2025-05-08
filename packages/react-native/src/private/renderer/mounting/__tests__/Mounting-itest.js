@@ -7,13 +7,18 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableFixForParentTagDuringReparenting:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import Fantom from '@react-native/fantom';
+import type {HostInstance} from 'react-native';
+
+import ensureInstance from '../../../__tests__/utilities/ensureInstance';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {View} from 'react-native';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('ViewFlattening', () => {
   /**
@@ -226,5 +231,237 @@ describe('ViewFlattening', () => {
       'Insert {type: "View", parentNativeID: "J", index: 0, nativeID: "A"}',
       'Insert {type: "View", parentNativeID: "J", index: 1, nativeID: "B"}',
     ]);
+  });
+});
+
+test('parent-child switching from unflattened-flattened to flattened-unflattened', () => {
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(
+      <View
+        style={{
+          marginTop: 100,
+          opacity: 0,
+        }}>
+        <View
+          style={{
+            marginTop: 50,
+          }}>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, backgroundColor: 'red'}}
+          />
+        </View>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  // force view to be flattened.
+  Fantom.runTask(() => {
+    root.render(
+      <View
+        style={{
+          marginTop: 100,
+        }}>
+        <View
+          style={{
+            marginTop: 50,
+            opacity: 0,
+          }}>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, backgroundColor: 'red'}}
+          />
+        </View>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "View", nativeID: "child"}',
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Delete {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+});
+
+test('parent-child switching from flattened-unflattened to unflattened-flattened', () => {
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(
+      <View
+        style={{
+          marginTop: 100,
+        }}>
+        <View
+          style={{
+            marginTop: 50,
+            opacity: 0,
+          }}>
+          <View nativeID={'child'} style={{height: 10, width: 10}} />
+        </View>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  // force view to be flattened.
+  Fantom.runTask(() => {
+    root.render(
+      <View
+        style={{
+          marginTop: 100,
+          opacity: 0,
+        }}>
+        <View
+          style={{
+            marginTop: 50,
+          }}>
+          <View nativeID={'child'} style={{height: 10, width: 10}} />
+        </View>
+      </View>,
+    );
+  });
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "View", nativeID: "child"}',
+    'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Delete {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+  ]);
+});
+
+describe('reconciliation of setNativeProps and React commit', () => {
+  it('props set by setNativeProps must not be overriden by React commit', () => {
+    const root = Fantom.createRoot();
+    const nodeRef = React.createRef<HostInstance>();
+
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={nodeRef}
+          nativeID="first native id"
+          testID="first test id"
+        />,
+      );
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID', 'testID'],
+        })
+        .toJSX(),
+    ).toEqual(
+      <rn-view nativeID={'first native id'} testID={'first test id'} />,
+    );
+
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+
+    Fantom.runTask(() => {
+      // Calling `setNativeProps` forces bug https://github.com/facebook/react-native/issues/47476 to manifest.
+      // The bug is about a collision between `setNativeProps` and `props` and how they must be applied in the correct order.
+      // When a prop is set via regular React commit, it must be respected by `setNativeProps` and vice versa.
+      // Learn more https://github.com/facebook/react-native/pull/47669.
+      element.setNativeProps({testID: 'second test id'});
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID', 'testID'],
+        })
+        .toJSX(),
+    ).toEqual(
+      <rn-view nativeID={'first native id'} testID={'second test id'} />,
+    );
+
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={nodeRef}
+          nativeID="second native id"
+          // testID was changed by `setNativeProps` and React does not know about it.
+          // Therefore, it will treat testID as unchanged.
+          // Fabric must correctly reconcile the changes coming from React and `setNativeProps`.
+          testID="first test id"
+        />,
+      );
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID', 'testID'],
+        })
+        .toJSX(),
+    ).toEqual(
+      <rn-view nativeID={'second native id'} testID={'second test id'} />,
+    );
+  });
+
+  it('allows React commit to override value set by setNativeProps', () => {
+    const root = Fantom.createRoot();
+    const nodeRef = React.createRef<HostInstance>();
+
+    Fantom.runTask(() => {
+      root.render(<View ref={nodeRef} nativeID="first native id" />);
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID'],
+        })
+        .toJSX(),
+    ).toEqual(<rn-view nativeID={'first native id'} />);
+
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+
+    Fantom.runTask(() => {
+      element.setNativeProps({nativeID: 'second native id'});
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID'],
+        })
+        .toJSX(),
+    ).toEqual(<rn-view nativeID={'second native id'} />);
+
+    Fantom.runTask(() => {
+      root.render(<View ref={nodeRef} nativeID="third native id" />);
+    });
+
+    expect(
+      root
+        .getRenderedOutput({
+          props: ['nativeID'],
+        })
+        .toJSX(),
+    ).toEqual(<rn-view nativeID={'third native id'} />);
   });
 });

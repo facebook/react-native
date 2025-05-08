@@ -51,7 +51,6 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     bool isContentEqual(const Fragment& rhs) const;
 
     bool operator==(const Fragment& rhs) const;
-    bool operator!=(const Fragment& rhs) const;
   };
 
   class Range {
@@ -104,7 +103,6 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   bool isContentEqual(const AttributedString& rhs) const;
 
   bool operator==(const AttributedString& rhs) const;
-  bool operator!=(const AttributedString& rhs) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -127,7 +125,7 @@ struct hash<facebook::react::AttributedString::Fragment> {
     return facebook::react::hash_combine(
         fragment.string,
         fragment.textAttributes,
-        fragment.parentShadowView,
+        fragment.parentShadowView.tag,
         fragment.parentShadowView.layoutMetrics);
   }
 };
@@ -138,6 +136,8 @@ struct hash<facebook::react::AttributedString> {
       const facebook::react::AttributedString& attributedString) const {
     auto seed = size_t{0};
 
+    facebook::react::hash_combine(
+        seed, attributedString.getBaseTextAttributes());
     for (const auto& fragment : attributedString.getFragments()) {
       facebook::react::hash_combine(seed, fragment);
     }

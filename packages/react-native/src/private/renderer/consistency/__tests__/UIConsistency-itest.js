@@ -8,32 +8,30 @@
  * @format
  * @oncall react_native
  * @fantom_flags enableAccessToHostTreeInFabric:true
- * @fantom_flags enableUIConsistency:true
  * @fantom_flags enableSynchronousStateUpdates:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import Fantom from '@react-native/fantom';
+import type {HostInstance} from 'react-native';
+
+import ensureInstance from '../../../__tests__/utilities/ensureInstance';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useLayoutEffect} from 'react';
 import {ScrollView, Text} from 'react-native';
-import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
-import 'react-native/Libraries/Core/InitializeCore';
 describe('UIConsistency', () => {
   it('should provide consistent data from the tree within the same synchronous function', () => {
     const root = Fantom.createRoot();
 
-    let maybeScrollViewNode;
+    const scrollViewRef = React.createRef<HostInstance>();
 
     Fantom.runTask(() => {
       root.render(
         <ScrollView
-          ref={node => {
-            maybeScrollViewNode = node;
-          }}
+          ref={scrollViewRef}
           style={{height: 100}}
           contentContainerStyle={{height: 1000}}
         />,
@@ -41,7 +39,7 @@ describe('UIConsistency', () => {
     });
 
     const scrollViewNode = ensureInstance(
-      maybeScrollViewNode,
+      scrollViewRef.current,
       ReactNativeElement,
     );
 
@@ -49,7 +47,7 @@ describe('UIConsistency', () => {
       expect(scrollViewNode.scrollTop).toBe(0);
 
       Fantom.runOnUIThread(() => {
-        Fantom.scrollTo(scrollViewNode, {x: 0, y: 100});
+        Fantom.enqueueScrollEvent(scrollViewNode, {x: 0, y: 100});
       });
 
       expect(scrollViewNode.scrollTop).toBe(0);
@@ -61,14 +59,12 @@ describe('UIConsistency', () => {
   it('should provide up-to-date data in the first access to the tree', () => {
     const root = Fantom.createRoot();
 
-    let maybeScrollViewNode;
+    const scrollViewRef = React.createRef<HostInstance>();
 
     Fantom.runTask(() => {
       root.render(
         <ScrollView
-          ref={node => {
-            maybeScrollViewNode = node;
-          }}
+          ref={scrollViewRef}
           style={{height: 100}}
           contentContainerStyle={{height: 1000}}
         />,
@@ -76,7 +72,7 @@ describe('UIConsistency', () => {
     });
 
     const scrollViewNode = ensureInstance(
-      maybeScrollViewNode,
+      scrollViewRef.current,
       ReactNativeElement,
     );
 
@@ -84,7 +80,7 @@ describe('UIConsistency', () => {
       // We never accessed the tree before the state update
 
       Fantom.runOnUIThread(() => {
-        Fantom.scrollTo(scrollViewNode, {x: 0, y: 100});
+        Fantom.enqueueScrollEvent(scrollViewNode, {x: 0, y: 100});
       });
 
       // The value is up-to-date immediately
@@ -95,7 +91,7 @@ describe('UIConsistency', () => {
   it('should provide up-to-date data after commit', () => {
     const root = Fantom.createRoot();
 
-    let maybeScrollViewNode;
+    const scrollViewRef = React.createRef<HostInstance>();
 
     function InnerComponent(props: {
       text: string,
@@ -116,9 +112,7 @@ describe('UIConsistency', () => {
     Fantom.runTask(() => {
       root.render(
         <ScrollView
-          ref={node => {
-            maybeScrollViewNode = node;
-          }}
+          ref={scrollViewRef}
           style={{height: 100}}
           contentContainerStyle={{height: 1000}}>
           <InnerComponent text="A" />
@@ -127,7 +121,7 @@ describe('UIConsistency', () => {
     });
 
     const scrollViewNode = ensureInstance(
-      maybeScrollViewNode,
+      scrollViewRef.current,
       ReactNativeElement,
     );
 
@@ -142,7 +136,7 @@ describe('UIConsistency', () => {
               expect(scrollViewNode.scrollTop).toBe(0);
 
               Fantom.runOnUIThread(() => {
-                Fantom.scrollTo(scrollViewNode, {x: 0, y: 100});
+                Fantom.enqueueScrollEvent(scrollViewNode, {x: 0, y: 100});
               });
 
               expect(scrollViewNode.scrollTop).toBe(0);

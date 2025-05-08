@@ -8,28 +8,26 @@
 package com.facebook.react.fabric.events
 
 import android.annotation.SuppressLint
-import com.facebook.jni.HybridData
+import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.fabric.FabricSoLoader
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener
 
 /**
  * Class that acts as a proxy between the list of EventBeats registered in C++ and the Android side.
  */
-@SuppressLint("MissingNativeLoadLibrary")
 @DoNotStrip
-public final class EventBeatManager() : BatchEventDispatchedListener {
+@SuppressLint("MissingNativeLoadLibrary")
+internal class EventBeatManager : HybridClassBase(), BatchEventDispatchedListener {
+  init {
+    initHybrid()
+  }
 
-  @Suppress("NoHungarianNotation") @DoNotStrip private val mHybridData: HybridData = initHybrid()
+  private external fun initHybrid()
 
   private external fun tick()
 
-  @Deprecated("Deprecated on v0.72.0 Use EventBeatManager() instead")
-  @Suppress("UNUSED_PARAMETER")
-  public constructor(reactApplicationContext: ReactApplicationContext?) : this()
-
-  public override fun onBatchEventDispatched() {
+  override fun onBatchEventDispatched() {
     tick()
   }
 
@@ -37,7 +35,5 @@ public final class EventBeatManager() : BatchEventDispatchedListener {
     init {
       FabricSoLoader.staticInit()
     }
-
-    @JvmStatic private external fun initHybrid(): HybridData
   }
 }

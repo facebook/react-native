@@ -89,7 +89,6 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
 
 @implementation RCTScrollViewComponentView {
   ScrollViewShadowNode::ConcreteState::Shared _state;
-  LayoutMetrics _lastContentContainerLayoutMetrics;
   CGSize _contentSize;
   NSTimeInterval _lastScrollEventDispatchTime;
   NSTimeInterval _scrollEventThrottle;
@@ -133,7 +132,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
     _automaticallyAdjustKeyboardInsets = NO;
     [self addSubview:_scrollView];
 
-    _containerView = [[RCTViewComponentView alloc] initWithFrame:CGRectZero];
+    _containerView = [[UIView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
 
     [self.scrollViewDelegateSplitter addDelegate:self];
@@ -469,15 +468,42 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   _contentSize = contentSize;
-  LayoutMetrics newContentContainerLayoutMetrics = LayoutMetrics{
-      .frame = {.origin = data.contentBoundingRect.origin, .size = data.getContentSize()}, .overflowInset = {.top = 1}};
-  [_containerView updateLayoutMetrics:newContentContainerLayoutMetrics
-                     oldLayoutMetrics:_lastContentContainerLayoutMetrics];
-  _lastContentContainerLayoutMetrics = newContentContainerLayoutMetrics;
+  _containerView.frame = CGRect{RCTCGPointFromPoint(data.contentBoundingRect.origin), contentSize};
 
   [self _preserveContentOffsetIfNeededWithBlock:^{
     self->_scrollView.contentSize = contentSize;
   }];
+}
+
+- (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // This is the same algorithm as in the RCTViewComponentView with the exception of
+  // skipping the immediate child (_containerView) and checking grandchildren instead.
+  // This prevents issues with touches outside of _containerView being ignored even
+  // if they are within the bounds of the _containerView's children.
+
+  if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+    return nil;
+  }
+
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+
+  BOOL clipsToBounds = _containerView.clipsToBounds;
+
+  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
+
+  if (clipsToBounds && !isPointInside) {
+    return nil;
+  }
+
+  for (UIView *subview in [_containerView.subviews reverseObjectEnumerator]) {
+    UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
+    if (hitView) {
+      return hitView;
+    }
+  }
+
+  return isPointInside ? self : nil;
 }
 
 /*

@@ -348,11 +348,18 @@ void JsErrorHandler::handleErrorWithCppPipeline(
   data.setProperty(runtime, "isComponentError", isComponentError);
 
   if (logToConsole) {
-    auto console = runtime.global().getPropertyAsObject(runtime, "console");
-    auto errorFn = console.getPropertyAsFunction(runtime, "error");
-    auto finalMessage =
-        jsi::String::createFromUtf8(runtime, processedError.message);
-    errorFn.callWithThis(runtime, console, finalMessage);
+    try {
+      auto console = runtime.global().getPropertyAsObject(runtime, "console");
+      auto errorFn = console.getPropertyAsFunction(runtime, "error");
+      auto finalMessage =
+          jsi::String::createFromUtf8(runtime, processedError.message);
+      errorFn.callWithThis(runtime, console, finalMessage);
+    } catch (jsi::JSError& ex) {
+      logErrorWhileReporting(
+          "handleErrorWithCppPipeline(): Error while logToConsole: ",
+          ex,
+          error);
+    }
   }
 
   std::shared_ptr<bool> shouldPreventDefault = std::make_shared<bool>(false);

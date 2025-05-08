@@ -12,47 +12,39 @@
 
 namespace facebook::react::jsinspector_modern::tracing {
 
-TEST(ProfileTreeNodeTest, EqualityOperator) {
-  auto callFrame = RuntimeSamplingProfile::SampleCallStackFrame{
+TEST(ProfileTreeNodeTest, OnlyAddsUniqueChildren) {
+  auto fooCallFrame = RuntimeSamplingProfile::SampleCallStackFrame{
       RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "foo"};
-  ProfileTreeNode* node1;
-  ProfileTreeNode* node2;
+  auto barCallFrame = RuntimeSamplingProfile::SampleCallStackFrame{
+      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "bar"};
 
-  node1 = new ProfileTreeNode(
-      1, ProfileTreeNode::CodeType::JavaScript, nullptr, callFrame);
-  node2 = new ProfileTreeNode(
-      2, ProfileTreeNode::CodeType::JavaScript, nullptr, callFrame);
-  EXPECT_EQ(*node1 == node2, true);
+  ProfileTreeNode parent(
+      1, ProfileTreeNode::CodeType::JavaScript, fooCallFrame);
+  ProfileTreeNode* child =
+      parent.addChild(2, ProfileTreeNode::CodeType::JavaScript, barCallFrame);
 
-  node1 = new ProfileTreeNode(
-      3, ProfileTreeNode::CodeType::JavaScript, node1, callFrame);
-  node2 = new ProfileTreeNode(
-      4, ProfileTreeNode::CodeType::JavaScript, nullptr, callFrame);
-  EXPECT_EQ(*node1 == node2, false);
+  auto maybeAlreadyExistingChild = parent.getIfAlreadyExists(
+      ProfileTreeNode::CodeType::JavaScript, barCallFrame);
+  EXPECT_NE(maybeAlreadyExistingChild, nullptr);
 
-  node1 = new ProfileTreeNode(
-      5, ProfileTreeNode::CodeType::JavaScript, node2, callFrame);
-  node2 = new ProfileTreeNode(
-      6, ProfileTreeNode::CodeType::JavaScript, node2, callFrame);
-  EXPECT_EQ(*node1 == node2, true);
+  auto maybeExistingChildOfChild = child->getIfAlreadyExists(
+      ProfileTreeNode::CodeType::JavaScript, barCallFrame);
+  EXPECT_EQ(maybeExistingChildOfChild, nullptr);
 }
 
-TEST(ProfileTreeNodeTest, OnlyAddsUniqueChildren) {
-  auto callFrame = RuntimeSamplingProfile::SampleCallStackFrame{
+TEST(ProfileTreeNodeTest, ConsidersCodeTypeOfChild) {
+  auto parentCallFrame = RuntimeSamplingProfile::SampleCallStackFrame{
       RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "foo"};
-  ProfileTreeNode* parent = new ProfileTreeNode(
-      1, ProfileTreeNode::CodeType::JavaScript, nullptr, callFrame);
-  ProfileTreeNode* existingChild = new ProfileTreeNode(
-      2, ProfileTreeNode::CodeType::JavaScript, parent, callFrame);
+  auto childCallFrame = RuntimeSamplingProfile::SampleCallStackFrame{
+      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction, 0, "bar"};
 
-  auto maybeAlreadyExistingChild = parent->addChild(existingChild);
-  EXPECT_EQ(maybeAlreadyExistingChild, nullptr);
+  ProfileTreeNode parent(
+      1, ProfileTreeNode::CodeType::JavaScript, parentCallFrame);
+  parent.addChild(2, ProfileTreeNode::CodeType::JavaScript, childCallFrame);
 
-  auto copyOfExistingChild = new ProfileTreeNode(
-      3, ProfileTreeNode::CodeType::JavaScript, parent, callFrame);
-
-  maybeAlreadyExistingChild = parent->addChild(copyOfExistingChild);
-  EXPECT_EQ(maybeAlreadyExistingChild, existingChild);
+  auto maybeExistingChild = parent.getIfAlreadyExists(
+      ProfileTreeNode::CodeType::Other, childCallFrame);
+  EXPECT_EQ(maybeExistingChild, nullptr);
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing

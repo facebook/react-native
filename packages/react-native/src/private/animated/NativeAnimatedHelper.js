@@ -57,7 +57,9 @@ const eventListenerAnimationFinishedCallbacks: {
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
-const shouldSignalBatch = ReactNativeFeatureFlags.animatedShouldSignalBatch();
+const shouldSignalBatch =
+  ReactNativeFeatureFlags.animatedShouldSignalBatch() ||
+  ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
   const methodNames = [
@@ -382,7 +384,7 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(
-  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig,
+  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig<mixed>,
 ): boolean {
   if (config.useNativeDriver == null) {
     console.warn(

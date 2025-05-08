@@ -16,16 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-
-header_search_paths = [
-  "\"$(PODS_ROOT)/boost\"",
-  "\"$(PODS_ROOT)/DoubleConversion\"",
-  "\"$(PODS_ROOT)/fast_float/include\"",
-  "\"$(PODS_ROOT)/fmt/include\"",
-  "\"$(PODS_ROOT)/RCT-Folly\"",
-]
+header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/..\""
@@ -45,7 +36,6 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
   s.header_dir             = header_dir
-  s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -58,12 +48,10 @@ Pod::Spec.new do |s|
     s.module_name = module_name
   end
 
-  s.dependency "glog"
-  s.dependency "RCT-Folly"
   s.dependency "React-featureflags"
-  s.dependency "DoubleConversion"
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-jsi"
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-perflogger", version
@@ -71,4 +59,5 @@ Pod::Spec.new do |s|
     s.dependency "hermes-engine"
   end
 
+  add_rn_third_party_dependencies(s)
 end

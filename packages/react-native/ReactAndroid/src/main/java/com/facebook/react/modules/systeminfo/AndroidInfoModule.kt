@@ -25,11 +25,6 @@ import com.facebook.react.module.annotations.ReactModule
 public class AndroidInfoModule(reactContext: ReactApplicationContext) :
     NativePlatformConstantsAndroidSpec(reactContext) {
 
-  private companion object {
-    private const val IS_TESTING = "IS_TESTING"
-    private const val IS_DISABLE_ANIMATIONS = "IS_DISABLE_ANIMATIONS"
-  }
-
   /**
    * See:
    * https://developer.android.com/reference/android/app/UiModeManager.html#getCurrentModeType()
@@ -83,5 +78,11 @@ public class AndroidInfoModule(reactContext: ReactApplicationContext) :
     } catch (ignored: ClassNotFoundException) {
       false
     }
+  }
+
+  public companion object {
+    public const val NAME: String = NativePlatformConstantsAndroidSpec.NAME
+    private const val IS_TESTING = "IS_TESTING"
+    private const val IS_DISABLE_ANIMATIONS = "IS_DISABLE_ANIMATIONS"
   }
 }

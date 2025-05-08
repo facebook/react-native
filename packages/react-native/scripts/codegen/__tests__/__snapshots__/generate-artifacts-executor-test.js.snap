@@ -40,6 +40,7 @@ exports[`execute "RCTAppDependencyProvider.mm" should match snapshot 1`] = `
 #import \\"RCTAppDependencyProvider.h\\"
 #import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
 #import <ReactCodegen/RCTThirdPartyComponentsProvider.h>
+#import <ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.h>
 #import <ReactCodegen/RCTModuleProviders.h>
 
 @implementation RCTAppDependencyProvider
@@ -54,6 +55,10 @@ exports[`execute "RCTAppDependencyProvider.mm" should match snapshot 1`] = `
 
 - (nonnull NSArray<NSString *> *)imageURLLoaderClassNames {
   return RCTModulesConformingToProtocolsProvider.imageURLLoaderClassNames;
+}
+
+- (nonnull NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup {
+  return RCTUnstableModulesRequiringMainQueueSetupProvider.modules;
 }
 
 - (nonnull NSDictionary<NSString *,Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents {
@@ -300,6 +305,58 @@ exports[`execute "RCTThirdPartyComponentsProvider.mm" should match snapshot 1`] 
 "
 `;
 
+exports[`execute "RCTUnstableModulesRequiringMainQueueSetupProvider.h" should match snapshot 1`] = `
+"/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#import <Foundation/Foundation.h>
+
+@interface RCTUnstableModulesRequiringMainQueueSetupProvider: NSObject
+
++(NSArray<NSString *> *)modules;
+
+@end
+"
+`;
+
+exports[`execute "RCTUnstableModulesRequiringMainQueueSetupProvider.mm" should match snapshot 1`] = `
+"/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#import \\"RCTUnstableModulesRequiringMainQueueSetupProvider.h\\"
+
+@implementation RCTUnstableModulesRequiringMainQueueSetupProvider
+
++(NSArray<NSString *> *)modules
+{
+  return @[
+    @\\"RCTTestAppDeprecatedImageURLLoader\\",
+		@\\"RCTTestAppDeprecatedURLRequestHandler\\",
+		@\\"RCTTestAppDeprecatedImageDataDecoder\\",
+		@\\"RCTTestLibraryDeprecatedImageURLLoader\\",
+		@\\"RCTTestLibraryDeprecatedURLRequestHandler\\",
+		@\\"RCTTestLibraryDeprecatedImageDataDecoder\\",
+		@\\"TestAppImageURLLoader\\",
+		@\\"TestAppURLRequestHandler\\",
+		@\\"TestAppImageDataDecoder\\",
+		@\\"TestLibraryImageURLLoader\\",
+		@\\"TestLibraryURLRequestHandler\\",
+		@\\"TestLibraryImageDataDecoder\\"
+  ];
+}
+
+@end
+"
+`;
+
 exports[`execute "ReactAppDependencyProvider.podspec" should match snapshot 1`] = `
 "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -358,11 +415,7 @@ folly_compiler_flags = Helpers::Constants.folly_config[:compiler_flags]
 boost_compiler_flags = Helpers::Constants.boost_config[:compiler_flags]
 
 header_search_paths = [
-  \\"\\\\\\"$(PODS_ROOT)/boost\\\\\\"\\",
-  \\"\\\\\\"$(PODS_ROOT)/RCT-Folly\\\\\\"\\",
-  \\"\\\\\\"$(PODS_ROOT)/DoubleConversion\\\\\\"\\",
-  \\"\\\\\\"$(PODS_ROOT)/fast_float/include\\\\\\"\\",
-  \\"\\\\\\"$(PODS_ROOT)/fmt/include\\\\\\"\\",
+  \\"\\\\\\"$(PODS_ROOT)/ReactNativeDependencies\\\\\\"\\",
   \\"\\\\\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\\\\\"\\",
   \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-Fabric\\\\\\"\\",
   \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\\\\\\"\\",
@@ -407,7 +460,6 @@ Pod::Spec.new do |s|
   }
 
   s.dependency \\"React-jsiexecutor\\"
-  s.dependency \\"RCT-Folly\\"
   s.dependency \\"RCTRequired\\"
   s.dependency \\"RCTTypeSafety\\"
   s.dependency \\"React-Core\\"
@@ -415,8 +467,6 @@ Pod::Spec.new do |s|
   s.dependency \\"ReactCommon/turbomodule/bridging\\"
   s.dependency \\"ReactCommon/turbomodule/core\\"
   s.dependency \\"React-NativeModulesApple\\"
-  s.dependency \\"glog\\"
-  s.dependency \\"DoubleConversion\\"
   s.dependency 'React-graphics'
   s.dependency 'React-rendererdebug'
   s.dependency 'React-Fabric'
@@ -427,6 +477,7 @@ Pod::Spec.new do |s|
   s.dependency 'React-RCTAppDelegate'
 
   depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   s.script_phases = {
     'name' => 'Generate Specs',
@@ -440,9 +491,9 @@ RCT_SCRIPT_POD_INSTALLATION_ROOT=$(pwd)
 popd >/dev/null
 
 export RCT_SCRIPT_RN_DIR=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT/../../../../..\\"
-export RCT_SCRIPT_APP_PATH=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT/..\\",
-export RCT_SCRIPT_OUTPUT_DIR=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT\\",
-export RCT_SCRIPT_TYPE=\\"withCodegenDiscovery\\",
+export RCT_SCRIPT_APP_PATH=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT/..\\"
+export RCT_SCRIPT_OUTPUT_DIR=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT\\"
+export RCT_SCRIPT_TYPE=\\"withCodegenDiscovery\\"
 
 SCRIPT_PHASES_SCRIPT=\\"$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh\\"
 WITH_ENVIRONMENT=\\"$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh\\"

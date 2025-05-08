@@ -8,7 +8,6 @@
  */
 
 const {create, update} = require('../../../../jest/renderer');
-const ReactNativeFeatureFlags = require('../../../../src/private/featureflags/ReactNativeFeatureFlags');
 const ReactNative = require('../../../ReactNative/RendererProxy');
 const {
   enter,
@@ -20,14 +19,8 @@ const ReactTestRenderer = require('react-test-renderer');
 
 jest.unmock('../TextInput');
 
-[
-  {useRefsForTextInputState: true, useTextChildren: true},
-  {useRefsForTextInputState: false, useTextChildren: true},
-  {useRefsForTextInputState: true, useTextChildren: false},
-  {useRefsForTextInputState: false, useTextChildren: false},
-].forEach(testCase => {
-  const {useRefsForTextInputState, useTextChildren} = testCase;
-  describe(`TextInput tests (useRefsForTextInputState = ${useRefsForTextInputState}) useTextChildren = ${useTextChildren}`, () => {
+[true, false].forEach(useTextChildren => {
+  describe(`TextInput tests (useTextChildren = ${useTextChildren})`, () => {
     let input;
     let inputRef;
     let onChangeListener;
@@ -35,9 +28,6 @@ jest.unmock('../TextInput');
     const initialValue = 'initialValue';
     beforeEach(async () => {
       jest.resetModules();
-      ReactNativeFeatureFlags.override({
-        useRefsForTextInputState: () => useRefsForTextInputState,
-      });
 
       inputRef = React.createRef(null);
       onChangeListener = jest.fn();

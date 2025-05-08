@@ -82,7 +82,7 @@ const [
   nativeTypeDiffingTypesAliases,
   nativeTypeDiffingTypesMethodParamLookup,
   nativeTypeDiffingTypesMethodLookup,
-  _,
+  ,
   nativeTypeDiffingTypesEnums,
 ] = getModule(
   'native-module-type-diffing-types',
@@ -1010,7 +1010,16 @@ describe('compareTypes on string literal unions', () => {
         nativeTypeDiffingTypesAliases,
         nativeTypeDiffingTypesAliases,
       ),
-    ).toHaveErrorWithMessage('Subtype of union at position 1 did not match');
+    ).toEqual(
+      expect.objectContaining({
+        status: 'positionalTypeChange',
+        changeLog: expect.objectContaining({
+          typeKind: 'stringUnion',
+          addedElements: expect.arrayContaining([expect.any(Array)]),
+          removedElements: expect.arrayContaining([expect.any(Array)]),
+        }),
+      }),
+    );
   });
 });
 

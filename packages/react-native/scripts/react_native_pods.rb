@@ -8,6 +8,7 @@ require 'open3'
 require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/jsengine.rb'
+require_relative './cocoapods/rndependencies.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
 require_relative './cocoapods/codegen_utils.rb'
@@ -100,6 +101,9 @@ def use_react_native! (
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
+  # Update ReactNativeDependencies so that we can easily switch between source and prebuilt
+  ReactNativeDependenciesUtils.setup_react_native_dependencies(prefix, react_native_version)
+
   Pod::UI.puts "Configuring the target with the #{new_arch_enabled ? "New" : "Legacy"} Architecture\n"
 
   # The Pods which should be included in all projects
@@ -146,6 +150,7 @@ def use_react_native! (
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
   pod 'React-jsitooling', :path => "#{prefix}/ReactCommon/jsitooling"
+  pod 'React-jsinspectorcdp', :path => "#{prefix}/ReactCommon/jsinspector-modern/cdp"
   pod 'React-jsinspectornetwork', :path => "#{prefix}/ReactCommon/jsinspector-modern/network"
   pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
@@ -164,12 +169,17 @@ def use_react_native! (
   pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
-  pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
-  pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
-  pod 'fast_float', :podspec => "#{prefix}/third-party-podspecs/fast_float.podspec"
-  pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec"
-  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
+  if ReactNativeDependenciesUtils.build_react_native_deps_from_source()
+    pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
+    pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
+    pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
+    pod 'fast_float', :podspec => "#{prefix}/third-party-podspecs/fast_float.podspec"
+    pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec", :modular_headers => true
+    pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
+    pod 'SocketRocket', "~> #{Helpers::Constants::socket_rocket_config[:version]}", :modular_headers => true
+  else
+    pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
+  end
 
   folly_config = get_folly_config()
   run_codegen!(

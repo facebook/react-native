@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.PointerEventHelper
@@ -34,14 +35,15 @@ class JSPointerDispatcherTest {
   private lateinit var root: ViewGroup
   private lateinit var pointerDispatcher: JSPointerDispatcher
 
-  class EventWithName(private val eventName: String) : ArgumentMatcher<Event<Event<*>>> {
-    override fun matches(argument: Event<Event<*>>?): Boolean = argument?.eventName == eventName
+  class EventWithName(private val eventName: String) : ArgumentMatcher<Event<*>> {
+    override fun matches(argument: Event<*>?): Boolean = argument?.getEventName() == eventName
 
     override fun toString(): String = "[event with name: $eventName]"
   }
 
   @Before
   fun setupViewHierarchy() {
+    ReactNativeFeatureFlagsForTests.setUp()
     val ctx: Context = RuntimeEnvironment.getApplication()
     root = LinearLayout(ctx)
     val childView = TextView(ctx)

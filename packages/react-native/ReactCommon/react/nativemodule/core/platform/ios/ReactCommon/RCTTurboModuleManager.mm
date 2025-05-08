@@ -29,7 +29,6 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
-#import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -602,30 +601,11 @@ typedef struct {
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
-        if (ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()) {
-          static int32_t modulesSettingUpOnMainQueueCount = 0;
-          std::unique_lock<std::mutex> lock{facebook::react::getMainThreadMutex(), std::defer_lock};
-
-          // This function can be recursive. If it's called recursively, we need to skip the lock.
-          // We can't use a recursive mutex instead because the lock is needed on multiple threads.
-          if (modulesSettingUpOnMainQueueCount == 0) {
-            if (!lock.try_lock()) {
-              NSString *reason = [NSString
-                  stringWithFormat:
-                      @"TurboModule %@ which requires main queue setup is initializing during sync rendering. This would have caused a deadlock. Please fix this by avoiding main queue setup or eager initializing this TurboModule.",
-                      NSStringFromClass(moduleClass)];
-              NSException *exception = [NSException exceptionWithName:@"UnsafeTurboModuleException"
-                                                               reason:reason
-                                                             userInfo:nil];
-              @throw exception;
-            }
-          }
-          modulesSettingUpOnMainQueueCount++;
-          RCTUnsafeExecuteOnMainQueueSync(work);
-          modulesSettingUpOnMainQueueCount--;
-        } else {
-          RCTUnsafeExecuteOnMainQueueSync(work);
-        }
+        NSString *message = [NSString
+            stringWithFormat:
+                @"Lazily setting up TurboModule \"%s\" on the main queue. This could deadlock react native, if it happens during sync rendering. Please fix this by avoiding lazy main queue setup.",
+                moduleName];
+        RCTUnsafeExecuteOnMainQueueSyncWithError(work, message);
       } else {
         work();
       }
@@ -846,13 +826,7 @@ typedef struct {
     return _legacyEagerlyRegisteredModuleClasses[moduleNameStr];
   }
 
-  Class moduleClass = nil;
-  if (ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex()) {
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  } else {
-    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  }
+  Class moduleClass = [_delegate getModuleClassFromName:moduleName];
 
   if (moduleClass != nil) {
     return moduleClass;
@@ -887,13 +861,7 @@ typedef struct {
     return [_legacyEagerlyRegisteredModuleClasses[moduleNameStr] new];
   }
 
-  id<RCTBridgeModule> module = nil;
-  if (ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex()) {
-    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
-  } else {
-    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
-  }
+  id<RCTBridgeModule> module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
 
   if (!module) {
     module = [moduleClass new];

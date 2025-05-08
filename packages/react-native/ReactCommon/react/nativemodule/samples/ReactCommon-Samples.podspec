@@ -16,19 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
-
 header_search_paths = [
-  "\"$(PODS_ROOT)/boost\"",
-  "\"$(PODS_ROOT)/RCT-Folly\"",
-  "\"$(PODS_ROOT)/DoubleConversion\"",
-  "\"$(PODS_ROOT)/fast_float/include\"",
-  "\"$(PODS_ROOT)/fmt/include\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 ]
 
@@ -45,7 +33,6 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths,
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -61,10 +48,6 @@ Pod::Spec.new do |s|
   s.source_files = "ReactCommon/**/*.{cpp,h}",
         "platform/ios/**/*.{mm,cpp,h}"
 
-  s.dependency "RCT-Folly"
-  s.dependency "DoubleConversion"
-  s.dependency "fast_float"
-  s.dependency "fmt", "11.0.2"
   s.dependency "React-Core"
   s.dependency "React-cxxreact"
   s.dependency "React-jsi"
@@ -73,4 +56,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-NativeModulesApple")
 
   depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 end

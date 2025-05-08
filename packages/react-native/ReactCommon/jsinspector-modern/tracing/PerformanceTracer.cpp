@@ -264,6 +264,29 @@ void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
   });
 }
 
+void PerformanceTracer::reportEventLoopMicrotasks(
+    uint64_t start,
+    uint64_t end) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "RunMicrotasks",
+      .cat = "v8.execute",
+      .ph = 'X',
+      .ts = start,
+      .pid = oscompat::getCurrentProcessId(),
+      .tid = oscompat::getCurrentThreadId(),
+      .dur = end - start,
+  });
+}
+
 folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
     uint64_t threadId,
     uint16_t profileId,
@@ -297,16 +320,17 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
       .pid = processId_,
       .tid = threadId,
       .args =
-          folly::dynamic::object("data", traceEventProfileChunk.asDynamic()),
+          folly::dynamic::object("data", traceEventProfileChunk.toDynamic()),
   });
 }
 
-folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
+folly::dynamic PerformanceTracer::serializeTraceEvent(
+    const TraceEvent& event) const {
   folly::dynamic result = folly::dynamic::object;
 
   if (event.id.has_value()) {
     std::array<char, 16> buffer{};
-    snprintf(buffer.data(), buffer.size(), "0x%08x", event.id.value());
+    snprintf(buffer.data(), buffer.size(), "0x%x", event.id.value());
     result["id"] = buffer.data();
   }
   result["name"] = event.name;

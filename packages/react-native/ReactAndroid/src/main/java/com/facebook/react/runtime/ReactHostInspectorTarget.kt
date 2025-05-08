@@ -15,7 +15,7 @@ import java.io.Closeable
 import java.util.concurrent.Executor
 
 @DoNotStripAny
-internal class ReactHostInspectorTarget(private val reactHostImpl: ReactHostImpl) : Closeable {
+internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) : Closeable {
   // fbjni looks for the exact name "mHybridData":
   // https://github.com/facebookincubator/fbjni/blob/5587a7fd2b191656be9391a3832ce04c034009a5/cxx/fbjni/detail/Hybrid.h#L310
   @Suppress("NoHungarianNotation")

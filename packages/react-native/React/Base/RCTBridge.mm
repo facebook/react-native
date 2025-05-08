@@ -15,7 +15,6 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
-#import <React/RCTInitializeUIKitProxies.h>
 #import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/InspectorInterfaces.h>
 #import <jsinspector-modern/ReactCdp.h>
@@ -43,6 +42,97 @@ NSArray<Class> *RCTGetModuleClasses(void)
   return result;
 }
 
+NSSet<NSString *> *getCoreModuleClasses(void);
+NSSet<NSString *> *getCoreModuleClasses(void)
+{
+  static NSSet<NSString *> *coreModuleClasses = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    coreModuleClasses = [NSSet setWithArray:@[
+      @"RCTViewManager",
+      @"RCTActivityIndicatorViewManager",
+      @"RCTDebuggingOverlayManager",
+      @"RCTModalHostViewManager",
+      @"RCTModalManager",
+      @"RCTRefreshControlManager",
+      @"RCTSafeAreaViewManager",
+      @"RCTScrollContentViewManager",
+      @"RCTScrollViewManager",
+      @"RCTSwitchManager",
+      @"RCTUIManager",
+      @"RCTAccessibilityManager",
+      @"RCTActionSheetManager",
+      @"RCTAlertManager",
+      @"RCTAppearance",
+      @"RCTAppState",
+      @"RCTClipboard",
+      @"RCTDeviceInfo",
+      @"RCTDevLoadingView",
+      @"RCTDevMenu",
+      @"RCTDevSettings",
+      @"RCTDevToolsRuntimeSettingsModule",
+      @"RCTEventDispatcher",
+      @"RCTExceptionsManager",
+      @"RCTI18nManager",
+      @"RCTKeyboardObserver",
+      @"RCTLogBox",
+      @"RCTPerfMonitor",
+      @"RCTPlatform",
+      @"RCTRedBox",
+      @"RCTSourceCode",
+      @"RCTStatusBarManager",
+      @"RCTTiming",
+      @"RCTWebSocketModule",
+      @"RCTNativeAnimatedModule",
+      @"RCTNativeAnimatedTurboModule",
+      @"RCTBlobManager",
+      @"RCTFileReaderModule",
+      @"RCTBundleAssetImageLoader",
+      @"RCTGIFImageDecoder",
+      @"RCTImageEditingManager",
+      @"RCTImageLoader",
+      @"RCTImageStoreManager",
+      @"RCTImageViewManager",
+      @"RCTLocalAssetImageLoader",
+      @"RCTLinkingManager",
+      @"RCTDataRequestHandler",
+      @"RCTFileRequestHandler",
+      @"RCTHTTPRequestHandler",
+      @"RCTNetworking",
+      @"RCTPushNotificationManager",
+      @"RCTSettingsManager",
+      @"RCTBaseTextViewManager",
+      @"RCTBaseTextInputViewManager",
+      @"RCTInputAccessoryViewManager",
+      @"RCTMultilineTextInputViewManager",
+      @"RCTRawTextViewManager",
+      @"RCTSinglelineTextInputViewManager",
+      @"RCTTextViewManager",
+      @"RCTVirtualTextViewManager",
+      @"RCTVibration",
+    ]];
+  });
+
+  return coreModuleClasses;
+}
+
+static NSMutableArray<NSString *> *modulesLoadedWithOldArch;
+void addModuleLoadedWithOldArch(NSString *);
+void addModuleLoadedWithOldArch(NSString *moduleName)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    modulesLoadedWithOldArch = [NSMutableArray new];
+  });
+
+  [modulesLoadedWithOldArch addObject:moduleName];
+}
+
+NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void)
+{
+  return modulesLoadedWithOldArch;
+}
+
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.
@@ -51,6 +141,10 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
+  if (RCTAreLegacyLogsEnabled() && RCTIsNewArchEnabled() &&
+      ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
+    addModuleLoadedWithOldArch([moduleClass description]);
+  }
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
@@ -158,17 +252,6 @@ BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
 void RCTEnableTurboModuleSyncVoidMethods(BOOL enabled)
 {
   gTurboModuleEnableSyncVoidMethods = enabled;
-}
-
-static BOOL gBridgeModuleDisableBatchDidComplete = NO;
-BOOL RCTBridgeModuleBatchDidCompleteDisabled(void)
-{
-  return gBridgeModuleDisableBatchDidComplete;
-}
-
-void RCTDisableBridgeModuleBatchDidComplete(BOOL disabled)
-{
-  gBridgeModuleDisableBatchDidComplete = disabled;
 }
 
 BOOL kDispatchAccessibilityManagerInitOntoMain = NO;
@@ -512,7 +595,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
   RCTExecuteOnMainQueue(^{
-    RCTInitializeUIKitProxies();
     RCTRegisterReloadCommandListener(self);
     RCTReloadCommandSetBundleURL(self->_bundleURL);
   });

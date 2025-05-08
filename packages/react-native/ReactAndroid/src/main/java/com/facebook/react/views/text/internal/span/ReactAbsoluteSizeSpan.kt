@@ -10,4 +10,4 @@ package com.facebook.react.views.text.internal.span
 import android.text.style.AbsoluteSizeSpan
 
 /** Wraps [AbsoluteSizeSpan] as a [ReactSpan]. */
-public class ReactAbsoluteSizeSpan(size: Int) : AbsoluteSizeSpan(size), ReactSpan
+internal class ReactAbsoluteSizeSpan(size: Int) : AbsoluteSizeSpan(size), ReactSpan

@@ -23,9 +23,6 @@ describe('Native Animated', () => {
       get NativeAnimatedHelper() {
         return require('../NativeAnimatedHelper').default;
       },
-      get ReactNativeFeatureFlags() {
-        return require('../../featureflags/ReactNativeFeatureFlags');
-      },
     };
   }
 
@@ -154,7 +151,7 @@ describe('Native Animated', () => {
       const tag = opacity.__getNativeTag();
 
       await unmount(root);
-
+      jest.runAllTicks();
       expect(NativeAnimatedModule.getValue).toBeCalledWith(
         tag,
         expect.any(Function),
@@ -178,7 +175,7 @@ describe('Native Animated', () => {
       const tag = opacity.__getNativeTag();
 
       await unmount(root);
-
+      jest.runAllTicks();
       expect(NativeAnimatedModule.getValue).toBeCalledWith(
         tag,
         expect.any(Function),
@@ -407,7 +404,7 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.dropAnimatedNode).not.toHaveBeenCalled();
 
       await unmount(root);
-
+      jest.runAllTicks();
       expect(
         NativeAnimatedModule.disconnectAnimatedNodes,
       ).toHaveBeenCalledTimes(2);
@@ -1390,11 +1387,13 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
 
       await update(root, <Animated.View style={{opacity: opacityB}} />);
+      jest.runAllTicks();
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
         1,
       );
 
       await unmount(root);
+      jest.runAllTicks();
       // Make sure it doesn't get called on unmount.
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
         1,
@@ -1419,6 +1418,7 @@ describe('Native Animated', () => {
       );
 
       await unmount(root);
+      jest.runAllTicks();
       expect(
         NativeAnimatedModule.disconnectAnimatedNodeFromView,
       ).toBeCalledWith(propsTag, 1);

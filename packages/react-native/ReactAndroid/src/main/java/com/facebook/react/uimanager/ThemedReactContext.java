@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptContextHolder;
@@ -30,6 +31,7 @@ import java.util.Collection;
  * events for this wrapper instances. TODO: T7538544 Rename ThemedReactContext to be in alignment
  * with name of ReactApplicationContext
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ThemedReactContext extends ReactContext {
 
   private final ReactApplicationContext mReactApplicationContext;
@@ -94,15 +96,13 @@ public class ThemedReactContext extends ReactContext {
     return mReactApplicationContext.getNativeModules();
   }
 
-  @Nullable
   @Override
-  public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
+  public @Nullable <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return mReactApplicationContext.getNativeModule(nativeModuleInterface);
   }
 
-  @Nullable
   @Override
-  public NativeModule getNativeModule(String moduleName) {
+  public @Nullable NativeModule getNativeModule(String moduleName) {
     return mReactApplicationContext.getNativeModule(moduleName);
   }
 
@@ -176,26 +176,23 @@ public class ThemedReactContext extends ReactContext {
     return mReactApplicationContext.isBridgeless();
   }
 
-  @Nullable
   @Override
-  public JavaScriptContextHolder getJavaScriptContextHolder() {
+  public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {
     return mReactApplicationContext.getJavaScriptContextHolder();
   }
 
-  @Nullable
   @Override
-  public CallInvokerHolder getJSCallInvokerHolder() {
+  public @Nullable CallInvokerHolder getJSCallInvokerHolder() {
     return mReactApplicationContext.getJSCallInvokerHolder();
   }
 
   @Override
-  public UIManager getFabricUIManager() {
+  public @Nullable UIManager getFabricUIManager() {
     return mReactApplicationContext.getFabricUIManager();
   }
 
-  @Nullable
   @Override
-  public String getSourceURL() {
+  public @Nullable String getSourceURL() {
     return mReactApplicationContext.getSourceURL();
   }
 

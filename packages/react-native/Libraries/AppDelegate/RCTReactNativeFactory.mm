@@ -229,6 +229,17 @@ using namespace facebook::react;
   }
 }
 
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
+{
+#if RN_DISABLE_OSS_PLUGIN_HEADER
+  return RCTTurboModulePluginUnstableModulesRequiringMainQueueSetup();
+#else
+  return self.delegate.dependencyProvider
+      ? RCTAppSetupUnstableModulesRequiringMainQueueSetup(self.delegate.dependencyProvider)
+      : @[];
+#endif
+}
+
 - (RCTRootViewFactory *)createRCTRootViewFactory
 {
   __weak __typeof(self) weakSelf = self;

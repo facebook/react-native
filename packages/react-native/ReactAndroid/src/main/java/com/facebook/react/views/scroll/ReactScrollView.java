@@ -41,6 +41,7 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -65,6 +66,7 @@ import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScro
 import com.facebook.systrace.Systrace;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -363,11 +365,12 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
+    if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, false);
 
-    @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, false);
-
-    if (nextfocusableView != null) {
-      return nextfocusableView;
+      if (nextfocusableView != null) {
+        return nextfocusableView;
+      }
     }
 
     return super.focusSearch(focused, direction);
@@ -418,7 +421,7 @@ public class ReactScrollView extends ScrollView
 
   @Override
   protected void onScrollChanged(int x, int y, int oldX, int oldY) {
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactScrollView.onScrollChanged");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactScrollView.onScrollChanged");
     try {
       super.onScrollChanged(x, y, oldX, oldY);
 
@@ -434,7 +437,7 @@ public class ReactScrollView extends ScrollView
             mOnScrollDispatchHelper.getYFlingVelocity());
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -542,22 +545,26 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void updateClippingRect() {
+    updateClippingRect(null);
+  }
+
+  @Override
+  public void updateClippingRect(@Nullable Set<Integer> excludedViewsSet) {
     if (!mRemoveClippedSubviews) {
       return;
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactScrollView.updateClippingRect");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactScrollView.updateClippingRect");
     try {
       Assertions.assertNotNull(mClippingRect);
 
       ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
       View contentView = getContentView();
       if (contentView instanceof ReactClippingViewGroup) {
-        ((ReactClippingViewGroup) contentView).updateClippingRect();
+        ((ReactClippingViewGroup) contentView).updateClippingRect(excludedViewsSet);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -1106,7 +1113,7 @@ public class ReactScrollView extends ScrollView
     }
   }
 
-  public void setContentOffset(ReadableMap value) {
+  public void setContentOffset(@Nullable ReadableMap value) {
     // When contentOffset={{x:0,y:0}} with lazy load items, setContentOffset
     // is repeatedly called, causing an unexpected scroll to top behavior.
     // Avoid updating contentOffset if the value has not changed.

@@ -13,7 +13,7 @@ import java.util.Collections
 internal class BridgelessReactStateTracker(private val shouldTrackStates: Boolean) {
   private val states = Collections.synchronizedList(mutableListOf<String>())
 
-  protected fun enterState(state: String) {
+  fun enterState(state: String) {
     FLog.w(TAG, state)
     if (shouldTrackStates) {
       states.add(state)

@@ -12,16 +12,16 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import java.util.regex.Pattern
 
-public object JSStackTrace {
+internal object JSStackTrace {
 
-  public const val LINE_NUMBER_KEY: String = "lineNumber"
-  public const val FILE_KEY: String = "file"
-  public const val COLUMN_KEY: String = "column"
-  public const val METHOD_NAME_KEY: String = "methodName"
+  const val LINE_NUMBER_KEY: String = "lineNumber"
+  const val FILE_KEY: String = "file"
+  const val COLUMN_KEY: String = "column"
+  const val METHOD_NAME_KEY: String = "methodName"
   private val FILE_ID_PATTERN = Pattern.compile("\\b((?:seg-\\d+(?:_\\d+)?|\\d+)\\.js)")
 
   @JvmStatic
-  public fun format(message: String, stack: ReadableArray): String {
+  fun format(message: String, stack: ReadableArray): String {
     val stringBuilder = StringBuilder(message).append(", stack:\n")
     for (i in 0 until stack.size()) {
       val frame = stack.getMap(i) ?: continue

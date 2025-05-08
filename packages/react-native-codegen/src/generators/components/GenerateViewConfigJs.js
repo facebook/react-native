@@ -75,7 +75,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
           );
         case 'ImageSourcePrimitive':
           return expression(
-            "{ process: require('react-native/Libraries/Image/resolveAssetSource') }",
+            "{ process: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Image/resolveAssetSource')) }",
           );
         case 'ImageRequestPrimitive':
           throw new Error('ImageRequest should not be used in props');

@@ -164,33 +164,12 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
 
     auto& entry = it->second;
     entry.processingEndTime = timeStamp;
-
-    if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-      // If reporting paint time, don't send the entry just yet and wait for the
-      // task to finish.
-      return;
-    }
-
-    const auto& name = entry.name;
-
-    performanceEntryReporter->reportEvent(
-        std::string(name),
-        entry.startTime,
-        timeStamp - entry.startTime,
-        entry.processingStartTime,
-        entry.processingEndTime,
-        entry.interactionId);
-    eventsInFlight_.erase(it);
   }
 }
 
 void EventPerformanceLogger::dispatchPendingEventTimingEntries(
     const std::unordered_set<SurfaceId>&
         surfaceIdsWithPendingRenderingUpdates) {
-  if (!ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    return;
-  }
-
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return;
@@ -224,10 +203,6 @@ void EventPerformanceLogger::dispatchPendingEventTimingEntries(
 void EventPerformanceLogger::shadowTreeDidMount(
     const RootShadowNode::Shared& rootShadowNode,
     double mountTime) noexcept {
-  if (!ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    return;
-  }
-
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return;

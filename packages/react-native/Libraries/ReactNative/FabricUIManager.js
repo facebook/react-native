@@ -92,6 +92,11 @@ export interface Spec {
     /* width: */ number,
     /* height: */ number,
   ];
+  +unstable_DefaultEventPriority: number;
+  +unstable_DiscreteEventPriority: number;
+  +unstable_ContinuousEventPriority: number;
+  +unstable_IdleEventPriority: number;
+  +unstable_getCurrentEventPriority: () => number;
 }
 
 let nativeFabricUIManagerProxy: ?Spec;
@@ -119,6 +124,11 @@ const CACHED_PROPERTIES = [
   'dispatchCommand',
   'compareDocumentPosition',
   'getBoundingClientRect',
+  'unstable_DefaultEventPriority',
+  'unstable_DiscreteEventPriority',
+  'unstable_ContinuousEventPriority',
+  'unstable_IdleEventPriority',
+  'unstable_getCurrentEventPriority',
 ];
 
 // This is exposed as a getter because apps using the legacy renderer AND
