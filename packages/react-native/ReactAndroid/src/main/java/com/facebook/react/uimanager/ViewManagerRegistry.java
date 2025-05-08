@@ -10,9 +10,13 @@ package com.facebook.react.uimanager;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +28,7 @@ import java.util.Map;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ViewManagerRegistry implements ComponentCallbacks2 {
 
+  private static final String TAG = "ViewManagerRegistry";
   private final Map<String, ViewManager> mViewManagers;
   private final @Nullable ViewManagerResolver mViewManagerResolver;
 
@@ -76,14 +81,33 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
       viewManager = getViewManagerFromResolver(rctViewManagerName);
       if (viewManager != null) return viewManager;
 
-      throw new IllegalViewOperationException(
+      String errorMessage =
           "Can't find ViewManager '"
               + className
               + "' nor '"
               + rctViewManagerName
               + "' in ViewManagerRegistry"
               + ", existing names are: "
-              + mViewManagerResolver.getViewManagerNames());
+              + mViewManagerResolver.getViewManagerNames();
+      // In release mode we don't want to crash the app if the view manager is not found.
+      // Instead we return a dummy view manager that will render an empty view (including children)
+      // and log an error.
+      if (!ReactBuildConfig.DEBUG
+          && ReactNativeFeatureFlags.enableGracefulUnregisteredComponentFailureAndroid()) {
+        // 1. Log the error
+        FLog.e(TAG, errorMessage);
+        ReactSoftExceptionLogger.logSoftException(
+            ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS,
+            new IllegalStateException(errorMessage));
+
+        // 2. Render UnimplementedNativeView if found.
+        viewManager = getViewManagerFromResolver("UnimplementedNativeView");
+        if (viewManager != null) {
+          return viewManager;
+        }
+      }
+
+      throw new IllegalViewOperationException(errorMessage);
     }
     throw new IllegalViewOperationException("No ViewManager found for class " + className);
   }
