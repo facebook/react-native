@@ -79,17 +79,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var transparent: Boolean = false
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
-  public var statusBarTranslucent: Boolean = false
-    set(value) {
-      field = value
-      createNewDialog = true
-    }
-
-  public var navigationBarTranslucent: Boolean = false
-    set(value) {
-      field = value
-      createNewDialog = true
-    }
 
   public var animationType: String? = null
     set(value) {
