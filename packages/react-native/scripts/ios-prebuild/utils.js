@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+const {execSync} = require('child_process');
 const fs = require('fs');
 
 /**
@@ -26,4 +27,18 @@ function createFolderIfNotExists(folderPath /*:string*/) /*: string*/ {
   return folderPath;
 }
 
-module.exports = {createFolderIfNotExists};
+function throwIfOnEden() {
+  try {
+    execSync('eden info');
+  } catch (error) {
+    // eden info failed, we are not on Eden, do nothing
+    return;
+  }
+
+  throw new Error('Cannot prepare the iOS prebuilds on an Eden checkout');
+}
+
+module.exports = {
+  createFolderIfNotExists,
+  throwIfOnEden,
+};
