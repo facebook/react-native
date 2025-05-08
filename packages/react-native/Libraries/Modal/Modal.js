@@ -27,6 +27,7 @@ const AppContainer = require('../ReactNative/AppContainer').default;
 const I18nManager = require('../ReactNative/I18nManager').default;
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet').default;
+const Appearance = require('../Utilities/Appearance');
 const Platform = require('../Utilities/Platform').default;
 
 const VirtualizedListContextResetter =
@@ -272,6 +273,8 @@ class Modal extends React.Component<ModalProps, ModalState> {
       return null;
     }
 
+    const isEdgeToEdge = Appearance.isEdgeToEdge();
+
     const containerStyles = {
       backgroundColor:
         this.props.transparent === true
@@ -317,8 +320,10 @@ class Modal extends React.Component<ModalProps, ModalState> {
         onDismiss={onDismiss}
         ref={this.props.modalRef}
         visible={this.props.visible}
-        statusBarTranslucent={this.props.statusBarTranslucent}
-        navigationBarTranslucent={this.props.navigationBarTranslucent}
+        statusBarTranslucent={isEdgeToEdge || this.props.statusBarTranslucent}
+        navigationBarTranslucent={
+          isEdgeToEdge || this.props.navigationBarTranslucent
+        }
         identifier={this._identifier}
         style={styles.modal}
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
