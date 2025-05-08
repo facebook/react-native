@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -18,7 +18,7 @@ class SampleNativeComponentState {
 public:
   SampleNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   SampleNativeComponentState(SampleNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};

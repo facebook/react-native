@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
@@ -20,7 +20,7 @@ class AndroidPopupMenuState {
 public:
   AndroidPopupMenuState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   AndroidPopupMenuState(AndroidPopupMenuState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
