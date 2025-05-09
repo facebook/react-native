@@ -13,12 +13,13 @@ import type {
   RenderOutputConfig,
 } from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
-import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
+import type {RootTag} from 'react-native';
 import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 
 import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
+import {LogBox} from 'react-native';
 import {createRootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import NativeFantom, {
   NativeEventCategory,
@@ -155,6 +156,7 @@ export function scheduleTask(task: () => void | Promise<void>) {
 }
 
 let flushingQueue = false;
+let isLogBoxCheckEnabled = true;
 
 /**
  * Runs a task on the event loop.
@@ -239,12 +241,41 @@ export function runWorkLoop(): void {
     );
   }
 
+  if (__DEV__) {
+    // We don't want to run these checks in optimized mode
+    // to avoid the small performance overhead in benchmarks.
+    runLogBoxCheck();
+  }
+
   try {
     flushingQueue = true;
     NativeFantom.flushMessageQueue();
   } finally {
     flushingQueue = false;
   }
+
+  if (__DEV__) {
+    // We also do it after because a task might trigger the initialization of the environment that enables LogBox,
+    // which could be equally dangerous.
+    runLogBoxCheck();
+  }
+}
+
+/**
+ * Set this flag to `false` to let Fantom run tasks with LogBox installed
+ * (necessary only if you are testing LogBox specifically).
+ *
+ * Otherwise, it will throw an error when running its work loop,
+ * as LogBox would intercept all errors in tasks instead of making them throw.
+ *
+ * @example
+ * ```
+ * // In LogBox tests:
+ * Fantom.setLogBoxCheckEnabled(false);
+ * ```
+ */
+export function setLogBoxCheckEnabled(enabled: boolean) {
+  isLogBoxCheckEnabled = enabled;
 }
 
 /**
@@ -600,4 +631,19 @@ export function saveJSMemoryHeapSnapshot(filePath: string): void {
   }
 
   NativeFantom.saveJSMemoryHeapSnapshot(filePath);
+}
+
+function runLogBoxCheck() {
+  if (isLogBoxCheckEnabled && LogBox.isInstalled()) {
+    const message =
+      'Cannot run work loop while LogBox is installed, as LogBox intercepts errors thrown in tests.' +
+      ' If you are installing LogBox unintentionally using `InitializeCore`, replace it with `@react-native/fantom/src/setUpDefaultReactNativeEnvironment` to avoid this problem.';
+
+    // This is will go through even if throwing doesn't.
+    console.error(message);
+
+    // Throwing here won't re-throw in the test if LogBox is enabled,
+    // but will hopefully fail it for some other reason.
+    throw new Error(message);
+  }
 }
