@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import '../../../Core/InitializeCore.js';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import TextInputState from '../../../Components/TextInput/TextInputState';

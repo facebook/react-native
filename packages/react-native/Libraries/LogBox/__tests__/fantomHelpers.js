@@ -18,8 +18,6 @@ import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 
-import '../../Core/InitializeCore.js';
-
 interface InspectorUI {
   header: ?string;
   title: ?string;

@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {Node} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 
