@@ -9354,6 +9354,13 @@ exports[`public API should not change unintentionally src/private/setup/setUpDOM
 "
 `;
 
+exports[`public API should not change unintentionally src/private/setup/setUpDefaultReactNativeEnvironment.js 1`] = `
+"declare export default function setUpDefaltReactNativeEnvironment(
+  enableDeveloperTools?: boolean
+): void;
+"
+`;
+
 exports[`public API should not change unintentionally src/private/setup/setUpIntersectionObserver.js 1`] = `
 "declare export default function setUpIntersectionObserver(): void;
 "
