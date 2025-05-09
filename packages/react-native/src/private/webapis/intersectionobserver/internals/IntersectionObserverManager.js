@@ -232,7 +232,6 @@ export function unobserve(
       );
       return;
     }
-    targetToShadowNodeMap.delete(target);
 
     NativeIntersectionObserver.unobserve(
       intersectionObserverId,
@@ -246,7 +245,6 @@ export function unobserve(
       );
       return;
     }
-    targetToTokenMap.delete(target);
 
     modernNativeIntersectionObserver.unobserve(
       intersectionObserverId,
