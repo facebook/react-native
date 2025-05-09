@@ -82,7 +82,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
     }
-    val source = ImageSource(getReactApplicationContext(), uriString)
+    val source = ImageSource(reactApplicationContext, uriString)
     val request: ImageRequest = ImageRequestBuilder.newBuilderWithSource(source.uri).build()
     val dataSource: DataSource<CloseableReference<CloseableImage>> =
         this.imagePipeline.fetchDecodedImage(request, this.callerContext)
@@ -131,7 +131,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
     }
-    val source = ImageSource(getReactApplicationContext(), uriString)
+    val source = ImageSource(reactApplicationContext, uriString)
     val imageRequestBuilder: ImageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(source.uri)
     val request: ImageRequest =
@@ -225,7 +225,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
   override fun queryCache(uris: ReadableArray, promise: Promise) {
     // perform cache interrogation in async task as disk cache checks are expensive
     @Suppress("DEPRECATION", "StaticFieldLeak")
-    object : GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
+    object : GuardedAsyncTask<Void, Void>(reactApplicationContext) {
           override fun doInBackgroundGuarded(vararg params: Void) {
             val result: WritableMap = Arguments.createMap()
             val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline

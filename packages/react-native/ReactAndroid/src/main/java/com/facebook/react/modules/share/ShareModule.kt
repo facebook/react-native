@@ -48,7 +48,7 @@ internal class ShareModule(reactContext: ReactApplicationContext) :
       if (currentActivity != null) {
         currentActivity.startActivity(chooser)
       } else {
-        getReactApplicationContext().startActivity(chooser)
+        reactApplicationContext.startActivity(chooser)
       }
       val result = Arguments.createMap()
       result.putString("action", ACTION_SHARED)
