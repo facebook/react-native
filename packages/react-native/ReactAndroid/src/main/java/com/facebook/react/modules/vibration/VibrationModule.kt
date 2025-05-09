@@ -54,12 +54,12 @@ internal class VibrationModule(reactContext: ReactApplicationContext) :
   private fun getVibrator(): Vibrator? =
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
-            getReactApplicationContext().getSystemService(Context.VIBRATOR_MANAGER_SERVICE)
+            reactApplicationContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE)
                 as VibratorManager?
         vibratorManager?.defaultVibrator
       } else {
         @Suppress("DEPRECATION")
-        getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
+        reactApplicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
       }
 
   companion object {

@@ -35,7 +35,7 @@ public open class DeviceEventManagerModule(
   /** Sends an event to the JS instance that the hardware back has been pressed. */
   public open fun emitHardwareBackPressed() {
     val reactApplicationContext: ReactApplicationContext? =
-        getReactApplicationContextIfActiveOrWarn()
+        reactApplicationContextIfActiveOrWarn
     reactApplicationContext?.emitDeviceEvent("hardwareBackPress", null)
   }
 
@@ -55,7 +55,7 @@ public open class DeviceEventManagerModule(
     // There should be no need to check if the catalyst instance is alive. After initialization
     // the thread instances cannot be null, and scheduling on a thread after ReactApplicationContext
     // teardown is a noop.
-    getReactApplicationContext().runOnUiQueueThread(invokeDefaultBackPressRunnable)
+    reactApplicationContext.runOnUiQueueThread(invokeDefaultBackPressRunnable)
   }
 
   public companion object {
