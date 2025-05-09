@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import createEventTargetHierarchyWithDepth from './createEventTargetHierarchyWithDepth';
 import Event from 'react-native/src/private/webapis/dom/events/Event';
