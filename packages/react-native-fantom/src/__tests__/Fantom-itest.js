@@ -16,7 +16,7 @@ import type {HostInstance} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
-import {Modal, ScrollView, Text, TextInput, View} from 'react-native';
+import {LogBox, Modal, ScrollView, Text, TextInput, View} from 'react-native';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
@@ -107,6 +107,11 @@ describe('Fantom', () => {
     });
 
     describe('error handling', () => {
+      afterEach(() => {
+        Fantom.setLogBoxCheckEnabled(true);
+        LogBox.uninstall();
+      });
+
       // TODO: T223804378 when error handling is fixed, this should verify using `toThrow`
       it('should throw when running a task inside another task', () => {
         let threw = false;
@@ -238,6 +243,31 @@ describe('Fantom', () => {
 
         // Flushing queue to avoid this test failing
         Fantom.runWorkLoop();
+      });
+
+      it('should throw an error when running a task with LogBox installed', () => {
+        LogBox.install();
+
+        expect(() => {
+          Fantom.runTask(() => {});
+        }).toThrow(
+          'Cannot run work loop while LogBox is installed, as LogBox intercepts errors thrown in tests.' +
+            ' If you are installing LogBox unintentionally using `InitializeCore`, replace it with `@react-native/fantom/src/setUpDefaultReactNativeEnvironment` to avoid this problem.',
+        );
+
+        // We need to do this cleanup or Fantom will fail the test for us.
+        LogBox.uninstall();
+        Fantom.runWorkLoop();
+      });
+
+      it('should not throw an error when running a task with LogBox installed if setLogBoxCheckEnabled is set to false', () => {
+        LogBox.install();
+
+        Fantom.setLogBoxCheckEnabled(false);
+
+        expect(() => {
+          Fantom.runTask(() => {});
+        }).not.toThrow();
       });
     });
   });
