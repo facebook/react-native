@@ -48,7 +48,7 @@ import com.facebook.react.common.build.ReactBuildConfig
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @StableReactNativeAPI
 public abstract class BaseJavaModule(
-  private val reactApplicationContext: ReactApplicationContext? = null
+  private val _reactApplicationContext: ReactApplicationContext? = null
 ) : NativeModule {
   @DoNotStrip
   protected var eventEmitterCallback: CxxCallbackImpl? = null
@@ -76,8 +76,8 @@ public abstract class BaseJavaModule(
    * Subclasses can use this method to access {@link ReactApplicationContext} passed as a
    * constructor.
    */
-  protected fun getReactApplicationContext(): ReactApplicationContext =
-    requireNotNull(reactApplicationContext) {
+  protected val reactApplicationContext: ReactApplicationContext
+    get() = requireNotNull(_reactApplicationContext) {
       "Tried to get ReactApplicationContext even though NativeModule wasn't instantiated with one"
     }
 
@@ -94,26 +94,28 @@ public abstract class BaseJavaModule(
    * <p>Threading implications have not been analyzed fully yet, so assume this method is not
    * thread-safe.
    */
-  @ThreadConfined(ANY)
-  protected fun getReactApplicationContextIfActiveOrWarn(): ReactApplicationContext? {
-    if (reactApplicationContext != null && reactApplicationContext.hasActiveReactInstance()) {
-      return reactApplicationContext
-    }
 
-    // We want to collect data about how often this happens, but SoftExceptions will cause a crash
-    // in debug mode, which isn't usually desirable.
-    val reactNativeInstanceErrorMessage =
-      "React Native Instance has already disappeared: requested by ${getName()}"
-    if (ReactBuildConfig.DEBUG) {
-      FLog.w(ReactConstants.TAG, reactNativeInstanceErrorMessage)
-    } else {
-      ReactSoftExceptionLogger.logSoftException(
-        ReactConstants.TAG,
-        RuntimeException(reactNativeInstanceErrorMessage)
-      )
+  protected val reactApplicationContextIfActiveOrWarn: ReactApplicationContext?
+    @ThreadConfined(ANY)
+    get() {
+      if (_reactApplicationContext != null && _reactApplicationContext.hasActiveReactInstance()) {
+        return _reactApplicationContext
+      }
+
+      // We want to collect data about how often this happens, but SoftExceptions will cause a crash
+      // in debug mode, which isn't usually desirable.
+      val reactNativeInstanceErrorMessage =
+        "React Native Instance has already disappeared: requested by ${getName()}"
+      if (ReactBuildConfig.DEBUG) {
+        FLog.w(ReactConstants.TAG, reactNativeInstanceErrorMessage)
+      } else {
+        ReactSoftExceptionLogger.logSoftException(
+          ReactConstants.TAG,
+          RuntimeException(reactNativeInstanceErrorMessage)
+        )
+      }
+      return null
     }
-    return null
-  }
 
   public companion object {
     public const val METHOD_TYPE_ASYNC: String = "async"
