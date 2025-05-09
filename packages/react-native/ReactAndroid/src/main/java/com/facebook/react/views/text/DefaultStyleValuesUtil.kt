@@ -9,6 +9,7 @@ package com.facebook.react.views.text
 
 import android.content.Context
 import android.content.res.ColorStateList
+import androidx.core.content.res.use
 
 /** Utility class that access default values from style */
 public object DefaultStyleValuesUtil {
