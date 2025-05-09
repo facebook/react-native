@@ -154,7 +154,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded(
       : props.mostRecentEventCount;
   auto newAttributedString = getMostRecentAttributedString(layoutContext);
 
-  setStateData(TextInputState{
+  setStateData(AndroidTextInputState{
       AttributedStringBox(newAttributedString),
       reactTreeAttributedString,
       props.paragraphAttributes,

@@ -11,16 +11,19 @@
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
+#include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+
 namespace facebook::react {
 
 /*
  * State for <TextInput> component.
  */
-class TextInputState final {
+class AndroidTextInputState final {
  public:
-  TextInputState() = default;
+  AndroidTextInputState() = default;
 
-  TextInputState(
+  AndroidTextInputState(
       AttributedStringBox attributedStringBox,
       AttributedString reactTreeAttributedString,
       ParagraphAttributes paragraphAttributes,
@@ -29,6 +32,24 @@ class TextInputState final {
         reactTreeAttributedString(std::move(reactTreeAttributedString)),
         paragraphAttributes(std::move(paragraphAttributes)),
         mostRecentEventCount(mostRecentEventCount) {}
+
+  AndroidTextInputState(
+      const AndroidTextInputState& previousState,
+      const folly::dynamic& data)
+      : attributedStringBox(previousState.attributedStringBox),
+        reactTreeAttributedString(previousState.reactTreeAttributedString),
+        paragraphAttributes(previousState.paragraphAttributes),
+        mostRecentEventCount(data.getDefault(
+                                     "mostRecentEventCount",
+                                     previousState.mostRecentEventCount)
+                                 .getInt()),
+        cachedAttributedStringId(data.getDefault(
+                                         "opaqueCacheId",
+                                         previousState.cachedAttributedStringId)
+                                     .getInt()) {}
+
+  folly::dynamic getDynamic() const;
+  MapBuffer getMapBuffer() const;
 
   /*
    * All content of <TextInput> component.
@@ -51,6 +72,12 @@ class TextInputState final {
   ParagraphAttributes paragraphAttributes;
 
   int64_t mostRecentEventCount{0};
+
+  /**
+   * Stores an opaque cache ID used on the Java side to refer to a specific
+   * AttributedString for measurement purposes only.
+   */
+  int64_t cachedAttributedStringId{0};
 };
 
 } // namespace facebook::react

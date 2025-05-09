@@ -108,7 +108,22 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
+  template <typename ParagraphStateT>
+  void updateStateIfNeeded(
+      const Content& content,
+      const MeasuredPreparedLayout& layout);
+
+  /*
+   * Creates a `State` object (with `AttributedText` and
+   * `TextLayoutManager`) if needed.
+   */
   void updateStateIfNeeded(const Content& content);
+
+  /**
+   * Returns any previously prepared layout, generated for measurement, which
+   * may be used, given the currently assigned layout to the ShadowNode
+   */
+  MeasuredPreparedLayout* findUsableLayout();
 
   std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
@@ -121,13 +136,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * Intermediate layout results generated during measurement, that may be
    * reused by the platform.
    */
-  struct PreparedLayoutResult {
-    LayoutConstraints layoutConstraints;
-    Size measureSize;
-    TextLayoutManagerExtended::PreparedLayout preparedLayout{};
-  };
-
-  mutable std::vector<PreparedLayoutResult> preparedLayouts_;
+  mutable std::vector<MeasuredPreparedLayout> measuredLayouts_;
 };
 
 } // namespace facebook::react

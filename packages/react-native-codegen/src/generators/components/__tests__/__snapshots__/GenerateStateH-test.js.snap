@@ -12,7 +12,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -22,7 +22,7 @@ class ArrayPropsNativeComponentState {
 public:
   ArrayPropsNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -46,7 +46,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -56,7 +56,7 @@ class ArrayPropsNativeComponentState {
 public:
   ArrayPropsNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -80,7 +80,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -90,7 +90,7 @@ class BooleanPropNativeComponentState {
 public:
   BooleanPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   BooleanPropNativeComponentState(BooleanPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -114,7 +114,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -124,7 +124,7 @@ class ColorPropNativeComponentState {
 public:
   ColorPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ColorPropNativeComponentState(ColorPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -148,7 +148,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -158,7 +158,7 @@ class CommandNativeComponentState {
 public:
   CommandNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -182,7 +182,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -192,7 +192,7 @@ class CommandNativeComponentState {
 public:
   CommandNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -216,7 +216,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -226,7 +226,7 @@ class DimensionPropNativeComponentState {
 public:
   DimensionPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   DimensionPropNativeComponentState(DimensionPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -250,7 +250,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -260,7 +260,7 @@ class DoublePropNativeComponentState {
 public:
   DoublePropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   DoublePropNativeComponentState(DoublePropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -284,7 +284,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -294,7 +294,7 @@ class EventsNestedObjectNativeComponentState {
 public:
   EventsNestedObjectNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   EventsNestedObjectNativeComponentState(EventsNestedObjectNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -318,7 +318,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -328,7 +328,7 @@ class EventsNativeComponentState {
 public:
   EventsNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   EventsNativeComponentState(EventsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -352,7 +352,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -376,7 +376,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -386,7 +386,7 @@ class ExcludedAndroidComponentState {
 public:
   ExcludedAndroidComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ExcludedAndroidComponentState(ExcludedAndroidComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -410,7 +410,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -420,7 +420,7 @@ class ExcludedAndroidIosComponentState {
 public:
   ExcludedAndroidIosComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ExcludedAndroidIosComponentState(ExcludedAndroidIosComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -444,7 +444,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -454,7 +454,7 @@ class ExcludedIosComponentState {
 public:
   ExcludedIosComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ExcludedIosComponentState(ExcludedIosComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -466,7 +466,7 @@ class MultiFileIncludedNativeComponentState {
 public:
   MultiFileIncludedNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   MultiFileIncludedNativeComponentState(MultiFileIncludedNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -490,7 +490,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -500,7 +500,7 @@ class FloatPropNativeComponentState {
 public:
   FloatPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   FloatPropNativeComponentState(FloatPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -524,7 +524,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -534,7 +534,7 @@ class ImagePropNativeComponentState {
 public:
   ImagePropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ImagePropNativeComponentState(ImagePropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -558,7 +558,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -568,7 +568,7 @@ class InsetsPropNativeComponentState {
 public:
   InsetsPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   InsetsPropNativeComponentState(InsetsPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -592,7 +592,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -602,7 +602,7 @@ class Int32EnumPropsNativeComponentState {
 public:
   Int32EnumPropsNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   Int32EnumPropsNativeComponentState(Int32EnumPropsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -626,7 +626,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -636,7 +636,7 @@ class IntegerPropNativeComponentState {
 public:
   IntegerPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   IntegerPropNativeComponentState(IntegerPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -660,7 +660,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -684,7 +684,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -694,7 +694,7 @@ class MixedPropNativeComponentState {
 public:
   MixedPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   MixedPropNativeComponentState(MixedPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -718,7 +718,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -728,7 +728,7 @@ class ImageColorPropNativeComponentState {
 public:
   ImageColorPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ImageColorPropNativeComponentState(ImageColorPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -752,7 +752,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -762,7 +762,7 @@ class NoPropsNoEventsComponentState {
 public:
   NoPropsNoEventsComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   NoPropsNoEventsComponentState(NoPropsNoEventsComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -786,7 +786,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -796,7 +796,7 @@ class ObjectPropsState {
 public:
   ObjectPropsState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   ObjectPropsState(ObjectPropsState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -820,7 +820,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -830,7 +830,7 @@ class PointPropNativeComponentState {
 public:
   PointPropNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   PointPropNativeComponentState(PointPropNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -854,7 +854,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -864,7 +864,7 @@ class StringEnumPropsNativeComponentState {
 public:
   StringEnumPropsNativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   StringEnumPropsNativeComponentState(StringEnumPropsNativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -888,7 +888,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -898,7 +898,7 @@ class StringPropComponentState {
 public:
   StringPropComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   StringPropComponentState(StringPropComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -922,7 +922,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -932,7 +932,7 @@ class MultiFile1NativeComponentState {
 public:
   MultiFile1NativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   MultiFile1NativeComponentState(MultiFile1NativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -944,7 +944,7 @@ class MultiFile2NativeComponentState {
 public:
   MultiFile2NativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   MultiFile2NativeComponentState(MultiFile2NativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -968,7 +968,7 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -978,7 +978,7 @@ class MultiComponent1NativeComponentState {
 public:
   MultiComponent1NativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   MultiComponent1NativeComponentState(MultiComponent1NativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
@@ -990,7 +990,7 @@ class MultiComponent2NativeComponentState {
 public:
   MultiComponent2NativeComponentState() = default;
 
-#ifdef ANDROID
+#ifdef REACT_NATIVE_HAS_SERIALIZABLE_STATE
   MultiComponent2NativeComponentState(MultiComponent2NativeComponentState const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};
