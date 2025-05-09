@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<17fa5e03fe52ed129cf731bba6e9869c>>
+ * @generated SignedSource<<73bd98850713966c32d122c3d3283df9>>
  * @flow strict
  */
 
@@ -87,6 +87,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
+  useAndroidTextLayoutWidthDirectly: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
@@ -325,6 +326,10 @@ export const updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean> = create
  * In Bridgeless mode, use the always available javascript error reporting pipeline.
  */
 export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFlagGetter('useAlwaysAvailableJSErrorHandling', false);
+/**
+ * Trust the width of a text layout we create, instead of re-deriving it from its contents
+ */
+export const useAndroidTextLayoutWidthDirectly: Getter<boolean> = createNativeFlagGetter('useAndroidTextLayoutWidthDirectly', true);
 /**
  * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
  */

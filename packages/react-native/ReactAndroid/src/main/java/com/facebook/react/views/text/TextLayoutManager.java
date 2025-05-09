@@ -787,6 +787,10 @@ public class TextLayoutManager {
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       int calculatedLineCount) {
+    if (ReactNativeFeatureFlags.useAndroidTextLayoutWidthDirectly()) {
+      return layout.getWidth();
+    }
+
     // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
     // text that is wrapping), compute width using the longest line.
     float calculatedWidth = 0;

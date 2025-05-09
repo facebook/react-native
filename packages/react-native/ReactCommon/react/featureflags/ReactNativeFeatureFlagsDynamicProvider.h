@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53e92dc49c9d5b93de14cde2fd319e92>>
+ * @generated SignedSource<<073265fa3290d8277fa48e6c86add604>>
  */
 
 /**
@@ -403,6 +403,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useAlwaysAvailableJSErrorHandling();
+  }
+
+  bool useAndroidTextLayoutWidthDirectly() override {
+    auto value = values_["useAndroidTextLayoutWidthDirectly"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useAndroidTextLayoutWidthDirectly();
   }
 
   bool useFabricInterop() override {
