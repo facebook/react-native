@@ -121,7 +121,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
                 ShadowNode::ListOfShared{singleRootChildNode})}));
 
     // Building an initial view hierarchy.
-    auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
+    auto viewTree = StubViewTree(ShadowView(*emptyRootNode));
     viewTree.mutate(
         calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
