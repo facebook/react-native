@@ -9,9 +9,9 @@
 
 #include "AndroidTextInputEventEmitter.h"
 #include "AndroidTextInputProps.h"
+#include "AndroidTextInputState.h"
 
 #include <react/renderer/attributedstring/AttributedString.h>
-#include <react/renderer/components/textinput/TextInputState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/utils/ContextContainer.h>
 
@@ -26,7 +26,7 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
                                              AndroidTextInputComponentName,
                                              AndroidTextInputProps,
                                              AndroidTextInputEventEmitter,
-                                             TextInputState> {
+                                             AndroidTextInputState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

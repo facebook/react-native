@@ -11,7 +11,9 @@
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
 
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 
@@ -50,13 +52,31 @@ class ParagraphState final {
    */
   std::weak_ptr<const TextLayoutManager> layoutManager;
 
+  /**
+   * A fully prepared representation of a text layout to mount
+   */
+  MeasuredPreparedLayout measuredLayout;
+
   ParagraphState(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
-      const std::weak_ptr<const TextLayoutManager>& layoutManager)
+      std::weak_ptr<const TextLayoutManager> layoutManager,
+      MeasuredPreparedLayout measuredLayout)
       : attributedString(std::move(attributedString)),
         paragraphAttributes(std::move(paragraphAttributes)),
-        layoutManager(layoutManager) {}
+        layoutManager(std::move(layoutManager)),
+        measuredLayout(std::move(measuredLayout)) {}
+
+  ParagraphState(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      std::weak_ptr<const TextLayoutManager> layoutManager)
+      : ParagraphState(
+            std::move(attributedString),
+            std::move(paragraphAttributes),
+            std::move(layoutManager),
+            {}) {}
+
   ParagraphState() = default;
   ParagraphState(
       const ParagraphState& /*previousState*/,
@@ -66,6 +86,7 @@ class ParagraphState final {
 
   folly::dynamic getDynamic() const;
   MapBuffer getMapBuffer() const;
+  jni::local_ref<jobject> getJNIReference() const;
 };
 
 } // namespace facebook::react

@@ -17,7 +17,7 @@ TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& /*paragraphAttributes*/,
     const TextLayoutContext& /*layoutContext*/,
-    const LayoutConstraints& /*layoutConstraints*/) const {
+    const LayoutConstraints& layoutConstraints) const {
   TextMeasurement::Attachments attachments;
   for (const auto& fragment : attributedStringBox.getValue().getFragments()) {
     if (fragment.isAttachment()) {
@@ -25,7 +25,10 @@ TextMeasurement TextLayoutManager::measure(
           TextMeasurement::Attachment{{{0, 0}, {0, 0}}, false});
     }
   }
-  return TextMeasurement{{0, 0}, attachments};
+  return TextMeasurement{
+      {layoutConstraints.minimumSize.width,
+       layoutConstraints.minimumSize.height},
+      attachments};
 }
 
 } // namespace facebook::react
