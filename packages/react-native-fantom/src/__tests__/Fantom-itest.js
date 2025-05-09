@@ -79,16 +79,6 @@ describe('Fantom', () => {
       expect(task).toHaveBeenCalledTimes(1);
     });
 
-    // TODO: fix error handling and make this pass
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('should re-throw errors from the task synchronously', () => {
-      expect(() => {
-        Fantom.runTask(() => {
-          throw new Error('test error');
-        });
-      }).toThrow('test error');
-    });
-
     it('should exhaust the microtask queue synchronously', () => {
       const lastMicrotask = jest.fn();
 
@@ -105,18 +95,6 @@ describe('Fantom', () => {
       expect(lastMicrotask).toHaveBeenCalledTimes(1);
     });
 
-    // TODO: fix error handling and make this pass
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('should re-throw errors from microtasks synchronously', () => {
-      expect(() => {
-        Fantom.runTask(() => {
-          queueMicrotask(() => {
-            throw new Error('test error');
-          });
-        });
-      }).toThrow('test error');
-    });
-
     it('should run async tasks synchronously', () => {
       let completed = false;
 
@@ -128,42 +106,139 @@ describe('Fantom', () => {
       expect(completed).toBe(true);
     });
 
-    // TODO: when error handling is fixed, this should verify using `toThrow`
-    it('should throw when running a task inside another task', () => {
-      let threw = false;
+    describe('error handling', () => {
+      // TODO: T223804378 when error handling is fixed, this should verify using `toThrow`
+      it('should throw when running a task inside another task', () => {
+        let threw = false;
 
-      Fantom.runTask(() => {
-        // TODO replace with expect(() => { ... }).toThrow() when error handling is fixed
-        try {
-          Fantom.runTask(() => {});
-        } catch {
-          threw = true;
-        }
-      });
-      expect(threw).toBe(true);
-
-      threw = false;
-
-      Fantom.runTask(() => {
-        queueMicrotask(() => {
+        Fantom.runTask(() => {
+          // TODO replace with expect(() => { ... }).toThrow() when error handling is fixed
           try {
             Fantom.runTask(() => {});
           } catch {
             threw = true;
           }
         });
+        expect(threw).toBe(true);
+
+        threw = false;
+
+        Fantom.runTask(() => {
+          queueMicrotask(() => {
+            try {
+              Fantom.runTask(() => {});
+            } catch {
+              threw = true;
+            }
+          });
+        });
+        expect(threw).toBe(true);
       });
-      expect(threw).toBe(true);
-    });
 
-    it('should error when any scheduled tasks remain after the test', () => {
-      Fantom.scheduleTask(() => {});
-      expect(() => NativeFantom.validateEmptyMessageQueue()).toThrow(
-        'Exception in HostFunction: MessageQueue is not empty',
-      );
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should re-throw errors from the task synchronously', () => {
+        expect(() => {
+          Fantom.runTask(() => {
+            throw new Error('test error');
+          });
+        }).toThrow('test error');
+      });
 
-      // Flushing queue to avoid this test failing
-      Fantom.runWorkLoop();
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should re-throw errors from microtasks synchronously', () => {
+        expect(() => {
+          Fantom.runTask(() => {
+            queueMicrotask(() => {
+              throw new Error('test error');
+            });
+          });
+        }).toThrow('test error');
+      });
+
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should not run subsequent tasks after an error in a task', () => {
+        Fantom.scheduleTask(() => {
+          throw new Error('test error');
+        });
+
+        const subsequentTask = jest.fn();
+        Fantom.scheduleTask(subsequentTask);
+
+        try {
+          Fantom.runWorkLoop();
+        } catch {}
+
+        expect(subsequentTask).not.toHaveBeenCalled();
+      });
+
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should not run subsequent tasks after an error in a microtask', () => {
+        Fantom.scheduleTask(() => {
+          queueMicrotask(() => {
+            throw new Error('test error');
+          });
+        });
+
+        const subsequentTask = jest.fn();
+        Fantom.scheduleTask(subsequentTask);
+
+        try {
+          Fantom.runWorkLoop();
+        } catch {}
+
+        expect(subsequentTask).not.toHaveBeenCalled();
+      });
+
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should not run subsequent microtasks after an error in a task', () => {
+        const subsequentMicrotask = jest.fn();
+
+        Fantom.runTask(() => {
+          queueMicrotask(subsequentMicrotask);
+
+          throw new Error('test error');
+        });
+
+        try {
+          Fantom.runWorkLoop();
+        } catch {}
+
+        expect(subsequentMicrotask).not.toHaveBeenCalled();
+      });
+
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should not run subsequent microtasks after an error in a microtask', () => {
+        const subsequentMicrotask = jest.fn();
+
+        Fantom.runTask(() => {
+          queueMicrotask(() => {
+            throw new Error('test error');
+          });
+          queueMicrotask(subsequentMicrotask);
+        });
+
+        try {
+          Fantom.runWorkLoop();
+        } catch {}
+
+        expect(subsequentMicrotask).not.toHaveBeenCalled();
+      });
+
+      it('should error when any scheduled tasks remain after the test', () => {
+        Fantom.scheduleTask(() => {});
+        expect(() => NativeFantom.validateEmptyMessageQueue()).toThrow(
+          'Exception in HostFunction: MessageQueue is not empty',
+        );
+
+        // Flushing queue to avoid this test failing
+        Fantom.runWorkLoop();
+      });
     });
   });
 
