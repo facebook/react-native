@@ -41,19 +41,19 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   }
 
   protected final void emitOnPress() {
-    mEventEmitterCallback.invoke("onPress");
+    getEventEmitterCallback().invoke("onPress");
   }
 
   protected final void emitOnClick(String value) {
-    mEventEmitterCallback.invoke("onClick", value);
+    getEventEmitterCallback().invoke("onClick", value);
   }
 
   protected final void emitOnChange(ReadableMap value) {
-    mEventEmitterCallback.invoke("onChange", value);
+    getEventEmitterCallback().invoke("onChange", value);
   }
 
   protected void emitOnSubmit(ReadableArray value) {
-    mEventEmitterCallback.invoke("onSubmit", value);
+    getEventEmitterCallback().invoke("onSubmit", value);
   }
 
   protected abstract Map<String, Object> getTypedExportedConstants();
