@@ -42,10 +42,8 @@ struct Bridging<PerformanceEntryType> {
     return static_cast<PerformanceEntryType>(value.asNumber());
   }
 
-  static jsi::Value toJs(
-      jsi::Runtime& /*rt*/,
-      const PerformanceEntryType& value) {
-    return {static_cast<int>(value)};
+  static int toJs(jsi::Runtime& /*rt*/, const PerformanceEntryType& value) {
+    return static_cast<int>(value);
   }
 };
 

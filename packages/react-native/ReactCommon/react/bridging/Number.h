@@ -17,7 +17,7 @@ struct Bridging<double> {
     return value.asNumber();
   }
 
-  static jsi::Value toJs(jsi::Runtime&, double value) {
+  static double toJs(jsi::Runtime& /*unused*/, double value) {
     return value;
   }
 };
@@ -28,7 +28,7 @@ struct Bridging<float> {
     return (float)value.asNumber();
   }
 
-  static jsi::Value toJs(jsi::Runtime&, float value) {
+  static double toJs(jsi::Runtime& /*unused*/, float value) {
     return (double)value;
   }
 };
@@ -39,7 +39,7 @@ struct Bridging<int32_t> {
     return (int32_t)value.asNumber();
   }
 
-  static jsi::Value toJs(jsi::Runtime&, int32_t value) {
+  static int32_t toJs(jsi::Runtime& /*unused*/, int32_t value) {
     return value;
   }
 };
@@ -50,7 +50,7 @@ struct Bridging<uint32_t> {
     return (uint32_t)value.asNumber();
   }
 
-  static jsi::Value toJs(jsi::Runtime&, uint32_t value) {
+  static double toJs(jsi::Runtime& /*unused*/, uint32_t value) {
     return (double)value;
   }
 };
