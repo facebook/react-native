@@ -563,58 +563,92 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime
 {
-  NSMutableDictionary<NSString *, id> *errorData = [NSMutableDictionary new];
-  errorData[@"message"] = @(error.message.c_str());
-  if (error.originalMessage) {
-    errorData[@"originalMessage"] = @(error.originalMessage->c_str());
-  }
-  if (error.name) {
-    errorData[@"name"] = @(error.name->c_str());
-  }
-  if (error.componentStack) {
-    errorData[@"componentStack"] = @(error.componentStack->c_str());
-  }
+ NSMutableDictionary<NSString *, id> *errorData = [NSMutableDictionary new];
+ errorData[@"message"] = @(error.message.c_str());
 
-  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const JsErrorHandler::ProcessedError::StackFrame &frame : error.stack) {
-    NSMutableDictionary<NSString *, id> *stackFrame = [NSMutableDictionary new];
-    if (frame.file) {
-      stackFrame[@"file"] = @(frame.file->c_str());
-    }
-    stackFrame[@"methodName"] = @(frame.methodName.c_str());
-    if (frame.lineNumber) {
-      stackFrame[@"lineNumber"] = @(*frame.lineNumber);
-    }
-    if (frame.column) {
-      stackFrame[@"column"] = @(*frame.column);
-    }
-    [stack addObject:stackFrame];
-  }
 
-  errorData[@"stack"] = stack;
-  errorData[@"id"] = @(error.id);
-  errorData[@"isFatal"] = @(error.isFatal);
+ if (error.originalMessage) {
+   errorData[@"originalMessage"] = @(error.originalMessage->c_str());
+ }
+ if (error.name) {
+   errorData[@"name"] = @(error.name->c_str());
+ }
+ if (error.componentStack) {
+   errorData[@"componentStack"] = @(error.componentStack->c_str());
+ }
 
-  id extraData =
-      TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsi::Value(runtime, error.extraData), nullptr);
-  if (extraData) {
-    errorData[@"extraData"] = extraData;
-  }
 
-  if (![_delegate instance:self
-          didReceiveJSErrorStack:errorData[@"stack"]
-                         message:errorData[@"message"]
-                 originalMessage:errorData[@"originalMessage"]
-                            name:errorData[@"name"]
-                  componentStack:errorData[@"componentStack"]
-                     exceptionId:error.id
-                         isFatal:[errorData[@"isFatal"] boolValue]
-                       extraData:errorData[@"extraData"]]) {
-    JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
-    id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
-    [exceptionsManager reportException:jsErrorData];
-  }
+ NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
+ for (const JsErrorHandler::ProcessedError::StackFrame &frame : error.stack) {
+   NSMutableDictionary<NSString *, id> *stackFrame = [NSMutableDictionary new];
+   if (frame.file) {
+     stackFrame[@"file"] = @(frame.file->c_str());
+   }
+   stackFrame[@"methodName"] = @(frame.methodName.c_str());
+   if (frame.lineNumber) {
+     stackFrame[@"lineNumber"] = @(*frame.lineNumber);
+   }
+   if (frame.column) {
+     stackFrame[@"column"] = @(*frame.column);
+   }
+   [stack addObject:stackFrame];
+ }
+
+
+ errorData[@"stack"] = stack;
+ errorData[@"id"] = @(error.id);
+ errorData[@"isFatal"] = @(error.isFatal); // BOOL to NSNumber
+
+
+ id extraData = TurboModuleConvertUtils::convertJSIValueToObjCObject(
+     runtime,
+     jsi::Value(runtime, error.extraData),
+     nullptr);
+ if (extraData) {
+   errorData[@"extraData"] = extraData;
+ }
+
+
+ // Handle deprecated method ONLY in debug, with correct BOOL cast
+#if DEBUG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+
+ if ([_delegate respondsToSelector:@selector(instance:didReceiveJSErrorStack:message:originalMessage:name:componentStack:exceptionId:isFatal:extraData:)]) {
+   NSNumber *isFatalNumber = errorData[@"isFatal"];
+   BOOL isFatal = [isFatalNumber boolValue];  // Explicit cast for release builds
+
+
+   BOOL handled = [_delegate instance:self
+                didReceiveJSErrorStack:errorData[@"stack"]
+                               message:errorData[@"message"]
+                       originalMessage:errorData[@"originalMessage"]
+                                  name:errorData[@"name"]
+                        componentStack:errorData[@"componentStack"]
+                           exceptionId:error.id
+                               isFatal:isFatal
+                             extraData:errorData[@"extraData"]];
+   if (handled) {
+     return;
+   }
+ }
+
+
+#pragma clang diagnostic pop
+#endif
+
+
+ // Fallback to ExceptionsManager
+ JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
+ id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
+ if (exceptionsManager) {
+   [exceptionsManager reportException:jsErrorData];
+ } else {
+   NSLog(@"[React] Failed to report JS error: %@", errorData);
+ }
 }
+
 
 - (void)_handleMemoryWarning
 {
