@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger.Categories.SOFT_ASSERT
  * opinion on when these assertions should be used as opposed to assertions that might throw
  * AssertionError Throwables that will cause the app to hard crash.
  */
-public object SoftAssertions {
+internal object SoftAssertions {
 
   /**
    * Throw [AssertionException] with a given message. Use this method surrounded with `if` block
@@ -24,7 +24,7 @@ public object SoftAssertions {
    * throw.
    */
   @JvmStatic
-  public fun assertUnreachable(message: String): Unit {
+  fun assertUnreachable(message: String): Unit {
     ReactSoftExceptionLogger.logSoftException(SOFT_ASSERTIONS, AssertionException(message))
   }
 
@@ -34,7 +34,7 @@ public object SoftAssertions {
    * throw.
    */
   @JvmStatic
-  public fun assertCondition(condition: Boolean, message: String): Unit {
+  fun assertCondition(condition: Boolean, message: String): Unit {
     if (!condition) {
       ReactSoftExceptionLogger.logSoftException(SOFT_ASSERTIONS, AssertionException(message))
     }
@@ -45,7 +45,7 @@ public object SoftAssertions {
    * an assertion with ReactSoftExceptionLogger, which decides whether or not to actually throw.
    */
   @JvmStatic
-  public fun <T> assertNotNull(instance: T?): T? {
+  fun <T> assertNotNull(instance: T?): T? {
     if (instance == null) {
       ReactSoftExceptionLogger.logSoftException(
           SOFT_ASSERTIONS, AssertionException("Expected object to not be null!"))
