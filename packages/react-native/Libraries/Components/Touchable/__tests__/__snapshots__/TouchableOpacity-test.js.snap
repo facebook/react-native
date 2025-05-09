@@ -8,6 +8,7 @@ exports[`TouchableOpacity renders correctly 1`] = `
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -49,6 +50,7 @@ exports[`TouchableOpacity renders in disabled state when a disabled prop is pass
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -90,6 +92,7 @@ exports[`TouchableOpacity renders in disabled state when a key disabled in acces
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }

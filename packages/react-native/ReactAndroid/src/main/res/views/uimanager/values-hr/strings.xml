@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Traka s alatima</string>
     <string name="summary_description" gender="unknown">Sažetak</string>
     <string name="state_busy_description" gender="unknown">zauzeto</string>
+    <string name="state_invalid_description" gender="unknown">nevažeći</string>
     <string name="state_expanded_description" gender="unknown">prošireno</string>
     <string name="state_collapsed_description" gender="unknown">sažeto</string>
     <string name="state_unselected_description" gender="unknown">poništen odabir</string>

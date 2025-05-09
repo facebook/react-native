@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Панель инструментов</string>
     <string name="summary_description" gender="unknown">Сводка</string>
     <string name="state_busy_description" gender="unknown">занято</string>
+    <string name="state_invalid_description" gender="unknown">недействительно</string>
     <string name="state_expanded_description" gender="unknown">развернуто</string>
     <string name="state_collapsed_description" gender="unknown">свернуто</string>
     <string name="state_unselected_description" gender="unknown">не выбрано</string>

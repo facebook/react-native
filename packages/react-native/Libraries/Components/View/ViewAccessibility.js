@@ -186,6 +186,10 @@ export type AccessibilityState = {
    *  When present, informs accessible tools the element is expanded or collapsed
    */
   expanded?: ?boolean,
+  /**
+   *  When present, informs accessible tools the element is invalid
+   */
+  invalid?: ?boolean,
   ...
 };
 
@@ -421,6 +425,7 @@ export type AccessibilityProps = $ReadOnly<{
   'aria-checked'?: ?boolean | 'mixed',
   'aria-disabled'?: ?boolean,
   'aria-expanded'?: ?boolean,
+  'aria-invalid'?: ?boolean,
   'aria-selected'?: ?boolean,
   /** A value indicating whether the accessibility elements contained within
    * this accessibility element are hidden.

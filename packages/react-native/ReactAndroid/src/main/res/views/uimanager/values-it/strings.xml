@@ -18,6 +18,7 @@
     <string name="toolbar_description" gender="unknown">Barra degli strumenti</string>
     <string name="summary_description" gender="unknown">Riepilogo</string>
     <string name="state_busy_description" gender="unknown">occupato</string>
+    <string name="state_invalid_description" gender="unknown">non valido/a</string>
     <string name="state_expanded_description" gender="unknown">aperto</string>
     <string name="state_collapsed_description" gender="unknown">chiuso</string>
     <string name="state_unselected_description" gender="unknown">non selezionato</string>

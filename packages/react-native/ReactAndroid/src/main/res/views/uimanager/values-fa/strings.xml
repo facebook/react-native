@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">نوار ابزار</string>
     <string name="summary_description" gender="unknown">خلاصه</string>
     <string name="state_busy_description" gender="unknown">مشغول</string>
+    <string name="state_invalid_description" gender="unknown">نامعتبر</string>
     <string name="state_expanded_description" gender="unknown">بزرگ‌شده</string>
     <string name="state_collapsed_description" gender="unknown">کوچک‌شده</string>
     <string name="state_unselected_description" gender="unknown">لغو انتخاب شد</string>

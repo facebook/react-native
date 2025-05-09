@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">ടൂൾ ബാർ</string>
     <string name="summary_description" gender="unknown">സംഗ്രഹം</string>
     <string name="state_busy_description" gender="unknown">തിരക്കിലാണ്</string>
+    <string name="state_invalid_description" gender="unknown">അസാധുവായ</string>
     <string name="state_expanded_description" gender="unknown">വിപുലീകരിച്ചു</string>
     <string name="state_collapsed_description" gender="unknown">ചുരുക്കി</string>
     <string name="state_unselected_description" gender="unknown">തിരഞ്ഞെടുത്തത് മാറ്റി</string>

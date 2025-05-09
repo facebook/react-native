@@ -21,6 +21,7 @@
     <string name="toolbar_description" gender="unknown">ხელსაწყოების ზოლი</string>
     <string name="summary_description" gender="unknown">შეჯამება</string>
     <string name="state_busy_description" gender="unknown">დაკავებული</string>
+    <string name="state_invalid_description" gender="unknown">არასწორი</string>
     <string name="state_expanded_description" gender="unknown">გაშლილი</string>
     <string name="state_collapsed_description" gender="unknown">აკეცილი</string>
     <string name="state_unselected_description" gender="unknown">აურჩეველი</string>

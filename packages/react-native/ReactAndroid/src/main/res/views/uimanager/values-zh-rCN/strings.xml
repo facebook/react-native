@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">工具栏</string>
     <string name="summary_description" gender="unknown">摘要</string>
     <string name="state_busy_description" gender="unknown">忙碌中</string>
+    <string name="state_invalid_description" gender="unknown">无效</string>
     <string name="state_expanded_description" gender="unknown">已展开</string>
     <string name="state_collapsed_description" gender="unknown">已收起</string>
     <string name="state_unselected_description" gender="unknown">未选中</string>

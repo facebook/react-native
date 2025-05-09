@@ -18,6 +18,7 @@ exports[`Image should render as <RCTImageView> when not mocked 1`] = `
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }

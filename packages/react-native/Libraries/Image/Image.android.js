@@ -193,6 +193,7 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
         checked: props['aria-checked'] ?? props.accessibilityState?.checked,
         disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
         expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
+        invalid: props['aria-invalid'] ?? props.accessibilityState?.invalid,
         selected: props['aria-selected'] ?? props.accessibilityState?.selected,
       },
     };

@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Shiriti i mjeteve</string>
     <string name="summary_description" gender="unknown">Përmbledhja</string>
     <string name="state_busy_description" gender="unknown">I zënë</string>
+    <string name="state_invalid_description" gender="unknown">I pavlefshëm</string>
     <string name="state_expanded_description" gender="unknown">zgjeruar</string>
     <string name="state_collapsed_description" gender="unknown">palosur</string>
     <string name="state_unselected_description" gender="unknown">i pazgjedhur</string>

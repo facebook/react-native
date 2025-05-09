@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">ਟੂਲ ਬਾਰ</string>
     <string name="summary_description" gender="unknown">ਸਾਰ</string>
     <string name="state_busy_description" gender="unknown">ਵਿਅਸਤ</string>
+    <string name="state_invalid_description" gender="unknown">ਅਵੈਧ</string>
     <string name="state_expanded_description" gender="unknown">ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ</string>
     <string name="state_collapsed_description" gender="unknown">ਸਮੇਟਿਆ ਗਿਆ</string>
     <string name="state_unselected_description" gender="unknown">ਚੋਣ ਹਟਾਈ ਗਈ</string>

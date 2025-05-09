@@ -19,6 +19,7 @@
     <string name="toolbar_description" gender="unknown">Værktøjslinje</string>
     <string name="summary_description" gender="unknown">Oversigt</string>
     <string name="state_busy_description" gender="unknown">optaget</string>
+    <string name="state_invalid_description" gender="unknown">ugyldigt</string>
     <string name="state_expanded_description" gender="unknown">udvidet</string>
     <string name="state_collapsed_description" gender="unknown">skjult</string>
     <string name="state_unselected_description" gender="unknown">fravalgt</string>

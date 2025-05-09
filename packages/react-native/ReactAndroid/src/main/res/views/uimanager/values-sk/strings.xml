@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Panel s nástrojmi</string>
     <string name="summary_description" gender="unknown">Súhrn</string>
     <string name="state_busy_description" gender="unknown">obsadené</string>
+    <string name="state_invalid_description" gender="unknown">neplatné</string>
     <string name="state_expanded_description" gender="unknown">rozbalené</string>
     <string name="state_collapsed_description" gender="unknown">zbalené</string>
     <string name="state_unselected_description" gender="unknown">nevybrané</string>

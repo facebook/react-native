@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">도구 표시줄</string>
     <string name="summary_description" gender="unknown">요약</string>
     <string name="state_busy_description" gender="unknown">처리 중</string>
+    <string name="state_invalid_description" gender="unknown">유효하지 않음</string>
     <string name="state_expanded_description" gender="unknown">확대됨</string>
     <string name="state_collapsed_description" gender="unknown">숨겨짐</string>
     <string name="state_unselected_description" gender="unknown">선택되지 않음</string>

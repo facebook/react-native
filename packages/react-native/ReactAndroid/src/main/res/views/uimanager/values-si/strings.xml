@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">මෙවලම් තීරුව</string>
     <string name="summary_description" gender="unknown">සාරාංශය</string>
     <string name="state_busy_description" gender="unknown">කාර්යබහුලයි</string>
+    <string name="state_invalid_description" gender="unknown">අවලංගු</string>
     <string name="state_expanded_description" gender="unknown">විහිදුවන ලදි</string>
     <string name="state_collapsed_description" gender="unknown">හකුළන ලදී</string>
     <string name="state_unselected_description" gender="unknown">තේරීම ඉවත් කරන ලද</string>

@@ -325,6 +325,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
           RCTLocalizedString("collapsed", "a menu, dialog, accordian panel, or other widget which is collapsed"),
       @"mixed" :
           RCTLocalizedString("mixed", "a checkbox, radio button, or other widget which is both checked and unchecked"),
+      @"invalid" :
+          RCTLocalizedString("invalid", "an input field which has failed validation or does not conform to the expected format"),
     };
   });
 
@@ -368,6 +370,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
     if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
       [valueComponents addObject:rolesAndStatesDescription[@"busy"]];
+    }
+    if ([state isEqualToString:@"invalid"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      [valueComponents addObject:rolesAndStatesDescription[@"invalid"]];
     }
   }
 

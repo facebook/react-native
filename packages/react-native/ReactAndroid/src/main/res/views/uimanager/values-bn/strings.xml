@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">টুল বার</string>
     <string name="summary_description" gender="unknown">সারসংক্ষেপ</string>
     <string name="state_busy_description" gender="unknown">ব্যস্ত</string>
+    <string name="state_invalid_description" gender="unknown">অবৈধ</string>
     <string name="state_expanded_description" gender="unknown">বাড়ানো হয়েছে</string>
     <string name="state_collapsed_description" gender="unknown">ছোট করা হয়েছে</string>
     <string name="state_unselected_description" gender="unknown">আনসিলেক্ট করা হয়েছে</string>

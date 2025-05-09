@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">ٹول بار</string>
     <string name="summary_description" gender="unknown">خلاصہ</string>
     <string name="state_busy_description" gender="unknown">مصروف</string>
+    <string name="state_invalid_description" gender="unknown">غیر معتبر</string>
     <string name="state_expanded_description" gender="unknown">توسیع کیا گیا</string>
     <string name="state_collapsed_description" gender="unknown">سکیڑا گیا</string>
     <string name="state_unselected_description" gender="unknown">غیر منتخب کردہ</string>

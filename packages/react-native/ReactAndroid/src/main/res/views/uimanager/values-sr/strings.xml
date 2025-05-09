@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Трака са алаткама</string>
     <string name="summary_description" gender="unknown">Резиме</string>
     <string name="state_busy_description" gender="unknown">заузето</string>
+    <string name="state_invalid_description" gender="unknown">неважећи</string>
     <string name="state_expanded_description" gender="unknown">проширено</string>
     <string name="state_collapsed_description" gender="unknown">скупљено</string>
     <string name="state_unselected_description" gender="unknown">избор опозван</string>

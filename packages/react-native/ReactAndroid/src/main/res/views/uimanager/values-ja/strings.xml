@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">ツールバー</string>
     <string name="summary_description" gender="unknown">概要</string>
     <string name="state_busy_description" gender="unknown">作業中</string>
+    <string name="state_invalid_description" gender="unknown">無効</string>
     <string name="state_expanded_description" gender="unknown">展開中</string>
     <string name="state_collapsed_description" gender="unknown">縮小中</string>
     <string name="state_unselected_description" gender="unknown">未選択</string>

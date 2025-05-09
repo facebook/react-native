@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">टूल बार</string>
     <string name="summary_description" gender="unknown">सारांश</string>
     <string name="state_busy_description" gender="unknown">व्यस्त</string>
+    <string name="state_invalid_description" gender="unknown">अवैध</string>
     <string name="state_expanded_description" gender="unknown">बड़ा किया गया</string>
     <string name="state_collapsed_description" gender="unknown">छोटा किया गया</string>
     <string name="state_unselected_description" gender="unknown">नहीं चुने गए</string>

@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Upau wa Zana</string>
     <string name="summary_description" gender="unknown">Muhtasari</string>
     <string name="state_busy_description" gender="unknown">shughulini</string>
+    <string name="state_invalid_description" gender="unknown">batili</string>
     <string name="state_expanded_description" gender="unknown">imepanuliwa</string>
     <string name="state_collapsed_description" gender="unknown">imekunjwa</string>
     <string name="state_unselected_description" gender="unknown">haijateuliwa</string>

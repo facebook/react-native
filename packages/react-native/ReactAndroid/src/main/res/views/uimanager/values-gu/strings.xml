@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">ટૂલ બાર</string>
     <string name="summary_description" gender="unknown">સારાંશ</string>
     <string name="state_busy_description" gender="unknown">વ્યસ્ત</string>
+    <string name="state_invalid_description" gender="unknown">અમાન</string>
     <string name="state_expanded_description" gender="unknown">વિસ્તૃત</string>
     <string name="state_collapsed_description" gender="unknown">નાનું</string>
     <string name="state_unselected_description" gender="unknown">પસંદગીમાંથી કાઢી નાખ્યું</string>

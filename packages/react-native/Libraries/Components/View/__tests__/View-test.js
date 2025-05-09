@@ -116,6 +116,7 @@ describe('View compat with web', () => {
             "checked": true,
             "disabled": true,
             "expanded": true,
+            "invalid": true,
             "selected": true,
           }
         }
@@ -140,7 +141,6 @@ describe('View compat with web', () => {
         aria-errormessage="errormessage"
         aria-flowto="flowto"
         aria-haspopup={true}
-        aria-invalid={true}
         aria-keyshortcuts="Cmd+S"
         aria-level={3}
         aria-modal={true}
