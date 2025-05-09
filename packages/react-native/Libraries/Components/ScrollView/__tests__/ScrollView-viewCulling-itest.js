@@ -12,7 +12,7 @@
  * @fantom_flags enableFixForParentTagDuringReparenting:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore.js';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 

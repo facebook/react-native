@@ -20,7 +20,6 @@ import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes
 import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import {createRootTag} from 'react-native/Libraries/ReactNative/RootTag';
-import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/testing/fantom/specs/NativeFantom';
@@ -89,6 +88,10 @@ class Root {
       this.#hasRendered = true;
     }
 
+    // Require Fabric lazily to prevent it from running InitializeCore before the test
+    // has a change to do its environment setup.
+    const ReactFabric =
+      require('react-native/Libraries/Renderer/shims/ReactFabric').default;
     ReactFabric.render(element, this.#surfaceId, null, true);
 
     if (this.#document == null) {
