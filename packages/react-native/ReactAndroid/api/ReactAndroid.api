@@ -1457,12 +1457,6 @@ public final class com/facebook/react/bridge/ReadableType : java/lang/Enum {
 	public static fun values ()[Lcom/facebook/react/bridge/ReadableType;
 }
 
-public final class com/facebook/react/bridge/RetryableMountingLayerException : java/lang/RuntimeException {
-	public fun <init> (Ljava/lang/String;)V
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public fun <init> (Ljava/lang/Throwable;)V
-}
-
 public final class com/facebook/react/bridge/RuntimeExecutor : com/facebook/jni/HybridClassBase {
 }
 
