@@ -847,7 +847,7 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
   if (!widthInBounds || !heightInBounds) {
     LOG(FATAL) << shadowNode.getComponentDescriptor().getComponentName()
-               << " returned in invalid measurement. Min: ["
+               << " returned an invalid measurement. Min: ["
                << minimumSize.width << "," << minimumSize.height << "] Max: ["
                << maximumSize.width << "," << maximumSize.height
                << "] Actual: [" << size.width << "," << size.height << "]";
