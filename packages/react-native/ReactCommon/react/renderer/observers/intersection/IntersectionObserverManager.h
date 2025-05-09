@@ -22,14 +22,14 @@ class IntersectionObserverManager final : public UIManagerMountHook {
 
   void observe(
       IntersectionObserverObserverId intersectionObserverId,
-      const ShadowNode::Shared& shadowNode,
+      const ShadowNodeFamily::Shared& shadowNode,
       std::vector<Float> thresholds,
       std::optional<std::vector<Float>> rootThresholds,
       const UIManager& uiManager);
 
   void unobserve(
       IntersectionObserverObserverId intersectionObserverId,
-      const ShadowNode& shadowNode);
+      const ShadowNodeFamily::Shared& shadowNode);
 
   void connect(
       UIManager& uiManager,
