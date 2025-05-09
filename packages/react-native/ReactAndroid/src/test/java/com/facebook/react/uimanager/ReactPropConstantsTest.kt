@@ -22,6 +22,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 /** Verifies that prop constants are generated properly based on `ReactProp` annotation. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @RunWith(RobolectricTestRunner::class)
 class ReactPropConstantsTest {
   @Suppress("UNUSED_PARAMETER")
