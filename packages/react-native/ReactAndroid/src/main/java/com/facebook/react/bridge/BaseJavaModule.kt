@@ -16,7 +16,6 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
-import java.util.Map
 
 /**
  * Base class for Catalyst native modules whose implementations are written in Java. Default
@@ -51,13 +50,14 @@ import java.util.Map
 public abstract class BaseJavaModule(
   private val reactApplicationContext: ReactApplicationContext? = null
 ) : NativeModule {
+  @DoNotStrip
   protected var eventEmitterCallback: CxxCallbackImpl? = null
 
   /**
    * @return a map of constants this module exports to JS. Supports JSON types.
    */
-  @DeprecatedInNewArchitecture()
-  public fun getConstants(): Map<String, Any>? = null
+  @DeprecatedInNewArchitecture
+  public open fun getConstants(): Map<String, Any>? = null
 
   override fun initialize() {
     // do nothing
@@ -73,7 +73,7 @@ public abstract class BaseJavaModule(
 
   // TODO: Replace with property getter
   /**
-   * Subclasses can use this function to access {@link ReactApplicationContext} passed as a
+   * Subclasses can use this method to access {@link ReactApplicationContext} passed as a
    * constructor.
    */
   protected fun getReactApplicationContext(): ReactApplicationContext =
@@ -113,11 +113,6 @@ public abstract class BaseJavaModule(
       )
     }
     return null
-  }
-
-  @DoNotStrip
-  protected fun setEventEmitterCallback(eventEmitterCallback: CxxCallbackImpl) {
-    this.eventEmitterCallback = eventEmitterCallback
   }
 
   public companion object {
