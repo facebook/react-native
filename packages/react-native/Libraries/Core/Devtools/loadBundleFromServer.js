@@ -20,6 +20,34 @@ let pendingRequests = 0;
 
 const cachedPromisesByUrl = new Map<string, Promise<void>>();
 
+export class LoadBundleFromServerError extends Error {
+  url: string;
+  isTimeout: boolean;
+  constructor(
+    message: string,
+    url: string,
+    isTimeout: boolean,
+    options?: {cause: mixed, ...},
+  ): void {
+    super(message, options);
+    this.url = url;
+    this.isTimeout = isTimeout;
+    this.name = 'LoadBundleFromServerError';
+  }
+}
+
+export class LoadBundleFromServerRequestError extends LoadBundleFromServerError {
+  constructor(
+    message: string,
+    url: string,
+    isTimeout: boolean,
+    options?: {cause: mixed, ...},
+  ): void {
+    super(message, url, isTimeout, options);
+    this.name = 'LoadBundleFromServerRequestError';
+  }
+}
+
 function asyncRequest(
   url: string,
 ): Promise<{body: string, headers: {[string]: string}}> {
@@ -62,10 +90,19 @@ function asyncRequest(
       );
       completeListener = Networking.addListener(
         'didCompleteNetworkResponse',
-        ([requestId, error]) => {
+        ([requestId, errorMessage, isTimeout]) => {
           if (requestId === id) {
-            if (error) {
-              reject(error);
+            if (errorMessage) {
+              reject(
+                new LoadBundleFromServerRequestError(
+                  'Could not load bundle',
+                  url,
+                  isTimeout,
+                  {
+                    cause: errorMessage,
+                  },
+                ),
+              );
             } else {
               //$FlowFixMe[incompatible-call]
               resolve({body: responseText, headers});
@@ -122,9 +159,15 @@ export default function loadBundleFromServer(
         headers['Content-Type'].indexOf('application/json') >= 0
       ) {
         // Errors are returned as JSON.
-        throw new Error(
-          JSON.parse(body).message ||
-            `Unknown error fetching '${bundlePathAndQuery}'`,
+        throw new LoadBundleFromServerError(
+          'Could not load bundle',
+          bundlePathAndQuery,
+          false, // isTimeout
+          {
+            cause:
+              JSON.parse(body).message ||
+              `Unknown error fetching '${bundlePathAndQuery}'`,
+          },
         );
       }
 

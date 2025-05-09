@@ -62,7 +62,7 @@ jest.mock('../../../Network/RCTNetworking', () => ({
       if (name === 'didReceiveNetworkData') {
         setImmediate(() => fn([1, mockDataResponse]));
       } else if (name === 'didCompleteNetworkResponse') {
-        setImmediate(() => fn([1, null]));
+        setImmediate(() => fn([1, mockRequestError]));
       } else if (name === 'didReceiveNetworkResponse') {
         setImmediate(() => fn([1, null, mockHeaders]));
       }
@@ -72,9 +72,14 @@ jest.mock('../../../Network/RCTNetworking', () => ({
 }));
 
 let loadBundleFromServer: (bundlePathAndQuery: string) => Promise<void>;
+const {
+  LoadBundleFromServerError,
+  LoadBundleFromServerRequestError,
+} = require('../loadBundleFromServer');
 
 let mockHeaders: {'Content-Type': string};
 let mockDataResponse;
+let mockRequestError = null;
 
 beforeEach(() => {
   jest.resetModules();
@@ -85,15 +90,35 @@ beforeEach(() => {
 test('loadBundleFromServer will throw for JSON responses', async () => {
   mockHeaders = {'Content-Type': 'application/json'};
   mockDataResponse = JSON.stringify({message: 'Error thrown from Metro'});
+  mockRequestError = null;
 
-  await expect(
-    loadBundleFromServer('/Fail.bundle?platform=ios'),
-  ).rejects.toThrow('Error thrown from Metro');
+  try {
+    await loadBundleFromServer('/Fail.bundle?platform=ios');
+  } catch (e) {
+    expect(e).toBeInstanceOf(LoadBundleFromServerError);
+    expect(e.message).toBe('Could not load bundle');
+    expect(e.cause).toBe('Error thrown from Metro');
+  }
+});
+
+test('loadBundleFromServer will throw LoadBundleFromServerError for request errors', async () => {
+  mockHeaders = {'Content-Type': 'application/json'};
+  mockDataResponse = '';
+  mockRequestError = 'Some error';
+
+  try {
+    await loadBundleFromServer('/Fail.bundle?platform=ios');
+  } catch (e) {
+    expect(e).toBeInstanceOf(LoadBundleFromServerRequestError);
+    expect(e.message).toBe('Could not load bundle');
+    expect(e.cause).toBe('Some error');
+  }
 });
 
 test('loadBundleFromServer will request a bundle if import bundles are available', async () => {
   mockDataResponse = '"code";';
   mockHeaders = {'Content-Type': 'application/javascript'};
+  mockRequestError = null;
 
   await loadBundleFromServer(
     '/Banana.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
@@ -138,6 +163,7 @@ test('loadBundleFromServer will request a bundle if import bundles are available
 test('shows and hides the loading view around a request', async () => {
   mockDataResponse = '"code";';
   mockHeaders = {'Content-Type': 'application/javascript'};
+  mockRequestError = null;
 
   const promise = loadBundleFromServer(
     '/Banana.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
@@ -157,6 +183,7 @@ test('shows and hides the loading view around a request', async () => {
 test('shows and hides the loading view around concurrent requests', async () => {
   mockDataResponse = '"code";';
   mockHeaders = {'Content-Type': 'application/javascript'};
+  mockRequestError = null;
 
   const promise1 = loadBundleFromServer(
     '/Banana.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
@@ -178,6 +205,7 @@ test('shows and hides the loading view around concurrent requests', async () => 
 test('loadBundleFromServer does not cache errors', async () => {
   mockHeaders = {'Content-Type': 'application/json'};
   mockDataResponse = JSON.stringify({message: 'Error thrown from Metro'});
+  mockRequestError = null;
 
   await expect(
     loadBundleFromServer('/Fail.bundle?platform=ios'),
@@ -185,6 +213,7 @@ test('loadBundleFromServer does not cache errors', async () => {
 
   mockDataResponse = '"code";';
   mockHeaders = {'Content-Type': 'application/javascript'};
+  mockRequestError = null;
 
   await expect(
     loadBundleFromServer('/Fail.bundle?platform=ios'),
@@ -194,6 +223,7 @@ test('loadBundleFromServer does not cache errors', async () => {
 test('loadBundleFromServer caches successful fetches', async () => {
   mockDataResponse = '"code";';
   mockHeaders = {'Content-Type': 'application/javascript'};
+  mockRequestError = null;
 
   const promise1 = loadBundleFromServer(
     '/Banana.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
