@@ -825,7 +825,7 @@ public class TextLayoutManager {
     // where the container is measured smaller than text. Math.ceil prevents it
     // See T136756103 for investigation
     if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-      calculatedWidth = Math.min((float) Math.ceil(calculatedWidth), width);
+      calculatedWidth = (float) Math.ceil(calculatedWidth);
     }
     return calculatedWidth;
   }

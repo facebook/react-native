@@ -9,9 +9,7 @@
 
 namespace facebook::react {
 
-constexpr float kDefaultEpsilon = 0.005f;
-
-inline bool floatEquality(float a, float b, float epsilon = kDefaultEpsilon) {
+inline bool floatEquality(float a, float b, float epsilon = 0.005f) {
   return (std::isnan(a) && std::isnan(b)) ||
       (!std::isnan(a) && !std::isnan(b) && fabs(a - b) < epsilon);
 }
