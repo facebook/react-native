@@ -9,8 +9,6 @@ package com.facebook.react.modules.image
 
 import android.net.Uri
 import android.util.SparseArray
-import androidx.core.net.toUri
-import androidx.core.util.size
 import com.facebook.common.executors.CallerThreadExecutor
 import com.facebook.common.references.CloseableReference
 import com.facebook.datasource.BaseDataSubscriber
@@ -235,7 +233,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
               repeat(uris.size()) {
                 val uriString = uris.getString(it)
                 if (!uriString.isNullOrEmpty()) {
-                  val uri = uriString.toUri()
+                  val uri = Uri.parse(uriString)
                   if (imagePipeline.isInBitmapMemoryCache(uri)) {
                     put(uriString, "memory")
                   } else if (imagePipeline.isInDiskCacheSync(uri)) {
@@ -270,7 +268,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
     // cancel all requests
     synchronized(enqueuedRequestMonitor) {
       var i = 0
-      val size: Int = enqueuedRequests.size
+      val size: Int = enqueuedRequests.size()
       while (i < size) {
         val enqueuedRequest: DataSource<Void?> = enqueuedRequests.valueAt(i)
         enqueuedRequest.close()
