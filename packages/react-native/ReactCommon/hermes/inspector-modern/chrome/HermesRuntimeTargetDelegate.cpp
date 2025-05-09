@@ -175,11 +175,13 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
   }
 
   void enableSamplingProfiler() override {
-    runtime_->enableSamplingProfiler(HERMES_SAMPLING_FREQUENCY_HZ);
+    auto* hermesAPI = castInterface<IHermesRootAPI>(makeHermesRootAPI());
+    hermesAPI->enableSamplingProfiler(HERMES_SAMPLING_FREQUENCY_HZ);
   }
 
   void disableSamplingProfiler() override {
-    runtime_->disableSamplingProfiler();
+    auto* hermesAPI = castInterface<IHermesRootAPI>(makeHermesRootAPI());
+    hermesAPI->disableSamplingProfiler();
   }
 
   tracing::RuntimeSamplingProfile collectSamplingProfile() override {

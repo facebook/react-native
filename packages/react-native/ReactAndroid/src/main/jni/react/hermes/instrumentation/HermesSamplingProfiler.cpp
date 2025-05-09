@@ -14,17 +14,23 @@ namespace jsi {
 namespace jni {
 
 void HermesSamplingProfiler::enable(jni::alias_ref<jclass>) {
-  hermes::HermesRuntime::enableSamplingProfiler();
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->enableSamplingProfiler();
 }
 
 void HermesSamplingProfiler::disable(jni::alias_ref<jclass>) {
-  hermes::HermesRuntime::disableSamplingProfiler();
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->disableSamplingProfiler();
 }
 
 void HermesSamplingProfiler::dumpSampledTraceToFile(
     jni::alias_ref<jclass>,
     std::string filename) {
-  hermes::HermesRuntime::dumpSampledTraceToFile(filename);
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->dumpSampledTraceToFile(filename);
 }
 
 void HermesSamplingProfiler::registerNatives() {
