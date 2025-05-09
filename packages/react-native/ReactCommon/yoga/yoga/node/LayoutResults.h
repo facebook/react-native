@@ -66,16 +66,8 @@ struct LayoutResults {
     return measuredDimensions_[yoga::to_underlying(axis)];
   }
 
-  float rawDimension(Dimension axis) const {
-    return rawDimensions_[yoga::to_underlying(axis)];
-  }
-
   void setMeasuredDimension(Dimension axis, float dimension) {
     measuredDimensions_[yoga::to_underlying(axis)] = dimension;
-  }
-
-  void setRawDimension(Dimension axis, float dimension) {
-    rawDimensions_[yoga::to_underlying(axis)] = dimension;
   }
 
   float position(PhysicalEdge physicalEdge) const {
@@ -121,7 +113,6 @@ struct LayoutResults {
 
   std::array<float, 2> dimensions_ = {{YGUndefined, YGUndefined}};
   std::array<float, 2> measuredDimensions_ = {{YGUndefined, YGUndefined}};
-  std::array<float, 2> rawDimensions_ = {{YGUndefined, YGUndefined}};
   std::array<float, 4> position_ = {};
   std::array<float, 4> margin_ = {};
   std::array<float, 4> border_ = {};
