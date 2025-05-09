@@ -170,10 +170,20 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_viewsToBeMounted addObject:@{
-    kRCTLegacyInteropChildIndexKey : [NSNumber numberWithInteger:index],
-    kRCTLegacyInteropChildComponentKey : childComponentView
-  }];
+if (_adapter && index == _adapter.paperView.reactSubviews.count) {
+    if ([childComponentView isKindOfClass:[RCTLegacyViewManagerInteropComponentView class]]) {
+      UIView *target = ((RCTLegacyViewManagerInteropComponentView *)childComponentView).contentView;
+      [_adapter.paperView insertReactSubview:target atIndex:index];
+    } else {
+      [_adapter.paperView insertReactSubview:childComponentView atIndex:index];
+    }
+    [_adapter.paperView didUpdateReactSubviews];
+  } else {
+    [_viewsToBeMounted addObject:@{
+      kRCTLegacyInteropChildIndexKey : [NSNumber numberWithInteger:index],
+      kRCTLegacyInteropChildComponentKey : childComponentView
+    }];
+  }
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
