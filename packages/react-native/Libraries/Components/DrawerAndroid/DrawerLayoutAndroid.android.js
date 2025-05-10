@@ -112,12 +112,6 @@ class DrawerLayoutAndroid
     const childrenWrapper = (
       <View style={styles.mainSubview} collapsable={false}>
         {drawStatusBar && (
-          <StatusBar
-            translucent
-            backgroundColor={this.props.statusBarBackgroundColor}
-          />
-        )}
-        {drawStatusBar && (
           <View
             style={[
               styles.statusBar,

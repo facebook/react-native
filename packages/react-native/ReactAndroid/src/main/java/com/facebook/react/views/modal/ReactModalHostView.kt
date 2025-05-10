@@ -52,8 +52,7 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
-import com.facebook.react.views.view.setStatusBarTranslucency
-import com.facebook.react.views.view.setSystemBarsTranslucency
+import com.facebook.react.views.view.applyEdgeToEdge
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -78,17 +77,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var transparent: Boolean = false
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
-  public var statusBarTranslucent: Boolean = false
-    set(value) {
-      field = value
-      createNewDialog = true
-    }
-
-  public var navigationBarTranslucent: Boolean = false
-    set(value) {
-      field = value
-      createNewDialog = true
-    }
 
   public var animationType: String? = null
     set(value) {
@@ -341,10 +329,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
     get() =
         FrameLayout(context).apply {
           addView(dialogRootViewGroup)
-          if (!statusBarTranslucent) {
-            // this is needed to prevent content hiding behind systems bars < API 30
-            this.fitsSystemWindows = true
-          }
         }
 
   /**
@@ -373,12 +357,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
       }
 
-      // Navigation bar cannot be translucent without status bar being translucent too
-      dialogWindow.setSystemBarsTranslucency(navigationBarTranslucent)
-
-      if (!navigationBarTranslucent) {
-        dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
-      }
+      dialogWindow.applyEdgeToEdge()
 
       if (transparent) {
         dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -409,9 +388,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
     // Modeled after the version check in StatusBarModule.setStyle
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
       val activityWindowInsetsController =
-          WindowInsetsControllerCompat(activityWindow, activityWindow.decorView)
+          WindowInsetsControllerCompat(activityWindow, activityWindow.decorView).apply {
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+          }
       val dialogWindowInsetsController =
-          WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
+          WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView).apply {
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+          }
 
       dialogWindowInsetsController.isAppearanceLightStatusBars =
           activityWindowInsetsController.isAppearanceLightStatusBars
