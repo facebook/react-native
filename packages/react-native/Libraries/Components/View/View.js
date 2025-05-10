@@ -30,9 +30,6 @@ const View: component(
   (
     {
       accessibilityElementsHidden,
-      accessibilityLabel,
-      accessibilityLabelledBy,
-      accessibilityLiveRegion,
       accessibilityState,
       accessibilityValue,
       'aria-busy': ariaBusy,
@@ -48,18 +45,43 @@ const View: component(
       'aria-valuemin': ariaValueMin,
       'aria-valuenow': ariaValueNow,
       'aria-valuetext': ariaValueText,
-      focusable,
       id,
-      importantForAccessibility,
-      nativeID,
       tabIndex,
       ...otherProps
     }: ViewProps,
     forwardedRef,
   ) => {
     const hasTextAncestor = React.useContext(TextAncestor);
-    const _accessibilityLabelledBy =
-      ariaLabelledBy?.split(/\s*,\s*/g) ?? accessibilityLabelledBy;
+    const processedProps = otherProps as {...ViewProps};
+
+    const parsedAriaLabelledBy = ariaLabelledBy?.split(/\s*,\s*/g);
+    if (parsedAriaLabelledBy != null) {
+      processedProps.accessibilityLabelledBy = parsedAriaLabelledBy;
+    }
+
+    if (ariaLabel !== undefined) {
+      processedProps.accessibilityLabel = ariaLabel;
+    }
+
+    if (ariaLive !== undefined) {
+      processedProps.accessibilityLiveRegion =
+        ariaLive === 'off' ? 'none' : ariaLive;
+    }
+
+    if (ariaHidden !== undefined) {
+      processedProps.accessibilityElementsHidden = ariaHidden;
+      if (ariaHidden === true) {
+        processedProps.importantForAccessibility = 'no-hide-descendants';
+      }
+    }
+
+    if (id !== undefined) {
+      processedProps.nativeID = id;
+    }
+
+    if (tabIndex !== undefined) {
+      processedProps.focusable = !tabIndex;
+    }
 
     const _accessibilityState =
       accessibilityState != null ||
@@ -76,6 +98,9 @@ const View: component(
             selected: ariaSelected ?? accessibilityState?.selected,
           }
         : undefined;
+    if (_accessibilityState !== undefined) {
+      processedProps.accessibilityState = _accessibilityState;
+    }
 
     const _accessibilityValue =
       accessibilityValue != null ||
@@ -91,26 +116,12 @@ const View: component(
           }
         : undefined;
 
+    if (_accessibilityValue !== undefined) {
+      processedProps.accessibilityValue = _accessibilityValue;
+    }
+
     const actualView = (
-      <ViewNativeComponent
-        {...otherProps}
-        accessibilityLiveRegion={
-          ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
-        }
-        accessibilityLabel={ariaLabel ?? accessibilityLabel}
-        focusable={tabIndex !== undefined ? !tabIndex : focusable}
-        accessibilityState={_accessibilityState}
-        accessibilityElementsHidden={ariaHidden ?? accessibilityElementsHidden}
-        accessibilityLabelledBy={_accessibilityLabelledBy}
-        accessibilityValue={_accessibilityValue}
-        importantForAccessibility={
-          ariaHidden === true
-            ? 'no-hide-descendants'
-            : importantForAccessibility
-        }
-        nativeID={id ?? nativeID}
-        ref={forwardedRef}
-      />
+      <ViewNativeComponent {...processedProps} ref={forwardedRef} />
     );
 
     if (hasTextAncestor) {
