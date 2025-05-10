@@ -14,7 +14,6 @@ import android.view.WindowManager
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.facebook.react.views.common.ContextUtils
 
 internal val LightNavigationBarColor = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
 internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
