@@ -318,6 +318,8 @@ export {default as NativeEventEmitter} from './Libraries/EventEmitter/NativeEven
 export {default as NativeModules} from './Libraries/BatchedBridge/NativeModules';
 export {default as Networking} from './Libraries/Network/RCTNetworking';
 
+export * as NewAppScreen from './Libraries/NewAppScreen';
+
 export type {
   PanResponderCallbacks,
   PanResponderGestureState,
