@@ -1340,7 +1340,7 @@ class StatusBarTest extends React.Component {
     console.log('height:', StatusBar.currentHeight);
 
     return (
-      <StatusBar backgroundColor="blue" barStyle="light-content" translucent />
+      <StatusBar barStyle="light-content" />
     );
   }
 }

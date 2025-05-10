@@ -79,7 +79,6 @@ RCT_EXPORT_MODULE()
 {
   _constants = facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
       .HEIGHT = RCTUIStatusBarManager().statusBarFrame.size.height,
-      .DEFAULT_BACKGROUND_COLOR = std::nullopt,
   });
 }
 

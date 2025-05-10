@@ -52,7 +52,6 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
-import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.enableEdgeToEdge
 import java.util.Objects
 

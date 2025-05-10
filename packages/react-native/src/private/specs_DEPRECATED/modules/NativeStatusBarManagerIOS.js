@@ -15,7 +15,6 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +getConstants: () => {
     +HEIGHT: number,
-    +DEFAULT_BACKGROUND_COLOR?: number,
   };
 
   // TODO(T47754272) Can we remove this method?
@@ -43,7 +42,6 @@ let constants = null;
 const NativeStatusBarManager = {
   getConstants(): {
     +HEIGHT: number,
-    +DEFAULT_BACKGROUND_COLOR?: number,
   } {
     if (constants == null) {
       constants = NativeModule.getConstants();
