@@ -31,7 +31,7 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 }
 
 @Suppress("DEPRECATION")
-internal fun Window.enableEdgeToEdge() {
+internal fun Window.applyEdgeToEdge() {
   WindowCompat.setDecorFitsSystemWindows(this, false)
 
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

@@ -52,7 +52,7 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
-import com.facebook.react.views.view.enableEdgeToEdge
+import com.facebook.react.views.view.applyEdgeToEdge
 import java.util.Objects
 
 /**
@@ -358,7 +358,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
       }
 
-      dialogWindow.enableEdgeToEdge()
+      dialogWindow.applyEdgeToEdge()
 
       if (transparent) {
         dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)

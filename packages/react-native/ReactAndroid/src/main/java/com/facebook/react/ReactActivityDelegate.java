@@ -123,7 +123,7 @@ public class ReactActivityDelegate {
           String mainComponentName = getMainComponentName();
           final Bundle launchOptions = composeLaunchOptions();
           if (mActivity != null) {
-            WindowUtilKt.enableEdgeToEdge(mActivity.getWindow());
+            WindowUtilKt.applyEdgeToEdge(mActivity.getWindow());
           }
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
             mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);

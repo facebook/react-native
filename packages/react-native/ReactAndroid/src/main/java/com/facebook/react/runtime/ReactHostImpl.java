@@ -831,7 +831,7 @@ public class ReactHostImpl implements ReactHost {
         public void run() {
           Activity currentActivity = getCurrentActivity();
           if (currentActivity != null) {
-            WindowUtilKt.enableEdgeToEdge(currentActivity.getWindow());
+            WindowUtilKt.applyEdgeToEdge(currentActivity.getWindow());
           }
         }
       });
