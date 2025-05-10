@@ -12,15 +12,25 @@
 const {prepareHermesArtifactsAsync} = require('./ios-prebuild/hermes');
 const {
   createFolderIfNotExists,
+  prebuild_log,
   throwIfOnEden,
 } = require('./ios-prebuild/utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..');
+const packageJsonPath = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'package.json',
+);
+
+// $FlowIgnore[unsupported-syntax]
+const {version: currentVersion} = require(packageJsonPath);
+
 async function main() {
-  console.log('Prebuilding React Native iOS...');
-  console.log('');
+  prebuild_log('Prebuilding React Native iOS...');
+  prebuild_log('');
 
   throwIfOnEden();
 
@@ -48,9 +58,10 @@ async function main() {
     const link = (fromPath /*:string*/, includePath /*:string*/) => {
       const source = path.resolve(root, fromPath);
       const target = path.resolve(linksFolder, includePath);
-      console.log(`Linking ${source} to ${target}...`);
 
       createFolderIfNotExists(target);
+
+      let copiedFiles = 0;
 
       // get subfolders in source - make sure we only copy folders with header files
       const entries = fs.readdirSync(source, {withFileTypes: true});
@@ -74,6 +85,7 @@ async function main() {
             }
             try {
               fs.linkSync(sourceFile, targetFile);
+              copiedFiles++;
             } catch (e) {
               console.error(
                 `Failed to create link for ${sourceFile} to ${targetFile}: ${e}`,
@@ -81,6 +93,10 @@ async function main() {
             }
           }
         });
+      }
+
+      if (copiedFiles > 0) {
+        prebuild_log(`Linking ${source} to ${target}...`);
       }
 
       const subfolders = entries
@@ -94,23 +110,24 @@ async function main() {
       });
     };
 
+    // HERMES ARTIFACTS
+    await prepareHermesArtifactsAsync(
+      currentVersion,
+      'release',
+      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+    );
+
     // CODEGEN
-    console.log('Running codegen...');
+    prebuild_log('Running codegen...');
     const codegenPath = path.join(root, '.build/codegen');
     createFolderIfNotExists(codegenPath);
 
     const command = `node scripts/generate-codegen-artifacts -p "${root}" -o "${codegenPath}"  -t ios`;
-    console.log(command);
+    prebuild_log(command);
     execSync(command, {stdio: 'inherit'});
 
-    // HERMES ARTIFACTS
-    console.log('Download hermes...');
-    // Temporary hardcoded hermes version to make the script work
-    // We will make it right in a future diff.
-    // TODO: T223708709
-    await prepareHermesArtifactsAsync('0.80.0-rc.0', 'debug');
-
     // LINKING
+    prebuild_log('Linking header files...');
     link('Libraries/WebSocket/', 'React');
     link('React/Base', 'React');
     link('React/Base/Surface', 'React');
@@ -152,7 +169,7 @@ async function main() {
     );
 
     // Done!
-    console.log('🏁 Done!');
+    prebuild_log('🏁 Done!');
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
