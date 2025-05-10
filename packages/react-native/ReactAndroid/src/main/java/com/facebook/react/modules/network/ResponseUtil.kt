@@ -10,6 +10,7 @@ package com.facebook.react.modules.network
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableArray
 import java.net.SocketTimeoutException
 
 /** Util methods to send network responses to JS. */
@@ -23,11 +24,12 @@ internal object ResponseUtil {
   ) {
     reactContext?.emitDeviceEvent(
         "didSendNetworkData",
-        Arguments.createArray().apply {
-          pushInt(requestId)
-          pushInt(progress.toInt())
-          pushInt(total.toInt())
-        })
+      buildReadableArray {
+        add(requestId)
+        add(progress.toInt())
+        add(total.toInt())
+      }
+    )
   }
 
   @JvmStatic
@@ -40,12 +42,13 @@ internal object ResponseUtil {
   ) {
     reactContext?.emitDeviceEvent(
         "didReceiveNetworkIncrementalData",
-        Arguments.createArray().apply {
-          pushInt(requestId)
-          pushString(data)
-          pushInt(progress.toInt())
-          pushInt(total.toInt())
-        })
+      buildReadableArray {
+        add(requestId)
+        add(data)
+        add(progress.toInt())
+        add(total.toInt())
+      }
+    )
   }
 
   @JvmStatic
@@ -56,22 +59,24 @@ internal object ResponseUtil {
       total: Long
   ) {
     reactContext?.emitDeviceEvent(
-        "didReceiveNetworkDataProgress",
-        Arguments.createArray().apply {
-          pushInt(requestId)
-          pushInt(progress.toInt())
-          pushInt(total.toInt())
-        })
+      "didReceiveNetworkDataProgress",
+      buildReadableArray {
+        add(requestId)
+        add(progress.toInt())
+        add(total.toInt())
+      }
+    )
   }
 
   @JvmStatic
   fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: String?) {
     reactContext?.emitDeviceEvent(
-        "didReceiveNetworkData",
-        Arguments.createArray().apply {
-          pushInt(requestId)
-          pushString(data)
-        })
+      "didReceiveNetworkData",
+      buildReadableArray {
+        add(requestId)
+        add(data)
+      }
+    )
   }
 
   @JvmStatic
@@ -81,7 +86,8 @@ internal object ResponseUtil {
         Arguments.createArray().apply {
           pushInt(requestId)
           pushMap(data)
-        })
+        }
+    )
   }
 
   @JvmStatic
@@ -93,23 +99,25 @@ internal object ResponseUtil {
   ) {
     reactContext?.emitDeviceEvent(
         "didCompleteNetworkResponse",
-        Arguments.createArray().apply {
-          pushInt(requestId)
-          pushString(error)
-          if (e?.javaClass == SocketTimeoutException::class.java) {
-            pushBoolean(true) // last argument is a time out boolean
-          }
-        })
+      buildReadableArray {
+        add(requestId)
+        add(error)
+        if (e?.javaClass == SocketTimeoutException::class.java) {
+          add(true) // last argument is a time out boolean
+        }
+      }
+    )
   }
 
   @JvmStatic
   fun onRequestSuccess(reactContext: ReactApplicationContext?, requestId: Int) {
     reactContext?.emitDeviceEvent(
-        "didCompleteNetworkResponse",
-        Arguments.createArray().apply {
-          pushInt(requestId)
-          pushNull()
-        })
+      "didCompleteNetworkResponse",
+      buildReadableArray {
+        add(requestId)
+        addNull()
+      }
+    )
   }
 
   @JvmStatic
@@ -127,6 +135,7 @@ internal object ResponseUtil {
           pushInt(statusCode)
           pushMap(headers)
           pushString(url)
-        })
+        }
+    )
   }
 }

@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.network.NetworkingModule
 import com.facebook.react.modules.websocket.WebSocketModule
@@ -52,10 +53,11 @@ public class BlobModule(reactContext: ReactApplicationContext) :
         override fun onMessage(byteString: ByteString, params: WritableMap) {
           val data = byteString.toByteArray()
 
-          val blob = Arguments.createMap()
-          blob.putString("blobId", store(data))
-          blob.putInt("offset", 0)
-          blob.putInt("size", data.size)
+          val blob = buildReadableMap {
+            put("blobId", store(data))
+            put("offset", 0)
+            put("size", data.size)
+          }
 
           params.putMap("data", blob)
           params.putString("type", "blob")

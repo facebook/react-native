@@ -13,6 +13,7 @@ import android.text.Layout
 import android.text.TextPaint
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.buildReadableMap
 
 internal object FontMetricsUtil {
 
@@ -51,20 +52,18 @@ internal object FontMetricsUtil {
       val lineWidth = if (endsWithNewLine) layout.getLineMax(i) else layout.getLineWidth(i)
       val bounds = Rect()
       layout.getLineBounds(i, bounds)
-      val line =
-          Arguments.createMap().apply {
-            putDouble("x", (layout.getLineLeft(i) / dm.density).toDouble())
-            putDouble("y", (bounds.top / dm.density).toDouble())
-            putDouble("width", (lineWidth / dm.density).toDouble())
-            putDouble("height", (bounds.height() / dm.density).toDouble())
-            putDouble("descender", (layout.getLineDescent(i) / dm.density).toDouble())
-            putDouble("ascender", (-layout.getLineAscent(i) / dm.density).toDouble())
-            putDouble("baseline", (layout.getLineBaseline(i) / dm.density).toDouble())
-            putDouble("capHeight", capHeight.toDouble())
-            putDouble("xHeight", xHeight.toDouble())
-            putString(
-                "text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString())
-          }
+      val line = buildReadableMap {
+        put("x", (layout.getLineLeft(i) / dm.density).toDouble())
+        put("y", (bounds.top / dm.density).toDouble())
+        put("width", (lineWidth / dm.density).toDouble())
+        put("height", (bounds.height() / dm.density).toDouble())
+        put("descender", (layout.getLineDescent(i) / dm.density).toDouble())
+        put("ascender", (-layout.getLineAscent(i) / dm.density).toDouble())
+        put("baseline", (layout.getLineBaseline(i) / dm.density).toDouble())
+        put("capHeight", capHeight.toDouble())
+        put("xHeight", xHeight.toDouble())
+        put("text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString())
+      }
       lines.pushMap(line)
     }
     return lines
