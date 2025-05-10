@@ -47,6 +47,14 @@ const MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT = 20;
 
 const INTERNAL_ERROR_CODE = 1011;
 
+// should be aligned with
+const INTERNAL_ERROR_MESSAGES = {
+  NON_REGISTERED_DEVICE:
+    '[NON_REGISTERED_DEVICE] Debugger connection attempted for a non registered device',
+  INCORRECT_URL:
+    '[INCORRECT_URL] Incorrect URL - device and page IDs must be provided',
+};
+
 export type GetPageDescriptionsConfig = {
   requestorRelativeBaseUrl: URL,
   logNoPagesForConnectedDevice?: boolean,
@@ -507,13 +515,11 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
       try {
         if (deviceId == null || pageId == null) {
-          throw new Error('Incorrect URL - must provide device and page IDs');
+          throw new Error(INTERNAL_ERROR_MESSAGES.INCORRECT_URL);
         }
 
         if (device == null) {
-          throw new Error(
-            'Debugger connection attempted for a non registered device',
-          );
+          throw new Error(INTERNAL_ERROR_MESSAGES.NON_REGISTERED_DEVICE);
         }
 
         this.#logger?.info(
