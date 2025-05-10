@@ -44,19 +44,19 @@ public class TimingModule(
   }
 
   override fun callTimers(timerIDs: WritableArray) {
-    reactApplicationContextIfActiveOrWarn
+    getReactApplicationContextIfActiveOrWarn()
         ?.getJSModule(JSTimers::class.java)
         ?.callTimers(timerIDs)
   }
 
   override fun callIdleCallbacks(frameTime: Double) {
-    reactApplicationContextIfActiveOrWarn
+    getReactApplicationContextIfActiveOrWarn()
         ?.getJSModule(JSTimers::class.java)
         ?.callIdleCallbacks(frameTime)
   }
 
   override fun emitTimeDriftWarning(warningMessage: String) {
-    reactApplicationContextIfActiveOrWarn
+    getReactApplicationContextIfActiveOrWarn()
         ?.getJSModule(JSTimers::class.java)
         ?.emitTimeDriftWarning(warningMessage)
   }

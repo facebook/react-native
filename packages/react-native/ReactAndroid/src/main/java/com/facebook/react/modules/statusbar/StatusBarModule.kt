@@ -28,6 +28,7 @@ import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.setStatusBarVisibility
 
 /** [NativeModule] that allows changing the appearance of the status bar. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeStatusBarManagerAndroidSpec.NAME)
 internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     NativeStatusBarManagerAndroidSpec(reactContext) {

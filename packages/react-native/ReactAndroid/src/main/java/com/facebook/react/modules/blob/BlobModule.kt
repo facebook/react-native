@@ -38,6 +38,7 @@ import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import okio.ByteString
 
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeBlobModuleSpec.NAME)
 public class BlobModule(reactContext: ReactApplicationContext) :
     NativeBlobModuleSpec(reactContext) {
@@ -134,8 +135,8 @@ public class BlobModule(reactContext: ReactApplicationContext) :
   }
 
   public override fun getTypedExportedConstants(): Map<String, Any> {
-    val resources = reactApplicationContext.resources
-    val packageName = reactApplicationContext.packageName
+    val resources = getReactApplicationContext().resources
+    val packageName = getReactApplicationContext().packageName
     val resourceId = resources.getIdentifier("blob_provider_authority", "string", packageName)
     if (resourceId == 0) {
       return mapOf()

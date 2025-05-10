@@ -19,7 +19,7 @@ public class FileReaderModule(reactContext: ReactApplicationContext) :
     NativeFileReaderModuleSpec(reactContext) {
 
   private fun getBlobModule(reason: String): BlobModule? {
-    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
 
     return reactApplicationContext?.getNativeModule(BlobModule::class.java)
   }

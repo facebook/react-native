@@ -21,7 +21,7 @@ import com.facebook.react.module.annotations.ReactModule
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = NativePlatformConstantsAndroidSpec.NAME)
 @SuppressLint("HardwareIds")
-@Suppress("DEPRECATION")
+@Suppress("DEPRECATION", "SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 public class AndroidInfoModule(reactContext: ReactApplicationContext) :
     NativePlatformConstantsAndroidSpec(reactContext) {
 

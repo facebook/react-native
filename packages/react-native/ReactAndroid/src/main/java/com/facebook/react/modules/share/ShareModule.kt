@@ -16,6 +16,7 @@ import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 
 /** Intent module. Launch other activities or open URLs. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeShareModuleSpec.NAME)
 internal class ShareModule(reactContext: ReactApplicationContext) :
     NativeShareModuleSpec(reactContext) {
@@ -48,7 +49,7 @@ internal class ShareModule(reactContext: ReactApplicationContext) :
       if (currentActivity != null) {
         currentActivity.startActivity(chooser)
       } else {
-        reactApplicationContext.startActivity(chooser)
+        getReactApplicationContext().startActivity(chooser)
       }
       val result = buildReadableMap { put("action", ACTION_SHARED) }
       promise.resolve(result)

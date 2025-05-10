@@ -17,6 +17,7 @@ import com.facebook.react.module.annotations.ReactModule
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeDevSettingsSpec.NAME)
 public class DevSettingsModule(
     reactContext: ReactApplicationContext?,

@@ -33,6 +33,7 @@ import okhttp3.JavaNetCookieJar
  *
  * Does not expose any methods to JavaScript code. For initialization and cleanup only.
  */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = FrescoModule.NAME, needsEagerInit = true)
 public open class FrescoModule
 @JvmOverloads

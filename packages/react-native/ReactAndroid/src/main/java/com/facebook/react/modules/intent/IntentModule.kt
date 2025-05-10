@@ -34,7 +34,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
     synchronized(this) {
       pendingOpenURLPromises.clear()
       initialURLListener
-          ?.let { listener -> reactApplicationContext.removeLifecycleEventListener(listener) }
+          ?.let { listener -> getReactApplicationContext().removeLifecycleEventListener(listener) }
           .also { initialURLListener = null }
     }
     super.invalidate()
@@ -47,7 +47,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
    */
   override fun getInitialURL(promise: Promise) {
     try {
-      val currentActivity = reactApplicationContext.getCurrentActivity()
+      val currentActivity = getReactApplicationContext().getCurrentActivity()
       if (currentActivity == null) {
         waitForActivityAndGetInitialURL(promise)
         return
@@ -82,7 +82,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
     initialURLListener =
         object : LifecycleEventListener {
           override fun onHostResume() {
-            reactApplicationContext.removeLifecycleEventListener(this)
+            getReactApplicationContext().removeLifecycleEventListener(this)
             synchronized(this@IntentModule) {
               for (pendingPromise in pendingOpenURLPromises) {
                 getInitialURL(pendingPromise)
@@ -96,7 +96,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
 
           override fun onHostDestroy() = Unit
         }
-    reactApplicationContext.addLifecycleEventListener(initialURLListener)
+    getReactApplicationContext().addLifecycleEventListener(initialURLListener)
   }
 
   /**
@@ -138,10 +138,10 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
 
     try {
       val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-      // We need Intent.FLAG_ACTIVITY_NEW_TASK since reactApplicationContext returns
+      // We need Intent.FLAG_ACTIVITY_NEW_TASK since getReactApplicationContext() returns
       // the ApplicationContext instead of the Activity context.
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      val packageManager = reactApplicationContext.getPackageManager()
+      val packageManager = getReactApplicationContext().getPackageManager()
       val canOpen = packageManager != null && intent.resolveActivity(packageManager) != null
       promise.resolve(canOpen)
     } catch (e: Exception) {
@@ -160,8 +160,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
     try {
       val intent = Intent()
       val currentActivity: Activity =
-          checkNotNull(reactApplicationContext.getCurrentActivity())
-      val selfPackageName = reactApplicationContext.getPackageName()
+          checkNotNull(getReactApplicationContext().getCurrentActivity())
+      val selfPackageName = getReactApplicationContext().getPackageName()
 
       intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
       intent.addCategory(Intent.CATEGORY_DEFAULT)
@@ -196,7 +196,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
 
     val intent = Intent(action)
 
-    val packageManager = reactApplicationContext.getPackageManager()
+    val packageManager = getReactApplicationContext().getPackageManager()
     if (packageManager == null || intent.resolveActivity(packageManager) == null) {
       promise.reject(
           JSApplicationIllegalArgumentException("Could not launch Intent with action $action."))
@@ -244,10 +244,10 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
   }
 
   private fun sendOSIntent(intent: Intent, useNewTaskFlag: Boolean) {
-    val currentActivity = reactApplicationContext.getCurrentActivity()
+    val currentActivity = getReactApplicationContext().getCurrentActivity()
 
-    val selfPackageName = reactApplicationContext.getPackageName()
-    val packageManager = reactApplicationContext.getPackageManager()
+    val selfPackageName = getReactApplicationContext().getPackageName()
+    val packageManager = getReactApplicationContext().getPackageManager()
     val componentName =
         if (packageManager == null) {
           intent.component
@@ -265,7 +265,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
     if (currentActivity != null) {
       currentActivity.startActivity(intent)
     } else {
-      reactApplicationContext.startActivity(intent)
+      getReactApplicationContext().startActivity(intent)
     }
   }
 

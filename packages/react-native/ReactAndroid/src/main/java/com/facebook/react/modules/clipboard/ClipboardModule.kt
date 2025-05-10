@@ -20,7 +20,7 @@ internal class ClipboardModule(context: ReactApplicationContext) : NativeClipboa
 
   private val clipboardService: ClipboardManager
     get() =
-        reactApplicationContext.getSystemService(ReactApplicationContext.CLIPBOARD_SERVICE)
+        getReactApplicationContext().getSystemService(ReactApplicationContext.CLIPBOARD_SERVICE)
             as ClipboardManager
 
   override fun getString(promise: Promise) {

@@ -78,6 +78,7 @@ import kotlin.concurrent.Volatile
  * from the problems that may be caused by concurrent updates of animated graph while UI thread is
  * "executing" the animation loop.
  */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @OptIn(UnstableReactNativeAPI::class)
 @ReactModule(name = NativeAnimatedModuleSpec.NAME)
 public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :

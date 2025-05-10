@@ -17,6 +17,7 @@ import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 
 /** Module that exposes the user's preferred color scheme. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeAppearanceSpec.NAME)
 public class AppearanceModule
 @JvmOverloads
