@@ -189,7 +189,6 @@ jobs:
         with:
           jsengine: ${{ matrix.jsengine }}
           architecture: ${{ matrix.architecture }}
-          run-unit-tests: "false"
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
