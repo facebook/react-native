@@ -622,7 +622,7 @@ void ObjCTurboModule::setInvocationArg(
   /**
    * Convert arg to ObjC objects.
    */
-  id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_);
+  id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, arg, jsInvoker_, YES);
   if (objCArg) {
     NSString *methodNameNSString = @(methodName);
 
@@ -639,6 +639,10 @@ void ObjCTurboModule::setInvocationArg(
           // Message dispatch logic from old infra
           id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
           id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
+          
+          if (objCArg == [NSNull null]) {
+            return;
+          }
 
           [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
           if (convertedObjCArg) {
