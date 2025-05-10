@@ -106,9 +106,10 @@ class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
       value: string | number | boolean,
       ...
     }>,
+    flags?: Array<number>,
   ): Promise<void> {
     if (Platform.OS === 'android') {
-      return nullthrows(NativeIntentAndroid).sendIntent(action, extras);
+      return nullthrows(NativeIntentAndroid).sendIntent(action, extras, flags);
     } else {
       return new Promise((resolve, reject) => reject(new Error('Unsupported')));
     }
