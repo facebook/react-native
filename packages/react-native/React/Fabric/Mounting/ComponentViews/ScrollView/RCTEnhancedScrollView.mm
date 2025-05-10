@@ -91,6 +91,15 @@
   self.contentInset = UIEdgeInsetsMake(top, left, top, left);
 }
 
+- (void)setCenterContent:(BOOL)centerContent
+{
+  _centerContent = centerContent;
+  if (!_centerContent) {
+    self.contentInset = UIEdgeInsetsZero;
+  }
+  [self centerContentIfNeeded];
+}
+
 - (void)setContentOffset:(CGPoint)contentOffset
 {
   if (_isSetContentOffsetDisabled) {
