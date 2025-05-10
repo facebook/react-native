@@ -63,6 +63,7 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   @Deprecated("This method is deprecated, please use UIManagerHelper.getUIManager() instead.")
   override fun getFabricUIManager(): UIManager? = reactHost.uiManager
 
+  @OptIn(FrameworkAPI::class)
   override fun getCatalystInstance(): CatalystInstance {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       throw UnsupportedOperationException(
@@ -136,7 +137,7 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
       reactHost.hasNativeModule(nativeModuleInterface)
 
-  override fun getNativeModules(): MutableCollection<NativeModule> = reactHost.nativeModules
+  override fun getNativeModules(): Collection<NativeModule> = reactHost.nativeModules
 
   override fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? =
       reactHost.getNativeModule(nativeModuleInterface)

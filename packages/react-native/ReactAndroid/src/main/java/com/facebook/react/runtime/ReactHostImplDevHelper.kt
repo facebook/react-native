@@ -13,6 +13,8 @@ import android.view.View
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.common.annotations.FrameworkAPI
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.interfaces.TaskInterface
 import com.facebook.react.modules.core.DeviceEventManagerModule
@@ -23,6 +25,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
  * This allows [BridgelessDevSupportHelper] and other classes inside the .devsupport package to
  * communicate with the Bridgeless infrastructure without exposing public APIs.
  */
+@UnstableReactNativeAPI
+@OptIn(FrameworkAPI::class)
 internal class ReactHostImplDevHelper(private val delegate: ReactHostImpl) :
     ReactInstanceDevHelper {
 

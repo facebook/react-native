@@ -14,7 +14,7 @@ internal class BridgelessAtomicRef<T>(
     @field:Volatile @get:Synchronized @get:JvmName("getNullable") var value: T? = null
 ) {
 
-  internal interface Provider<T> {
+  internal fun interface Provider<T> {
     fun get(): T
   }
 

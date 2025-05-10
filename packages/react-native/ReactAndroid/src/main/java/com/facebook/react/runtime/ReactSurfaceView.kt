@@ -17,6 +17,8 @@ import android.view.View
 import com.facebook.common.logging.FLog
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.common.annotations.FrameworkAPI
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.JSPointerDispatcher
@@ -29,6 +31,7 @@ import java.util.Objects
  * A view created by [com.facebook.react.interfaces.fabric.ReactSurface] that's responsible for
  * rendering a React component.
  */
+@OptIn(FrameworkAPI::class, UnstableReactNativeAPI::class)
 public class ReactSurfaceView(context: Context?, private val surface: ReactSurfaceImpl) :
     ReactRootView(context) {
   private val jsTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)

@@ -8,7 +8,7 @@
 package com.facebook.react.bridge
 
 /** Listener interface for memory pressure events. */
-public interface MemoryPressureListener {
+public fun interface MemoryPressureListener {
   /** Called when the system generates a memory warning. */
   public fun handleMemoryPressure(level: Int)
 }
