@@ -32,8 +32,6 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 
 @Suppress("DEPRECATION")
 internal fun Window.enableEdgeToEdge() {
-  val isDarkMode = ContextUtils.isDarkMode(context)
-
   WindowCompat.setDecorFitsSystemWindows(this, false)
 
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -45,13 +43,9 @@ internal fun Window.enableEdgeToEdge() {
   navigationBarColor =
     when {
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isDarkMode -> LightNavigationBarColor
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> LightNavigationBarColor
       else -> DarkNavigationBarColor
     }
-
-  WindowInsetsControllerCompat(this, this.decorView).run {
-    isAppearanceLightNavigationBars = !isDarkMode
-  }
 
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
     attributes.layoutInDisplayCutoutMode =
