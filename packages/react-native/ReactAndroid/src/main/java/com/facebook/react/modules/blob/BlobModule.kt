@@ -37,6 +37,7 @@ import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import okio.ByteString
 
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeBlobModuleSpec.NAME)
 public class BlobModule(reactContext: ReactApplicationContext) :
     NativeBlobModuleSpec(reactContext) {
