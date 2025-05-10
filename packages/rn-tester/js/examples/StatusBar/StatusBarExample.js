@@ -22,8 +22,6 @@ import {
   View,
 } from 'react-native';
 
-const colors = ['#ff0000', '#00ff00', '#0000ff', 'rgba(0, 0, 0, 0.4)'];
-
 const barStyles = ['default', 'light-content', 'dark-content'];
 
 const showHideTransitions = ['fade', 'slide'];
@@ -157,56 +155,6 @@ class StatusBarStyleExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class StatusBarBackgroundColorExample extends React.Component<
-  {...},
-  $FlowFixMeState,
-> {
-  state: $FlowFixMe | {animated: boolean, backgroundColor: string} = {
-    animated: true,
-    backgroundColor: getValue(colors, 0),
-  };
-
-  _colorIndex = 0;
-
-  _onChangeBackgroundColor = () => {
-    this._colorIndex++;
-    this.setState({backgroundColor: getValue(colors, this._colorIndex)});
-  };
-
-  _onChangeAnimated = () => {
-    this.setState({animated: !this.state.animated});
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <StatusBar
-          backgroundColor={this.state.backgroundColor}
-          animated={this.state.animated}
-        />
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={this._onChangeBackgroundColor}>
-          <View style={styles.button}>
-            <RNTesterText style={styles.buttonText}>
-              backgroundColor: '{getValue(colors, this._colorIndex)}'
-            </RNTesterText>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={this._onChangeAnimated}>
-          <View style={styles.button}>
-            <RNTesterText style={styles.buttonText}>
-              animated: {this.state.animated ? 'true' : 'false'}
-            </RNTesterText>
-          </View>
-        </TouchableHighlight>
-      </View>
-    );
-  }
-}
-
 class StatusBarStaticIOSExample extends React.Component<{...}> {
   render(): React.Node {
     return (
@@ -329,53 +277,6 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
             (default is dark for iOS, light for Android)
           </RNTesterText>
         </View>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => {
-            StatusBar.setBackgroundColor('#ff00ff', true);
-          }}>
-          <View style={styles.button}>
-            <RNTesterText style={styles.buttonText}>
-              setBackgroundColor('#ff00ff', true)
-            </RNTesterText>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => {
-            StatusBar.setBackgroundColor('#00ff00', true);
-          }}>
-          <View style={styles.button}>
-            <RNTesterText style={styles.buttonText}>
-              setBackgroundColor('#00ff00', true)
-            </RNTesterText>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => {
-            StatusBar.setTranslucent(true);
-            StatusBar.setBackgroundColor('rgba(0, 0, 0, 0.4)', true);
-          }}>
-          <View style={styles.button}>
-            <RNTesterText style={styles.buttonText}>
-              setTranslucent(true) and setBackgroundColor('rgba(0, 0, 0, 0.4)',
-              true)
-            </RNTesterText>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => {
-            StatusBar.setTranslucent(false);
-            StatusBar.setBackgroundColor('black', true);
-          }}>
-          <View style={styles.button}>
-            <RNTesterText style={styles.buttonText}>
-              setTranslucent(false) and setBackgroundColor('black', true)
-            </RNTesterText>
-          </View>
-        </TouchableHighlight>
       </View>
     );
   }
@@ -443,13 +344,6 @@ exports.examples = [
     render(): React.Node {
       return <StatusBarStyleExample />;
     },
-  },
-  {
-    title: 'StatusBar background color',
-    render(): React.Node {
-      return <StatusBarBackgroundColorExample />;
-    },
-    platform: 'android',
   },
   {
     title: 'StatusBar static API',
