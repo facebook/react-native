@@ -41,7 +41,7 @@ T callFromJs(
         rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...);
     return jsi::Value();
 
-  } else if constexpr (is_jsi_v<T>) {
+  } else if constexpr (is_jsi_v<T> || supportsToJs<R, T>) {
     static_assert(supportsToJs<R, T>, "Incompatible return type");
 
     return toJs(
@@ -49,7 +49,6 @@ T callFromJs(
         (instance->*method)(
             rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...),
         jsInvoker);
-
   } else if constexpr (is_optional_jsi_v<T>) {
     static_assert(
         is_optional_v<R>
