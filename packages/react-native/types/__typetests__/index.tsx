@@ -1331,9 +1331,7 @@ class StatusBarTest extends React.Component {
 
     console.log('height:', StatusBar.currentHeight);
 
-    return (
-      <StatusBar barStyle="light-content" />
-    );
+    return <StatusBar barStyle="light-content" />;
   }
 }
 

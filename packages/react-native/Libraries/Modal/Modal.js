@@ -184,11 +184,15 @@ function confirmProps(props: ModalProps) {
         `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
       );
     }
-    if (typeof props.statusBarTranslucent !== "undefined") {
-      console.warn('`statusBarTranslucent` is deprecated and no longer has any effect');
+    if (typeof props.statusBarTranslucent !== 'undefined') {
+      console.warn(
+        '`statusBarTranslucent` is deprecated and no longer has any effect',
+      );
     }
-    if (typeof props.navigationBarTranslucent !== "undefined") {
-      console.warn('`navigationBarTranslucent` is deprecated and no longer has any effect');
+    if (typeof props.navigationBarTranslucent !== 'undefined') {
+      console.warn(
+        '`navigationBarTranslucent` is deprecated and no longer has any effect',
+      );
     }
   }
 }
