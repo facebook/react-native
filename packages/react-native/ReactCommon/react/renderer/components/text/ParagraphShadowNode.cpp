@@ -29,7 +29,7 @@ const char ParagraphComponentName[] = "Paragraph";
 
 void ParagraphShadowNode::initialize() noexcept {
 #ifdef ANDROID
-  if (getConcreteProps().isSelectable) {
+  if (getConcreteProps().selectable) {
     traits_.set(ShadowNodeTraits::Trait::KeyboardFocusable);
   }
 #endif
