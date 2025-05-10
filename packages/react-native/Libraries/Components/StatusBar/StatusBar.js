@@ -295,7 +295,9 @@ class StatusBar extends React.Component<StatusBarProps> {
    * @deprecated
    */
   static setBackgroundColor(color: ColorValue, animated?: boolean): void {
-    console.warn('`setBackgroundColor` is deprecated and no longer has any effect');
+    console.warn(
+      '`setBackgroundColor` is deprecated and no longer has any effect',
+    );
   }
 
   /**
