@@ -125,7 +125,7 @@ namespace facebook::react {
 
 template <>
 struct Bridging<JsErrorHandler::ProcessedError::StackFrame> {
-  static jsi::Value toJs(
+  static jsi::Object toJs(
       jsi::Runtime& runtime,
       const JsErrorHandler::ProcessedError::StackFrame& frame) {
     auto stackFrame = jsi::Object(runtime);
@@ -143,7 +143,7 @@ struct Bridging<JsErrorHandler::ProcessedError::StackFrame> {
 
 template <>
 struct Bridging<JsErrorHandler::ProcessedError> {
-  static jsi::Value toJs(
+  static jsi::Object toJs(
       jsi::Runtime& runtime,
       const JsErrorHandler::ProcessedError& error) {
     auto data = jsi::Object(runtime);
@@ -341,7 +341,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
       .extraData = std::move(extraData),
   };
 
-  auto data = bridging::toJs(runtime, processedError).asObject(runtime);
+  auto data = bridging::toJs(runtime, processedError);
 
   auto isComponentError =
       isTruthy(runtime, errorObj.getProperty(runtime, "isComponentError"));
