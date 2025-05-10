@@ -53,7 +53,6 @@ import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.applyEdgeToEdge
-import java.util.Objects
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
