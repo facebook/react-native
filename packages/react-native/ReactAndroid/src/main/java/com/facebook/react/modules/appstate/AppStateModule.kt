@@ -17,6 +17,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.module.annotations.ReactModule
 
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeAppStateSpec.NAME)
 internal class AppStateModule(reactContext: ReactApplicationContext) :
     NativeAppStateSpec(reactContext), LifecycleEventListener, WindowFocusChangeListener {
@@ -84,7 +85,7 @@ internal class AppStateModule(reactContext: ReactApplicationContext) :
 
   override fun invalidate() {
     super.invalidate()
-    reactApplicationContext.removeLifecycleEventListener(this)
+    getReactApplicationContext().removeLifecycleEventListener(this)
   }
 
   companion object {

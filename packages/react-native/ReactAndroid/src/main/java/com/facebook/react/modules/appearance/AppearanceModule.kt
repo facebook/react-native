@@ -91,7 +91,7 @@ constructor(
   public fun emitAppearanceChanged(colorScheme: String) {
     val appearancePreferences = Arguments.createMap()
     appearancePreferences.putString("colorScheme", colorScheme)
-    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     reactApplicationContext?.emitDeviceEvent(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences)
   }
 

@@ -22,7 +22,7 @@ public class SourceCodeModule(reactContext: ReactApplicationContext) :
       mapOf(
           "scriptURL" to
               Assertions.assertNotNull<String>(
-                  reactApplicationContext.getSourceURL(),
+                  getReactApplicationContext().getSourceURL(),
                   "No source URL loaded, have you initialised the instance?"))
 
   public companion object {
