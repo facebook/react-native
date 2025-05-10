@@ -120,7 +120,7 @@ static TextAttributes convertRawProp(
   textAttributes.baseWritingDirection = convertRawProp(
       context,
       rawProps,
-      "baseWritingDirection",
+      "writingDirection",
       sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
   textAttributes.lineBreakStrategy = convertRawProp(
@@ -297,7 +297,7 @@ void BaseTextProps::setProp(
         value,
         textAttributes,
         baseWritingDirection,
-        "baseWritingDirection");
+        "writingDirection");
     REBUILD_FIELD_SWITCH_CASE(
         defaults,
         value,
