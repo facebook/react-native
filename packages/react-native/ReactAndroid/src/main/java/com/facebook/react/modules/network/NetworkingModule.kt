@@ -232,7 +232,7 @@ public class NetworkingModule(
       FLog.e(TAG, "Failed to send url request: $url", th)
 
       ResponseUtil.onRequestError(
-          reactApplicationContextIfActiveOrWarn, requestId, th.message, th)
+          getReactApplicationContextIfActiveOrWarn(), requestId, th.message, th)
     }
   }
 
@@ -248,7 +248,7 @@ public class NetworkingModule(
       timeout: Int,
       withCredentials: Boolean
   ): Unit {
-    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     try {
       val uri = Uri.parse(url)
 
@@ -442,8 +442,7 @@ public class NetworkingModule(
               reactApplicationContext, requestId, "Request body URI field was set but null", null)
           return
         }
-        val fileInputStream =
-          reactApplicationContext?.let { RequestBodyUtil.getFileInputStream(it, uri) }
+        val fileInputStream = RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri)
         if (fileInputStream == null) {
           ResponseUtil.onRequestError(
               reactApplicationContext, requestId, "Could not retrieve file for uri $uri", null)
@@ -590,7 +589,7 @@ public class NetworkingModule(
     if (requestBody == null) {
       return null
     }
-    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     return RequestBodyUtil.createProgressRequest(
         requestBody,
         object : ProgressListener {
@@ -632,7 +631,7 @@ public class NetworkingModule(
     try {
       val buffer = ByteArray(MAX_CHUNK_SIZE_BETWEEN_FLUSHES)
       var read: Int
-      val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       while ((inputStream.read(buffer).also { read = it }) != -1) {
         ResponseUtil.onIncrementalDataReceived(
             reactApplicationContext,
@@ -688,7 +687,7 @@ public class NetworkingModule(
       contentType: String,
       requestId: Int
   ): MultipartBody.Builder? {
-    val reactApplicationContext = reactApplicationContextIfActiveOrWarn
+    val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     val multipartBuilder = MultipartBody.Builder()
     val mediaType = MediaType.parse(contentType)
     if (mediaType == null) {
@@ -747,7 +746,7 @@ public class NetworkingModule(
           return null
         }
         val fileInputStream =
-          reactApplicationContext?.let { RequestBodyUtil.getFileInputStream(it, fileContentUriStr) }
+            RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr)
         if (fileInputStream == null) {
           ResponseUtil.onRequestError(
               reactApplicationContext,

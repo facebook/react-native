@@ -23,6 +23,7 @@ import com.facebook.react.modules.core.PermissionListener
 import java.util.ArrayList
 
 /** Module that exposes the Android M Permission system to JS. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativePermissionsAndroidSpec.NAME)
 public class PermissionsModule(reactContext: ReactApplicationContext?) :
     NativePermissionsAndroidSpec(reactContext), PermissionListener {
@@ -38,7 +39,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * permission had been granted, false otherwise. See [Activity.checkSelfPermission].
    */
   public override fun checkPermission(permission: String, promise: Promise): Unit {
-    val context = reactApplicationContext.getBaseContext()
+    val context = getReactApplicationContext().getBaseContext()
     promise.resolve(context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
   }
 
@@ -68,7 +69,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * [Activity.checkSelfPermission].
    */
   public override fun requestPermission(permission: String, promise: Promise): Unit {
-    val context = reactApplicationContext.getBaseContext()
+    val context = getReactApplicationContext().getBaseContext()
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       promise.resolve(GRANTED)
       return
@@ -106,7 +107,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
     val grantedPermissions = WritableNativeMap()
     val permissionsToCheck = ArrayList<String>()
     var checkedPermissionsCount = 0
-    val context = reactApplicationContext.getBaseContext()
+    val context = getReactApplicationContext().getBaseContext()
     for (i in 0 until permissions.size()) {
       val perm = permissions.getString(i) ?: continue
       if (context.checkSelfPermission(perm) == PackageManager.PERMISSION_GRANTED) {
