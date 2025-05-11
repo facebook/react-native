@@ -18,7 +18,6 @@
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <cxxreact/TraceSection.h>
 #import <react/bridging/Bridging.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #include <glog/logging.h>
 
@@ -623,9 +622,7 @@ void ObjCTurboModule::setInvocationArg(
   /**
    * Convert arg to ObjC objects.
    */
-  BOOL enableModuleArgumentNSNullConversionIOS = ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
-  id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(
-      runtime, arg, jsInvoker_, enableModuleArgumentNSNullConversionIOS);
+  id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, arg, jsInvoker_, YES);
   if (objCArg) {
     NSString *methodNameNSString = @(methodName);
 
@@ -642,8 +639,8 @@ void ObjCTurboModule::setInvocationArg(
           // Message dispatch logic from old infra
           id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
           id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
-
-          if (enableModuleArgumentNSNullConversionIOS && objCArg == [NSNull null]) {
+          
+          if (objCArg == [NSNull null]) {
             return;
           }
 

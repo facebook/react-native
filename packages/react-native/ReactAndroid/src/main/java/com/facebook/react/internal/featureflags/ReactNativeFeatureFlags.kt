@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6623698bcf11e6e155ec021bb211ebbf>>
+ * @generated SignedSource<<62ec58d76b9e14b3e1e4e10e62fc196a>>
  */
 
 /**
@@ -155,12 +155,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMainQueueModulesOnIOS(): Boolean = accessor.enableMainQueueModulesOnIOS()
-
-  /**
-   * Enable NSNull conversion when handling module arguments on iOS
-   */
-  @JvmStatic
-  public fun enableModuleArgumentNSNullConversionIOS(): Boolean = accessor.enableModuleArgumentNSNullConversionIOS()
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
