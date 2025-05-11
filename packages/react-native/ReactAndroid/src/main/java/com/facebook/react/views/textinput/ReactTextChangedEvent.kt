@@ -30,7 +30,7 @@ internal class ReactTextChangedEvent(
 
   override fun getEventName(): String = EVENT_NAME
 
-  override fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     return Arguments.createMap().apply {
       putString("text", text)
       putInt("eventCount", eventCount)

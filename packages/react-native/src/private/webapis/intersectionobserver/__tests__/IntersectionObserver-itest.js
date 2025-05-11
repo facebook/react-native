@@ -7,14 +7,16 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags utilizeTokensInIntersectionObserver:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 import type IntersectionObserverType from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
+import {createShadowNodeReferenceCountingRef} from '../../../__tests__/utilities/ShadowNodeReferenceCounter';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {ScrollView, View} from 'react-native';
@@ -841,6 +843,48 @@ describe('IntersectionObserver', () => {
         width: 1000,
         height: 1000,
       });
+    });
+
+    it('should not retain initial children of observed targets', () => {
+      const root = Fantom.createRoot();
+      observer = new IntersectionObserver(() => {});
+
+      const [getReferenceCount, ref] = createShadowNodeReferenceCountingRef();
+
+      const observeRef: React.RefSetter<
+        React.ElementRef<typeof View>,
+      > = instance => {
+        const element = ensureReactNativeElement(instance);
+        observer.observe(element);
+        return () => {
+          observer.unobserve(element);
+        };
+      };
+
+      function Observe({children}: $ReadOnly<{children?: React.Node}>) {
+        return <View ref={observeRef}>{children}</View>;
+      }
+
+      Fantom.runTask(() => {
+        root.render(
+          <Observe>
+            <View ref={ref} />
+          </Observe>,
+        );
+      });
+
+      expect(getReferenceCount()).toBeGreaterThan(0);
+
+      Fantom.runTask(() => {
+        root.render(<Observe />);
+      });
+
+      // TODO (T223254666): Delete this and figure out why test fails.
+      Fantom.runTask(() => {
+        root.render(<Observe />);
+      });
+
+      expect(getReferenceCount()).toBe(0);
     });
 
     describe('rootThreshold', () => {

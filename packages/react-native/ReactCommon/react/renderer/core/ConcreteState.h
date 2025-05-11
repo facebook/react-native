@@ -49,17 +49,15 @@ class ConcreteState : public State {
   /*
    * Creates an updated `State` object with given previous one and `data`.
    */
-  explicit ConcreteState(const SharedData& data, const State& previousState)
-      : State(data, previousState) {}
+  explicit ConcreteState(SharedData data, const State& previousState)
+      : State(std::move(data), previousState) {}
 
   /*
    * Creates a first-of-its-family `State` object with given `family` and
    * `data`.
    */
-  explicit ConcreteState(
-      const SharedData& data,
-      const ShadowNodeFamily::Shared& family)
-      : State(data, family) {}
+  explicit ConcreteState(SharedData data, ShadowNodeFamily::Weak family)
+      : State(std::move(data), std::move(family)) {}
 
   ~ConcreteState() override = default;
 

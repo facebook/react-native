@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d0bd91d4b6685104d89086086a100d3>>
+ * @generated SignedSource<<7cc4d81e12995c1ffdf19144cb50492d>>
  */
 
 /**
@@ -57,6 +57,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableCustomFocusSearchOnClippedElementsAndroid(jsi::Runtime& runtime);
 
+  bool enableDestroyShadowTreeRevisionAsync(jsi::Runtime& runtime);
+
   bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
@@ -85,6 +87,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
+  bool enablePreparedTextLayout(jsi::Runtime& runtime);
+
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
   bool enableResourceTimingAPI(jsi::Runtime& runtime);
@@ -105,13 +109,15 @@ class NativeReactNativeFeatureFlags
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
+  bool incorporateMaxLinesDuringAndroidLayout(jsi::Runtime& runtime);
+
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
   bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
-  bool useEditTextStockAndroidFocusBehavior(jsi::Runtime& runtime);
+  bool useAndroidTextLayoutWidthDirectly(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 

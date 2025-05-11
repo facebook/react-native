@@ -15,7 +15,7 @@ ComponentBuilder::ComponentBuilder(
     ComponentDescriptorRegistry::Shared componentDescriptorRegistry)
     : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)){};
 
-ShadowNode::Unshared ComponentBuilder::build(
+std::shared_ptr<ShadowNode> ComponentBuilder::build(
     const ElementFragment& elementFragment) const {
   auto& componentDescriptor =
       componentDescriptorRegistry_->at(elementFragment.componentHandle);

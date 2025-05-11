@@ -16,11 +16,11 @@ namespace facebook::react {
 
 IntersectionObserver::IntersectionObserver(
     IntersectionObserverObserverId intersectionObserverId,
-    ShadowNode::Shared targetShadowNode,
+    ShadowNodeFamily::Shared targetShadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds)
     : intersectionObserverId_(intersectionObserverId),
-      targetShadowNode_(std::move(targetShadowNode)),
+      targetShadowNodeFamily_(std::move(targetShadowNodeFamily)),
       thresholds_(std::move(thresholds)),
       rootThresholds_(std::move(rootThresholds)) {}
 
@@ -112,8 +112,7 @@ IntersectionObserver::updateIntersectionObservation(
       layoutableRootShadowNode != nullptr &&
       "RootShadowNode instances must always inherit from LayoutableShadowNode.");
 
-  auto targetAncestors =
-      targetShadowNode_->getFamily().getAncestors(rootShadowNode);
+  auto targetAncestors = targetShadowNodeFamily_->getAncestors(rootShadowNode);
 
   // Absolute coordinates of the root
   auto rootBoundingRect = getRootBoundingRect(*layoutableRootShadowNode);
@@ -189,7 +188,7 @@ IntersectionObserver::setIntersectingState(
     state_ = newState;
     IntersectionObserverEntry entry{
         intersectionObserverId_,
-        targetShadowNode_,
+        targetShadowNodeFamily_,
         targetBoundingRect,
         rootBoundingRect,
         intersectionRect,
@@ -212,7 +211,7 @@ IntersectionObserver::setNotIntersectingState(
     state_ = IntersectionObserverState::NotIntersecting();
     IntersectionObserverEntry entry{
         intersectionObserverId_,
-        targetShadowNode_,
+        targetShadowNodeFamily_,
         targetBoundingRect,
         rootBoundingRect,
         intersectionRect,

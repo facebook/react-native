@@ -62,8 +62,6 @@ import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.UIConstantsProviderBinding
 import com.facebook.react.uimanager.UIConstantsProviderBinding.ConstantsForViewManagerProvider
-import com.facebook.react.uimanager.UIConstantsProviderBinding.ConstantsProvider
-import com.facebook.react.uimanager.UIConstantsProviderBinding.DefaultEventTypesProvider
 import com.facebook.react.uimanager.UIManagerModuleConstantsHelper
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerRegistry
@@ -79,8 +77,8 @@ import kotlin.collections.Collection
 import kotlin.jvm.JvmStatic
 
 /**
- * A replacement for [com.facebook.react.CatalystInstance] responsible for creating and managing a
- * React Native instance
+ * A replacement for [com.facebook.react.bridge.CatalystInstance] responsible for creating and
+ * managing a React Native instance
  */
 @ThreadSafe
 @DoNotStrip
@@ -211,7 +209,7 @@ internal class ReactInstance(
           // 2. genericBubblingEventTypes.
           // 3. genericDirectEventTypes.
           // We want to match this beahavior.
-          DefaultEventTypesProvider {
+          {
             Arguments.makeNativeMap(UIManagerModuleConstantsHelper.getDefaultExportableEventTypes())
           },
           ConstantsForViewManagerProvider { viewManagerName: String ->
@@ -220,7 +218,7 @@ internal class ReactInstance(
                     ?: return@ConstantsForViewManagerProvider null
             getConstantsForViewManager(viewManager, customDirectEvents)
           },
-          ConstantsProvider {
+          {
             val viewManagers: List<ViewManager<*, *>> =
                 ArrayList(viewManagerResolver.eagerViewManagerMap.values)
             val constants = createConstants(viewManagers, customDirectEvents)

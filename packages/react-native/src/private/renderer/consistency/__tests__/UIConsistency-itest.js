@@ -11,7 +11,7 @@
  * @fantom_flags enableSynchronousStateUpdates:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 

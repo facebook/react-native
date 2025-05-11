@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dae3956726e1cbbb2b78d9fffaeca6dd>>
+ * @generated SignedSource<<656fc82f692a639b7c08f289a7637507>>
  */
 
 /**
@@ -60,6 +60,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableCustomFocusSearchOnClippedElementsAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool enableDestroyShadowTreeRevisionAsync(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool enableDoubleMeasurementFixAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -102,6 +105,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableNewBackgroundAndBorderDrawables(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool enablePreparedTextLayout(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -132,6 +138,9 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool fuseboxNetworkInspectionEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
+  static bool incorporateMaxLinesDuringAndroidLayout(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
   static bool traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -141,7 +150,7 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool useAlwaysAvailableJSErrorHandling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool useEditTextStockAndroidFocusBehavior(
+  static bool useAndroidTextLayoutWidthDirectly(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useFabricInterop(

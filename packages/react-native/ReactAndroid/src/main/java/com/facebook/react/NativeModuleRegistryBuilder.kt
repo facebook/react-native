@@ -28,7 +28,7 @@ public class NativeModuleRegistryBuilder(
   public constructor(
       reactApplicationContext: ReactApplicationContext,
       @Suppress("UNUSED_PARAMETER") reactInstanceManager: ReactInstanceManager
-  ) : this(reactApplicationContext) {}
+  ) : this(reactApplicationContext)
 
   public fun processPackage(reactPackage: ReactPackage) {
     // We use an iterable instead of an iterator here to ensure thread safety, and that this list

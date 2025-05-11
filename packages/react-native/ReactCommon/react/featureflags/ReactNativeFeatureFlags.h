@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<871f96445659d2f927efeda5480b6f96>>
+ * @generated SignedSource<<f14956751ac132ac58fcbd2dd2f331a9>>
  */
 
 /**
@@ -90,6 +90,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableCustomFocusSearchOnClippedElementsAndroid();
 
   /**
+   * Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.
+   */
+  RN_EXPORT static bool enableDestroyShadowTreeRevisionAsync();
+
+  /**
    * When enabled a subset of components will avoid double measurement on Android.
    */
   RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
@@ -160,6 +165,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
 
   /**
+   * Enables caching text layout artifacts for later reuse
+   */
+  RN_EXPORT static bool enablePreparedTextLayout();
+
+  /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
    */
   RN_EXPORT static bool enablePropsUpdateReconciliationAndroid();
@@ -210,6 +220,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 
   /**
+   * Set maxLines and ellipsization during Android layout creation
+   */
+  RN_EXPORT static bool incorporateMaxLinesDuringAndroidLayout();
+
+  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
@@ -225,9 +240,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
 
   /**
-   * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
+   * Trust the width of a text layout we create, instead of re-deriving it from its contents
    */
-  RN_EXPORT static bool useEditTextStockAndroidFocusBehavior();
+  RN_EXPORT static bool useAndroidTextLayoutWidthDirectly();
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

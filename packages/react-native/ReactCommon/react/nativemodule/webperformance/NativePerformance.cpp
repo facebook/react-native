@@ -8,8 +8,8 @@
 #include "NativePerformance.h"
 
 #include <memory>
-#include <mutex>
 #include <unordered_map>
+#include <variant>
 
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
@@ -45,6 +45,50 @@ class PerformanceObserverWrapper : public jsi::NativeState {
 void sortEntries(std::vector<PerformanceEntry>& entries) {
   return std::stable_sort(
       entries.begin(), entries.end(), PerformanceEntrySorter{});
+}
+
+NativePerformanceEntry toNativePerformanceEntry(const PerformanceEntry& entry) {
+  auto nativeEntry = std::visit(
+      [](const auto& entryData) -> NativePerformanceEntry {
+        return {
+            .name = entryData.name,
+            .entryType = entryData.entryType,
+            .startTime = entryData.startTime,
+            .duration = entryData.duration,
+        };
+      },
+      entry);
+
+  if (std::holds_alternative<PerformanceEventTiming>(entry)) {
+    auto eventEntry = std::get<PerformanceEventTiming>(entry);
+    nativeEntry.processingStart = eventEntry.processingStart;
+    nativeEntry.processingEnd = eventEntry.processingEnd;
+    nativeEntry.interactionId = eventEntry.interactionId;
+  }
+  if (std::holds_alternative<PerformanceResourceTiming>(entry)) {
+    auto resourceEntry = std::get<PerformanceResourceTiming>(entry);
+    nativeEntry.fetchStart = resourceEntry.fetchStart;
+    nativeEntry.requestStart = resourceEntry.requestStart;
+    nativeEntry.connectStart = resourceEntry.connectStart;
+    nativeEntry.connectEnd = resourceEntry.connectEnd;
+    nativeEntry.responseStart = resourceEntry.responseStart;
+    nativeEntry.responseEnd = resourceEntry.responseEnd;
+    nativeEntry.responseStatus = resourceEntry.responseStatus;
+  }
+
+  return nativeEntry;
+}
+
+std::vector<NativePerformanceEntry> toNativePerformanceEntries(
+    std::vector<PerformanceEntry>& entries) {
+  std::vector<NativePerformanceEntry> result;
+  result.reserve(entries.size());
+
+  for (auto& entry : entries) {
+    result.emplace_back(toNativePerformanceEntry(entry));
+  }
+
+  return result;
 }
 
 const std::array<PerformanceEntryType, 2> ENTRY_TYPES_AVAILABLE_FROM_TIMELINE{
@@ -122,7 +166,7 @@ void NativePerformance::clearMeasures(
   }
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntries(
+std::vector<NativePerformanceEntry> NativePerformance::getEntries(
     jsi::Runtime& /*rt*/) {
   std::vector<PerformanceEntry> entries;
 
@@ -132,10 +176,10 @@ std::vector<PerformanceEntry> NativePerformance::getEntries(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntriesByName(
+std::vector<NativePerformanceEntry> NativePerformance::getEntriesByName(
     jsi::Runtime& /*rt*/,
     std::string entryName,
     std::optional<PerformanceEntryType> entryType) {
@@ -155,10 +199,10 @@ std::vector<PerformanceEntry> NativePerformance::getEntriesByName(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntriesByType(
+std::vector<NativePerformanceEntry> NativePerformance::getEntriesByType(
     jsi::Runtime& /*rt*/,
     PerformanceEntryType entryType) {
   std::vector<PerformanceEntry> entries;
@@ -169,7 +213,7 @@ std::vector<PerformanceEntry> NativePerformance::getEntriesByType(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
 std::vector<std::pair<std::string, uint32_t>> NativePerformance::getEventCounts(
@@ -304,7 +348,7 @@ void NativePerformance::disconnect(jsi::Runtime& rt, jsi::Object observerObj) {
   observer->disconnect();
 }
 
-std::vector<PerformanceEntry> NativePerformance::takeRecords(
+std::vector<NativePerformanceEntry> NativePerformance::takeRecords(
     jsi::Runtime& rt,
     jsi::Object observerObj,
     bool sort) {
@@ -320,7 +364,7 @@ std::vector<PerformanceEntry> NativePerformance::takeRecords(
   if (sort) {
     sortEntries(records);
   }
-  return records;
+  return toNativePerformanceEntries(records);
 }
 
 std::vector<PerformanceEntryType>

@@ -61,14 +61,27 @@ class NativeIntersectionObserver
  public:
   NativeIntersectionObserver(std::shared_ptr<CallInvoker> jsInvoker);
 
+  // TODO(T223605846): Remove legacy observe method
+  [[deprecated("Please use observeV2")]]
   void observe(
       jsi::Runtime& runtime,
       NativeIntersectionObserverObserveOptions options);
 
+  // TODO(T223605846): Remove legacy unobserve method
+  [[deprecated("Please use unobserveV2")]]
   void unobserve(
       jsi::Runtime& runtime,
       IntersectionObserverObserverId intersectionObserverId,
       jsi::Object targetShadowNode);
+
+  jsi::Object observeV2(
+      jsi::Runtime& runtime,
+      NativeIntersectionObserverObserveOptions options);
+
+  void unobserveV2(
+      jsi::Runtime& runtime,
+      IntersectionObserverObserverId intersectionObserverId,
+      jsi::Object targetToken);
 
   void connect(
       jsi::Runtime& runtime,

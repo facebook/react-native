@@ -19,7 +19,7 @@ import com.facebook.react.viewmanagers.SafeAreaViewManagerInterface
 
 /** View manager for [ReactSafeAreaView] components. */
 @ReactModule(name = ReactSafeAreaViewManager.REACT_CLASS)
-internal class ReactSafeAreaViewManager() :
+internal class ReactSafeAreaViewManager :
     ViewGroupManager<ReactSafeAreaView>(), SafeAreaViewManagerInterface<ReactSafeAreaView> {
 
   private val delegate: ViewManagerDelegate<ReactSafeAreaView> = SafeAreaViewManagerDelegate(this)

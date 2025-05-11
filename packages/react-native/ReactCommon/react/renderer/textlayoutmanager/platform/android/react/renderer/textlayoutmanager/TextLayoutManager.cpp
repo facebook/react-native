@@ -5,20 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "TextLayoutManager.h"
-
 #include <span>
 #include <utility>
 
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
+#include <react/debug/react_native_assert.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
 
 namespace facebook::react {
+
+static_assert(TextLayoutManagerExtended::supportsLineMeasurement());
+static_assert(TextLayoutManagerExtended::supportsPreparedLayout());
 
 namespace {
 
@@ -287,6 +291,104 @@ LinesMeasurements TextLayoutManager::measureLines(
       });
 
   return lineMeasurements;
+}
+
+TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
+    const TextLayoutContext& layoutContext,
+    const LayoutConstraints& layoutConstraints) const {
+  const auto& fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+  static auto prepareLayout =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<JPreparedLayout::javaobject(
+              jint,
+              JReadableMapBuffer::javaobject,
+              JReadableMapBuffer::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat)>("prepareLayout");
+
+  auto attributedStringMB =
+      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+  auto paragraphAttributesMB =
+      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+
+  auto minimumSize = layoutConstraints.minimumSize;
+  auto maximumSize = layoutConstraints.maximumSize;
+
+  // T222682416: We don't have any global cache here. We should investigate
+  // whether that is desirable
+  return {jni::make_global(prepareLayout(
+      fabricUIManager,
+      layoutContext.surfaceId,
+      attributedStringMB.get(),
+      paragraphAttributesMB.get(),
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height))};
+}
+
+TextMeasurement TextLayoutManager::measurePreparedLayout(
+    const PreparedLayout& preparedLayout,
+    const TextLayoutContext& /*layoutContext*/,
+    const LayoutConstraints& layoutConstraints) const {
+  const auto& fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+  static auto measurePreparedLayout =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jni::JArrayFloat(
+              JPreparedLayout::javaobject, jfloat, jfloat, jfloat, jfloat)>(
+              "measurePreparedLayout");
+
+  auto minimumSize = layoutConstraints.minimumSize;
+  auto maximumSize = layoutConstraints.maximumSize;
+
+  auto measurementsArr = measurePreparedLayout(
+      fabricUIManager,
+      preparedLayout.get(),
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height);
+  auto measurements = measurementsArr->getRegion(
+      0, static_cast<jsize>(measurementsArr->size()));
+
+  react_native_assert(measurementsArr->size() >= 2);
+  react_native_assert((measurementsArr->size() - 2) % 4 == 0);
+
+  TextMeasurement textMeasurement;
+
+  textMeasurement.size.width = measurements[0];
+  textMeasurement.size.height = measurements[1];
+
+  if (measurementsArr->size() > 2) {
+    textMeasurement.attachments.reserve((measurementsArr->size() - 2) / 4);
+    for (size_t i = 2; i < measurementsArr->size(); i += 4) {
+      auto top = measurements[i];
+      auto left = measurements[i + 1];
+      auto width = measurements[i + 2];
+      auto height = measurements[i + 3];
+
+      if (std::isnan(top) || std::isnan(left)) {
+        textMeasurement.attachments.push_back(
+            TextMeasurement::Attachment{.frame = Rect{}, .isClipped = true});
+      } else {
+        textMeasurement.attachments.push_back(TextMeasurement::Attachment{
+            .frame =
+                {.origin = {.x = left, .y = top},
+                 .size = {.width = width, .height = height}},
+            .isClipped = false});
+      }
+    }
+  }
+
+  return textMeasurement;
 }
 
 } // namespace facebook::react

@@ -301,10 +301,37 @@ void AccessibilityProps::setProp(
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
+
 SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
   const auto& defaultProps = AccessibilityProps();
   return SharedDebugStringConvertibleList{
       debugStringConvertibleItem("testID", testId, defaultProps.testId),
+      debugStringConvertibleItem(
+          "accessibilityRole",
+          accessibilityRole,
+          defaultProps.accessibilityRole),
+      debugStringConvertibleItem(
+          "accessible", accessible, defaultProps.accessible),
+      debugStringConvertibleItem(
+          "accessibilityActions",
+          accessibilityActions,
+          defaultProps.accessibilityActions),
+      debugStringConvertibleItem(
+          "accessibilityElementsHidden",
+          accessibilityElementsHidden,
+          defaultProps.accessibilityElementsHidden),
+      debugStringConvertibleItem(
+          "accessibilityHint",
+          accessibilityHint,
+          defaultProps.accessibilityHint),
+      debugStringConvertibleItem(
+          "accessibilityLabel",
+          accessibilityLabel,
+          defaultProps.accessibilityLabel),
+      debugStringConvertibleItem(
+          "accessibilityLiveRegion",
+          accessibilityLiveRegion,
+          defaultProps.accessibilityLiveRegion),
   };
 }
 #endif // RN_DEBUG_STRING_CONVERTIBLE

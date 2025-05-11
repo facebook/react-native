@@ -27,6 +27,7 @@ const preTransforms: Array<PreTransformFn> = [
   require('./transforms/replaceEmptyWithNever'),
   require('./transforms/replaceStringishWithString'),
   require('./transforms/replaceNullablePropertiesWithUndefined'),
+  require('./transforms/reattachDocComments'),
 ];
 const postTransforms: Array<PluginObj<mixed>> = [];
 const prettierOptions = {parser: 'babel'};

@@ -24,10 +24,19 @@ export type RawPerformanceEntry = {
   startTime: number,
   duration: number,
 
-  // For "event" entries only:
+  // For PerformanceEventTiming only
   processingStart?: number,
   processingEnd?: number,
   interactionId?: number,
+
+  // For PerformanceResourceTiming only
+  fetchStart?: number,
+  requestStart?: number,
+  connectStart?: number,
+  connectEnd?: number,
+  responseStart?: number,
+  responseEnd?: number,
+  responseStatus?: number,
 };
 
 export type OpaqueNativeObserverHandle = mixed;

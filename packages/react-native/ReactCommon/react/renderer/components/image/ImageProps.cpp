@@ -174,4 +174,158 @@ void ImageProps::setProp(
   }
 }
 
+#ifdef ANDROID
+
+static folly::dynamic convertImageSource(const ImageSource& imageSource) {
+  folly::dynamic imageSourceResult = folly::dynamic::object();
+  switch (imageSource.type) {
+    case ImageSource::Type::Invalid:
+      imageSourceResult["type"] = "invalid";
+      break;
+    case ImageSource::Type::Remote:
+      imageSourceResult["type"] = "remote";
+      break;
+    case ImageSource::Type::Local:
+      imageSourceResult["type"] = "local";
+      break;
+  }
+
+  imageSourceResult["uri"] = imageSource.uri;
+  imageSourceResult["bundle"] = imageSource.bundle;
+  imageSourceResult["scale"] = imageSource.scale;
+
+  folly::dynamic size = folly::dynamic::object();
+  size["width"] = imageSource.size.width;
+  size["height"] = imageSource.size.height;
+  imageSourceResult["size"] = size;
+
+  imageSourceResult["body"] = imageSource.body;
+  imageSourceResult["method"] = imageSource.method;
+
+  switch (imageSource.cache) {
+    case ImageSource::CacheStategy::Default:
+      imageSourceResult["cache"] = "default";
+      break;
+    case ImageSource::CacheStategy::Reload:
+      imageSourceResult["cache"] = "reload";
+      break;
+    case ImageSource::CacheStategy::ForceCache:
+      imageSourceResult["cache"] = "force-cache";
+      break;
+    case ImageSource::CacheStategy::OnlyIfCached:
+      imageSourceResult["cache"] = "only-if-cached";
+      break;
+  }
+
+  folly::dynamic headersObject = folly::dynamic::object();
+  for (const auto& header : imageSource.headers) {
+    headersObject[header.first] = header.second;
+  }
+  imageSourceResult["headers"] = headersObject;
+  return imageSourceResult;
+}
+
+static folly::dynamic convertEdgeInsets(const EdgeInsets& edgeInsets) {
+  folly::dynamic edgeInsetsResult = folly::dynamic::object();
+  edgeInsetsResult["left"] = edgeInsets.left;
+  edgeInsetsResult["top"] = edgeInsets.top;
+  edgeInsetsResult["right"] = edgeInsets.right;
+  edgeInsetsResult["bottom"] = edgeInsets.bottom;
+  return edgeInsetsResult;
+}
+
+folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
+  static const auto defaultProps = ImageProps();
+
+  const ImageProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ImageProps*>(prevProps);
+
+  folly::dynamic result = ViewProps::getDiffProps(oldProps);
+
+  if (sources != oldProps->sources) {
+    auto sourcesArray = folly::dynamic::array();
+    for (const auto& source : sources) {
+      sourcesArray.push_back(convertImageSource(source));
+    }
+    result["source"] = sourcesArray;
+  }
+
+  if (defaultSource != oldProps->defaultSource) {
+    result["defaultSource"] = convertImageSource(defaultSource);
+  }
+
+  if (loadingIndicatorSource != oldProps->loadingIndicatorSource) {
+    result["loadingIndicatorSource"] =
+        convertImageSource(loadingIndicatorSource);
+  }
+
+  if (resizeMode != oldProps->resizeMode) {
+    switch (resizeMode) {
+      case ImageResizeMode::Cover:
+        result["resizeMode"] = "cover";
+        break;
+      case ImageResizeMode::Contain:
+        result["resizeMode"] = "contain";
+        break;
+      case ImageResizeMode::Stretch:
+        result["resizeMode"] = "stretch";
+        break;
+      case ImageResizeMode::Center:
+        result["resizeMode"] = "center";
+        break;
+      case ImageResizeMode::Repeat:
+        result["resizeMode"] = "repeat";
+        break;
+      case ImageResizeMode::None:
+        result["resizeMode"] = "none";
+        break;
+    }
+  }
+
+  if (blurRadius != oldProps->blurRadius) {
+    result["blurRadius"] = blurRadius;
+  }
+
+  if (capInsets != oldProps->capInsets) {
+    result["capInsets"] = convertEdgeInsets(capInsets);
+  }
+
+  if (tintColor != oldProps->tintColor) {
+    result["tintColor"] = *tintColor;
+  }
+
+  if (internal_analyticTag != oldProps->internal_analyticTag) {
+    result["internal_analyticTag"] = internal_analyticTag;
+  }
+
+  if (resizeMethod != oldProps->resizeMethod) {
+    result["resizeMethod"] = resizeMethod;
+  }
+
+  if (resizeMultiplier != oldProps->resizeMultiplier) {
+    result["resizeMultiplier"] = resizeMultiplier;
+  }
+
+  if (shouldNotifyLoadEvents != oldProps->shouldNotifyLoadEvents) {
+    result["shouldNotifyLoadEvents"] = shouldNotifyLoadEvents;
+  }
+
+  if (overlayColor != oldProps->overlayColor) {
+    result["overlayColor"] = *overlayColor;
+  }
+
+  if (fadeDuration != oldProps->fadeDuration) {
+    result["fadeDuration"] = fadeDuration;
+  }
+
+  if (progressiveRenderingEnabled != oldProps->progressiveRenderingEnabled) {
+    result["progressiveRenderingEnabled"] = progressiveRenderingEnabled;
+  }
+
+  return result;
+}
+
+#endif
+
 } // namespace facebook::react

@@ -31,6 +31,88 @@ class FBJSRuntime;
 namespace facebook {
 namespace jsi {
 
+/// UUID version 1 implementation. This should be constructed with constant
+/// arguments to identify fixed UUIDs.
+class JSI_EXPORT UUID {
+ public:
+  // Construct from raw parts
+  constexpr UUID(
+      uint32_t timeLow,
+      uint16_t timeMid,
+      uint16_t timeHighAndVersion,
+      uint16_t variantAndClockSeq,
+      uint64_t node)
+      : high(
+            ((uint64_t)(timeLow) << 32) | ((uint64_t)(timeMid) << 16) |
+            ((uint64_t)(timeHighAndVersion))),
+        low(((uint64_t)(variantAndClockSeq) << 48) | node) {}
+
+  // Default constructor (zero UUID)
+  constexpr UUID() : high(0), low(0) {}
+
+  constexpr UUID(const UUID&) = default;
+  constexpr UUID& operator=(const UUID&) = default;
+
+  constexpr bool operator==(const UUID& other) const {
+    return high == other.high && low == other.low;
+  }
+  constexpr bool operator!=(const UUID& other) const {
+    return !(*this == other);
+  }
+
+  // Ordering (for std::map, sorting, etc.)
+  constexpr bool operator<(const UUID& other) const {
+    return (high < other.high) || (high == other.high && low < other.low);
+  }
+
+  // Hash support for UUID (for unordered_map compatibility)
+  struct Hash {
+    std::size_t operator()(const UUID& uuid) const noexcept {
+      return std::hash<uint64_t>{}(uuid.high) ^
+          (std::hash<uint64_t>{}(uuid.low) << 1);
+    }
+  };
+
+  // UUID format: 8-4-4-4-12
+  std::string toString() const {
+    std::string buffer(36, ' ');
+    std::snprintf(
+        buffer.data(),
+        buffer.size() + 1,
+        "%08x-%04x-%04x-%04x-%012llx",
+        getTimeLow(),
+        getTimeMid(),
+        getTimeHighAndVersion(),
+        getVariantAndClockSeq(),
+        (unsigned long long)getNode());
+    return buffer;
+  }
+
+  constexpr uint32_t getTimeLow() const {
+    return (uint32_t)(high >> 32);
+  }
+
+  constexpr uint16_t getTimeMid() const {
+    return (uint16_t)(high >> 16);
+  }
+
+  constexpr uint16_t getTimeHighAndVersion() const {
+    return (uint16_t)high;
+  }
+
+  constexpr uint16_t getVariantAndClockSeq() const {
+    return (uint16_t)(low >> 48);
+  }
+
+  constexpr uint64_t getNode() const {
+    return low & 0xFFFFFFFFFFFF;
+  }
+
+ private:
+  uint64_t high;
+  uint64_t low;
+};
+
 /// Base class for buffers of data or bytecode that need to be passed to the
 /// runtime. The buffer is expected to be fully immutable, so the result of
 /// size(), data(), and the contents of the pointer returned by data() must not
@@ -267,6 +349,16 @@ class JSI_EXPORT Runtime {
   /// which returns no metrics.
   virtual Instrumentation& instrumentation();
 
+  /// Stores the pointer \p data with the \p uuid in the runtime. This can be
+  /// used to store some custom data within the runtime. When the runtime is
+  /// destroyed, or if an entry at an existing key is overwritten, the runtime
+  /// will release its ownership of the held object.
+  void setRuntimeData(const UUID& uuid, const std::shared_ptr<void>& data);
+
+  /// Returns the data associated with the \p uuid in the runtime. If there's no
+  /// data associated with the uuid, return a null pointer.
+  std::shared_ptr<void> getRuntimeData(const UUID& uuid);
+
  protected:
   friend class Pointer;
   friend class PropNameID;
@@ -281,6 +373,19 @@ class JSI_EXPORT Runtime {
   friend class Value;
   friend class Scope;
   friend class JSError;
+
+  /// Stores the pointer \p data with the \p uuid in the runtime. This can be
+  /// used to store some custom data within the runtime. When the runtime is
+  /// destroyed, or if an entry at an existing key is overwritten, the runtime
+  /// will release its ownership by calling \p deleter.
+  virtual void setRuntimeDataImpl(
+      const UUID& uuid,
+      const void* data,
+      void (*deleter)(const void* data));
+
+  /// Returns the data associated with the \p uuid in the runtime. If there's no
+  /// data associated with the uuid, return a null pointer.
+  virtual const void* getRuntimeDataImpl(const UUID& uuid);
 
   // Potential optimization: avoid the cloneFoo() virtual dispatch,
   // and instead just fix the number of fields, and copy them, since

@@ -119,7 +119,7 @@ static ShadowNode::Shared getCaptureTargetOverride(
     return nullptr;
   }
 
-  ShadowNode::Weak maybeTarget = pendingPointerItr->second;
+  std::weak_ptr<const ShadowNode> maybeTarget = pendingPointerItr->second;
   if (maybeTarget.expired()) {
     // target has expired so it should functionally behave the same as if it
     // was removed from the override list.

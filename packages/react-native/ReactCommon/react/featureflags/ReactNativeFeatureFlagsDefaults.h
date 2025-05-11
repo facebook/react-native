@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9efccdd812d3d0fdd2d1a0061d778eaa>>
+ * @generated SignedSource<<f54c5becf4091df57e4e11d1c04698ab>>
  */
 
 /**
@@ -67,6 +67,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enableDestroyShadowTreeRevisionAsync() override {
+    return false;
+  }
+
   bool enableDoubleMeasurementFixAndroid() override {
     return false;
   }
@@ -123,6 +127,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enablePreparedTextLayout() override {
+    return false;
+  }
+
   bool enablePropsUpdateReconciliationAndroid() override {
     return false;
   }
@@ -163,6 +171,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool incorporateMaxLinesDuringAndroidLayout() override {
+    return true;
+  }
+
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     return false;
   }
@@ -175,7 +187,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool useEditTextStockAndroidFocusBehavior() override {
+  bool useAndroidTextLayoutWidthDirectly() override {
     return true;
   }
 

@@ -33,10 +33,14 @@ class ShadowNode : public Sealable,
                    public jsi::NativeState {
  public:
   using Shared = std::shared_ptr<const ShadowNode>;
-  using Weak = std::weak_ptr<const ShadowNode>;
-  using Unshared = std::shared_ptr<ShadowNode>;
+  // TODO(T223558094): delete this in the next version.
+  using Weak [[deprecated("Use std::weak_ptr<const ShadowNode> instead")]] =
+      std::weak_ptr<const ShadowNode>;
+  // TODO(T223558094): delete this in the next version.
+  using Unshared [[deprecated("Use std::weak_ptr<const ShadowNode> instead")]] =
+      std::shared_ptr<ShadowNode>;
   using ListOfShared = std::vector<Shared>;
-  using ListOfWeak = std::vector<Weak>;
+  using ListOfWeak = std::vector<std::weak_ptr<const ShadowNode>>;
   using SharedListOfShared = std::shared_ptr<const ListOfShared>;
   using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
   using UnsharedListOfWeak = std::shared_ptr<ListOfWeak>;
@@ -93,7 +97,7 @@ class ShadowNode : public Sealable,
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  Unshared clone(const ShadowNodeFragment& fragment) const;
+  std::shared_ptr<ShadowNode> clone(const ShadowNodeFragment& fragment) const;
 
   /*
    * Clones the node (and partially the tree starting from the node) by
@@ -102,10 +106,10 @@ class ShadowNode : public Sealable,
    *
    * Returns `nullptr` if the operation cannot be performed successfully.
    */
-  Unshared cloneTree(
+  std::shared_ptr<ShadowNode> cloneTree(
       const ShadowNodeFamily& shadowNodeFamily,
-      const std::function<Unshared(const ShadowNode& oldShadowNode)>& callback)
-      const;
+      const std::function<std::shared_ptr<ShadowNode>(
+          const ShadowNode& oldShadowNode)>& callback) const;
 
 #pragma mark - Getters
 
@@ -158,6 +162,8 @@ class ShadowNode : public Sealable,
   void sealRecursive() const;
 
   const ShadowNodeFamily& getFamily() const;
+
+  ShadowNodeFamily::Shared getFamilyShared() const;
 
 #pragma mark - Mutating Methods
 

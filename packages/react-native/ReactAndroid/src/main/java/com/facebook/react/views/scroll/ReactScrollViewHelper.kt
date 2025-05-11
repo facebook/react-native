@@ -566,7 +566,7 @@ public object ReactScrollViewHelper {
     }
   }
 
-  public class ReactScrollViewScrollState() {
+  public class ReactScrollViewScrollState {
 
     /** Get the position after current animation is finished */
     public val finalAnimatedPositionScroll: Point = Point()

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42e3fd2958733abb652f73d87b5b4a7d>>
+ * @generated SignedSource<<42a15fd8d0ea1cfe23bc3f98627a9090>>
  */
 
 /**
@@ -66,6 +66,10 @@ bool ReactNativeFeatureFlags::enableCustomFocusSearchOnClippedElementsAndroid() 
   return getAccessor().enableCustomFocusSearchOnClippedElementsAndroid();
 }
 
+bool ReactNativeFeatureFlags::enableDestroyShadowTreeRevisionAsync() {
+  return getAccessor().enableDestroyShadowTreeRevisionAsync();
+}
+
 bool ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid() {
   return getAccessor().enableDoubleMeasurementFixAndroid();
 }
@@ -122,6 +126,10 @@ bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
   return getAccessor().enableNewBackgroundAndBorderDrawables();
 }
 
+bool ReactNativeFeatureFlags::enablePreparedTextLayout() {
+  return getAccessor().enablePreparedTextLayout();
+}
+
 bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
   return getAccessor().enablePropsUpdateReconciliationAndroid();
 }
@@ -162,6 +170,10 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
   return getAccessor().fuseboxNetworkInspectionEnabled();
 }
 
+bool ReactNativeFeatureFlags::incorporateMaxLinesDuringAndroidLayout() {
+  return getAccessor().incorporateMaxLinesDuringAndroidLayout();
+}
+
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
   return getAccessor().traceTurboModulePromiseRejectionsOnAndroid();
 }
@@ -174,8 +186,8 @@ bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
   return getAccessor().useAlwaysAvailableJSErrorHandling();
 }
 
-bool ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior() {
-  return getAccessor().useEditTextStockAndroidFocusBehavior();
+bool ReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly() {
+  return getAccessor().useAndroidTextLayoutWidthDirectly();
 }
 
 bool ReactNativeFeatureFlags::useFabricInterop() {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62ec58d76b9e14b3e1e4e10e62fc196a>>
+ * @generated SignedSource<<a9968341533b3d6347ee99ce117dc62c>>
  */
 
 /**
@@ -91,6 +91,12 @@ public object ReactNativeFeatureFlags {
   public fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = accessor.enableCustomFocusSearchOnClippedElementsAndroid()
 
   /**
+   * Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.
+   */
+  @JvmStatic
+  public fun enableDestroyShadowTreeRevisionAsync(): Boolean = accessor.enableDestroyShadowTreeRevisionAsync()
+
+  /**
    * When enabled a subset of components will avoid double measurement on Android.
    */
   @JvmStatic
@@ -175,6 +181,12 @@ public object ReactNativeFeatureFlags {
   public fun enableNewBackgroundAndBorderDrawables(): Boolean = accessor.enableNewBackgroundAndBorderDrawables()
 
   /**
+   * Enables caching text layout artifacts for later reuse
+   */
+  @JvmStatic
+  public fun enablePreparedTextLayout(): Boolean = accessor.enablePreparedTextLayout()
+
+  /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
    */
   @JvmStatic
@@ -235,6 +247,12 @@ public object ReactNativeFeatureFlags {
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
 
   /**
+   * Set maxLines and ellipsization during Android layout creation
+   */
+  @JvmStatic
+  public fun incorporateMaxLinesDuringAndroidLayout(): Boolean = accessor.incorporateMaxLinesDuringAndroidLayout()
+
+  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   @JvmStatic
@@ -253,10 +271,10 @@ public object ReactNativeFeatureFlags {
   public fun useAlwaysAvailableJSErrorHandling(): Boolean = accessor.useAlwaysAvailableJSErrorHandling()
 
   /**
-   * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
+   * Trust the width of a text layout we create, instead of re-deriving it from its contents
    */
   @JvmStatic
-  public fun useEditTextStockAndroidFocusBehavior(): Boolean = accessor.useEditTextStockAndroidFocusBehavior()
+  public fun useAndroidTextLayoutWidthDirectly(): Boolean = accessor.useAndroidTextLayoutWidthDirectly()
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

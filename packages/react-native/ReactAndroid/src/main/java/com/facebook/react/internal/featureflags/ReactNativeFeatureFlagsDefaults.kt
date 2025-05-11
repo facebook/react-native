@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d343ae73a15daf1a4d8d85ba959dd81>>
+ * @generated SignedSource<<86773a0948ff9dd3b150678f336e6ff4>>
  */
 
 /**
@@ -43,6 +43,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = true
 
+  override fun enableDestroyShadowTreeRevisionAsync(): Boolean = false
+
   override fun enableDoubleMeasurementFixAndroid(): Boolean = false
 
   override fun enableEagerRootViewAttachment(): Boolean = false
@@ -71,6 +73,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
 
+  override fun enablePreparedTextLayout(): Boolean = false
+
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
   override fun enableResourceTimingAPI(): Boolean = false
@@ -91,13 +95,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
+  override fun incorporateMaxLinesDuringAndroidLayout(): Boolean = true
+
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
   override fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = false
 
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
-  override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
+  override fun useAndroidTextLayoutWidthDirectly(): Boolean = true
 
   override fun useFabricInterop(): Boolean = true
 

@@ -23,7 +23,7 @@ internal class RefreshEvent : Event<RefreshEvent> {
     return "topRefresh"
   }
 
-  override fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     return Arguments.createMap()
   }
 }

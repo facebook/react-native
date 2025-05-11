@@ -28,4 +28,28 @@ SharedDebugStringConvertibleList RawTextProps::getDebugProps() const {
 }
 #endif
 
+#ifdef ANDROID
+
+folly::dynamic RawTextProps::getDiffProps(const Props* prevProps) const {
+  folly::dynamic result = folly::dynamic::object();
+
+  static const auto defaultProps = RawTextProps();
+
+  const RawTextProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RawTextProps*>(prevProps);
+
+  if (this == oldProps) {
+    return result;
+  }
+
+  if (text != oldProps->text) {
+    result["text"] = text;
+  }
+
+  return result;
+}
+
+#endif
+
 } // namespace facebook::react

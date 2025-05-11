@@ -10,7 +10,7 @@
  * @fantom_flags useShadowNodeStateOnClone:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
@@ -18,10 +18,10 @@ import ensureInstance from '../../../src/private/__tests__/utilities/ensureInsta
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {ScrollView, View} from 'react-native';
-import NativeFantomForcedCloneCommitHook from 'react-native/src/private/testing/fantom/specs/NativeFantomForcedCloneCommitHook';
+import NativeFantomTestSpecificMethods from 'react-native/src/private/testing/fantom/specs/NativeFantomTestSpecificMethods';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
-NativeFantomForcedCloneCommitHook.setup();
+NativeFantomTestSpecificMethods.registerForcedCloneCommitHook();
 
 describe('ScrollViewShadowNode', () => {
   it('maintains state after commit hook processing', () => {

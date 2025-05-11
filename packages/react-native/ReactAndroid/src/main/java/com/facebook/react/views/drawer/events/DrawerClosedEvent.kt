@@ -21,7 +21,7 @@ internal class DrawerClosedEvent : Event<DrawerClosedEvent> {
 
   override fun getEventName(): String = EVENT_NAME
 
-  protected override fun getEventData(): WritableMap? = Arguments.createMap()
+  protected override fun getEventData(): WritableMap = Arguments.createMap()
 
   companion object {
     const val EVENT_NAME: String = "topDrawerClose"

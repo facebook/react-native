@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3a195160a461f2a83201aeb1f9100513>>
+ * @generated SignedSource<<7190cd81a60f3956bb57d647c6ff1dc1>>
  * @flow strict
  */
 
@@ -34,6 +34,7 @@ export interface Spec extends TurboModule {
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
   +enableCustomFocusSearchOnClippedElementsAndroid?: () => boolean;
+  +enableDestroyShadowTreeRevisionAsync?: () => boolean;
   +enableDoubleMeasurementFixAndroid?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
   +enableFabricLogs?: () => boolean;
@@ -48,6 +49,7 @@ export interface Spec extends TurboModule {
   +enableNativeCSSParsing?: () => boolean;
   +enableNetworkEventReporting?: () => boolean;
   +enableNewBackgroundAndBorderDrawables?: () => boolean;
+  +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableResourceTimingAPI?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
@@ -58,10 +60,11 @@ export interface Spec extends TurboModule {
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
+  +incorporateMaxLinesDuringAndroidLayout?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
-  +useEditTextStockAndroidFocusBehavior?: () => boolean;
+  +useAndroidTextLayoutWidthDirectly?: () => boolean;
   +useFabricInterop?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useOptimizedEventBatchingOnAndroid?: () => boolean;
