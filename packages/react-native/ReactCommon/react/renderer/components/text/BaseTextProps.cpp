@@ -120,7 +120,7 @@ static TextAttributes convertRawProp(
   textAttributes.baseWritingDirection = convertRawProp(
       context,
       rawProps,
-      "baseWritingDirection",
+      "writingDirection",
       sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
   textAttributes.lineBreakStrategy = convertRawProp(
