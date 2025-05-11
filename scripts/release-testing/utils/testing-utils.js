@@ -20,6 +20,7 @@ const {
   generateiOSArtifacts,
 } = require('../../releases/utils/release-utils');
 const ghaArtifactsUtils = require('./github-actions-utils.js');
+const chalk = require('chalk');
 const fs = require('fs');
 // $FlowIgnore[cannot-resolve-module]
 const {spawn} = require('node:child_process');
@@ -340,6 +341,21 @@ async function prepareArtifacts(
       };
 }
 
+function timeBlock(label /*: string*/, block /*: () => void */) {
+  console.info(`\n⏲️ ${chalk.bold.green(label)}:\n`);
+  let failed = true;
+  const start = new Date().getTime();
+  try {
+    block();
+    failed = false;
+  } finally {
+    const delta = new Date().getTime() - start;
+    console.info(
+      `🏁 ${chalk.bold.blue(label)} → ${(delta / 1000).toFixed(0)}s to ${failed ? chalk.red('fail') : chalk.green('succeed')}.`,
+    );
+  }
+}
+
 module.exports = {
   checkPackagerRunning,
   maybeLaunchAndroidEmulator,
@@ -347,4 +363,5 @@ module.exports = {
   launchPackagerInSeparateWindow,
   setupGHAArtifacts,
   prepareArtifacts,
+  timeBlock,
 };
