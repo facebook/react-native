@@ -1161,7 +1161,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   for (auto childId : _props->accessibilityOrder) {
     NSString *nsStringChildId = RCTNSStringFromString(childId);
     // Special case to allow for self-referencing with accessibilityOrder
-    if (nsStringChildId == self.nativeId) {
+    if ([nsStringChildId isEqualToString:self.nativeId]) {
       if (!_axElementDescribingSelf) {
         _axElementDescribingSelf = [[RCTViewAccessibilityElement alloc] initWithView:self];
       }
