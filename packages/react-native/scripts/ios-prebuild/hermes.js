@@ -29,23 +29,23 @@ async function prepareHermesArtifactsAsync(
   // See if the user has set the HERMES_ENGINE_TARBALL_PATH environment variable
   let localPath = process.env.HERMES_ENGINE_TARBALL_PATH ?? '';
 
+  // Create artifacts folder
+  const artifactsPath /*: string*/ = path.resolve(
+    process.cwd(),
+    '.build',
+    'artifacts',
+    'hermes',
+  );
+
+  // Ensure that the artifacts folder exists
+  fs.mkdirSync(artifactsPath, {recursive: true});
+
   // Only check if the artifacts folder exists if we are not using a local tarball
   if (!localPath) {
     // Resolve the version from the environment variable or use the default version
     const resolvedVersion = process.env.HERMES_VERSION ?? version;
 
     // Check if the Hermes artifacts are already downloaded
-    const artifactsPath /*: string*/ = path.resolve(
-      process.cwd(),
-      '.build',
-      'artifacts',
-      'hermes',
-    );
-
-    // Ensure that the artifacts folder exists
-    fs.mkdirSync(artifactsPath, {recursive: true});
-
-    // Check hermes version file
     if (checkExistingVersion(resolvedVersion, artifactsPath)) {
       return artifactsPath;
     }
