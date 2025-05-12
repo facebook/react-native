@@ -20,7 +20,6 @@ import com.facebook.imagepipeline.core.ImagePipeline
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.imagepipeline.request.ImageRequestBuilder
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.GuardedAsyncTask
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
@@ -28,7 +27,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.views.image.ReactCallerContextFactory
@@ -96,9 +95,10 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
             if (ref != null) {
               try {
                 val image: CloseableImage = ref.get()
-                val sizes: WritableMap = Arguments.createMap()
-                sizes.putInt("width", image.width)
-                sizes.putInt("height", image.height)
+                val sizes = buildReadableMap {
+                  put("width", image.width)
+                  put("height", image.height)
+                }
                 promise.resolve(sizes)
               } catch (e: Exception) {
                 promise.reject(ERROR_GET_SIZE_FAILURE, e)
@@ -131,7 +131,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
     }
-    val source = ImageSource(getReactApplicationContext(), uriString)
+    val source = ImageSource(reactApplicationContext, uriString)
     val imageRequestBuilder: ImageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(source.uri)
     val request: ImageRequest =
@@ -148,9 +148,10 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
             if (ref != null) {
               try {
                 val image: CloseableImage = ref.get()
-                val sizes: WritableMap = Arguments.createMap()
-                sizes.putInt("width", image.width)
-                sizes.putInt("height", image.height)
+                val sizes = buildReadableMap {
+                  put("width", image.width)
+                  put("height", image.height)
+                }
                 promise.resolve(sizes)
               } catch (e: Exception) {
                 promise.reject(ERROR_GET_SIZE_FAILURE, e)
@@ -227,16 +228,17 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
     @Suppress("DEPRECATION", "StaticFieldLeak")
     object : GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
           override fun doInBackgroundGuarded(vararg params: Void) {
-            val result: WritableMap = Arguments.createMap()
-            val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
-            for (i in 0 until uris.size()) {
-              val uriString = uris.getString(i)
-              if (!uriString.isNullOrEmpty()) {
-                val uri = Uri.parse(uriString)
-                if (imagePipeline.isInBitmapMemoryCache(uri)) {
-                  result.putString(uriString, "memory")
-                } else if (imagePipeline.isInDiskCacheSync(uri)) {
-                  result.putString(uriString, "disk")
+            val result = buildReadableMap {
+              val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
+              repeat(uris.size()) {
+                val uriString = uris.getString(it)
+                if (!uriString.isNullOrEmpty()) {
+                  val uri = Uri.parse(uriString)
+                  if (imagePipeline.isInBitmapMemoryCache(uri)) {
+                    put(uriString, "memory")
+                  } else if (imagePipeline.isInDiskCacheSync(uri)) {
+                    put(uriString, "disk")
+                  }
                 }
               }
             }

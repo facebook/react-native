@@ -1353,6 +1353,8 @@ public final class com/facebook/react/bridge/ReadableArrayBuilder {
 	public final fun add (D)V
 	public final fun add (I)V
 	public final fun add (J)V
+	public final fun add (Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun add (Lcom/facebook/react/bridge/ReadableMap;)V
 	public final fun add (Ljava/lang/String;)V
 	public final fun add (Z)V
 	public final fun addArray (Lkotlin/jvm/functions/Function1;)V
@@ -1386,6 +1388,8 @@ public final class com/facebook/react/bridge/ReadableMapBuilder {
 	public final fun put (Ljava/lang/String;D)V
 	public final fun put (Ljava/lang/String;I)V
 	public final fun put (Ljava/lang/String;J)V
+	public final fun put (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public final fun put (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public final fun put (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun put (Ljava/lang/String;Z)V
 	public final fun putArray (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
