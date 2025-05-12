@@ -12,7 +12,6 @@
 const {prepareHermesArtifactsAsync} = require('./ios-prebuild/hermes');
 const {
   createFolderIfNotExists,
-  prebuild_log,
   throwIfOnEden,
 } = require('./ios-prebuild/utils');
 const {execSync} = require('child_process');
@@ -29,8 +28,8 @@ const packageJsonPath = path.join(
 const {version: currentVersion} = require(packageJsonPath);
 
 async function main() {
-  prebuild_log('Prebuilding React Native iOS...');
-  prebuild_log('');
+  console.log('Prebuilding React Native iOS...');
+  console.log('');
 
   throwIfOnEden();
 
@@ -58,10 +57,9 @@ async function main() {
     const link = (fromPath /*:string*/, includePath /*:string*/) => {
       const source = path.resolve(root, fromPath);
       const target = path.resolve(linksFolder, includePath);
+      console.log(`Linking ${source} to ${target}...`);
 
       createFolderIfNotExists(target);
-
-      let copiedFiles = 0;
 
       // get subfolders in source - make sure we only copy folders with header files
       const entries = fs.readdirSync(source, {withFileTypes: true});
@@ -85,7 +83,6 @@ async function main() {
             }
             try {
               fs.linkSync(sourceFile, targetFile);
-              copiedFiles++;
             } catch (e) {
               console.error(
                 `Failed to create link for ${sourceFile} to ${targetFile}: ${e}`,
@@ -93,10 +90,6 @@ async function main() {
             }
           }
         });
-      }
-
-      if (copiedFiles > 0) {
-        prebuild_log(`Linking ${source} to ${target}...`);
       }
 
       const subfolders = entries
@@ -118,16 +111,15 @@ async function main() {
     );
 
     // CODEGEN
-    prebuild_log('Running codegen...');
+    console.log('Running codegen...');
     const codegenPath = path.join(root, '.build/codegen');
     createFolderIfNotExists(codegenPath);
 
     const command = `node scripts/generate-codegen-artifacts -p "${root}" -o "${codegenPath}"  -t ios`;
-    prebuild_log(command);
+    console.log(command);
     execSync(command, {stdio: 'inherit'});
 
     // LINKING
-    prebuild_log('Linking header files...');
     link('Libraries/WebSocket/', 'React');
     link('React/Base', 'React');
     link('React/Base/Surface', 'React');
@@ -169,7 +161,7 @@ async function main() {
     );
 
     // Done!
-    prebuild_log('🏁 Done!');
+    console.log('🏁 Done!');
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
