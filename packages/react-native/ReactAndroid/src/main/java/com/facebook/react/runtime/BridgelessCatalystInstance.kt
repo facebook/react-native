@@ -24,6 +24,7 @@ import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
@@ -35,6 +36,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
     message =
         "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
 @LegacyArchitecture
+@FrameworkAPI
 internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : CatalystInstance {
 
   override fun handleMemoryPressure(level: Int) {
@@ -94,13 +96,13 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
 
   @get:Deprecated("Deprecated in Java")
   public override val javaScriptContextHolder: JavaScriptContextHolder
-    get() = reactHost.getJavaScriptContextHolder()!!
+    get() = reactHost.javaScriptContextHolder!!
 
   @Suppress("INAPPLICABLE_JVM_NAME")
   @get:Deprecated("Deprecated in Java")
   @get:JvmName("getJSCallInvokerHolder") // This is needed to keep backward compatibility
   public override val jsCallInvokerHolder: CallInvokerHolder
-    get() = reactHost.getJSCallInvokerHolder()!!
+    get() = reactHost.jsCallInvokerHolder!!
 
   public override val nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder
     get() =
@@ -117,13 +119,13 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
       reactHost.getNativeModule(moduleName)
 
   public override val nativeModules: Collection<NativeModule>
-    get() = reactHost.getNativeModules()
+    get() = reactHost.nativeModules
 
   public override val reactQueueConfiguration: ReactQueueConfiguration
     get() = reactHost.reactQueueConfiguration!!
 
   public override val runtimeExecutor: RuntimeExecutor?
-    get() = reactHost.getRuntimeExecutor()
+    get() = reactHost.runtimeExecutor
 
   public override val runtimeScheduler: RuntimeScheduler
     get() = throw UnsupportedOperationException("Unimplemented method 'getRuntimeScheduler'")
