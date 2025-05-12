@@ -10,6 +10,7 @@ package com.facebook.react.uimanager
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import androidx.window.layout.WindowMetricsCalculator
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 
@@ -59,9 +60,19 @@ public object DisplayMetricsHolder {
   @JvmStatic
   public fun initDisplayMetrics(context: Context) {
     val displayMetrics = context.resources.displayMetrics
-    windowDisplayMetrics = displayMetrics
+    val windowDisplayMetrics = DisplayMetrics()
     val screenDisplayMetrics = DisplayMetrics()
+
+    windowDisplayMetrics.setTo(displayMetrics)
     screenDisplayMetrics.setTo(displayMetrics)
+
+    WindowMetricsCalculator
+      .getOrCreate()
+      .computeCurrentWindowMetrics(context).let {
+        windowDisplayMetrics.widthPixels = it.bounds.width()
+        windowDisplayMetrics.heightPixels = it.bounds.height()
+      }
+
     val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     checkNotNull(wm) { "WindowManager is null!" }
     // Get the real display metrics if we are using API level 17 or higher.
@@ -70,6 +81,8 @@ public object DisplayMetricsHolder {
     // See:
     // http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
     @Suppress("DEPRECATION") wm.defaultDisplay.getRealMetrics(screenDisplayMetrics)
+
+    DisplayMetricsHolder.windowDisplayMetrics = windowDisplayMetrics
     DisplayMetricsHolder.screenDisplayMetrics = screenDisplayMetrics
   }
 

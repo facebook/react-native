@@ -29,7 +29,6 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible) {}
 {
   return facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
       .HEIGHT = 0,
-      .DEFAULT_BACKGROUND_COLOR = std::nullopt,
   });
 }
 

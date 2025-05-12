@@ -26,6 +26,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.BuildConfig;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactHost;
 import com.facebook.react.ReactInstanceEventListener;
@@ -74,6 +75,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.react.views.view.WindowUtilKt;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -823,6 +825,17 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onConfigurationChanged(Context updatedContext) {
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          Activity currentActivity = getCurrentActivity();
+          if (currentActivity != null) {
+            WindowUtilKt.applyEdgeToEdge(currentActivity.getWindow());
+          }
+        }
+      });
+
     ReactContext currentReactContext = getCurrentReactContext();
     if (currentReactContext != null) {
       if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {

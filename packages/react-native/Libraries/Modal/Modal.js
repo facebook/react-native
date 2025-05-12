@@ -184,12 +184,14 @@ function confirmProps(props: ModalProps) {
         `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
       );
     }
-    if (
-      props.navigationBarTranslucent === true &&
-      props.statusBarTranslucent !== true
-    ) {
+    if (typeof props.statusBarTranslucent !== 'undefined') {
       console.warn(
-        'Modal with translucent navigation bar and without translucent status bar is not supported.',
+        '`statusBarTranslucent` is deprecated and no longer has any effect',
+      );
+    }
+    if (typeof props.navigationBarTranslucent !== 'undefined') {
+      console.warn(
+        '`navigationBarTranslucent` is deprecated and no longer has any effect',
       );
     }
   }
@@ -317,8 +319,6 @@ class Modal extends React.Component<ModalProps, ModalState> {
         onDismiss={onDismiss}
         ref={this.props.modalRef}
         visible={this.props.visible}
-        statusBarTranslucent={this.props.statusBarTranslucent}
-        navigationBarTranslucent={this.props.navigationBarTranslucent}
         identifier={this._identifier}
         style={styles.modal}
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
