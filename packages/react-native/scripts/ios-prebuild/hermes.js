@@ -61,7 +61,7 @@ async function prepareHermesArtifactsAsync(
       hermes_log(
         `Hermes artifacts folder already exists, but version does not match. Deleting: ${artifactsPath}`,
       );
-      // Lets create the veresion.txt file
+      // Lets create the version.txt file
       fs.mkdirSync(artifactsPath, {recursive: true});
       fs.writeFileSync(versionFilePath, resolved_version, 'utf8');
       hermes_log(
