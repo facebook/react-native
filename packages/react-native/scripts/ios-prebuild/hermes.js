@@ -86,7 +86,7 @@ type HermesEngineSourceType =
 
 */
 
-const HermesEngineSourceType = {
+const HermesEngineSourceTypes = {
   LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
   DOWNLOAD_PREBUILD_RELEASE_TARBALL: 'download_prebuild_release_tarball',
   DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
@@ -183,20 +183,20 @@ function hermesSourceType(
 ) /*: HermesEngineSourceType */ {
   if (hermesEngineTarballEnvvarDefined()) {
     hermesLog('Using local prebuild tarball');
-    return HermesEngineSourceType.LOCAL_PREBUILT_TARBALL;
+    return HermesEngineSourceTypes.LOCAL_PREBUILT_TARBALL;
   }
   if (releaseArtifactExists(version)) {
     hermesLog('Using download prebuild release tarball');
-    return HermesEngineSourceType.DOWNLOAD_PREBUILD_RELEASE_TARBALL;
+    return HermesEngineSourceTypes.DOWNLOAD_PREBUILD_RELEASE_TARBALL;
   }
   if (nightlyArtifactExists(version)) {
     hermesLog('Using download prebuild nightly tarball');
-    return HermesEngineSourceType.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
+    return HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
   }
   hermesLog(
     'Using download prebuild nightly tarball - this is a fallback and might not work.',
   );
-  return HermesEngineSourceType.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
+  return HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
 }
 
 function resolveSourceFromSourceType(
@@ -206,15 +206,15 @@ function resolveSourceFromSourceType(
   artifactsPath /*: string*/,
 ) /*: string */ {
   switch (sourceType) {
-    case HermesEngineSourceType.LOCAL_PREBUILT_TARBALL:
+    case HermesEngineSourceTypes.LOCAL_PREBUILT_TARBALL:
       return localPrebuiltTarball();
-    case HermesEngineSourceType.DOWNLOAD_PREBUILD_RELEASE_TARBALL:
+    case HermesEngineSourceTypes.DOWNLOAD_PREBUILD_RELEASE_TARBALL:
       return downloadPrebuildReleaseTarball(
         reactNativePath,
         version,
         artifactsPath,
       );
-    case HermesEngineSourceType.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL:
+    case HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL:
       return downloadPrebuiltNightlyTarball(version, artifactsPath);
     default:
       abort(
@@ -245,12 +245,7 @@ function downloadPrebuildReleaseTarball(
 ) /*: string */ {
   const url = releaseTarballUrl(version, 'debug');
   hermesLog(`Using release tarball from URL: ${url}`);
-  return downloadStableHermes(
-    reactNativePath,
-    version,
-    'release',
-    artifactsPath,
-  );
+  return downloadStableHermes(version, 'release', artifactsPath);
 }
 
 function downloadPrebuiltNightlyTarball(
