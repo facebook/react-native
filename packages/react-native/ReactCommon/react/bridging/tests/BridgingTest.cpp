@@ -46,8 +46,8 @@ TEST_F(BridgingTest, boolTest) {
   EXPECT_FALSE(bridging::fromJs<bool>(rt, jsi::Value(false), invoker));
   EXPECT_JSI_THROW(bridging::fromJs<bool>(rt, jsi::Value(1), invoker));
 
-  EXPECT_TRUE(bridging::toJs(rt, true).asBool());
-  EXPECT_FALSE(bridging::toJs(rt, false).asBool());
+  EXPECT_TRUE(bridging::toJs(rt, true));
+  EXPECT_FALSE(bridging::toJs(rt, false));
 }
 
 TEST_F(BridgingTest, numberTest) {
@@ -56,10 +56,9 @@ TEST_F(BridgingTest, numberTest) {
   EXPECT_DOUBLE_EQ(1.2, bridging::fromJs<double>(rt, jsi::Value(1.2), invoker));
   EXPECT_JSI_THROW(bridging::fromJs<double>(rt, jsi::Value(true), invoker));
 
-  EXPECT_EQ(1, static_cast<int>(bridging::toJs(rt, 1).asNumber()));
-  EXPECT_FLOAT_EQ(
-      1.2f, static_cast<float>(bridging::toJs(rt, 1.2f).asNumber()));
-  EXPECT_DOUBLE_EQ(1.2, bridging::toJs(rt, 1.2).asNumber());
+  EXPECT_EQ(1, static_cast<int>(bridging::toJs(rt, 1)));
+  EXPECT_FLOAT_EQ(1.2f, static_cast<float>(bridging::toJs(rt, 1.2f)));
+  EXPECT_DOUBLE_EQ(1.2, bridging::toJs(rt, 1.2));
 
   EXPECT_EQ(
       42,
