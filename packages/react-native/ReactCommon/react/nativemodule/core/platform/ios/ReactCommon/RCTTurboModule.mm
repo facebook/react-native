@@ -643,7 +643,7 @@ void ObjCTurboModule::setInvocationArg(
           id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
           id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
 
-          if (enableModuleArgumentNSNullConversionIOS && objCArg == [NSNull null]) {
+          if (enableModuleArgumentNSNullConversionIOS && convertedObjCArg == [NSNull null]) {
             return;
           }
 
