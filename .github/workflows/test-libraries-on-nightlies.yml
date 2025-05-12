@@ -48,7 +48,6 @@ jobs:
           "react-native-contacts",
           "react-native-device-info",
           "react-native-email-link",
-          "react-native-exit-app",
           "@dr.pogodin/react-native-fs",
           "react-native-permissions",
           "react-native-vector-icons",

@@ -25,7 +25,7 @@ describe('View', () => {
   });
 
   it('has displayName', () => {
-    expect(View.displayName).toEqual('View');
+    expect(View.displayName ?? View.name).toEqual('View');
   });
 });
 

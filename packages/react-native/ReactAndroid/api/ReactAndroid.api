@@ -3218,9 +3218,9 @@ public abstract class com/facebook/react/runtime/JSRuntimeFactory {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
 }
 
-public class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/ReactHost {
-	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;ZZ)V
+public final class com/facebook/react/runtime/ReactHostImpl : com/facebook/react/ReactHost {
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;ZZLcom/facebook/react/devsupport/DevSupportManagerFactory;)V
+	public synthetic fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;ZZLcom/facebook/react/devsupport/DevSupportManagerFactory;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/runtime/ReactHostDelegate;Lcom/facebook/react/fabric/ComponentFactory;ZZ)V
 	public fun addBeforeDestroyListener (Lkotlin/jvm/functions/Function0;)V
 	public fun addReactInstanceEventListener (Lcom/facebook/react/ReactInstanceEventListener;)V
