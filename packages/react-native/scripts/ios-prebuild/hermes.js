@@ -24,74 +24,58 @@ async function prepareHermesArtifactsAsync(
   buildType /*:string*/,
   reactNativePath /*:string*/,
 ) /*: Promise<string> */ {
-  const resolved_version = process.env.HERMES_VERSION ?? version;
-  hermes_log(`Preparing Hermes v.${resolved_version}...`);
+  hermesLog(`Preparing Hermes...`);
 
-  // Check if the Hermes artifacts are already downloaded
-  const artifactsPath /*: string*/ = path.resolve(
-    process.cwd(),
-    '.build',
-    'artifacts',
-    'hermes',
-  );
-
-  fs.mkdirSync(artifactsPath, {recursive: true});
-
-  let local_path = process.env.HERMES_ENGINE_TARBALL_PATH ?? '';
+  // See if the user has set the HERMES_ENGINE_TARBALL_PATH environment variable
+  let localPath = process.env.HERMES_ENGINE_TARBALL_PATH ?? '';
 
   // Only check if the artifacts folder exists if we are not using a local tarball
-  if (!local_path) {
-    if (fs.existsSync(artifactsPath)) {
-      // Check hermes version file
-      const versionFilePath = path.join(artifactsPath, 'version.txt');
-      if (fs.existsSync(versionFilePath)) {
-        const versionFileContent = fs.readFileSync(versionFilePath, 'utf8');
-        if (versionFileContent.trim() === resolved_version) {
-          hermes_log(
-            `Hermes artifacts already downloaded and up to date: ${artifactsPath}`,
-          );
-          return artifactsPath;
-        }
-      }
-      // If the version file does not exist or the version does not match, delete the artifacts folder
-      fs.rmSync(artifactsPath, {recursive: true, force: true});
-      hermes_log(
-        `Hermes artifacts folder already exists, but version does not match. Deleting: ${artifactsPath}`,
-      );
-      // Lets create the version.txt file
-      fs.mkdirSync(artifactsPath, {recursive: true});
-      fs.writeFileSync(versionFilePath, resolved_version, 'utf8');
-      hermes_log(
-        `Hermes artifacts folder created: ${artifactsPath} with version: ${resolved_version}`,
-      );
+  if (!localPath) {
+    // Resolve the version from the environment variable or use the default version
+    const resolvedVersion = process.env.HERMES_VERSION ?? version;
+
+    // Check if the Hermes artifacts are already downloaded
+    const artifactsPath /*: string*/ = path.resolve(
+      process.cwd(),
+      '.build',
+      'artifacts',
+      'hermes',
+    );
+
+    // Ensure that the artifacts folder exists
+    fs.mkdirSync(artifactsPath, {recursive: true});
+
+    // Check hermes version file
+    if (checkExistingVersion(resolvedVersion, artifactsPath)) {
+      return artifactsPath;
     }
 
-    const sourceType = hermesSourceType(resolved_version, reactNativePath);
-    local_path = resolve_source_type(
+    const sourceType = hermesSourceType(resolvedVersion, reactNativePath);
+    localPath = resolveSourceFromSourceType(
       sourceType,
-      resolved_version,
+      resolvedVersion,
       reactNativePath,
       artifactsPath,
     );
   } else {
-    hermes_log('Using local tarball, skipping artifacts folder check');
+    hermesLog('Using local tarball, skipping artifacts folder check');
   }
 
   // Extract the tar.gz
-  execSync(`tar -xzf "${local_path}" -C "${artifactsPath}"`, {
+  execSync(`tar -xzf "${localPath}" -C "${artifactsPath}"`, {
     stdio: 'inherit',
   });
 
   // Delete the tarball after extraction
   if (!process.env.HERMES_ENGINE_TARBALL_PATH) {
-    fs.unlinkSync(local_path);
+    fs.unlinkSync(localPath);
   }
 
   return artifactsPath;
 }
 
 /*::
-type HermesEngineSourceTypeT =
+type HermesEngineSourceType =
   | 'local_prebuilt_tarball'
   | 'download_prebuild_release_tarball'
   | 'download_prebuilt_nightly_tarball'
@@ -107,6 +91,38 @@ const HermesEngineSourceType = {
   DOWNLOAD_PREBUILD_RELEASE_TARBALL: 'download_prebuild_release_tarball',
   DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
 };
+
+/**
+ * Checks if the Hermes artifacts are already downloaded and up to date with the specified version.
+ * Returns true if the artifacts are up to date, false otherwise.
+ */
+function checkExistingVersion(
+  version /*: string */,
+  artifactsPath /*: string */,
+) {
+  const versionFilePath = path.join(artifactsPath, 'version.txt');
+  if (fs.existsSync(versionFilePath)) {
+    const versionFileContent = fs.readFileSync(versionFilePath, 'utf8');
+    if (versionFileContent.trim() === version) {
+      hermesLog(
+        `Hermes artifacts already downloaded and up to date: ${artifactsPath}`,
+      );
+      return true;
+    }
+  }
+  // If the version file does not exist or the version does not match, delete the artifacts folder
+  fs.rmSync(artifactsPath, {recursive: true, force: true});
+  hermesLog(
+    `Hermes artifacts folder already exists, but version does not match. Deleting: ${artifactsPath}`,
+  );
+  // Lets create the version.txt file
+  fs.mkdirSync(artifactsPath, {recursive: true});
+  fs.writeFileSync(versionFilePath, version, 'utf8');
+  hermesLog(
+    `Hermes artifacts folder created: ${artifactsPath} with version: ${version}`,
+  );
+  return false;
+}
 
 function hermesEngineTarballEnvvarDefined() /*: boolean */ {
   return !!process.env.HERMES_ENGINE_TARBALL_PATH;
@@ -135,7 +151,7 @@ function resolveUrlRedirects(url /*: string */) /*: string */ {
       .toString()
       .trim();
   } catch (e) {
-    hermes_log(`Failed to resolve URL redirects\n${e}`, 'error');
+    hermesLog(`Failed to resolve URL redirects\n${e}`, 'error');
     return url;
   }
 }
@@ -164,43 +180,42 @@ function nightlyArtifactExists(version /*: string */) /*: boolean */ {
 function hermesSourceType(
   version /*: string */,
   reactNativePath /*: string */,
-) /*: HermesEngineSourceTypeT */ {
+) /*: HermesEngineSourceType */ {
   if (hermesEngineTarballEnvvarDefined()) {
-    hermes_log('Using local prebuild tarball');
+    hermesLog('Using local prebuild tarball');
     return HermesEngineSourceType.LOCAL_PREBUILT_TARBALL;
   }
   if (releaseArtifactExists(version)) {
-    hermes_log('Using download prebuild release tarball');
+    hermesLog('Using download prebuild release tarball');
     return HermesEngineSourceType.DOWNLOAD_PREBUILD_RELEASE_TARBALL;
   }
   if (nightlyArtifactExists(version)) {
-    hermes_log('Using download prebuild nightly tarball');
+    hermesLog('Using download prebuild nightly tarball');
     return HermesEngineSourceType.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
   }
-  //return HermesEngineSourceType.BUILD_FROM_GITHUB_MAIN;
-  hermes_log(
+  hermesLog(
     'Using download prebuild nightly tarball - this is a fallback and might not work.',
   );
   return HermesEngineSourceType.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
 }
 
-function resolve_source_type(
-  sourceType /*: HermesEngineSourceTypeT */,
+function resolveSourceFromSourceType(
+  sourceType /*: HermesEngineSourceType */,
   version /*: string */,
   reactNativePath /*: string */,
   artifactsPath /*: string*/,
 ) /*: string */ {
   switch (sourceType) {
     case HermesEngineSourceType.LOCAL_PREBUILT_TARBALL:
-      return local_prebuilt_tarball(artifactsPath);
+      return localPrebuiltTarball();
     case HermesEngineSourceType.DOWNLOAD_PREBUILD_RELEASE_TARBALL:
-      return _download_prebuild_release_tarball(
+      return downloadPrebuildReleaseTarball(
         reactNativePath,
         version,
         artifactsPath,
       );
     case HermesEngineSourceType.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL:
-      return _download_prebuilt_nightly_tarball(version, artifactsPath);
+      return downloadPrebuiltNightlyTarball(version, artifactsPath);
     default:
       abort(
         `[Hermes] Unsupported or invalid source type provided: ${sourceType}`,
@@ -209,10 +224,10 @@ function resolve_source_type(
   }
 }
 
-function local_prebuilt_tarball(artifactsPath /*: string*/) /*: string */ {
+function localPrebuiltTarball() /*: string */ {
   const tarballPath = process.env.HERMES_ENGINE_TARBALL_PATH;
   if (tarballPath && fs.existsSync(tarballPath)) {
-    hermes_log(
+    hermesLog(
       `Using pre-built binary from local path defined by HERMES_ENGINE_TARBALL_PATH envvar: ${tarballPath}`,
     );
     return `file://${tarballPath}`;
@@ -223,14 +238,14 @@ function local_prebuilt_tarball(artifactsPath /*: string*/) /*: string */ {
   return '';
 }
 
-function _download_prebuild_release_tarball(
+function downloadPrebuildReleaseTarball(
   reactNativePath /*: string */,
   version /*: string */,
   artifactsPath /*: string*/,
 ) /*: string */ {
   const url = releaseTarballUrl(version, 'debug');
-  hermes_log(`Using release tarball from URL: ${url}`);
-  return download_stable_hermes(
+  hermesLog(`Using release tarball from URL: ${url}`);
+  return downloadStableHermes(
     reactNativePath,
     version,
     'release',
@@ -238,33 +253,25 @@ function _download_prebuild_release_tarball(
   );
 }
 
-function _download_prebuilt_nightly_tarball(
+function downloadPrebuiltNightlyTarball(
   version /*: string */,
   artifactsPath /*: string*/,
 ) /*: string */ {
   const url = nightlyTarballUrl(version);
-  hermes_log(`Using nightly tarball from URL: ${url}`);
-  return download_stable_hermes('', version, 'release', artifactsPath);
+  hermesLog(`Using nightly tarball from URL: ${url}`);
+  return downloadStableHermes(version, 'release', artifactsPath);
 }
 
-function download_stable_hermes(
-  reactNativePath /*: string */,
+function downloadStableHermes(
   version /*: string */,
   buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string */,
 ) /*: string */ {
   const tarballUrl = releaseTarballUrl(version, buildType);
-  return download_hermes_tarball(
-    reactNativePath,
-    tarballUrl,
-    version,
-    buildType,
-    artifactsPath,
-  );
+  return downloadHermesTarball(tarballUrl, version, buildType, artifactsPath);
 }
 
-function download_hermes_tarball(
-  reactNativePath /*: string */,
+function downloadHermesTarball(
   tarballUrl /*: string */,
   version /*: string */,
   configuration /*: string */,
@@ -288,11 +295,11 @@ function download_hermes_tarball(
 }
 
 function abort(message /*: string */) {
-  hermes_log(message, 'error');
+  hermesLog(message, 'error');
   throw new Error(message);
 }
 
-function hermes_log(
+function hermesLog(
   message /*: string */,
   level /*: 'info' | 'warning' | 'error' */ = 'warning',
 ) {
