@@ -17,4 +17,4 @@ import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
  * pass it from CatalystInstance, through Java, to TurboModuleManager::initHybrid.
  */
 @FrameworkAPI
-public class CallInvokerHolderImpl private constructor() : HybridClassBase(), CallInvokerHolder {}
+public class CallInvokerHolderImpl private constructor() : HybridClassBase(), CallInvokerHolder

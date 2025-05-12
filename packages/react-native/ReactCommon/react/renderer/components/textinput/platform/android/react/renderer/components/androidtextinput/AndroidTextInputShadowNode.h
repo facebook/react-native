@@ -22,13 +22,11 @@ extern const char AndroidTextInputComponentName[];
 /*
  * `ShadowNode` for <AndroidTextInput> component.
  */
-class AndroidTextInputShadowNode final
-    : public ConcreteViewShadowNode<
-          AndroidTextInputComponentName,
-          AndroidTextInputProps,
-          AndroidTextInputEventEmitter,
-          TextInputState,
-          /* usesMapBufferForStateData */ true> {
+class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
+                                             AndroidTextInputComponentName,
+                                             AndroidTextInputProps,
+                                             AndroidTextInputEventEmitter,
+                                             TextInputState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

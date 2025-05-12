@@ -213,9 +213,18 @@ jint FabricUIManagerBinding::findNextFocusableElement(
 
   ShadowNode::Shared parentShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
+
+  if (parentShadowNode == nullptr) {
+    return -1;
+  }
+
   ShadowNode::Shared focusedShadowNode =
       FocusOrderingHelper::findShadowNodeByTagRecursively(
           parentShadowNode, focusedTag);
+
+  if (focusedShadowNode == nullptr) {
+    return -1;
+  }
 
   LayoutMetrics childLayoutMetrics = uimanager->getRelativeLayoutMetrics(
       *focusedShadowNode, parentShadowNode.get(), {.includeTransform = true});
@@ -244,9 +253,11 @@ jint FabricUIManagerBinding::findNextFocusableElement(
   return nextNode->getTag();
 }
 
-jint FabricUIManagerBinding::findRelativeTopMostParent(
+jintArray FabricUIManagerBinding::getRelativeAncestorList(
     jint rootTag,
     jint childTag) {
+  JNIEnv* env = jni::Environment::current();
+
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
   ShadowNode::Shared childShadowNode =
@@ -255,27 +266,33 @@ jint FabricUIManagerBinding::findRelativeTopMostParent(
       uimanager->findShadowNodeByTag_DEPRECATED(rootTag);
 
   if (childShadowNode == nullptr || rootShadowNode == nullptr) {
-    return -1;
+    return nullptr;
   }
 
   ShadowNode::AncestorList ancestorList =
       childShadowNode->getFamily().getAncestors(*rootShadowNode);
 
   if (ancestorList.empty() || ancestorList.size() < 2) {
-    return -1;
+    return nullptr;
   }
 
   // ignore the first ancestor as it is the rootShadowNode itself
+  std::vector<int> ancestorTags;
   for (auto it = std::next(ancestorList.begin()); it != ancestorList.end();
        ++it) {
     auto& ancestor = *it;
     if (ancestor.first.get().getTraits().check(
             ShadowNodeTraits::Trait::FormsStackingContext)) {
-      return ancestor.first.get().getTag();
+      ancestorTags.push_back(ancestor.first.get().getTag());
     }
   }
 
-  return -1;
+  jintArray result = env->NewIntArray(static_cast<jint>(ancestorTags.size()));
+
+  env->SetIntArrayRegion(
+      result, 0, static_cast<jint>(ancestorTags.size()), ancestorTags.data());
+
+  return result;
 }
 
 // Used by non-bridgeless+Fabric
@@ -754,8 +771,8 @@ void FabricUIManagerBinding::registerNatives() {
           "findNextFocusableElement",
           FabricUIManagerBinding::findNextFocusableElement),
       makeNativeMethod(
-          "findRelativeTopMostParent",
-          FabricUIManagerBinding::findRelativeTopMostParent),
+          "getRelativeAncestorList",
+          FabricUIManagerBinding::getRelativeAncestorList),
   });
 }
 

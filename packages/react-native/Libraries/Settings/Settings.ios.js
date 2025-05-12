@@ -29,6 +29,7 @@ const Settings = {
 
   set(settings: Object) {
     // $FlowFixMe[object-this-reference]
+    // $FlowFixMe[unsafe-object-assign]
     this._settings = Object.assign(this._settings, settings);
     NativeSettingsManager.setValues(settings);
   },

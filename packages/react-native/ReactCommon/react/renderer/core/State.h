@@ -8,6 +8,7 @@
 #pragma once
 
 #ifdef ANDROID
+#include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #endif
@@ -33,9 +34,7 @@ class State {
    * type-erasured arguments impossible.
    */
   explicit State(StateData::Shared data, const State& previousState);
-  explicit State(
-      StateData::Shared data,
-      const ShadowNodeFamily::Shared& family);
+  explicit State(StateData::Shared data, ShadowNodeFamily::Weak family);
 
  public:
   virtual ~State() = default;
@@ -66,6 +65,7 @@ class State {
 #ifdef ANDROID
   virtual folly::dynamic getDynamic() const = 0;
   virtual MapBuffer getMapBuffer() const = 0;
+  virtual jni::local_ref<jobject> getJNIReference() const = 0;
   virtual void updateState(folly::dynamic&& data) const = 0;
 #endif
 

@@ -90,6 +90,7 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
   // top-level props on the native side.
   validAttributes.style = ReactNativeStyleAttributes;
 
+  // $FlowFixMe[unsafe-object-assign]
   Object.assign(viewConfig, {
     uiViewClassName,
     validAttributes,

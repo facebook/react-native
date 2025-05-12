@@ -11,7 +11,7 @@
 
 'use strict';
 
-import type {ScrollEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {ScrollEvent} from 'react-native';
 
 import {LIST_100_ITEMS} from '../components/itemData';
 import ItemList from '../components/ItemList';

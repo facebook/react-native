@@ -44,7 +44,6 @@ const textViewConfig = {
     minimumFontScale: true,
     textBreakStrategy: true,
     onTextLayout: true,
-    onInlineViewLayout: true,
     dataDetectorType: true,
     android_hyphenationFrequency: true,
     lineBreakStrategyIOS: true,
@@ -52,9 +51,6 @@ const textViewConfig = {
   directEventTypes: {
     topTextLayout: {
       registrationName: 'onTextLayout',
-    },
-    topInlineViewLayout: {
-      registrationName: 'onInlineViewLayout',
     },
   },
   uiViewClassName: 'RCTText',

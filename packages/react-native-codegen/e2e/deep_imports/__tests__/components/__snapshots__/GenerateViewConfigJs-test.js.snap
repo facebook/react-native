@@ -367,7 +367,7 @@ export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: \\"ImagePropNativeComponentView\\",
   validAttributes: {
     thumbImage: {
-      process: require('react-native/Libraries/Image/resolveAssetSource')
+      process: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/Image/resolveAssetSource'))
     }
   }
 };
@@ -503,7 +503,7 @@ export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: \\"MultiNativePropNativeComponentView\\",
   validAttributes: {
     thumbImage: {
-      process: require('react-native/Libraries/Image/resolveAssetSource')
+      process: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/Image/resolveAssetSource'))
     },
     color: {
       process: require('react-native/Libraries/StyleSheet/processColor').default

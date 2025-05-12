@@ -27,6 +27,12 @@ class UnimplementedViewProps final : public ViewProps {
   void setComponentName(ComponentName componentName);
   ComponentName getComponentName() const;
 
+#ifdef ANDROID
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+
+#endif
+
  private:
   mutable ComponentName componentName_{};
 };

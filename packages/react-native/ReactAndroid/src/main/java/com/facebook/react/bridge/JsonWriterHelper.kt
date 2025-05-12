@@ -40,7 +40,6 @@ public object JsonWriterHelper {
         val array = value.asArray()
         readableArrayValue(writer, checkNotNull(array))
       }
-      else -> throw IllegalArgumentException("Unknown data type: ${value.type}")
     }
   }
 
@@ -65,7 +64,6 @@ public object JsonWriterHelper {
             val array = value.getArray(key)
             readableArrayValue(writer, checkNotNull(array))
           }
-          else -> throw IllegalArgumentException("Unknown data type: ${value.getType(key)}")
         }
       }
     } finally {
@@ -92,7 +90,6 @@ public object JsonWriterHelper {
             val array = value.getArray(i)
             readableArrayValue(writer, checkNotNull(array))
           }
-          else -> throw IllegalArgumentException("Unknown data type: ${value.getType(i)}")
         }
       }
     } finally {

@@ -85,7 +85,7 @@ class ComponentDescriptor {
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
    */
-  virtual ShadowNode::Unshared cloneShadowNode(
+  virtual std::shared_ptr<ShadowNode> cloneShadowNode(
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment) const = 0;
 

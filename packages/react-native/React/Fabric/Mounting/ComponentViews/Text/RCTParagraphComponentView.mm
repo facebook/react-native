@@ -9,7 +9,7 @@
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <react/featureflags/ReactNativeFeatureFlags.h>
+#import <React/RCTViewAccessibilityElement.h>
 #import <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #import <react/renderer/components/text/ParagraphProps.h>
 #import <react/renderer/components/text/ParagraphState.h>
@@ -202,7 +202,8 @@ using namespace facebook::react;
 
   NSArray<UIAccessibilityElement *> *elements = _accessibilityProvider.accessibilityElements;
   if ([elements count] > 0) {
-    elements[0].isAccessibilityElement = ![self isAccessibilityCoopted];
+    elements[0].isAccessibilityElement =
+        elements[0].accessibilityTraits & UIAccessibilityTraitLink || ![self isAccessibilityCoopted];
   }
   return elements;
 }
@@ -213,22 +214,25 @@ using namespace facebook::react;
   NSMutableSet<UIView *> *cooptingCandidates = [NSMutableSet new];
   while (ancestor) {
     if ([ancestor isKindOfClass:[RCTViewComponentView class]]) {
-      NSArray *elements = ancestor.accessibilityElements;
-      if ([elements count] > 0 && [cooptingCandidates count] > 0) {
-        for (UIView *element in elements) {
-          if ([cooptingCandidates containsObject:element]) {
-            return YES;
-          }
-        }
-      }
-
       if ([((RCTViewComponentView *)ancestor) accessibilityLabelForCoopting]) {
         // We found a label above us. That would be coopted before we would be
         return NO;
-      } else if (ancestor.isAccessibilityElement) {
-        // We found an accessible view without a label for coopting before anything
-        // else, if it is in some accessibilityElements somewhere then it will coopt
+      } else if ([((RCTViewComponentView *)ancestor) wantsToCooptLabel]) {
+        // We found an view that is looking to coopt a label below it
         [cooptingCandidates addObject:ancestor];
+      }
+
+      NSArray *elements = ancestor.accessibilityElements;
+      if ([elements count] > 0 && [cooptingCandidates count] > 0) {
+        for (NSObject *element in elements) {
+          if ([element isKindOfClass:[UIView class]] && [cooptingCandidates containsObject:((UIView *)element)]) {
+            return YES;
+          } else if (
+              [element isKindOfClass:[RCTViewAccessibilityElement class]] &&
+              [cooptingCandidates containsObject:((RCTViewAccessibilityElement *)element).view]) {
+            return YES;
+          }
+        }
       }
     } else if (![ancestor isKindOfClass:[RCTViewComponentView class]] && ancestor.accessibilityLabel) {
       // Same as above, for UIView case. Cannot call this on RCTViewComponentView

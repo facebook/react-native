@@ -18,10 +18,23 @@ export type ResolvedAssetSource = {
   +scale: number,
 };
 
-import type {
-  AssetDestPathResolver,
-  PackagerAsset,
-} from '@react-native/assets-registry/registry';
+// From @react-native/assets-registry
+type AssetDestPathResolver = 'android' | 'generic';
+
+// From @react-native/assets-registry
+type PackagerAsset = $ReadOnly<{
+  __packager_asset: boolean,
+  fileSystemLocation: string,
+  httpServerLocation: string,
+  width: ?number,
+  height: ?number,
+  scales: Array<number>,
+  hash: string,
+  name: string,
+  type: string,
+  resolver?: AssetDestPathResolver,
+  ...
+}>;
 
 const PixelRatio = require('../Utilities/PixelRatio').default;
 const Platform = require('../Utilities/Platform').default;

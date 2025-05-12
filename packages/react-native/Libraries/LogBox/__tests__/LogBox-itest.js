@@ -21,6 +21,9 @@ import {LogBox, Text, View} from 'react-native';
 // This is a bug we'll fix in a followup.
 const BUG_WITH_COMPONENT_FRAMES: [] = [];
 
+// Disable the logic to make sure that LogBox is not installed in tests.
+Fantom.setLogBoxCheckEnabled(false);
+
 describe('LogBox', () => {
   let originalConsoleError;
   let originalConsoleWarn;

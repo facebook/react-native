@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -186,8 +186,6 @@ describe('Suspense', () => {
     expect(resolveFunction).toBeNull();
   });
 
-  // TODO(T207868872): this test only succeeds with enableFabricCompleteRootInCommitPhase enabled.
-  // enableFabricCompleteRootInCommitPhase is hardcoded to true in the testing environment.
   it('shows stale data while transition is happening', () => {
     cache.clear();
     cache.set(SquareId.Green, {color: 'green'});

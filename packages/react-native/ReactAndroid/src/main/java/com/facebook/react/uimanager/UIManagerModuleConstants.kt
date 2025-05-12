@@ -10,7 +10,6 @@ package com.facebook.react.uimanager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.ImageView
 import com.facebook.react.uimanager.events.TouchEventType
-import com.facebook.react.uimanager.events.TouchEventType.Companion.getJSEventName
 
 /** Constants exposed to JS from [UIManagerModule]. */
 internal object UIManagerModuleConstants {

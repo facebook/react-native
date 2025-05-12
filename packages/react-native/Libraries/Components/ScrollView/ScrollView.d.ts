@@ -365,7 +365,7 @@ export interface ScrollViewPropsIOS {
 
   /**
    * When true the scroll view bounces when it reaches the end of the
-   * content if the content is larger then the scroll view along the axis of
+   * content if the content is larger than the scroll view along the axis of
    * the scroll direction. When false it disables all bouncing even if
    * the `alwaysBounce*` props are true. The default value is true.
    */
@@ -565,16 +565,20 @@ export interface ScrollViewPropsAndroid {
   nestedScrollEnabled?: boolean | undefined;
 
   /**
-   * Fades out the edges of the scroll content.
+   * Controls the fading effect at the edges of the scroll content.
    *
-   * If the value is greater than 0, the fading edges will be set accordingly
-   * to the current scroll direction and position,
-   * indicating if there is more content to show.
+   * A value greater than 0 will apply the fading effect, indicating more content is available
+   * to scroll.
+   *
+   * You can specify a single number to apply the same fading length to both edges.
+   * Alternatively, use an object with `start` and `end` properties to set different
+   * fading lengths for the start and end of the scroll content.
    *
    * The default value is 0.
+   *
    * @platform android
    */
-  fadingEdgeLength?: number | undefined;
+  fadingEdgeLength?: number | {start: number; end: number} | undefined;
 
   /**
    * Causes the scrollbars not to turn transparent when they are not in use. The default value is false.
@@ -869,7 +873,7 @@ export class ScrollView extends ScrollViewBase {
    * This function sends props straight to native. They will not participate in
    * future diff process - this means that if you do not include them in the
    * next render, they will remain active (see [Direct
-   * Manipulation](https://reactnative.dev/docs/direct-manipulation)).
+   * Manipulation](https://reactnative.dev/docs/the-new-architecture/direct-manipulation-new-architecture)).
    */
   setNativeProps(nativeProps: object): void;
 }

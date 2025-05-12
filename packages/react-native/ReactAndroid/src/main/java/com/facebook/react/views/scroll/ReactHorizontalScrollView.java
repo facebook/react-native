@@ -41,6 +41,7 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -129,6 +130,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private int mScrollEventThrottle = 0;
   private @Nullable View mContentView;
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
+  private int mFadingEdgeLengthStart = 0;
+  private int mFadingEdgeLengthEnd = 0;
 
   private final Rect mTempRect = new Rect();
 
@@ -281,6 +284,44 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  public int getFadingEdgeLengthStart() {
+    return mFadingEdgeLengthStart;
+  }
+
+  public int getFadingEdgeLengthEnd() {
+    return mFadingEdgeLengthEnd;
+  }
+
+  public void setFadingEdgeLengthStart(int start) {
+    mFadingEdgeLengthStart = start;
+    invalidate();
+  }
+
+  public void setFadingEdgeLengthEnd(int end) {
+    mFadingEdgeLengthEnd = end;
+    invalidate();
+  }
+
+  @Override
+  protected float getLeftFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    int value =
+        getLayoutDirection() == LAYOUT_DIRECTION_RTL
+            ? mFadingEdgeLengthEnd
+            : mFadingEdgeLengthStart;
+    return (value / max);
+  }
+
+  @Override
+  protected float getRightFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    int value =
+        getLayoutDirection() == LAYOUT_DIRECTION_RTL
+            ? mFadingEdgeLengthStart
+            : mFadingEdgeLengthEnd;
+    return (value / max);
   }
 
   public void setOverflow(@Nullable String overflow) {
@@ -776,10 +817,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
-    @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, true);
+    if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, true);
 
-    if (nextfocusableView != null) {
-      return nextfocusableView;
+      if (nextfocusableView != null) {
+        return nextfocusableView;
+      }
     }
 
     return super.focusSearch(focused, direction);

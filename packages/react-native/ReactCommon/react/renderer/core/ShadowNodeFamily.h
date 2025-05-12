@@ -39,7 +39,7 @@ struct ShadowNodeFamilyFragment {
  * Represents all things that shadow nodes from the same family have in common.
  * To be used inside `ShadowNode` class *only*.
  */
-class ShadowNodeFamily final {
+class ShadowNodeFamily final : public jsi::NativeState {
  public:
   using Shared = std::shared_ptr<const ShadowNodeFamily>;
   using Weak = std::weak_ptr<const ShadowNodeFamily>;
@@ -122,6 +122,7 @@ class ShadowNodeFamily final {
    */
   Tag getTag() const;
 
+  jsi::Value getInstanceHandle(jsi::Runtime& runtime) const;
   InstanceHandle::Shared getInstanceHandle() const;
   void setInstanceHandle(InstanceHandle::Shared& instanceHandle) const;
 

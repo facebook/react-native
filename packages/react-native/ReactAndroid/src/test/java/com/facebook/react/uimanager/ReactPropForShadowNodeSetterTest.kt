@@ -24,12 +24,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockedStatic
-import org.mockito.Mockito.any
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
@@ -104,15 +104,13 @@ class ReactPropForShadowNodeSetterTest {
   fun setup() {
     ReactNativeFeatureFlagsForTests.setUp()
     yogaNodeFactory = mockStatic(YogaNodeFactory::class.java)
-    yogaNodeFactory
-        .`when`<YogaNode> { YogaNodeFactory.create(any()) }
-        .thenReturn(mock(YogaNode::class.java))
+    yogaNodeFactory.`when`<YogaNode> { YogaNodeFactory.create(any()) }.thenReturn(mock<YogaNode>())
     yogaConfigFactory = mockStatic(YogaConfigFactory::class.java)
     yogaConfigFactory
         .`when`<YogaConfig> { YogaConfigFactory.create() }
-        .thenReturn(mock(YogaConfig::class.java))
+        .thenReturn(mock<YogaConfig>())
 
-    updatesReceiverMock = mock(ViewManagerUpdatesReceiver::class.java)
+    updatesReceiverMock = mock<ViewManagerUpdatesReceiver>()
     shadowView = ShadowViewUnderTest(updatesReceiverMock)
   }
 

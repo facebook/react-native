@@ -14,10 +14,7 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 
-namespace facebook {
-namespace hermes {
-namespace inspector_modern {
-namespace chrome {
+namespace facebook::hermes::inspector_modern::chrome {
 
 using ::facebook::react::jsinspector_modern::IInspector;
 using ::facebook::react::jsinspector_modern::ILocalConnection;
@@ -139,9 +136,6 @@ void ConnectionDemux::removePage(int pageId) {
   conns_.erase(pageId);
 }
 
-} // namespace chrome
-} // namespace inspector_modern
-} // namespace hermes
-} // namespace facebook
+} // namespace facebook::hermes::inspector_modern::chrome
 
 #endif // HERMES_ENABLE_DEBUGGER

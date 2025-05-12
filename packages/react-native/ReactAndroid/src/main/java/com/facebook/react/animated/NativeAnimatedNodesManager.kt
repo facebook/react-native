@@ -272,6 +272,7 @@ public class NativeAnimatedNodesManager(
           val endCallbackResponse = Arguments.createMap()
           endCallbackResponse.putBoolean("finished", false)
           endCallbackResponse.putDouble("value", animatedValueNonnull.nodeValue)
+          endCallbackResponse.putDouble("offset", animatedValueNonnull.offset)
           animation.endCallback?.invoke(endCallbackResponse)
         } else if (reactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -281,6 +282,7 @@ public class NativeAnimatedNodesManager(
           params.putInt("animationId", animation.id)
           params.putBoolean("finished", false)
           params.putDouble("value", animatedValueNonnull.nodeValue)
+          params.putDouble("offset", animatedValueNonnull.offset)
           events = events ?: Arguments.createArray()
           events.pushMap(params)
         }
@@ -309,6 +311,7 @@ public class NativeAnimatedNodesManager(
           val endCallbackResponse = Arguments.createMap()
           endCallbackResponse.putBoolean("finished", false)
           endCallbackResponse.putDouble("value", checkNotNull(animation.animatedValue).nodeValue)
+          endCallbackResponse.putDouble("offset", checkNotNull(animation.animatedValue).offset)
           checkNotNull(animation.endCallback).invoke(endCallbackResponse)
         } else if (reactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -318,6 +321,7 @@ public class NativeAnimatedNodesManager(
           params.putInt("animationId", animation.id)
           params.putBoolean("finished", false)
           params.putDouble("value", checkNotNull(animation.animatedValue).nodeValue)
+          params.putDouble("offset", checkNotNull(animation.animatedValue).offset)
           events = events ?: Arguments.createArray()
           events.pushMap(params)
         }
@@ -578,6 +582,7 @@ public class NativeAnimatedNodesManager(
             val endCallbackResponse = Arguments.createMap()
             endCallbackResponse.putBoolean("finished", true)
             endCallbackResponse.putDouble("value", animatedValueNonnull.nodeValue)
+            endCallbackResponse.putDouble("offset", animatedValueNonnull.offset)
             animation.endCallback?.invoke(endCallbackResponse)
           } else if (reactApplicationContext != null) {
             // If no callback is passed in, this /may/ be an animation set up by the single-op
@@ -587,6 +592,7 @@ public class NativeAnimatedNodesManager(
             params.putInt("animationId", animation.id)
             params.putBoolean("finished", true)
             params.putDouble("value", animatedValueNonnull.nodeValue)
+            params.putDouble("offset", animatedValueNonnull.offset)
             events = events ?: Arguments.createArray()
             events.pushMap(params)
           }

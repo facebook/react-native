@@ -30,7 +30,7 @@ internal class ReactTextInputTextWatcher(
   }
 
   override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-    if (editText.mDisableTextDiffing) {
+    if (editText.disableTextDiffing) {
       return
     }
 

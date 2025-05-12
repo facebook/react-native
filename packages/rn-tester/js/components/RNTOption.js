@@ -10,8 +10,8 @@
 
 'use strict';
 
+import type {GestureResponderEvent} from 'react-native';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';

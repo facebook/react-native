@@ -41,6 +41,7 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -130,6 +131,8 @@ public class ReactScrollView extends ScrollView
   private int mScrollEventThrottle = 0;
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper =
       null;
+  private int mFadingEdgeLengthStart = 0;
+  private int mFadingEdgeLengthEnd = 0;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -262,6 +265,36 @@ public class ReactScrollView extends ScrollView
     awakenScrollBars();
   }
 
+  public int getFadingEdgeLengthStart() {
+    return mFadingEdgeLengthStart;
+  }
+
+  public int getFadingEdgeLengthEnd() {
+    return mFadingEdgeLengthEnd;
+  }
+
+  public void setFadingEdgeLengthStart(int start) {
+    mFadingEdgeLengthStart = start;
+    invalidate();
+  }
+
+  public void setFadingEdgeLengthEnd(int end) {
+    mFadingEdgeLengthEnd = end;
+    invalidate();
+  }
+
+  @Override
+  protected float getTopFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    return (mFadingEdgeLengthStart / max);
+  }
+
+  @Override
+  protected float getBottomFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    return (mFadingEdgeLengthEnd / max);
+  }
+
   public void setOverflow(@Nullable String overflow) {
     if (overflow == null) {
       mOverflow = Overflow.SCROLL;
@@ -364,11 +397,12 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
+    if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, false);
 
-    @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, false);
-
-    if (nextfocusableView != null) {
-      return nextfocusableView;
+      if (nextfocusableView != null) {
+        return nextfocusableView;
+      }
     }
 
     return super.focusSearch(focused, direction);
@@ -1111,7 +1145,7 @@ public class ReactScrollView extends ScrollView
     }
   }
 
-  public void setContentOffset(ReadableMap value) {
+  public void setContentOffset(@Nullable ReadableMap value) {
     // When contentOffset={{x:0,y:0}} with lazy load items, setContentOffset
     // is repeatedly called, causing an unexpected scroll to top behavior.
     // Avoid updating contentOffset if the value has not changed.

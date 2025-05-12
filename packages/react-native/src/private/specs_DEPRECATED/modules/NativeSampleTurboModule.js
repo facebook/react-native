@@ -59,6 +59,9 @@ export interface Spec extends TurboModule {
   +voidFuncAssert?: () => void;
   +getObjectAssert?: (arg: Object) => Object;
   +promiseAssert?: () => Promise<void>;
+
+  // Android-only
+  +getImageUrl?: () => Promise<string | null>;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(

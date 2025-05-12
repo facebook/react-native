@@ -28,7 +28,7 @@ package com.facebook.react.uimanager.annotations
  * value that is going to be used: [defaultBoolean], [defaultDouble], etc.)
  *
  * Since in case of property removal for non-primitive value type setter will be called with value
- * set to `null` it's required that value type is annotated with [Nullable].
+ * set to `null` it's required that value type is annotated with [androidx.annotation.Nullable].
  *
  * Note: Since boolean property type can be represented both as primitive and wrapped default value
  * set through [defaultBoolean] is only respected for primitive type and for the wrapped type `null`

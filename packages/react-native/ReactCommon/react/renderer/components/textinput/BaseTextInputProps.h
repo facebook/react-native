@@ -80,6 +80,8 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   bool multiline{false};
 
   bool disableKeyboardShortcuts{false};
+
+  std::optional<std::vector<std::string>> acceptDragAndDropTypes{};
 };
 
 } // namespace facebook::react

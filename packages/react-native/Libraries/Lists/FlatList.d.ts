@@ -155,16 +155,20 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
   removeClippedSubviews?: boolean | undefined;
 
   /**
-   * Fades out the edges of the scroll content.
+   * Controls the fading effect at the edges of the scroll content.
    *
-   * If the value is greater than 0, the fading edges will be set accordingly
-   * to the current scroll direction and position,
-   * indicating if there is more content to show.
+   * A value greater than 0 will apply the fading effect, indicating more content is available
+   * to scroll.
+   *
+   * You can specify a single number to apply the same fading length to both edges.
+   * Alternatively, use an object with `start` and `end` properties to set different
+   * fading lengths for the start and end of the scroll content.
    *
    * The default value is 0.
+   *
    * @platform android
    */
-  fadingEdgeLength?: number | undefined;
+  fadingEdgeLength?: number | {start: number; end: number} | undefined;
 }
 
 export abstract class FlatListComponent<
@@ -228,8 +232,8 @@ export abstract class FlatListComponent<
    * Provides a reference to the underlying host component
    */
   getNativeScrollRef: () =>
-    | React.ElementRef<typeof View>
-    | React.ElementRef<typeof ScrollViewComponent>
+    | React.ComponentRef<typeof View>
+    | React.ComponentRef<typeof ScrollViewComponent>
     | null
     | undefined;
 

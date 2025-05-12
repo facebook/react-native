@@ -499,11 +499,14 @@ public object ReactScrollViewHelper {
         (uimanager as FabricUIManager).findNextFocusableElement(
             host.getChildAt(0).id, focused.id, absDir) ?: return null
 
-    val nextFocusTopMostParentId =
-        uimanager.findRelativeTopMostParent(host.getChildAt(0).id, nextFocusableViewId)
-            ?: return null
+    val ancestorIdList =
+        uimanager
+            .getRelativeAncestorList(host.getChildAt(0).id, nextFocusableViewId)
+            ?.toMutableSet() ?: return null
 
-    host.updateClippingRect(setOf(nextFocusableViewId, nextFocusTopMostParentId))
+    ancestorIdList.add(nextFocusableViewId)
+
+    host.updateClippingRect(ancestorIdList)
 
     return host.findViewById(nextFocusableViewId)
   }
@@ -563,7 +566,7 @@ public object ReactScrollViewHelper {
     }
   }
 
-  public class ReactScrollViewScrollState() {
+  public class ReactScrollViewScrollState {
 
     /** Get the position after current animation is finished */
     public val finalAnimatedPositionScroll: Point = Point()

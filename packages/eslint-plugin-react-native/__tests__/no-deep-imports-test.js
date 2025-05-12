@@ -29,6 +29,8 @@ eslintTester.run('../no-deep-imports', rule, {
     "import Foo from 'react-native-foo';",
     "import Foo from 'react-native-foo/Foo';",
     "import Foo from 'react/native/Foo';",
+    "import 'react-native/Libraries/Core/InitializeCore';",
+    "require('react-native/Libraries/Core/InitializeCore');",
   ],
   invalid: [
     {

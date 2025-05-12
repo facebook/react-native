@@ -120,7 +120,7 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
     }
   }
 
-  override fun dispatchModern(eventEmitter: RCTModernEventEmitter) {
+  override fun dispatchModern(rctEventEmitter: RCTModernEventEmitter) {
     if (!verifyMotionEvent()) {
       return
     }
@@ -128,9 +128,9 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
     @UIManagerType val uiManagerType = getUIManagerType(viewTag, surfaceId)
     if (uiManagerType == UIManagerType.FABRIC) {
       // TouchesHelper.sendTouchEvent can be inlined here post Fabric rollout
-      TouchesHelper.sendTouchEvent(eventEmitter, this)
+      TouchesHelper.sendTouchEvent(rctEventEmitter, this)
     } else if (uiManagerType == UIManagerType.LEGACY) {
-      TouchesHelper.sendTouchesLegacy(eventEmitter, this)
+      TouchesHelper.sendTouchesLegacy(rctEventEmitter, this)
     }
   }
 

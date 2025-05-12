@@ -12,11 +12,8 @@ import type {
   PlatformTestResult,
   PlatformTestResultStatus,
 } from './RNTesterPlatformTestTypes';
-import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
-import type {
-  TextStyle,
-  ViewStyleProp,
-} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {ListRenderItemInfo, TextStyle} from 'react-native';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterPlatformTestMinimizedResultView from './RNTesterPlatformTestMinimizedResultView';
 import RNTesterPlatformTestResultsText from './RNTesterPlatformTestResultsText';

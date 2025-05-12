@@ -14,7 +14,7 @@ import android.view.ViewGroup
  * Interface definition for a callback to be invoked when a onInterceptTouch is called on a
  * [ViewGroup].
  */
-public fun interface OnInterceptTouchEventListener {
+internal fun interface OnInterceptTouchEventListener {
 
   /**
    * Called when a onInterceptTouch is invoked on a view group.
@@ -24,5 +24,5 @@ public fun interface OnInterceptTouchEventListener {
    * @return Return true to steal motion event from the children and have the dispatched to this
    *   view, or return false to allow motion event to be delivered to children view
    */
-  public fun onInterceptTouchEvent(view: ViewGroup, event: MotionEvent): Boolean
+  fun onInterceptTouchEvent(view: ViewGroup, event: MotionEvent): Boolean
 }

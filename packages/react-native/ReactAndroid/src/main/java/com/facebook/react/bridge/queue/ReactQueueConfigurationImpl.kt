@@ -11,7 +11,7 @@ import android.os.Looper
 import com.facebook.react.bridge.queue.MessageQueueThreadImpl.Companion.create
 import com.facebook.react.bridge.queue.MessageQueueThreadSpec.Companion.mainThreadSpec
 
-public class ReactQueueConfigurationImpl
+internal class ReactQueueConfigurationImpl
 private constructor(
     private val uiQueueThread: MessageQueueThreadImpl,
     private val nativeModulesQueueThread: MessageQueueThreadImpl,

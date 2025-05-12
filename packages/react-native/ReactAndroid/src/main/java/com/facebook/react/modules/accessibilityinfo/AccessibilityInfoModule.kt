@@ -105,9 +105,19 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       val rawValue =
           Settings.Global.getString(contentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE)
 
-      // Parse the value as a float so we can check for a single value.
-      val parsedValue = rawValue?.toFloat() ?: 1f
-      return parsedValue == 0f
+      if (rawValue == null) {
+        return false
+      }
+
+      try {
+        // In some locales, the decimal separator is a comma instead of a dot,
+        // but "toFloat" would crash failing to conver these.
+        val parsedValue = rawValue.replace(',', '.').toFloat()
+        return parsedValue == 0f
+      } catch (e: NumberFormatException) {
+        // If the value is not a valid number, we assume reduced motion is not enabled
+        return false
+      }
     }
 
   private val isInvertColorsEnabledValue: Boolean

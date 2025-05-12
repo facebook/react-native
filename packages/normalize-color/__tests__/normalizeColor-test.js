@@ -140,6 +140,7 @@ it('handles hwb properly', () => {
   expect(normalizeColor('hwb(0 0% 0%)')).toBe(0xff0000ff);
   expect(normalizeColor('hwb(70 50% 0%)')).toBe(0xeaff80ff);
   expect(normalizeColor('hwb(0, 0%, 100%)')).toBe(null);
+  expect(normalizeColor('hwb(200 30% 20% / 0.5)')).toBe(0x4da1cc80);
 });
 
 it('handles named colors properly', () => {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1094b4a727e64c614de06b0fa6f75436>>
+ * @generated SignedSource<<deb2909bc5beb6b6fb8f832149a99346>>
  */
 
 /**
@@ -33,8 +33,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
-  @DoNotStrip public fun disableShadowNodeOnNewArchitectureAndroid(): Boolean
-
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
@@ -43,11 +41,19 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
+  @DoNotStrip public fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean
+
+  @DoNotStrip public fun enableDestroyShadowTreeRevisionAsync(): Boolean
+
+  @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
+
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
+
+  @DoNotStrip public fun enableFixForParentTagDuringReparenting(): Boolean
 
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
@@ -65,9 +71,15 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
+  @DoNotStrip public fun enableNetworkEventReporting(): Boolean
+
   @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
 
+  @DoNotStrip public fun enablePreparedTextLayout(): Boolean
+
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
+
+  @DoNotStrip public fun enableResourceTimingAPI(): Boolean
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
@@ -85,13 +97,15 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
-  @DoNotStrip public fun removeTurboModuleManagerDelegateMutex(): Boolean
+  @DoNotStrip public fun incorporateMaxLinesDuringAndroidLayout(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
+  @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
+
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
-  @DoNotStrip public fun useEditTextStockAndroidFocusBehavior(): Boolean
+  @DoNotStrip public fun useAndroidTextLayoutWidthDirectly(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 
@@ -100,6 +114,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
+
+  @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

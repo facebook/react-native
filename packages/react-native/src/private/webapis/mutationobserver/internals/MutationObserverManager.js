@@ -43,6 +43,7 @@ const registeredMutationObservers: Map<
 
 // The mapping between ReactNativeElement and their corresponding shadow node
 // needs to be kept here because React removes the link when unmounting.
+// TODO: remove this code when NativeMutationObserver.unobserveAll is available in all apps
 const targetToShadowNodeMap: WeakMap<
   ReactNativeElement,
   ReturnType<typeof getNativeNodeReference>,
@@ -111,7 +112,11 @@ export function observe({
     return false;
   }
 
-  targetToShadowNodeMap.set(target, targetShadowNode);
+  // We need to keep this temporarily until the changes in the native module have propagated.
+  // After that, we don't need to keep this mapping that can cause memory leaks.
+  if (!nativeUnobserveAll) {
+    targetToShadowNodeMap.set(target, targetShadowNode);
+  }
 
   if (!isConnected) {
     NativeMutationObserver.connect(
@@ -135,34 +140,61 @@ export function observe({
   return true;
 }
 
-export function unobserve(
+const nativeUnobserve = NativeMutationObserver?.unobserve;
+
+// TODO: delete in the next version, when NativeMutationObserver.unobserveAll is available in all apps
+export const unobserve: ?(
   mutationObserverId: number,
   target: ReactNativeElement,
-): void {
-  if (NativeMutationObserver == null) {
-    warnNoNativeMutationObserver();
-    return;
-  }
+) => void = nativeUnobserve
+  ? function unobserve(
+      mutationObserverId: number,
+      target: ReactNativeElement,
+    ): void {
+      if (NativeMutationObserver == null) {
+        warnNoNativeMutationObserver();
+        return;
+      }
 
-  const registeredObserver =
-    registeredMutationObservers.get(mutationObserverId);
-  if (registeredObserver == null) {
-    console.error(
-      `MutationObserverManager: could not stop observing target because MutationObserver with ID ${mutationObserverId} was not registered.`,
-    );
-    return;
-  }
+      const registeredObserver =
+        registeredMutationObservers.get(mutationObserverId);
+      if (registeredObserver == null) {
+        console.error(
+          `MutationObserverManager: could not stop observing target because MutationObserver with ID ${mutationObserverId} was not registered.`,
+        );
+        return;
+      }
 
-  const targetShadowNode = targetToShadowNodeMap.get(target);
-  if (targetShadowNode == null) {
-    console.error(
-      'MutationObserverManager: could not find registration data for target',
-    );
-    return;
-  }
+      const targetShadowNode = targetToShadowNodeMap.get(target);
+      if (targetShadowNode == null) {
+        console.error(
+          'MutationObserverManager: could not find registration data for target',
+        );
+        return;
+      }
 
-  NativeMutationObserver.unobserve(mutationObserverId, targetShadowNode);
-}
+      nativeUnobserve(mutationObserverId, targetShadowNode);
+    }
+  : null;
+
+const nativeUnobserveAll = NativeMutationObserver?.unobserveAll;
+
+// TODO: clean up as a regular export in the next version, when NativeMutationObserver.unobserveAll is available in all apps
+export const unobserveAll: ?(mutationObserverId: number) => void =
+  nativeUnobserveAll
+    ? function unobserveAll(mutationObserverId: MutationObserverId): void {
+        const registeredObserver =
+          registeredMutationObservers.get(mutationObserverId);
+        if (registeredObserver == null) {
+          console.error(
+            `MutationObserverManager: could not stop observing target because MutationObserver with ID ${mutationObserverId} was not registered.`,
+          );
+          return;
+        }
+
+        nativeUnobserveAll(mutationObserverId);
+      }
+    : null;
 
 /**
  * This function is called from native when there are `MutationObserver`

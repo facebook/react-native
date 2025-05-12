@@ -14,6 +14,7 @@
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <memory>
 #include <semaphore>
+#include <variant>
 
 #include "StubClock.h"
 #include "StubErrorUtils.h"
@@ -717,6 +718,11 @@ TEST_P(RuntimeSchedulerTest, normalTaskYieldsToSynchronousAccessAndResumes) {
 
   signalTaskToSync.acquire();
 
+  // Wait until both tasks (the work item and synchronous access request)
+  // are queued before proceeding with test assertions. Without this wait,
+  // the test would be flaky in a multithreaded environment.
+  stubQueue_->waitForTasks(2);
+
   // Normal priority task immediatelly yield in favour of the sync task.
   stubQueue_->tick();
 
@@ -1242,9 +1248,14 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
   EXPECT_EQ(stubQueue_->size(), 0);
   pendingEntries = performanceEntryReporter_->getEntries();
   EXPECT_EQ(pendingEntries.size(), 1);
-  EXPECT_EQ(pendingEntries[0].entryType, PerformanceEntryType::LONGTASK);
-  EXPECT_EQ(pendingEntries[0].startTime, 100);
-  EXPECT_EQ(pendingEntries[0].duration, 50);
+  auto entry = pendingEntries[0];
+  std::visit(
+      [](const auto& entryDetails) {
+        EXPECT_EQ(entryDetails.entryType, PerformanceEntryType::LONGTASK);
+        EXPECT_EQ(entryDetails.startTime, 100);
+        EXPECT_EQ(entryDetails.duration, 50);
+      },
+      entry);
 }
 
 TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
@@ -1322,9 +1333,14 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
   EXPECT_EQ(stubQueue_->size(), 0);
   pendingEntries = performanceEntryReporter_->getEntries();
   EXPECT_EQ(pendingEntries.size(), 1);
-  EXPECT_EQ(pendingEntries[0].entryType, PerformanceEntryType::LONGTASK);
-  EXPECT_EQ(pendingEntries[0].startTime, 100);
-  EXPECT_EQ(pendingEntries[0].duration, 120);
+  auto entry = pendingEntries[0];
+  std::visit(
+      [](const auto& entryDetails) {
+        EXPECT_EQ(entryDetails.entryType, PerformanceEntryType::LONGTASK);
+        EXPECT_EQ(entryDetails.startTime, 100);
+        EXPECT_EQ(entryDetails.duration, 120);
+      },
+      entry);
 }
 
 INSTANTIATE_TEST_SUITE_P(

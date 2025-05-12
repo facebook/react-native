@@ -29,7 +29,10 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
 
 using namespace facebook::react;
 
-@interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
+@interface RCTTextInputComponentView () <
+    RCTBackedTextInputDelegate,
+    RCTTextInputViewProtocol,
+    UIDropInteractionDelegate>
 @end
 
 static NSSet<NSNumber *> *returnKeyTypesSet;
@@ -71,6 +74,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   NSDictionary<NSAttributedStringKey, id> *_originalTypingAttributes;
 
   BOOL _hasInputAccessoryView;
+  CGSize _previousContentSize;
 }
 
 #pragma mark - UIView overrides
@@ -87,6 +91,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
     _originalTypingAttributes = [_backedTextInputView.typingAttributes copy];
+    _previousContentSize = CGSizeZero;
 
     [self addSubview:_backedTextInputView];
     [self initializeReturnKeyType];
@@ -305,6 +310,19 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _backedTextInputView.disableKeyboardShortcuts = newTextInputProps.disableKeyboardShortcuts;
   }
 
+  if (newTextInputProps.acceptDragAndDropTypes != oldTextInputProps.acceptDragAndDropTypes) {
+    if (!newTextInputProps.acceptDragAndDropTypes.has_value()) {
+      _backedTextInputView.acceptDragAndDropTypes = nil;
+    } else {
+      auto &vector = newTextInputProps.acceptDragAndDropTypes.value();
+      NSMutableArray<NSString *> *array = [NSMutableArray arrayWithCapacity:vector.size()];
+      for (const std::string &str : vector) {
+        [array addObject:[NSString stringWithUTF8String:str.c_str()]];
+      }
+      _backedTextInputView.acceptDragAndDropTypes = array;
+    }
+  }
+
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];
@@ -336,8 +354,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
            oldLayoutMetrics:(const LayoutMetrics &)oldLayoutMetrics
 {
-  CGSize previousContentSize = _backedTextInputView.contentSize;
-
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
   _backedTextInputView.frame =
@@ -345,7 +361,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   _backedTextInputView.textContainerInset =
       RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.contentInsets - layoutMetrics.borderWidth);
 
-  if (!CGSizeEqualToSize(previousContentSize, _backedTextInputView.contentSize) && _eventEmitter) {
+  if (!CGSizeEqualToSize(_previousContentSize, _backedTextInputView.contentSize) && _eventEmitter) {
+    _previousContentSize = _backedTextInputView.contentSize;
     static_cast<const TextInputEventEmitter &>(*_eventEmitter).onContentSizeChange([self _textInputMetrics]);
   }
 }

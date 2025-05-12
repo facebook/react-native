@@ -10,8 +10,8 @@
 
 'use strict';
 
-import type {Domain} from '../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher';
-import type {Spec as NativeReactDevToolsRuntimeSettingsModuleSpec} from '../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule';
+import type {Domain} from '../../src/private/devsupport/rndevtools/setUpFuseboxReactDevToolsDispatcher';
+import type {Spec as NativeReactDevToolsRuntimeSettingsModuleSpec} from '../../src/private/devsupport/rndevtools/specs/NativeReactDevToolsRuntimeSettingsModule';
 
 if (__DEV__) {
   if (typeof global.queueMicrotask !== 'function') {
@@ -31,18 +31,18 @@ if (__DEV__) {
 
 if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
-  require('../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher');
+  require('../../src/private/devsupport/rndevtools/setUpFuseboxReactDevToolsDispatcher');
   const {
     initialize,
     connectToDevTools,
     connectWithCustomMessagingProtocol,
   } = require('react-devtools-core');
 
-  const reactDevToolsSettingsManager = require('../../src/private/debugging/ReactDevToolsSettingsManager');
+  const reactDevToolsSettingsManager = require('../../src/private/devsupport/rndevtools/ReactDevToolsSettingsManager');
   const serializedHookSettings =
     reactDevToolsSettingsManager.getGlobalHookSettings();
   const maybeReactDevToolsRuntimeSettingsModuleModule =
-    require('../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule').default;
+    require('../../src/private/devsupport/rndevtools/specs/NativeReactDevToolsRuntimeSettingsModule').default;
 
   let hookSettings = null;
   if (serializedHookSettings != null) {

@@ -8,8 +8,7 @@
  * @flow strict-local
  */
 
-import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
-import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {EventSubscription, RootTag} from 'react-native';
 
 import NativeCxxModuleExample, {
   EnumInt,

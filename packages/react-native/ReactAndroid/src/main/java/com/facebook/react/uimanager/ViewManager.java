@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
@@ -407,11 +408,13 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Map contains the names (key) and types (value) of the ViewManager's props.
    */
   public Map<String, String> getNativeProps() {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
-        && ReactNativeFeatureFlags.disableShadowNodeOnNewArchitectureAndroid()) {
+    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
+        && ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+      // TODO: review if we need to check fabricInterop here
       return ViewManagerPropertyUpdater.getNativeProps(getClass(), null);
+    } else {
+      return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
     }
-    return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }
 
   /**

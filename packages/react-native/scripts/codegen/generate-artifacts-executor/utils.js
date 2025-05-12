@@ -94,10 +94,20 @@ function cleanupEmptyFilesAndFolders(filepath) {
   }
 }
 
+function readReactNativeConfig(projectRoot) {
+  const rnConfigFilePath = path.resolve(projectRoot, 'react-native.config.js');
+
+  if (!fs.existsSync(rnConfigFilePath)) {
+    return {};
+  }
+
+  return require(rnConfigFilePath);
+}
+
 /**
  * Finding libraries!
  */
-function findCodegenEnabledLibraries(pkgJson, projectRoot) {
+function findCodegenEnabledLibraries(pkgJson, projectRoot, reactNativeConfig) {
   const projectLibraries = findProjectRootLibraries(pkgJson, projectRoot);
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
     return projectLibraries;
@@ -105,7 +115,7 @@ function findCodegenEnabledLibraries(pkgJson, projectRoot) {
     return [
       ...projectLibraries,
       ...findExternalLibraries(pkgJson, projectRoot),
-      ...findLibrariesFromReactNativeConfig(projectRoot),
+      ...findLibrariesFromReactNativeConfig(projectRoot, reactNativeConfig),
     ];
   }
 }
@@ -128,22 +138,13 @@ function findProjectRootLibraries(pkgJson, projectRoot) {
   return extractLibrariesFromJSON(pkgJson, projectRoot);
 }
 
-function findLibrariesFromReactNativeConfig(projectRoot) {
-  const rnConfigFileName = 'react-native.config.js';
-
+function findLibrariesFromReactNativeConfig(projectRoot, rnConfig) {
   codegenLog(
-    `Searching for codegen-enabled libraries in ${rnConfigFileName}`,
+    `Searching for codegen-enabled libraries in react-native.config.js`,
     true,
   );
 
-  const rnConfigFilePath = path.resolve(projectRoot, rnConfigFileName);
-
-  if (!fs.existsSync(rnConfigFilePath)) {
-    return [];
-  }
-  const rnConfig = require(rnConfigFilePath);
-
-  if (rnConfig.dependencies == null) {
+  if (!rnConfig.dependencies) {
     return [];
   }
   return Object.keys(rnConfig.dependencies).flatMap(name => {
@@ -366,6 +367,19 @@ function getLibraryName(library) {
   ).name;
 }
 
+/**
+ * Finds all disabled libraries by platform based the react native config.
+ *
+ * This is needed when selectively disabling libraries in react-native.config.js since codegen should exclude those libraries as well.
+ */
+function findDisabledLibrariesByPlatform(reactNativeConfig, platform) {
+  const dependencies = reactNativeConfig.dependencies ?? {};
+
+  return Object.keys(dependencies).filter(
+    dependency => dependencies[dependency].platforms?.[platform] === null,
+  );
+}
+
 module.exports = {
   buildCodegenIfNeeded,
   pkgJsonIncludesGeneratedCode,
@@ -377,4 +391,6 @@ module.exports = {
   findProjectRootLibraries,
   extractLibrariesFromJSON,
   parseiOSAnnotations,
+  readReactNativeConfig,
+  findDisabledLibrariesByPlatform,
 };

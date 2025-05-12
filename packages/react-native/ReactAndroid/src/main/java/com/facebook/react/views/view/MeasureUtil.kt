@@ -10,10 +10,10 @@ package com.facebook.react.views.view
 import android.view.View
 import com.facebook.yoga.YogaMeasureMode
 
-public object MeasureUtil {
+internal object MeasureUtil {
 
   @JvmStatic
-  public fun getMeasureSpec(size: Float, mode: YogaMeasureMode): Int =
+  fun getMeasureSpec(size: Float, mode: YogaMeasureMode): Int =
       when (mode) {
         YogaMeasureMode.EXACTLY ->
             View.MeasureSpec.makeMeasureSpec(size.toInt(), View.MeasureSpec.EXACTLY)

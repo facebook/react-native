@@ -21,8 +21,11 @@
 
 namespace facebook::react {
 
+// Aligned with maxBufferSize implemented by browsers
+// https://w3c.github.io/timing-entrytypes-registry/#registry
 constexpr size_t EVENT_BUFFER_SIZE = 150;
 constexpr size_t LONG_TASK_BUFFER_SIZE = 200;
+constexpr size_t RESOURCE_TIMING_BUFFER_SIZE = 250;
 
 constexpr DOMHighResTimeStamp LONG_TASK_DURATION_THRESHOLD_MS = 50.0;
 
@@ -77,11 +80,11 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
-  PerformanceEntry reportMark(
+  PerformanceMark reportMark(
       const std::string& name,
       const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
 
-  PerformanceEntry reportMeasure(
+  PerformanceMeasure reportMeasure(
       const std::string& name,
       double startTime,
       double endTime,
@@ -101,12 +104,24 @@ class PerformanceEntryReporter {
 
   void reportLongTask(double startTime, double duration);
 
+  PerformanceResourceTiming reportResourceTiming(
+      const std::string& url,
+      DOMHighResTimeStamp fetchStart,
+      DOMHighResTimeStamp requestStart,
+      std::optional<DOMHighResTimeStamp> connectStart,
+      std::optional<DOMHighResTimeStamp> connectEnd,
+      DOMHighResTimeStamp responseStart,
+      DOMHighResTimeStamp responseEnd,
+      const std::optional<int>& responseStatus);
+
  private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
 
   mutable std::shared_mutex buffersMutex_;
   PerformanceEntryCircularBuffer eventBuffer_{EVENT_BUFFER_SIZE};
   PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
+  PerformanceEntryCircularBuffer resourceTimingBuffer_{
+      RESOURCE_TIMING_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
   PerformanceEntryKeyedBuffer measureBuffer_;
 
@@ -127,6 +142,8 @@ class PerformanceEntryReporter {
         return measureBuffer_;
       case PerformanceEntryType::LONGTASK:
         return longTaskBuffer_;
+      case PerformanceEntryType::RESOURCE:
+        return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
@@ -143,14 +160,16 @@ class PerformanceEntryReporter {
         return measureBuffer_;
       case PerformanceEntryType::LONGTASK:
         return longTaskBuffer_;
+      case PerformanceEntryType::RESOURCE:
+        return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
     }
     throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
-  void traceMark(const PerformanceEntry& entry) const;
-  void traceMeasure(const PerformanceEntry& entry) const;
+  void traceMark(const PerformanceMark& entry) const;
+  void traceMeasure(const PerformanceMeasure& entry) const;
 };
 
 } // namespace facebook::react

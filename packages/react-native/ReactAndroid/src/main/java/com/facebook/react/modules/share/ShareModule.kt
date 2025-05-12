@@ -17,7 +17,7 @@ import com.facebook.react.module.annotations.ReactModule
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = NativeShareModuleSpec.NAME)
-public class ShareModule(reactContext: ReactApplicationContext) :
+internal class ShareModule(reactContext: ReactApplicationContext) :
     NativeShareModuleSpec(reactContext) {
 
   /**
@@ -28,7 +28,7 @@ public class ShareModule(reactContext: ReactApplicationContext) :
    * @param content the data to send
    * @param dialogTitle the title of the chooser dialog
    */
-  public override fun share(content: ReadableMap?, dialogTitle: String?, promise: Promise) {
+  override fun share(content: ReadableMap?, dialogTitle: String?, promise: Promise) {
     if (content == null) {
       promise.reject(ERROR_INVALID_CONTENT, "Content cannot be null")
       return
@@ -58,10 +58,10 @@ public class ShareModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  public companion object {
-    public const val NAME: String = NativeShareModuleSpec.NAME
+  companion object {
+    const val NAME: String = NativeShareModuleSpec.NAME
     private const val ACTION_SHARED: String = "sharedAction"
-    public const val ERROR_INVALID_CONTENT: String = "E_INVALID_CONTENT"
+    const val ERROR_INVALID_CONTENT: String = "E_INVALID_CONTENT"
     private const val ERROR_UNABLE_TO_OPEN_DIALOG: String = "E_UNABLE_TO_OPEN_DIALOG"
   }
 }

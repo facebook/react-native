@@ -17,7 +17,6 @@ import type {
   SectionData,
   VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
-import type {ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
 import VirtualizedLists from '@react-native/virtualized-lists';
@@ -175,7 +174,7 @@ const SectionList: component(
     ...props,
   };
 
-  const wrapperRef = useRef<?ElementRef<typeof VirtualizedSectionList>>();
+  const wrapperRef = useRef<?React.ElementRef<typeof VirtualizedSectionList>>();
 
   useImperativeHandle(
     ref,

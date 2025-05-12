@@ -49,9 +49,32 @@ struct Bridging<PerformanceEntryType> {
   }
 };
 
+// Our Native Module codegen does not support JS type unions, so we use a
+// flattened object here as an intermediate format.
+struct NativePerformanceEntry {
+  std::string name;
+  PerformanceEntryType entryType;
+  DOMHighResTimeStamp startTime;
+  DOMHighResTimeStamp duration;
+
+  // For PerformanceEventTiming only
+  std::optional<DOMHighResTimeStamp> processingStart;
+  std::optional<DOMHighResTimeStamp> processingEnd;
+  std::optional<PerformanceEntryInteractionId> interactionId;
+
+  // For PerformanceResourceTiming only
+  std::optional<DOMHighResTimeStamp> fetchStart;
+  std::optional<DOMHighResTimeStamp> requestStart;
+  std::optional<DOMHighResTimeStamp> connectStart;
+  std::optional<DOMHighResTimeStamp> connectEnd;
+  std::optional<DOMHighResTimeStamp> responseStart;
+  std::optional<DOMHighResTimeStamp> responseEnd;
+  std::optional<int> responseStatus;
+};
+
 template <>
-struct Bridging<PerformanceEntry>
-    : NativePerformanceRawPerformanceEntryBridging<PerformanceEntry> {};
+struct Bridging<NativePerformanceEntry>
+    : NativePerformanceRawPerformanceEntryBridging<NativePerformanceEntry> {};
 
 template <>
 struct Bridging<NativePerformancePerformanceObserverObserveOptions>
@@ -98,15 +121,15 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 #pragma mark - Performance Timeline (https://w3c.github.io/performance-timeline/#performance-timeline)
 
   // https://www.w3.org/TR/performance-timeline/#getentries-method
-  std::vector<PerformanceEntry> getEntries(jsi::Runtime& rt);
+  std::vector<NativePerformanceEntry> getEntries(jsi::Runtime& rt);
 
   // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
-  std::vector<PerformanceEntry> getEntriesByType(
+  std::vector<NativePerformanceEntry> getEntriesByType(
       jsi::Runtime& rt,
       PerformanceEntryType entryType);
 
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
-  std::vector<PerformanceEntry> getEntriesByName(
+  std::vector<NativePerformanceEntry> getEntriesByName(
       jsi::Runtime& rt,
       std::string entryName,
       std::optional<PerformanceEntryType> entryType = std::nullopt);
@@ -125,7 +148,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       jsi::Object observer,
       NativePerformancePerformanceObserverObserveOptions options);
   void disconnect(jsi::Runtime& rt, jsi::Object observer);
-  std::vector<PerformanceEntry> takeRecords(
+  std::vector<NativePerformanceEntry> takeRecords(
       jsi::Runtime& rt,
       jsi::Object observerObj,
       // When called via `observer.takeRecords` it should be in insertion order.

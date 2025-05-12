@@ -56,7 +56,7 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle.Companion.fromString
 import com.facebook.react.uimanager.style.LogicalEdge
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper.Companion.instance
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import com.facebook.react.views.scroll.ScrollEventType
 import com.facebook.react.views.scroll.ScrollEventType.Companion.getJSEventName
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColor
@@ -585,20 +585,20 @@ public open class ReactTextInputManager public constructor() :
   public fun setTextAlignVertical(view: ReactEditText, textAlignVertical: String?) {
     when (textAlignVertical) {
       null,
-      "auto" -> view.setGravityVertical(Gravity.NO_GRAVITY)
-      "top" -> view.setGravityVertical(Gravity.TOP)
-      "bottom" -> view.setGravityVertical(Gravity.BOTTOM)
-      "center" -> view.setGravityVertical(Gravity.CENTER_VERTICAL)
+      "auto" -> view.gravityVertical = Gravity.NO_GRAVITY
+      "top" -> view.gravityVertical = Gravity.TOP
+      "bottom" -> view.gravityVertical = Gravity.BOTTOM
+      "center" -> view.gravityVertical = Gravity.CENTER_VERTICAL
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid textAlignVertical: $textAlignVertical")
-        view.setGravityVertical(Gravity.NO_GRAVITY)
+        view.gravityVertical = Gravity.NO_GRAVITY
       }
     }
   }
 
   @ReactProp(name = "inlineImageLeft")
   public fun setInlineImageLeft(view: ReactEditText, resource: String?) {
-    val id = instance.getResourceDrawableId(view.context, resource)
+    val id = ResourceDrawableIdHelper.getResourceDrawableId(view.context, resource)
     view.setCompoundDrawablesWithIntrinsicBounds(id, 0, 0, 0)
   }
 
@@ -768,6 +768,22 @@ public open class ReactTextInputManager public constructor() :
   @ReactProp(name = "returnKeyType")
   public fun setReturnKeyType(view: ReactEditText, returnKeyType: String?) {
     view.returnKeyType = returnKeyType
+  }
+
+  @ReactProp(name = "acceptDragAndDropTypes")
+  public fun setAcceptDragAndDropTypes(
+      view: ReactEditText,
+      acceptDragAndDropTypes: ReadableArray?
+  ) {
+    if (acceptDragAndDropTypes == null) {
+      view.dragAndDropFilter = null
+    } else {
+      val acceptedTypes = mutableListOf<String>()
+      for (i in 0 until acceptDragAndDropTypes.size()) {
+        acceptDragAndDropTypes.getString(i)?.also(acceptedTypes::add)
+      }
+      view.dragAndDropFilter = acceptedTypes
+    }
   }
 
   @ReactProp(name = "disableFullscreenUI", defaultBoolean = false)

@@ -90,9 +90,6 @@ abstract class GenerateEntryPointTask : DefaultTask() {
             throw new RuntimeException(error);
           }
           
-          if ({{packageName}}.BuildConfig.LEGACY_WARNINGS_ENABLED) {
-            LegacyArchitectureLogger.OSS_LEGACY_WARNINGS_ENABLED = true;
-          }
           if ({{packageName}}.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
             DefaultNewArchitectureEntryPoint.load();
           }

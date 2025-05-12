@@ -51,6 +51,10 @@ const config = {
     // using babel-register.
     babelTransformerPath: path.resolve(__dirname, 'metro-babel-transformer.js'),
   },
+  serializer: {
+    // Force an empty list so Metro doesn't inject InitializeCore in tests.
+    getModulesRunBeforeMainModule: () => [],
+  },
   watchFolders: JS_DIR
     ? [
         path.join(JS_DIR, 'RKJSModules', 'vendor', 'react'),

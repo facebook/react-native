@@ -11,7 +11,12 @@
 // flowlint unsafe-getters-setters:off
 
 export type DOMHighResTimeStamp = number;
-export type PerformanceEntryType = 'mark' | 'measure' | 'event' | 'longtask';
+export type PerformanceEntryType =
+  | 'mark'
+  | 'measure'
+  | 'event'
+  | 'longtask'
+  | 'resource';
 
 export type PerformanceEntryJSON = {
   name: string,

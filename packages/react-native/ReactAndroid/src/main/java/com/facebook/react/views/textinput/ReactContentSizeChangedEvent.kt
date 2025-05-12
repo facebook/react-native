@@ -31,7 +31,7 @@ internal class ReactContentSizeChangedEvent(
 
   override fun getEventName(): String = EVENT_NAME
 
-  override fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     val contentSize =
         Arguments.createMap().apply {
           putDouble("width", contentWidth.toDouble())
