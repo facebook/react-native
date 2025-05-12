@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<073265fa3290d8277fa48e6c86add604>>
+ * @generated SignedSource<<7fae26876dac82dbeaf238872d93f57b>>
  */
 
 /**
@@ -205,15 +205,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
-  }
-
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    auto value = values_["enableJSRuntimeGCOnMemoryPressureOnIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableJSRuntimeGCOnMemoryPressureOnIOS();
   }
 
   bool enableLayoutAnimationsOnAndroid() override {

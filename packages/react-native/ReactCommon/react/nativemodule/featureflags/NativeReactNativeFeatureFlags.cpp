@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ad1233105bb6e6cd20cc8fb895b2d5c>>
+ * @generated SignedSource<<9abcefcde5f24456941fc112119ccb28>>
  */
 
 /**
@@ -132,11 +132,6 @@ bool NativeReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout(
 bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
-}
-
-bool NativeReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(

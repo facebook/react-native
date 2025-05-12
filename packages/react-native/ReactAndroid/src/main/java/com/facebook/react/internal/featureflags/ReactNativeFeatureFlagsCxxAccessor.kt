@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c0dbb15487fd85e3beff70699ce99882>>
+ * @generated SignedSource<<de51ff5f161363975ef67549e717f010>>
  */
 
 /**
@@ -38,7 +38,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
-  private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
@@ -227,15 +226,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableIOSViewClipToPaddingBox()
       enableIOSViewClipToPaddingBoxCache = cached
-    }
-    return cached
-  }
-
-  override fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean {
-    var cached = enableJSRuntimeGCOnMemoryPressureOnIOSCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableJSRuntimeGCOnMemoryPressureOnIOS()
-      enableJSRuntimeGCOnMemoryPressureOnIOSCache = cached
     }
     return cached
   }
