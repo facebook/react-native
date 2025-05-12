@@ -17,5 +17,5 @@ export const version: $ReadOnly<{
   major: 0,
   minor: 80,
   patch: 0,
-  prerelease: 'rc.0',
+  prerelease: 'rc.1',
 };
