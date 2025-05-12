@@ -18,9 +18,6 @@ const path = require('path');
  * version of hermes, use the HERMES_VERSION environment variable. The path to the artifacts will be inside
  * the .build/artifacts/hermes folder, but this can be overridden by setting the HERMES_ENGINE_TARBALL_PATH
  * environment variable. If this varuable is set, the script will use the local tarball instead of downloading it.
- * @param {*} version
- * @param {*} buildType
- * @returns
  */
 async function prepareHermesArtifactsAsync(
   version /*:string*/,
