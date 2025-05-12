@@ -86,10 +86,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTJSThreadManager *_jsThreadManager;
   NSDictionary *_launchOptions;
   void (^_waitUntilModuleSetupComplete)();
-
+  
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
-
+  
   jsinspector_modern::HostTarget *_parentInspectorTarget;
 }
 
@@ -107,7 +107,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _performanceLogger = [RCTPerformanceLogger new];
     registerPerformanceLoggerHooks(_performanceLogger);
     [_performanceLogger markStartForTag:RCTPLReactInstanceInit];
-
+    
     _delegate = delegate;
     _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
@@ -120,24 +120,24 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     {
       __weak __typeof(self) weakSelf = self;
       [_bridgeModuleDecorator.callableJSModules
-          setBridgelessJSModuleMethodInvoker:^(
-              NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
-            [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
-            if (onComplete) {
-              [weakSelf
-                  callFunctionOnBufferedRuntimeExecutor:[onComplete](facebook::jsi::Runtime &_) { onComplete(); }];
-            }
-          }];
+       setBridgelessJSModuleMethodInvoker:^(
+                                            NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
+                                              [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
+                                              if (onComplete) {
+                                                [weakSelf
+                                                 callFunctionOnBufferedRuntimeExecutor:[onComplete](facebook::jsi::Runtime &_) { onComplete(); }];
+                                              }
+                                            }];
     }
     _launchOptions = launchOptions;
-
+    
     if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
       [[NSNotificationCenter defaultCenter] addObserver:self
                                                selector:@selector(_handleMemoryWarning)
                                                    name:UIApplicationDidReceiveMemoryWarningNotification
                                                  object:nil];
     }
-
+    
     [self _start];
   }
   return self;
@@ -156,7 +156,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   if (_valid) {
     _reactInstance->callFunctionOnModule(
-        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ? args : @[]));
+                                         [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ? args : @[]));
   }
 }
 
@@ -174,7 +174,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
      * TurboModuleManager invalidate blocks the calling thread until all TurboModules are invalidated.
      */
     [self->_turboModuleManager invalidate];
-
+    
     // Clean up all the Resources
     self->_reactInstance = nullptr;
     self->_jsRuntimeFactory = nullptr;
@@ -182,10 +182,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     self->_delegate = nil;
     [self->_displayLink invalidate];
     self->_displayLink = nil;
-
+    
     self->_turboModuleManager = nil;
     self->_performanceLogger = nil;
-
+    
     // Terminate the JavaScript thread, so that no other work executes after this block.
     self->_jsThreadManager = nil;
   }];
@@ -208,22 +208,22 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
-
+  
   if (!module) {
     module = [moduleClass new];
   }
-
+  
   [self _attachBridgelessAPIsToModule:module];
   return module;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   if ([_appTMMDelegate respondsToSelector:@selector(getTurboModule:jsInvoker:)]) {
     return [_appTMMDelegate getTurboModule:name jsInvoker:jsInvoker];
   }
-
+  
   return nullptr;
 }
 
@@ -232,7 +232,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   if ([_appTMMDelegate respondsToSelector:@selector(extraModulesForBridge:)]) {
     return [_appTMMDelegate extraModulesForBridge:nil];
   }
-
+  
   return @[];
 }
 
@@ -252,56 +252,56 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto objCTimerRegistry = std::make_unique<ObjCTimerRegistry>();
   auto timing = objCTimerRegistry->timing;
   auto *objCTimerRegistryRawPtr = objCTimerRegistry.get();
-
+  
   auto timerManager = std::make_shared<TimerManager>(std::move(objCTimerRegistry));
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
-
+  
   __weak __typeof(self) weakSelf = self;
   auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ProcessedError &error) {
     [weakSelf _handleJSError:error withRuntime:runtime];
   };
-
+  
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
-      _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
-      _jsThreadManager.jsMessageThread,
-      timerManager,
-      onJsError,
-      _parentInspectorTarget);
+                                                   _jsRuntimeFactory->createJSRuntime(_jsThreadManager.jsMessageThread),
+                                                   _jsThreadManager.jsMessageThread,
+                                                   timerManager,
+                                                   onJsError,
+                                                   _parentInspectorTarget);
   _valid = true;
-
+  
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
-
+  
   auto jsCallInvoker = make_shared<RuntimeSchedulerCallInvoker>(_reactInstance->getRuntimeScheduler());
   RCTBridgeProxy *bridgeProxy =
-      [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
-          moduleRegistry:_bridgeModuleDecorator.moduleRegistry
-          bundleManager:_bridgeModuleDecorator.bundleManager
-          callableJSModules:_bridgeModuleDecorator.callableJSModules
-          dispatchToJSThread:^(dispatch_block_t block) {
-            __strong __typeof(self) strongSelf = weakSelf;
-            if (strongSelf && strongSelf->_valid) {
-              strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
-            }
-          }
-          registerSegmentWithId:^(NSNumber *segmentId, NSString *path) {
-            __strong __typeof(self) strongSelf = weakSelf;
-            if (strongSelf && strongSelf->_valid) {
-              [strongSelf registerSegmentWithId:segmentId path:path];
-            }
-          }
-          runtime:_reactInstance->getJavaScriptContext()
-          launchOptions:_launchOptions];
+  [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
+                                moduleRegistry:_bridgeModuleDecorator.moduleRegistry
+                                 bundleManager:_bridgeModuleDecorator.bundleManager
+                             callableJSModules:_bridgeModuleDecorator.callableJSModules
+                            dispatchToJSThread:^(dispatch_block_t block) {
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (strongSelf && strongSelf->_valid) {
+      strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
+    }
+  }
+                         registerSegmentWithId:^(NSNumber *segmentId, NSString *path) {
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (strongSelf && strongSelf->_valid) {
+      [strongSelf registerSegmentWithId:segmentId path:path];
+    }
+  }
+                                       runtime:_reactInstance->getJavaScriptContext()
+                                 launchOptions:_launchOptions];
   bridgeProxy.jsCallInvoker = jsCallInvoker;
   [RCTBridge setCurrentBridge:(RCTBridge *)bridgeProxy];
-
+  
   // Set up TurboModules
   _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridgeProxy:bridgeProxy
                                                      bridgeModuleDecorator:_bridgeModuleDecorator
                                                                   delegate:self
                                                                  jsInvoker:jsCallInvoker];
-
+  
 #if RCT_DEV
   /**
    * Instantiating DevMenu has the side-effect of registering
@@ -311,10 +311,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
    */
   [_turboModuleManager moduleForName:"RCTDevMenu"];
 #endif // end RCT_DEV
-
+  
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
-
+  
   if (ReactNativeFeatureFlags::enableMainQueueModulesOnIOS()) {
     /**
      * Some native modules need to capture uikit objects on the main thread.
@@ -322,51 +322,51 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
      * will wait until this module init finishes, before executing the js bundle.
      */
     NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
-
+    
     std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
     std::shared_ptr<std::condition_variable> cv = std::make_shared<std::condition_variable>();
     std::shared_ptr<bool> isReady = std::make_shared<bool>(false);
-
+    
     _waitUntilModuleSetupComplete = ^{
       std::unique_lock<std::mutex> lock(*mutex);
       cv->wait(lock, [isReady] { return *isReady; });
     };
-
+    
     // TODO(T218039767): Integrate perf logging into main queue module init
     RCTExecuteOnMainQueue(^{
       for (NSString *moduleName in modulesRequiringMainQueueSetup) {
         [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
       }
-
+      
       RCTScreenSize();
       RCTScreenScale();
-
+      
       std::lock_guard<std::mutex> lock(*mutex);
       *isReady = true;
       cv->notify_all();
     });
   }
-
+  
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
-
+  
   auto contextContainer = std::make_shared<ContextContainer>();
   [_delegate didCreateContextContainer:contextContainer];
-
+  
   contextContainer->insert(
-      "RCTImageLoader", facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTImageLoader"]));
+                           "RCTImageLoader", facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTImageLoader"]));
   contextContainer->insert(
-      "RCTEventDispatcher",
-      facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTEventDispatcher"]));
+                           "RCTEventDispatcher",
+                           facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTEventDispatcher"]));
   contextContainer->insert("RCTBridgeModuleDecorator", facebook::react::wrapManagedObject(_bridgeModuleDecorator));
   contextContainer->insert(RuntimeSchedulerKey, std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
   contextContainer->insert("RCTBridgeProxy", facebook::react::wrapManagedObject(bridgeProxy));
-
+  
   _surfacePresenter = [[RCTSurfacePresenter alloc]
-        initWithContextContainer:contextContainer
-                 runtimeExecutor:bufferedRuntimeExecutor
-      bridgelessBindingsExecutor:std::optional(_reactInstance->getUnbufferedRuntimeExecutor())];
-
+                       initWithContextContainer:contextContainer
+                       runtimeExecutor:bufferedRuntimeExecutor
+                       bridgelessBindingsExecutor:std::optional(_reactInstance->getUnbufferedRuntimeExecutor())];
+  
   // This enables RCTViewRegistry in modules to return UIViews from its viewForReactTag method
   __weak RCTSurfacePresenter *weakSurfacePresenter = _surfacePresenter;
   [_bridgeModuleDecorator.viewRegistry_DEPRECATED setBridgelessComponentViewProvider:^UIView *(NSNumber *reactTag) {
@@ -374,33 +374,33 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     if (strongSurfacePresenter == nil) {
       return nil;
     }
-
+    
     return [strongSurfacePresenter findComponentViewWithTag_DO_NOT_USE_DEPRECATED:reactTag.integerValue];
   }];
-
+  
   // DisplayLink is used to call timer callbacks.
   _displayLink = [RCTDisplayLink new];
-
+  
   ReactInstance::JSRuntimeFlags options = {
-      .isProfiling = false, .runtimeDiagnosticFlags = [RCTInstanceRuntimeDiagnosticFlags() UTF8String]};
+    .isProfiling = false, .runtimeDiagnosticFlags = [RCTInstanceRuntimeDiagnosticFlags() UTF8String]};
   _reactInstance->initializeRuntime(options, [=](jsi::Runtime &runtime) {
     __strong __typeof(self) strongSelf = weakSelf;
     if (!strongSelf) {
       return;
     }
-
+    
     [strongSelf->_turboModuleManager installJSBindings:runtime];
     facebook::react::bindNativeLogger(runtime, [](const std::string &message, unsigned int logLevel) {
       _RCTLogJavaScriptInternal(static_cast<RCTLogLevel>(logLevel), [NSString stringWithUTF8String:message.c_str()]);
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
-
+    
     if (ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
-
+    
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
-
+    
     // Set up Display Link
     RCTModuleData *timingModuleData = [[RCTModuleData alloc] initWithModuleInstance:timing
                                                                              bridge:nil
@@ -410,12 +410,12 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                                   callableJSModules:nil];
     [strongSelf->_displayLink registerModuleForFrameUpdates:timing withModuleData:timingModuleData];
     [strongSelf->_displayLink addToRunLoop:[NSRunLoop currentRunLoop]];
-
+    
     // Attempt to load bundle synchronously, fallback to asynchronously.
     [strongSelf->_performanceLogger markStartForTag:RCTPLScriptDownload];
     [strongSelf _loadJSBundle:[strongSelf->_bridgeModuleDecorator.bundleManager bundleURL]];
   });
-
+  
   [_performanceLogger markStopForTag:RCTPLReactInstanceInit];
 }
 
@@ -425,17 +425,17 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   if ([module respondsToSelector:@selector(setDispatchToJSThread:)]) {
     ((id<RCTJSDispatcherModule>)module).dispatchToJSThread = ^(dispatch_block_t block) {
       __strong __typeof(self) strongSelf = weakSelf;
-
+      
       if (strongSelf && strongSelf->_valid) {
         strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
       }
     };
   }
-
+  
   if ([module respondsToSelector:@selector(setSurfacePresenter:)]) {
     [module performSelector:@selector(setSurfacePresenter:) withObject:_surfacePresenter];
   }
-
+  
   // Replaces bridge.isInspectable
   if ([module respondsToSelector:@selector(setIsInspectable:)]) {
 #if RCT_DEV_MENU
@@ -462,15 +462,15 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   if (!_valid) {
     return;
   }
-
+  
   RCTRedBox *redBox = [_turboModuleManager moduleForName:"RedBox"];
-
+  
   RCTExecuteOnMainQueue(^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
                                                         object:self
                                                       userInfo:@{@"error" : error}];
     [redBox showErrorMessage:[error localizedDescription]];
-
+    
     RCTFatal(error);
   });
 }
@@ -480,46 +480,46 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
   {
     id<RCTDevLoadingViewProtocol> loadingView =
-        (id<RCTDevLoadingViewProtocol>)[_turboModuleManager moduleForName:"DevLoadingView"];
+    (id<RCTDevLoadingViewProtocol>)[_turboModuleManager moduleForName:"DevLoadingView"];
     [loadingView showWithURL:sourceURL];
   }
 #endif
-
+  
   __weak __typeof(self) weakSelf = self;
   [_delegate loadBundleAtURL:sourceURL
-      onProgress:^(RCTLoadingProgress *progressData) {
-        __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
+                  onProgress:^(RCTLoadingProgress *progressData) {
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
-        id<RCTDevLoadingViewProtocol> loadingView =
-            (id<RCTDevLoadingViewProtocol>)[strongSelf->_turboModuleManager moduleForName:"DevLoadingView"];
-        [loadingView updateProgress:progressData];
+    id<RCTDevLoadingViewProtocol> loadingView =
+    (id<RCTDevLoadingViewProtocol>)[strongSelf->_turboModuleManager moduleForName:"DevLoadingView"];
+    [loadingView updateProgress:progressData];
 #endif
-      }
-      onComplete:^(NSError *error, RCTSource *source) {
-        __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
-        if (error) {
-          [strongSelf handleBundleLoadingError:error];
-          return;
-        }
-        // DevSettings module is needed by _loadScriptFromSource's callback so prior initialization is required
-        RCTDevSettings *const devSettings =
-            (RCTDevSettings *)[strongSelf->_turboModuleManager moduleForName:"DevSettings"];
-        [strongSelf _loadScriptFromSource:source];
-        // Set up hot module reloading in Dev only.
-        [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
-        [devSettings setupHMRClientWithBundleURL:sourceURL];
+  }
+                  onComplete:^(NSError *error, RCTSource *source) {
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    
+    if (error) {
+      [strongSelf handleBundleLoadingError:error];
+      return;
+    }
+    // DevSettings module is needed by _loadScriptFromSource's callback so prior initialization is required
+    RCTDevSettings *const devSettings =
+    (RCTDevSettings *)[strongSelf->_turboModuleManager moduleForName:"DevSettings"];
+    [strongSelf _loadScriptFromSource:source];
+    // Set up hot module reloading in Dev only.
+    [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
+    [devSettings setupHMRClientWithBundleURL:sourceURL];
 #if RCT_DEV
-        [strongSelf _logOldArchitectureWarnings];
+    [strongSelf _logOldArchitectureWarnings];
 #endif
-      }];
+  }];
 }
 
 - (void)_logOldArchitectureWarnings
@@ -527,7 +527,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   if (!RCTAreLegacyLogsEnabled()) {
     return;
   }
-
+  
   NSArray<NSString *> *modulesInOldArchMode = [getModulesLoadedWithOldArch() copy];
   if (modulesInOldArchMode.count > 0) {
     NSMutableString *moduleList = [NSMutableString new];
@@ -535,8 +535,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       [moduleList appendFormat:@"- %@\n", moduleName];
     }
     RCTLogWarn(
-        @"The following modules have been registered using a RCT_EXPORT_MODULE. That's a Legacy Architecture API. Please migrate to the new approach as described in the https://reactnative.dev/docs/next/turbo-native-modules-introduction#register-the-native-module-in-your-app website or open a PR in the library repository:\n%@",
-        moduleList);
+               @"The following modules have been registered using a RCT_EXPORT_MODULE. That's a Legacy Architecture API. Please migrate to the new approach as described in the https://reactnative.dev/docs/next/turbo-native-modules-introduction#register-the-native-module-in-your-app website or open a PR in the library repository:\n%@",
+               moduleList);
   }
 }
 
@@ -546,10 +546,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   if (!_valid) {
     return;
   }
-
+  
   auto script = std::make_unique<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
-
+  
   auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
     if (waitUntilModuleSetupComplete) {
       waitUntilModuleSetupComplete();
@@ -565,6 +565,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   NSMutableDictionary<NSString *, id> *errorData = [NSMutableDictionary new];
   errorData[@"message"] = @(error.message.c_str());
+  
+  
   if (error.originalMessage) {
     errorData[@"originalMessage"] = @(error.originalMessage->c_str());
   }
@@ -574,7 +576,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   if (error.componentStack) {
     errorData[@"componentStack"] = @(error.componentStack->c_str());
   }
-
+  
+  
   NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
   for (const JsErrorHandler::ProcessedError::StackFrame &frame : error.stack) {
     NSMutableDictionary<NSString *, id> *stackFrame = [NSMutableDictionary new];
@@ -590,31 +593,62 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
     [stack addObject:stackFrame];
   }
-
+  
+  
   errorData[@"stack"] = stack;
   errorData[@"id"] = @(error.id);
-  errorData[@"isFatal"] = @(error.isFatal);
-
-  id extraData =
-      TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsi::Value(runtime, error.extraData), nullptr);
+  errorData[@"isFatal"] = @(error.isFatal); // BOOL to NSNumber
+  
+  
+  id extraData = TurboModuleConvertUtils::convertJSIValueToObjCObject(
+                                                                      runtime,
+                                                                      jsi::Value(runtime, error.extraData),
+                                                                      nullptr);
   if (extraData) {
     errorData[@"extraData"] = extraData;
   }
-
-  if (![_delegate instance:self
-          didReceiveJSErrorStack:errorData[@"stack"]
-                         message:errorData[@"message"]
-                 originalMessage:errorData[@"originalMessage"]
-                            name:errorData[@"name"]
-                  componentStack:errorData[@"componentStack"]
-                     exceptionId:error.id
-                         isFatal:[errorData[@"isFatal"] boolValue]
-                       extraData:errorData[@"extraData"]]) {
-    JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
-    id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
+  
+  
+  // Handle deprecated method ONLY in debug, with correct BOOL cast
+#if DEBUG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  
+  
+  if ([_delegate respondsToSelector:@selector(instance:didReceiveJSErrorStack:message:originalMessage:name:componentStack:exceptionId:isFatal:extraData:)]) {
+    NSNumber *isFatalNumber = errorData[@"isFatal"];
+    BOOL isFatal = [isFatalNumber boolValue];  // Explicit cast for release builds
+    
+    
+    BOOL handled = [_delegate instance:self
+                didReceiveJSErrorStack:errorData[@"stack"]
+                               message:errorData[@"message"]
+                       originalMessage:errorData[@"originalMessage"]
+                                  name:errorData[@"name"]
+                        componentStack:errorData[@"componentStack"]
+                           exceptionId:error.id
+                               isFatal:isFatal
+                             extraData:errorData[@"extraData"]];
+    if (handled) {
+      return;
+    }
+  }
+  
+  
+#pragma clang diagnostic pop
+#endif
+  
+  
+  // Fallback to ExceptionsManager
+  JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
+  id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
+  if (exceptionsManager) {
     [exceptionsManager reportException:jsErrorData];
+  } else {
+    NSLog(@"[React] Failed to report JS error: %@", errorData);
   }
 }
+
 
 - (void)_handleMemoryWarning
 {
