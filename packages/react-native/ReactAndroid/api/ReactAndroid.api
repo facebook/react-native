@@ -1389,6 +1389,7 @@ public final class com/facebook/react/bridge/ReadableMapBuilder {
 	public final fun put (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun put (Ljava/lang/String;Z)V
 	public final fun putArray (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun putMap (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V
 	public final fun putMap (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public final fun putNull (Ljava/lang/String;)V
 }

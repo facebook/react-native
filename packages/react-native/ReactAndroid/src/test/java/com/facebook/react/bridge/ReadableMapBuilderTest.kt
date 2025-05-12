@@ -57,11 +57,16 @@ class ReadableMapBuilderTest {
 
   @Test
   fun `buildReadableMap supports nested maps and arrays`() {
+    val otherMap: ReadableMap = buildReadableMap {
+      put("name", "Anakin")
+      put("isJedi", false)
+    }
     val map: ReadableMap = buildReadableMap {
       putMap("nestedMap") {
         put("innerString", "innerValue")
         put("innerNumber", 123L)
       }
+      putMap("additionalNestedMap", otherMap)
       putArray("nestedArray") {
         add(10)
         add(20)
@@ -77,6 +82,15 @@ class ReadableMapBuilderTest {
         .hasSize(2)
         .containsEntry("innerString", "innerValue")
         .containsEntry("innerNumber", 123.0)
+
+    // Pre-built Nested Map
+    val additionalNestedMap = map.getMap("additionalNestedMap")
+    checkNotNull(additionalNestedMap)
+    assertThat(additionalNestedMap.toHashMap())
+        .isNotNull
+        .hasSize(2)
+        .containsEntry("name", "Anakin")
+        .containsEntry("isJedi", false)
 
     // Nested Array inside Map
     val nestedArray = map.getArray("nestedArray")
