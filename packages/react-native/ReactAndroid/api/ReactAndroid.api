@@ -4695,11 +4695,11 @@ public final class com/facebook/react/uimanager/ViewManagerRegistry : android/co
 	public fun <init> (Lcom/facebook/react/uimanager/ViewManagerResolver;)V
 	public fun <init> (Ljava/util/List;)V
 	public fun <init> (Ljava/util/Map;)V
-	public fun get (Ljava/lang/String;)Lcom/facebook/react/uimanager/ViewManager;
-	public fun invalidate ()V
+	public final fun get (Ljava/lang/String;)Lcom/facebook/react/uimanager/ViewManager;
+	public final fun invalidate ()V
 	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onLowMemory ()V
-	public fun onSurfaceStopped (I)V
+	public final fun onSurfaceStopped (I)V
 	public fun onTrimMemory (I)V
 }
 
