@@ -146,6 +146,7 @@ exports[`LogBoxInspectorStackFrames should render stack frames with 1 frame coll
             "checked": undefined,
             "disabled": undefined,
             "expanded": undefined,
+            "invalid": undefined,
             "selected": undefined,
           }
         }

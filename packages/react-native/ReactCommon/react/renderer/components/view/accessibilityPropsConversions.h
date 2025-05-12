@@ -170,6 +170,10 @@ inline void fromRawValue(
   if (expanded != map.end()) {
     fromRawValue(context, expanded->second, result.expanded);
   }
+  auto invalid = map.find("invalid");
+  if (invalid != map.end()) {
+    fromRawValue(context, invalid->second, result.invalid);
+  }
 }
 
 inline std::string toString(

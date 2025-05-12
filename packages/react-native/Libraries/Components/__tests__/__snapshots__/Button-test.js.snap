@@ -9,6 +9,7 @@ exports[`<Button /> should be disabled and it should set accessibilityState to d
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -75,6 +76,7 @@ exports[`<Button /> should be disabled when disabled is empty and accessibilityS
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -141,6 +143,7 @@ exports[`<Button /> should be disabled when disabled={true} and accessibilitySta
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -207,6 +210,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -269,6 +273,7 @@ exports[`<Button /> should be set importantForAccessibility={no-hide-descendants
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -331,6 +336,7 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
       "checked": undefined,
       "disabled": false,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -393,6 +399,7 @@ exports[`<Button /> should not be disabled when disabled={false} and accessibili
       "checked": undefined,
       "disabled": false,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -455,6 +462,7 @@ exports[`<Button /> should overwrite accessibilityState with value of disabled p
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -521,6 +529,7 @@ exports[`<Button /> should render as expected 1`] = `
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }

@@ -60,6 +60,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   private static final String STATE_CHECKED = "checked"; // Special case for mixed state checkboxes
   private static final String STATE_BUSY = "busy";
+  private static final String STATE_INVALID = "invalid";
   private static final String STATE_EXPANDED = "expanded";
   private static final String STATE_MIXED = "mixed";
 
@@ -425,6 +426,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     while (i.hasNextKey()) {
       final String state = i.nextKey();
       if (state.equals(STATE_BUSY)
+          || state.equals(STATE_INVALID)
           || state.equals(STATE_EXPANDED)
           || (state.equals(STATE_CHECKED)
               && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
@@ -462,6 +464,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
             && value.getType() == ReadableType.Boolean
             && value.asBoolean()) {
           contentDescription.add(view.getContext().getString(R.string.state_busy_description));
+        } else if (state.equals(STATE_INVALID)
+            && value.getType() == ReadableType.Boolean
+            && value.asBoolean()) {
+          contentDescription.add(view.getContext().getString(R.string.state_invalid_description));
         }
       }
     }

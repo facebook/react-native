@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Nutsbalk</string>
     <string name="summary_description" gender="unknown">Opsomming</string>
     <string name="state_busy_description" gender="unknown">besig</string>
+    <string name="state_invalid_description" gender="unknown">ongeldig</string>
     <string name="state_expanded_description" gender="unknown">is uitgevou</string>
     <string name="state_collapsed_description" gender="unknown">is ingevou</string>
     <string name="state_unselected_description" gender="unknown">ontkies</string>

@@ -20,6 +20,7 @@
     <string name="toolbar_description" gender="unknown">Bară de instrumente</string>
     <string name="summary_description" gender="unknown">Rezumat</string>
     <string name="state_busy_description" gender="unknown">ocupat</string>
+    <string name="state_invalid_description" gender="unknown">invalid</string>
     <string name="state_expanded_description" gender="unknown">extins</string>
     <string name="state_collapsed_description" gender="unknown">restrâns</string>
     <string name="state_unselected_description" gender="unknown">neselectat</string>

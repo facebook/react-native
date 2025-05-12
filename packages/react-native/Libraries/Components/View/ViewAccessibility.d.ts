@@ -56,6 +56,7 @@ export interface AccessibilityProps
   'aria-checked'?: boolean | 'mixed' | undefined;
   'aria-disabled'?: boolean | undefined;
   'aria-expanded'?: boolean | undefined;
+  'aria-invalid'?: boolean | undefined;
   'aria-selected'?: boolean | undefined;
 
   /**
@@ -161,6 +162,10 @@ export interface AccessibilityState {
    *  When present, informs accessible tools the element is expanded or collapsed
    */
   expanded?: boolean | undefined;
+  /**
+   *  When present, informs accessible tools the element is invalid
+   */
+  invalid?: boolean | undefined;
 }
 
 export interface AccessibilityValue {

@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">סרגל כלים</string>
     <string name="summary_description" gender="unknown">סיכום</string>
     <string name="state_busy_description" gender="unknown">תפוס</string>
+    <string name="state_invalid_description" gender="unknown">לא תקין</string>
     <string name="state_expanded_description" gender="unknown">מורחב</string>
     <string name="state_collapsed_description" gender="unknown">מצומצם</string>
     <string name="state_unselected_description" gender="unknown">הבחירה בוטלה</string>

@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">கருவிப்பட்டி</string>
     <string name="summary_description" gender="unknown">சுருக்கம்</string>
     <string name="state_busy_description" gender="unknown">பணிமிகுதி</string>
+    <string name="state_invalid_description" gender="unknown">செல்லாதது</string>
     <string name="state_expanded_description" gender="unknown">விரிவாக்கப்பட்டது</string>
     <string name="state_collapsed_description" gender="unknown">சுருக்கப்பட்டது</string>
     <string name="state_unselected_description" gender="unknown">தேர்வுநீக்கப்பட்டது</string>

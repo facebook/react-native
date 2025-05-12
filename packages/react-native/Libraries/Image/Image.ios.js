@@ -144,6 +144,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-invalid': ariaInvalid,
     'aria-selected': ariaSelected,
     src,
     ...restProps
@@ -154,6 +155,7 @@ let BaseImage: AbstractImageIOS = React.forwardRef((props, forwardedRef) => {
     checked: ariaChecked ?? props.accessibilityState?.checked,
     disabled: ariaDisabled ?? props.accessibilityState?.disabled,
     expanded: ariaExpanded ?? props.accessibilityState?.expanded,
+    invalid: ariaInvalid ?? props.accessibilityState?.invalid,
     selected: ariaSelected ?? props.accessibilityState?.selected,
   };
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;

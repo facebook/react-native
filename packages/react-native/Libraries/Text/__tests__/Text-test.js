@@ -128,6 +128,7 @@ describe('Text compat with web', () => {
             "checked": true,
             "disabled": true,
             "expanded": true,
+            "invalid": true,
             "selected": true,
           }
         }
@@ -147,7 +148,6 @@ describe('Text compat with web', () => {
         aria-flowto="flowto"
         aria-haspopup={true}
         aria-hidden={true}
-        aria-invalid={true}
         aria-keyshortcuts="Cmd+S"
         aria-labelledby="labelledby"
         aria-level={3}

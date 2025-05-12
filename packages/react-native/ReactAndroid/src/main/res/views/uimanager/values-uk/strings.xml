@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Панель інструментів</string>
     <string name="summary_description" gender="unknown">Зведення</string>
     <string name="state_busy_description" gender="unknown">зайнято</string>
+    <string name="state_invalid_description" gender="unknown">недійсний</string>
     <string name="state_expanded_description" gender="unknown">розгорнуто</string>
     <string name="state_collapsed_description" gender="unknown">згорнуто</string>
     <string name="state_unselected_description" gender="unknown">не вибрано</string>

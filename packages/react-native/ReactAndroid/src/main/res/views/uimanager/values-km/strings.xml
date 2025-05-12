@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">របារ​ឧបករណ៍</string>
     <string name="summary_description" gender="unknown">សេចក្ដីសង្ខេប</string>
     <string name="state_busy_description" gender="unknown">ជាប់រវល់</string>
+    <string name="state_invalid_description" gender="unknown">មិនត្រឹមត្រូវ</string>
     <string name="state_expanded_description" gender="unknown">បានពង្រីក</string>
     <string name="state_collapsed_description" gender="unknown">បានបង្រួម</string>
     <string name="state_unselected_description" gender="unknown">បាបនដោះការជ្រើសរើស</string>

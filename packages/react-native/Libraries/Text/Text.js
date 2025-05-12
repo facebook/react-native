@@ -50,6 +50,7 @@ const TextImpl: component(
       'aria-disabled': ariaDisabled,
       'aria-expanded': ariaExpanded,
       'aria-label': ariaLabel,
+      'aria-invalid': ariaInvalid,
       'aria-selected': ariaSelected,
       children,
       ellipsizeMode,
@@ -85,6 +86,7 @@ const TextImpl: component(
       ariaChecked != null ||
       ariaDisabled != null ||
       ariaExpanded != null ||
+      ariaInvalid != null ||
       ariaSelected != null
     ) {
       if (_accessibilityState != null) {
@@ -93,6 +95,7 @@ const TextImpl: component(
           checked: ariaChecked ?? _accessibilityState.checked,
           disabled: ariaDisabled ?? _accessibilityState.disabled,
           expanded: ariaExpanded ?? _accessibilityState.expanded,
+          invalid: ariaInvalid ?? _accessibilityState.invalid,
           selected: ariaSelected ?? _accessibilityState.selected,
         };
       } else {
@@ -101,6 +104,7 @@ const TextImpl: component(
           checked: ariaChecked,
           disabled: ariaDisabled,
           expanded: ariaExpanded,
+          invalid: ariaInvalid,
           selected: ariaSelected,
         };
       }

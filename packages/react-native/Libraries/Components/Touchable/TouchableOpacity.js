@@ -271,6 +271,8 @@ class TouchableOpacity extends React.Component<
         this.props['aria-disabled'] ?? this.props.accessibilityState?.disabled,
       expanded:
         this.props['aria-expanded'] ?? this.props.accessibilityState?.expanded,
+      invalid:
+        this.props['aria-invalid'] ?? this.props.accessibilityState?.invalid,
       selected:
         this.props['aria-selected'] ?? this.props.accessibilityState?.selected,
     };

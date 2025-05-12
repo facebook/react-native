@@ -40,6 +40,7 @@ const View: component(
       'aria-disabled': ariaDisabled,
       'aria-expanded': ariaExpanded,
       'aria-hidden': ariaHidden,
+      'aria-invalid': ariaInvalid,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
       'aria-live': ariaLive,
@@ -67,12 +68,14 @@ const View: component(
       ariaChecked != null ||
       ariaDisabled != null ||
       ariaExpanded != null ||
+      ariaInvalid != null ||
       ariaSelected != null
         ? {
             busy: ariaBusy ?? accessibilityState?.busy,
             checked: ariaChecked ?? accessibilityState?.checked,
             disabled: ariaDisabled ?? accessibilityState?.disabled,
             expanded: ariaExpanded ?? accessibilityState?.expanded,
+            invalid: ariaInvalid ?? accessibilityState?.invalid,
             selected: ariaSelected ?? accessibilityState?.selected,
           }
         : undefined;

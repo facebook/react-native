@@ -21,6 +21,7 @@
     <string name="toolbar_description" gender="unknown">Verktygsfält</string>
     <string name="summary_description" gender="unknown">Sammanfattning</string>
     <string name="state_busy_description" gender="unknown">upptagen</string>
+    <string name="state_invalid_description" gender="unknown">ogiltig</string>
     <string name="state_expanded_description" gender="unknown">utökad</string>
     <string name="state_collapsed_description" gender="unknown">minimerad</string>
     <string name="state_unselected_description" gender="unknown">avmarkerad</string>

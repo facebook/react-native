@@ -8,6 +8,7 @@ exports[`TouchableWithoutFeedback renders correctly 1`] = `
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -33,6 +34,7 @@ exports[`TouchableWithoutFeedback with disabled state should be disabled when di
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -56,6 +58,7 @@ exports[`TouchableWithoutFeedback with disabled state should be disabled when di
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -79,6 +82,7 @@ exports[`TouchableWithoutFeedback with disabled state should disable button when
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -102,6 +106,7 @@ exports[`TouchableWithoutFeedback with disabled state should keep accessibilityS
       "checked": true,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -125,6 +130,7 @@ exports[`TouchableWithoutFeedback with disabled state should overwrite accessibi
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }

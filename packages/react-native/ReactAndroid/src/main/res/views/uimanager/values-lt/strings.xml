@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Įrankių juosta</string>
     <string name="summary_description" gender="unknown">Suvestinė</string>
     <string name="state_busy_description" gender="unknown">naudojama</string>
+    <string name="state_invalid_description" gender="unknown">neteisinga</string>
     <string name="state_expanded_description" gender="unknown">išskleista</string>
     <string name="state_collapsed_description" gender="unknown">sutraukta</string>
     <string name="state_unselected_description" gender="unknown">pasirinkimas atšauktas</string>

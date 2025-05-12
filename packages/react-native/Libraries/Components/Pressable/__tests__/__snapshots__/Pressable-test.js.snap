@@ -8,6 +8,7 @@ exports[`<Pressable /> should render as expected: should deep render when mocked
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -44,6 +45,7 @@ exports[`<Pressable /> should render as expected: should deep render when not mo
       "checked": undefined,
       "disabled": undefined,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -80,6 +82,7 @@ exports[`<Pressable disabled={true} /> should be disabled when disabled is true:
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -116,6 +119,7 @@ exports[`<Pressable disabled={true} /> should be disabled when disabled is true:
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -152,6 +156,7 @@ exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disable
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -188,6 +193,7 @@ exports[`<Pressable disabled={true} accessibilityState={{}} /> should be disable
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -224,6 +230,7 @@ exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> shou
       "checked": true,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -260,6 +267,7 @@ exports[`<Pressable disabled={true} accessibilityState={{checked: true}} /> shou
       "checked": true,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -296,6 +304,7 @@ exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> sh
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }
@@ -332,6 +341,7 @@ exports[`<Pressable disabled={true} accessibilityState={{disabled: false}} /> sh
       "checked": undefined,
       "disabled": true,
       "expanded": undefined,
+      "invalid": undefined,
       "selected": undefined,
     }
   }

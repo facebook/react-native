@@ -22,6 +22,7 @@
     <string name="toolbar_description" gender="unknown">Työkalupalkki</string>
     <string name="summary_description" gender="unknown">Yhteenveto</string>
     <string name="state_busy_description" gender="unknown">varattu</string>
+    <string name="state_invalid_description" gender="unknown">virheellinen</string>
     <string name="state_expanded_description" gender="unknown">laajennettu</string>
     <string name="state_collapsed_description" gender="unknown">pienennetty</string>
     <string name="state_unselected_description" gender="unknown">ei valittu</string>
