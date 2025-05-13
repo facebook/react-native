@@ -167,7 +167,7 @@ folly::dynamic ParagraphProps::getDiffProps(const Props* prevProps) const {
 
   if (paragraphAttributes.maximumNumberOfLines !=
       oldProps->paragraphAttributes.maximumNumberOfLines) {
-    result["numberOfLine"] = paragraphAttributes.maximumNumberOfLines;
+    result["numberOfLines"] = paragraphAttributes.maximumNumberOfLines;
   }
 
   if (paragraphAttributes.ellipsizeMode !=
