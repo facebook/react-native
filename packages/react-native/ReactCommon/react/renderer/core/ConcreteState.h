@@ -13,7 +13,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <fbjni/fbjni.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
@@ -21,7 +21,7 @@
 
 namespace facebook::react {
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 template <typename StateDataT>
 concept StateDataWithMapBuffer = requires(StateDataT stateData) {
   { stateData.getMapBuffer() } -> std::same_as<MapBuffer>;
@@ -107,7 +107,7 @@ class ConcreteState : public State {
     family->dispatchRawState(std::move(stateUpdate));
   }
 
-#ifdef ANDROID
+#if defined(RN_SERIALIZABLE_STATE)
   folly::dynamic getDynamic() const override {
     return getData().getDynamic();
   }
