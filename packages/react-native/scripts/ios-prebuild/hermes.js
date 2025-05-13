@@ -22,7 +22,6 @@ const path = require('path');
 async function prepareHermesArtifactsAsync(
   version /*:string*/,
   buildType /*:string*/,
-  reactNativePath /*:string*/,
 ) /*: Promise<string> */ {
   hermesLog(`Preparing Hermes...`);
 
@@ -40,25 +39,39 @@ async function prepareHermesArtifactsAsync(
   // Ensure that the artifacts folder exists
   fs.mkdirSync(artifactsPath, {recursive: true});
 
+  // Path for keeping track of the current version in the artifacts folder
+  const versionFilePath = path.join(artifactsPath, 'version.txt');
+
   // Only check if the artifacts folder exists if we are not using a local tarball
   if (!localPath) {
     // Resolve the version from the environment variable or use the default version
     const resolvedVersion = process.env.HERMES_VERSION ?? version;
 
     // Check if the Hermes artifacts are already downloaded
-    if (checkExistingVersion(resolvedVersion, artifactsPath)) {
+    if (
+      checkExistingVersion(
+        versionFilePath,
+        resolvedVersion,
+        buildType,
+        artifactsPath,
+      )
+    ) {
       return artifactsPath;
     }
 
-    const sourceType = hermesSourceType(resolvedVersion, reactNativePath);
+    const sourceType = hermesSourceType(resolvedVersion, buildType);
     localPath = resolveSourceFromSourceType(
       sourceType,
       resolvedVersion,
-      reactNativePath,
+      buildType,
       artifactsPath,
     );
   } else {
     hermesLog('Using local tarball, skipping artifacts folder check');
+    // Delete version.txt if it exists
+    if (fs.existsSync(versionFilePath)) {
+      fs.unlinkSync(versionFilePath);
+    }
   }
 
   // Extract the tar.gz
@@ -77,18 +90,13 @@ async function prepareHermesArtifactsAsync(
 /*::
 type HermesEngineSourceType =
   | 'local_prebuilt_tarball'
-  | 'download_prebuild_release_tarball'
+  | 'download_prebuild_tarball'
   | 'download_prebuilt_nightly_tarball'
-  | 'build_from_github_commit'
-  | 'build_from_github_tag'
-  | 'build_from_github_main'
-  | 'build_from_local_source_dir';
-
 */
 
 const HermesEngineSourceTypes = {
   LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
-  DOWNLOAD_PREBUILD_RELEASE_TARBALL: 'download_prebuild_release_tarball',
+  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
   DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
 };
 
@@ -97,13 +105,15 @@ const HermesEngineSourceTypes = {
  * Returns true if the artifacts are up to date, false otherwise.
  */
 function checkExistingVersion(
+  versionFilePath /*: string */,
   version /*: string */,
+  buildType /*: string */,
   artifactsPath /*: string */,
 ) {
-  const versionFilePath = path.join(artifactsPath, 'version.txt');
+  const resolvedVersion = `${version}-${buildType}`;
   if (fs.existsSync(versionFilePath)) {
     const versionFileContent = fs.readFileSync(versionFilePath, 'utf8');
-    if (versionFileContent.trim() === version) {
+    if (versionFileContent.trim() === resolvedVersion) {
       hermesLog(
         `Hermes artifacts already downloaded and up to date: ${artifactsPath}`,
       );
@@ -117,9 +127,9 @@ function checkExistingVersion(
   );
   // Lets create the version.txt file
   fs.mkdirSync(artifactsPath, {recursive: true});
-  fs.writeFileSync(versionFilePath, version, 'utf8');
+  fs.writeFileSync(versionFilePath, resolvedVersion, 'utf8');
   hermesLog(
-    `Hermes artifacts folder created: ${artifactsPath} with version: ${version}`,
+    `Hermes artifacts folder created: ${artifactsPath} with version: ${resolvedVersion}`,
   );
   return false;
 }
@@ -128,7 +138,7 @@ function hermesEngineTarballEnvvarDefined() /*: boolean */ {
   return !!process.env.HERMES_ENGINE_TARBALL_PATH;
 }
 
-function releaseTarballUrl(
+function getTarballUrl(
   version /*: string */,
   buildType /*: 'debug' | 'release' */,
 ) /*: string */ {
@@ -137,7 +147,7 @@ function releaseTarballUrl(
   return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${buildType}.tar.gz`;
 }
 
-function nightlyTarballUrl(version /*: string */) /*: string */ {
+function getNightlyTarballUrl(version /*: string */) /*: string */ {
   const params = `r=snapshots&g=com.facebook.react&a=react-native-artifacts&c=hermes-ios-debug&e=tar.gz&v=${version}-SNAPSHOT`;
   return resolveUrlRedirects(
     `http://oss.sonatype.org/service/local/artifact/maven/redirect?${params}`,
@@ -170,24 +180,24 @@ function hermesArtifactExists(tarballUrl /*: string */) /*: boolean */ {
 }
 
 function releaseArtifactExists(version /*: string */) /*: boolean */ {
-  return hermesArtifactExists(releaseTarballUrl(version, 'debug'));
+  return hermesArtifactExists(getTarballUrl(version, 'debug'));
 }
 
 function nightlyArtifactExists(version /*: string */) /*: boolean */ {
-  return hermesArtifactExists(nightlyTarballUrl(version).replace(/\\/g, ''));
+  return hermesArtifactExists(getNightlyTarballUrl(version).replace(/\\/g, ''));
 }
 
 function hermesSourceType(
   version /*: string */,
-  reactNativePath /*: string */,
+  buildType /*: string */,
 ) /*: HermesEngineSourceType */ {
   if (hermesEngineTarballEnvvarDefined()) {
     hermesLog('Using local prebuild tarball');
     return HermesEngineSourceTypes.LOCAL_PREBUILT_TARBALL;
   }
   if (releaseArtifactExists(version)) {
-    hermesLog('Using download prebuild release tarball');
-    return HermesEngineSourceTypes.DOWNLOAD_PREBUILD_RELEASE_TARBALL;
+    hermesLog(`Using download prebuild ${buildType} tarball`);
+    return HermesEngineSourceTypes.DOWNLOAD_PREBUILD_TARBALL;
   }
   if (nightlyArtifactExists(version)) {
     hermesLog('Using download prebuild nightly tarball');
@@ -202,18 +212,14 @@ function hermesSourceType(
 function resolveSourceFromSourceType(
   sourceType /*: HermesEngineSourceType */,
   version /*: string */,
-  reactNativePath /*: string */,
+  buildType /*: string */,
   artifactsPath /*: string*/,
 ) /*: string */ {
   switch (sourceType) {
     case HermesEngineSourceTypes.LOCAL_PREBUILT_TARBALL:
       return localPrebuiltTarball();
-    case HermesEngineSourceTypes.DOWNLOAD_PREBUILD_RELEASE_TARBALL:
-      return downloadPrebuildReleaseTarball(
-        reactNativePath,
-        version,
-        artifactsPath,
-      );
+    case HermesEngineSourceTypes.DOWNLOAD_PREBUILD_TARBALL:
+      return downloadPrebuildTarball(version, buildType, artifactsPath);
     case HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL:
       return downloadPrebuiltNightlyTarball(version, artifactsPath);
     default:
@@ -238,21 +244,21 @@ function localPrebuiltTarball() /*: string */ {
   return '';
 }
 
-function downloadPrebuildReleaseTarball(
-  reactNativePath /*: string */,
+function downloadPrebuildTarball(
   version /*: string */,
+  buildType /*: string */,
   artifactsPath /*: string*/,
 ) /*: string */ {
-  const url = releaseTarballUrl(version, 'debug');
+  const url = getTarballUrl(version, buildType);
   hermesLog(`Using release tarball from URL: ${url}`);
-  return downloadStableHermes(version, 'release', artifactsPath);
+  return downloadStableHermes(version, buildType, artifactsPath);
 }
 
 function downloadPrebuiltNightlyTarball(
   version /*: string */,
   artifactsPath /*: string*/,
 ) /*: string */ {
-  const url = nightlyTarballUrl(version);
+  const url = getNightlyTarballUrl(version);
   hermesLog(`Using nightly tarball from URL: ${url}`);
   return downloadStableHermes(version, 'release', artifactsPath);
 }
@@ -262,7 +268,7 @@ function downloadStableHermes(
   buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string */,
 ) /*: string */ {
-  const tarballUrl = releaseTarballUrl(version, buildType);
+  const tarballUrl = getTarballUrl(version, buildType);
   return downloadHermesTarball(tarballUrl, version, buildType, artifactsPath);
 }
 

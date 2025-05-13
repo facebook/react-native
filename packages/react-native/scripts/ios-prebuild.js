@@ -110,11 +110,7 @@ async function main() {
     };
 
     // HERMES ARTIFACTS
-    await prepareHermesArtifactsAsync(
-      currentVersion,
-      'release',
-      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-    );
+    await prepareHermesArtifactsAsync(currentVersion, 'debug');
 
     // CODEGEN
     const codegenPath = path.join(root, '.build/codegen');
