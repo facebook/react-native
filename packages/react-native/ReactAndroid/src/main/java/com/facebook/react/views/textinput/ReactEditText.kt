@@ -364,9 +364,23 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     hideSoftKeyboard()
   }
 
+  override fun requestFocus(direction: Int, previouslyFocusedRect: Rect?): Boolean {
+    // On some older versions of Android there is a bug where `clearFocus` will try to focus the
+    // first focusable View in the hierarchy after clearing focus. This is intended behavior, but
+    // only if you are not in touch mode per
+    // https://developer.android.com/reference/android/view/View#clearFocus(), yet this happens in
+    // both. Therefore, we are swallowing Android-based focus calls if we are in touch mode.
+    // If we are not in touch mode (using a hardware keyboard) then we will allow this to happen.
+    // Note this only happens for Android-origin focus calls, as opposed to JS-origin (like tapping)
+    // since those go through `requestFocusProgrammatically`
+    if (isInTouchMode) {
+      return isFocused
+    }
+    return super.requestFocus(direction, previouslyFocusedRect)
+  }
+
   // For cases like autoFocus, or ref.focus() where we request focus programmatically and not
-  // through
-  // interacting with the EditText directly (like clicking on it). We cannot use stock
+  // through interacting with the EditText directly (like clicking on it). We cannot use stock
   // requestFocus() because it will not pop up the soft keyboard, only clicking the input will do
   // that. This method will eventually replace requestFocusInternal()
   private fun requestFocusProgrammatically(): Boolean {
