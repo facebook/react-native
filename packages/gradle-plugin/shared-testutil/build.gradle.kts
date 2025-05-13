@@ -27,8 +27,9 @@ tasks.withType<KotlinCompile>().configureEach {
     apiVersion.set(KotlinVersion.KOTLIN_1_8)
     // See comment above on JDK 11 support
     jvmTarget.set(JvmTarget.JVM_11)
-    allWarningsAsErrors =
+     allWarningsAsErrors.set(
         project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
+    )
   }
 }
 
