@@ -95,7 +95,9 @@ class KeyboardAvoidingView extends React.Component<
     }
 
     const keyboardY =
-      keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
+      keyboardFrame.height > 0
+        ? keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0)
+        : keyboardFrame.screenY;
 
     if (this.props.behavior === 'height') {
       return Math.max(
@@ -157,7 +159,9 @@ class KeyboardAvoidingView extends React.Component<
     }
 
     const {duration, easing, endCoordinates} = this._keyboardEvent;
-    const height = await this._relativeKeyboardHeight(endCoordinates);
+    const height = Math.ceil(
+      await this._relativeKeyboardHeight(endCoordinates),
+    );
 
     if (this._bottom === height) {
       return;
