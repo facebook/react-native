@@ -228,7 +228,8 @@ jni::local_ref<jobject> getProps(
        strcmp(newShadowView.componentName, "ScrollView") == 0 ||
        strcmp(newShadowView.componentName, "RawText") == 0 ||
        strcmp(newShadowView.componentName, "Text") == 0 ||
-       strcmp(newShadowView.componentName, "Paragraph") == 0)) {
+       strcmp(newShadowView.componentName, "Paragraph") == 0 ||
+       strcmp(newShadowView.componentName, "TextInput") == 0)) {
     return ReadableNativeMap::newObjectCxxArgs(
         newProps->getDiffProps(oldProps));
   }

@@ -27,6 +27,12 @@ struct AndroidTextInputTextShadowOffsetStruct {
   double height;
 };
 
+inline static bool operator==(
+    const AndroidTextInputTextShadowOffsetStruct& lhs,
+    const AndroidTextInputTextShadowOffsetStruct& rhs) {
+  return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
 static inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
