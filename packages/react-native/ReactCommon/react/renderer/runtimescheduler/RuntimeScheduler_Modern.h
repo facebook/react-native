@@ -225,8 +225,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
   std::unordered_set<SurfaceId> surfaceIdsWithPendingRenderingUpdates_;
 
-  ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
-      nullptr};
+  std::atomic<ShadowTreeRevisionConsistencyManager*>
+      shadowTreeRevisionConsistencyManager_{nullptr};
 
   PerformanceEntryReporter* performanceEntryReporter_{nullptr};
   RuntimeSchedulerEventTimingDelegate* eventTimingDelegate_{nullptr};
