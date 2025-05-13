@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a6fc25aa098ac76ba77e53c5a1dfec58>>
+ * @generated SignedSource<<1b685268279bbfd65820e45f5028d4dd>>
  */
 
 /**
@@ -42,7 +42,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
-  private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
@@ -249,16 +248,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableIOSViewClipToPaddingBox()
       accessedFeatureFlags.add("enableIOSViewClipToPaddingBox")
       enableIOSViewClipToPaddingBoxCache = cached
-    }
-    return cached
-  }
-
-  override fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean {
-    var cached = enableJSRuntimeGCOnMemoryPressureOnIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableJSRuntimeGCOnMemoryPressureOnIOS()
-      accessedFeatureFlags.add("enableJSRuntimeGCOnMemoryPressureOnIOS")
-      enableJSRuntimeGCOnMemoryPressureOnIOSCache = cached
     }
     return cached
   }

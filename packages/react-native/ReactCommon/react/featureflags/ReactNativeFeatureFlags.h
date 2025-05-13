@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f14956751ac132ac58fcbd2dd2f331a9>>
+ * @generated SignedSource<<b931e0ebaa1c91c42caf9dd6e56a7663>>
  */
 
 /**
@@ -128,11 +128,6 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
-
-  /**
-   * Trigger JS runtime GC on memory pressure event on iOS
-   */
-  RN_EXPORT static bool enableJSRuntimeGCOnMemoryPressureOnIOS();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.

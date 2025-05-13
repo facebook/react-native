@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a8d560adc9345a33b72f760f08628bd>>
+ * @generated SignedSource<<7199b7c0c5d3b389e504f615a813b6c5>>
  */
 
 /**
@@ -144,12 +144,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableIOSViewClipToPaddingBox() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSViewClipToPaddingBox");
-    return method(javaProvider_);
-  }
-
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableJSRuntimeGCOnMemoryPressureOnIOS");
     return method(javaProvider_);
   }
 
@@ -421,11 +415,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableJSRuntimeGCOnMemoryPressureOnIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -656,9 +645,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
-      makeNativeMethod(
-        "enableJSRuntimeGCOnMemoryPressureOnIOS",
-        JReactNativeFeatureFlagsCxxInterop::enableJSRuntimeGCOnMemoryPressureOnIOS),
       makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),

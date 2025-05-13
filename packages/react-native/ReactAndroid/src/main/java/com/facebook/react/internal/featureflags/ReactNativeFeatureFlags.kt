@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a9968341533b3d6347ee99ce117dc62c>>
+ * @generated SignedSource<<255deaad99bac2448e0a11bad50a770b>>
  */
 
 /**
@@ -137,12 +137,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
-
-  /**
-   * Trigger JS runtime GC on memory pressure event on iOS
-   */
-  @JvmStatic
-  public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean = accessor.enableJSRuntimeGCOnMemoryPressureOnIOS()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ca537faeb7f931631200fb71f5ab78e>>
+ * @generated SignedSource<<5c838361f63ba6741a51c8eeeaf6aa8c>>
  */
 
 /**
@@ -50,7 +50,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFixForParentTagDuringReparenting();
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSViewClipToPaddingBox();
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableMainQueueModulesOnIOS();
@@ -91,7 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 48> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -111,7 +110,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFixForParentTagDuringReparenting_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
-  std::atomic<std::optional<bool>> enableJSRuntimeGCOnMemoryPressureOnIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableMainQueueModulesOnIOS_;

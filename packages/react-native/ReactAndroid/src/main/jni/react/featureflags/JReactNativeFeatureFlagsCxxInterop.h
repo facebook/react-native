@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<656fc82f692a639b7c08f289a7637507>>
+ * @generated SignedSource<<3d383541d829ce105ac5e97a5d35ded1>>
  */
 
 /**
@@ -82,9 +82,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableIOSViewClipToPaddingBox(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableJSRuntimeGCOnMemoryPressureOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableLayoutAnimationsOnAndroid(

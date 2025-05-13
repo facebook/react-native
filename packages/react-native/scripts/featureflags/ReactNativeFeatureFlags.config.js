@@ -237,15 +237,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableJSRuntimeGCOnMemoryPressureOnIOS: {
-      defaultValue: false,
-      metadata: {
-        description: 'Trigger JS runtime GC on memory pressure event on iOS',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableLayoutAnimationsOnAndroid: {
       defaultValue: false,
       metadata: {

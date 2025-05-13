@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<24076ce2a95804d6dda128740cbbae8f>>
+ * @generated SignedSource<<3f0ec75899c1031fab539bff4f8a0f9c>>
  * @flow strict
  */
 
@@ -67,7 +67,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
-  enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
@@ -250,10 +249,6 @@ export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativ
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
-/**
- * Trigger JS runtime GC on memory pressure event on iOS
- */
-export const enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean> = createNativeFlagGetter('enableJSRuntimeGCOnMemoryPressureOnIOS', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
