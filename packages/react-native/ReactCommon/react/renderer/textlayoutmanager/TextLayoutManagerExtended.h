@@ -121,4 +121,10 @@ class TextLayoutManagerExtended {
 using TextLayoutManagerExtended =
     detail::TextLayoutManagerExtended<TextLayoutManager>;
 
+struct MeasuredPreparedLayout {
+  LayoutConstraints layoutConstraints;
+  TextMeasurement measurement;
+  TextLayoutManagerExtended::PreparedLayout preparedLayout{};
+};
+
 } // namespace facebook::react
