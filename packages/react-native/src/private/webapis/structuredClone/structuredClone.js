@@ -10,6 +10,10 @@
  */
 
 import DOMException from '../errors/DOMException';
+import {
+  getPlatformObjectClone,
+  isPlatformObject,
+} from '../webidl/PlatformObjects';
 
 const VALID_ERROR_NAMES = new Set([
   'Error',
@@ -128,6 +132,23 @@ function structuredCloneInternal<T>(value: T): T {
     return result;
   }
 
+  if (value instanceof RegExp) {
+    const result = new RegExp(value.source, value.flags);
+    memory.set(value, result);
+
+    // $FlowExpectedError[incompatible-return] we know result is T
+    return result;
+  }
+
+  // We need to check platform objects before `Error` because `DOMException`
+  // is a platform object AND an `Error` subclass.
+  const clone = getPlatformObjectClone(value);
+  if (clone != null) {
+    const result = clone(value);
+    memory.set(value, result);
+    return result;
+  }
+
   if (value instanceof Error) {
     const result = value.cause
       ? new Error(value.message, {cause: value.cause})
@@ -146,16 +167,8 @@ function structuredCloneInternal<T>(value: T): T {
     return result;
   }
 
-  if (value instanceof RegExp) {
-    const result = new RegExp(value.source, value.flags);
-    memory.set(value, result);
-
-    // $FlowExpectedError[incompatible-return] we know result is T
-    return result;
-  }
-
   // Known non-serializable objects.
-  if (isNonSerializableObject(value)) {
+  if (isNonSerializableObject(value) || isPlatformObject(value)) {
     throw new DOMException(
       `Failed to execute 'structuredClone' on 'Window': ${String(value)} could not be cloned.`,
       'DataCloneError',
@@ -194,7 +207,6 @@ function structuredCloneInternal<T>(value: T): T {
  *
  * Known limitations:
  * - It does not support transfering values.
- * - it does not support cloning platform objects like `DOMRect` and `DOMException`.
  */
 export default function structuredClone<T>(value: T): T {
   try {

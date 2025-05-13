@@ -11,8 +11,23 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
+import type {HostInstance} from 'react-native';
+
+import ensureInstance from '../../../__tests__/utilities/ensureInstance';
+import * as Fantom from '@react-native/fantom';
+import * as React from 'react';
+import {View} from 'react-native';
+import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';
+import setUpMutationObserver from 'react-native/src/private/setup/setUpMutationObserver';
+import EventTarget from 'react-native/src/private/webapis/dom/events/EventTarget';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import DOMException from 'react-native/src/private/webapis/errors/DOMException';
+import IntersectionObserver from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
+import MutationObserver from 'react-native/src/private/webapis/mutationobserver/MutationObserver';
 import structuredClone from 'react-native/src/private/webapis/structuredClone/structuredClone';
+
+setUpIntersectionObserver();
+setUpMutationObserver();
 
 function expectDataCloneError(fn: () => mixed) {
   try {
@@ -288,5 +303,142 @@ describe('structuredClone', () => {
     // $FlowExpectedError[incompatible-type]
     // $FlowExpectedError[prop-missing]
     expect([...clone.map.get('set')][0]).toBe(clone.map);
+  });
+
+  describe('platform objects', () => {
+    describe('serializable platform objects', () => {
+      it('clones DOMRectReadOnly', () => {
+        let value = new DOMRectReadOnly(1, 2, 3, 4);
+        let clone = structuredClone(value);
+        expect(clone).not.toBe(value);
+        expect(clone).toBeInstanceOf(DOMRectReadOnly);
+        expect(clone).toEqual(value);
+      });
+
+      it('clones DOMRect', () => {
+        let value = new DOMRect(1, 2, 3, 4);
+        let clone = structuredClone(value);
+        expect(clone).not.toBe(value);
+        expect(clone).toBeInstanceOf(DOMRect);
+        expect(clone).toEqual(value);
+      });
+
+      it('clones DOMException', () => {
+        const value = new DOMException('error message', 'Error');
+        const clone = structuredClone(value);
+        expect(clone).not.toBe(value);
+        expect(clone).toBeInstanceOf(DOMException);
+        expect(clone.name).toEqual(value.name);
+        expect(clone.message).toEqual(value.message);
+      });
+    });
+
+    describe('non-serializable platform objects', () => {
+      it('does NOT clone ReadOnlyNode', () => {
+        const ref = React.createRef<HostInstance>();
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(<View ref={ref} />);
+        });
+        expect(ref.current).not.toBe(null);
+        expectDataCloneError(() => structuredClone(ref.current));
+      });
+
+      it('does NOT clone EventTarget', () => {
+        expectDataCloneError(() => structuredClone(new EventTarget()));
+      });
+
+      it('does NOT clone XMLHttpRequest', () => {
+        const xhr = new XMLHttpRequest();
+        expectDataCloneError(() => structuredClone(xhr));
+      });
+
+      it('does NOT clone performance', () => {
+        expectDataCloneError(() => structuredClone(performance));
+      });
+
+      it('does NOT clone performance.memory', () => {
+        // $FlowExpectedError[prop-missing]
+        expectDataCloneError(() => structuredClone(performance.memory));
+      });
+
+      it('does NOT clone performance.rnStartupTiming', () => {
+        expectDataCloneError(() =>
+          // $FlowExpectedError[prop-missing]
+          structuredClone(performance.rnStartupTiming),
+        );
+      });
+
+      it('does NOT clone PerformanceEntry', () => {
+        // $FlowExpectedError[prop-missing]
+        expectDataCloneError(() => structuredClone(performance.mark('foo')));
+      });
+
+      it('does NOT clone IntersectionObserver', () => {
+        expectDataCloneError(() =>
+          structuredClone(new IntersectionObserver(() => {})),
+        );
+      });
+
+      it('does NOT clone IntersectionObserverEntry', () => {
+        const ref = React.createRef<HostInstance>();
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(<View ref={ref} />);
+        });
+        expect(ref.current).not.toBe(null);
+
+        const entries: Array<mixed> = [];
+        Fantom.runTask(() => {
+          const observer = new IntersectionObserver(e => {
+            entries.push(...e);
+          });
+
+          observer.observe(ensureInstance(ref.current, ReactNativeElement));
+
+          Fantom.scheduleTask(() => {
+            observer.disconnect();
+          });
+        });
+
+        expectDataCloneError(() => structuredClone(entries[0]));
+      });
+
+      it('does NOT clone MutationObserver', () => {
+        expectDataCloneError(() =>
+          structuredClone(new MutationObserver(() => {})),
+        );
+      });
+
+      it('does NOT clone MutationRecord', () => {
+        const ref = React.createRef<HostInstance>();
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(<View ref={ref} />);
+        });
+        expect(ref.current).not.toBe(null);
+
+        const records: Array<mixed> = [];
+        Fantom.runTask(() => {
+          const observer = new MutationObserver(e => {
+            records.push(...e);
+          });
+
+          observer.observe(ensureInstance(ref.current, ReactNativeElement), {
+            childList: true,
+          });
+        });
+
+        Fantom.runTask(() => {
+          root.render(
+            <View>
+              <View />
+            </View>,
+          );
+        });
+
+        expectDataCloneError(() => structuredClone(records[0]));
+      });
+    });
   });
 });
