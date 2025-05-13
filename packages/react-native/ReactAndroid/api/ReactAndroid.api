@@ -959,12 +959,22 @@ public class com/facebook/react/bridge/ModuleHolder {
 	public fun isTurboModule ()Z
 }
 
-public class com/facebook/react/bridge/ModuleSpec {
-	public fun getName ()Ljava/lang/String;
-	public fun getProvider ()Ljavax/inject/Provider;
-	public static fun nativeModuleSpec (Ljava/lang/Class;Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
-	public static fun nativeModuleSpec (Ljava/lang/String;Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
-	public static fun viewManagerSpec (Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
+public final class com/facebook/react/bridge/ModuleSpec {
+	public static final field Companion Lcom/facebook/react/bridge/ModuleSpec$Companion;
+	public synthetic fun <init> (Ljavax/inject/Provider;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getName ()Ljava/lang/String;
+	public final fun getProvider ()Ljavax/inject/Provider;
+	public final fun moduleName ()Ljava/lang/String;
+	public static final fun nativeModuleSpec (Ljava/lang/Class;Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
+	public static final fun nativeModuleSpec (Ljava/lang/String;Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
+	public final fun provider ()Ljavax/inject/Provider;
+	public static final fun viewManagerSpec (Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
+}
+
+public final class com/facebook/react/bridge/ModuleSpec$Companion {
+	public final fun nativeModuleSpec (Ljava/lang/Class;Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
+	public final fun nativeModuleSpec (Ljava/lang/String;Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
+	public final fun viewManagerSpec (Ljavax/inject/Provider;)Lcom/facebook/react/bridge/ModuleSpec;
 }
 
 public abstract class com/facebook/react/bridge/NativeArray : com/facebook/jni/HybridClassBase, com/facebook/react/bridge/NativeArrayInterface {
