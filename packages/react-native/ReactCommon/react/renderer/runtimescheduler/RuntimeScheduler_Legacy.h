@@ -182,8 +182,8 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    */
   std::atomic_bool isPerformingWork_{false};
 
-  ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
-      nullptr};
+  std::atomic<ShadowTreeRevisionConsistencyManager*>
+      shadowTreeRevisionConsistencyManager_{nullptr};
 
   RuntimeSchedulerTaskErrorHandler onTaskError_;
 };
