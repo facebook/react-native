@@ -44,10 +44,10 @@ const WS_CLOSURE_CODE = {
 };
 
 export const WS_CLOSE_REASON = {
-  PAGE_NOT_FOUND: 'Debugger Page Not Found',
-  DEVICE_DISCONNECTED: 'Corresponding Device Disconnected',
-  RECREATING_DEVICE: 'Recreating Device Connection',
-  RECREATING_DEBUGGER: 'Recreating Debugger Connection',
+  PAGE_NOT_FOUND: '[PAGE_NOT_FOUND] Debugger Page Not Found',
+  CONNECTION_LOST: '[CONNECTION_LOST] Connection lost to corresponding device',
+  RECREATING_DEVICE: '[RECREATING_DEVICE] Recreating Device Connection',
+  RECREATING_DEBUGGER: '[RECREATING_DEBUGGER] Recreating Debugger Connection',
 };
 
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
@@ -219,7 +219,7 @@ export default class Device {
         // Device disconnected - close debugger connection.
         this.#terminateDebuggerConnection(
           WS_CLOSURE_CODE.NORMAL,
-          WS_CLOSE_REASON.DEVICE_DISCONNECTED,
+          WS_CLOSE_REASON.CONNECTION_LOST,
         );
         clearInterval(this.#pagesPollingIntervalId);
       }
