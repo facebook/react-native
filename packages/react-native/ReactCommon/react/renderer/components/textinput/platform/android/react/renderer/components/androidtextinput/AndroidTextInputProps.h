@@ -124,8 +124,10 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   bool hasPaddingEnd{};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-  SharedDebugStringConvertibleList getDebugProps() const;
+  SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
 };
 
 } // namespace facebook::react

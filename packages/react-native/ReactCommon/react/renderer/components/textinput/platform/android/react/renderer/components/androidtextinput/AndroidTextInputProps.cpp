@@ -356,4 +356,60 @@ SharedDebugStringConvertibleList AndroidTextInputProps::getDebugProps() const {
 }
 #endif
 
+folly::dynamic AndroidTextInputProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = AndroidTextInputProps();
+
+  const AndroidTextInputProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const AndroidTextInputProps*>(prevProps);
+
+  folly::dynamic result = ViewProps::getDiffProps(oldProps);
+
+  // Base text input paragraph props
+  if (paragraphAttributes.maximumNumberOfLines !=
+      oldProps->paragraphAttributes.maximumNumberOfLines) {
+    result["numberOfLines"] = paragraphAttributes.maximumNumberOfLines;
+  }
+
+  if (paragraphAttributes.ellipsizeMode !=
+      oldProps->paragraphAttributes.ellipsizeMode) {
+    result["ellipsizeMode"] = toString(paragraphAttributes.ellipsizeMode);
+  }
+
+  if (paragraphAttributes.textBreakStrategy !=
+      oldProps->paragraphAttributes.textBreakStrategy) {
+    result["textBreakStrategy"] =
+        toString(paragraphAttributes.textBreakStrategy);
+  }
+
+  if (paragraphAttributes.adjustsFontSizeToFit !=
+      oldProps->paragraphAttributes.adjustsFontSizeToFit) {
+    result["adjustsFontSizeToFit"] = paragraphAttributes.adjustsFontSizeToFit;
+  }
+
+  if (paragraphAttributes.minimumFontSize !=
+      oldProps->paragraphAttributes.minimumFontSize) {
+    result["minimumFontSize"] = paragraphAttributes.minimumFontSize;
+  }
+
+  if (paragraphAttributes.maximumFontSize !=
+      oldProps->paragraphAttributes.maximumFontSize) {
+    result["maximumFontSize"] = paragraphAttributes.maximumFontSize;
+  }
+
+  if (paragraphAttributes.includeFontPadding !=
+      oldProps->paragraphAttributes.includeFontPadding) {
+    result["includeFontPadding"] = paragraphAttributes.includeFontPadding;
+  }
+
+  if (paragraphAttributes.android_hyphenationFrequency !=
+      oldProps->paragraphAttributes.android_hyphenationFrequency) {
+    result["android_hyphenationFrequency"] =
+        toString(paragraphAttributes.android_hyphenationFrequency);
+  }
+
+  return result;
+}
+
 } // namespace facebook::react
