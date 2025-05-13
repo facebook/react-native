@@ -98,6 +98,7 @@ void EventEmitter::dispatchEvent(
       normalizeEventType(std::move(type)),
       std::move(payload),
       eventTarget_,
+      shadowNodeFamily_,
       category));
 }
 
@@ -123,6 +124,7 @@ void EventEmitter::dispatchUniqueEvent(
       normalizeEventType(std::move(type)),
       std::move(payload),
       eventTarget_,
+      shadowNodeFamily_,
       RawEvent::Category::Continuous));
 }
 
@@ -147,6 +149,11 @@ void EventEmitter::setEnabled(bool enabled) const {
       eventTarget_.reset();
     }
   }
+}
+
+void EventEmitter::setShadowNodeFamily(
+    std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) const {
+  shadowNodeFamily_ = std::move(shadowNodeFamily);
 }
 
 const SharedEventTarget& EventEmitter::getEventTarget() const {
