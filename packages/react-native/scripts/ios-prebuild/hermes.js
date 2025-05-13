@@ -21,7 +21,7 @@ const path = require('path');
  */
 async function prepareHermesArtifactsAsync(
   version /*:string*/,
-  buildType /*:string*/,
+  buildType /*: 'debug' | 'release' */,
 ) /*: Promise<string> */ {
   hermesLog(`Preparing Hermes...`);
 
@@ -107,7 +107,7 @@ const HermesEngineSourceTypes = {
 function checkExistingVersion(
   versionFilePath /*: string */,
   version /*: string */,
-  buildType /*: string */,
+  buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string */,
 ) {
   const resolvedVersion = `${version}-${buildType}`;
@@ -189,7 +189,7 @@ function nightlyArtifactExists(version /*: string */) /*: boolean */ {
 
 function hermesSourceType(
   version /*: string */,
-  buildType /*: string */,
+  buildType /*: 'debug' | 'release' */,
 ) /*: HermesEngineSourceType */ {
   if (hermesEngineTarballEnvvarDefined()) {
     hermesLog('Using local prebuild tarball');
@@ -212,7 +212,7 @@ function hermesSourceType(
 function resolveSourceFromSourceType(
   sourceType /*: HermesEngineSourceType */,
   version /*: string */,
-  buildType /*: string */,
+  buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string*/,
 ) /*: string */ {
   switch (sourceType) {
@@ -246,7 +246,7 @@ function localPrebuiltTarball() /*: string */ {
 
 function downloadPrebuildTarball(
   version /*: string */,
-  buildType /*: string */,
+  buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string*/,
 ) /*: string */ {
   const url = getTarballUrl(version, buildType);
