@@ -493,6 +493,135 @@ folly::dynamic AndroidTextInputProps::getDiffProps(
         : nullptr;
   }
 
+  // Android text input props
+  if (autoComplete != oldProps->autoComplete) {
+    result["autoComplete"] = autoComplete;
+  }
+
+  if (returnKeyLabel != oldProps->returnKeyLabel) {
+    result["returnKeyLabel"] = returnKeyLabel;
+  }
+
+  if (numberOfLines != oldProps->numberOfLines) {
+    result["numberOfLines"] = numberOfLines;
+  }
+
+  if (disableFullscreenUI != oldProps->disableFullscreenUI) {
+    result["disableFullscreenUI"] = disableFullscreenUI;
+  }
+
+  if (textBreakStrategy != oldProps->textBreakStrategy) {
+    result["textBreakStrategy"] = textBreakStrategy;
+  }
+
+  if (inlineImageLeft != oldProps->inlineImageLeft) {
+    result["inlineImageLeft"] = inlineImageLeft;
+  }
+
+  if (inlineImagePadding != oldProps->inlineImagePadding) {
+    result["inlineImagePadding"] = inlineImagePadding;
+  }
+
+  if (importantForAutofill != oldProps->importantForAutofill) {
+    result["importantForAutofill"] = importantForAutofill;
+  }
+
+  if (showSoftInputOnFocus != oldProps->showSoftInputOnFocus) {
+    result["showSoftInputOnFocus"] = showSoftInputOnFocus;
+  }
+
+  if (autoCorrect != oldProps->autoCorrect) {
+    result["autoCorrect"] = autoCorrect;
+  }
+
+  if (allowFontScaling != oldProps->allowFontScaling) {
+    result["allowFontScaling"] = allowFontScaling;
+  }
+
+  if (maxFontSizeMultiplier != oldProps->maxFontSizeMultiplier) {
+    result["maxFontSizeMultiplier"] = maxFontSizeMultiplier;
+  }
+
+  if (keyboardType != oldProps->keyboardType) {
+    result["keyboardType"] = keyboardType;
+  }
+
+  if (returnKeyType != oldProps->returnKeyType) {
+    result["returnKeyType"] = returnKeyType;
+  }
+
+  if (secureTextEntry != oldProps->secureTextEntry) {
+    result["secureTextEntry"] = secureTextEntry;
+  }
+
+  if (value != oldProps->value) {
+    result["value"] = value;
+  }
+
+  if (selectTextOnFocus != oldProps->selectTextOnFocus) {
+    result["selectTextOnFocus"] = selectTextOnFocus;
+  }
+
+  if (caretHidden != oldProps->caretHidden) {
+    result["caretHidden"] = caretHidden;
+  }
+
+  if (contextMenuHidden != oldProps->contextMenuHidden) {
+    result["contextMenuHidden"] = contextMenuHidden;
+  }
+
+  if (textShadowColor != oldProps->textShadowColor) {
+    result["textShadowColor"] = *textShadowColor;
+  }
+
+  if (textShadowRadius != oldProps->textShadowRadius) {
+    result["textShadowRadius"] = textShadowRadius;
+  }
+
+  if (textDecorationLine != oldProps->textDecorationLine) {
+    result["textDecorationLine"] = textDecorationLine;
+  }
+
+  if (fontStyle != oldProps->fontStyle) {
+    result["fontStyle"] = fontStyle;
+  }
+
+  if (textShadowOffset != oldProps->textShadowOffset) {
+    result["textShadowOffset"] = toDynamic(textShadowOffset);
+  }
+
+  if (lineHeight != oldProps->lineHeight) {
+    result["lineHeight"] = lineHeight;
+  }
+
+  if (textTransform != oldProps->textTransform) {
+    result["textTransform"] = textTransform;
+  }
+
+  if (letterSpacing != oldProps->letterSpacing) {
+    result["letterSpacing"] = letterSpacing;
+  }
+
+  if (fontSize != oldProps->fontSize) {
+    result["fontSize"] = fontSize;
+  }
+
+  if (textAlign != oldProps->textAlign) {
+    result["textAlign"] = textAlign;
+  }
+
+  if (includeFontPadding != oldProps->includeFontPadding) {
+    result["includeFontPadding"] = includeFontPadding;
+  }
+
+  if (fontWeight != oldProps->fontWeight) {
+    result["fontWeight"] = fontWeight;
+  }
+
+  if (fontFamily != oldProps->fontFamily) {
+    result["fontFamily"] = fontFamily;
+  }
+
   return result;
 }
 
