@@ -14,6 +14,7 @@
  * licensed under [CC-BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/).
  */
 
+import {setPlatformObject} from '../webidl/PlatformObjects';
 import DOMRectReadOnly, {type DOMRectInit} from './DOMRectReadOnly';
 
 // flowlint unsafe-getters-setters:off
@@ -80,3 +81,7 @@ export default class DOMRect extends DOMRectReadOnly {
     return new DOMRect(rect.x, rect.y, rect.width, rect.height);
   }
 }
+
+setPlatformObject(DOMRect, {
+  clone: rect => new DOMRect(rect.x, rect.y, rect.width, rect.height),
+});
