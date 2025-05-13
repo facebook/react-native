@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.80.0-rc.1
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Enable `DEFINES_MODULE` in `React-jsc.podspec` ([473e42bbc3](https://github.com/facebook/react-native/commit/473e42bbc383fb01981bdfc7085ab923f0c786c0) by [@krozniata](https://github.com/krozniata))
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Fix generated types in react-native/virtualized-lists being used without opt-in ([c9f2055097](https://github.com/facebook/react-native/commit/c9f20550972db2f94c5970948239312046a66a4e) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Skip codegen for selectively disabled libraries in react-native.config.js ([be8595b18a](https://github.com/facebook/react-native/commit/be8595b18a46635bf679d8e7473f2960c33530fa) by [@ismarbesic](https://github.com/ismarbesic))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.80.0-rc.1 ([d2168e9415](https://github.com/facebook/react-native/commit/d2168e94157deb728eccc061a55fe9e330677269) by [@react-native-bot](https://github.com/react-native-bot))
+- Fix set-rn-version to consider also the codegen snapshot tests ([79e2298230](https://github.com/facebook/react-native/commit/79e2298230ac202432cec1940ffda894d09a9231) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix draft creation ([cdf7d76101](https://github.com/facebook/react-native/commit/cdf7d761011daf67ce92854372f96900dbbc42c9) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock ([f70a146699](https://github.com/facebook/react-native/commit/f70a146699f870a230126bab1f3ef0e47d5cedc1) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.80.0-rc.0
 
 ### Breaking
