@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react
 
 import com.facebook.react.bridge.ModuleHolder
@@ -24,15 +25,16 @@ import com.facebook.systrace.SystraceMessage
 /** React package supporting lazy creation of native modules. */
 @Deprecated("This class is deprecated, please use BaseReactPackage instead.")
 @LegacyArchitecture
-public abstract class LazyReactPackage public constructor() : ReactPackage {
+public abstract class LazyReactPackage : ReactPackage {
     /**
      * We return an iterable
      *
      * @param reactContext context
-     * @return [<] that contains all native modules registered for the context
+     * @return An [Iterable]<[ModuleHolder]> that contains all native modules registered for the
+     *   context
      */
     public fun getNativeModuleIterator(
-        reactContext: ReactApplicationContext?
+        reactContext: ReactApplicationContext
     ): Iterable<ModuleHolder> {
         val reactModuleInfoMap: Map<String, ReactModuleInfo> =
             reactModuleInfoProvider.getReactModuleInfos()
@@ -81,11 +83,11 @@ public abstract class LazyReactPackage public constructor() : ReactPackage {
      * @param reactContext react application context that can be used to create modules
      * @return list of module specs that can create the native modules
      */
-    public abstract fun getNativeModules(reactContext: ReactApplicationContext?): List<ModuleSpec>
+    public abstract fun getNativeModules(reactContext: ReactApplicationContext): List<ModuleSpec>
 
     /**
      * @param reactContext react application context that can be used to create modules
-     * @return [<] to register
+     * @return A [List]<[NativeModule]> to register
      */
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
         val modules: MutableList<NativeModule> = ArrayList()
@@ -108,7 +110,7 @@ public abstract class LazyReactPackage public constructor() : ReactPackage {
      * @param reactContext react application context that can be used to create View Managers.
      * @return list of module specs that can create the View Managers.
      */
-    public fun getViewManagers(reactContext: ReactApplicationContext?): List<ModuleSpec> {
+    public fun getViewManagers(reactContext: ReactApplicationContext): List<ModuleSpec> {
         return emptyList()
     }
 
@@ -129,7 +131,7 @@ public abstract class LazyReactPackage public constructor() : ReactPackage {
 
     public abstract val reactModuleInfoProvider: ReactModuleInfoProvider
 
-    public companion object {
+    private companion object {
         init {
             LegacyArchitectureLogger.assertLegacyArchitecture(
                 "LazyReactPackage",
