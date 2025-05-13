@@ -858,12 +858,6 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
               root.render(<View style={{width: 1}} />);
             });
 
-            // This forces swapping the alternate tree in the reconciler
-            Fantom.runTask(() => {
-              // Set style to force a state update
-              root.render(<View style={{width: 2}} />);
-            });
-
             expect(getReferenceCount()).toBe(0);
 
             observer.disconnect();

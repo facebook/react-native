@@ -879,11 +879,6 @@ describe('IntersectionObserver', () => {
         root.render(<Observe />);
       });
 
-      // TODO (T223254666): Delete this and figure out why test fails.
-      Fantom.runTask(() => {
-        root.render(<Observe />);
-      });
-
       expect(getReferenceCount()).toBe(0);
     });
 
