@@ -14,6 +14,7 @@ import type ReactNativeElement from '../dom/nodes/ReactNativeElement';
 import type {NativeIntersectionObserverEntry} from './specs/NativeIntersectionObserver';
 
 import DOMRectReadOnly from '../geometry/DOMRectReadOnly';
+import {setPlatformObject} from '../webidl/PlatformObjects';
 
 /**
  * The [`IntersectionObserverEntry`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry)
@@ -158,6 +159,8 @@ export default class IntersectionObserverEntry {
     return this._nativeEntry.time;
   }
 }
+
+setPlatformObject(IntersectionObserverEntry);
 
 export function createIntersectionObserverEntry(
   entry: NativeIntersectionObserverEntry,

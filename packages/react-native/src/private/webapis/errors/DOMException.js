@@ -16,6 +16,8 @@
 
 // flowlint unsafe-getters-setters:off
 
+import {setPlatformObject} from '../webidl/PlatformObjects';
+
 const ERROR_NAME_TO_ERROR_CODE_MAP: {[string]: number} = {
   IndexSizeError: 1,
   HierarchyRequestError: 3,
@@ -159,3 +161,7 @@ for (const code in ERROR_CODES) {
     value: ERROR_CODES[code],
   });
 }
+
+setPlatformObject(DOMException, {
+  clone: exception => new DOMException(exception.message, exception.name),
+});
