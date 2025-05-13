@@ -186,18 +186,21 @@ folly::dynamic ParagraphProps::getDiffProps(const Props* prevProps) const {
     result["adjustsFontSizeToFit"] = paragraphAttributes.adjustsFontSizeToFit;
   }
 
-  if (paragraphAttributes.minimumFontScale !=
-      oldProps->paragraphAttributes.minimumFontScale) {
+  if (!floatEquality(
+          paragraphAttributes.minimumFontScale,
+          oldProps->paragraphAttributes.minimumFontScale)) {
     result["minimumFontScale"] = paragraphAttributes.minimumFontScale;
   }
 
-  if (paragraphAttributes.minimumFontSize !=
-      oldProps->paragraphAttributes.minimumFontSize) {
+  if (!floatEquality(
+          paragraphAttributes.minimumFontSize,
+          oldProps->paragraphAttributes.minimumFontSize)) {
     result["minimumFontSize"] = paragraphAttributes.minimumFontSize;
   }
 
-  if (paragraphAttributes.maximumFontSize !=
-      oldProps->paragraphAttributes.maximumFontSize) {
+  if (!floatEquality(
+          paragraphAttributes.maximumFontSize,
+          oldProps->paragraphAttributes.maximumFontSize)) {
     result["maximumFontSize"] = paragraphAttributes.maximumFontSize;
   }
 
