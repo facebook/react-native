@@ -3522,12 +3522,12 @@ public class com/facebook/react/uimanager/JSPointerDispatcher {
 	public fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
 }
 
-public class com/facebook/react/uimanager/JSTouchDispatcher {
+public final class com/facebook/react/uimanager/JSTouchDispatcher {
 	public fun <init> (Landroid/view/ViewGroup;)V
-	public fun handleTouchEvent (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
-	public fun handleTouchEvent (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;Lcom/facebook/react/bridge/ReactContext;)V
-	public fun onChildEndedNativeGesture (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
-	public fun onChildStartedNativeGesture (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
+	public final fun handleTouchEvent (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
+	public final fun handleTouchEvent (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;Lcom/facebook/react/bridge/ReactContext;)V
+	public final fun onChildEndedNativeGesture (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
+	public final fun onChildStartedNativeGesture (Landroid/view/MotionEvent;Lcom/facebook/react/uimanager/events/EventDispatcher;)V
 }
 
 public class com/facebook/react/uimanager/LayoutShadowNode : com/facebook/react/uimanager/ReactShadowNodeImpl {
