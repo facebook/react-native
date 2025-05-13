@@ -11,6 +11,8 @@
 
 // flowlint unsafe-getters-setters:off
 
+import {setPlatformObject} from '../webidl/PlatformObjects';
+
 type MemoryInfoLike = {
   jsHeapSizeLimit: ?number,
   totalJSHeapSize: ?number,
@@ -52,3 +54,5 @@ export default class MemoryInfo {
     return this.#usedJSHeapSize;
   }
 }
+
+setPlatformObject(MemoryInfo);

@@ -15,7 +15,7 @@ import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
+import {setPlatformObject} from '../../webidl/PlatformObjects';
 import {createNodeList} from '../oldstylecollections/NodeList';
 import {
   getNativeNodeReference,
@@ -287,6 +287,8 @@ export default class ReadOnlyNode {
    */
   static DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: number = 32;
 }
+
+setPlatformObject(ReadOnlyNode);
 
 export function getChildNodes(
   node: ReadOnlyNode,

@@ -13,6 +13,7 @@
 import type {ArrayLike} from '../../utils/ArrayLikeUtils';
 
 import {createValueIterator} from '../../utils/ArrayLikeUtils';
+import {setPlatformObject} from '../../webidl/PlatformObjects';
 
 // IMPORTANT: The type definition for this module is defined in `HTMLCollection.js.flow`
 // because Flow only supports indexers in classes in declaration files.
@@ -68,6 +69,8 @@ export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
     return createValueIterator(this);
   }
 }
+
+setPlatformObject(HTMLCollection);
 
 /**
  * This is an internal method to create instances of `HTMLCollection`,
