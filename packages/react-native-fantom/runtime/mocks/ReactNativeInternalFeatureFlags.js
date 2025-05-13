@@ -9,4 +9,11 @@
  * @oncall react_native
  */
 
-module.exports = {};
+module.exports = {
+  // When enableEagerAlternateStateNodeCleanup is enabled, alternate.stateNode is proactively
+  // pointed towards finishedWork's stateNode, releasing resources sooner.
+  // With enableEagerAlternateStateNodeCleanup enabled, we can remove workarounds in tests
+  // and have predictable memory model.
+  // See https://github.com/facebook/react/pull/33161 for details.
+  enableEagerAlternateStateNodeCleanup: true,
+};
