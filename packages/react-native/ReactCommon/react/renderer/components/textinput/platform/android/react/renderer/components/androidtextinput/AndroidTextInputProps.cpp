@@ -356,6 +356,15 @@ SharedDebugStringConvertibleList AndroidTextInputProps::getDebugProps() const {
 }
 #endif
 
+static folly::dynamic toDynamic(
+    const std::vector<std::string>& acceptDragAndDropTypes) {
+  folly::dynamic acceptDragAndDropTypesArray = folly::dynamic::array();
+  for (const auto& acceptDragAndDropType : acceptDragAndDropTypes) {
+    acceptDragAndDropTypesArray.push_back(acceptDragAndDropType);
+  }
+  return acceptDragAndDropTypesArray;
+}
+
 folly::dynamic AndroidTextInputProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = AndroidTextInputProps();
@@ -407,6 +416,81 @@ folly::dynamic AndroidTextInputProps::getDiffProps(
       oldProps->paragraphAttributes.android_hyphenationFrequency) {
     result["android_hyphenationFrequency"] =
         toString(paragraphAttributes.android_hyphenationFrequency);
+  }
+
+  // Base text input props
+  if (defaultValue != oldProps->defaultValue) {
+    result["defaultValue"] = defaultValue;
+  }
+
+  if (placeholder != oldProps->placeholder) {
+    result["placeholder"] = placeholder;
+  }
+
+  if (placeholderTextColor != oldProps->placeholderTextColor) {
+    result["placeholderTextColor"] = *placeholderTextColor;
+  }
+
+  if (cursorColor != oldProps->cursorColor) {
+    result["cursorColor"] = *cursorColor;
+  }
+
+  if (selectionColor != oldProps->selectionColor) {
+    result["selectionColor"] = *selectionColor;
+  }
+
+  if (selectionHandleColor != oldProps->selectionHandleColor) {
+    result["selectionHandleColor"] = *selectionHandleColor;
+  }
+
+  if (underlineColorAndroid != oldProps->underlineColorAndroid) {
+    result["underlineColorAndroid"] = *underlineColorAndroid;
+  }
+
+  if (maxLength != oldProps->maxLength) {
+    result["maxLength"] = maxLength;
+  }
+
+  if (text != oldProps->text) {
+    result["text"] = text;
+  }
+
+  if (mostRecentEventCount != oldProps->mostRecentEventCount) {
+    result["mostRecentEventCount"] = mostRecentEventCount;
+  }
+
+  if (autoFocus != oldProps->autoFocus) {
+    result["autoFocus"] = autoFocus;
+  }
+
+  if (autoCapitalize != oldProps->autoCapitalize) {
+    result["autoCapitalize"] = autoCapitalize;
+  }
+
+  if (editable != oldProps->editable) {
+    result["editable"] = editable;
+  }
+
+  if (readOnly != oldProps->readOnly) {
+    result["readOnly"] = readOnly;
+  }
+
+  if (submitBehavior != oldProps->submitBehavior) {
+    result["submitBehavior"] = toDynamic(submitBehavior);
+  }
+
+  if (multiline != oldProps->multiline) {
+    result["multiline"] = multiline;
+  }
+
+  if (disableKeyboardShortcuts != oldProps->disableKeyboardShortcuts) {
+    result["disableKeyboardShortcuts"] = disableKeyboardShortcuts;
+  }
+
+  if (acceptDragAndDropTypes != oldProps->acceptDragAndDropTypes) {
+    result["acceptDragAndDropTypes"] = acceptDragAndDropTypes.has_value()
+        ? toDynamic(acceptDragAndDropTypes.value())
+        : nullptr;
   }
 
   return result;
