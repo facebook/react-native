@@ -155,12 +155,7 @@ function structuredCloneInternal<T>(value: T): T {
   }
 
   // Known non-serializable objects.
-  // TODO: Handle this more holistically
-  if (
-    value instanceof WeakMap ||
-    value instanceof WeakSet ||
-    value instanceof Promise
-  ) {
+  if (isNonSerializableObject(value)) {
     throw new DOMException(
       `Failed to execute 'structuredClone' on 'Window': ${String(value)} could not be cloned.`,
       'DataCloneError',
@@ -208,3 +203,20 @@ export default function structuredClone<T>(value: T): T {
     memory.clear();
   }
 }
+
+const NON_SERIALIZABLE_OBJECT_KEY = Symbol('nonSerializableObject');
+
+function isNonSerializableObject<T: interface {}>(obj: T): boolean {
+  // $FlowExpectedError[invalid-in-lhs]
+  return NON_SERIALIZABLE_OBJECT_KEY in obj;
+}
+
+function markClassAsNonSerializable<T>(cls: Class<T>): void {
+  // $FlowExpectedError[incompatible-use]
+  cls.prototype[NON_SERIALIZABLE_OBJECT_KEY] = true;
+}
+
+// Non-serializable built-ins.
+markClassAsNonSerializable(WeakMap);
+markClassAsNonSerializable(WeakSet);
+markClassAsNonSerializable(Promise);
