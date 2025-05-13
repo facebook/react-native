@@ -171,8 +171,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         std::make_shared<EventTarget>(
             fragment.instanceHandle, fragment.surfaceId),
         eventDispatcher_);
-    return std::make_shared<ShadowNodeFamily>(
-        fragment, std::move(eventEmitter), eventDispatcher_, *this);
+    auto family = std::make_shared<ShadowNodeFamily>(
+        fragment, eventEmitter, eventDispatcher_, *this);
+    eventEmitter->setShadowNodeFamily(family);
+    return family;
   }
 
  protected:
