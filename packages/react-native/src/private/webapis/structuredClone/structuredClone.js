@@ -21,7 +21,18 @@ const VALID_ERROR_NAMES = new Set([
   'URIError',
 ]);
 
-function structuredCloneInternal<T>(value: T, memory: Map<mixed, mixed>): T {
+const BASIC_CONSTRUCTORS = [Number, String, Boolean, Date];
+
+const ObjectPrototype = Object.prototype;
+
+// Technicall the memory value should be a parameter in
+// `structuredCloneInternal` but as an optimization we can reuse the same map
+// and avoid allocating a new one in every call to `structuredClone`.
+// This is safe because we don't invoke user code in `structuredClone`, so at
+// any given point we only have one memory object alive anyway.
+const memory: Map<mixed, mixed> = new Map();
+
+function structuredCloneInternal<T>(value: T): T {
   // Handles `null` and `undefined`.
   if (value == null) {
     return value;
@@ -51,53 +62,67 @@ function structuredCloneInternal<T>(value: T, memory: Map<mixed, mixed>): T {
     return memory.get(value);
   }
 
-  // Known non-serializable objects
-  // TODO: Handle this more holistically.
-  if (
-    value instanceof WeakMap ||
-    value instanceof WeakSet ||
-    value instanceof Promise
-  ) {
-    throw new DOMException(
-      `Failed to execute 'structuredClone' on 'Window': ${String(value)} could not be cloned.`,
-      'DataCloneError',
-    );
-  }
-
-  // Handles primitive wrappers.
-
-  if (value instanceof Number) {
-    // eslint-disable-next-line no-new-wrappers
-    const result = new Number(value);
+  // Handles arrays.
+  if (Array.isArray(value)) {
+    const result = [];
     memory.set(value, result);
+
+    for (const key of Object.keys(value)) {
+      result[key] = structuredCloneInternal(value[key]);
+    }
 
     // $FlowExpectedError[incompatible-return] we know result is T
     return result;
   }
 
-  if (value instanceof Boolean) {
-    // eslint-disable-next-line no-new-wrappers
-    const result = new Boolean(value);
+  // Simple object fast path
+  // $FlowIssue[prop-missing] Why doesn't Flow know about Object.prototype?
+  if (Object.getPrototypeOf(value) === ObjectPrototype) {
+    const result = {};
     memory.set(value, result);
+
+    for (const key of Object.keys(value)) {
+      // $FlowExpectedError[prop-missing]
+      result[key] = structuredCloneInternal(value[key]);
+    }
 
     // $FlowExpectedError[incompatible-return] we know result is T
     return result;
   }
 
-  if (value instanceof String) {
-    // eslint-disable-next-line no-new-wrappers
-    const result = new String(value);
+  // Handles complex types (typeof === 'object').
+
+  for (const Cls of BASIC_CONSTRUCTORS) {
+    if (value instanceof Cls) {
+      const result = new Cls(value);
+      memory.set(value, result);
+      // $FlowExpectedError[incompatible-return] we know result is T
+      return result;
+    }
+  }
+
+  if (value instanceof Map) {
+    const result = new Map<mixed, mixed>();
     memory.set(value, result);
+
+    for (const [innerKey, innerValue] of value) {
+      result.set(
+        structuredCloneInternal(innerKey),
+        structuredCloneInternal(innerValue),
+      );
+    }
 
     // $FlowExpectedError[incompatible-return] we know result is T
     return result;
   }
 
-  // Handles remaining known objects.
-
-  if (value instanceof Date) {
-    const result = new Date(value);
+  if (value instanceof Set) {
+    const result = new Set<mixed>();
     memory.set(value, result);
+
+    for (const innerValue of value) {
+      result.add(structuredCloneInternal(innerValue));
+    }
 
     // $FlowExpectedError[incompatible-return] we know result is T
     return result;
@@ -121,33 +146,6 @@ function structuredCloneInternal<T>(value: T, memory: Map<mixed, mixed>): T {
     return result;
   }
 
-  if (value instanceof Map) {
-    const result = new Map<mixed, mixed>();
-    memory.set(value, result);
-
-    for (const [innerKey, innerValue] of value) {
-      result.set(
-        structuredCloneInternal(innerKey, memory),
-        structuredCloneInternal(innerValue, memory),
-      );
-    }
-
-    // $FlowExpectedError[incompatible-return] we know result is T
-    return result;
-  }
-
-  if (value instanceof Set) {
-    const result = new Set<mixed>();
-    memory.set(value, result);
-
-    for (const innerValue of value) {
-      result.add(structuredCloneInternal(innerValue, memory));
-    }
-
-    // $FlowExpectedError[incompatible-return] we know result is T
-    return result;
-  }
-
   if (value instanceof RegExp) {
     const result = new RegExp(value.source, value.flags);
     memory.set(value, result);
@@ -156,17 +154,31 @@ function structuredCloneInternal<T>(value: T, memory: Map<mixed, mixed>): T {
     return result;
   }
 
-  // $FlowExpectedError[incompatible-type] result will be T
-  const result: T = Array.isArray(value) ? [] : {};
+  // Known non-serializable objects.
+  // TODO: Handle this more holistically
+  if (
+    value instanceof WeakMap ||
+    value instanceof WeakSet ||
+    value instanceof Promise
+  ) {
+    throw new DOMException(
+      `Failed to execute 'structuredClone' on 'Window': ${String(value)} could not be cloned.`,
+      'DataCloneError',
+    );
+  }
+
+  // Arbitrary object slow path
+  const result = {};
   memory.set(value, result);
 
   // We need to use Object.keys instead of iterating by indices because we
   // also need to copy arbitrary fields set in the array.
   for (const key of Object.keys(value)) {
-    // $FlowExpectedError[incompatible-use]
-    result[key] = structuredCloneInternal(value[key], memory);
+    // $FlowExpectedError[prop-missing]
+    result[key] = structuredCloneInternal(value[key]);
   }
 
+  // $FlowExpectedError[incompatible-return] we know result is T
   return result;
 }
 
@@ -190,5 +202,9 @@ function structuredCloneInternal<T>(value: T, memory: Map<mixed, mixed>): T {
  * - it does not support cloning platform objects like `DOMRect` and `DOMException`.
  */
 export default function structuredClone<T>(value: T): T {
-  return structuredCloneInternal(value, new Map());
+  try {
+    return structuredCloneInternal(value);
+  } finally {
+    memory.clear();
+  }
 }
