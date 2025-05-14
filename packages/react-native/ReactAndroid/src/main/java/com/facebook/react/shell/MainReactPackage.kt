@@ -55,6 +55,7 @@ import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
 import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
+import com.facebook.react.views.text.PreparedLayoutTextViewManager
 import com.facebook.react.views.text.ReactRawTextManager
 import com.facebook.react.views.text.ReactTextViewManager
 import com.facebook.react.views.text.ReactVirtualTextViewManager
@@ -148,7 +149,8 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactModalHostManager(),
           ReactRawTextManager(),
           ReactTextInputManager(),
-          ReactTextViewManager(),
+          if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
+          else ReactTextViewManager(),
           ReactViewManager(),
           ReactVirtualTextViewManager(),
           ReactUnimplementedViewManager())
@@ -183,7 +185,12 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactRawTextManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactRawTextManager() },
           ReactTextInputManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactTextInputManager() },
-          ReactTextViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactTextViewManager() },
+          ReactTextViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec {
+                if (ReactNativeFeatureFlags.enablePreparedTextLayout())
+                    PreparedLayoutTextViewManager()
+                else ReactTextViewManager()
+              },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
           ReactVirtualTextViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactVirtualTextViewManager() },
