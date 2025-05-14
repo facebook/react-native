@@ -136,10 +136,10 @@ internal data class BorderRadiusStyle(
                     (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height)
                         ?: zeroRadii,
                 bottomLeft =
-                    (endEnd ?: bottomStart ?: bottomRight ?: uniform)?.resolve(width, height)
+                    (endEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height)
                         ?: zeroRadii,
                 bottomRight =
-                    (startEnd ?: bottomEnd ?: bottomLeft ?: uniform)?.resolve(width, height)
+                    (startEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height)
                         ?: zeroRadii,
                 width = width,
                 height = height,
