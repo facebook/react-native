@@ -49,6 +49,10 @@ constructor(reactContext: ReactApplicationContext? = null) :
     parent.removeViewAt(index)
   }
 
+  /**
+    Expo overrides this function GroupViewManagerWrapper.kt`, which is a replacement view manager adding 
+    support for delegates receiving callbacks whenever one of the methods in the view manager are called.
+  */
   public open fun removeView(parent: T, view: View) {
     UiThreadUtil.assertOnUiThread()
 
