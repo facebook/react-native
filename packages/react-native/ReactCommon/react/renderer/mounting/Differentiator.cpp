@@ -280,7 +280,6 @@ static void updateMatchedPairSubtrees(
     return;
   }
 
-  // TODO(T217775046): find a test case for this branch.
   auto oldCullingContextCopy =
       oldCullingContext.adjustCullingContextIfNeeded(oldPair);
   auto newCullingContextCopy =
