@@ -331,6 +331,8 @@ static void updateBorderColorsProps(
       newBorderColor.bottom,
       oldBorderColor.bottom);
   updateBorderColorPropValue(
+      result, "borderEndColor", newBorderColor.end, oldBorderColor.end);
+  updateBorderColorPropValue(
       result, "borderStartColor", newBorderColor.start, oldBorderColor.start);
   updateBorderColorPropValue(
       result, "borderBlockColor", newBorderColor.block, oldBorderColor.block);
