@@ -637,6 +637,10 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["filter"] = toDynamic(filter);
   }
 
+  if (mixBlendMode != oldProps->mixBlendMode) {
+    result["mixBlendMode"] = toString(mixBlendMode);
+  }
+
   if (pointerEvents != oldProps->pointerEvents) {
     std::string value;
     switch (pointerEvents) {
