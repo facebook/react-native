@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<66f25e1a314965cbbad2a9ce9a7aa35a>>
+ * @generated SignedSource<<829c85b56fbeaf01ece2d1dd84ecde8e>>
  */
 
 /**
@@ -33,6 +33,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool animatedShouldSignalBatch() override {
     return false;
+  }
+
+  bool avoidCeilingAvailableAndroidTextWidth() override {
+    return true;
   }
 
   bool cxxNativeAnimatedEnabled() override {

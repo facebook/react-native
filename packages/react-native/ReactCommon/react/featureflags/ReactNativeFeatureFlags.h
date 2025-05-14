@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b931e0ebaa1c91c42caf9dd6e56a7663>>
+ * @generated SignedSource<<a4123bc6f44835c022a1a5238908674c>>
  */
 
 /**
@@ -48,6 +48,11 @@ class ReactNativeFeatureFlags {
    * Enables start- and finishOperationBatch on any platform.
    */
   RN_EXPORT static bool animatedShouldSignalBatch();
+
+  /**
+   * Do not incorrectly ceil the available width of an Android text layout
+   */
+  RN_EXPORT static bool avoidCeilingAvailableAndroidTextWidth();
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
