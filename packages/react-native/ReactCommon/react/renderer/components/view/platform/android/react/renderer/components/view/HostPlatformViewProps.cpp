@@ -547,6 +547,32 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["backgroundColor"] = *backgroundColor;
   }
 
+  if (outlineColor != oldProps->outlineColor) {
+    result["outlineColor"] = *outlineColor;
+  }
+
+  if (outlineOffset != oldProps->outlineOffset) {
+    result["outlineOffset"] = outlineOffset;
+  }
+
+  if (outlineStyle != oldProps->outlineStyle) {
+    switch (outlineStyle) {
+      case OutlineStyle::Solid:
+        result["outlineStyle"] = "solid";
+        break;
+      case OutlineStyle::Dotted:
+        result["outlineStyle"] = "dotted";
+        break;
+      case OutlineStyle::Dashed:
+        result["outlineStyle"] = "dashed";
+        break;
+    }
+  }
+
+  if (outlineWidth != oldProps->outlineWidth) {
+    result["outlineWidth"] = outlineWidth;
+  }
+
   if (shadowColor != oldProps->shadowColor) {
     result["shadowColor"] = *shadowColor;
   }
