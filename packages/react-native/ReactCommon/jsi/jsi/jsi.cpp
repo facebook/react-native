@@ -286,6 +286,10 @@ NativeState::~NativeState() {}
 
 Runtime::~Runtime() {}
 
+ICast* Runtime::castInterface(const UUID& /*interfaceUUID*/) {
+  return nullptr;
+}
+
 Instrumentation& Runtime::instrumentation() {
   class NoInstrumentation : public Instrumentation {
     std::string getRecordedGCStats() override {
