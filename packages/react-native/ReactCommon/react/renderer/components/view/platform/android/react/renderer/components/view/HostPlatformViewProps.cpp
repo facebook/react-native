@@ -488,6 +488,21 @@ inline static void updateAccessibilityStateProp(
   result["accessibilityState"] = resultState;
 }
 
+static folly::dynamic toDynamic(const std::vector<BoxShadow>& boxShadow) {
+  folly::dynamic boxShadowResult = folly::dynamic::array();
+  for (const auto& boxShadowValue : boxShadow) {
+    folly::dynamic boxShadowValueResult = folly::dynamic::object();
+    boxShadowValueResult["offsetX"] = boxShadowValue.offsetX;
+    boxShadowValueResult["offsetY"] = boxShadowValue.offsetY;
+    boxShadowValueResult["blurRadius"] = boxShadowValue.blurRadius;
+    boxShadowValueResult["spreadDistance"] = boxShadowValue.spreadDistance;
+    boxShadowValueResult["color"] = *boxShadowValue.color;
+    boxShadowValueResult["inset"] = boxShadowValue.inset;
+    boxShadowResult.push_back(boxShadowValueResult);
+  }
+  return boxShadowResult;
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
@@ -562,6 +577,10 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
 
   if (zIndex != oldProps->zIndex) {
     result["zIndex"] = zIndex.value();
+  }
+
+  if (boxShadow != oldProps->boxShadow) {
+    result["boxShadow"] = toDynamic(boxShadow);
   }
 
   if (pointerEvents != oldProps->pointerEvents) {
