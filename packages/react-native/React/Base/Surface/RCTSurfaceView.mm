@@ -21,7 +21,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
-- (instancetype)initWithSurface:(RCTSurface *)surface
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _stage = surface.stage;
