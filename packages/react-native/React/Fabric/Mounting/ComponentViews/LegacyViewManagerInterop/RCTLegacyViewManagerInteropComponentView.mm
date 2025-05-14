@@ -170,10 +170,24 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_viewsToBeMounted addObject:@{
-    kRCTLegacyInteropChildIndexKey : [NSNumber numberWithInteger:index],
-    kRCTLegacyInteropChildComponentKey : childComponentView
-  }];
+  if (_adapter && index == _adapter.paperView.reactSubviews.count) {
+    // This is a new child view that is being added to the end of the children array.
+    // After the children is added, we need to call didUpdateReactSubviews to make sure that it is rendered.
+    // Without this change, the new child will not be rendered right away because the didUpdateReactSubviews is not
+    // called and the `finalizeUpdate` is not invoked.
+    if ([childComponentView isKindOfClass:[RCTLegacyViewManagerInteropComponentView class]]) {
+      UIView *target = ((RCTLegacyViewManagerInteropComponentView *)childComponentView).contentView;
+      [_adapter.paperView insertReactSubview:target atIndex:index];
+    } else {
+      [_adapter.paperView insertReactSubview:childComponentView atIndex:index];
+    }
+    [_adapter.paperView didUpdateReactSubviews];
+  } else {
+    [_viewsToBeMounted addObject:@{
+      kRCTLegacyInteropChildIndexKey : [NSNumber numberWithInteger:index],
+      kRCTLegacyInteropChildComponentKey : childComponentView
+    }];
+  }
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
