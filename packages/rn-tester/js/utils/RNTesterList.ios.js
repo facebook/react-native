@@ -147,6 +147,11 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
   },
   {
+    key: 'FabricInteropLayer',
+    category: 'UI',
+    module: require('../examples/FabricInteropLayer/FabricInteropLayer'),
+  },
+  {
     key: 'PerformanceComparisonExample',
     category: 'Basic',
     module: require('../examples/Performance/PerformanceComparisonExample'),
