@@ -23,6 +23,7 @@ import {
 
 type SectionProps = {
   title: string,
+  testID?: string,
   children?: React.Node,
 };
 
@@ -82,13 +83,21 @@ function AddChildrenForInteropLayer() {
         backgroundColor: isDarkMode ? BLACK : WHITE,
       }}>
       <Section title="Squares">
-        <Button title="Add Marker" onPress={addMarker} />
+        <Button
+          title="Add Marker"
+          onPress={addMarker}
+          testID="add-marker-btn"
+        />
         <Text>{`Number of squares: ${squares.length}`}</Text>
       </Section>
-      <Section title="Custom native view">
+      <Section title="Custom native view" testID="interop-view-content">
         <InteropTestView style={styles.customView}>
           {squares.map((_, index) => (
-            <View key={index} style={styles.customViewChild} />
+            <View
+              key={index}
+              style={styles.customViewChild}
+              testID={`marker_${index}`}
+            />
           ))}
         </InteropTestView>
       </Section>
@@ -134,16 +143,16 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'Fabric Interop Layer';
+exports.title = 'FabricInteropLayer';
 exports.category = 'UI';
 exports.description = 'A set test cases for the Fabric Interop Layer.';
 exports.examples = [
   {
     title: 'Add children to Interop Layer',
     description: 'Add children to Interop Layer',
-    name: 'Add Children to interop layer',
+    name: 'add-children',
     render(): React.Node {
-      return <AddChildrenForInteropLayer />;
+      return <AddChildrenForInteropLayer testID="add-children" />;
     },
   },
 ];
