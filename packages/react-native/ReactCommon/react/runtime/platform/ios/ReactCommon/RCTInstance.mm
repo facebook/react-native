@@ -69,6 +69,35 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   sRuntimeDiagnosticFlags = [flags copy];
 }
 
+@interface RCTBridgelessDisplayLinkModuleHolder : NSObject <RCTDisplayLinkModuleHolder>
+- (instancetype)initWithModule:(id<RCTBridgeModule>)module;
+@end
+
+@implementation RCTBridgelessDisplayLinkModuleHolder {
+  id<RCTBridgeModule> _module;
+}
+- (instancetype)initWithModule:(id<RCTBridgeModule>)module
+{
+  _module = module;
+  return self;
+}
+
+- (id<RCTBridgeModule>)instance
+{
+  return _module;
+}
+
+- (Class)moduleClass
+{
+  return [_module class];
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return _module.methodQueue;
+}
+@end
+
 @interface RCTInstance () <RCTTurboModuleManagerDelegate>
 @end
 
@@ -398,13 +427,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
 
     // Set up Display Link
-    RCTModuleData *timingModuleData = [[RCTModuleData alloc] initWithModuleInstance:timing
-                                                                             bridge:nil
-                                                                     moduleRegistry:nil
-                                                            viewRegistry_DEPRECATED:nil
-                                                                      bundleManager:nil
-                                                                  callableJSModules:nil];
-    [strongSelf->_displayLink registerModuleForFrameUpdates:timing withModuleData:timingModuleData];
+    id<RCTDisplayLinkModuleHolder> moduleHolder = [[RCTBridgelessDisplayLinkModuleHolder alloc] initWithModule:timing];
+    [strongSelf->_displayLink registerModuleForFrameUpdates:timing withModuleHolder:moduleHolder];
     [strongSelf->_displayLink addToRunLoop:[NSRunLoop currentRunLoop]];
 
     // Attempt to load bundle synchronously, fallback to asynchronously.
