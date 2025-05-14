@@ -407,7 +407,9 @@ void BaseViewProps::setProp(
     VIEW_EVENT_CASE(PointerLeave);
     VIEW_EVENT_CASE(PointerLeaveCapture);
     VIEW_EVENT_CASE(PointerOver);
+    VIEW_EVENT_CASE(PointerOverCapture);
     VIEW_EVENT_CASE(PointerOut);
+    VIEW_EVENT_CASE(PointerOutCapture);
     VIEW_EVENT_CASE(MoveShouldSetResponder);
     VIEW_EVENT_CASE(MoveShouldSetResponderCapture);
     VIEW_EVENT_CASE(StartShouldSetResponder);

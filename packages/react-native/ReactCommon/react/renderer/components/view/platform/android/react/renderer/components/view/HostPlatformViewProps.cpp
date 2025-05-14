@@ -691,10 +691,28 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
         result,
         events,
         oldProps->events,
+        ViewEvents::Offset::PointerOverCapture,
+        "onPointerOverCapture");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
         ViewEvents::Offset::PointerOut,
         "onPointerOut");
     updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerOutCapture,
+        "onPointerOutCapture");
+    updateEventProp(
         result, events, oldProps->events, ViewEvents::Offset::Click, "onClick");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ClickCapture,
+        "onClickCapture");
     updateEventProp(
         result,
         events,
