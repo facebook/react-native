@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e9d98230a39a243ea748105a77ebd1e0>>
+ * @generated SignedSource<<593b1d64dc31038140032a6b0a439700>>
  */
 
 /**
@@ -26,6 +26,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
   @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
+
+  @DoNotStrip public fun avoidCeilingAvailableAndroidTextWidth(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<255deaad99bac2448e0a11bad50a770b>>
+ * @generated SignedSource<<e9a109fd77667dd0cb945ef6ef9737f2>>
  */
 
 /**
@@ -41,6 +41,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
+
+  /**
+   * Do not incorrectly ceil the available width of an Android text layout
+   */
+  @JvmStatic
+  public fun avoidCeilingAvailableAndroidTextWidth(): Boolean = accessor.avoidCeilingAvailableAndroidTextWidth()
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
