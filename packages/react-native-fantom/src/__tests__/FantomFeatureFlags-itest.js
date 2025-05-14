@@ -8,7 +8,16 @@
  * @format
  * @oncall react_native
  * @fantom_flags commonTestFlag:true jsOnlyTestFlag:true
+ * @fantom_react_fb_flags testOnlyFlagNotUsedByReact:true
  */
+
+/**
+ * Please note that the code running the logic in this test is defined in the
+ * docblock of this file (see the @fantom_flags and @fantom_react_fb_flags
+ * directives above).
+ */
+
+import ReactNativeInternalFeatureFlags from 'ReactNativeInternalFeatureFlags';
 
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
@@ -19,5 +28,11 @@ describe('FantomFeatureFlags', () => {
 
   it('allows overridding JS-only feature flags', () => {
     expect(ReactNativeFeatureFlags.jsOnlyTestFlag()).toBe(true);
+  });
+
+  it('allows overriding Meta internal React Native => React flags', () => {
+    expect(ReactNativeInternalFeatureFlags.testOnlyFlagNotUsedByReact).toBe(
+      true,
+    );
   });
 });
