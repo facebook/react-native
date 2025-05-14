@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ec0b4daaab75d4afa5acc443c1b52148>>
+ * @generated SignedSource<<f7fbc7ab177cd84524a544cf3f94ae19>>
  */
 
 /**
@@ -40,6 +40,8 @@ class NativeReactNativeFeatureFlags
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
 
   bool animatedShouldSignalBatch(jsi::Runtime& runtime);
+
+  bool avoidCeilingAvailableAndroidTextWidth(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
