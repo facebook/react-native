@@ -15,9 +15,11 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
+#include <react/utils/FloatComparison.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -836,6 +838,21 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
   auto size = shadowNode.measureContent(
       threadLocalLayoutContext, {minimumSize, maximumSize});
+
+#ifdef REACT_NATIVE_DEBUG
+  bool widthInBounds = size.width + kDefaultEpsilon >= minimumSize.width &&
+      size.width - kDefaultEpsilon <= maximumSize.width;
+  bool heightInBounds = size.height + kDefaultEpsilon >= minimumSize.height &&
+      size.height - kDefaultEpsilon <= maximumSize.height;
+
+  if (!widthInBounds || !heightInBounds) {
+    LOG(ERROR) << shadowNode.getComponentDescriptor().getComponentName()
+               << " returned an invalid measurement. Min: ["
+               << minimumSize.width << "," << minimumSize.height << "] Max: ["
+               << maximumSize.width << "," << maximumSize.height
+               << "] Actual: [" << size.width << "," << size.height << "]";
+  }
+#endif
 
   return YGSize{
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};

@@ -17,12 +17,23 @@
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
-#include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
+#include <react/utils/FloatComparison.h>
 
 #include <react/renderer/components/text/ParagraphState.h>
 
-namespace facebook::react {
+#define assert_valid_size(size, layoutConstraints)                         \
+  react_native_assert(                                                     \
+      !ReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth() || \
+      ((size).width + kDefaultEpsilon >=                                   \
+           (layoutConstraints).minimumSize.width &&                        \
+       (size).width - kDefaultEpsilon <=                                   \
+           (layoutConstraints).maximumSize.width &&                        \
+       (size).height + kDefaultEpsilon >=                                  \
+           (layoutConstraints).minimumSize.height &&                       \
+       (size).height - kDefaultEpsilon <=                                  \
+           (layoutConstraints).maximumSize.height))
 
+namespace facebook::react {
 using Content = ParagraphShadowNode::Content;
 
 const char ParagraphComponentName[] = "Paragraph";
@@ -212,17 +223,20 @@ Size ParagraphShadowNode::measureContent(
           // PreparedLayout is not trivially copyable on all platforms
           // NOLINTNEXTLINE(performance-move-const-arg)
           std::move(preparedLayout)});
+      assert_valid_size(mesaurements.size, layoutConstraints);
       return mesaurements.size;
     }
   }
 
-  return textLayoutManager_
-      ->measure(
-          AttributedStringBox{attributedString},
-          content.paragraphAttributes,
-          textLayoutContext,
-          layoutConstraints)
-      .size;
+  auto size = textLayoutManager_
+                  ->measure(
+                      AttributedStringBox{attributedString},
+                      content.paragraphAttributes,
+                      textLayoutContext,
+                      layoutConstraints)
+                  .size;
+  assert_valid_size(size, layoutConstraints);
+  return size;
 }
 
 Float ParagraphShadowNode::baseline(
