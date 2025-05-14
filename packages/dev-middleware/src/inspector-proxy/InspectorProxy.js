@@ -172,7 +172,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
       ) {
         this.#logger?.warn(
           `Waiting for a DevTools connection to app='%s' on device='%s'.
-    Try again when it's established. If no connection occurs, try to:
+    Try again when the main bundle for the app is built and connection is established.
+    If no connection occurs, try to:
     - Restart the app. For Android, force stopping the app first might be required.
     - Ensure a stable connection to the device.
     - Ensure that the app is built in a mode that supports debugging.
