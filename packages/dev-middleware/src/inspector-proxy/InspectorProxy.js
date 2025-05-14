@@ -48,7 +48,7 @@ const MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT = 20;
 const INTERNAL_ERROR_CODE = 1011;
 
 // should be aligned with
-// https://github.com/facebook/react-native-devtools-frontend/blob/fa273092fbc8edc94d4a0a3621735f4677a99ba8/front_end/ui/legacy/components/utils/TargetDetachedDialog.ts#L50
+// https://github.com/facebook/react-native-devtools-frontend/blob/3d17e0fd462dc698db34586697cce2371b25e0d3/front_end/ui/legacy/components/utils/TargetDetachedDialog.ts#L50-L64
 const INTERNAL_ERROR_MESSAGES = {
   UREGISTERED_DEVICE:
     '[UREGISTERED_DEVICE] Debugger connection attempted for a device that was not registered',
