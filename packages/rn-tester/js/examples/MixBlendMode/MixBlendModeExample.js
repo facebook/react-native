@@ -48,6 +48,7 @@ function LayeredImage(props: Props) {
         <ImageBackground
           source={require('../../assets/rainbow.jpeg')}
           style={[styles.backdrop, {width: 200}]}>
+          {/* $FlowFixMe - ImageStyle is not compatible with ViewStyle */}
           <Image
             source={require('../../assets/alpha-hotdog.png')}
             style={[styles.commonImage, props.style]}
