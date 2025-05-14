@@ -49,7 +49,7 @@ constructor(reactContext: ReactApplicationContext? = null) :
     parent.removeViewAt(index)
   }
 
-  public fun removeView(parent: T, view: View) {
+  public open fun removeView(parent: T, view: View) {
     UiThreadUtil.assertOnUiThread()
 
     for (i in 0 until getChildCount(parent)) {
