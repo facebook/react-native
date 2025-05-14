@@ -503,6 +503,30 @@ static folly::dynamic toDynamic(const std::vector<BoxShadow>& boxShadow) {
   return boxShadowResult;
 }
 
+static folly::dynamic toDynamic(const std::vector<FilterFunction>& filter) {
+  folly::dynamic filterResult = folly::dynamic::array();
+  for (const auto& filterFunction : filter) {
+    folly::dynamic filterFunctionResult = folly::dynamic::object();
+    std::string typeKey = toString(filterFunction.type);
+    if (std::holds_alternative<Float>(filterFunction.parameters)) {
+      filterFunctionResult[typeKey] =
+          std::get<Float>(filterFunction.parameters);
+    } else if (std::holds_alternative<DropShadowParams>(
+                   filterFunction.parameters)) {
+      const auto& parameters =
+          std::get<DropShadowParams>(filterFunction.parameters);
+      folly::dynamic parametersResult = folly::dynamic::object();
+      parametersResult["offsetX"] = parameters.offsetX;
+      parametersResult["offsetY"] = parameters.offsetY;
+      parametersResult["standardDeviation"] = parameters.standardDeviation;
+      parametersResult["color"] = *parameters.color;
+      filterFunctionResult[typeKey] = parametersResult;
+    }
+    filterResult.push_back(filterFunctionResult);
+  }
+  return filterResult;
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
@@ -607,6 +631,10 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
 
   if (boxShadow != oldProps->boxShadow) {
     result["boxShadow"] = toDynamic(boxShadow);
+  }
+
+  if (filter != oldProps->filter) {
+    result["filter"] = toDynamic(filter);
   }
 
   if (pointerEvents != oldProps->pointerEvents) {
