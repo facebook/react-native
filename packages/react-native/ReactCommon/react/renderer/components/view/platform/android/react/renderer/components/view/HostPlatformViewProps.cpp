@@ -583,11 +583,11 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (nativeId != oldProps->nativeId) {
-    result["nativeId"] = nativeId;
+    result["nativeID"] = nativeId;
   }
 
   if (testId != oldProps->testId) {
-    result["testId"] = testId;
+    result["testID"] = testId;
   }
 
   if (accessible != oldProps->accessible) {
