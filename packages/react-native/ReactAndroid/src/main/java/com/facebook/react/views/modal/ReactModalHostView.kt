@@ -54,6 +54,13 @@ import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.setSystemBarsTranslucency
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -143,6 +150,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   protected override fun onAttachedToWindow() {
     super.onAttachedToWindow()
+    dialog?.enableComposeViewSupport(getCurrentActivity())
     (context as ThemedReactContext).addLifecycleEventListener(this)
   }
 
@@ -593,5 +601,14 @@ public class ReactModalHostView(context: ThemedReactContext) :
       // No-op - override in order to still receive events to onInterceptTouchEvent
       // even when some other view disallow that
     }
+  }
+}
+
+public fun Dialog.enableComposeViewSupport(activity: Activity?) {
+  val decorView = getWindow()?.getDecorView()
+  if (decorView != null && activity != null) {
+    decorView.setViewTreeLifecycleOwner(activity as LifecycleOwner)
+    decorView.setViewTreeViewModelStoreOwner(activity as ViewModelStoreOwner)
+    decorView.setViewTreeSavedStateRegistryOwner(activity as SavedStateRegistryOwner)
   }
 }
