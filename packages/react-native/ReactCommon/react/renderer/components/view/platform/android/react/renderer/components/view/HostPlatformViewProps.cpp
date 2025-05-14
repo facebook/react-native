@@ -527,6 +527,15 @@ static folly::dynamic toDynamic(const std::vector<FilterFunction>& filter) {
   return filterResult;
 }
 
+static folly::dynamic toDynamic(const EdgeInsets& edgeInsets) {
+  folly::dynamic edgeInsetsResult = folly::dynamic::object();
+  edgeInsetsResult["left"] = edgeInsets.left;
+  edgeInsetsResult["top"] = edgeInsets.top;
+  edgeInsetsResult["right"] = edgeInsets.right;
+  edgeInsetsResult["bottom"] = edgeInsets.bottom;
+  return edgeInsetsResult;
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
@@ -657,6 +666,10 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
         result["pointerEvents"] = "auto";
         break;
     }
+  }
+
+  if (hitSlop != oldProps->hitSlop) {
+    result["hitSlop"] = toDynamic(hitSlop);
   }
 
   if (nativeId != oldProps->nativeId) {
