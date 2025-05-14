@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
@@ -572,6 +573,14 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   if (renderToHardwareTextureAndroid !=
       oldProps->renderToHardwareTextureAndroid) {
     result["renderToHardwareTextureAndroid"] = renderToHardwareTextureAndroid;
+  }
+
+  if (screenReaderFocusable != oldProps->screenReaderFocusable) {
+    result["screenReaderFocusable"] = screenReaderFocusable;
+  }
+
+  if (role != oldProps->role) {
+    result["role"] = toString(role);
   }
 
   if (opacity != oldProps->opacity) {
