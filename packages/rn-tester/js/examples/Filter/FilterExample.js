@@ -34,6 +34,7 @@ function StaticViewAndImage(props: Props): React.Node {
           <Text>Hello world!</Text>
         </View>
       </View>
+      {/* $FlowFixMe - ImageStyle is not compatible with ViewStyle */}
       <Image
         source={props.imageSource ?? hotdog}
         style={[props.style, styles.commonImage]}
