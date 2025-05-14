@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
+import androidx.core.view.ViewCompat
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.style.Overflow
 import kotlin.collections.ArrayList
@@ -122,10 +123,12 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
     // No-op
   }
 
-  private fun setSelection(span: ClickableSpan) {
+  public fun setSelection(start: Int, end: Int) {
     val textLayout = checkNotNull(layout)
-    val start = (textLayout.text as Spanned).getSpanStart(span)
-    val end = (textLayout.text as Spanned).getSpanEnd(span)
+    if (start < 0 || end > textLayout.text.length || start >= end) {
+      throw IllegalArgumentException(
+          "setSelection start and end are not in valid range. start: $start, end: $end, text length: ${textLayout.text.length}")
+    }
 
     val textSelection = selection
     if (textSelection == null) {
@@ -141,7 +144,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
     invalidate()
   }
 
-  private fun clearSelection() {
+  public fun clearSelection() {
     selection = null
     invalidate()
   }
@@ -161,18 +164,21 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
     val x = event.x.toInt()
     val y = event.y.toInt()
 
-    val clickedSpan = getClickableSpanInCoords(x, y)
+    val clickableSpan = getClickableSpanInCoords(x, y)
 
-    if (clickedSpan == null) {
+    if (clickableSpan == null) {
       clearSelection()
       return super.onTouchEvent(event)
     }
 
     if (action == MotionEvent.ACTION_UP) {
       clearSelection()
-      clickedSpan.onClick(this)
+      clickableSpan.onClick(this)
     } else if (action == MotionEvent.ACTION_DOWN) {
-      setSelection(clickedSpan)
+      val textLayout = checkNotNull(layout)
+      val start = (textLayout.text as Spanned).getSpanStart(clickableSpan)
+      val end = (textLayout.text as Spanned).getSpanEnd(clickableSpan)
+      setSelection(start, end)
     }
 
     return true
@@ -249,7 +255,6 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
   }
 
   public override fun dispatchHoverEvent(event: MotionEvent): Boolean =
-      // TODO T221698305: Dispatch to AccessibilityDelegate
       super.dispatchHoverEvent(event)
 
   public override fun onFocusChanged(
@@ -261,99 +266,20 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
       clearSelection()
     }
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
-    // TODO T221698305: Dispatch to AccessibilityDelegate
+    val accessibilityDelegateCompat = ViewCompat.getAccessibilityDelegate(this)
+    if (accessibilityDelegateCompat != null &&
+        accessibilityDelegateCompat is ReactTextViewAccessibilityDelegate) {
+      accessibilityDelegateCompat.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
+    }
   }
 
-  override fun dispatchKeyEvent(event: KeyEvent): Boolean =
-      // TODO T221698305: Dispatch to AccessibilityDelegate
-      super.dispatchKeyEvent(event)
+  override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+    val accessibilityDelegateCompat = ViewCompat.getAccessibilityDelegate(this)
+    val delegateHandled =
+        accessibilityDelegateCompat is ReactTextViewAccessibilityDelegate &&
+            accessibilityDelegateCompat.dispatchKeyEvent(event)
 
-  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    if (isEnabled &&
-        clickableSpans.isNotEmpty() &&
-        selection == null &&
-        (isDirectionKey(keyCode) || keyCode == KeyEvent.KEYCODE_TAB)) {
-      // View just received focus due to keyboard navigation. Nothing is currently selected,
-      // let's select first span according to the navigation direction.
-      var targetSpan: ClickableSpan? = null
-      if (isDirectionKey(keyCode) && event.hasNoModifiers()) {
-        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-          targetSpan = clickableSpans[0]
-        } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-          targetSpan = clickableSpans[clickableSpans.size - 1]
-        }
-      }
-
-      if (keyCode == KeyEvent.KEYCODE_TAB) {
-        if (event.hasNoModifiers()) {
-          targetSpan = clickableSpans[0]
-        } else if (event.hasModifiers(KeyEvent.META_SHIFT_ON)) {
-          targetSpan = clickableSpans[clickableSpans.size - 1]
-        }
-      }
-
-      if (targetSpan != null) {
-        setSelection(targetSpan)
-        return true
-      }
-    }
-
-    return super.onKeyUp(keyCode, event)
-  }
-
-  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-    if (isEnabled &&
-        clickableSpans.isNotEmpty() &&
-        (isDirectionKey(keyCode) || isConfirmKey(keyCode)) &&
-        event.hasNoModifiers()) {
-      val selectedSpanIndex = selectedSpanIndex()
-      if (selectedSpanIndex == -1) {
-        return super.onKeyDown(keyCode, event)
-      }
-
-      if (isDirectionKey(keyCode)) {
-        val direction =
-            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-              1
-            } else {
-              // keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_UP
-              -1
-            }
-        val repeatCount = 1 + event.repeatCount
-        val targetIndex = selectedSpanIndex + direction * repeatCount
-        if (targetIndex >= 0 && targetIndex < clickableSpans.size) {
-          setSelection(clickableSpans[targetIndex])
-          return true
-        }
-      }
-
-      if (isConfirmKey(keyCode) && event.repeatCount == 0) {
-        clearSelection()
-        clickableSpans[selectedSpanIndex].onClick(this)
-        return true
-      }
-    }
-
-    return super.onKeyDown(keyCode, event)
-  }
-
-  private fun selectedSpanIndex(): Int {
-    val spanned = text as? Spanned ?: return -1
-    val textSelection = selection ?: return -1
-
-    if (clickableSpans.isEmpty()) {
-      return -1
-    }
-
-    for (i in clickableSpans.indices) {
-      val span = clickableSpans[i]
-      val spanStart = spanned.getSpanStart(span)
-      val spanEnd = spanned.getSpanEnd(span)
-      if (spanStart == textSelection.start && spanEnd == textSelection.end) {
-        return i
-      }
-    }
-    return -1
+    return delegateHandled || super.dispatchKeyEvent(event)
   }
 
   @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -386,21 +312,8 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
   private companion object {
     private val selectionPaint = Paint()
 
-    private fun isDirectionKey(keyCode: Int): Boolean =
-        keyCode == KeyEvent.KEYCODE_DPAD_LEFT ||
-            keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
-            keyCode == KeyEvent.KEYCODE_DPAD_UP ||
-            keyCode == KeyEvent.KEYCODE_DPAD_DOWN
-
-    private fun isConfirmKey(keyCode: Int): Boolean =
-        keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
-            keyCode == KeyEvent.KEYCODE_ENTER ||
-            keyCode == KeyEvent.KEYCODE_SPACE ||
-            keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER
-
     private fun filterClickableSpans(text: CharSequence): List<ClickableSpan> {
-      if (text !is Spanned ||
-          text.nextSpanTransition(0, text.length, ClickableSpan::class.java) == text.length) {
+      if (text !is Spanned) {
         return emptyList()
       }
 
