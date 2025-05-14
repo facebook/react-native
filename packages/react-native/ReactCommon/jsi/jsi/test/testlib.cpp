@@ -1861,6 +1861,25 @@ TEST_P(JSITest, SetRuntimeData) {
   EXPECT_EQ(weakObj3.use_count(), 0);
 }
 
+TEST_P(JSITest, CastInterface) {
+  // This Runtime Decorator is used to test the default implementation of
+  // jsi::Runtime::castInterface
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    ICast* castInterface(const UUID& interfaceUuid) override {
+      return Runtime::castInterface(interfaceUuid);
+    }
+  };
+
+  RD rd = RD(rt);
+  auto randomUuid = UUID{0xf2cd96cf, 0x455e, 0x42d9, 0x850a, 0x13e2cde59b8b};
+  auto ptr = rd.castInterface(randomUuid);
+
+  EXPECT_EQ(ptr, nullptr);
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
