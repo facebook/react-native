@@ -224,8 +224,10 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
     // Ensure the link hasn't been ellipsized away; in such cases,
     // getPrimaryHorizontal will crash (and the link isn't rendered anyway).
     val startOffsetLineNumber = textViewLayout.getLineForOffset(startOffset)
-    val lineEndOffset = textViewLayout.getLineEnd(startOffsetLineNumber)
-    if (startOffset > lineEndOffset) {
+    val startLineEndOffset = textViewLayout.getLineEnd(startOffsetLineNumber)
+    val endOffsetLineNumber = textViewLayout.getLineForOffset(endOffset)
+    val endLineEndOffset = textViewLayout.getLineEnd(endOffsetLineNumber)
+    if (startOffset > startLineEndOffset || endOffset > endLineEndOffset) {
       return null
     }
 
@@ -233,7 +235,6 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
 
     val startXCoordinates = textViewLayout.getPrimaryHorizontal(startOffset).toDouble()
 
-    val endOffsetLineNumber = textViewLayout.getLineForOffset(endOffset)
     val isMultiline = startOffsetLineNumber != endOffsetLineNumber
     textViewLayout.getLineBounds(startOffsetLineNumber, rootRect)
 
