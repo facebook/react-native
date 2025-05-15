@@ -122,6 +122,13 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       jsi::Value relativeToNativeElementReference,
       jsi::Function onFail,
       jsi::Function onSuccess);
+
+#pragma mark - Legacy direct manipulation APIs (for `ReactNativeElement`).
+
+  void setNativeProps(
+      jsi::Runtime& rt,
+      jsi::Value nativeElementReference,
+      jsi::Value updatePayload);
 };
 
 } // namespace facebook::react
