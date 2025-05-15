@@ -245,29 +245,51 @@ describe('Fantom', () => {
         Fantom.runWorkLoop();
       });
 
-      it('should throw an error when running a task with LogBox installed', () => {
-        LogBox.install();
+      describe('when LogBox is installed', () => {
+        let originalConsoleError;
 
-        expect(() => {
-          Fantom.runTask(() => {});
-        }).toThrow(
-          'Cannot run work loop while LogBox is installed, as LogBox intercepts errors thrown in tests.' +
-            ' If you are installing LogBox unintentionally using `InitializeCore`, replace it with `@react-native/fantom/src/setUpDefaultReactNativeEnvironment` to avoid this problem.',
-        );
+        beforeEach(() => {
+          LogBox.install();
 
-        // We need to do this cleanup or Fantom will fail the test for us.
-        LogBox.uninstall();
-        Fantom.runWorkLoop();
-      });
+          originalConsoleError = console.error;
 
-      it('should not throw an error when running a task with LogBox installed if setLogBoxCheckEnabled is set to false', () => {
-        LogBox.install();
+          // $FlowExpectedError[cannot-write]
+          console.error = jest.fn();
+        });
 
-        Fantom.setLogBoxCheckEnabled(false);
+        afterEach(() => {
+          LogBox.uninstall();
 
-        expect(() => {
-          Fantom.runTask(() => {});
-        }).not.toThrow();
+          // $FlowExpectedError[cannot-write]
+          console.error = originalConsoleError;
+        });
+
+        it('should throw an error when running a task', () => {
+          const expectedErrorMessage =
+            'Cannot run work loop while LogBox is installed, as LogBox intercepts errors thrown in tests.' +
+            ' If you are installing LogBox unintentionally using `InitializeCore`, replace it with `@react-native/fantom/src/setUpDefaultReactNativeEnvironment` to avoid this problem.';
+
+          expect(() => {
+            Fantom.runTask(() => {});
+          }).toThrow(expectedErrorMessage);
+
+          expect(console.error).toHaveBeenCalledTimes(1);
+          expect(console.error).toHaveBeenCalledWith(expectedErrorMessage);
+
+          // We need to do this cleanup or Fantom will fail the test for us.
+          LogBox.uninstall();
+          Fantom.runWorkLoop();
+        });
+
+        it('should not throw an error if setLogBoxCheckEnabled is set to false', () => {
+          Fantom.setLogBoxCheckEnabled(false);
+
+          expect(() => {
+            Fantom.runTask(() => {});
+          }).not.toThrow();
+
+          expect(console.error).not.toHaveBeenCalled();
+        });
       });
     });
   });
