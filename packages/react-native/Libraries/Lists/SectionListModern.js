@@ -168,7 +168,13 @@ export type Props<ItemT, SectionT = DefaultSectionT> = $ReadOnly<{
 const SectionList: component(
   ref?: React.RefSetter<any>,
   ...Props<any, DefaultSectionT>
-) = forwardRef<Props<any, DefaultSectionT>, any>((props, ref) => {
+) = ({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<any>,
+  ...Props<any, DefaultSectionT>,
+}) => {
   const propsWithDefaults = {
     stickySectionHeadersEnabled: Platform.OS === 'ios',
     ...props,
@@ -237,6 +243,6 @@ const SectionList: component(
       getItem={(items, index) => items[index]}
     />
   );
-});
+};
 
 export default SectionList;
