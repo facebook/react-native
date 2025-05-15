@@ -871,27 +871,28 @@ const autoCompleteWebToTextContentTypeMap = {
   username: 'username',
 };
 
-const ExportedForwardRef: component(
+const TextInput: component(
   ref?: React.RefSetter<TextInputInstance>,
   ...props: React.ElementConfig<typeof InternalTextInput>
-) = React.forwardRef(function TextInput(
-  {
-    allowFontScaling = true,
-    rejectResponderTermination = true,
-    underlineColorAndroid = 'transparent',
-    autoComplete,
-    textContentType,
-    readOnly,
-    editable,
-    enterKeyHint,
-    returnKeyType,
-    inputMode,
-    showSoftInputOnFocus,
-    keyboardType,
-    ...restProps
-  },
-  forwardedRef: React.RefSetter<TextInputInstance>,
-) {
+) = function TextInput({
+  ref: forwardedRef,
+  allowFontScaling = true,
+  rejectResponderTermination = true,
+  underlineColorAndroid = 'transparent',
+  autoComplete,
+  textContentType,
+  readOnly,
+  editable,
+  enterKeyHint,
+  returnKeyType,
+  inputMode,
+  showSoftInputOnFocus,
+  keyboardType,
+  ...restProps
+}: {
+  ref?: React.RefSetter<TextInputInstance>,
+  ...React.ElementConfig<typeof InternalTextInput>,
+}) {
   return (
     <InternalTextInput
       allowFontScaling={allowFontScaling}
@@ -930,12 +931,12 @@ const ExportedForwardRef: component(
       forwardedRef={forwardedRef}
     />
   );
-});
+};
 
-ExportedForwardRef.displayName = 'TextInput';
+TextInput.displayName = 'TextInput';
 
 // $FlowFixMe[prop-missing]
-ExportedForwardRef.State = {
+TextInput.State = {
   currentlyFocusedInput: TextInputState.currentlyFocusedInput,
 
   currentlyFocusedField: TextInputState.currentlyFocusedField,
@@ -964,4 +965,4 @@ const verticalAlignToTextAlignVerticalMap = {
 };
 
 // $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
-export default ExportedForwardRef as any as TextInputType;
+export default TextInput as any as TextInputType;

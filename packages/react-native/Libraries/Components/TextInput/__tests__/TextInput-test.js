@@ -243,7 +243,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -287,7 +286,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -330,7 +328,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         nativeID="id"
         onBlur={[Function]}
@@ -461,7 +458,6 @@ jest.unmock('../TextInput');
         aria-valuenow={3}
         aria-valuetext="3"
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -502,7 +498,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
