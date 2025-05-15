@@ -136,7 +136,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/*-itest{.fb,}.js'],
+      files: ['**/__tests__/**'],
       rules: {
         'lint/no-react-native-imports': 'off',
       },
