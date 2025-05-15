@@ -16,7 +16,6 @@
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTConstants.h>
 #import <React/RCTFabricSurface.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTI18nUtil.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
@@ -25,6 +24,7 @@
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
+#import <react/utils/FollyConvert.h>
 
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>

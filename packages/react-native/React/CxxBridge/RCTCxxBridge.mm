@@ -23,7 +23,6 @@
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
@@ -43,6 +42,7 @@
 #import <cxxreact/ReactMarker.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
+#import <react/utils/FollyConvert.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #if USE_HERMES

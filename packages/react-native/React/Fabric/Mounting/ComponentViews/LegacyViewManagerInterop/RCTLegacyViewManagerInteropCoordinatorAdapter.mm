@@ -6,8 +6,8 @@
  */
 
 #import "RCTLegacyViewManagerInteropCoordinatorAdapter.h"
-#import <React/RCTFollyConvert.h>
 #import <React/UIView+React.h>
+#import <react/utils/FollyConvert.h>
 
 @implementation RCTLegacyViewManagerInteropCoordinatorAdapter {
   RCTLegacyViewManagerInteropCoordinator *_coordinator;
