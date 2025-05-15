@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2482f57e0652cfaa4806b5333c50ad9f>>
+ * @generated SignedSource<<593b1d64dc31038140032a6b0a439700>>
  */
 
 /**
@@ -26,6 +26,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
   @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
+
+  @DoNotStrip public fun avoidCeilingAvailableAndroidTextWidth(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
@@ -58,8 +60,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
-
-  @DoNotStrip public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -102,6 +102,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
 
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
+
+  @DoNotStrip public fun useAndroidTextLayoutWidthDirectly(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 

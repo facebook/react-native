@@ -17,6 +17,7 @@ import type {
 } from './PerformanceEntry';
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
+import {setPlatformObject} from '../webidl/PlatformObjects';
 import {EventCounts} from './EventTiming';
 import {
   performanceEntryTypeToRaw,
@@ -283,3 +284,5 @@ export default class Performance {
     ).map(rawToPerformanceEntry);
   }
 }
+
+setPlatformObject(Performance);

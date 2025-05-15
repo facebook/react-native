@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 import type MutationObserverType from 'react-native/src/private/webapis/mutationobserver/MutationObserver';
@@ -856,12 +856,6 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
             Fantom.runTask(() => {
               // Set style to force a state update
               root.render(<View style={{width: 1}} />);
-            });
-
-            // This forces swapping the alternate tree in the reconciler
-            Fantom.runTask(() => {
-              // Set style to force a state update
-              root.render(<View style={{width: 2}} />);
             });
 
             expect(getReferenceCount()).toBe(0);

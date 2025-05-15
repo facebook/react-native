@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "RuntimeSamplingProfileTraceEventSerializer.h"
+#include <string_view>
+
 #include "ProfileTreeNode.h"
+#include "RuntimeSamplingProfileTraceEventSerializer.h"
 
 namespace facebook::react::jsinspector_modern::tracing {
 
@@ -20,6 +22,11 @@ constexpr uint16_t PROFILE_ID = 1;
 /// (program). Required for emulating the payload in a format that is expected
 /// by Chrome DevTools.
 constexpr uint32_t FALLBACK_SCRIPT_ID = 0;
+
+constexpr std::string_view GARBAGE_COLLECTOR_FRAME_NAME = "(garbage collector)";
+constexpr std::string_view ROOT_FRAME_NAME = "(root)";
+constexpr std::string_view IDLE_FRAME_NAME = "(idle)";
+constexpr std::string_view PROGRAM_FRAME_NAME = "(program)";
 
 uint64_t formatTimePointToUnixTimestamp(
     std::chrono::steady_clock::time_point timestamp) {
@@ -37,9 +44,10 @@ TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
           node.getCodeType() == ProfileTreeNode::CodeType::JavaScript ? "JS"
                                                                       : "other",
           callFrame.getScriptId(),
-          callFrame.getFunctionName(),
-          callFrame.hasUrl() ? std::optional<std::string>(callFrame.getUrl())
-                             : std::nullopt,
+          std::string(callFrame.getFunctionName()),
+          callFrame.hasUrl()
+              ? std::optional<std::string>(std::string(callFrame.getUrl()))
+              : std::nullopt,
           callFrame.hasLineNumber()
               ? std::optional<uint32_t>(callFrame.getLineNumber())
               : std::nullopt,
@@ -55,18 +63,18 @@ TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
 }
 
 RuntimeSamplingProfile::SampleCallStackFrame createArtificialCallFrame(
-    std::string callFrameName) {
+    std::string_view callFrameName) {
   return RuntimeSamplingProfile::SampleCallStackFrame{
       RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
       FALLBACK_SCRIPT_ID,
-      std::move(callFrameName)};
+      callFrameName};
 };
 
 RuntimeSamplingProfile::SampleCallStackFrame createGarbageCollectorCallFrame() {
   return RuntimeSamplingProfile::SampleCallStackFrame{
       RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector,
       FALLBACK_SCRIPT_ID,
-      "(garbage collector)"};
+      GARBAGE_COLLECTOR_FRAME_NAME};
 };
 
 class ProfileTreeRootNode : public ProfileTreeNode {
@@ -75,7 +83,7 @@ class ProfileTreeRootNode : public ProfileTreeNode {
       : ProfileTreeNode(
             id,
             CodeType::Other,
-            createArtificialCallFrame("(root)")) {}
+            createArtificialCallFrame(ROOT_FRAME_NAME)) {}
 };
 
 } // namespace
@@ -204,13 +212,13 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   ProfileTreeNode* programNode = rootNode.addChild(
       nodeIdGenerator.getNext(),
       ProfileTreeNode::CodeType::Other,
-      createArtificialCallFrame("(program)"));
+      createArtificialCallFrame(PROGRAM_FRAME_NAME));
   chunk.nodes.push_back(*programNode);
 
   ProfileTreeNode* idleNode = rootNode.addChild(
       nodeIdGenerator.getNext(),
       ProfileTreeNode::CodeType::Other,
-      createArtificialCallFrame("(idle)"));
+      createArtificialCallFrame(IDLE_FRAME_NAME));
   chunk.nodes.push_back(*idleNode);
   uint32_t idleNodeId = idleNode->getId();
 

@@ -12,14 +12,15 @@
  * @fantom_flags enableFixForParentTagDuringReparenting:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore.js';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
-import {Modal, ScrollView, View} from 'react-native';
+import {FlatList, Modal, ScrollView, View} from 'react-native';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('basic culling', () => {
@@ -816,6 +817,56 @@ test('culling inside of Modal', () => {
     'Create {type: "View", nativeID: "child"}',
     'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
   ]);
+});
+
+test('nesting inside FlatList with item resizing', () => {
+  const root = Fantom.createRoot({viewportHeight: 100, viewportWidth: 100});
+  let _setIsExpanded = null;
+  function ExpandableComponent() {
+    const [isExpanded, setIsExpanded] = React.useState(false);
+    _setIsExpanded = setIsExpanded;
+    return <View>{isExpanded && <View style={{height: 80.5}} />}</View>;
+  }
+
+  Fantom.runTask(() => {
+    root.render(
+      <FlatList
+        style={{height: 100, width: 100}}
+        data={[{key: 'one'}, {key: 'two'}]}
+        renderItem={({item}) => {
+          if (item.key === 'one') {
+            return <ExpandableComponent />;
+          } else if (item.key === 'two') {
+            return (
+              // position: 'absolute' is the important part that prevents Yoga from overcloning.
+              // When Yoga overclones, differentiator visits all cloned nodes and culling is correctly
+              // applied.
+              <View style={{position: 'absolute'}}>
+                <View nativeID={'parent'} style={{marginTop: 10}}>
+                  <View
+                    nativeID={'child'}
+                    style={{height: 10, width: 75, marginTop: 10}}
+                  />
+                </View>
+              </View>
+            );
+          }
+        }}
+      />,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toContain(
+    'Create {type: "View", nativeID: "child"}',
+  );
+
+  Fantom.runTask(() => {
+    nullthrows(_setIsExpanded)(true);
+  });
+
+  expect(root.takeMountingManagerLogs()).toContain(
+    'Delete {type: "View", nativeID: "child"}',
+  );
 });
 
 describe('reparenting', () => {

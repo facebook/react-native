@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8410561a80edd67b4528181b1f8557fe>>
+ * @generated SignedSource<<88fdbea2f97f628187164a47a9737da0>>
  */
 
 /**
@@ -32,6 +32,10 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
 
 bool ReactNativeFeatureFlags::animatedShouldSignalBatch() {
   return getAccessor().animatedShouldSignalBatch();
+}
+
+bool ReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth() {
+  return getAccessor().avoidCeilingAvailableAndroidTextWidth();
 }
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
@@ -96,10 +100,6 @@ bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
-}
-
-bool ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS() {
-  return getAccessor().enableJSRuntimeGCOnMemoryPressureOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
@@ -184,6 +184,10 @@ bool ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() {
 
 bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
   return getAccessor().useAlwaysAvailableJSErrorHandling();
+}
+
+bool ReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly() {
+  return getAccessor().useAndroidTextLayoutWidthDirectly();
 }
 
 bool ReactNativeFeatureFlags::useFabricInterop() {

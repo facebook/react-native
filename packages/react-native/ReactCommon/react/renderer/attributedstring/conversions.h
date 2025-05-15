@@ -24,7 +24,7 @@
 #include <cmath>
 #include <unordered_map>
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
@@ -1003,7 +1003,7 @@ inline std::string toString(const AttributedString::Range& range) {
       ", length: " + std::to_string(range.length) + "}";
 }
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 
 // constants for AttributedString serialization
 constexpr static MapBuffer::Key AS_KEY_HASH = 0;

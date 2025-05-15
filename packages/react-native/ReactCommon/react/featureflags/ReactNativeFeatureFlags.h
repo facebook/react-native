@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8b135b02d868914f6b3487f09e8955ff>>
+ * @generated SignedSource<<a4123bc6f44835c022a1a5238908674c>>
  */
 
 /**
@@ -48,6 +48,11 @@ class ReactNativeFeatureFlags {
    * Enables start- and finishOperationBatch on any platform.
    */
   RN_EXPORT static bool animatedShouldSignalBatch();
+
+  /**
+   * Do not incorrectly ceil the available width of an Android text layout
+   */
+  RN_EXPORT static bool avoidCeilingAvailableAndroidTextWidth();
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
@@ -128,11 +133,6 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
-
-  /**
-   * Trigger JS runtime GC on memory pressure event on iOS
-   */
-  RN_EXPORT static bool enableJSRuntimeGCOnMemoryPressureOnIOS();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -238,6 +238,11 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, use the always available javascript error reporting pipeline.
    */
   RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
+
+  /**
+   * Trust the width of a text layout we create, instead of re-deriving it from its contents
+   */
+  RN_EXPORT static bool useAndroidTextLayoutWidthDirectly();
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

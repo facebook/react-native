@@ -308,12 +308,17 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
               jfloat,
+              jfloat,
+              jfloat,
               jfloat)>("prepareLayout");
 
   auto attributedStringMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
   auto paragraphAttributesMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+
+  auto minimumSize = layoutConstraints.minimumSize;
+  auto maximumSize = layoutConstraints.maximumSize;
 
   // T222682416: We don't have any global cache here. We should investigate
   // whether that is desirable
@@ -322,8 +327,10 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
       layoutContext.surfaceId,
       attributedStringMB.get(),
       paragraphAttributesMB.get(),
-      layoutConstraints.maximumSize.width,
-      layoutConstraints.maximumSize.height))};
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height))};
 }
 
 TextMeasurement TextLayoutManager::measurePreparedLayout(

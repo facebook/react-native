@@ -131,6 +131,8 @@ public class ReactScrollView extends ScrollView
   private int mScrollEventThrottle = 0;
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper =
       null;
+  private int mFadingEdgeLengthStart = 0;
+  private int mFadingEdgeLengthEnd = 0;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -261,6 +263,36 @@ public class ReactScrollView extends ScrollView
 
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  public int getFadingEdgeLengthStart() {
+    return mFadingEdgeLengthStart;
+  }
+
+  public int getFadingEdgeLengthEnd() {
+    return mFadingEdgeLengthEnd;
+  }
+
+  public void setFadingEdgeLengthStart(int start) {
+    mFadingEdgeLengthStart = start;
+    invalidate();
+  }
+
+  public void setFadingEdgeLengthEnd(int end) {
+    mFadingEdgeLengthEnd = end;
+    invalidate();
+  }
+
+  @Override
+  protected float getTopFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    return (mFadingEdgeLengthStart / max);
+  }
+
+  @Override
+  protected float getBottomFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    return (mFadingEdgeLengthEnd / max);
   }
 
   public void setOverflow(@Nullable String overflow) {

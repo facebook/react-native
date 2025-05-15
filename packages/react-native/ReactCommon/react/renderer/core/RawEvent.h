@@ -17,6 +17,8 @@
 
 namespace facebook::react {
 
+class ShadowNodeFamily;
+
 /*
  * Represents ready-to-dispatch event object.
  */
@@ -69,12 +71,14 @@ struct RawEvent {
       std::string type,
       SharedEventPayload eventPayload,
       SharedEventTarget eventTarget,
+      std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily,
       Category category = Category::Unspecified,
       bool isUnique = false);
 
   std::string type;
   SharedEventPayload eventPayload;
   SharedEventTarget eventTarget;
+  std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily;
   Category category;
   EventTag loggingTag{0};
   bool isUnique{false};

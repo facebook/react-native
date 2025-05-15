@@ -70,6 +70,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    avoidCeilingAvailableAndroidTextWidth: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Do not incorrectly ceil the available width of an Android text layout',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'stable',
+    },
     cxxNativeAnimatedEnabled: {
       defaultValue: false,
       metadata: {
@@ -234,15 +244,6 @@ const definitions: FeatureFlagDefinitions = {
         description: 'iOS Views will clip to their padding box vs border box',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableJSRuntimeGCOnMemoryPressureOnIOS: {
-      defaultValue: false,
-      metadata: {
-        description: 'Trigger JS runtime GC on memory pressure event on iOS',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -467,6 +468,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useAndroidTextLayoutWidthDirectly: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Trust the width of a text layout we create, instead of re-deriving it from its contents',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'stable',
+    },
     useFabricInterop: {
       defaultValue: true,
       metadata: {
@@ -600,6 +611,27 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewDebugFeatures: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables VirtualView debug features such as logging and overlays.',
+        expectedReleaseValue: false,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableVirtualViewDoubleStateHidden: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-10',
+        description:
+          'Enables a VirtualView workaround that triggers a second state update when changing to hidden mode.',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
       metadata: {
@@ -618,6 +650,17 @@ const definitions: FeatureFlagDefinitions = {
           'Function used to enable / disabled Layout Animations in React Native.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    reduceDefaultPropsInView: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-5-12',
+        description:
+          'Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -658,6 +701,16 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    utilizeTokensInIntersectionObserver: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-05-06',
+        description: 'Use tokens in IntersectionObserver vs ShadowNode.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

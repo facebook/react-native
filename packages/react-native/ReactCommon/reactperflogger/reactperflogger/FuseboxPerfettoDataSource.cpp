@@ -115,14 +115,18 @@ void logHermesProfileToFusebox(const std::string& traceStr) {
 
 void FuseboxPerfettoDataSource::OnStart(const StartArgs&) {
   FuseboxTracer::getFuseboxTracer().startTracing();
-  facebook::hermes::HermesRuntime::enableSamplingProfiler(SAMPLING_HZ);
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->enableSamplingProfiler(SAMPLING_HZ);
 }
 
 void FuseboxPerfettoDataSource::OnFlush(const FlushArgs&) {}
 
 void FuseboxPerfettoDataSource::OnStop(const StopArgs& a) {
   std::stringstream stream;
-  facebook::hermes::HermesRuntime::dumpSampledTraceToStream(stream);
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->dumpSampledTraceToStream(stream);
   std::string trace = stream.str();
   logHermesProfileToFusebox(trace);
 

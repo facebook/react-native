@@ -2018,7 +2018,7 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
   scrollPerfTag?: ?string,
   overScrollMode?: ?(\\"auto\\" | \\"always\\" | \\"never\\"),
   persistentScrollbar?: ?boolean,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
 }>;
 type StickyHeaderComponentType = component(
   ref?: React.RefSetter<
@@ -2157,7 +2157,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   directionalLockEnabled?: ?boolean,
   disableIntervalMomentum?: ?boolean,
   endFillColor?: ?ColorValue,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
   indicatorStyle?: ?(\\"default\\" | \\"black\\" | \\"white\\"),
   isInvertedVirtualizedList?: ?boolean,
   keyboardDismissMode?: ?(\\"none\\" | \\"on-drag\\" | \\"interactive\\"),
@@ -3496,11 +3496,10 @@ declare export default typeof ReactNativeViewAttributes;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
 "export type Props = ViewProps;
-declare const View: component(
+declare export default component(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
-declare export default typeof View;
 "
 `;
 
@@ -3843,7 +3842,27 @@ declare export default function getDevServer(): DevServerInfo;
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/Devtools/loadBundleFromServer.js 1`] = `
-"declare export default function loadBundleFromServer(
+"declare export class LoadBundleFromServerError extends Error {
+  url: string;
+  isTimeout: boolean;
+  constructor(
+    message: string,
+    url: string,
+    isTimeout: boolean,
+    options?: { cause: mixed, ... }
+  ): void;
+}
+declare export class LoadBundleFromServerRequestError
+  extends LoadBundleFromServerError
+{
+  constructor(
+    message: string,
+    url: string,
+    isTimeout: boolean,
+    options?: { cause: mixed, ... }
+  ): void;
+}
+declare export default function loadBundleFromServer(
   bundlePathAndQuery: string
 ): Promise<void>;
 "
@@ -4202,6 +4221,19 @@ exports[`public API should not change unintentionally Libraries/Image/AssetSourc
   +uri: string,
   +scale: number,
 };
+type AssetDestPathResolver = \\"android\\" | \\"generic\\";
+type PackagerAsset = $ReadOnly<{
+  fileSystemLocation: string,
+  httpServerLocation: string,
+  width: ?number,
+  height: ?number,
+  scales: Array<number>,
+  hash: string,
+  name: string,
+  type: string,
+  resolver?: AssetDestPathResolver,
+  ...
+}>;
 declare class AssetSourceResolver {
   serverUrl: ?string;
   jsbundleUrl: ?string;
@@ -4934,7 +4966,7 @@ type OptionalProps<ItemT> = {
   keyExtractor?: ?(item: ItemT, index: number) => string,
   numColumns?: number,
   removeClippedSubviews?: boolean,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
   strictMode?: boolean,
 };
 type FlatListBaseProps<ItemT> = {
@@ -7486,6 +7518,7 @@ export type ____ImageStyle_InternalCore = $ReadOnly<{
   objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
+  overflow?: \\"visible\\" | \\"hidden\\",
 }>;
 export type ____ImageStyle_Internal = $ReadOnly<{
   ...____ImageStyle_InternalCore,
@@ -8915,8 +8948,33 @@ declare export default typeof rejectionTrackingOptions;
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/core/ErrorUtils.js 1`] = `
-"export type ErrorUtils = ErrorUtilsT;
-declare export default ErrorUtilsT;
+"type ErrorHandler = (error: mixed, isFatal: boolean) => void;
+type Fn<Args, Return> = (...Args) => Return;
+export type ErrorUtils = {
+  applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    context?: mixed,
+    args?: ?TArgs,
+    unused_onError?: null,
+    unused_name?: ?string
+  ): ?TOut,
+  applyWithGuardIfNeeded<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    context?: mixed,
+    args?: ?TArgs
+  ): ?TOut,
+  getGlobalHandler(): ErrorHandler,
+  guard<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    name?: ?string,
+    context?: mixed
+  ): ?(...TArgs) => ?TOut,
+  inGuard(): boolean,
+  reportError(error: mixed): void,
+  reportFatalError(error: mixed): void,
+  setGlobalHandler(fun: ErrorHandler): void,
+};
+declare export default ErrorUtils;
 "
 `;
 
@@ -9313,6 +9371,13 @@ export type {
 
 exports[`public API should not change unintentionally src/private/setup/setUpDOM.js 1`] = `
 "declare export default function setUpDOM(): void;
+"
+`;
+
+exports[`public API should not change unintentionally src/private/setup/setUpDefaultReactNativeEnvironment.js 1`] = `
+"declare export default function setUpDefaltReactNativeEnvironment(
+  enableDeveloperTools?: boolean
+): void;
 "
 `;
 

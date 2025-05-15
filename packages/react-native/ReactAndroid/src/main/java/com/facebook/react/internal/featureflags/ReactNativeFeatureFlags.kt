@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<453f8c0a593b173c197fcf54ed834a1b>>
+ * @generated SignedSource<<e9a109fd77667dd0cb945ef6ef9737f2>>
  */
 
 /**
@@ -41,6 +41,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
+
+  /**
+   * Do not incorrectly ceil the available width of an Android text layout
+   */
+  @JvmStatic
+  public fun avoidCeilingAvailableAndroidTextWidth(): Boolean = accessor.avoidCeilingAvailableAndroidTextWidth()
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
@@ -137,12 +143,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
-
-  /**
-   * Trigger JS runtime GC on memory pressure event on iOS
-   */
-  @JvmStatic
-  public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean = accessor.enableJSRuntimeGCOnMemoryPressureOnIOS()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -269,6 +269,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useAlwaysAvailableJSErrorHandling(): Boolean = accessor.useAlwaysAvailableJSErrorHandling()
+
+  /**
+   * Trust the width of a text layout we create, instead of re-deriving it from its contents
+   */
+  @JvmStatic
+  public fun useAndroidTextLayoutWidthDirectly(): Boolean = accessor.useAndroidTextLayoutWidthDirectly()
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

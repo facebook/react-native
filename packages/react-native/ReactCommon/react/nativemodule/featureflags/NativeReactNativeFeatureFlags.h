@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4169b34b13c62ab90d7976de908b5f16>>
+ * @generated SignedSource<<f7fbc7ab177cd84524a544cf3f94ae19>>
  */
 
 /**
@@ -41,6 +41,8 @@ class NativeReactNativeFeatureFlags
 
   bool animatedShouldSignalBatch(jsi::Runtime& runtime);
 
+  bool avoidCeilingAvailableAndroidTextWidth(jsi::Runtime& runtime);
+
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
   bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
@@ -72,8 +74,6 @@ class NativeReactNativeFeatureFlags
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
-
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
@@ -116,6 +116,8 @@ class NativeReactNativeFeatureFlags
   bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
+
+  bool useAndroidTextLayoutWidthDirectly(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 

@@ -10,7 +10,7 @@
  * @fantom_flags fixMappingOfEventPrioritiesBetweenFabricAndReact:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';

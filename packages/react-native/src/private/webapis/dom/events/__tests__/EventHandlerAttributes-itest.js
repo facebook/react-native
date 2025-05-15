@@ -11,7 +11,7 @@
 
 // flowlint unsafe-getters-setters:off
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {EventCallback} from 'react-native/src/private/webapis/dom/events/EventTarget';
 

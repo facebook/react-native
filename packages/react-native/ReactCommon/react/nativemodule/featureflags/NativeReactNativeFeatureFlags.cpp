@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cf54fabb5023a846cadd14482ea80999>>
+ * @generated SignedSource<<3c85cdc2dc3d2368d09a5c0aff4d083a>>
  */
 
 /**
@@ -52,6 +52,11 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
 bool NativeReactNativeFeatureFlags::animatedShouldSignalBatch(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::animatedShouldSignalBatch();
+}
+
+bool NativeReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth();
 }
 
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
@@ -132,11 +137,6 @@ bool NativeReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout(
 bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
-}
-
-bool NativeReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
@@ -242,6 +242,11 @@ bool NativeReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit(
 bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
+}
+
+bool NativeReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly();
 }
 
 bool NativeReactNativeFeatureFlags::useFabricInterop(

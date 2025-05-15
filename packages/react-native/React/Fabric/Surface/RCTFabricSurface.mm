@@ -142,7 +142,7 @@ using namespace facebook::react;
   RCTAssertMainQueue();
 
   if (!_view) {
-    _view = [[RCTSurfaceView alloc] initWithSurface:(RCTSurface *)self];
+    _view = [[RCTSurfaceView alloc] initWithSurface:self];
     [self _updateLayoutContext];
     _touchHandler = [RCTSurfaceTouchHandler new];
     [_touchHandler attachToView:_view];

@@ -10,7 +10,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/graphics/Float.h>
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -35,7 +35,7 @@ class ModalHostViewState final {
   };
   ModalHostViewState(Size screenSize_) : screenSize(screenSize_){};
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   ModalHostViewState(
       const ModalHostViewState& previousState,
       folly::dynamic data)
@@ -46,7 +46,7 @@ class ModalHostViewState final {
 
   const Size screenSize{};
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   folly::dynamic getDynamic() const;
 #endif
 

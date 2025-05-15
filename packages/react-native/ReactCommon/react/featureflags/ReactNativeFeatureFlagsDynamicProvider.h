@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53e92dc49c9d5b93de14cde2fd319e92>>
+ * @generated SignedSource<<d21af3f613aa450f25708c3da0cb6e97>>
  */
 
 /**
@@ -61,6 +61,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::animatedShouldSignalBatch();
+  }
+
+  bool avoidCeilingAvailableAndroidTextWidth() override {
+    auto value = values_["avoidCeilingAvailableAndroidTextWidth"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::avoidCeilingAvailableAndroidTextWidth();
   }
 
   bool cxxNativeAnimatedEnabled() override {
@@ -205,15 +214,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
-  }
-
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    auto value = values_["enableJSRuntimeGCOnMemoryPressureOnIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableJSRuntimeGCOnMemoryPressureOnIOS();
   }
 
   bool enableLayoutAnimationsOnAndroid() override {
@@ -403,6 +403,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useAlwaysAvailableJSErrorHandling();
+  }
+
+  bool useAndroidTextLayoutWidthDirectly() override {
+    auto value = values_["useAndroidTextLayoutWidthDirectly"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useAndroidTextLayoutWidthDirectly();
   }
 
   bool useFabricInterop() override {

@@ -10,10 +10,10 @@ package com.facebook.react.modules.core
 import android.net.Uri
 import com.facebook.fbreact.specs.NativeDeviceEventManagerSpec
 import com.facebook.proguard.annotations.DoNotStripAny
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaScriptModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 
 /** Native module that handles device hardware events like hardware back presses. */
@@ -43,8 +43,7 @@ public open class DeviceEventManagerModule(
   public open fun emitNewIntentReceived(uri: Uri) {
     val reactApplicationContext: ReactApplicationContext? =
         getReactApplicationContextIfActiveOrWarn()
-    val map = Arguments.createMap()
-    map.putString("url", uri.toString())
+    val map = buildReadableMap { put("url", uri.toString()) }
     reactApplicationContext?.emitDeviceEvent("url", map)
   }
 

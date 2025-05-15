@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a51441451ec25033040ba044ee3371fc>>
+ * @generated SignedSource<<1a5cd689229d4e0c31070123045e84da>>
  */
 
 /**
@@ -22,6 +22,7 @@ package com.facebook.react.internal.featureflags
 internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
   private var animatedShouldSignalBatchCache: Boolean? = null
+  private var avoidCeilingAvailableAndroidTextWidthCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
@@ -38,7 +39,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
-  private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
@@ -60,6 +60,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
+  private var useAndroidTextLayoutWidthDirectlyCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
@@ -82,6 +83,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.animatedShouldSignalBatch()
       animatedShouldSignalBatchCache = cached
+    }
+    return cached
+  }
+
+  override fun avoidCeilingAvailableAndroidTextWidth(): Boolean {
+    var cached = avoidCeilingAvailableAndroidTextWidthCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.avoidCeilingAvailableAndroidTextWidth()
+      avoidCeilingAvailableAndroidTextWidthCache = cached
     }
     return cached
   }
@@ -226,15 +236,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableIOSViewClipToPaddingBox()
       enableIOSViewClipToPaddingBoxCache = cached
-    }
-    return cached
-  }
-
-  override fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean {
-    var cached = enableJSRuntimeGCOnMemoryPressureOnIOSCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableJSRuntimeGCOnMemoryPressureOnIOS()
-      enableJSRuntimeGCOnMemoryPressureOnIOSCache = cached
     }
     return cached
   }
@@ -424,6 +425,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useAlwaysAvailableJSErrorHandling()
       useAlwaysAvailableJSErrorHandlingCache = cached
+    }
+    return cached
+  }
+
+  override fun useAndroidTextLayoutWidthDirectly(): Boolean {
+    var cached = useAndroidTextLayoutWidthDirectlyCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useAndroidTextLayoutWidthDirectly()
+      useAndroidTextLayoutWidthDirectlyCache = cached
     }
     return cached
   }

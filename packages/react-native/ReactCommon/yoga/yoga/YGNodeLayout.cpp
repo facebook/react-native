@@ -90,3 +90,11 @@ float YGNodeLayoutGetPadding(YGNodeConstRef node, YGEdge edge) {
   return getResolvedLayoutProperty<&LayoutResults::padding>(
       node, scopedEnum(edge));
 }
+
+float YGNodeLayoutGetRawHeight(YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().rawDimension(Dimension::Height);
+}
+
+float YGNodeLayoutGetRawWidth(YGNodeConstRef node) {
+  return resolveRef(node)->getLayout().rawDimension(Dimension::Width);
+}

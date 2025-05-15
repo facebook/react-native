@@ -52,7 +52,6 @@ import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.SetSpanOperation;
 import com.facebook.react.views.text.internal.span.ShadowStyleSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import java.util.ArrayList;
@@ -382,6 +381,108 @@ public class TextLayoutManager {
       @Nullable TextUtils.TruncateAt ellipsizeMode,
       int maxNumberOfLines,
       TextPaint paint) {
+    if (ReactNativeFeatureFlags.avoidCeilingAvailableAndroidTextWidth()) {
+      return createLayoutWithCorrectRounding(
+          text,
+          boring,
+          width,
+          widthYogaMeasureMode,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment,
+          justificationMode,
+          ellipsizeMode,
+          maxNumberOfLines,
+          paint);
+    } else {
+      return createLayoutWithBuggedRounding(
+          text,
+          boring,
+          width,
+          widthYogaMeasureMode,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment,
+          justificationMode,
+          ellipsizeMode,
+          maxNumberOfLines,
+          paint);
+    }
+  }
+
+  private static Layout createLayoutWithCorrectRounding(
+      Spannable text,
+      BoringLayout.Metrics boring,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      boolean includeFontPadding,
+      int textBreakStrategy,
+      int hyphenationFrequency,
+      Layout.Alignment alignment,
+      int justificationMode,
+      @Nullable TextUtils.TruncateAt ellipsizeMode,
+      int maxNumberOfLines,
+      TextPaint paint) {
+    // If our text is boring, and fully fits in the available space, we can represent the text
+    // layout as a BoringLayout
+    if (boring != null
+        && (widthYogaMeasureMode == YogaMeasureMode.UNDEFINED
+            || boring.width <= Math.floor(width))) {
+      int layoutWidth =
+          widthYogaMeasureMode == YogaMeasureMode.EXACTLY ? (int) Math.floor(width) : boring.width;
+      return BoringLayout.make(
+          text, paint, layoutWidth, alignment, 1.f, 0.f, boring, includeFontPadding);
+    }
+
+    int desiredWidth = (int) Math.ceil(Layout.getDesiredWidth(text, paint));
+
+    int layoutWidth =
+        widthYogaMeasureMode == YogaMeasureMode.EXACTLY
+            ? (int) Math.floor(width)
+            : widthYogaMeasureMode == YogaMeasureMode.UNDEFINED
+                ? desiredWidth
+                : Math.min(desiredWidth, (int) Math.floor(width));
+
+    StaticLayout.Builder builder =
+        StaticLayout.Builder.obtain(text, 0, text.length(), paint, layoutWidth)
+            .setAlignment(alignment)
+            .setLineSpacing(0.f, 1.f)
+            .setIncludePad(includeFontPadding)
+            .setBreakStrategy(textBreakStrategy)
+            .setHyphenationFrequency(hyphenationFrequency);
+
+    if (ReactNativeFeatureFlags.incorporateMaxLinesDuringAndroidLayout()) {
+      if (maxNumberOfLines != ReactConstants.UNSET && maxNumberOfLines != 0) {
+        builder.setEllipsize(ellipsizeMode).setMaxLines(maxNumberOfLines);
+      }
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      builder.setJustificationMode(justificationMode);
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      builder.setUseLineSpacingFromFallbacks(true);
+    }
+
+    return builder.build();
+  }
+
+  private static Layout createLayoutWithBuggedRounding(
+      Spannable text,
+      BoringLayout.Metrics boring,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      boolean includeFontPadding,
+      int textBreakStrategy,
+      int hyphenationFrequency,
+      Layout.Alignment alignment,
+      int justificationMode,
+      @Nullable TextUtils.TruncateAt ellipsizeMode,
+      int maxNumberOfLines,
+      TextPaint paint) {
     Layout layout;
 
     int spanLength = text.length();
@@ -390,8 +491,7 @@ public class TextLayoutManager {
     boolean isScriptRTL = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, 0, spanLength);
 
     if (boring == null
-        && (unconstrainedWidth
-            || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
+        && (unconstrainedWidth || (!Float.isNaN(desiredWidth) && desiredWidth <= width))) {
       // Is used when the width is not known and the text is not boring, ie. if it contains
       // unicode characters.
 
@@ -510,6 +610,7 @@ public class TextLayoutManager {
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
       float width,
+      YogaMeasureMode widthYogaMeasureMode,
       float height,
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     Spannable text =
@@ -525,7 +626,7 @@ public class TextLayoutManager {
       updateTextPaint(paint, baseTextAttributes, context);
     }
 
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, paint);
+    BoringLayout.Metrics boring = isBoring(text, paint);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
@@ -582,7 +683,7 @@ public class TextLayoutManager {
         text,
         boring,
         width,
-        YogaMeasureMode.EXACTLY,
+        widthYogaMeasureMode,
         includeFontPadding,
         textBreakStrategy,
         hyphenationFrequency,
@@ -607,7 +708,7 @@ public class TextLayoutManager {
       Layout.Alignment alignment,
       int justificationMode,
       TextPaint paint) {
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, paint);
+    BoringLayout.Metrics boring = isBoring(text, paint);
     Layout layout =
         createLayout(
             text,
@@ -660,7 +761,7 @@ public class TextLayoutManager {
         text.removeSpan(span);
       }
       if (boring != null) {
-        boring = BoringLayout.isBoring(text, paint);
+        boring = isBoring(text, paint);
       }
       layout =
           createLayout(
@@ -696,6 +797,7 @@ public class TextLayoutManager {
             attributedString,
             paragraphAttributes,
             width,
+            widthYogaMeasureMode,
             height,
             reactTextViewManagerCallback);
 
@@ -787,6 +889,16 @@ public class TextLayoutManager {
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       int calculatedLineCount) {
+    if (ReactNativeFeatureFlags.useAndroidTextLayoutWidthDirectly()) {
+      // Our layout must be created at a physical pixel boundary, so may be sized smaller by a
+      // subpixel compared to the assigned layout width.
+      if (widthYogaMeasureMode == YogaMeasureMode.EXACTLY) {
+        return width;
+      }
+
+      return layout.getWidth();
+    }
+
     // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
     // text that is wrapping), compute width using the longest line.
     float calculatedWidth = 0;
@@ -825,7 +937,7 @@ public class TextLayoutManager {
     // where the container is measured smaller than text. Math.ceil prevents it
     // See T136756103 for investigation
     if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-      calculatedWidth = (float) Math.ceil(calculatedWidth);
+      calculatedWidth = Math.min((float) Math.ceil(calculatedWidth), width);
     }
     return calculatedWidth;
   }
@@ -990,8 +1102,26 @@ public class TextLayoutManager {
       float width,
       float height) {
     Layout layout =
-        createLayout(context, attributedString, paragraphAttributes, width, height, null);
+        createLayout(
+            context,
+            attributedString,
+            paragraphAttributes,
+            width,
+            YogaMeasureMode.EXACTLY,
+            height,
+            null);
     return FontMetricsUtil.getFontMetrics(
         layout.getText(), layout, Preconditions.checkNotNull(sTextPaintInstance.get()), context);
+  }
+
+  private static @Nullable BoringLayout.Metrics isBoring(Spannable text, TextPaint paint) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      return BoringLayout.isBoring(text, paint);
+    } else {
+      // Default to include fallback line spacing on Android 13+, like TextView
+      // https://cs.android.com/android/_/android/platform/frameworks/base/+/78c774defb238c05c42b34a12b6b3b0c64844ed7
+      return BoringLayout.isBoring(
+          text, paint, TextDirectionHeuristics.FIRSTSTRONG_LTR, true, null);
+    }
   }
 }

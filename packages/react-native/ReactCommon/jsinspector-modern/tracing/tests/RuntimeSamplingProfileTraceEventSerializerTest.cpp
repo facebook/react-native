@@ -26,16 +26,16 @@ class RuntimeSamplingProfileTraceEventSerializerTest : public ::testing::Test {
   }
 
   RuntimeSamplingProfile::SampleCallStackFrame createJSCallFrame(
-      std::string functionName,
+      std::string_view functionName,
       uint32_t scriptId = 1,
-      std::optional<std::string> url = std::nullopt,
+      std::optional<std::string_view> url = std::nullopt,
       std::optional<uint32_t> lineNumber = std::nullopt,
       std::optional<uint32_t> columnNumber = std::nullopt) {
     return RuntimeSamplingProfile::SampleCallStackFrame(
         RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
         scriptId,
-        std::move(functionName),
-        std::move(url),
+        functionName,
+        url,
         lineNumber,
         columnNumber);
   }
@@ -55,12 +55,12 @@ class RuntimeSamplingProfileTraceEventSerializerTest : public ::testing::Test {
   }
 
   RuntimeSamplingProfile createEmptyProfile() {
-    return {"TestRuntime", {}};
+    return {"TestRuntime", {}, {}};
   }
 
   RuntimeSamplingProfile createProfileWithSamples(
       std::vector<RuntimeSamplingProfile::Sample> samples) {
-    return {"TestRuntime", std::move(samples)};
+    return {"TestRuntime", std::move(samples), {}};
   }
 };
 

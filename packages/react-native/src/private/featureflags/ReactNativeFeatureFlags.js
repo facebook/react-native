@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6667fc8e4fdd2db0b54c908155b110cf>>
+ * @generated SignedSource<<2dc9ec2ea173f10586a67940720f1d37>>
  * @flow strict
  */
 
@@ -33,12 +33,16 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
+  enableVirtualViewDebugFeatures: Getter<boolean>,
+  enableVirtualViewDoubleStateHidden: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
+  reduceDefaultPropsInView: Getter<boolean>,
   scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
+  utilizeTokensInIntersectionObserver: Getter<boolean>,
 }>;
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
@@ -48,6 +52,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
+  avoidCeilingAvailableAndroidTextWidth: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
@@ -64,7 +69,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
-  enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
@@ -86,6 +90,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
+  useAndroidTextLayoutWidthDirectly: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
@@ -126,6 +131,16 @@ export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGe
 export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
 
 /**
+ * Enables VirtualView debug features such as logging and overlays.
+ */
+export const enableVirtualViewDebugFeatures: Getter<boolean> = createJavaScriptFlagGetter('enableVirtualViewDebugFeatures', false);
+
+/**
+ * Enables a VirtualView workaround that triggers a second state update when changing to hidden mode.
+ */
+export const enableVirtualViewDoubleStateHidden: Getter<boolean> = createJavaScriptFlagGetter('enableVirtualViewDoubleStateHidden', false);
+
+/**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
  */
 export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaScriptFlagGetter('fixVirtualizeListCollapseWindowSize', false);
@@ -134,6 +149,11 @@ export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaSc
  * Function used to enable / disabled Layout Animations in React Native.
  */
 export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
+
+/**
+ * Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.
+ */
+export const reduceDefaultPropsInView: Getter<boolean> = createJavaScriptFlagGetter('reduceDefaultPropsInView', true);
 
 /**
  * Changes the cleanup of `AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).
@@ -156,6 +176,11 @@ export const shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean> = cre
 export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInFabric', true);
 
 /**
+ * Use tokens in IntersectionObserver vs ShadowNode.
+ */
+export const utilizeTokensInIntersectionObserver: Getter<boolean> = createJavaScriptFlagGetter('utilizeTokensInIntersectionObserver', true);
+
+/**
  * Common flag for testing. Do NOT modify.
  */
 export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTestFlag', false);
@@ -167,6 +192,10 @@ export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = create
  * Enables start- and finishOperationBatch on any platform.
  */
 export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter('animatedShouldSignalBatch', false);
+/**
+ * Do not incorrectly ceil the available width of an Android text layout
+ */
+export const avoidCeilingAvailableAndroidTextWidth: Getter<boolean> = createNativeFlagGetter('avoidCeilingAvailableAndroidTextWidth', true);
 /**
  * Use a C++ implementation of Native Animated instead of the platform implementation.
  */
@@ -231,10 +260,6 @@ export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativ
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
-/**
- * Trigger JS runtime GC on memory pressure event on iOS
- */
-export const enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean> = createNativeFlagGetter('enableJSRuntimeGCOnMemoryPressureOnIOS', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
@@ -319,6 +344,10 @@ export const updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean> = create
  * In Bridgeless mode, use the always available javascript error reporting pipeline.
  */
 export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFlagGetter('useAlwaysAvailableJSErrorHandling', false);
+/**
+ * Trust the width of a text layout we create, instead of re-deriving it from its contents
+ */
+export const useAndroidTextLayoutWidthDirectly: Getter<boolean> = createNativeFlagGetter('useAndroidTextLayoutWidthDirectly', true);
 /**
  * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
  */

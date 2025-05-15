@@ -36,6 +36,12 @@ class RawTextProps : public Props {
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
+
+#ifdef ANDROID
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+
+#endif
 };
 
 } // namespace facebook::react

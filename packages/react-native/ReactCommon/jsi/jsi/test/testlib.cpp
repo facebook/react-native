@@ -1173,7 +1173,7 @@ TEST_P(JSITest, DecoratorTest) {
 
   class CountRuntime final : public WithRuntimeDecorator<Count> {
    public:
-    explicit CountRuntime(std::unique_ptr<Runtime> rt)
+    explicit CountRuntime(std::shared_ptr<Runtime> rt)
         : WithRuntimeDecorator<Count>(*rt, count_),
           rt_(std::move(rt)),
           count_(kInit) {}
@@ -1183,7 +1183,7 @@ TEST_P(JSITest, DecoratorTest) {
     }
 
    private:
-    std::unique_ptr<Runtime> rt_;
+    std::shared_ptr<Runtime> rt_;
     Count count_;
   };
 
@@ -1222,7 +1222,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
   class MultiRuntime final
       : public WithRuntimeDecorator<std::tuple<Inc, Nest>> {
    public:
-    explicit MultiRuntime(std::unique_ptr<Runtime> rt)
+    explicit MultiRuntime(std::shared_ptr<Runtime> rt)
         : WithRuntimeDecorator<std::tuple<Inc, Nest>>(*rt, tuple_),
           rt_(std::move(rt)) {}
 
@@ -1234,7 +1234,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
     }
 
    private:
-    std::unique_ptr<Runtime> rt_;
+    std::shared_ptr<Runtime> rt_;
     std::tuple<Inc, Nest> tuple_;
   };
 
@@ -1771,6 +1771,113 @@ TEST_P(JSITest, ObjectCreateWithPrototype) {
   // Tests null value as prototype
   child = Object::create(rd, Value::null());
   EXPECT_TRUE(child.getPrototype(rd).isNull());
+}
+
+TEST_P(JSITest, SetRuntimeData) {
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void setRuntimeDataImpl(
+        const UUID& uuid,
+        const void* data,
+        void (*deleter)(const void* data)) override {
+      Runtime::setRuntimeDataImpl(uuid, data, deleter);
+    }
+
+    const void* getRuntimeDataImpl(const UUID& uuid) override {
+      return Runtime::getRuntimeDataImpl(uuid);
+    }
+  };
+
+  RD rd1 = RD(rt);
+  UUID uuid1{0xe67ab3d6, 0x09a0, 0x11f0, 0xa641, 0x325096b39f47};
+  auto str = std::make_shared<std::string>("hello world");
+  rd1.setRuntimeData(uuid1, str);
+
+  UUID uuid2{0xa12f99fc, 0x09a2, 0x11f0, 0x84de, 0x325096b39f47};
+  auto obj1 = std::make_shared<Object>(rd1);
+  rd1.setRuntimeData(uuid2, obj1);
+
+  auto storedStr =
+      std::static_pointer_cast<std::string>(rd1.getRuntimeData(uuid1));
+  auto storedObj = std::static_pointer_cast<Object>(rd1.getRuntimeData(uuid2));
+  EXPECT_EQ(storedStr, str);
+  EXPECT_EQ(storedObj, obj1);
+
+  // Override the existing value at uuid1
+  auto weakOldStr = std::weak_ptr<std::string>(str);
+  str = std::make_shared<std::string>("goodbye world");
+  rd1.setRuntimeData(uuid1, str);
+  storedStr = std::static_pointer_cast<std::string>(rd1.getRuntimeData(uuid1));
+  EXPECT_EQ(str, storedStr);
+  // Verify that the old data was not held on after it was overwritten.
+  EXPECT_EQ(weakOldStr.use_count(), 0);
+
+  auto rt2 = factory();
+  RD* rd2 = new RD(*rt2);
+  UUID uuid3{0x16f55892, 0x1034, 0x11f0, 0x8f65, 0x325096b39f47};
+  auto obj2 = std::make_shared<Object>(*rd2);
+  rd2->setRuntimeData(uuid3, obj2);
+
+  auto storedObj2 =
+      std::static_pointer_cast<Object>(rd2->getRuntimeData(uuid3));
+  EXPECT_EQ(storedObj2, obj2);
+
+  // UUID1 is for some data in runtime rd1, not rd2
+  EXPECT_FALSE(rd2->getRuntimeData(uuid1));
+
+  // Verify that when runtime is deleted, its runtime data map gets removed from
+  // the global map. So nothing should be holding on to the stored data.
+  auto weakObj2 = std::weak_ptr<Object>(obj2);
+  obj2.reset();
+  storedObj2.reset();
+  delete rd2;
+  rt2.reset();
+  EXPECT_EQ(weakObj2.use_count(), 0);
+
+  // Only the second runtime was destroyed, so custom data from the first
+  // runtime should remain unaffected.
+  storedStr = std::static_pointer_cast<std::string>(rd1.getRuntimeData(uuid1));
+  EXPECT_EQ(storedStr, str);
+
+  // Overwrite Object.defineProperty, which is called in the default
+  // implementation of setRuntimeDataImpl, to test that even if the JSI
+  // operations on this secret property fail, we are still able to properly
+  // clean up the custom data.
+  auto rt3 = factory();
+  RD* rd3 = new RD(*rt3);
+  UUID uuid4{0xa5682986, 0x1edc, 0x11f0, 0xa4fa, 0x325096b39f47};
+  rd3->global()
+      .getPropertyAsObject(*rd3, "Object")
+      .setProperty(*rd3, "defineProperty", Value(false));
+
+  auto obj3 = std::make_shared<Object>(*rd3);
+  auto weakObj3 = std::weak_ptr<Object>(obj3);
+  EXPECT_THROW(rd3->setRuntimeData(uuid4, obj3), JSIException);
+  obj3.reset();
+  delete rd3;
+  rt3.reset();
+  EXPECT_EQ(weakObj3.use_count(), 0);
+}
+
+TEST_P(JSITest, CastInterface) {
+  // This Runtime Decorator is used to test the default implementation of
+  // jsi::Runtime::castInterface
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    ICast* castInterface(const UUID& interfaceUuid) override {
+      return Runtime::castInterface(interfaceUuid);
+    }
+  };
+
+  RD rd = RD(rt);
+  auto randomUuid = UUID{0xf2cd96cf, 0x455e, 0x42d9, 0x850a, 0x13e2cde59b8b};
+  auto ptr = rd.castInterface(randomUuid);
+
+  EXPECT_EQ(ptr, nullptr);
 }
 
 INSTANTIATE_TEST_CASE_P(
