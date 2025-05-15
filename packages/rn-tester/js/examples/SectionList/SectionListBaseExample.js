@@ -77,7 +77,14 @@ const SectionListBaseExample: component(
   // $FlowIgnore[unclear-type]
   ref: React.RefSetter<SectionList<any>>,
   ...props: Props
-) = React.forwardRef((props: Props, ref): React.Node => {
+) = ({
+  ref,
+  ...props
+}: {
+  // $FlowIgnore[unclear-type]
+  ref: React.RefSetter<SectionList<any>>,
+  ...Props,
+}): React.Node => {
   return (
     <View style={styles.container}>
       {props.testOutput != null ? (
@@ -112,7 +119,7 @@ const SectionListBaseExample: component(
       />
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   item: {
