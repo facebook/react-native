@@ -4118,11 +4118,7 @@ exports[`public API should not change unintentionally Libraries/Debugging/Debugg
   highlightElements(elements: ElementRectangle[]): void,
   clearElementsHighlight(): void,
 };
-declare const DebuggingOverlayWithForwardedRef: component(
-  ref: React.RefSetter<DebuggingOverlayHandle>,
-  ...props: {}
-);
-declare export default typeof DebuggingOverlayWithForwardedRef;
+declare export default component(ref: React.RefSetter<DebuggingOverlayHandle>);
 "
 `;
 
