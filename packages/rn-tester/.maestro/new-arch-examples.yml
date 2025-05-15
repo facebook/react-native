@@ -6,7 +6,8 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     element:
       id: "New Architecture Examples"
     direction: DOWN
-    speed: 40
+    speed: 60
+    visibilityPercentage: 100
 - tapOn:
     id: "New Architecture Examples"
 - assertVisible: "HSBA: h: 0, s: 0, b: 0, a: 0"
