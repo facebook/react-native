@@ -4595,7 +4595,7 @@ public abstract class com/facebook/react/uimanager/ViewGroupManager : com/facebo
 	public fun getShadowNodeClass ()Ljava/lang/Class;
 	public static final fun getViewZIndex (Landroid/view/View;)Ljava/lang/Integer;
 	public fun needsCustomLayoutForChildren ()Z
-	public final fun removeView (Landroid/view/ViewGroup;Landroid/view/View;)V
+	public fun removeView (Landroid/view/ViewGroup;Landroid/view/View;)V
 	public synthetic fun removeViewAt (Landroid/view/View;I)V
 	public fun removeViewAt (Landroid/view/ViewGroup;I)V
 	public static final fun setViewZIndex (Landroid/view/View;I)V
