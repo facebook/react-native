@@ -1485,11 +1485,11 @@ export type ActivityIndicatorProps = $ReadOnly<{
   color?: ?ColorValue,
   size?: ?IndicatorSize,
 }>;
-declare const ActivityIndicatorWithRef: component(
+declare const ActivityIndicator: component(
   ref?: React.RefSetter<HostComponent<empty>>,
   ...props: ActivityIndicatorProps
 );
-declare export default typeof ActivityIndicatorWithRef;
+declare export default typeof ActivityIndicator;
 "
 `;
 
