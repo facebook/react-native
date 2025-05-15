@@ -26,18 +26,14 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
   // TODO: move these tests to the test file for `ReactNativeElement` when the legacy implementation is removed.
   describe(`ReactFabricPublicInstance (${isModern ? 'modern' : 'legacy'})`, () => {
     it('should provide instances of the right class as refs in host components', () => {
-      let node;
+      const nodeRef = React.createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={receivedNode => {
-              node = receivedNode;
-            }}
-          />,
-        );
+        root.render(<View ref={nodeRef} />);
       });
+
+      const node = nullthrows(nodeRef.current);
 
       expect(node).toBeInstanceOf(
         isModern ? ReactNativeElement : ReactFabricHostComponent,
@@ -47,20 +43,13 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('blur', () => {
       test('blur() invokes TextInputState', () => {
         const root = Fantom.createRoot();
-
-        let maybeNode;
+        const nodeRef = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
-          root.render(
-            <View
-              ref={node => {
-                maybeNode = node;
-              }}
-            />,
-          );
+          root.render(<View ref={nodeRef} />);
         });
 
-        const node = nullthrows(maybeNode);
+        const node = nullthrows(nodeRef.current);
 
         const blurTextInput = jest.fn();
 
@@ -79,20 +68,13 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('focus', () => {
       test('focus() invokes TextInputState', () => {
         const root = Fantom.createRoot();
-
-        let maybeNode;
+        const ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
-          root.render(
-            <View
-              ref={node => {
-                maybeNode = node;
-              }}
-            />,
-          );
+          root.render(<View ref={ref} />);
         });
 
-        const node = nullthrows(maybeNode);
+        const node = nullthrows(ref.current);
 
         const focusTextInput = jest.fn();
 
@@ -111,21 +93,18 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('measure', () => {
       it('component.measure(...) invokes callback', () => {
         const root = Fantom.createRoot();
-
-        let maybeNode;
+        const ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
-              ref={node => {
-                maybeNode = node;
-              }}
+              ref={ref}
             />,
           );
         });
 
-        const node = nullthrows(maybeNode);
+        const node = nullthrows(ref.current);
 
         const callback = jest.fn();
         node.measure(callback);
@@ -136,21 +115,18 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('unmounted.measure(...) does nothing', () => {
         const root = Fantom.createRoot();
-
-        let maybeNode;
+        const ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
-              ref={node => {
-                maybeNode = node;
-              }}
+              ref={ref}
             />,
           );
         });
 
-        const node = nullthrows(maybeNode);
+        const node = nullthrows(ref.current);
 
         Fantom.runTask(() => {
           root.render(<></>);
@@ -166,21 +142,18 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('measureInWindow', () => {
       it('component.measureInWindow(...) invokes callback', () => {
         const root = Fantom.createRoot();
-
-        let maybeNode;
+        const ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
-              ref={node => {
-                maybeNode = node;
-              }}
+              ref={ref}
             />,
           );
         });
 
-        const node = nullthrows(maybeNode);
+        const node = nullthrows(ref.current);
 
         const callback = jest.fn();
         node.measureInWindow(callback);
@@ -191,21 +164,18 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('unmounted.measureInWindow(...) does nothing', () => {
         const root = Fantom.createRoot();
-
-        let maybeNode;
+        const ref = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
-              ref={node => {
-                maybeNode = node;
-              }}
+              ref={ref}
             />,
           );
         });
 
-        const node = nullthrows(maybeNode);
+        const node = nullthrows(ref.current);
 
         Fantom.runTask(() => {
           root.render(<></>);
@@ -221,29 +191,24 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('measureLayout', () => {
       it('component.measureLayout(component, ...) invokes callback', () => {
         const root = Fantom.createRoot();
-
-        let maybeParentNode;
-        let maybeChildNode;
+        const parentRef = React.createRef<HostInstance>();
+        const childRef = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
-              ref={node => {
-                maybeParentNode = node;
-              }}>
+              ref={parentRef}>
               <View
                 style={{width: 10, height: 10, left: 20, top: 20}}
-                ref={node => {
-                  maybeChildNode = node;
-                }}
+                ref={childRef}
               />
             </View>,
           );
         });
 
-        const parentNode = nullthrows(maybeParentNode);
-        const childNode = nullthrows(maybeChildNode);
+        const parentNode = nullthrows(parentRef.current);
+        const childNode = nullthrows(childRef.current);
 
         const callback = jest.fn();
         childNode.measureLayout(parentNode, callback);
@@ -254,29 +219,24 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('unmounted.measureLayout(component, ...) does nothing', () => {
         const root = Fantom.createRoot();
-
-        let maybeParentNode;
-        let maybeChildNode;
+        const parentRef = React.createRef<HostInstance>();
+        const childRef = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
-              ref={node => {
-                maybeParentNode = node;
-              }}>
+              ref={parentRef}>
               <View
                 style={{width: 10, height: 10, left: 20, top: 20}}
-                ref={node => {
-                  maybeChildNode = node;
-                }}
+                ref={childRef}
               />
             </View>,
           );
         });
 
-        const parentNode = nullthrows(maybeParentNode);
-        const childNode = nullthrows(maybeChildNode);
+        const parentNode = nullthrows(parentRef.current);
+        const childNode = nullthrows(childRef.current);
 
         Fantom.runTask(() => {
           root.render(
@@ -292,29 +252,24 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('component.measureLayout(unmounted, ...) does nothing', () => {
         const root = Fantom.createRoot();
-
-        let maybeParentNode;
-        let maybeChildNode;
+        const parentRef = React.createRef<HostInstance>();
+        const childRef = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
-              ref={node => {
-                maybeParentNode = node;
-              }}>
+              ref={parentRef}>
               <View
                 style={{width: 10, height: 10, left: 20, top: 20}}
-                ref={node => {
-                  maybeChildNode = node;
-                }}
+                ref={childRef}
               />
             </View>,
           );
         });
 
-        const parentNode = nullthrows(maybeParentNode);
-        const childNode = nullthrows(maybeChildNode);
+        const parentNode = nullthrows(parentRef.current);
+        const childNode = nullthrows(childRef.current);
 
         Fantom.runTask(() => {
           root.render(
@@ -330,29 +285,24 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('unmounted.measureLayout(unmounted, ...) does nothing', () => {
         const root = Fantom.createRoot();
-
-        let maybeParentNode;
-        let maybeChildNode;
+        const parentRef = React.createRef<HostInstance>();
+        const childRef = React.createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
-              ref={node => {
-                maybeParentNode = node;
-              }}>
+              ref={parentRef}>
               <View
                 style={{width: 10, height: 10, left: 20, top: 20}}
-                ref={node => {
-                  maybeChildNode = node;
-                }}
+                ref={childRef}
               />
             </View>,
           );
         });
 
-        const parentNode = nullthrows(maybeParentNode);
-        const childNode = nullthrows(maybeChildNode);
+        const parentNode = nullthrows(parentRef.current);
+        const childNode = nullthrows(childRef.current);
 
         Fantom.runTask(() => {
           root.render(<></>);

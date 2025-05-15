@@ -912,26 +912,21 @@ describe('Fantom', () => {
 
     it('change size of <Modal />', () => {
       const root = Fantom.createRoot();
-      let maybeModalNode;
-      let maybeViewNode;
+      const modalNodeRef = React.createRef<HostInstance>();
+      const viewNodeRef = React.createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(
-          <Modal
-            ref={(node: ?HostInstance) => {
-              maybeModalNode = node;
-            }}>
-            <View
-              style={{width: '50%', height: '25%'}}
-              ref={node => {
-                maybeViewNode = node;
-              }}
-            />
+          <Modal ref={modalNodeRef}>
+            <View style={{width: '50%', height: '25%'}} ref={viewNodeRef} />
           </Modal>,
         );
       });
 
-      const modalElement = ensureInstance(maybeModalNode, ReactNativeElement);
+      const modalElement = ensureInstance(
+        modalNodeRef.current,
+        ReactNativeElement,
+      );
 
       Fantom.runOnUIThread(() => {
         Fantom.enqueueModalSizeUpdate(modalElement, {
@@ -942,7 +937,10 @@ describe('Fantom', () => {
 
       Fantom.runWorkLoop();
 
-      const viewElement = ensureInstance(maybeViewNode, ReactNativeElement);
+      const viewElement = ensureInstance(
+        viewNodeRef.current,
+        ReactNativeElement,
+      );
 
       const boundingClientRect = viewElement.getBoundingClientRect();
       expect(boundingClientRect.height).toBe(25);
