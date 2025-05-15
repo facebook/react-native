@@ -898,36 +898,27 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       if (keyboardIsVisible != mKeyboardIsVisible) {
         mKeyboardIsVisible = keyboardIsVisible;
 
-        if (keyboardIsVisible) {
-          Insets imeInsets = rootInsets.getInsets(WindowInsets.Type.ime());
-          Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
-          int height = imeInsets.bottom - barInsets.bottom;
+        Insets imeInsets = rootInsets.getInsets(WindowInsets.Type.ime());
+        Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
+        int height = imeInsets.bottom - barInsets.bottom;
 
-          ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
-          Assertions.assertCondition(rootLayoutParams instanceof WindowManager.LayoutParams);
+        ViewGroup.LayoutParams rootLayoutParams = getRootView().getLayoutParams();
+        Assertions.assertCondition(rootLayoutParams instanceof WindowManager.LayoutParams);
 
-          int softInputMode = ((WindowManager.LayoutParams) rootLayoutParams).softInputMode;
-          int screenY =
-              softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
-                  ? mVisibleViewArea.bottom - height
-                  : mVisibleViewArea.bottom;
+        int softInputMode = ((WindowManager.LayoutParams) rootLayoutParams).softInputMode;
+        int screenY =
+            softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+                ? mVisibleViewArea.bottom - height
+                : mVisibleViewArea.bottom;
 
-          sendEvent(
-              "keyboardDidShow",
-              createKeyboardEventPayload(
-                  PixelUtil.toDIPFromPixel(screenY),
-                  PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
-                  PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
-                  PixelUtil.toDIPFromPixel(height)));
-        } else {
-          sendEvent(
-              "keyboardDidHide",
-              createKeyboardEventPayload(
-                  PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
-                  0,
-                  PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
-                  0));
-        }
+        String eventName = keyboardIsVisible ? "keyboardDidShow" : "keyboardDidHide";
+        sendEvent(
+            eventName,
+            createKeyboardEventPayload(
+                PixelUtil.toDIPFromPixel(screenY),
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
+                PixelUtil.toDIPFromPixel(Math.max(height, 0))));
       }
     }
 
@@ -972,8 +963,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         sendEvent(
             "keyboardDidHide",
             createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
-                0,
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.bottom),
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
                 PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                 0));
       }
