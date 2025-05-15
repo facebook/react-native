@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<47c364c263ce5ab89202cab3bc334c22>>
+ * @generated SignedSource<<3c85cdc2dc3d2368d09a5c0aff4d083a>>
  */
 
 /**
@@ -247,11 +247,6 @@ bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
 bool NativeReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly();
-}
-
-bool NativeReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior();
 }
 
 bool NativeReactNativeFeatureFlags::useFabricInterop(
