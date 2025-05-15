@@ -31,10 +31,11 @@ type DebuggingOverlayHandle = {
   clearElementsHighlight(): void,
 };
 
-function DebuggingOverlay(
-  _props: {},
+function DebuggingOverlay({
+  ref,
+}: {
   ref: React.RefSetter<DebuggingOverlayHandle>,
-): React.Node {
+}): React.Node {
   useImperativeHandle(
     ref,
     () => ({
@@ -102,9 +103,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const DebuggingOverlayWithForwardedRef: component(
+export default DebuggingOverlay as component(
   ref: React.RefSetter<DebuggingOverlayHandle>,
-  ...props: {}
-) = React.forwardRef(DebuggingOverlay);
-
-export default DebuggingOverlayWithForwardedRef;
+);
