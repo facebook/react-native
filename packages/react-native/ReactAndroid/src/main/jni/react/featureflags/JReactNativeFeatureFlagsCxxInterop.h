@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a5ab0022f6a01bd6e929d36d9d87db10>>
+ * @generated SignedSource<<69f0ab1339e848cb292cc6612e7776f3>>
  */
 
 /**
@@ -151,6 +151,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useAndroidTextLayoutWidthDirectly(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useEditTextStockAndroidFocusBehavior(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useFabricInterop(
