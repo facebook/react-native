@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f7db897c6e1f59c494c8b7cebea7c942>>
+ * @generated SignedSource<<d74dc8182a14fddbd7118149298515bd>>
  */
 
 /**
@@ -285,12 +285,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool useEditTextStockAndroidFocusBehavior() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useEditTextStockAndroidFocusBehavior");
-    return method(javaProvider_);
-  }
-
   bool useFabricInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useFabricInterop");
@@ -542,11 +536,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useAndroidTextLayoutWidthDirectly(
   return ReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useEditTextStockAndroidFocusBehavior(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useFabricInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useFabricInterop();
@@ -736,9 +725,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useAndroidTextLayoutWidthDirectly",
         JReactNativeFeatureFlagsCxxInterop::useAndroidTextLayoutWidthDirectly),
-      makeNativeMethod(
-        "useEditTextStockAndroidFocusBehavior",
-        JReactNativeFeatureFlagsCxxInterop::useEditTextStockAndroidFocusBehavior),
       makeNativeMethod(
         "useFabricInterop",
         JReactNativeFeatureFlagsCxxInterop::useFabricInterop),
