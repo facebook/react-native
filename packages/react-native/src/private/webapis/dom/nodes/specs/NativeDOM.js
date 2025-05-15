@@ -13,6 +13,7 @@ import type {Node as ShadowNode} from '../../../../../../Libraries/Renderer/shim
 import type {TurboModule} from '../../../../../../Libraries/TurboModule/RCTExport';
 import type {InstanceHandle} from '../internals/NodeInternals';
 
+import {getFabricUIManager} from '../../../../../../Libraries/ReactNative/FabricUIManager';
 import * as TurboModuleRegistry from '../../../../../../Libraries/TurboModule/TurboModuleRegistry';
 import nullthrows from 'nullthrows';
 
@@ -154,9 +155,22 @@ export interface Spec extends TurboModule {
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void;
+
+  /**
+   * Legacy direct manipulation APIs (for `ReactNativeElement`).
+   */
+
+  +setNativeProps?: (
+    nativeElementReference: mixed,
+    updatePayload: mixed,
+  ) => void;
 }
 
 const RawNativeDOM = (TurboModuleRegistry.get<Spec>('NativeDOMCxx'): ?Spec);
+
+export function getRawNativeDOMForTests(): ?Spec {
+  return RawNativeDOM;
+}
 
 // This is the actual interface of this module, but the native module codegen
 // isn't expressive enough yet.
@@ -408,6 +422,14 @@ export interface RefinedSpec {
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void;
+
+  /**
+   * Legacy direct manipulation APIs
+   */
+  +setNativeProps: (
+    nativeElementReference: NativeElementReference,
+    updatePayload: {...},
+  ) => void;
 }
 
 const NativeDOM: RefinedSpec = {
@@ -573,6 +595,22 @@ const NativeDOM: RefinedSpec = {
       onFail,
       onSuccess,
     );
+  },
+
+  /**
+   * Legacy direct manipulation APIs
+   */
+  setNativeProps(nativeNodeReference, updatePayload) {
+    // TODO: remove when RawNativeDOM.setNativeProps is NOT nullable.
+    if (RawNativeDOM?.setNativeProps == null) {
+      nullthrows(getFabricUIManager()).setNativeProps(
+        nativeNodeReference,
+        updatePayload,
+      );
+      return;
+    }
+
+    return RawNativeDOM.setNativeProps(nativeNodeReference, updatePayload);
   },
 };
 

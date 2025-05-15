@@ -25,12 +25,15 @@ namespace facebook::react {
 
 #pragma mark - Private helpers
 
+static UIManager& getUIManagerFromRuntime(facebook::jsi::Runtime& runtime) {
+  return UIManagerBinding::getBinding(runtime)->getUIManager();
+}
+
 static RootShadowNode::Shared getCurrentShadowTreeRevision(
     facebook::jsi::Runtime& runtime,
     SurfaceId surfaceId) {
-  auto& uiManager =
-      facebook::react::UIManagerBinding::getBinding(runtime)->getUIManager();
-  auto shadowTreeRevisionProvider = uiManager.getShadowTreeRevisionProvider();
+  auto shadowTreeRevisionProvider =
+      getUIManagerFromRuntime(runtime).getShadowTreeRevisionProvider();
   return shadowTreeRevisionProvider->getCurrentRevision(surfaceId);
 }
 
@@ -457,6 +460,17 @@ void NativeDOM::measureLayout(
        jsi::Value{rt, rect.y},
        jsi::Value{rt, rect.width},
        jsi::Value{rt, rect.height}});
+}
+
+#pragma mark - Legacy direct manipulation APIs (for `ReactNativeElement`).
+
+void NativeDOM::setNativeProps(
+    jsi::Runtime& rt,
+    jsi::Value nativeElementReference,
+    jsi::Value updatePayload) {
+  getUIManagerFromRuntime(rt).setNativeProps_DEPRECATED(
+      shadowNodeFromValue(rt, nativeElementReference),
+      RawProps(rt, updatePayload));
 }
 
 } // namespace facebook::react
