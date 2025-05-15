@@ -153,18 +153,14 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
   measure(callback: MeasureOnSuccessCallback) {
     const node = getNativeElementReference(this);
     if (node != null) {
-      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
-      const shadowNode: ShadowNode = node;
-      nullthrows(getFabricUIManager()).measure(shadowNode, callback);
+      NativeDOM.measure(node, callback);
     }
   }
 
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
     const node = getNativeElementReference(this);
     if (node != null) {
-      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
-      const shadowNode: ShadowNode = node;
-      nullthrows(getFabricUIManager()).measureInWindow(shadowNode, callback);
+      NativeDOM.measureInWindow(node, callback);
     }
   }
 
@@ -187,14 +183,9 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
     const fromStateNode = getNativeElementReference(relativeToNativeNode);
 
     if (toStateNode != null && fromStateNode != null) {
-      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
-      const toStateShadowNode: ShadowNode = toStateNode;
-      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
-      const fromStateShadowNode: ShadowNode = fromStateNode;
-
-      nullthrows(getFabricUIManager()).measureLayout(
-        toStateShadowNode,
-        fromStateShadowNode,
+      NativeDOM.measureLayout(
+        toStateNode,
+        fromStateNode,
         onFail != null ? onFail : noop,
         onSuccess != null ? onSuccess : noop,
       );
