@@ -13,7 +13,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, TextInput} from 'react-native';
 
 function Playground() {
   return (
@@ -21,12 +21,20 @@ function Playground() {
       <RNTesterText>
         Edit "RNTesterPlayground.js" to change this file
       </RNTesterText>
+      <TextInput style={styles.input} />
+      <TextInput style={styles.input} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    padding: 10,
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
     padding: 10,
   },
 });
