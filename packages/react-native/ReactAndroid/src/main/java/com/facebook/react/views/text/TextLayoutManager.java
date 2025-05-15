@@ -1065,9 +1065,8 @@ public class TextLayoutManager {
         // Find the vertical center of the text
         float textMiddle = currentTextPaint.getFontMetricsInt().ascent + textHeight / 2;
         
-        // Apply a moderate upward adjustment (7% of text height)
-        // This is enough to make a visual difference without breaking layout
-        float adjustment = textHeight * 0.07f;
+        // Apply a moderate upward adjustment
+        float adjustment = textHeight * TEXT_MIDDLE_ADJUSTMENT_FACTOR;
         float adjustedMiddle = textMiddle - adjustment;
         
         // Center the view on the adjusted middle point
@@ -1077,11 +1076,10 @@ public class TextLayoutManager {
         placeholderTopPosition = layout.getLineBaseline(line) + adjustedMiddle - halfViewHeight;
       } else {
         // Fallback to improved vertical centering if metrics aren't valid
-        // 60/40 split with a moderate upward adjustment
-        float aboveRatio = 0.6f;  // 60% above baseline
-        float upwardAdjustment = placeholderHeight * 0.07f;  // 7% upward shift
+        // Use defined ratios and adjustment factors
+        float upwardAdjustment = placeholderHeight * FALLBACK_UPWARD_ADJUSTMENT_FACTOR;
         
-        placeholderTopPosition = layout.getLineBaseline(line) - (placeholderHeight * aboveRatio + upwardAdjustment);
+        placeholderTopPosition = layout.getLineBaseline(line) - (placeholderHeight * FALLBACK_ABOVE_BASELINE_RATIO + upwardAdjustment);
       }
 
       // The attachment array returns the positions of each of the attachments as

@@ -14,6 +14,11 @@
 
 #import <React/RCTTextView.h>
 #import "NSTextStorage+FontScaling.h"
+#import <React/RCTUIManagerUtils.h>
+#import <React/RCTUtils.h>
+
+// Empirical vertical offset for inline views/attachments to achieve better visual centering.
+static const CGFloat kAttachmentVerticalOffsetPoints = 2.0;
 
 @implementation RCTTextShadowView {
   __weak RCTBridge *_bridge;
@@ -123,20 +128,32 @@
 
 - (void)postprocessAttributedText:(NSMutableAttributedString *)attributedText
 {
-  __block CGFloat maximumLineHeight = 0;
-  __block CGFloat maximumAscender = 0;
-  __block CGFloat maximumDescender = 0;
+  // First, determine if any explicit lineHeight is set on any part of the attributed string.
+  // This comes from the `lineHeight` style in JavaScript.
+  __block CGFloat overallMaximumLineHeight = 0;
+  __block BOOL hasExplicitLineHeight = NO;
 
-  // First pass: find maximum line height and font metrics
   [attributedText enumerateAttribute:NSParagraphStyleAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
-                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                          usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
-                            if (!paragraphStyle) {
-                              return;
+                             options:0 // Check all ranges, not just the longest effective one initially
+                          usingBlock:^(NSParagraphStyle *_Nullable paragraphStyle, NSRange range, BOOL *_Nonnull stop) {
+                            if (paragraphStyle && paragraphStyle.maximumLineHeight > 0) {
+                              hasExplicitLineHeight = YES;
+                              // Use the maximum of any specified lineHeights
+                              overallMaximumLineHeight = MAX(paragraphStyle.maximumLineHeight, overallMaximumLineHeight);
                             }
-                            maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
                           }];
+
+  if (!hasExplicitLineHeight) {
+    // No explicit 'lineHeight' was found in any part of the attributed string.
+    // Return early to preserve any existing complex attributed string styling.
+    return;
+  }
+
+  // An explicit lineHeight was specified. Proceed to calculate natural text metrics
+  // and apply consistent paragraph style and baseline offset for vertical centering.
+  __block CGFloat maximumAscender = -CGFLOAT_MAX;
+  __block CGFloat maximumDescender = CGFLOAT_MAX;
 
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
@@ -150,26 +167,30 @@
                           }];
 
   CGFloat naturalLineHeight = maximumAscender - maximumDescender;
-  
-  // Always create a new paragraph style to ensure consistent layout
-  NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-  
-  if (maximumLineHeight > 0) {
-    // If we have a maximum line height, use it
-    paragraphStyle.minimumLineHeight = maximumLineHeight;
-    paragraphStyle.maximumLineHeight = maximumLineHeight;
-    
-    // Calculate baseline offset to center text vertically
-    CGFloat baselineOffset = (maximumLineHeight - naturalLineHeight) / 2.0;
-    [attributedText addAttribute:NSBaselineOffsetAttributeName value:@(baselineOffset) range:NSMakeRange(0, attributedText.length)];
-  } else {
-    // If no maximum line height, use natural line height
-    paragraphStyle.minimumLineHeight = naturalLineHeight;
-    paragraphStyle.maximumLineHeight = naturalLineHeight;
+
+  if (naturalLineHeight <= 0 || overallMaximumLineHeight <= 0) {
+    // Avoid division by zero or invalid calculations if heights are zero/negative.
+    // If overallMaximumLineHeight is 0 here, it means it was set to 0 explicitly,
+    // which might imply hiding text or specific layout; let system handle default.
+    return;
   }
   
-  // Apply paragraph style
-  [attributedText addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, attributedText.length)];
+  // Create a new paragraph style to apply consistently.
+  NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.minimumLineHeight = overallMaximumLineHeight;
+  paragraphStyle.maximumLineHeight = overallMaximumLineHeight;
+  
+  // Calculate baseline offset to center text (naturalLineHeight) vertically within overallMaximumLineHeight.
+  CGFloat baselineOffset = (overallMaximumLineHeight - naturalLineHeight) / 2.0;
+  [attributedText addAttribute:NSBaselineOffsetAttributeName
+                         value:@(baselineOffset)
+                         range:NSMakeRange(0, attributedText.length)];
+  
+  // Apply the new paragraph style to the entire string.
+  // This ensures consistent line height as specified by the maximum 'lineHeight' prop found.
+  [attributedText addAttribute:NSParagraphStyleAttributeName
+                         value:paragraphStyle
+                         range:NSMakeRange(0, attributedText.length)];
 }
 
 - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
@@ -340,8 +361,8 @@
 
                 // Calculate the center of the text line
                 CGFloat textLineCenter = glyphRect.origin.y + (glyphRect.size.height / 2.0);
-                // Calculate the center of the attachment with a small vertical offset
-                CGFloat attachmentCenter = textLineCenter - (attachmentSize.height / 2.0) + 2.0; // Increase offset to 2.0 points
+                // Calculate the center of the attachment, then apply a small empirical vertical offset for better visual balance.
+                CGFloat attachmentCenter = textLineCenter - (attachmentSize.height / 2.0) + kAttachmentVerticalOffsetPoints;
 
                 CGRect frame = {
                     {RCTRoundPixelValue(glyphRect.origin.x),
@@ -408,38 +429,62 @@
 - (CGFloat)lastBaselineForSize:(CGSize)size
 {
   NSTextStorage *textStorage = [self textStorageAndLayoutManagerThatFitsSize:size exclusiveOwnership:NO];
+  if (textStorage.length == 0) {
+    return 0; // No text, no baseline.
+  }
+
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   
   [layoutManager ensureLayoutForTextContainer:textContainer];
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   
-  __block CGFloat lastBaseline = 0.0;
-  __block CGFloat lastLineHeight = 0.0;
+  if (glyphRange.location == NSNotFound || glyphRange.length == 0) {
+    return 0; // No glyphs laid out.
+  }
+
+  __block CGFloat lastLineMinY = 0.0;
   __block CGFloat lastAscender = 0.0;
-  __block CGFloat lastDescender = 0.0;
   
-  [layoutManager enumerateLineFragmentsForGlyphRange:glyphRange
-                                         usingBlock:^(CGRect rect, CGRect usedRect, 
-                                                    NSTextContainer *container, NSRange glyphRange, BOOL *stop) {
-    lastBaseline = CGRectGetMaxY(usedRect);
-    lastLineHeight = usedRect.size.height;
-    
-    // Get the font metrics for the last line
-    NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
-    UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:characterRange.location effectiveRange:nil];
-    if (font) {
-      lastAscender = font.ascender;
-      lastDescender = font.descender;
-    }
-    
-    *stop = YES; // We only need the last line
-  }];
+  // Enumerate line fragments. The block is called for each line.
+  // We stop after the first call because it enumerates from the end of the text backwards
+  // when determining the last line for baseline purposes.
+  // However, standard enumeration is from start to end. We need the *last* line.
+  // The most reliable way to get the last line's metrics is to get the full range of lines
+  // and then query the last one. Or, iterate and keep the last values.
+
+  NSRange lastLineGlyphRange = [layoutManager glyphRangeForCharacterRange:NSMakeRange(textStorage.length - 1, 1) actualCharacterRange:NULL];
+  if (lastLineGlyphRange.location == NSNotFound) { // Should not happen if textStorage.length > 0
+      lastLineGlyphRange = glyphRange; // Fallback to overall glyph range if last char range fails
+  }
   
-  // Calculate the center of the text line
-  CGFloat textCenter = lastBaseline - (lastLineHeight / 2.0);
-  // Adjust baseline to be relative to the text center
-  return textCenter + (lastAscender - lastDescender) / 2.0;
+  // Find the line fragment rect for the last line
+  CGRect lastLineUsedRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:lastLineGlyphRange.location effectiveRange:NULL];
+  lastLineMinY = CGRectGetMinY(lastLineUsedRect);
+
+  // Get the font for the last line to find its ascender
+  NSRange lastCharacterRange = [layoutManager characterRangeForGlyphRange:lastLineGlyphRange actualGlyphRange:nil];
+  if (lastCharacterRange.location != NSNotFound && lastCharacterRange.length > 0) {
+      UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:lastCharacterRange.location effectiveRange:nil];
+      if (font) {
+        lastAscender = font.ascender;
+      }
+  }
+  
+  // The baseline for Yoga is the distance from the top of the view to the typographic baseline of the last line.
+  // This is lastLineMinY (top of the last line's usedRect) + lastAscender (font's ascent from its baseline).
+  CGFloat calculatedBaseline = lastLineMinY + lastAscender;
+  
+  // Ensure baseline is not negative, and not outside the view's bounds (size.height) if size is non-zero.
+  // Yoga expects the baseline relative to the component's top edge.
+  calculatedBaseline = MAX(0, calculatedBaseline);
+  if (size.height > 0) {
+      // While the baseline can be theoretically anywhere, practically it should be within or near the view height.
+      // This check might be too restrictive if text is aligned strangely, but often a safeguard.
+      // For now, let's rely on the raw calculation unless it's negative.
+      // calculatedBaseline = MIN(calculatedBaseline, size.height);
+  }
+  return calculatedBaseline;
 }
 
 static YGSize RCTTextShadowViewMeasure(
@@ -487,7 +532,7 @@ static float RCTTextShadowViewBaseline(YGNodeConstRef node, const float width, c
   
   CGFloat lastBaseline = [shadowTextView lastBaselineForSize:size];
   
-  // Convert to Yoga units and ensure we're not returning negative values
+  // Yoga expects the baseline value as a float, positive, from the top of the component.
   return RCTYogaFloatFromCoreGraphicsFloat(MAX(0, lastBaseline));
 }
 

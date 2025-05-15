@@ -37,9 +37,8 @@ internal class TextInlineViewPlaceholderSpan(val reactTag: Int, val width: Int, 
         // Find the vertical center of the text
         val textMiddle = metrics.ascent + textHeight / 2
         
-        // Apply a moderate upward adjustment (7% of text height)
-        // This is enough to make a visual difference without breaking layout
-        val adjustment = (textHeight * 0.07f).toInt()
+        // Apply a moderate upward adjustment
+        val adjustment = (textHeight * TEXT_MIDDLE_ADJUSTMENT_FACTOR).toInt()
         val adjustedMiddle = textMiddle - adjustment
         
         // Center the view on the adjusted middle point
@@ -54,12 +53,11 @@ internal class TextInlineViewPlaceholderSpan(val reactTag: Int, val width: Int, 
       } 
       // Fallback to improved vertical centering if metrics aren't valid
       else {
-        // 60/40 split with a moderate upward adjustment
-        val aboveRatio = 0.6f  // 60% above baseline
-        val upwardAdjustment = height * 0.07f  // 7% upward shift 
+        // Use defined ratios and adjustment factors
+        val upwardAdjustment = height * FALLBACK_UPWARD_ADJUSTMENT_FACTOR
         
-        fm.ascent = -(height * aboveRatio + upwardAdjustment).toInt()
-        fm.descent = (height * (1 - aboveRatio)).toInt()
+        fm.ascent = -(height * FALLBACK_ABOVE_BASELINE_RATIO + upwardAdjustment).toInt()
+        fm.descent = (height * (1 - FALLBACK_ABOVE_BASELINE_RATIO)).toInt() // Or a new FALLBACK_BELOW_BASELINE_RATIO
         fm.top = fm.ascent
         fm.bottom = fm.descent
       }

@@ -14,6 +14,13 @@
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SimpleThreadSafeCache.h>
+#import <react/renderer/attributedstring/TextAttributes.h>
+#import <react/renderer/core/LayoutConstraints.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
+
+// Empirical vertical offset for inline views/attachments to achieve better visual centering.
+// Same as defined in RCTTextShadowView.mm for consistency in Paper and Fabric.
+static const CGFloat kAttachmentVerticalOffsetPoints = 2.0;
 
 using namespace facebook::react;
 
@@ -411,15 +418,13 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                   CGSize attachmentSize = attachment.bounds.size;
                   CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
 
-                  CGRect frame;
-                  CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
-                  
-                  // Calculate the center of the text line
+                  // Calculate the center of the text line using the glyph rect from the layout manager.
                   CGFloat textLineCenter = glyphRect.origin.y + (glyphRect.size.height / 2.0);
-                  // Position the attachment so its center aligns with the text line center with a small vertical offset
-                  CGFloat attachmentY = textLineCenter - (attachmentSize.height / 2.0) + 2.0; // Increase offset to 2.0 points
+                  // Position the attachment so its center aligns with the text line center, 
+                  // then apply a small empirical vertical offset for better visual balance.
+                  CGFloat attachmentY = textLineCenter - (attachmentSize.height / 2.0) + kAttachmentVerticalOffsetPoints;
                   
-                  frame = {{glyphRect.origin.x, attachmentY}, attachmentSize};
+                  CGRect frame = {{glyphRect.origin.x, attachmentY}, attachmentSize};
 
                   auto rect = facebook::react::Rect{
                       facebook::react::Point{frame.origin.x, frame.origin.y},
