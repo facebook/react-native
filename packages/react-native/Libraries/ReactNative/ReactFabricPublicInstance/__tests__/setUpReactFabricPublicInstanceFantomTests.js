@@ -11,6 +11,8 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
+import type {HostInstance} from 'react-native';
+
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import TextInputState from '../../../Components/TextInput/TextInputState';
 import View from '../../../Components/View/View';
@@ -359,6 +361,39 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
         childNode.measureLayout(parentNode, callback);
 
         expect(callback).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('setNativeProps', () => {
+      it('should propagate changes to the host component', () => {
+        const root = Fantom.createRoot();
+        const nodeRef = React.createRef<HostInstance>();
+
+        Fantom.runTask(() => {
+          root.render(<View ref={nodeRef} testID="first test id" />);
+        });
+
+        expect(
+          root
+            .getRenderedOutput({
+              props: ['testID'],
+            })
+            .toJSX(),
+        ).toEqual(<rn-view testID={'first test id'} />);
+
+        const element = nullthrows(nodeRef.current);
+
+        Fantom.runTask(() => {
+          element.setNativeProps({testID: 'second test id'});
+        });
+
+        expect(
+          root
+            .getRenderedOutput({
+              props: ['testID'],
+            })
+            .toJSX(),
+        ).toEqual(<rn-view testID={'second test id'} />);
       });
     });
   });
