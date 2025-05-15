@@ -13,14 +13,45 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableWithoutFeedback,
+  TextInput,
+} from 'react-native';
 
 function Playground() {
+  const [value, setValue] = React.useState('0.5');
+  const [scale, setScale] = React.useState(0.5);
+
   return (
-    <View style={styles.container}>
-      <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
-      </RNTesterText>
+    <View>
+      <View style={{backgroundColor: 'green', marginTop: 10}}>
+        <View style={{height: 100, transform: [{scaleY: 0}]}}>
+          <TouchableWithoutFeedback onPress={() => console.log('1 clicked')}>
+            <View style={{flex: 1, backgroundColor: 'red'}} />
+          </TouchableWithoutFeedback>
+        </View>
+      </View>
+      <View style={{backgroundColor: 'green', marginTop: 10}}>
+        <View style={{height: 100, transform: [{scaleY: scale}]}}>
+          <TouchableWithoutFeedback onPress={() => console.log('2 clicked')}>
+            <View style={{flex: 1, backgroundColor: 'red'}} />
+          </TouchableWithoutFeedback>
+        </View>
+      </View>
+      <View>
+        <Text>Scale:</Text>
+        <TextInput
+          value={value}
+          onChangeText={it => {
+            setValue(it);
+            const p = parseFloat(it);
+            if (isFinite(p)) setScale(p);
+          }}
+        />
+      </View>
     </View>
   );
 }
