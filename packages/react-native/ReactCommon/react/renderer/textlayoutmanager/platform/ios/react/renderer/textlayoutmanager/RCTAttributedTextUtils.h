@@ -41,6 +41,8 @@ NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, facebook:
 
 void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText);
 
+void RCTApplyBaselineOffsetForRange(NSMutableAttributedString *attributedText, NSRange attributedTextRange);
+
 /*
  * Whether two `NSAttributedString` lead to the same underlying displayed text, even if they are not strictly equal.
  * I.e. is one string substitutable for the other when backing a control (which may have some ignorable attributes
