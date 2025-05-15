@@ -10,13 +10,19 @@
  */
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
-import React, {forwardRef, useContext} from 'react';
+import React, {useContext} from 'react';
 import {StyleSheet, TextInput} from 'react-native';
 
 const ExampleTextInput: component(
   ref: React.RefSetter<null | React.ElementRef<typeof TextInput>>,
   ...props: React.ElementConfig<typeof TextInput>
-) = forwardRef((props, ref) => {
+) = ({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<null | React.ElementRef<typeof TextInput>>,
+  ...React.ElementConfig<typeof TextInput>,
+}) => {
   const theme = useContext(RNTesterThemeContext);
 
   return (
@@ -34,7 +40,7 @@ const ExampleTextInput: component(
       ]}
     />
   );
-});
+};
 
 const styles = StyleSheet.create({
   input: {
