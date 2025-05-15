@@ -12,7 +12,6 @@
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
 #import <React/RCTConversions.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTI18nUtil.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTSurfaceDelegate.h>
@@ -23,6 +22,7 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
 #import <react/renderer/mounting/MountingCoordinator.h>
+#import <react/utils/FollyConvert.h>
 
 #import "RCTSurfacePresenter.h"
 

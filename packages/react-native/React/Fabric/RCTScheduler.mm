@@ -15,8 +15,6 @@
 #import <react/renderer/scheduler/SchedulerDelegate.h>
 #import <react/utils/RunLoopObserver.h>
 
-#import <React/RCTFollyConvert.h>
-
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 
