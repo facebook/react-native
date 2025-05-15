@@ -26,13 +26,6 @@ namespace facebook::react {
 
 namespace {
 
-class IdleTaskRef : public jsi::NativeState {
- public:
-  IdleTaskRef(std::shared_ptr<Task> task) : task(std::move(task)) {}
-
-  std::shared_ptr<Task> task;
-};
-
 jsi::Function makeTimeRemainingFunction(
     jsi::Runtime& runtime,
     std::shared_ptr<RuntimeScheduler> runtimeScheduler,
@@ -88,6 +81,7 @@ CallbackHandle NativeIdleCallbacks::requestIdleCallback(
   // handle timeout parameter
   std::optional<RuntimeSchedulerTimeout> timeout;
   std::optional<RuntimeSchedulerTimePoint> expirationTime;
+  double insertedCounter = counter_++;
 
   if (options.has_value() && options.value().timeout.has_value()) {
     auto userTimeout = (options.value().timeout.value());
@@ -101,7 +95,7 @@ CallbackHandle NativeIdleCallbacks::requestIdleCallback(
   auto userCallbackShared = std::make_shared<SyncCallback<void(jsi::Object)>>(
       std::move(userCallback));
 
-  auto wrappedCallback = [runtimeScheduler, expirationTime, userCallbackShared](
+  auto wrappedCallback = [runtimeScheduler, expirationTime, userCallbackShared, insertedCounter, this](
                              jsi::Runtime& runtime) -> void {
     // This implementation gives each idle callback a 50ms deadline, instead of
     // being shared by all idle callbacks. This is ok because we don't really
@@ -123,6 +117,7 @@ CallbackHandle NativeIdleCallbacks::requestIdleCallback(
         makeTimeRemainingFunction(runtime, runtimeScheduler, deadline));
 
     userCallbackShared->call(std::move(idleDeadline));
+    taskMap_.erase(insertedCounter);
   };
 
   std::shared_ptr<Task> task;
@@ -139,30 +134,24 @@ CallbackHandle NativeIdleCallbacks::requestIdleCallback(
         "requestIdleCallback is not supported in legacy runtime scheduler");
   }
 
-  jsi::Object taskHandle{runtime};
-  auto taskNativeState = std::make_shared<IdleTaskRef>(task);
-  taskHandle.setNativeState(runtime, std::move(taskNativeState));
-
-  return taskHandle;
+  taskMap_.insert({ insertedCounter, task });  
+  return insertedCounter;
 }
 
 void NativeIdleCallbacks::cancelIdleCallback(
     jsi::Runtime& runtime,
-    jsi::Object handle) {
+    CallbackHandle handle) {
   auto binding = RuntimeSchedulerBinding::getBinding(runtime);
   auto runtimeScheduler = binding->getRuntimeScheduler();
 
-  if (!handle.hasNativeState(runtime)) {
+  auto taskEntry = taskMap_.find(handle);
+  if (taskEntry == taskMap_.end()) {
     return;
   }
 
-  auto taskHandle =
-      std::dynamic_pointer_cast<IdleTaskRef>(handle.getNativeState(runtime));
-  if (!taskHandle) {
-    return;
-  }
-
-  runtimeScheduler->cancelTask(*taskHandle->task);
+  auto task = taskEntry->second;
+  runtimeScheduler->cancelTask(*task);
+  taskMap_.erase(taskEntry);
 }
 
 } // namespace facebook::react
