@@ -36,10 +36,16 @@ interface Instance extends React.ElementRef<typeof Animated.View> {
   +setNextHeaderY: number => void;
 }
 
-const ScrollViewStickyHeaderWithForwardedRef: component(
+const ScrollViewStickyHeader: component(
   ref: React.RefSetter<Instance>,
   ...props: ScrollViewStickyHeaderProps
-) = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
+) = function ScrollViewStickyHeader({
+  ref: forwardedRef,
+  ...props
+}: {
+  ref?: React.RefSetter<Instance>,
+  ...ScrollViewStickyHeaderProps,
+}) {
   const {
     inverted,
     scrollViewHeight,
@@ -295,7 +301,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
       })}
     </Animated.View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   header: {
@@ -306,4 +312,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScrollViewStickyHeaderWithForwardedRef;
+export default ScrollViewStickyHeader;

@@ -2213,11 +2213,11 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 interface Instance extends React.ElementRef<typeof Animated.View> {
   +setNextHeaderY: (number) => void;
 }
-declare const ScrollViewStickyHeaderWithForwardedRef: component(
+declare const ScrollViewStickyHeader: component(
   ref: React.RefSetter<Instance>,
   ...props: ScrollViewStickyHeaderProps
 );
-declare export default typeof ScrollViewStickyHeaderWithForwardedRef;
+declare export default typeof ScrollViewStickyHeader;
 "
 `;
 
