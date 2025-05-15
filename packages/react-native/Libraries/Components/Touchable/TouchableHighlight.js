@@ -408,9 +408,13 @@ class TouchableHighlightImpl extends React.Component<
 const TouchableHighlight: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: $ReadOnly<Omit<TouchableHighlightProps, 'hostRef'>>
-) = React.forwardRef((props, hostRef) => (
-  <TouchableHighlightImpl {...props} hostRef={hostRef} />
-));
+) = ({
+  ref: hostRef,
+  ...props
+}: {
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ...$ReadOnly<Omit<TouchableHighlightProps, 'hostRef'>>,
+}) => <TouchableHighlightImpl {...props} hostRef={hostRef} />;
 
 TouchableHighlight.displayName = 'TouchableHighlight';
 
