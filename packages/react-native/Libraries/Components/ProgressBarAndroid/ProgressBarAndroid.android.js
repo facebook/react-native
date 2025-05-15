@@ -39,23 +39,24 @@ export type {ProgressBarAndroidProps};
  * },
  * ```
  */
-const ProgressBarAndroidWithForwardedRef: component(
+const ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<typeof ProgressBarAndroidNativeComponent>,
   >,
   ...props: ProgressBarAndroidProps
-) = React.forwardRef(function ProgressBarAndroid(
-  {
-    // $FlowFixMe[incompatible-type]
-    styleAttr = 'Normal',
-    indeterminate = true,
-    animating = true,
-    ...restProps
-  }: ProgressBarAndroidProps,
-  forwardedRef: ?React.RefSetter<
+) = function ProgressBarAndroid({
+  ref: forwardedRef,
+  // $FlowFixMe[incompatible-type]
+  styleAttr = 'Normal',
+  indeterminate = true,
+  animating = true,
+  ...restProps
+}: {
+  ref?: React.RefSetter<
     React.ElementRef<typeof ProgressBarAndroidNativeComponent>,
   >,
-) {
+  ...ProgressBarAndroidProps,
+}) {
   return (
     <ProgressBarAndroidNativeComponent
       styleAttr={styleAttr}
@@ -65,6 +66,6 @@ const ProgressBarAndroidWithForwardedRef: component(
       ref={forwardedRef}
     />
   );
-});
+};
 
-export default ProgressBarAndroidWithForwardedRef;
+export default ProgressBarAndroid;
