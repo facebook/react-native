@@ -47,6 +47,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.uimanager.BackgroundStyleApplicator.clipToPaddingBox
 import com.facebook.react.uimanager.BackgroundStyleApplicator.getBackgroundColor
@@ -197,6 +198,10 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
   init {
+    if (!useEditTextStockAndroidFocusBehavior()) {
+      isFocusableInTouchMode = false
+    }
+
     inputMethodManager =
         context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     defaultGravityHorizontal =
@@ -235,7 +240,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
                 // selection on accessibility click to undo that.
                 setSelection(length)
               }
-              return requestFocusProgrammatically()
+              return if (useEditTextStockAndroidFocusBehavior()) requestFocusProgrammatically()
+              else requestFocusInternal()
             }
             return super.performAccessibilityAction(host, action, args)
           }
@@ -360,8 +366,36 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
           if (id == android.R.id.paste) android.R.id.pasteAsPlainText else id)
 
   override fun clearFocus() {
+    val useStockFocusBehavior = useEditTextStockAndroidFocusBehavior()
+    if (!useStockFocusBehavior) {
+      isFocusableInTouchMode = false
+    }
     super.clearFocus()
     hideSoftKeyboard()
+  }
+
+  override fun requestFocus(direction: Int, previouslyFocusedRect: Rect?): Boolean =
+      // This is a no-op so that when the OS calls requestFocus(), nothing will happen.
+      // ReactEditText
+      // is a controlled component, which means its focus is controlled by JS, with two exceptions:
+      // autofocus when it's attached to the window, and responding to accessibility events. In both
+      // of these cases, we call requestFocusInternal() directly.
+      if (useEditTextStockAndroidFocusBehavior()) {
+        super.requestFocus(direction, previouslyFocusedRect)
+      } else {
+        isFocused
+      }
+
+  private fun requestFocusInternal(): Boolean {
+    isFocusableInTouchMode = true
+    // We must explicitly call this method on the super class; if we call requestFocus() without
+    // any arguments, it will call into the overridden requestFocus(int, Rect) above, which no-ops.
+    val focused = super.requestFocus(FOCUS_DOWN, null)
+    if (showSoftInputOnFocus) {
+      showSoftKeyboard()
+    }
+
+    return focused
   }
 
   // For cases like autoFocus, or ref.focus() where we request focus programmatically and not
@@ -595,7 +629,11 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   }
 
   public fun requestFocusFromJS() {
-    requestFocusProgrammatically()
+    if (useEditTextStockAndroidFocusBehavior()) {
+      requestFocusProgrammatically()
+    } else {
+      requestFocusInternal()
+    }
   }
 
   internal fun clearFocusFromJS() {
@@ -945,7 +983,11 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     if (autoFocus && !didAttachToWindow) {
-      requestFocusProgrammatically()
+      if (useEditTextStockAndroidFocusBehavior()) {
+        requestFocusProgrammatically()
+      } else {
+        requestFocusInternal()
+      }
     }
 
     didAttachToWindow = true
