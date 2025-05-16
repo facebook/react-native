@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
-- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
+- (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag props:(folly::dynamic)props;
 
 - (void)setupAnimationDriverWithSurfaceHandler:(const facebook::react::SurfaceHandler &)surfaceHandler;
 

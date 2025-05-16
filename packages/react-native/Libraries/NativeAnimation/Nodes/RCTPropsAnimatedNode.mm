@@ -13,6 +13,7 @@
 #import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTValueAnimatedNode.h>
+#import <react/utils/FollyConvert.h>
 
 @implementation RCTPropsAnimatedNode {
   NSNumber *_connectedViewTag;
@@ -61,9 +62,12 @@
 {
   if (_managedByFabric) {
     if (_bridge.surfacePresenter) {
-      [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag props:_propsDictionary];
+      [_bridge.surfacePresenter
+          synchronouslyUpdateViewOnUIThread:_connectedViewTag.integerValue
+                                      props:facebook::react::convertIdToFollyDynamic(_propsDictionary)];
     } else {
-      [_surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag props:_propsDictionary];
+      [_surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag.integerValue
+                                                     props:facebook::react::convertIdToFollyDynamic(_propsDictionary)];
     }
   } else {
     [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
