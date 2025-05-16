@@ -18,7 +18,7 @@ import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ExampleTextInput from './ExampleTextInput';
 import * as React from 'react';
-import {createRef, useContext, useState} from 'react';
+import {createRef, memo, useContext, useState} from 'react';
 import {
   Button,
   Platform,
@@ -621,7 +621,7 @@ function UncontrolledExample() {
   );
 }
 
-const TextStylesExample = React.memo(() => {
+const TextStylesExample = memo(() => {
   const theme = useContext(RNTesterThemeContext);
 
   return (

@@ -10,6 +10,7 @@
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import RNTPressableRow from './RNTPressableRow';
+import {memo} from 'react';
 
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const React = require('react');
@@ -61,7 +62,7 @@ const renderSectionHeader = ({section}: {section: any, ...}) => (
   </RNTesterThemeContext.Consumer>
 );
 
-const RNTesterModuleList: React.ComponentType<any> = React.memo(
+const RNTesterModuleList: React.ComponentType<any> = memo(
   ({sections, handleModuleCardPress}: any) => {
     const filter = ({example, filterRegex, category}: any) =>
       filterRegex.test(example.module.title) &&

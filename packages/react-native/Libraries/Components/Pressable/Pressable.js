@@ -24,7 +24,7 @@ import useAndroidRippleForView, {
   type PressableAndroidRippleConfig,
 } from './useAndroidRippleForView';
 import * as React from 'react';
-import {useMemo, useRef, useState} from 'react';
+import {memo, useMemo, useRef, useState} from 'react';
 
 type ViewStyleProp = React.ElementConfig<typeof View>['style'];
 
@@ -334,7 +334,7 @@ function usePressState(forcePressed: boolean): [boolean, (boolean) => void] {
   return [pressed || forcePressed, setPressed];
 }
 
-const MemoedPressable = React.memo(Pressable);
+const MemoedPressable = memo(Pressable);
 MemoedPressable.displayName = 'Pressable';
 
 export default (MemoedPressable: component(
