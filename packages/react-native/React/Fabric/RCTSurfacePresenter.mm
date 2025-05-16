@@ -150,12 +150,17 @@ using namespace facebook::react;
 
 - (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
 {
+  ReactTag tag = [reactTag integerValue];
+  [self schedulerDidSynchronouslyUpdateViewOnUIThread:tag props:convertIdToFollyDynamic(props)];
+}
+
+- (void)schedulerDidSynchronouslyUpdateViewOnUIThread:(ReactTag)tag props:(folly::dynamic)props
+{
   RCTScheduler *scheduler = [self scheduler];
   if (!scheduler) {
     return;
   }
 
-  ReactTag tag = [reactTag integerValue];
   UIView<RCTComponentViewProtocol> *componentView =
       [_mountingManager.componentViewRegistry findComponentViewWithTag:tag];
   if (componentView == nil) {
@@ -168,7 +173,9 @@ using namespace facebook::react;
     return;
   }
 
-  [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:*componentDescriptor];
+  [_mountingManager synchronouslyUpdateViewOnUIThread:tag
+                                         changedProps:std::move(props)
+                                  componentDescriptor:*componentDescriptor];
 }
 
 - (void)setupAnimationDriverWithSurfaceHandler:(const facebook::react::SurfaceHandler &)surfaceHandler
