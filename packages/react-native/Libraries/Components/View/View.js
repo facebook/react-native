@@ -14,6 +14,7 @@ import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/Reac
 import TextAncestor from '../../Text/TextAncestor';
 import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
+import {use} from 'react';
 
 export type Props = ViewProps;
 
@@ -30,7 +31,7 @@ type PropsWithRef = $ReadOnly<{
  * @see https://reactnative.dev/docs/view
  */
 function View(props: PropsWithRef): React.Node {
-  const hasTextAncestor = React.use(TextAncestor);
+  const hasTextAncestor = use(TextAncestor);
 
   let actualView;
   if (ReactNativeFeatureFlags.reduceDefaultPropsInView()) {
