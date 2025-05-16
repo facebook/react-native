@@ -14,7 +14,6 @@ import {
   View,
   NativeSyntheticEvent,
   NativeScrollEvent,
-  StyleProp,
   SectionListData,
 } from 'react-native';
 
@@ -43,12 +42,6 @@ const ForwardComp = React.forwardRef<
 });
 
 type X = React.PropsWithoutRef<React.ComponentProps<typeof ForwardComp>>;
-
-type Props = React.ComponentPropsWithRef<typeof Animated.Text>;
-const AnimatedWrapperComponent: React.FunctionComponent<Props> = ({
-  key, // $ExpectType string | number | null | undefined || Key | null | undefined
-  ...props
-}) => <Animated.Text {...props} />;
 
 function TestAnimatedAPI() {
   // Value
@@ -172,9 +165,6 @@ function TestAnimatedAPI() {
 
   const AnimatedView = Animated.createAnimatedComponent(View);
   const ref = React.useRef<React.ComponentRef<typeof View>>(null);
-  const legacyRef =
-    React.useRef<Animated.LegacyRef<React.ComponentRef<typeof View>>>(null);
-
   return (
     <View ref={ref}>
       <Animated.View
@@ -189,8 +179,6 @@ function TestAnimatedAPI() {
       <AnimatedView ref={ref} style={{top: 3}}>
         i has children
       </AnimatedView>
-      <Animated.View ref={legacyRef} />
-      <AnimatedView ref={legacyRef} />
       <AnimatedComp ref={AnimatedCompRef} width={v1} />
       <ForwardComp ref={ForwardCompRef} width={1} />
       <AnimatedForwardComp ref={AnimatedForwardCompRef} width={10} />

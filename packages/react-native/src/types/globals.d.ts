@@ -57,6 +57,48 @@ declare global {
 
   const HermesInternal: null | {};
 
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly) */
+  interface DOMRectReadOnly {
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly/bottom) */
+    readonly bottom: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly/height) */
+    readonly height: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly/left) */
+    readonly left: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly/right) */
+    readonly right: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly/top) */
+    readonly top: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly/width) */
+    readonly width: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly/x) */
+    readonly x: number;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRectReadOnly/y) */
+    readonly y: number;
+    toJSON(): any;
+  }
+
+  interface DOMRect extends DOMRectReadOnly {
+    height: number;
+    width: number;
+    x: number;
+    y: number;
+  }
+
+  interface DOMRectInit {
+    height?: number | undefined;
+    width?: number | undefined;
+    x?: number | undefined;
+    y?: number | undefined;
+  }
+
+  var DOMRect: {
+    prototype: DOMRect;
+    new (x?: number, y?: number, width?: number, height?: number): DOMRect;
+    /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/DOMRect/fromRect_static) */
+    fromRect(other?: DOMRectInit): DOMRect;
+  };
+
   // #region Timer Functions
 
   function clearInterval(handle: number): void;

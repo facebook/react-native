@@ -107,4 +107,6 @@ declare export const setStyleAttributePreprocessor: (
  * An identity function for creating style sheets.
  */
 // $FlowFixMe[unsupported-variance-annotation]
-declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
+declare export const create: <+S: ____Styles_Internal>(
+  obj: S & ____Styles_Internal,
+) => $ReadOnly<S>;

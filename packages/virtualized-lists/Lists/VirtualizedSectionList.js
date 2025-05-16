@@ -17,6 +17,7 @@ import invariant from 'invariant';
 import * as React from 'react';
 
 type DefaultSectionT = {
+  data: any,
   [key: string]: any,
 };
 

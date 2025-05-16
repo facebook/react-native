@@ -106,6 +106,7 @@ export type {
   SectionListProps,
   SectionListRenderItem,
   SectionListRenderItemInfo,
+  SectionListData,
 } from './Libraries/Lists/SectionList';
 export {default as SectionList} from './Libraries/Lists/SectionList';
 

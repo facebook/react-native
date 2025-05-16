@@ -8,6 +8,7 @@
  */
 
 import * as React from 'react';
+// @ts-ignore
 import {View, StyleSheet, type ShadowStyleIOS} from 'react-native';
 
 export function App() {

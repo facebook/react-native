@@ -10,7 +10,7 @@
 
 // From @react-native/js-polyfills
 type ErrorHandler = (error: mixed, isFatal: boolean) => void;
-type Fn<Args, Return> = (...Args) => Return;
+type Fn<Args: $ReadOnlyArray<mixed>, Return> = (...Args) => Return;
 export type ErrorUtils = {
   applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(
     fun: Fn<TArgs, TOut>,

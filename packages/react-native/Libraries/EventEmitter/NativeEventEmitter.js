@@ -52,7 +52,7 @@ export default class NativeEventEmitter<
 {
   _nativeModule: ?NativeModule;
 
-  constructor(nativeModule: ?NativeModule) {
+  constructor(nativeModule?: ?NativeModule) {
     if (Platform.OS === 'ios') {
       invariant(
         nativeModule != null,
