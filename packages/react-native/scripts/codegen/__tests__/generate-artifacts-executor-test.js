@@ -28,105 +28,107 @@ const packageJson = JSON.stringify({
   name: 'react-native',
 });
 
-describe('execute', () => {
-  const appDir = path.join(__dirname, '../__fixtures__/test-app');
-  const outputDir = path.join(appDir, 'temp');
+['test-app', 'test-app-legacy'].forEach(appName => {
+  describe(`execute ${appName}`, () => {
+    const appDir = path.join(__dirname, '../__fixtures__', appName);
+    const outputDir = path.join(appDir, 'temp');
 
-  beforeAll(() => {
-    execute(appDir, 'ios', outputDir, 'app', false);
-  });
-
-  afterAll(() => {
-    fs.rmdirSync(outputDir, {recursive: true});
-  });
-
-  [
-    'RCTAppDependencyProvider.h',
-    'RCTAppDependencyProvider.mm',
-    'RCTModuleProviders.h',
-    'RCTModuleProviders.mm',
-    'RCTModulesConformingToProtocolsProvider.h',
-    'RCTModulesConformingToProtocolsProvider.mm',
-    'RCTThirdPartyComponentsProvider.h',
-    'RCTThirdPartyComponentsProvider.mm',
-    'ReactAppDependencyProvider.podspec',
-    'ReactCodegen.podspec',
-    'RCTUnstableModulesRequiringMainQueueSetupProvider.h',
-    'RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
-  ].forEach(file => {
-    it(`"${file}" should match snapshot`, () => {
-      const generatedFileDir = path.join(outputDir, 'build/generated/ios');
-      const generatedFile = path.join(generatedFileDir, file);
-      expect(fs.existsSync(generatedFile)).toBe(true);
-      expect(fs.readFileSync(generatedFile, 'utf8')).toMatchSnapshot();
+    beforeAll(() => {
+      execute(appDir, 'ios', outputDir, 'app', false);
     });
-  });
-});
 
-describe('extractLibrariesFromJSON', () => {
-  it('extracts a single dependency when config has no libraries', () => {
-    let configFile = fixtures.noLibrariesConfigFile;
-    let libraries = extractLibrariesFromJSON(configFile, '.');
-    expect(libraries.length).toBe(1);
-    expect(libraries[0]).toEqual({
-      config: {
-        name: 'AppModules',
-        type: 'all',
-        jsSrcsDir: '.',
-      },
-      libraryPath: '.',
+    afterAll(() => {
+      fs.rmdirSync(outputDir, {recursive: true});
+    });
+
+    [
+      'RCTAppDependencyProvider.h',
+      'RCTAppDependencyProvider.mm',
+      'RCTModuleProviders.h',
+      'RCTModuleProviders.mm',
+      'RCTModulesConformingToProtocolsProvider.h',
+      'RCTModulesConformingToProtocolsProvider.mm',
+      'RCTThirdPartyComponentsProvider.h',
+      'RCTThirdPartyComponentsProvider.mm',
+      'ReactAppDependencyProvider.podspec',
+      'ReactCodegen.podspec',
+      'RCTUnstableModulesRequiringMainQueueSetupProvider.h',
+      'RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
+    ].forEach(file => {
+      it(`"${file}" should match snapshot`, () => {
+        const generatedFileDir = path.join(outputDir, 'build/generated/ios');
+        const generatedFile = path.join(generatedFileDir, file);
+        expect(fs.existsSync(generatedFile)).toBe(true);
+        expect(fs.readFileSync(generatedFile, 'utf8')).toMatchSnapshot();
+      });
     });
   });
 
-  it("doesn't extract libraries when they are present but empty", () => {
-    const configFile = {codegenConfig: {libraries: []}};
-    let libraries = extractLibrariesFromJSON(configFile, rootPath);
-    expect(libraries.length).toBe(0);
-  });
+  describe('extractLibrariesFromJSON', () => {
+    it('extracts a single dependency when config has no libraries', () => {
+      let configFile = fixtures.noLibrariesConfigFile;
+      let libraries = extractLibrariesFromJSON(configFile, '.');
+      expect(libraries.length).toBe(1);
+      expect(libraries[0]).toEqual({
+        config: {
+          name: 'AppModules',
+          type: 'all',
+          jsSrcsDir: '.',
+        },
+        libraryPath: '.',
+      });
+    });
 
-  it('extracts libraries when they are present and not empty', () => {
-    const configFile = fixtures.singleLibraryCodegenConfig;
-    let libraries = extractLibrariesFromJSON(configFile, rootPath);
-    expect(libraries.length).toBe(1);
-    expect(libraries[0]).toEqual({
-      config: {
-        name: 'react-native',
-        type: 'all',
-        jsSrcsDir: '.',
-      },
-      libraryPath: rootPath,
+    it("doesn't extract libraries when they are present but empty", () => {
+      const configFile = {codegenConfig: {libraries: []}};
+      let libraries = extractLibrariesFromJSON(configFile, rootPath);
+      expect(libraries.length).toBe(0);
     });
-  });
 
-  it('extract codegenConfig with multiple dependencies', () => {
-    const configFile = fixtures.multipleLibrariesCodegenConfig;
-    const myDependency = 'my-dependency';
-    const myDependencyPath = path.join(__dirname, myDependency);
-    let libraries = extractLibrariesFromJSON(configFile, myDependencyPath);
-    expect(libraries.length).toBe(3);
-    expect(libraries[0]).toEqual({
-      config: {
-        name: 'react-native',
-        type: 'all',
-        jsSrcsDir: '.',
-      },
-      libraryPath: myDependencyPath,
+    it('extracts libraries when they are present and not empty', () => {
+      const configFile = fixtures.singleLibraryCodegenConfig;
+      let libraries = extractLibrariesFromJSON(configFile, rootPath);
+      expect(libraries.length).toBe(1);
+      expect(libraries[0]).toEqual({
+        config: {
+          name: 'react-native',
+          type: 'all',
+          jsSrcsDir: '.',
+        },
+        libraryPath: rootPath,
+      });
     });
-    expect(libraries[1]).toEqual({
-      config: {
-        name: 'my-component',
-        type: 'components',
-        jsSrcsDir: 'component/js',
-      },
-      libraryPath: myDependencyPath,
-    });
-    expect(libraries[2]).toEqual({
-      config: {
-        name: 'my-module',
-        type: 'module',
-        jsSrcsDir: 'module/js',
-      },
-      libraryPath: myDependencyPath,
+
+    it('extract codegenConfig with multiple dependencies', () => {
+      const configFile = fixtures.multipleLibrariesCodegenConfig;
+      const myDependency = 'my-dependency';
+      const myDependencyPath = path.join(__dirname, myDependency);
+      let libraries = extractLibrariesFromJSON(configFile, myDependencyPath);
+      expect(libraries.length).toBe(3);
+      expect(libraries[0]).toEqual({
+        config: {
+          name: 'react-native',
+          type: 'all',
+          jsSrcsDir: '.',
+        },
+        libraryPath: myDependencyPath,
+      });
+      expect(libraries[1]).toEqual({
+        config: {
+          name: 'my-component',
+          type: 'components',
+          jsSrcsDir: 'component/js',
+        },
+        libraryPath: myDependencyPath,
+      });
+      expect(libraries[2]).toEqual({
+        config: {
+          name: 'my-module',
+          type: 'module',
+          jsSrcsDir: 'module/js',
+        },
+        libraryPath: myDependencyPath,
+      });
     });
   });
 });
