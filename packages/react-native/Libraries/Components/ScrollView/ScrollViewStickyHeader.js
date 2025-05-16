@@ -16,7 +16,14 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import * as React from 'react';
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {
+  cloneElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 export type ScrollViewStickyHeaderProps = $ReadOnly<{
   children?: React.Node,
@@ -295,7 +302,7 @@ const ScrollViewStickyHeader: component(
       passthroughAnimatedPropExplicitValues={
         passthroughAnimatedPropExplicitValues
       }>
-      {React.cloneElement(child, {
+      {cloneElement(child, {
         style: styles.fill, // We transfer the child style to the wrapper.
         onLayout: undefined, // we call this manually through our this._onLayout
       })}

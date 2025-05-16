@@ -52,6 +52,7 @@ import invariant from 'invariant';
 import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {cloneElement} from 'react';
 
 /*
  * iOS scroll event timing nuances:
@@ -1830,7 +1831,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
         // however, the ScrollView still needs the baseStyle to be scrollable
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         // $FlowFixMe[incompatible-call]
-        return React.cloneElement(
+        return cloneElement(
           refreshControl,
           {style: StyleSheet.compose(baseStyle, outer)},
           <NativeScrollView

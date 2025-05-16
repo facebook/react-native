@@ -19,6 +19,7 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
+import {cloneElement} from 'react';
 
 type AndroidProps = $ReadOnly<{
   nextFocusDown?: ?number,
@@ -371,7 +372,7 @@ class TouchableHighlightImpl extends React.Component<
         testID={this.props.testID}
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
-        {React.cloneElement(child, {
+        {cloneElement(child, {
           style: StyleSheet.compose(
             child.props.style,
             this.state.extraStyles?.child,
