@@ -7831,8 +7831,7 @@ declare export default typeof TextImpl;
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/TextAncestor.js 1`] = `
-"declare const React: $FlowFixMe;
-declare const TextAncestorContext: React.Context<boolean>;
+"declare const TextAncestorContext: React.Context<boolean>;
 declare export default typeof TextAncestorContext;
 "
 `;
