@@ -11,6 +11,7 @@
 import type {ColorValue, ImageSource} from 'react-native';
 
 import * as React from 'react';
+import {createContext} from 'react';
 import {Appearance} from 'react-native';
 
 export type RNTesterTheme = {
@@ -137,7 +138,6 @@ export const RNTesterDarkTheme = {
 };
 
 export const themes = {light: RNTesterLightTheme, dark: RNTesterDarkTheme};
-export const RNTesterThemeContext: React.Context<RNTesterTheme> =
-  React.createContext(
-    Appearance.getColorScheme() === 'dark' ? themes.dark : themes.light,
-  );
+export const RNTesterThemeContext: React.Context<RNTesterTheme> = createContext(
+  Appearance.getColorScheme() === 'dark' ? themes.dark : themes.light,
+);
