@@ -9,14 +9,14 @@
  */
 
 'use strict';
+
 import SectionListBaseExample from './SectionListBaseExample';
 import * as React from 'react';
+import {useState} from 'react';
 
 export function SectionList_stickySectionHeadersEnabled(): React.Node {
-  const [output, setOutput] = React.useState(
-    'stickySectionHeadersEnabled false',
-  );
-  const [exampleProps, setExampleProps] = React.useState({
+  const [output, setOutput] = useState('stickySectionHeadersEnabled false');
+  const [exampleProps, setExampleProps] = useState({
     stickySectionHeadersEnabled: false,
   });
 

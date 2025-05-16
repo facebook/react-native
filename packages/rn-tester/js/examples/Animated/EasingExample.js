@@ -15,6 +15,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
+import {useState} from 'react';
 import {
   Animated,
   Easing,
@@ -128,7 +129,7 @@ function EasingItem({
 }
 
 function EasingExample(props: Props): React.Node {
-  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+  const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (
     <>

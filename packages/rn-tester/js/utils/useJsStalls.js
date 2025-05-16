@@ -11,6 +11,7 @@
 import type {RNTesterJsStallsState} from '../types/RNTesterTypes';
 
 import * as React from 'react';
+import {useState} from 'react';
 
 const INITIAL_STATE: RNTesterJsStallsState = {
   stallIntervalId: null,
@@ -30,7 +31,7 @@ const useJsStalls = (): ({
   state: RNTesterJsStallsState,
 }) => {
   const [stallsState, setStallsState] =
-    React.useState<RNTesterJsStallsState>(INITIAL_STATE);
+    useState<RNTesterJsStallsState>(INITIAL_STATE);
 
   const {stallIntervalId} = stallsState;
 

@@ -17,6 +17,7 @@ import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+import {useState} from 'react';
 
 type Props = $ReadOnly<{
   id?: string,
@@ -31,7 +32,7 @@ type Props = $ReadOnly<{
 }>;
 
 function LogBoxButton(props: Props): React.Node {
-  const [pressed, setPressed] = React.useState(false);
+  const [pressed, setPressed] = useState(false);
 
   let backgroundColor = props.backgroundColor;
   if (!backgroundColor) {
