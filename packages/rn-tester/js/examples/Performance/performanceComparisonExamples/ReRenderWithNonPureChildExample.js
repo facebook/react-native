@@ -16,10 +16,11 @@ import type {ScrollEvent} from 'react-native';
 import {LIST_100_ITEMS} from '../components/itemData';
 import ItemList from '../components/ItemList';
 import * as React from 'react';
+import {memo} from 'react';
 import {Text} from 'react-native';
 
 const {useCallback, useState} = React;
-const ItemListMemo = React.memo(ItemList);
+const ItemListMemo = memo(ItemList);
 
 function ReRenderWithNonPureChildBadExample(): React.Node {
   const [scrollOffset, setScrollOffset] = useState(0);
