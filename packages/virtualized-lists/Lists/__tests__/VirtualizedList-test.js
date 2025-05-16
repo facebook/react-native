@@ -13,7 +13,7 @@
 import VirtualizedList from '../VirtualizedList';
 import {format} from 'node:util';
 import * as React from 'react';
-import {createRef} from 'react';
+import {createElement, createRef} from 'react';
 import {act, create} from 'react-test-renderer';
 
 jest.useFakeTimers();
@@ -889,7 +889,7 @@ describe('VirtualizedList', () => {
     await act(() => {
       component = create(
         <VirtualizedList
-          ListHeaderComponent={() => React.createElement('Header')}
+          ListHeaderComponent={() => createElement('Header')}
           initialNumToRender={10}
           {...baseItemProps(items)}
           {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
@@ -2558,7 +2558,7 @@ function baseItemProps(items) {
   return {
     data: items,
     renderItem: ({item}) =>
-      React.createElement('MockCellItem', {value: item.key, ...item}),
+      createElement('MockCellItem', {value: item.key, ...item}),
     getItem: (data, index) => data[index],
     getItemCount: data => data.length,
     stickyHeaderIndices: stickyHeaderIndices(items),
