@@ -1947,7 +1947,7 @@ public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementa
 	public final fun setDevLoadingEnabled (Z)V
 }
 
-public final class com/facebook/react/devsupport/DevServerHelper {
+public class com/facebook/react/devsupport/DevServerHelper {
 	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Landroid/content/Context;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
 	public final fun closeInspectorConnection ()V
 	public final fun closePackagerConnection ()V
@@ -1956,12 +1956,12 @@ public final class com/facebook/react/devsupport/DevServerHelper {
 	public final fun downloadBundleFromURL (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;Lokhttp3/Request$Builder;)V
 	public static synthetic fun downloadBundleFromURL$default (Lcom/facebook/react/devsupport/DevServerHelper;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;Ljava/io/File;Ljava/lang/String;Lcom/facebook/react/devsupport/BundleDownloader$BundleInfo;Lokhttp3/Request$Builder;ILjava/lang/Object;)V
 	public final fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
-	public final fun getDevServerBundleURL (Ljava/lang/String;)Ljava/lang/String;
-	public final fun getDevServerSplitBundleURL (Ljava/lang/String;)Ljava/lang/String;
-	public final fun getSourceMapUrl (Ljava/lang/String;)Ljava/lang/String;
-	public final fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
+	public fun getDevServerBundleURL (Ljava/lang/String;)Ljava/lang/String;
+	public fun getDevServerSplitBundleURL (Ljava/lang/String;)Ljava/lang/String;
+	public fun getSourceMapUrl (Ljava/lang/String;)Ljava/lang/String;
+	public fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
 	public final fun getWebsocketProxyURL ()Ljava/lang/String;
-	public final fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
+	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public final fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
 	public final fun openInspectorConnection ()V
 	public final fun openPackagerConnection (Ljava/lang/String;Lcom/facebook/react/devsupport/DevServerHelper$PackagerCommandListener;)V
