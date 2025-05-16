@@ -10,6 +10,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTSurface.h>
 #import <React/RCTSurfaceHostingView.h>
+#import <React/RCTSurfacePresenterStub.h>
 
 @implementation RCTLogBoxView {
   RCTSurface *_surface;

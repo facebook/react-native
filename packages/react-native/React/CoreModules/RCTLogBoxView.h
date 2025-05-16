@@ -6,9 +6,10 @@
  */
 
 #import <React/RCTBridge.h>
-#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTSurfaceView.h>
 #import <UIKit/UIKit.h>
+
+@protocol RCTSurfacePresenterStub;
 
 @interface RCTLogBoxView : UIWindow
 

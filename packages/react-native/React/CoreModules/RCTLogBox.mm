@@ -13,6 +13,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTSurface.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import "CoreModulesPlugins.h"
 
 #if RCT_DEV_MENU
