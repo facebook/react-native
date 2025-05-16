@@ -73,5 +73,7 @@ Pod::Spec.new do |s|
     s.exclude_files = "ReactCommon/RCTHermesInstance.{mm,h}"
   end
 
+  s.exclude_files += "ReactCommon/RCTJermesInstance.{mm,h}"
+
   add_rn_third_party_dependencies(s)
 end
