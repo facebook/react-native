@@ -76,4 +76,10 @@ internal class TextInlineViewPlaceholderSpan(val reactTag: Int, val width: Int, 
       bottom: Int,
       paint: Paint
   ): Unit = Unit
+
+  companion object {
+    private const val TEXT_MIDDLE_ADJUSTMENT_FACTOR = 0.15f
+    private const val FALLBACK_UPWARD_ADJUSTMENT_FACTOR = 0.1f
+    private const val FALLBACK_ABOVE_BASELINE_RATIO = 0.75f
+  }
 }

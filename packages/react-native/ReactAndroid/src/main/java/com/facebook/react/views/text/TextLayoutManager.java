@@ -107,6 +107,16 @@ public class TextLayoutManager {
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
       new ConcurrentHashMap<>();
 
+  // Factor for adjusting the vertical middle of text for inline view alignment.
+  // Empirically chosen for better visual balance.
+  private static final float TEXT_MIDDLE_ADJUSTMENT_FACTOR = 0.07f;
+  // In fallback scenarios where text metrics might be unreliable for inline view alignment,
+  // this ratio determines how much of the placeholder is placed above the baseline.
+  private static final float FALLBACK_ABOVE_BASELINE_RATIO = 0.6f;
+  // In fallback scenarios, this is an additional upward adjustment factor for the placeholder,
+  // based on the placeholder's height. Empirically chosen.
+  private static final float FALLBACK_UPWARD_ADJUSTMENT_FACTOR = 0.1f;
+
   public static void setCachedSpannableForTag(int reactTag, @NonNull Spannable sp) {
     sTagToSpannableCache.put(reactTag, sp);
   }
