@@ -28,7 +28,7 @@ import {
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useMemo} from 'react';
 import {
   BackHandler,
   Button,
@@ -82,7 +82,7 @@ const RNTesterApp = ({
 
   const isScreenTiny = useWindowDimensions().height < 600;
 
-  const examplesList = React.useMemo(
+  const examplesList = useMemo(
     () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
     [recentlyUsed, testList],
   );

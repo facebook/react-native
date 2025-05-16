@@ -60,7 +60,7 @@ import TextInputState from './TextInputState';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-import {useCallback, useLayoutEffect, useRef, useState} from 'react';
+import {useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react';
 
 let AndroidTextInput;
 let AndroidTextInputCommands;
@@ -578,7 +578,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
     rejectResponderTermination,
   } = props;
 
-  const config = React.useMemo(
+  const config = useMemo(
     () => ({
       hitSlop,
       onPress: (event: GestureResponderEvent) => {

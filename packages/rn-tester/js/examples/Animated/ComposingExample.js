@@ -17,7 +17,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useRef, useState} from 'react';
+import {useMemo, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -147,7 +147,7 @@ function ComposingExampleItem({
   // Figure out how far along the x axis we should translate the box by taking into
   // account the window width, box size, and padding
   const maxXTranslation = windowWidth - boxSize - 4 * padding;
-  const boxIndexes = React.useMemo(() => [0, 1, 2, 3, 4], []);
+  const boxIndexes = useMemo(() => [0, 1, 2, 3, 4], []);
   const xTranslations = useRef(boxIndexes.map(() => new Animated.Value(0)));
   const animation = useRef(
     compositeAnimation(xTranslations.current, useNativeDriver),

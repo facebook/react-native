@@ -14,7 +14,7 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
 export default ({
@@ -31,8 +31,8 @@ function LoopingView({
   useNativeDriver: boolean,
   running: boolean,
 }) {
-  const opacity = React.useMemo(() => new Animated.Value(1), []);
-  const scale = React.useMemo(() => new Animated.Value(1), []);
+  const opacity = useMemo(() => new Animated.Value(1), []);
+  const scale = useMemo(() => new Animated.Value(1), []);
 
   useEffect(() => {
     if (!running) {
