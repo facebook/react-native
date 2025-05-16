@@ -204,22 +204,32 @@ PerformanceMeasure PerformanceEntryReporter::reportMeasure(
     const std::optional<std::string>& endMark,
     const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
         trackMetadata) {
-  DOMHighResTimeStamp startTimeVal =
-      startMark ? getMarkTime(*startMark) : startTime;
-  DOMHighResTimeStamp endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
+  DOMHighResTimeStamp startTimeValue = startTime;
+  if (startMark) {
+    if (auto startMarkBufferedTime = getMarkTime(*startMark)) {
+      startTimeValue = *startMarkBufferedTime;
+    }
+  }
 
-  if (!endMark && endTime < startTimeVal) {
+  DOMHighResTimeStamp endTimeValue = endTime;
+  if (endMark) {
+    if (auto endMarkBufferedTime = getMarkTime(*endMark)) {
+      endTimeValue = *endMarkBufferedTime;
+    }
+  }
+
+  if (!endMark && endTime < startTimeValue) {
     // The end time is not specified, take the current time, according to the
     // standard
-    endTimeVal = getCurrentTimeStamp();
+    endTimeValue = getCurrentTimeStamp();
   }
 
   DOMHighResTimeStamp durationVal =
-      duration ? *duration : endTimeVal - startTimeVal;
+      duration ? *duration : endTimeValue - startTimeValue;
 
   const auto entry = PerformanceMeasure{
       {.name = std::string(name),
-       .startTime = startTimeVal,
+       .startTime = startTimeValue,
        .duration = durationVal}};
 
   traceMeasure(entry);
@@ -235,16 +245,16 @@ PerformanceMeasure PerformanceEntryReporter::reportMeasure(
   return entry;
 }
 
-DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
+std::optional<DOMHighResTimeStamp> PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
   std::shared_lock lock(buffersMutex_);
 
   if (auto it = markBuffer_.find(markName); it) {
     return std::visit(
         [](const auto& entryData) { return entryData.startTime; }, *it);
-  } else {
-    return 0.0;
   }
+
+  return std::nullopt;
 }
 
 void PerformanceEntryReporter::reportEvent(
