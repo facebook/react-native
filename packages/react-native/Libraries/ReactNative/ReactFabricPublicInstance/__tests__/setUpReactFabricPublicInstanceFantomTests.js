@@ -21,12 +21,13 @@ import ReactFabricHostComponent from '../ReactFabricHostComponent';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {createRef} from 'react';
 
 export default function setUpTests({isModern}: {isModern: boolean}) {
   // TODO: move these tests to the test file for `ReactNativeElement` when the legacy implementation is removed.
   describe(`ReactFabricPublicInstance (${isModern ? 'modern' : 'legacy'})`, () => {
     it('should provide instances of the right class as refs in host components', () => {
-      const nodeRef = React.createRef<HostInstance>();
+      const nodeRef = createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
@@ -43,7 +44,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('blur', () => {
       test('blur() invokes TextInputState', () => {
         const root = Fantom.createRoot();
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(<View ref={nodeRef} />);
@@ -68,7 +69,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('focus', () => {
       test('focus() invokes TextInputState', () => {
         const root = Fantom.createRoot();
-        const ref = React.createRef<HostInstance>();
+        const ref = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(<View ref={ref} />);
@@ -93,7 +94,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('measure', () => {
       it('component.measure(...) invokes callback', () => {
         const root = Fantom.createRoot();
-        const ref = React.createRef<HostInstance>();
+        const ref = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -115,7 +116,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('unmounted.measure(...) does nothing', () => {
         const root = Fantom.createRoot();
-        const ref = React.createRef<HostInstance>();
+        const ref = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -142,7 +143,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('measureInWindow', () => {
       it('component.measureInWindow(...) invokes callback', () => {
         const root = Fantom.createRoot();
-        const ref = React.createRef<HostInstance>();
+        const ref = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -164,7 +165,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('unmounted.measureInWindow(...) does nothing', () => {
         const root = Fantom.createRoot();
-        const ref = React.createRef<HostInstance>();
+        const ref = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -191,8 +192,8 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('measureLayout', () => {
       it('component.measureLayout(component, ...) invokes callback', () => {
         const root = Fantom.createRoot();
-        const parentRef = React.createRef<HostInstance>();
-        const childRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childRef = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -219,8 +220,8 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('unmounted.measureLayout(component, ...) does nothing', () => {
         const root = Fantom.createRoot();
-        const parentRef = React.createRef<HostInstance>();
-        const childRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childRef = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -252,8 +253,8 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('component.measureLayout(unmounted, ...) does nothing', () => {
         const root = Fantom.createRoot();
-        const parentRef = React.createRef<HostInstance>();
-        const childRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childRef = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -285,8 +286,8 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
       it('unmounted.measureLayout(unmounted, ...) does nothing', () => {
         const root = Fantom.createRoot();
-        const parentRef = React.createRef<HostInstance>();
-        const childRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childRef = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -318,7 +319,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     describe('setNativeProps', () => {
       it('should propagate changes to the host component', () => {
         const root = Fantom.createRoot();
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(<View ref={nodeRef} testID="first test id" />);
@@ -370,7 +371,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
           expect(RawNativeDOM.setNativeProps).toBeNull();
 
           const root = Fantom.createRoot();
-          const nodeRef = React.createRef<HostInstance>();
+          const nodeRef = createRef<HostInstance>();
 
           Fantom.runTask(() => {
             root.render(<View ref={nodeRef} testID="first test id" />);

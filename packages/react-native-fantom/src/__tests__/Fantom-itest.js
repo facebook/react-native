@@ -16,6 +16,7 @@ import type {HostInstance} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {createRef} from 'react';
 import {LogBox, Modal, ScrollView, Text, TextInput, View} from 'react-native';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
@@ -552,7 +553,7 @@ describe('Fantom', () => {
 
       let focusEvent = jest.fn();
 
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(<TextInput onFocus={focusEvent} ref={ref} />);
@@ -576,7 +577,7 @@ describe('Fantom', () => {
 
     it('sends event with payload', () => {
       const root = Fantom.createRoot();
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
       const onChange = jest.fn();
 
       Fantom.runTask(() => {
@@ -607,7 +608,7 @@ describe('Fantom', () => {
 
     it('it batches events with isUnique option', () => {
       const root = Fantom.createRoot();
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
       const onScroll = jest.fn();
 
       Fantom.runTask(() => {
@@ -666,7 +667,7 @@ describe('Fantom', () => {
   describe('dispatchNativeEvent', () => {
     it('flushes the event and runs the work loop', () => {
       const root = Fantom.createRoot();
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
 
       let focusEvent = jest.fn();
 
@@ -687,7 +688,7 @@ describe('Fantom', () => {
   describe('enqueueScrollEvent', () => {
     it('throws error if called on node that is not scroll view', () => {
       const root = Fantom.createRoot();
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(<View ref={ref} />);
@@ -709,8 +710,8 @@ describe('Fantom', () => {
 
     it('delivers onScroll event and affects position of elements on screen', () => {
       const root = Fantom.createRoot();
-      const viewRef = React.createRef<HostInstance>();
-      const scrollViewRef = React.createRef<HostInstance>();
+      const viewRef = createRef<HostInstance>();
+      const scrollViewRef = createRef<HostInstance>();
       const onScroll = jest.fn();
 
       Fantom.runTask(() => {
@@ -778,7 +779,7 @@ describe('Fantom', () => {
   describe('scrollTo', () => {
     it('throws error if called on node that is not scroll view', () => {
       const root = Fantom.createRoot();
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(<View ref={ref} />);
@@ -798,8 +799,8 @@ describe('Fantom', () => {
 
     it('delivers onScroll event and affects position of elements on screen', () => {
       const root = Fantom.createRoot();
-      const scrollViewRef = React.createRef<HostInstance>();
-      const viewRef = React.createRef<HostInstance>();
+      const scrollViewRef = createRef<HostInstance>();
+      const viewRef = createRef<HostInstance>();
       const onScroll = jest.fn();
 
       Fantom.runTask(() => {
@@ -890,7 +891,7 @@ describe('Fantom', () => {
   describe('enqueueModalSizeUpdate', () => {
     it('throws error if called on node that is not <Modal />', () => {
       const root = Fantom.createRoot();
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(<View ref={ref} />);
@@ -912,8 +913,8 @@ describe('Fantom', () => {
 
     it('change size of <Modal />', () => {
       const root = Fantom.createRoot();
-      const modalNodeRef = React.createRef<HostInstance>();
-      const viewNodeRef = React.createRef<HostInstance>();
+      const modalNodeRef = createRef<HostInstance>();
+      const viewNodeRef = createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(
