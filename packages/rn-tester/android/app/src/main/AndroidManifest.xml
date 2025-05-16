@@ -87,6 +87,14 @@
                     android:scheme="rntester" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.alert.AlertDialogActivity"
+            android:label="@string/app_name"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.AppCompat.Dialog.Alert">
+        </activity>
 
         <provider
             android:name="com.facebook.react.modules.blob.BlobProvider"
