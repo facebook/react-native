@@ -28,7 +28,7 @@ import {
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
-import {useCallback, useEffect, useMemo} from 'react';
+import {useCallback, useEffect, useMemo, useReducer} from 'react';
 import {
   BackHandler,
   Button,
@@ -65,7 +65,7 @@ const RNTesterApp = ({
   },
   customBackButton?: BackButton,
 }): React.Node => {
-  const [state, dispatch] = React.useReducer(
+  const [state, dispatch] = useReducer(
     RNTesterNavigationReducer,
     initialNavigationState,
   );
