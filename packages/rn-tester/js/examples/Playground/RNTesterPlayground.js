@@ -9,15 +9,9 @@
  * @oncall react_native
  */
 
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-
-import RNTesterText from '../../components/RNTesterText';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Button,
-  SafeAreaView,
-  ScrollView,
-  useColorScheme,
   View,
   NativeModules,
   AppState,
@@ -27,10 +21,9 @@ import {
 } from 'react-native';
 
 const { ForcedAlert } = NativeModules;
-const {EVENT_A, EVENT_B} = ForcedAlert.getConstants();
+const {EVENT_SYNC, EVENT_ASYNC} = ForcedAlert.getConstants();
 
 function Playground(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
@@ -42,12 +35,12 @@ function Playground(): React.JSX.Element {
     }));
 
     const eventEmitter = new NativeEventEmitter(ForcedAlert);
-    subscriptions.push(eventEmitter.addListener(EVENT_A, message => {
-      console.log('Event A: ', message);
+    subscriptions.push(eventEmitter.addListener(EVENT_SYNC, message => {
+      console.log('Event sync: ', message);
     }));
-    subscriptions.push(eventEmitter.addListener(EVENT_B, async message => {
+    subscriptions.push(eventEmitter.addListener(EVENT_ASYNC, async message => {
       await sleep(500);
-      console.log('Event B: ', message);
+      console.log('Event async: ', message);
     }));
 
     return () => {
@@ -55,18 +48,12 @@ function Playground(): React.JSX.Element {
     };
   }, []);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? 'black' : 'white',
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic">
+    <View>
         <Text>Current state is: {appStateVisible}</Text>
-        <View style={backgroundStyle}>
+        <View>
          <Button 
-          title='Press me'
+          title='Open Alert'
           onPress={async () => {
             console.log('\n');
             await sleep(500);
@@ -78,8 +65,7 @@ function Playground(): React.JSX.Element {
           }}
          />
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
   );
 }
 

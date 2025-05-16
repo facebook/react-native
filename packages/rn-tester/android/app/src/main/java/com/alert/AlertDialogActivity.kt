@@ -25,13 +25,13 @@ public class AlertDialogActivity: Activity() {
         val button1 = AppCompatButton(this)
         button1.setText("Send event")
         button1.setOnClickListener {
-            ForcedAlertModule.sendEvent(ForcedAlertModule.EVENT_A, message ?: "no message")
+            ForcedAlertModule.sendSyncEvent(message ?: "no message")
         }
 
         val button2 = AppCompatButton(this)
-        button2.setText("Send event with async")
+        button2.setText("Send async event")
         button2.setOnClickListener {
-            ForcedAlertModule.sendEvent(ForcedAlertModule.EVENT_B, message ?: "no message")
+            ForcedAlertModule.sendAsyncEvent(message ?: "no message")
         }
         view.addView(button1)
         view.addView(button2)
@@ -40,8 +40,13 @@ public class AlertDialogActivity: Activity() {
             .setView(view)
             .setTitle(title)
             .setPositiveButton("Dismiss") { _, _ ->
+                ForcedAlertModule.sendSyncEvent("Closing Alert")
+                ForcedAlertModule.sendAsyncEvent("Closing Alert")
                 finish()
             }
+
+        ForcedAlertModule.sendSyncEvent("Opening Alert")
+        ForcedAlertModule.sendAsyncEvent("Opening Alert")
 
         val alert = builder.create()
         alert.setCancelable(false)
