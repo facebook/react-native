@@ -15,7 +15,7 @@ import RNTesterText from '../../components/RNTesterText';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-import {useCallback, useRef, useState} from 'react';
+import {cloneElement, useCallback, useRef, useState} from 'react';
 import {
   Platform,
   RefreshControl,
@@ -84,7 +84,7 @@ class AppendingList extends React.Component<
           style={styles.scrollView}>
           {this.state.items.map(item =>
             // $FlowFixMe[prop-missing] React.Element internal inspection
-            React.cloneElement(item, {key: item.props.msg}),
+            cloneElement(item, {key: item.props.msg}),
           )}
         </ScrollView>
         <ScrollView
@@ -97,7 +97,7 @@ class AppendingList extends React.Component<
           style={[styles.scrollView, styles.horizontalScrollView]}>
           {this.state.items.map(item =>
             // $FlowFixMe[prop-missing] React.Element internal inspection
-            React.cloneElement(item, {key: item.props.msg, style: null}),
+            cloneElement(item, {key: item.props.msg, style: null}),
           )}
         </ScrollView>
         <View style={styles.row}>
@@ -127,7 +127,7 @@ class AppendingList extends React.Component<
             onPress={() => {
               this.setState(state => ({
                 items: [
-                  React.cloneElement(state.items[0], {
+                  cloneElement(state.items[0], {
                     style: {paddingBottom: Math.random() * 40},
                   }),
                 ].concat(state.items.slice(1)),
@@ -159,7 +159,7 @@ class AppendingList extends React.Component<
             onPress={() => {
               this.setState(state => ({
                 items: state.items.slice(0, -1).concat(
-                  React.cloneElement(state.items[state.items.length - 1], {
+                  cloneElement(state.items[state.items.length - 1], {
                     style: {paddingBottom: Math.random() * 40},
                   }),
                 ),
