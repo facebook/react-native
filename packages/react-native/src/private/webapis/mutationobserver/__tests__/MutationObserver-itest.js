@@ -21,6 +21,7 @@ import NativeMutationObserver from '../specs/NativeMutationObserver';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {createRef} from 'react';
 import {View} from 'react-native';
 import setUpMutationObserver from 'react-native/src/private/setup/setUpMutationObserver';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
@@ -92,7 +93,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should throw if the `childList` option is not provided', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -129,7 +130,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should throw if the `attributes` option is provided', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -147,7 +148,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should throw if the `attributeFilter` option is provided', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -165,7 +166,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should throw if the `attributeOldValue` option is provided', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -184,7 +185,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should throw if the `characterData` option is provided', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -202,7 +203,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should throw if the `characterDataOldValue` option is provided', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -223,7 +224,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should ignore calls to observe disconnected targets', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -247,7 +248,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should report direct children added to and removed from an observed node (childList: true, subtree: false) ', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -266,8 +267,8 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
         // Does not report anything initially
         expect(observerCallbackCallArgs.length).toBe(0);
 
-        const childNode1Ref = React.createRef<HostInstance>();
-        const childNode2Ref = React.createRef<HostInstance>();
+        const childNode1Ref = createRef<HostInstance>();
+        const childNode2Ref = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -329,7 +330,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should NOT report changes in transitive children when `subtree` is not set to true', () => {
-        const observedNodeRef = React.createRef<HostInstance>();
+        const observedNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -373,7 +374,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should report changes in transitive children when `subtree` is set to true', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -393,7 +394,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
         // Does not report anything initially
         expect(observerCallback).not.toHaveBeenCalled();
 
-        const node111Ref = React.createRef<HostInstance>();
+        const node111Ref = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -432,7 +433,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should report changes in different parts of the subtree as separate entries (subtree = true)', () => {
-        const nodeRef = React.createRef<HostInstance>();
+        const nodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -453,8 +454,8 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
         // Does not report anything initially
         expect(observerCallback).not.toHaveBeenCalled();
 
-        const node111Ref = React.createRef<HostInstance>();
-        const node121Ref = React.createRef<HostInstance>();
+        const node111Ref = createRef<HostInstance>();
+        const node121Ref = createRef<HostInstance>();
 
         Fantom.runTask(() => {
           root.render(
@@ -504,8 +505,8 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
 
       describe('multiple observers', () => {
         it('should report changes to multiple observers observing different subtrees', () => {
-          const node1Ref = React.createRef<HostInstance>();
-          const node2Ref = React.createRef<HostInstance>();
+          const node1Ref = createRef<HostInstance>();
+          const node2Ref = createRef<HostInstance>();
 
           const root = Fantom.createRoot();
           Fantom.runTask(() => {
@@ -532,8 +533,8 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
           expect(observerCallback1).not.toHaveBeenCalled();
           expect(observerCallback2).not.toHaveBeenCalled();
 
-          const childNode11Ref = React.createRef<HostInstance>();
-          const childNode21Ref = React.createRef<HostInstance>();
+          const childNode11Ref = createRef<HostInstance>();
+          const childNode21Ref = createRef<HostInstance>();
 
           Fantom.runTask(() => {
             root.render(
@@ -594,8 +595,8 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
         });
 
         it('should report changes to multiple observers observing the same subtree', () => {
-          const node1Ref = React.createRef<HostInstance>();
-          const node2Ref = React.createRef<HostInstance>();
+          const node1Ref = createRef<HostInstance>();
+          const node2Ref = createRef<HostInstance>();
 
           const root = Fantom.createRoot();
           Fantom.runTask(() => {
@@ -621,7 +622,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
           expect(observerCallback1).not.toHaveBeenCalled();
           expect(observerCallback2).not.toHaveBeenCalled();
 
-          const childNode111Ref = React.createRef<HostInstance>();
+          const childNode111Ref = createRef<HostInstance>();
 
           Fantom.runTask(() => {
             root.render(
@@ -686,8 +687,8 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
 
       describe('multiple observed nodes in the same observer', () => {
         it('should report changes in disjoint observations', () => {
-          const node1Ref = React.createRef<HostInstance>();
-          const node2Ref = React.createRef<HostInstance>();
+          const node1Ref = createRef<HostInstance>();
+          const node2Ref = createRef<HostInstance>();
 
           const root = Fantom.createRoot();
           Fantom.runTask(() => {
@@ -710,8 +711,8 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
           // Does not report anything initially
           expect(observerCallback).not.toHaveBeenCalled();
 
-          const childNode11Ref = React.createRef<HostInstance>();
-          const childNode21Ref = React.createRef<HostInstance>();
+          const childNode11Ref = createRef<HostInstance>();
+          const childNode21Ref = createRef<HostInstance>();
 
           Fantom.runTask(() => {
             root.render(
@@ -760,8 +761,8 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
         });
 
         it('should report changes in joint observations', () => {
-          const node1Ref = React.createRef<HostInstance>();
-          const node11Ref = React.createRef<HostInstance>();
+          const node1Ref = createRef<HostInstance>();
+          const node11Ref = createRef<HostInstance>();
 
           const root = Fantom.createRoot();
           Fantom.runTask(() => {
@@ -783,7 +784,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
           // Does not report anything initially
           expect(observerCallback).not.toHaveBeenCalled();
 
-          const childNode111Ref = React.createRef<HostInstance>();
+          const childNode111Ref = createRef<HostInstance>();
 
           Fantom.runTask(() => {
             root.render(
@@ -834,7 +835,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
             const [getReferenceCount, childRef] =
               createShadowNodeReferenceCountingRef();
 
-            const parentRef = React.createRef<HostInstance>();
+            const parentRef = createRef<HostInstance>();
 
             Fantom.runTask(() => {
               root.render(
@@ -868,7 +869,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
 
     describe('disconnect()', () => {
       it('should stop observing targets', () => {
-        const observedNodeRef = React.createRef<HostInstance>();
+        const observedNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -909,7 +910,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should correctly unobserve targets that are disconnected after observing', () => {
-        const observedNodeRef = React.createRef<HostInstance>();
+        const observedNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -934,7 +935,7 @@ const nativeUnobserveAll = nullthrows(NativeMutationObserver?.unobserveAll);
       });
 
       it('should correctly unobserve targets that are disconnected before observing', () => {
-        const observedNodeRef = React.createRef<HostInstance>();
+        const observedNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {

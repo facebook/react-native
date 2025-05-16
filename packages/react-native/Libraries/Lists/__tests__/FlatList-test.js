@@ -13,6 +13,7 @@
 const {create} = require('../../../jest/renderer');
 const FlatList = require('../FlatList').default;
 const React = require('react');
+const {createRef} = require('react');
 
 describe('FlatList', () => {
   it('renders simple list', async () => {
@@ -96,7 +97,7 @@ describe('FlatList', () => {
     jest.resetModules();
     jest.unmock('../../Components/ScrollView/ScrollView');
 
-    const listRef = React.createRef(null);
+    const listRef = createRef(null);
 
     await create(
       <FlatList
@@ -132,7 +133,7 @@ describe('FlatList', () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
     }
-    const listRef = React.createRef(null);
+    const listRef = createRef(null);
 
     await create(
       <FlatList

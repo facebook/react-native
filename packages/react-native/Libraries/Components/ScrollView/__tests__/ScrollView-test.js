@@ -17,6 +17,7 @@ const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 const View = require('../../View/View').default;
 const ScrollView = require('../ScrollView').default;
 const React = require('react');
+const {createRef} = require('react');
 
 describe('ScrollView', () => {
   beforeEach(() => {
@@ -42,7 +43,7 @@ describe('ScrollView', () => {
   it('mocks native methods and instance methods', async () => {
     jest.mock('../ScrollView');
 
-    const ref = React.createRef();
+    const ref = createRef();
     await create(<ScrollView ref={ref} />);
 
     expect(ref.current?.measure).toBeInstanceOf(jest.fn().constructor);
@@ -137,7 +138,7 @@ describe('ScrollView', () => {
     it('returns an instance', async () => {
       jest.dontMock('../ScrollView');
 
-      const scrollViewRef = React.createRef(null);
+      const scrollViewRef = createRef(null);
       await create(<ScrollView ref={scrollViewRef} />);
       const innerViewRef = scrollViewRef.current.getInnerViewRef();
 
