@@ -29,6 +29,7 @@ import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEv
 import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
 import EventfulView from './W3CPointerEventsEventfulView';
 import * as React from 'react';
+import {useState} from 'react';
 import {Button, ScrollView, StyleSheet, Text, View} from 'react-native';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
@@ -105,7 +106,7 @@ function PointerEventScaffolding({
 }: {
   Example: component(log: (string) => void),
 }) {
-  const [eventsLog, setEventsLog] = React.useState('');
+  const [eventsLog, setEventsLog] = useState('');
   const clear = () => setEventsLog('');
   const log = (eventStr: string) => {
     setEventsLog(currentEventsLog => `${eventStr}\n${currentEventsLog}`);

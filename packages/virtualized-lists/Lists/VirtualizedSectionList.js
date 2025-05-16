@@ -15,6 +15,7 @@ import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
+import {useState} from 'react';
 
 type DefaultSectionT = {
   data: any,
@@ -509,11 +510,11 @@ function ItemWithSeparator<ItemT>(
   } = props;
 
   const [leadingSeparatorHiglighted, setLeadingSeparatorHighlighted] =
-    React.useState(false);
+    useState(false);
 
-  const [separatorHighlighted, setSeparatorHighlighted] = React.useState(false);
+  const [separatorHighlighted, setSeparatorHighlighted] = useState(false);
 
-  const [leadingSeparatorProps, setLeadingSeparatorProps] = React.useState<
+  const [leadingSeparatorProps, setLeadingSeparatorProps] = useState<
     ItemWithSeparatorCommonProps<ItemT>,
   >({
     leadingItem: props.leadingItem,
@@ -522,7 +523,7 @@ function ItemWithSeparator<ItemT>(
     trailingItem: props.item,
     trailingSection: props.trailingSection,
   });
-  const [separatorProps, setSeparatorProps] = React.useState<
+  const [separatorProps, setSeparatorProps] = useState<
     ItemWithSeparatorCommonProps<ItemT>,
   >({
     leadingItem: props.item,

@@ -17,7 +17,7 @@ import RNTesterText from '../../components/RNTesterText';
 import checkImageSource from './check.png';
 import mixedCheckboxImageSource from './mixed.png';
 import uncheckImageSource from './uncheck.png';
-import React, {createRef} from 'react';
+import React, {createRef, useState} from 'react';
 import {
   AccessibilityInfo,
   Alert,
@@ -1561,7 +1561,7 @@ function DisplayOptionStatusExample({
   optionChecker: () => Promise<boolean>,
   optionName: string,
 }) {
-  const [statusEnabled, setStatusEnabled] = React.useState(false);
+  const [statusEnabled, setStatusEnabled] = useState(false);
   React.useEffect(() => {
     const listener = AccessibilityInfo.addEventListener(
       // $FlowFixMe[prop-missing]
@@ -1589,7 +1589,7 @@ function DisplayOptionStatusExample({
 }
 
 function AccessibilityExpandedExample(): React.Node {
-  const [expand, setExpanded] = React.useState(false);
+  const [expand, setExpanded] = useState(false);
   const expandAction = {name: 'expand'};
   const collapseAction = {name: 'collapse'};
   return (

@@ -20,7 +20,7 @@ import ensureInstance from '../../../../src/private/__tests__/utilities/ensureIn
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-import {createRef} from 'react';
+import {createRef, useState} from 'react';
 import {FlatList, Modal, ScrollView, View} from 'react-native';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -824,7 +824,7 @@ test('nesting inside FlatList with item resizing', () => {
   const root = Fantom.createRoot({viewportHeight: 100, viewportWidth: 100});
   let _setIsExpanded = null;
   function ExpandableComponent() {
-    const [isExpanded, setIsExpanded] = React.useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     _setIsExpanded = setIsExpanded;
     return <View>{isExpanded && <View style={{height: 80.5}} />}</View>;
   }

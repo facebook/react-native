@@ -14,6 +14,7 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
+import {useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
 function AnimatedView({useNativeDriver}: {useNativeDriver: boolean}) {
@@ -123,7 +124,7 @@ function AnimatedView({useNativeDriver}: {useNativeDriver: boolean}) {
 }
 
 function AnimatedColorStyleExample(): React.Node {
-  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+  const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (
     <View>

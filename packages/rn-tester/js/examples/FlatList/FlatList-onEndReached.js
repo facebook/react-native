@@ -9,13 +9,15 @@
  */
 
 'use strict';
+
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import BaseFlatListExample from './BaseFlatListExample';
 import * as React from 'react';
+import {useState} from 'react';
 
 export function FlatList_onEndReached(): React.Node {
-  const [output, setOutput] = React.useState('');
+  const [output, setOutput] = useState('');
   const exampleProps = {
     onEndReached: (info: {distanceFromEnd: number, ...}) =>
       setOutput('onEndReached'),

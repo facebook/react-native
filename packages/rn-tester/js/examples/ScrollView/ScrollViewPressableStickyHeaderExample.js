@@ -9,6 +9,7 @@
  */
 
 import * as React from 'react';
+import {useState} from 'react';
 import {
   Button,
   Pressable,
@@ -19,7 +20,7 @@ import {
 } from 'react-native';
 
 function StickyHeader() {
-  const [backgroundColor, setBackgroundColor] = React.useState('blue');
+  const [backgroundColor, setBackgroundColor] = useState('blue');
   return (
     <View
       key={0}

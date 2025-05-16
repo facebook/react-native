@@ -608,7 +608,7 @@ class SelectionExample extends React.Component<
 }
 
 function UncontrolledExample() {
-  const [isFocused, setIsFocused] = React.useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
     <ExampleTextInput
@@ -887,10 +887,10 @@ function AutogrowingTextInputExample({
   style,
   ...props
 }: React.ElementConfig<typeof TextInput>) {
-  const [multiline, setMultiline] = React.useState(true);
-  const [fullWidth, setFullWidth] = React.useState(true);
-  const [text, setText] = React.useState('');
-  const [contentSize, setContentSize] = React.useState({width: 0, height: 0});
+  const [multiline, setMultiline] = useState(true);
+  const [fullWidth, setFullWidth] = useState(true);
+  const [text, setText] = useState('');
+  const [contentSize, setContentSize] = useState({width: 0, height: 0});
 
   return (
     <View>

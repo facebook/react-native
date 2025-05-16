@@ -14,6 +14,7 @@ import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useState} from 'react';
 import {
   Image,
   Platform,
@@ -39,7 +40,7 @@ function blobToBase64(blob: Blob) {
 }
 
 const ContentSelector = (): React.Node => {
-  const [base64Image, setBase64Image] = React.useState('');
+  const [base64Image, setBase64Image] = useState('');
   const imageSelector = React.useCallback(async () => {
     try {
       const NativeSampleTurboModule =

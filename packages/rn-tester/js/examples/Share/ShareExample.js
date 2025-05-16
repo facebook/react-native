@@ -12,6 +12,7 @@
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useState} from 'react';
 import {Button, Share, StyleSheet, View} from 'react-native';
 
 const shareMessage = () => {
@@ -81,7 +82,7 @@ const ShareMessageWithTitle = () => {
 };
 
 const SharedAction = () => {
-  const [shared, setShared] = React.useState<?string>();
+  const [shared, setShared] = useState<?string>();
 
   const sharedAction = async () => {
     try {

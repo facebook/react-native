@@ -14,7 +14,7 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
 export default ({
@@ -65,8 +65,8 @@ function LoopingView({
 }
 
 function LoopingExample(props: {}): React.Node {
-  const [running, setRunning] = React.useState(false);
-  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+  const [running, setRunning] = useState(false);
+  const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (
     <View>

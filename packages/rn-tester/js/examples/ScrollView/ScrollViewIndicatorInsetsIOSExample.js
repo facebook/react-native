@@ -20,8 +20,8 @@ import {
 } from 'react-native';
 
 export function ScrollViewIndicatorInsetsExample() {
-  const [automaticallyAdjustsScrollIndicatorInsets, setAutomaticallyAdjustsScrollIndicatorInsets] = React.useState(true);
-  const [modalVisible, setModalVisible] = React.useState(false);
+  const [automaticallyAdjustsScrollIndicatorInsets, setAutomaticallyAdjustsScrollIndicatorInsets] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const { height, width } = useWindowDimensions();
 
     return (
