@@ -113,20 +113,4 @@ folly::dynamic convertIdToFollyDynamic(id json)
   return nil;
 }
 
-NSArray<NSString *> *extractKeysFromFollyDynamic(const folly::dynamic &dyn)
-{
-  NSMutableArray<NSString *> *result = [NSMutableArray new];
-
-  if (dyn.type() == folly::dynamic::OBJECT) {
-    for (const auto &elem : dyn.items()) {
-      NSString *key = [[NSString alloc] initWithBytes:elem.first.c_str()
-                                               length:elem.first.size()
-                                             encoding:NSUTF8StringEncoding];
-      [result addObject:key];
-    }
-  }
-
-  return result;
-}
-
 } // namespace facebook::react

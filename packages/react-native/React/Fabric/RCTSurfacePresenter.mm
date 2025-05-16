@@ -148,27 +148,28 @@ using namespace facebook::react;
   return componentView;
 }
 
-- (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag props:(folly::dynamic)props
+- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
 {
   RCTScheduler *scheduler = [self scheduler];
   if (!scheduler) {
-    return;
+    return NO;
   }
+
+  ReactTag tag = [reactTag integerValue];
   UIView<RCTComponentViewProtocol> *componentView =
-      [_mountingManager.componentViewRegistry findComponentViewWithTag:reactTag];
+      [_mountingManager.componentViewRegistry findComponentViewWithTag:tag];
   if (componentView == nil) {
-    return; // This view probably isn't managed by Fabric
+    return NO; // This view probably isn't managed by Fabric
   }
   ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
   auto *componentDescriptor = [scheduler findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:handle];
 
   if (!componentDescriptor) {
-    return;
+    return YES;
   }
 
-  [_mountingManager synchronouslyUpdateViewOnUIThread:reactTag
-                                         changedProps:std::move(props)
-                                  componentDescriptor:*componentDescriptor];
+  [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:*componentDescriptor];
+  return YES;
 }
 
 - (void)setupAnimationDriverWithSurfaceHandler:(const facebook::react::SurfaceHandler &)surfaceHandler

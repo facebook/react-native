@@ -12,7 +12,6 @@
 namespace facebook::react {
 
 folly::dynamic convertIdToFollyDynamic(id json);
-id convertFollyDynamicToId(const folly::dynamic &dyn);
-NSArray<NSString *> *extractKeysFromFollyDynamic(const folly::dynamic &dyn);
+id convertFollyDynamicToId(const folly::dynamic& dyn);
 
 } // namespace facebook::react

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 
 #import "RCTBridge.h"

@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
            forShadowView:(const facebook::react::ShadowView &)shadowView;
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
-                             changedProps:(folly::dynamic)props
+                             changedProps:(NSDictionary *)props
                       componentDescriptor:(const facebook::react::ComponentDescriptor &)componentDescriptor;
 @end
 
