@@ -16,7 +16,7 @@ import type {HostInstance} from 'react-native';
 import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
-import {useEffect, useLayoutEffect, useRef} from 'react';
+import {createRef, useEffect, useLayoutEffect, useRef} from 'react';
 import {TextInput} from 'react-native';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -102,7 +102,7 @@ describe('focus view command', () => {
 describe('focus and blur event', () => {
   it('sends focus and blur events', () => {
     const root = Fantom.createRoot();
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
 
     let focusEvent = jest.fn();
     let blurEvent = jest.fn();
@@ -145,7 +145,7 @@ describe('focus and blur event', () => {
 describe('onChange', () => {
   it('delivers onChange event', () => {
     const root = Fantom.createRoot();
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
     const onChange = jest.fn();
 
     Fantom.runTask(() => {
@@ -178,7 +178,7 @@ describe('onChange', () => {
 describe('onChangeText', () => {
   it('delivers onChangeText event', () => {
     const root = Fantom.createRoot();
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
     const onChangeText = jest.fn();
 
     Fantom.runTask(() => {

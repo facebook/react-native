@@ -16,6 +16,7 @@ import type {HostInstance} from 'react-native';
 import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {createRef} from 'react';
 import {ScrollView, View} from 'react-native';
 import {
   NativeText,
@@ -35,7 +36,7 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 
 describe('ReactNativeElement', () => {
   it('should be used to create public instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
-    const ref = React.createRef<HostInstance>();
+    const ref = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
@@ -47,7 +48,7 @@ describe('ReactNativeElement', () => {
 
   describe('extends `ReadOnlyNode`', () => {
     it('should be an instance of `ReadOnlyNode`', () => {
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
@@ -59,10 +60,10 @@ describe('ReactNativeElement', () => {
 
     describe('nodeType', () => {
       it('returns ReadOnlyNode.ELEMENT_NODE', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const childNodeARef = React.createRef<HostInstance>();
-        const childNodeBRef = React.createRef<HostInstance>();
-        const childNodeCRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
@@ -90,10 +91,10 @@ describe('ReactNativeElement', () => {
 
     describe('nodeValue', () => {
       it('returns null', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const childNodeARef = React.createRef<HostInstance>();
-        const childNodeBRef = React.createRef<HostInstance>();
-        const childNodeCRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
@@ -121,10 +122,10 @@ describe('ReactNativeElement', () => {
 
     describe('childNodes / hasChildNodes()', () => {
       it('returns updated child nodes information', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const childNodeARef = React.createRef<HostInstance>();
-        const childNodeBRef = React.createRef<HostInstance>();
-        const childNodeCRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
@@ -186,10 +187,10 @@ describe('ReactNativeElement', () => {
     describe('getRootNode()', () => {
       // This is the desired implementation (not implemented yet).
       it('returns a root node representing the document', () => {
-        const parentANodeRef = React.createRef<HostInstance>();
-        const parentBNodeRef = React.createRef<HostInstance>();
-        const childANodeRef = React.createRef<HostInstance>();
-        const childBNodeRef = React.createRef<HostInstance>();
+        const parentANodeRef = createRef<HostInstance>();
+        const parentBNodeRef = createRef<HostInstance>();
+        const childANodeRef = createRef<HostInstance>();
+        const childBNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -244,10 +245,10 @@ describe('ReactNativeElement', () => {
 
     describe('firstChild / lastChild / previousSibling / nextSibling / parentNode / parentElement', () => {
       it('return updated relative nodes', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const childNodeARef = React.createRef<HostInstance>();
-        const childNodeBRef = React.createRef<HostInstance>();
-        const childNodeCRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
@@ -382,11 +383,11 @@ describe('ReactNativeElement', () => {
 
     describe('compareDocumentPosition / contains', () => {
       it('handles containment, order and connection', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const childNodeARef = React.createRef<HostInstance>();
-        const childNodeAARef = React.createRef<HostInstance>();
-        const childNodeBRef = React.createRef<HostInstance>();
-        const childNodeBBRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeAARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeBBRef = createRef<HostInstance>();
 
         // Initial render with 2 children
         const root = Fantom.createRoot();
@@ -491,7 +492,7 @@ describe('ReactNativeElement', () => {
         expect(childNodeBB.compareDocumentPosition(childNodeBB)).toBe(0);
         expect(childNodeBB.contains(childNodeBB)).toBe(true);
 
-        const altParentNodeRef = React.createRef<HostInstance>();
+        const altParentNodeRef = createRef<HostInstance>();
 
         // Similar structure in a different tree
         const root2 = Fantom.createRoot();
@@ -548,7 +549,7 @@ describe('ReactNativeElement', () => {
 
   describe('extends `ReadOnlyElement`', () => {
     it('should be an instance of `ReadOnlyElement`', () => {
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
@@ -560,10 +561,10 @@ describe('ReactNativeElement', () => {
 
     describe('children / childElementCount', () => {
       it('return updated element children information', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const childElementARef = React.createRef<HostInstance>();
-        const childElementBRef = React.createRef<HostInstance>();
-        const childElementCRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childElementARef = createRef<HostInstance>();
+        const childElementBRef = createRef<HostInstance>();
+        const childElementCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
@@ -630,10 +631,10 @@ describe('ReactNativeElement', () => {
 
     describe('firstElementChild / lastElementChild / previousElementSibling / nextElementSibling', () => {
       it('return updated relative elements', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const childElementARef = React.createRef<HostInstance>();
-        const childElementBRef = React.createRef<HostInstance>();
-        const childElementCRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childElementARef = createRef<HostInstance>();
+        const childElementBRef = createRef<HostInstance>();
+        const childElementCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
@@ -742,8 +743,8 @@ describe('ReactNativeElement', () => {
 
     describe('textContent', () => {
       it('should return the concatenated values of all its text node descendants (using DFS)', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const childNodeARef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -763,7 +764,7 @@ describe('ReactNativeElement', () => {
         expect(parentNode.textContent).toBe('Hello world!');
         expect(childNodeA.textContent).toBe('world!');
 
-        const childNodeBRef = React.createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
         Fantom.runTask(() => {
           root.render(
             <View key="parent">
@@ -793,7 +794,7 @@ describe('ReactNativeElement', () => {
 
     describe('getBoundingClientRect', () => {
       it('returns a DOMRect with its size and position, or an empty DOMRect when disconnected', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
@@ -837,7 +838,7 @@ describe('ReactNativeElement', () => {
 
     describe('scrollLeft / scrollTop', () => {
       it('return the scroll position on each axis', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -866,7 +867,7 @@ describe('ReactNativeElement', () => {
 
     describe('scrollWidth / scrollHeight', () => {
       it('return the scroll size on each axis', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -896,7 +897,7 @@ describe('ReactNativeElement', () => {
 
     describe('clientWidth / clientHeight', () => {
       it('return the inner size of the node', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -928,7 +929,7 @@ describe('ReactNativeElement', () => {
 
     describe('clientLeft / clientTop', () => {
       it('return the border size of the node', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -960,7 +961,7 @@ describe('ReactNativeElement', () => {
 
     describe('id', () => {
       it('returns the current `id` prop from the node', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -979,7 +980,7 @@ describe('ReactNativeElement', () => {
       });
 
       it('returns the current `nativeID` prop from the node', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1000,7 +1001,7 @@ describe('ReactNativeElement', () => {
 
     describe('tagName', () => {
       it('returns the normalized tag name for the node', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1016,7 +1017,7 @@ describe('ReactNativeElement', () => {
 
   describe('extends `ReactNativeElement`', () => {
     it('should be an instance of `ReactNativeElement`', () => {
-      const ref = React.createRef<HostInstance>();
+      const ref = createRef<HostInstance>();
 
       // Initial render with 3 children
       const root = Fantom.createRoot();
@@ -1030,7 +1031,7 @@ describe('ReactNativeElement', () => {
 
     describe('offsetWidth / offsetHeight', () => {
       it('return the rounded width and height, or 0 when disconnected', () => {
-        const elementRef = React.createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1065,8 +1066,8 @@ describe('ReactNativeElement', () => {
 
     describe('offsetParent / offsetTop / offsetLeft', () => {
       it('retun the rounded offset values and the parent, or null and zeros when disconnected or hidden', () => {
-        const parentRef = React.createRef<HostInstance>();
-        const elementRef = React.createRef<HostInstance>();
+        const parentRef = createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
