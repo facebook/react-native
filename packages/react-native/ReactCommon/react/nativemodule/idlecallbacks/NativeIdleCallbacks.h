@@ -20,7 +20,8 @@ namespace facebook::react {
 using CallbackHandle = jsi::Object;
 
 using NativeRequestIdleCallbackOptions =
-    NativeIdleCallbacksRequestIdleCallbackOptions<std::optional<double>>;
+    NativeIdleCallbacksRequestIdleCallbackOptions<
+        std::optional<HighResDuration>>;
 
 template <>
 struct Bridging<NativeRequestIdleCallbackOptions>

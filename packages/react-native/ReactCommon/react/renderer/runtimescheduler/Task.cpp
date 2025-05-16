@@ -12,7 +12,7 @@ namespace facebook::react {
 Task::Task(
     SchedulerPriority priority,
     jsi::Function&& callback,
-    std::chrono::steady_clock::time_point expirationTime)
+    HighResTimeStamp expirationTime)
     : priority(priority),
       callback(std::move(callback)),
       expirationTime(expirationTime) {}
@@ -20,7 +20,7 @@ Task::Task(
 Task::Task(
     SchedulerPriority priority,
     RawCallback&& callback,
-    std::chrono::steady_clock::time_point expirationTime)
+    HighResTimeStamp expirationTime)
     : priority(priority),
       callback(std::move(callback)),
       expirationTime(expirationTime) {}

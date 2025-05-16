@@ -7,35 +7,30 @@
 
 #pragma once
 
-#include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
-#include <chrono>
+#include <react/timing/primitives.h>
 
 namespace facebook::react {
 
 class StubClock {
  public:
-  RuntimeSchedulerTimePoint getNow() const {
+  HighResTimeStamp getNow() const {
     return timePoint_;
   }
 
-  void setTimePoint(RuntimeSchedulerTimePoint timePoint) {
+  void setTimePoint(HighResTimeStamp timePoint) {
     timePoint_ = timePoint;
   }
 
-  void setTimePoint(RuntimeSchedulerDuration duration) {
-    timePoint_ = RuntimeSchedulerTimePoint(duration);
-  }
-
-  RuntimeSchedulerTimePoint getTimePoint() {
+  HighResTimeStamp getTimePoint() {
     return timePoint_;
   }
 
-  void advanceTimeBy(RuntimeSchedulerDuration duration) {
+  void advanceTimeBy(HighResDuration duration) {
     timePoint_ += duration;
   }
 
  private:
-  RuntimeSchedulerTimePoint timePoint_;
+  HighResTimeStamp timePoint_ = HighResTimeStamp::now();
 };
 
 } // namespace facebook::react

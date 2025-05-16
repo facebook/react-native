@@ -9,6 +9,7 @@
 
 #include <ReactCommon/SchedulerPriority.h>
 #include <react/debug/react_native_assert.h>
+#include <react/timing/primitives.h>
 #include <chrono>
 
 namespace facebook::react {
@@ -36,22 +37,22 @@ static inline SchedulerPriority fromRawValue(double value) {
   return SchedulerPriority::NormalPriority;
 }
 
-static inline std::chrono::milliseconds timeoutForSchedulerPriority(
+static inline HighResDuration timeoutForSchedulerPriority(
     SchedulerPriority schedulerPriority) noexcept {
   switch (schedulerPriority) {
     case SchedulerPriority::ImmediatePriority:
-      return std::chrono::milliseconds(0);
+      return HighResDuration::fromChrono(std::chrono::milliseconds(0));
     case SchedulerPriority::UserBlockingPriority:
-      return std::chrono::milliseconds(250);
+      return HighResDuration::fromChrono(std::chrono::milliseconds(250));
     case SchedulerPriority::NormalPriority:
-      return std::chrono::seconds(5);
+      return HighResDuration::fromChrono(std::chrono::seconds(5));
     case SchedulerPriority::LowPriority:
-      return std::chrono::seconds(10);
+      return HighResDuration::fromChrono(std::chrono::seconds(10));
     case SchedulerPriority::IdlePriority:
-      return std::chrono::minutes(5);
+      return HighResDuration::fromChrono(std::chrono::minutes(5));
   }
   react_native_assert(false && "Unsupported SchedulerPriority value");
-  return std::chrono::seconds(5);
+  return HighResDuration::fromChrono(std::chrono::seconds(5));
 }
 
 } // namespace facebook::react

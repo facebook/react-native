@@ -19,21 +19,25 @@
 namespace facebook::react {
 
 namespace {
-std::chrono::milliseconds getResolvedTimeoutForIdleTask(
-    std::chrono::milliseconds customTimeout) {
+HighResDuration getResolvedTimeoutForIdleTask(HighResDuration customTimeout) {
   return customTimeout <
           timeoutForSchedulerPriority(SchedulerPriority::IdlePriority)
       ? timeoutForSchedulerPriority(SchedulerPriority::LowPriority) +
           customTimeout
       : customTimeout;
 }
+
+int64_t durationToMilliseconds(HighResDuration duration) {
+  return duration.toNanoseconds() / static_cast<int64_t>(1e6);
+}
+
 } // namespace
 
 #pragma mark - Public
 
 RuntimeScheduler_Modern::RuntimeScheduler_Modern(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now,
+    std::function<HighResTimeStamp()> now,
     RuntimeSchedulerTaskErrorHandler onTaskError)
     : runtimeExecutor_(std::move(runtimeExecutor)),
       now_(std::move(now)),
@@ -84,11 +88,11 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
 
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
     jsi::Function&& callback,
-    RuntimeSchedulerTimeout customTimeout) noexcept {
+    HighResDuration customTimeout) noexcept {
   TraceSection s(
       "RuntimeScheduler::scheduleIdleTask",
       "customTimeout",
-      customTimeout.count(),
+      durationToMilliseconds(customTimeout),
       "callbackType",
       "jsi::Function");
 
@@ -104,11 +108,11 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
 
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
     RawCallback&& callback,
-    RuntimeSchedulerTimeout customTimeout) noexcept {
+    HighResDuration customTimeout) noexcept {
   TraceSection s(
       "RuntimeScheduler::scheduleIdleTask",
       "customTimeout",
-      customTimeout.count(),
+      durationToMilliseconds(customTimeout),
       "callbackType",
       "RawCallback");
 
@@ -139,7 +143,7 @@ SchedulerPriority RuntimeScheduler_Modern::getCurrentPriorityLevel()
   return currentPriority_;
 }
 
-RuntimeSchedulerTimePoint RuntimeScheduler_Modern::now() const noexcept {
+HighResTimeStamp RuntimeScheduler_Modern::now() const noexcept {
   return now_();
 }
 
@@ -276,7 +280,7 @@ void RuntimeScheduler_Modern::runEventLoop(
 }
 
 std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
-    RuntimeSchedulerTimePoint currentTime,
+    HighResTimeStamp currentTime,
     bool onlyExpired) {
   // We need a unique lock here because we'll also remove executed tasks from
   // the top of the queue.
@@ -305,7 +309,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
 void RuntimeScheduler_Modern::runEventLoopTick(
     jsi::Runtime& runtime,
     Task& task,
-    RuntimeSchedulerTimePoint taskStartTime) {
+    HighResTimeStamp taskStartTime) {
   TraceSection s("RuntimeScheduler::runEventLoopTick");
   jsinspector_modern::tracing::EventLoopReporter performanceReporter(
       jsinspector_modern::tracing::EventLoopPhase::Task);
@@ -317,7 +321,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   currentPriority_ = task.priority;
 
   lastYieldingOpportunity_ = taskStartTime;
-  longestPeriodWithoutYieldingOpportunity_ = std::chrono::milliseconds::zero();
+  longestPeriodWithoutYieldingOpportunity_ = HighResDuration::zero();
 
   auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
   executeTask(runtime, task, didUserCallbackTimeout);
@@ -434,24 +438,24 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
 
 void RuntimeScheduler_Modern::reportLongTasks(
     const Task& /*task*/,
-    RuntimeSchedulerTimePoint startTime,
-    RuntimeSchedulerTimePoint endTime) {
+    HighResTimeStamp startTime,
+    HighResTimeStamp endTime) {
   auto reporter = performanceEntryReporter_;
   if (reporter == nullptr) {
     return;
   }
 
   auto checkedDurationMs =
-      chronoToDOMHighResTimeStamp(longestPeriodWithoutYieldingOpportunity_);
+      longestPeriodWithoutYieldingOpportunity_.toDOMHighResTimeStamp();
   if (checkedDurationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
-    auto durationMs = chronoToDOMHighResTimeStamp(endTime - startTime);
-    auto startTimeMs = chronoToDOMHighResTimeStamp(startTime);
+    auto durationMs = (endTime - startTime).toDOMHighResTimeStamp();
+    auto startTimeMs = startTime.toDOMHighResTimeStamp();
     reporter->reportLongTask(startTimeMs, durationMs);
   }
 }
 
 void RuntimeScheduler_Modern::markYieldingOpportunity(
-    RuntimeSchedulerTimePoint currentTime) {
+    HighResTimeStamp currentTime) {
   auto currentPeriod = currentTime - lastYieldingOpportunity_;
   if (currentPeriod > longestPeriodWithoutYieldingOpportunity_) {
     longestPeriodWithoutYieldingOpportunity_ = currentPeriod;

@@ -21,6 +21,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/timing/primitives.h>
 #include <react/utils/jsi-utils.h>
 #include <iostream>
 #include <memory>
@@ -35,7 +36,7 @@ std::shared_ptr<RuntimeScheduler> createRuntimeScheduler(
     RuntimeSchedulerTaskErrorHandler taskErrorHandler) {
   std::shared_ptr<RuntimeScheduler> scheduler =
       std::make_shared<RuntimeScheduler>(
-          runtimeExecutor, RuntimeSchedulerClock::now, taskErrorHandler);
+          runtimeExecutor, HighResTimeStamp::now, taskErrorHandler);
   scheduler->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and
       // guarantee that its lifetime is the same as the runtime.
