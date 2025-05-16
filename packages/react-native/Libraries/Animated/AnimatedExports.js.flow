@@ -37,7 +37,7 @@ export type {default as AnimatedDivision} from './nodes/AnimatedDivision';
 export type {default as AnimatedModulo} from './nodes/AnimatedModulo';
 export type {default as AnimatedMultiplication} from './nodes/AnimatedMultiplication';
 export type {default as AnimatedSubtraction} from './nodes/AnimatedSubtraction';
-export type {WithAnimatedValue} from './createAnimatedComponent';
+export type {WithAnimatedValue, AnimatedProps} from './createAnimatedComponent';
 export type {AnimatedComponentType as AnimatedComponent} from './createAnimatedComponent';
 
 /**

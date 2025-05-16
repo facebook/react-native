@@ -22,7 +22,12 @@ import NativeAppState from './NativeAppState';
  *   - @platform android - on another Activity (even if it was launched by your app)
  * @platform ios - inactive - This is a state that occurs when transitioning between foreground & background, and during periods of inactivity such as entering the multitasking view, opening the Notification Center or in the event of an incoming call.
  */
-export type AppStateStatus = 'inactive' | 'background' | 'active';
+export type AppStateStatus =
+  | 'inactive'
+  | 'background'
+  | 'active'
+  | 'extension'
+  | 'unknown';
 
 /**
  * change - This even is received when the app state has changed.

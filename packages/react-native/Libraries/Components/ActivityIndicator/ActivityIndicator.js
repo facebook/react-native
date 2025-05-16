@@ -110,6 +110,7 @@ const ActivityIndicator = (
       style={StyleSheet.compose(styles.container, style)}>
       {Platform.OS === 'android' ? (
         // $FlowFixMe[prop-missing] Flow doesn't know when this is the android component
+        // $FlowFixMe[incompatible-type]
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
         /* $FlowFixMe[incompatible-type] (>=0.106.0 site=react_native_android_fb) This comment
