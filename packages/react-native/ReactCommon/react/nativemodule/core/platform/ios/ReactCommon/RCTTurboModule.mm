@@ -686,7 +686,7 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
     NSMutableArray *retainedObjectsForInvocation)
 {
   const char *moduleName = name_.c_str();
-  const id<RCTBridgeModule> module = instance_;
+  const NSObject<RCTBridgeModule> *module = instance_;
 
   if (isSync) {
     TurboModulePerfLogger::syncMethodCallArgConversionStart(moduleName, methodName);
@@ -694,11 +694,9 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
     TurboModulePerfLogger::asyncMethodCallArgConversionStart(moduleName, methodName);
   }
 
-  NSInvocation *inv =
-      [NSInvocation invocationWithMethodSignature:[[module class] instanceMethodSignatureForSelector:selector]];
+  NSMethodSignature *methodSignature = [module methodSignatureForSelector:selector];
+  NSInvocation *inv = [NSInvocation invocationWithMethodSignature:methodSignature];
   [inv setSelector:selector];
-
-  NSMethodSignature *methodSignature = [[module class] instanceMethodSignatureForSelector:selector];
 
   for (size_t i = 0; i < count; i++) {
     const jsi::Value &arg = args[i];
