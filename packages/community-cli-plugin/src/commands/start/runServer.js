@@ -10,9 +10,7 @@
  */
 
 import type {Config} from '@react-native-community/cli-types';
-import type {TerminalReporter} from 'metro';
-import type {Reporter} from 'metro/src/lib/reporting';
-import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
+import type {Reporter, TerminalReportableEvent, TerminalReporter} from 'metro';
 
 import createDevMiddlewareLogger from '../../utils/createDevMiddlewareLogger';
 import isDevServerRunning from '../../utils/isDevServerRunning';
@@ -180,7 +178,7 @@ function getReporterImpl(
   customLogReporterPath?: string,
 ): Class<TerminalReporter> {
   if (customLogReporterPath == null) {
-    return require('metro/src/lib/TerminalReporter');
+    return require('metro').TerminalReporter;
   }
   try {
     // First we let require resolve it, so we can require packages in node_modules
