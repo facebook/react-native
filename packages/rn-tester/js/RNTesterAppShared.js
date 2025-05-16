@@ -28,6 +28,7 @@ import {
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
+import {useEffect} from 'react';
 import {
   BackHandler,
   Button,
@@ -93,7 +94,7 @@ const RNTesterApp = ({
   }, [dispatch, activeModuleKey]);
 
   // Setup hardware back button press listener
-  React.useEffect(() => {
+  useEffect(() => {
     const handleHardwareBackPress = () => {
       if (activeModuleKey) {
         handleBackPress();
@@ -229,7 +230,7 @@ const RNTesterApp = ({
     },
     [dispatch],
   );
-  React.useEffect(() => {
+  useEffect(() => {
     // Initial deeplink
     Linking.getInitialURL()
       .then(url => url != null && handleOpenUrlRequest({url: url}))

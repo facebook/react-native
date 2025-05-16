@@ -11,7 +11,7 @@
 import type {PointerEvent, ViewProps} from 'react-native';
 
 import * as React from 'react';
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 export default function EventfulView(props: {
@@ -37,7 +37,7 @@ export default function EventfulView(props: {
   ...ViewProps,
 }): React.Node {
   const ref = useRef<?React.ElementRef<typeof View>>();
-  React.useEffect(() => {
+  useEffect(() => {
     // $FlowFixMe[prop-missing] Using private property
     setTag(ref.current?._nativeTag);
   }, [ref]);

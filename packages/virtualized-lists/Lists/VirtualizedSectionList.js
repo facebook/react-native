@@ -15,7 +15,7 @@ import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 type DefaultSectionT = {
   data: any,
@@ -533,7 +533,7 @@ function ItemWithSeparator<ItemT>(
     trailingSection: props.trailingSection,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     setSelfHighlightCallback(cellKey, setSeparatorHighlighted);
     // $FlowFixMe[incompatible-call]
     setSelfUpdatePropsCallback(cellKey, setSeparatorProps);
