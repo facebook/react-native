@@ -60,4 +60,10 @@ public class ReactStylesDiffMap(props: ReadableMap) {
   public fun getDynamic(name: String): Dynamic = backingMap.getDynamic(name)
 
   override fun toString(): String = "{ ${javaClass.simpleName}: $backingMap }"
+
+  /**
+   * Access the package private property for faster access to the underlying values.
+   This is used in Expo to override setting properties in some subclassed view-managers
+  */
+  public fun getBackingMap(): ReadableMap = backingMap
 }
