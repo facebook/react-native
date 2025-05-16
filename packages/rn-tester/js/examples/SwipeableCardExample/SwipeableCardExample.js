@@ -11,7 +11,7 @@
 import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -88,10 +88,9 @@ function SwipeableCard(props: {
   color: string,
   onSwipedOut: () => void,
 }) {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const movementX = React.useMemo(() => new Animated.Value(0), [props.color]);
+  const movementX = useMemo(() => new Animated.Value(0), []);
 
-  const panResponder = React.useMemo(
+  const panResponder = useMemo(
     () =>
       PanResponder.create({
         onMoveShouldSetPanResponderCapture: (e, gestureState) => {
