@@ -14,7 +14,7 @@ import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
 
 import BaseFlatListExample from './BaseFlatListExample';
 import * as React from 'react';
-import {useRef, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 
 type FlatListProps = React.ElementProps<typeof FlatList>;
@@ -33,7 +33,7 @@ export function FlatList_BaseOnViewableItemsChanged(props: {
 }): React.Node {
   const {offScreen, horizontal, useScrollRefScroll, waitForInteraction} = props;
   const [output, setOutput] = useState('');
-  const onViewableItemsChanged = React.useCallback(
+  const onViewableItemsChanged = useCallback(
     (info: {changed: Array<ViewToken>, viewableItems: Array<ViewToken>, ...}) =>
       setOutput(
         info.viewableItems

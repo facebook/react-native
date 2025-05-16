@@ -10,8 +10,7 @@
 
 import type {RNTesterJsStallsState} from '../types/RNTesterTypes';
 
-import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 
 const INITIAL_STATE: RNTesterJsStallsState = {
   stallIntervalId: null,
@@ -39,12 +38,12 @@ const useJsStalls = (): ({
     return () => clearInterval(stallIntervalId);
   }, [stallIntervalId]);
 
-  const onDisableForceJsStalls = React.useCallback(
+  const onDisableForceJsStalls = useCallback(
     () => setStallsState(state => ({...state, stallIntervalId: null})),
     [],
   );
 
-  const onEnableForceJsStalls = React.useCallback(() => {
+  const onEnableForceJsStalls = useCallback(() => {
     const intervalId = setInterval(() => {
       const start = Date.now();
 
@@ -56,7 +55,7 @@ const useJsStalls = (): ({
     setStallsState(state => ({...state, stallIntervalId: intervalId}));
   }, []);
 
-  const onEnableJsStallsTracking = React.useCallback(() => {
+  const onEnableJsStallsTracking = useCallback(() => {
     const JSEventLoopWatchdog =
       require('react-native/Libraries/Interaction/JSEventLoopWatchdog').default;
 
@@ -83,7 +82,7 @@ const useJsStalls = (): ({
     });
   }, []);
 
-  const onDisableJsStallsTracking = React.useCallback(() => {
+  const onDisableJsStallsTracking = useCallback(() => {
     console.warn('Cannot disable yet...');
   }, []);
 

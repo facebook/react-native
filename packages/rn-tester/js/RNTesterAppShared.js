@@ -28,7 +28,7 @@ import {
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {
   BackHandler,
   Button,
@@ -87,7 +87,7 @@ const RNTesterApp = ({
     [recentlyUsed, testList],
   );
 
-  const handleBackPress = React.useCallback(() => {
+  const handleBackPress = useCallback(() => {
     if (activeModuleKey != null) {
       dispatch({type: RNTesterNavigationActionsType.BACK_BUTTON_PRESS});
     }
@@ -110,7 +110,7 @@ const RNTesterApp = ({
     return () => subscription.remove();
   }, [activeModuleKey, handleBackPress]);
 
-  const handleModuleCardPress = React.useCallback(
+  const handleModuleCardPress = useCallback(
     ({exampleType, key, title}: any) => {
       dispatch({
         type: RNTesterNavigationActionsType.MODULE_CARD_PRESS,
@@ -120,7 +120,7 @@ const RNTesterApp = ({
     [dispatch],
   );
 
-  const handleModuleExampleCardPress = React.useCallback(
+  const handleModuleExampleCardPress = useCallback(
     (exampleName: string) => {
       dispatch({
         type: RNTesterNavigationActionsType.EXAMPLE_CARD_PRESS,
@@ -130,7 +130,7 @@ const RNTesterApp = ({
     [dispatch],
   );
 
-  const handleNavBarPress = React.useCallback(
+  const handleNavBarPress = useCallback(
     (args: {screen: ScreenTypes}) => {
       if (args.screen === 'playgrounds') {
         dispatch({
@@ -152,7 +152,7 @@ const RNTesterApp = ({
   );
 
   // Setup Linking event subscription
-  const handleOpenUrlRequest = React.useCallback(
+  const handleOpenUrlRequest = useCallback(
     ({url}: {url: string, ...}) => {
       // Supported URL pattern(s):
       // *  rntester://example/<moduleKey>
