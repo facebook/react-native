@@ -22,6 +22,7 @@ import LogBoxInspectorSourceMapStatus from './LogBoxInspectorSourceMapStatus';
 import LogBoxInspectorStackFrame from './LogBoxInspectorStackFrame';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+import {useState} from 'react';
 
 type Props = $ReadOnly<{
   log: LogBoxLog,
@@ -65,7 +66,7 @@ export function getCollapseMessage(
 }
 
 function LogBoxInspectorStackFrames(props: Props): React.Node {
-  const [collapsed, setCollapsed] = React.useState(() => {
+  const [collapsed, setCollapsed] = useState(() => {
     // Only collapse frames initially if some frames are not collapsed.
     return props.log.getAvailableStack().some(({collapse}) => !collapse);
   });

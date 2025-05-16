@@ -11,13 +11,14 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
+import {useState} from 'react';
 import {Animated, Button, Text, View} from 'react-native';
 
 const componentList: number[] = Array.from({length: 100}, (_, i) => i + 1);
 
 function PressableWithNativeDriver() {
   const currScroll = React.useRef(new Animated.Value(0)).current;
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = useState(0);
 
   return (
     <View style={{flex: 1}}>

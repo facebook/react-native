@@ -14,6 +14,7 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
+import {useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -36,7 +37,7 @@ function FadeInView({
   children: React.Node,
 }) {
   //opacity 0
-  const [fadeAnim] = React.useState(() => new Animated.Value(0));
+  const [fadeAnim] = useState(() => new Animated.Value(0));
   React.useEffect(() => {
     Animated.timing(
       // Uses easing functions
@@ -64,8 +65,8 @@ function FadeInView({
 }
 
 function FadeInExample(): React.Node {
-  const [show, setShow] = React.useState(true);
-  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+  const [show, setShow] = useState(true);
+  const [useNativeDriver, setUseNativeDriver] = useState(false);
   return (
     <View>
       <RNTConfigurationBlock>

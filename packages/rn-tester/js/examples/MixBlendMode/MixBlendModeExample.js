@@ -13,6 +13,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
+import {useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{
@@ -60,14 +61,14 @@ function LayeredImage(props: Props) {
 }
 
 function LayeredViewWithState(props: Props): React.Node {
-  const [s, setS] = React.useState(true);
+  const [s, setS] = useState(true);
   setTimeout(() => setS(!s), 5000);
 
   return <LayeredView style={s ? [props.style] : null} testID={props.testID} />;
 }
 
 function LayeredImageWithState(props: Props): React.Node {
-  const [s, setS] = React.useState(true);
+  const [s, setS] = useState(true);
   setTimeout(() => setS(!s), 5000);
 
   return (

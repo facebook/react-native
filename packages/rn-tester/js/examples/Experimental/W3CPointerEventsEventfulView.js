@@ -11,6 +11,7 @@
 import type {PointerEvent, ViewProps} from 'react-native';
 
 import * as React from 'react';
+import {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 export default function EventfulView(props: {
@@ -64,7 +65,7 @@ export default function EventfulView(props: {
     onCancelCapture,
     ...restProps
   } = props;
-  const [tag, setTag] = React.useState<?string>('');
+  const [tag, setTag] = useState<?string>('');
 
   const eventLog =
     (eventName: string, handler: ?(e: PointerEvent) => void) =>

@@ -8,6 +8,7 @@
 'use strict';
 
 import * as React from 'react';
+import {useState} from 'react';
 import {
   FlatList,
   ScrollView,
@@ -19,10 +20,10 @@ import {
 } from 'react-native';
 
 export function ScrollViewKeyboardInsetsExample() {
-  const [automaticallyAdjustKeyboardInsets, setAutomaticallyAdjustKeyboardInsets] = React.useState(true);
-  const [flatList, setFlatList] = React.useState(false);
-  const [inverted, setInverted] = React.useState(false);
-  const [heightRestricted, setHeightRestricted] = React.useState(false);
+  const [automaticallyAdjustKeyboardInsets, setAutomaticallyAdjustKeyboardInsets] = useState(true);
+  const [flatList, setFlatList] = useState(false);
+  const [inverted, setInverted] = useState(false);
+  const [heightRestricted, setHeightRestricted] = useState(false);
 
   const scrollViewProps = {
     style: heightRestricted && styles.scrollViewHeightRestricted,

@@ -9,14 +9,16 @@
  */
 
 'use strict';
+
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import BaseFlatListExample, {ITEM_HEIGHT} from './BaseFlatListExample';
 import * as React from 'react';
+import {useState} from 'react';
 import {FlatList} from 'react-native';
 
 export function FlatList_onStartReached(): React.Node {
-  const [output, setOutput] = React.useState('');
+  const [output, setOutput] = useState('');
   const exampleProps = {
     onStartReached: (info: {distanceFromStart: number, ...}) =>
       setOutput('onStartReached'),

@@ -11,6 +11,7 @@
 import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
+import {useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -43,7 +44,7 @@ module.exports = {
 
 function SwipeableCardExample() {
   const cardColors = ['red', 'blue', 'pink', 'aquamarine'];
-  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextIndex = currentIndex + 1;
 

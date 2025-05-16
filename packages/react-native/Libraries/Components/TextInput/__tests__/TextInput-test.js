@@ -15,7 +15,7 @@ const {
 } = require('../../../Utilities/ReactNativeTestTools');
 const TextInput = require('../TextInput').default;
 const React = require('react');
-const {createRef} = require('react');
+const {createRef, useState} = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
 jest.unmock('../TextInput');
@@ -35,7 +35,7 @@ jest.unmock('../TextInput');
       onChangeTextListener = jest.fn();
 
       function TextInputWrapper() {
-        const [state, setState] = React.useState({text: initialValue});
+        const [state, setState] = useState({text: initialValue});
 
         return (
           <TextInput
