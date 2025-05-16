@@ -15,7 +15,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {
   Animated,
   Easing,
@@ -87,8 +87,8 @@ function EasingItem({
   item: EasingListItem,
   useNativeDriver: boolean,
 }): React.Node {
-  const opacityAndScale = React.useRef(new Animated.Value(1));
-  const animation = React.useRef(
+  const opacityAndScale = useRef(new Animated.Value(1));
+  const animation = useRef(
     Animated.timing(opacityAndScale.current, {
       toValue: 1,
       duration: 1200,

@@ -15,13 +15,13 @@ import type {Node} from 'react';
 
 import PopupMenuAndroid from '@react-native/popup-menu-android';
 import * as React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 
 type Fruit = 'Apple' | 'Pear' | 'Banana' | 'Orange' | 'Kiwi';
 
 const PopupMenu = () => {
-  const popupRef = React.useRef<?PopupMenuAndroidInstance>();
+  const popupRef = useRef<?PopupMenuAndroidInstance>();
   const [fruit, setFruit] = useState<?Fruit>();
   const fruits: Array<Fruit> = ['Apple', 'Pear', 'Banana', 'Orange', 'Kiwi'];
   const items = fruits.map(item => ({

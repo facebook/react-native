@@ -14,7 +14,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import BaseFlatListExample from './BaseFlatListExample';
 import * as React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 
 export function FlatList_onEndReached(): React.Node {
   const [output, setOutput] = useState('');
@@ -23,7 +23,7 @@ export function FlatList_onEndReached(): React.Node {
       setOutput('onEndReached'),
     onEndReachedThreshold: 0,
   };
-  const ref = React.useRef<any>(null);
+  const ref = useRef<any>(null);
 
   const onTest = () => {
     const scrollResponder = ref?.current?.getScrollResponder();

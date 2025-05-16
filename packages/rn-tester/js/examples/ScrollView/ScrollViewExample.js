@@ -15,7 +15,7 @@ import RNTesterText from '../../components/RNTesterText';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-import {useCallback, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {
   Platform,
   RefreshControl,
@@ -569,7 +569,7 @@ const HorizontalScrollView = (props: {
   itemCount?: number,
 }) => {
   const {direction} = props;
-  const scrollRef = React.useRef<?React.ElementRef<typeof ScrollView>>();
+  const scrollRef = useRef<?React.ElementRef<typeof ScrollView>>();
   const title = direction === 'ltr' ? 'LTR Layout' : 'RTL Layout';
   const items =
     props.itemCount == null ? ITEMS : ITEMS.slice(0, props.itemCount);
@@ -1013,7 +1013,7 @@ const KeyboardExample = () => {
 
 const InvertStickyHeaders = () => {
   const [invertStickyHeaders, setInvertStickyHeaders] = useState(false);
-  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
+  const _scrollView = useRef<?React.ElementRef<typeof ScrollView>>(null);
   return (
     <View>
       {/* $FlowFixMe[incompatible-use] */}
@@ -1054,7 +1054,7 @@ const InvertStickyHeaders = () => {
 };
 
 const MultipleStickyHeaders = () => {
-  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
+  const _scrollView = useRef<?React.ElementRef<typeof ScrollView>>(null);
   const stickyHeaderStyle = {backgroundColor: 'yellow'};
   return (
     <View>

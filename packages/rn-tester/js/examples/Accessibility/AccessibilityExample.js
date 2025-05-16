@@ -17,7 +17,7 @@ import RNTesterText from '../../components/RNTesterText';
 import checkImageSource from './check.png';
 import mixedCheckboxImageSource from './mixed.png';
 import uncheckImageSource from './uncheck.png';
-import React, {createRef, useState} from 'react';
+import React, {createRef, useRef, useState} from 'react';
 import {
   AccessibilityInfo,
   Alert,
@@ -1314,7 +1314,7 @@ class AnnounceForAccessibility extends React.Component<{}> {
 }
 
 function SetAccessibilityFocusExample(props: {}): React.Node {
-  const myRef = React.useRef<?React.ElementRef<typeof RNTesterText>>(null);
+  const myRef = useRef<?React.ElementRef<typeof RNTesterText>>(null);
 
   const onPress = () => {
     if (myRef && myRef.current) {
