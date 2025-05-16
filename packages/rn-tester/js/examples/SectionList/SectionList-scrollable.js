@@ -28,7 +28,7 @@ import {
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {
   Alert,
   Animated,
@@ -213,7 +213,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
     setData([...data.slice(0, index), item, ...data.slice(index + 1)]);
   };
 
-  const ref = React.useRef<?SectionList<SectionBase<any>>>(null);
+  const ref = useRef<?SectionList<SectionBase<any>>>(null);
   const scrollToLocation = (sectionIndex: number, itemIndex: number) => {
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     if (ref != null && ref.current?.scrollToLocation != null) {

@@ -11,7 +11,7 @@
 import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -149,7 +149,7 @@ function Card(props: {color: string}) {
 
   const separatorComponent = () => <View style={styles.separator} />;
 
-  const listRef = React.useRef<?FlatList<mixed>>();
+  const listRef = useRef<?FlatList<mixed>>();
 
   React.useEffect(() => {
     listRef.current?.scrollToOffset({offset: 0, animated: false});

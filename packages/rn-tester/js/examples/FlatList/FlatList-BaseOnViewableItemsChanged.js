@@ -14,7 +14,7 @@ import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
 
 import BaseFlatListExample from './BaseFlatListExample';
 import * as React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 
 type FlatListProps = React.ElementProps<typeof FlatList>;
@@ -53,7 +53,7 @@ export function FlatList_BaseOnViewableItemsChanged(props: {
     horizontal,
   };
 
-  const ref = React.useRef<any>(null);
+  const ref = useRef<any>(null);
   const onTest =
     useScrollRefScroll === true
       ? () => {

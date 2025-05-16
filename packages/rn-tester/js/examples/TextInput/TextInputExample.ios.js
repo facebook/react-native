@@ -20,6 +20,7 @@ import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';
 import TextInputSharedExamples from './TextInputSharedExamples';
 import React from 'react';
+import {useRef} from 'react';
 import {
   Alert,
   Button,
@@ -210,9 +211,9 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
 }
 
 const TextInputWithFocusButton = () => {
-  const inputToFocusRef = React.useRef<React.ElementRef<
-    typeof TextInput,
-  > | null>(null);
+  const inputToFocusRef = useRef<React.ElementRef<typeof TextInput> | null>(
+    null,
+  );
   return (
     <View>
       <ExampleTextInput
