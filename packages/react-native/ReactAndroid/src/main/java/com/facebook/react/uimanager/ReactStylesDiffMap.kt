@@ -31,7 +31,12 @@ import com.facebook.react.bridge.ReadableMap
  */
 public class ReactStylesDiffMap(props: ReadableMap) {
 
-  @JvmField internal val backingMap: ReadableMap = props
+  /**
+   * This backing map is annotated as JvmName("internal_backingMap") so can be accessed by Java
+   * consumers. This is used in Expo to override setting properties in some subclassed view-manager
+   * as this provides faster access to the underlying values.
+   */
+  @get:JvmName("internal_backingMap") internal val backingMap: ReadableMap = props
 
   public fun toMap(): Map<String, Any?> = backingMap.toHashMap()
 
