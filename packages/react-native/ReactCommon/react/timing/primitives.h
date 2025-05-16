@@ -17,8 +17,6 @@ namespace facebook::react {
 // not necessary in React Native.
 using DOMHighResTimeStamp = double;
 
-constexpr DOMHighResTimeStamp DOM_HIGH_RES_TIME_STAMP_UNSET = -1.0;
-
 inline DOMHighResTimeStamp chronoToDOMHighResTimeStamp(
     std::chrono::steady_clock::duration duration) {
   return static_cast<std::chrono::duration<double, std::milli>>(duration)

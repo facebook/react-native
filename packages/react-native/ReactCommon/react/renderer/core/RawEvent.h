@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include <react/renderer/core/EventLogger.h>
@@ -86,7 +87,7 @@ struct RawEvent {
   // The client may specify a platform-specific timestamp for the event start
   // time, for example when MotionEvent was triggered on the Android native
   // side.
-  DOMHighResTimeStamp eventStartTimeStamp{DOM_HIGH_RES_TIME_STAMP_UNSET};
+  std::optional<DOMHighResTimeStamp> eventStartTimeStamp = std::nullopt;
 };
 
 } // namespace facebook::react
