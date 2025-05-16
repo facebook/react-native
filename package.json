@@ -50,7 +50,7 @@
     "@babel/plugin-transform-regenerator": "^7.24.7",
     "@babel/preset-env": "^7.25.3",
     "@babel/preset-flow": "^7.24.7",
-    "@definitelytyped/dtslint": "^0.0.127",
+    "@definitelytyped/dtslint": "^0.0.178",
     "@jest/create-cache-key-function": "^29.7.0",
     "@react-native/metro-babel-transformer": "0.80.0-main",
     "@react-native/metro-config": "0.80.0-main",

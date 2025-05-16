@@ -21,6 +21,7 @@ import type {
   ____ViewStyle_InternalOverrides,
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
+import type {ColorValue} from './StyleSheet';
 
 export type {____TransformStyle_Internal};
 
@@ -1001,7 +1002,7 @@ export type ____ImageStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
   overflow?: 'visible' | 'hidden',
 }>;
 
@@ -1015,7 +1016,7 @@ export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
 }>;
 
 export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
