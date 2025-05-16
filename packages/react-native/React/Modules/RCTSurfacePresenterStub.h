@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
                                          initialProperties:(NSDictionary *)initialProperties;
 - (nullable UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;
-- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
+- (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
 
