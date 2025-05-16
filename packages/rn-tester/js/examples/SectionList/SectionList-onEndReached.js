@@ -10,7 +10,7 @@
 
 import SectionListBaseExample from './SectionListBaseExample';
 import * as React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 
 export function SectionList_onEndReached(): React.Node {
   const [output, setOutput] = useState('');
@@ -19,7 +19,7 @@ export function SectionList_onEndReached(): React.Node {
       setOutput('onEndReached'),
     onEndReachedThreshold: 0,
   };
-  const ref = React.useRef<any>(null);
+  const ref = useRef<any>(null);
 
   const onTest = () => {
     const scrollResponder = ref?.current?.getScrollResponder();

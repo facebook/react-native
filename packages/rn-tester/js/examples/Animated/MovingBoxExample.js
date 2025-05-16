@@ -14,7 +14,7 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
 const containerWidth = 200;
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 type Props = $ReadOnly<{}>;
 
 function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
-  const x = React.useRef(new Animated.Value(0));
+  const x = useRef(new Animated.Value(0));
   const [update, setUpdate] = useState(0);
   const [boxVisible, setBoxVisible] = useState(true);
 
