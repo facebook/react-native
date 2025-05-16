@@ -23,7 +23,7 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
-import {useMemo} from 'react';
+import {cloneElement, useMemo} from 'react';
 
 export type TouchableWithoutFeedbackPropsIOS = {};
 
@@ -283,5 +283,5 @@ export default function TouchableWithoutFeedback(
   }
 
   // $FlowFixMe[incompatible-call]
-  return React.cloneElement(element, elementProps, ...children);
+  return cloneElement(element, elementProps, ...children);
 }

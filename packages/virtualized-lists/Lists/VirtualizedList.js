@@ -54,6 +54,7 @@ import {
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {cloneElement} from 'react';
 import {
   I18nManager,
   Platform,
@@ -902,7 +903,7 @@ class VirtualizedList extends StateSafePureComponent<
       return element;
     }
 
-    return React.cloneElement(element, {
+    return cloneElement(element, {
       onLayout: (event: LayoutChangeEvent) => {
         this._onLayoutEmpty(event);
         // $FlowFixMe[prop-missing] React.Element internal inspection
@@ -1129,7 +1130,7 @@ class VirtualizedList extends StateSafePureComponent<
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
         }}>
-        {React.cloneElement(
+        {cloneElement(
           (
             this.props.renderScrollComponent ||
             this._defaultRenderScrollComponent

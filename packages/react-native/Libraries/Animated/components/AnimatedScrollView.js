@@ -24,7 +24,7 @@ import useMergeRefs from '../../Utilities/useMergeRefs';
 import createAnimatedComponent from '../createAnimatedComponent';
 import useAnimatedProps from '../useAnimatedProps';
 import * as React from 'react';
-import {useMemo} from 'react';
+import {cloneElement, useMemo} from 'react';
 
 type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
 type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
@@ -104,7 +104,7 @@ const AnimatedScrollViewWithInvertedRefreshControl =
     // NOTE: Assumes that refreshControl.ref` and `refreshControl.style` can be
     // safely clobbered.
     const refreshControl: ExactReactElement_DEPRECATED<typeof RefreshControl> =
-      React.cloneElement(props.refreshControl, {
+      cloneElement(props.refreshControl, {
         ...refreshControlAnimatedProps,
         ref: refreshControlRef,
       });
