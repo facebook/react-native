@@ -22,7 +22,7 @@ import invariant from 'invariant';
 
 export type AnimatedPropsAllowlist = $ReadOnly<{
   style?: ?AnimatedStyleAllowlist,
-  [string]: true,
+  [key: string]: true | AnimatedStyleAllowlist,
 }>;
 
 type TargetView = {

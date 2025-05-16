@@ -17,28 +17,25 @@ import type {ViewProps} from '../View/ViewPropTypes';
  * `indeterminate` can only be false if `styleAttr` is Horizontal, and requires a
  * `progress` value.
  */
-type ProgressBarAndroidStyleAttrProp =
-  | {
-      styleAttr: 'Horizontal',
-      indeterminate: false,
-      progress: number,
-    }
-  | {
-      styleAttr:
-        | 'Horizontal'
-        | 'Normal'
-        | 'Small'
-        | 'Large'
-        | 'Inverse'
-        | 'SmallInverse'
-        | 'LargeInverse',
-      indeterminate: true,
-    };
+type DeterminateProgressBarAndroidStyleAttrProp = {
+  styleAttr: 'Horizontal',
+  indeterminate: false,
+  progress: number,
+};
 
-export type ProgressBarAndroidProps = $ReadOnly<{
-  ...ViewProps,
-  ...ProgressBarAndroidStyleAttrProp,
+type IndeterminateProgressBarAndroidStyleAttrProp = {
+  styleAttr:
+    | 'Horizontal'
+    | 'Normal'
+    | 'Small'
+    | 'Large'
+    | 'Inverse'
+    | 'SmallInverse'
+    | 'LargeInverse',
+  indeterminate: true,
+};
 
+type ProgressBarAndroidBaseProps = $ReadOnly<{
   /**
    * Whether to show the ProgressBar (true, the default) or hide it (false).
    */
@@ -52,3 +49,15 @@ export type ProgressBarAndroidProps = $ReadOnly<{
    */
   testID?: ?string,
 }>;
+
+export type ProgressBarAndroidProps =
+  | $ReadOnly<{
+      ...ViewProps,
+      ...ProgressBarAndroidBaseProps,
+      ...DeterminateProgressBarAndroidStyleAttrProp,
+    }>
+  | $ReadOnly<{
+      ...ViewProps,
+      ...ProgressBarAndroidBaseProps,
+      ...IndeterminateProgressBarAndroidStyleAttrProp,
+    }>;
