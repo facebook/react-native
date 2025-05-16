@@ -10,6 +10,7 @@
 'use strict';
 
 const React = require('react');
+const {createElement} = require('react');
 
 let nativeTag = 1;
 
@@ -18,7 +19,7 @@ export default viewName => {
     _nativeTag = nativeTag++;
 
     render() {
-      return React.createElement(viewName, this.props, this.props.children);
+      return createElement(viewName, this.props, this.props.children);
     }
 
     // The methods that exist on host components
