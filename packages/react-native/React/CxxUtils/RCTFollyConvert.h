@@ -16,7 +16,6 @@ namespace facebook::react {
 folly::dynamic convertIdToFollyDynamic(id json);
 [[deprecated(
     "This function is deprecated, please use /ReactCommon/react/utils/platform/ios/react/utils/FollyConvert.h instead")]]
-id convertFollyDynamicToId(const folly::dynamic &dyn);
-NSArray<NSString *> *extractKeysFromFollyDynamic(const folly::dynamic &dyn);
+id convertFollyDynamicToId(const folly::dynamic& dyn);
 
 } // namespace facebook::react

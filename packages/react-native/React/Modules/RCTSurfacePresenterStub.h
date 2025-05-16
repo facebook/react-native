@@ -9,7 +9,6 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeProxy.h>
-#import <folly/dynamic.h>
 
 @protocol RCTSurfaceProtocol;
 
@@ -33,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<RCTSurfaceProtocol>)createFabricSurfaceForModuleName:(NSString *)moduleName
                                          initialProperties:(NSDictionary *)initialProperties;
 - (nullable UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;
-- (void)synchronouslyUpdateViewOnUIThread:(NSInteger)reactTag props:(folly::dynamic)props;
+- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
 
