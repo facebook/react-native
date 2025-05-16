@@ -17,7 +17,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useMemo, useRef, useState} from 'react';
+import {useContext, useMemo, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -152,7 +152,7 @@ function ComposingExampleItem({
   const animation = useRef(
     compositeAnimation(xTranslations.current, useNativeDriver),
   );
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   return (
     <View style={styles.itemContainer}>
