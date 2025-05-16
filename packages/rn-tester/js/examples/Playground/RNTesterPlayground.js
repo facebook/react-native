@@ -57,11 +57,10 @@ function Playground(): React.JSX.Element {
           onPress={async () => {
             console.log('\n');
             await sleep(500);
-            console.log('Timer works before Activity');
+            console.log('Local JS works before Alert opened');
             ForcedAlert.alert("Native Alert", "Custom Android Activity")
-            console.log('Custom activity started');
             await sleep(500);
-            console.log('Timer works after async');
+            console.log('Local JS works after Alert opened');
           }}
          />
         </View>
