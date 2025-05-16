@@ -11,7 +11,7 @@
 import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -151,7 +151,7 @@ function Card(props: {color: string}) {
 
   const listRef = useRef<?FlatList<mixed>>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     listRef.current?.scrollToOffset({offset: 0, animated: false});
   }, [props.color]);
 

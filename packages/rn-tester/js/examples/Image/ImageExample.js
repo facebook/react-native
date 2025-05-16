@@ -17,7 +17,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import React from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 
 const IMAGE1 =
@@ -41,7 +41,7 @@ type BlobImageProps = $ReadOnly<{
 const BlobImage = ({url}: BlobImageProps): React.Node => {
   const [objectURL, setObjectURL] = useState<?string>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // $FlowFixMe[unused-promise]
     (async () => {
       const result = await fetch(url);
@@ -91,7 +91,7 @@ const NetworkImageCallbackExample = ({
   const [startLoadPrefetched, setStartLoadPrefetched] = useState(false);
   const [mountTime, setMountTime] = useState(Date.now());
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMountTime(Date.now());
   }, []);
 
