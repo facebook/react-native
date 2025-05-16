@@ -16,7 +16,7 @@ import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import RNTOption from '../../components/RNTOption';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
 const transformProperties = {
@@ -91,7 +91,7 @@ function AnimatedTransformStyleExample(): React.Node {
         selected: !properties[property].selected,
       },
     });
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   return (
     <View>

@@ -15,7 +15,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
-import {useRef, useState} from 'react';
+import {useContext, useRef, useState} from 'react';
 import {
   Animated,
   Easing,
@@ -105,7 +105,7 @@ function EasingItem({
     },
   ];
 
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   return (
     <View style={styles.itemContainer}>

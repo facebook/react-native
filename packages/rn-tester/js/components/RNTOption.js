@@ -15,7 +15,7 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{
@@ -33,7 +33,7 @@ type Props = $ReadOnly<{
  */
 export default function RNTOption(props: Props): React.Node {
   const [pressed, setPressed] = useState(false);
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   return (
     <Pressable

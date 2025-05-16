@@ -11,6 +11,7 @@
 import RNTesterComponentTitle from './RNTesterComponentTitle';
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
+import {useContext} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 
 type ViewStyleProp = React.ElementConfig<typeof View>['style'];
@@ -35,7 +36,7 @@ export default function RNTPressableRow({
   style,
   accessibilityLabel,
 }: Props): React.Node {
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
   const label = accessibilityLabel ?? `${title} ${description ?? ''}`;
   return (
     <Pressable

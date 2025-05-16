@@ -13,6 +13,7 @@ import type {RNTesterTheme} from './RNTesterTheme';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
+import {useContext} from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 
 type NavBarOnPressHandler = ({screen: ScreenTypes}) => void;
@@ -126,7 +127,7 @@ const RNTesterNavbar = ({
   screen,
   isExamplePageOpen,
 }: Props): React.Node => {
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   const isAPIActive = screen === 'apis' && !isExamplePageOpen;
   const isComponentActive = screen === 'components' && !isExamplePageOpen;
