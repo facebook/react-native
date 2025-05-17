@@ -17,7 +17,7 @@ export type PlatformOSType =
   | 'native';
 
 type OptionalPlatformSelectSpec<T> = {
-  [_key in PlatformOSType]?: T,
+  [key in PlatformOSType]?: T, // eslint-disable-line no-unused-vars
 };
 
 export type PlatformSelectSpec<T> =

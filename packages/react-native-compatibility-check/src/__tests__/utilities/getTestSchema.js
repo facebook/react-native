@@ -6,7 +6,6 @@
  *
  * @format
  * @flow strict-local
- * @oncall react_native
  */
 
 import type {SchemaType} from '@react-native/codegen/src/CodegenSchema';

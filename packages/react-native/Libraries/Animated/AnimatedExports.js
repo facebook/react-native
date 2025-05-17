@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 import typeof AnimatedFlatList from './components/AnimatedFlatList';

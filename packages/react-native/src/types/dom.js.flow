@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall flow
  */
 
 // Adapted from https://github.com/flow-typed/flow-typed/blob/main/definitions/environments/dom/flow_v0.261.x-/dom.js

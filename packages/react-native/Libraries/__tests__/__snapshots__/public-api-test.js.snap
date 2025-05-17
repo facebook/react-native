@@ -8432,7 +8432,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
   | \\"web\\"
   | \\"native\\";
 type OptionalPlatformSelectSpec<T> = {
-  [_key in PlatformOSType]?: T,
+  [key in PlatformOSType]?: T,
 };
 export type PlatformSelectSpec<T> =
   | {
