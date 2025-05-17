@@ -5,66 +5,122 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <Foundation/Foundation.h>
+
 #import <ReactCommon/RuntimeExecutorSyncUIThreadUtils.h>
-#include <mutex>
-#include <thread>
+#import <react/debug/react_native_assert.h>
+#import <react/utils/OnScopeExit.h>
+#import <functional>
+#import <mutex>
+
+namespace {
+struct UITask {
+  std::promise<void> _isDone;
+  std::mutex _mutex;
+  std::function<void()> _uiWork;
+  std::atomic_bool _hasStarted;
+
+ public:
+  UITask(std::function<void()> uiWork) : _uiWork(uiWork), _hasStarted(false) {}
+
+  void run()
+  {
+    bool expected = false;
+    if (!_hasStarted.compare_exchange_strong(expected, true)) {
+      return;
+    }
+    facebook::react::OnScopeExit onScopeExit(^{
+      _uiWork = nil;
+      _isDone.set_value();
+    });
+    _uiWork();
+  }
+
+  bool hasStarted()
+  {
+    return _hasStarted.load();
+  }
+
+  std::future<void> getFuture()
+  {
+    return _isDone.get_future();
+  }
+};
+
+static std::mutex _mutex;
+static std::condition_variable _cv;
+
+// Global state
+static bool _isRunningPendingUITask = false;
+static std::shared_ptr<UITask> _pendingUITask;
+
+void runPendingUITask()
+{
+  facebook::react::OnScopeExit onScopeExit([&]() {
+    _pendingUITask = nullptr;
+    _isRunningPendingUITask = false;
+  });
+  _isRunningPendingUITask = true;
+  _pendingUITask->run();
+}
+} // namespace
 
 namespace facebook::react {
-/**
- * Example order of events (when not a sync call in runtimeExecutor
- * jsWork):
- * - [UI thread] Lock all mutexes at start
- * - [UI thread] Schedule "runtime capture block" on js thread
- * - [UI thread] Wait for runtime capture: runtimeCaptured.lock()
- * - [JS thread] Capture runtime by setting runtimePtr
- * - [JS thread] Signal runtime captured: runtimeCaptured.unlock()
- * - [UI thread] Call jsWork using runtimePtr
- * - [JS thread] Wait until jsWork done: jsWorkDone.lock()
- * - [UI thread] Signal jsWork done: jsWorkDone.unlock()
- * - [UI thread] Wait until runtime capture block finished:
- *               runtimeCaptureBlockDone.lock()
- * - [JS thread] Signal runtime capture block is finished:
- *               runtimeCaptureBlockDone.unlock()
- */
 void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor &runtimeExecutor,
     std::function<void(jsi::Runtime &runtime)> &&jsWork) noexcept
 {
-  // Note: We need the third mutex to get back to the main thread before
-  // the lambda is finished (because all mutexes are allocated on the stack).
+  react_native_assert([[NSThread currentThread] isMainThread] && !_isRunningPendingUITask);
 
-  std::mutex runtimeCaptured;
+  jsi::Runtime *runtime = nullptr;
   std::mutex jsWorkDone;
-  std::mutex runtimeCaptureBlockDone;
-
-  runtimeCaptured.lock();
   jsWorkDone.lock();
-  runtimeCaptureBlockDone.lock();
 
-  jsi::Runtime *runtimePtr;
-
-  auto threadId = std::this_thread::get_id();
-  auto runtimeCaptureBlock = [&](jsi::Runtime &runtime) {
-    runtimePtr = &runtime;
-
-    if (threadId == std::this_thread::get_id()) {
-      // In case of a synchronous call, we should unlock mutexes and return.
-      runtimeCaptured.unlock();
-      runtimeCaptureBlockDone.unlock();
-      return;
+  {
+    std::unique_lock<std::mutex> lock(_mutex);
+    if (_pendingUITask) {
+      runPendingUITask();
     }
 
-    runtimeCaptured.unlock();
-    // `jsWork` is called somewhere here.
-    jsWorkDone.lock();
-    runtimeCaptureBlockDone.unlock();
-  };
-  runtimeExecutor(std::move(runtimeCaptureBlock));
+    runtimeExecutor([&](jsi::Runtime &rt) {
+      {
+        std::lock_guard<std::mutex> lock(_mutex);
+        runtime = &rt;
+        _cv.notify_one();
+      }
 
-  runtimeCaptured.lock();
-  jsWork(*runtimePtr);
+      // Block the js thread until jsWork finishes on calling thread
+      jsWorkDone.lock();
+    });
+
+    while (true) {
+      _cv.wait(lock, [&] { return runtime != nullptr || _pendingUITask != nullptr; });
+
+      if (_pendingUITask != nullptr) {
+        runPendingUITask();
+      } else {
+        break;
+      }
+    }
+  }
+
+  jsWork(*runtime);
   jsWorkDone.unlock();
-  runtimeCaptureBlockDone.lock();
+}
+
+std::future<void> schedulePotentiallyDeadlockingUITask(std::function<void()> work)
+{
+  std::lock_guard<std::mutex> lock(_mutex);
+  react_native_assert((!_pendingUITask || _pendingUITask->hasStarted()));
+
+  auto uiTask = std::make_shared<UITask>(work);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    uiTask->run();
+  });
+
+  _pendingUITask = uiTask;
+  _cv.notify_one();
+  return uiTask->getFuture();
 }
 
 } // namespace facebook::react

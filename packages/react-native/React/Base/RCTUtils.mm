@@ -19,6 +19,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 
 #import <React/RCTUtilsUIOverride.h>
+#import <ReactCommon/RuntimeExecutorUtils.h>
 #import "RCTAssert.h"
 #import "RCTLog.h"
 
@@ -295,6 +296,11 @@ void RCTExecuteOnMainQueue(dispatch_block_t block)
   }
 }
 
+static BOOL RCTIsJSThread()
+{
+  return [[NSThread currentThread].name containsString:@"JavaScript"];
+}
+
 // Please do not use this method
 // unless you know what you are doing.
 void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
@@ -311,7 +317,16 @@ void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *
     return;
   }
 
-  if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+  if (facebook::react::ReactNativeFeatureFlags::saferMainQueueSyncDispatch()) {
+    if (RCTIsJSThread()) {
+      auto uiTask = facebook::react::postPotentiallyDeadlockingUITask(block);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        uiTask->run();
+      });
+      uiTask->waitUntilDone();
+      return;
+    }
+  } else if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
     RCTLogError(
         @"RCTUnsafeExecuteOnMainQueueSync: %@",
         context ?: @"Sync dispatches to the main queue can deadlock React Native.");
@@ -340,7 +355,16 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
     return;
   }
 
-  if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+  if (facebook::react::ReactNativeFeatureFlags::saferMainQueueSyncDispatch()) {
+    if (RCTIsJSThread()) {
+      auto uiTask = facebook::react::postPotentiallyDeadlockingUITask(block);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        uiTask->run();
+      });
+      uiTask->waitUntilDone();
+      return;
+    }
+  } else if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
     RCTLogError(@"RCTUnsafeExecuteOnMainQueueOnceSync: Sync dispatches to the main queue can deadlock React Native.");
   }
 

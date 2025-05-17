@@ -8,6 +8,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 
 #include <jsi/jsi.h>
+#include <future>
 
 namespace facebook::react {
 
@@ -34,4 +35,8 @@ DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 
   return data;
 }
+
+std::future<void> schedulePotentiallyDeadlockingUITask(
+    std::function<void()> runnable);
+
 } // namespace facebook::react
