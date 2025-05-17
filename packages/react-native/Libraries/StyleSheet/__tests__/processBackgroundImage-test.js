@@ -1019,7 +1019,7 @@ describe('processBackgroundImage', () => {
   });
 
   // 4. position syntax: [ [ left | right ] <length-percentage> ] && [ [ top | bottom ] <length-percentage> ]
-  it('should handle left position top position syntax', () => {
+  it('should handle position with separate left and top percentages', () => {
     const input = 'radial-gradient(at top 0% right 10%, red, blue)';
     const result = processBackgroundImage(input);
     expect(result[0].position).toEqual({right: '10%', top: '0%'});
@@ -1137,10 +1137,11 @@ describe('processBackgroundImage', () => {
   });
 
   it('should not process negative radius in radial gradient syntax', () => {
-    const input = 'radial-gradient(circle -100px, red, blue)';
-    const input1 = 'radial-gradient(ellipse 100px -40px, red, blue)';
-    const result = processBackgroundImage(input);
+    const input1 = 'radial-gradient(circle -100px, red, blue)';
+    const input2 = 'radial-gradient(ellipse 100px -40px, red, blue)';
     const result1 = processBackgroundImage(input1);
-    expect(result).toEqual([]);
+    const result2 = processBackgroundImage(input2);
+    expect(result1).toEqual([]);
+    expect(result2).toEqual([]);
   });
 });

@@ -12,10 +12,7 @@
 
 import type {
   AccessibilityActionEvent,
-  AccessibilityActionInfo,
   AccessibilityProps,
-  AccessibilityRole,
-  AccessibilityState,
   Role,
 } from '../Components/View/ViewAccessibility';
 import type {ColorValue, TextStyleProp} from '../StyleSheet/StyleSheet';
