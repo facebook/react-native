@@ -203,7 +203,7 @@ jest
     __esModule: true,
     default: jest.requireActual(
       '../Libraries/Components/RefreshControl/__mocks__/RefreshControlMock',
-    ),
+    ).default,
   }))
   .mock('../Libraries/Components/ScrollView/ScrollView', () => {
     const baseComponent = mockComponent(
