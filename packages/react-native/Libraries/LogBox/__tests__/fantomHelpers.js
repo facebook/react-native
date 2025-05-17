@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';

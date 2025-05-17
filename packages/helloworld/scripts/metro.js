@@ -6,7 +6,6 @@
  *
  * @noflow
  * @format
- * @oncall react_native
  */
 
 const {startCommand} = require('@react-native/community-cli-plugin');

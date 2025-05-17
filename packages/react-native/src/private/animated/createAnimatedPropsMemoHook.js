@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type AnimatedProps from '../../../Libraries/Animated/nodes/AnimatedProps';
