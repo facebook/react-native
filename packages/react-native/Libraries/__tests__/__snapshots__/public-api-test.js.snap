@@ -4219,11 +4219,10 @@ declare export default typeof RCTNativeAppEventEmitter;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/AssetRegistry.js 1`] = `
-"declare const AssetRegistry: {
-  registerAsset: (asset: PackagerAsset) => number,
-  getAssetByID: (assetId: number) => PackagerAsset,
-};
-declare module.exports: typeof AssetRegistry;
+"export {
+  registerAsset,
+  getAssetByID,
+} from \\"@react-native/assets-registry/registry\\";
 "
 `;
 
