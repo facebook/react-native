@@ -8,6 +8,7 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict
+ * @noformat
  * << GENERATED >>
  */
 
@@ -135,6 +136,7 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict
+ * @noformat
  * << GENERATED >>
  */
 
