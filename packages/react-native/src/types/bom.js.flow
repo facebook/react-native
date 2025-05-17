@@ -108,13 +108,10 @@ declare class WebSocket extends EventTarget {
   bufferedAmount: number;
   close(code?: number, reason?: string): void;
   static CLOSED: 3;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   CLOSED: 3;
   static CLOSING: 2;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   CLOSING: 2;
   static CONNECTING: 0;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   CONNECTING: 0;
   constructor(url: string, protocols?: string | Array<string>): void;
   extensions: string;
@@ -123,7 +120,6 @@ declare class WebSocket extends EventTarget {
   onmessage: (ev: MessageEvent) => mixed;
   onopen: (ev: $FlowFixMe) => mixed;
   static OPEN: 1;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   OPEN: 1;
   protocol: string;
   readyState: number;
@@ -137,15 +133,12 @@ declare class WebSocket extends EventTarget {
 declare class XMLHttpRequest extends EventTarget {
   abort(): void;
   static DONE: number;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   DONE: number;
   getAllResponseHeaders(): string;
   getResponseHeader(header: string): string;
   static HEADERS_RECEIVED: number;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   HEADERS_RECEIVED: number;
   static LOADING: number;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   LOADING: number;
   msCaching: string;
   msCachingEnabled(): boolean;
@@ -165,7 +158,6 @@ declare class XMLHttpRequest extends EventTarget {
     password?: string,
   ): void;
   static OPENED: number;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   OPENED: number;
   overrideMimeType(mime: string): void;
   readyState: number;
@@ -182,7 +174,6 @@ declare class XMLHttpRequest extends EventTarget {
   statusText: string;
   timeout: number;
   static UNSENT: number;
-  // eslint-disable-next-line ft-flow/no-dupe-keys
   UNSENT: number;
   upload: XMLHttpRequestEventTarget;
 

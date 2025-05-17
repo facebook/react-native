@@ -24,9 +24,8 @@ describe('PerformanceObserver', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    const Performance = require('../Performance').default;
     // $FlowExpectedError[cannot-write]
-    global.performance = new Performance();
+    global.performance = new (require('../Performance').default)();
     PerformanceObserver = require('../PerformanceObserver').PerformanceObserver;
   });
 

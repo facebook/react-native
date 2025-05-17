@@ -67,6 +67,7 @@ function MultiColumnExample(): React.Node {
     return {length, offset: length * index, index};
   };
 
+  // eslint-disable-next-line react/no-unstable-nested-components
   const _renderItemComponent = ({
     item,
   }: ListRenderItemInfo<any | Item>): $FlowFixMe => {
