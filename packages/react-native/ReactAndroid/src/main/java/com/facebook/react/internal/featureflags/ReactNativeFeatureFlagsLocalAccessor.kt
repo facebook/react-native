@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<14cd1a58bd153dedda045a72c1494caa>>
+ * @generated SignedSource<<4022c8d62266f4bcc649022d1be2d7fe>>
  */
 
 /**
@@ -61,6 +61,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var incorporateMaxLinesDuringAndroidLayoutCache: Boolean? = null
+  private var saferMainQueueSyncDispatchCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -439,6 +440,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.incorporateMaxLinesDuringAndroidLayout()
       accessedFeatureFlags.add("incorporateMaxLinesDuringAndroidLayout")
       incorporateMaxLinesDuringAndroidLayoutCache = cached
+    }
+    return cached
+  }
+
+  override fun saferMainQueueSyncDispatch(): Boolean {
+    var cached = saferMainQueueSyncDispatchCache
+    if (cached == null) {
+      cached = currentProvider.saferMainQueueSyncDispatch()
+      accessedFeatureFlags.add("saferMainQueueSyncDispatch")
+      saferMainQueueSyncDispatchCache = cached
     }
     return cached
   }

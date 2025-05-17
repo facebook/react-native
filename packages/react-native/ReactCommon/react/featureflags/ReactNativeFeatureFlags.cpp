@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<88fdbea2f97f628187164a47a9737da0>>
+ * @generated SignedSource<<27d178af8531a2726bef81d8bb0ccbb1>>
  */
 
 /**
@@ -172,6 +172,10 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
 
 bool ReactNativeFeatureFlags::incorporateMaxLinesDuringAndroidLayout() {
   return getAccessor().incorporateMaxLinesDuringAndroidLayout();
+}
+
+bool ReactNativeFeatureFlags::saferMainQueueSyncDispatch() {
+  return getAccessor().saferMainQueueSyncDispatch();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

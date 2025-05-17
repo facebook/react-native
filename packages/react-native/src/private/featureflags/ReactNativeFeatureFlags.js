@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29691b2062c240377834a01ced24c71c>>
+ * @generated SignedSource<<1714993ba13665970f62e198a54d9622>>
  * @flow strict
  * @noformat
  */
@@ -88,6 +88,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   incorporateMaxLinesDuringAndroidLayout: Getter<boolean>,
+  saferMainQueueSyncDispatch: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
@@ -333,6 +334,10 @@ export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlag
  * Set maxLines and ellipsization during Android layout creation
  */
 export const incorporateMaxLinesDuringAndroidLayout: Getter<boolean> = createNativeFlagGetter('incorporateMaxLinesDuringAndroidLayout', true);
+/**
+ * Main queue sync dispatch that won't deadlock with sync render/events
+ */
+export const saferMainQueueSyncDispatch: Getter<boolean> = createNativeFlagGetter('saferMainQueueSyncDispatch', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

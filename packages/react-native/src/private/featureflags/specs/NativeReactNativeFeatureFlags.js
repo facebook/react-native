@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<59ebee6019b99a8c6a29dfc1eb036194>>
+ * @generated SignedSource<<4996dad946fef13d88f7482e643dff91>>
  * @flow strict
  * @noformat
  */
@@ -62,6 +62,7 @@ export interface Spec extends TurboModule {
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +incorporateMaxLinesDuringAndroidLayout?: () => boolean;
+  +saferMainQueueSyncDispatch?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
