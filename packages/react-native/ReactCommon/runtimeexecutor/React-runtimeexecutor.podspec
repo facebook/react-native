@@ -17,6 +17,8 @@ else
 end
 
 Pod::Spec.new do |s|
+  source_files = "*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
+
   s.name                   = "React-runtimeexecutor"
   s.version                = version
   s.summary                = "-"  # TODO
@@ -25,8 +27,14 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = source_files
   s.header_dir             = "ReactCommon"
+
+  if ENV['USE_FRAMEWORKS']
+    s.module_name            = "React-runtimeexecutor"
+    s.header_mappings_dir  = "."
+    header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
+  end
 
   s.dependency "React-jsi", version
 end
