@@ -15,6 +15,9 @@ const {
   isReactNativeCoreLibrary,
   parseiOSAnnotations,
 } = require('./utils');
+const {
+  generateSupportedApplePlatformsMacro,
+} = require('@react-native/codegen/lib/generators/components/ComponentsProviderUtils');
 const fs = require('fs');
 const path = require('path');
 
@@ -28,7 +31,11 @@ const THIRD_PARTY_COMPONENTS_MM_TEMPLATE_PATH = path.join(
   'RCTThirdPartyComponentsProviderMM.template',
 );
 
-function generateRCTThirdPartyComponents(libraries, outputDir) {
+function generateRCTThirdPartyComponents(
+  libraries,
+  librariesSupportedApplePlatforms,
+  outputDir,
+) {
   fs.mkdirSync(outputDir, {recursive: true});
   // Generate Header File
   codegenLog('Generating RCTThirdPartyComponentsProvider.h');
@@ -42,6 +49,7 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
 
   codegenLog('Generating RCTThirdPartyComponentsProvider.mm');
   let componentsInLibraries = {};
+  let componentsSupportedApplePlatforms = {};
 
   const componentLibraries = libraries.filter(({config, libraryPath}) => {
     if (isReactNativeCoreLibrary(config.name) || config.type === 'modules') {
@@ -58,6 +66,9 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
     const libraryName = JSON.parse(
       fs.readFileSync(path.join(libraryPath, 'package.json')),
     ).name;
+
+    componentsSupportedApplePlatforms[libraryName] =
+      librariesSupportedApplePlatforms[config.name];
 
     librariesToCrawl[libraryName] = library;
 
@@ -118,14 +129,8 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
     componentsInLibraries[libraryName] = componentsMapping;
   });
 
-  const thirdPartyComponentsMapping = Object.keys(componentsInLibraries)
-    .flatMap(library => {
-      const components = componentsInLibraries[library];
-      return components.map(({componentName, className}) => {
-        return `\t\t@"${componentName}": NSClassFromString(@"${className}"), // ${library}`;
-      });
-    })
-    .join('\n');
+  const thirdPartyComponentsMapping = _generateComponentRegistry(componentsInLibraries, componentsSupportedApplePlatforms);
+
   // Generate implementation file
   const templateMM = fs
     .readFileSync(THIRD_PARTY_COMPONENTS_MM_TEMPLATE_PATH, 'utf8')
@@ -206,6 +211,44 @@ function findRCTComponentViewProtocolClass(filepath) {
   return null;
 }
 
+function _generateComponentRegistry(libraryComponentsMap, platformSupportByLibrary) {
+  if (!libraryComponentsMap || Object.keys(libraryComponentsMap).length === 0) {
+    return '';
+  }
+
+  const generatedComponentMappings = Object.keys(libraryComponentsMap)
+    .flatMap(library => {
+      const components = libraryComponentsMap[library];
+
+      const componentMappings = components.map(
+        ({ componentName, className }) => {
+          if (!className || !componentName) {
+            return null;
+          }
+
+          return `\t\t@"${componentName}": NSClassFromString(@"${className}"), // ${library}`;
+        },
+      ).filter(item => item !== null);
+
+      if (componentMappings.length === 0) {
+        return [];
+      }
+
+      return generateSupportedApplePlatformsMacro(
+        componentMappings.join('\n'),
+        platformSupportByLibrary?.[library]
+      );
+    });
+
+  const sanitizedComponentMappings = generatedComponentMappings
+    .map(line => line.replace(/[\r\n]+$/, ''))
+    .filter(line => line.length > 0);
+
+  return sanitizedComponentMappings.join('\n');
+}
+
 module.exports = {
   generateRCTThirdPartyComponents,
+  // exported for testing purposes only:
+  _generateComponentRegistry,
 };
