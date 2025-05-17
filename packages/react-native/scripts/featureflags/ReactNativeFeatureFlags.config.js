@@ -437,6 +437,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'stable',
     },
+    saferMainQueueSyncDispatch: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-17',
+        description:
+          "Main queue sync dispatch that won't deadlock with sync render/events",
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<829c85b56fbeaf01ece2d1dd84ecde8e>>
+ * @generated SignedSource<<8c61e7b06e77c2386044e2f04119b23f>>
  */
 
 /**
@@ -173,6 +173,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool incorporateMaxLinesDuringAndroidLayout() override {
     return true;
+  }
+
+  bool saferMainQueueSyncDispatch() override {
+    return false;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
