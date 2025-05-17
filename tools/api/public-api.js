@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 const chalk = require('chalk');
@@ -287,8 +286,6 @@ function main() {
  *
  * @file_count ${files.length}
  * @generate-command: node tools/api/public-api.js
- *
- * @oncall react_native
  */
 
 `,

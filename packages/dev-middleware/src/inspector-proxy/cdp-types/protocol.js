@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 // Adapted from https://github.com/ChromeDevTools/devtools-protocol/blob/master/types/protocol.d.ts

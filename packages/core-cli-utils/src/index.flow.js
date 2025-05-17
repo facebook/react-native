@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 // @babel/register doesn't like export {foo} from './bar'; statements,

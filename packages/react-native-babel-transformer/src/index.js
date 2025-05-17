@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 // This file uses Flow comment syntax so that it may be used from source as a

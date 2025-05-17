@@ -16,11 +16,7 @@ import type {
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-import {
-  type ColorValue,
-  type TextStyleProp,
-  type ViewStyleProp,
-} from '../../StyleSheet/StyleSheet';
+import {type ColorValue, type TextStyleProp} from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
 /**

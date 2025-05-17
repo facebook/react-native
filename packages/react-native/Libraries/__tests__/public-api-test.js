@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 import type {TransformVisitor} from 'hermes-transform';

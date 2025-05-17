@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';

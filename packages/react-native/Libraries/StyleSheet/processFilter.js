@@ -6,7 +6,6 @@
  *
  * @format strict-local
  * @flow
- * @oncall react-native
  */
 
 'use strict';
