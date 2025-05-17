@@ -13,13 +13,19 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Dimensions, StyleSheet, View} from 'react-native';
 
 function Playground() {
+  const screenWithoutStatusBar = Dimensions.get('window').height;
+  const screenWithStatusBar = Dimensions.get('screen').height;
   return (
     <View style={styles.container}>
       <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
+        {`Dimensions.get('window').height: ${screenWithoutStatusBar}`}
+        {'\n'}
+        {`Dimensions.get('screen').height: ${screenWithStatusBar}`}
+        {'\n\n'}
+        {'Note these two should not be equal on iOS devices with a status bar.'}
       </RNTesterText>
     </View>
   );
