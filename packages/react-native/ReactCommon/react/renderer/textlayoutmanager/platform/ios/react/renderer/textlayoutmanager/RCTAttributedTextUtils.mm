@@ -293,10 +293,18 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
 
 void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
 {
+  [attributedText.string enumerateSubstringsInRange:NSMakeRange(0, attributedText.length)
+                                            options:NSStringEnumerationByLines | NSStringEnumerationSubstringNotRequired
+                                         usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+    RCTApplyBaselineOffsetForRange(attributedText, enclosingRange);
+  }];
+}
+
+void RCTApplyBaselineOffsetForRange(NSMutableAttributedString *attributedText, NSRange attributedTextRange)
   __block CGFloat maximumLineHeight = 0;
 
   [attributedText enumerateAttribute:NSParagraphStyleAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
+                             inRange:attributedTextRange
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
                           usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
                             if (!paragraphStyle) {
@@ -314,7 +322,7 @@ void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
   __block CGFloat maximumFontLineHeight = 0;
 
   [attributedText enumerateAttribute:NSFontAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
+                             inRange:attributedTextRange
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
                           usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
                             if (!font) {
@@ -332,7 +340,7 @@ void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
 
   [attributedText addAttribute:NSBaselineOffsetAttributeName
                          value:@(baseLineOffset)
-                         range:NSMakeRange(0, attributedText.length)];
+                         range:attributedTextRange];
 }
 
 static NSMutableAttributedString *RCTNSAttributedStringFragmentFromFragment(
