@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {DebuggerSessionIDs, EventReporter} from '../types/EventReporter';

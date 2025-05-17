@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 export function withAbortSignalForEachTest(): $ReadOnly<{signal: AbortSignal}> {

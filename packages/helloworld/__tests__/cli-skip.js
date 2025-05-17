@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 // TODO(T187224491): js1 jest doesn't install the correct commander, instead

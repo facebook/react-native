@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -13,13 +12,13 @@
 const Blob = require('../Blob').default;
 const FileReader = require('../FileReader').default;
 
-jest.setMock('../../BatchedBridge/NativeModules', {
+jest.mock('../../BatchedBridge/NativeModules', () => ({
   __esModule: true,
   default: {
-    BlobModule: require('../__mocks__/BlobModule'),
-    FileReaderModule: require('../__mocks__/FileReaderModule'),
+    BlobModule: require('../__mocks__/BlobModule').default,
+    FileReaderModule: require('../__mocks__/FileReaderModule').default,
   },
-});
+}));
 
 describe('FileReader', function () {
   it('should read blob as text', async () => {

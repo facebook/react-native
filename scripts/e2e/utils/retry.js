@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react-native
  */
 
 const {spawnSync} = require('child_process');

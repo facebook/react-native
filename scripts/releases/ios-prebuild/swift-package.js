@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 const {RESOURCES_FOLDER, TARGET_FOLDER} = require('./constants');

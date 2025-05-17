@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 const {prepareHermesArtifactsAsync} = require('./ios-prebuild/hermes');
