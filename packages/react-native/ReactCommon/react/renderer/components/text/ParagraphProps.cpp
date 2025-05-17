@@ -31,14 +31,14 @@ ParagraphProps::ParagraphProps(
                     rawProps,
                     sourceProps.paragraphAttributes,
                     {})),
-      isSelectable(
+      selectable(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
-              ? sourceProps.isSelectable
+              ? sourceProps.selectable
               : convertRawProp(
                     context,
                     rawProps,
                     "selectable",
-                    sourceProps.isSelectable,
+                    sourceProps.selectable,
                     false)),
       onTextLayout(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
@@ -129,7 +129,7 @@ void ParagraphProps::setProp(
   }
 
   switch (hash) {
-    RAW_SET_PROP_SWITCH_CASE_BASIC(isSelectable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(selectable);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onTextLayout);
   }
 
@@ -148,7 +148,7 @@ SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
   return ViewProps::getDebugProps() + BaseTextProps::getDebugProps() +
       paragraphAttributes.getDebugProps() +
       SharedDebugStringConvertibleList{
-          debugStringConvertibleItem("isSelectable", isSelectable)};
+          debugStringConvertibleItem("selectable", selectable)};
 }
 #endif
 
