@@ -9,12 +9,12 @@
 
 'use strict';
 
-jest.setMock('../../BatchedBridge/NativeModules', {
+jest.mock('../../BatchedBridge/NativeModules', () => ({
   __esModule: true,
   default: {
-    BlobModule: require('../__mocks__/BlobModule'),
+    BlobModule: require('../__mocks__/BlobModule').default,
   },
-});
+}));
 
 const Blob = require('../Blob').default;
 const BlobManager = require('../BlobManager').default;
