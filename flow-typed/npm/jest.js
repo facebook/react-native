@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 // Modified from https://raw.githubusercontent.com/flow-typed/flow-typed/master/definitions/npm/jest_v29.x.x/flow_v0.134.x-/jest_v29.x.x.js
