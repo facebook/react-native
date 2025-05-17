@@ -129,7 +129,7 @@ class PerformanceEntryReporter {
 
   std::function<double()> timeStampProvider_ = nullptr;
 
-  double getMarkTime(const std::string& markName) const;
+  std::optional<double> getMarkTime(const std::string& markName) const;
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
