@@ -33,14 +33,14 @@ namespace detail {
 template <typename F>
 struct function_wrapper;
 
-template <typename C, typename R, typename... Args>
-struct function_wrapper<R (C::*)(Args...)> {
-  using type = std::function<R(Args...)>;
+template <typename ClassT, typename ReturnT, typename... ArgsT>
+struct function_wrapper<ReturnT (ClassT::*)(ArgsT...)> {
+  using type = std::function<ReturnT(ArgsT...)>;
 };
 
-template <typename C, typename R, typename... Args>
-struct function_wrapper<R (C::*)(Args...) const> {
-  using type = std::function<R(Args...)>;
+template <typename ClassT, typename ReturnT, typename... ArgsT>
+struct function_wrapper<ReturnT (ClassT::*)(ArgsT...) const> {
+  using type = std::function<ReturnT(ArgsT...)>;
 };
 
 template <typename T, typename = void>
@@ -61,33 +61,43 @@ struct bridging_wrapper<
 template <typename T>
 using bridging_t = typename detail::bridging_wrapper<T>::type;
 
-template <typename R, typename T, std::enable_if_t<is_jsi_v<T>, int> = 0>
-auto fromJs(jsi::Runtime& rt, T&& value, const std::shared_ptr<CallInvoker>&)
-    -> decltype(static_cast<R>(
-        std::move(convert(rt, std::forward<T>(value))))) {
-  return static_cast<R>(std::move(convert(rt, std::forward<T>(value))));
-}
-
-template <typename R, typename T>
-auto fromJs(jsi::Runtime& rt, T&& value, const std::shared_ptr<CallInvoker>&)
-    -> decltype(Bridging<remove_cvref_t<R>>::fromJs(
-        rt,
-        convert(rt, std::forward<T>(value)))) {
-  return Bridging<remove_cvref_t<R>>::fromJs(
-      rt, convert(rt, std::forward<T>(value)));
-}
-
-template <typename R, typename T>
+template <
+    typename ReturnT,
+    typename JSArgT,
+    std::enable_if_t<is_jsi_v<JSArgT>, int> = 0>
 auto fromJs(
     jsi::Runtime& rt,
-    T&& value,
-    const std::shared_ptr<CallInvoker>& jsInvoker)
-    -> decltype(Bridging<remove_cvref_t<R>>::fromJs(
+    JSArgT&& value,
+    const std::shared_ptr<CallInvoker>&)
+    -> decltype(static_cast<ReturnT>(
+        std::move(convert(rt, std::forward<JSArgT>(value))))) {
+  return static_cast<ReturnT>(
+      std::move(convert(rt, std::forward<JSArgT>(value))));
+}
+
+template <typename ReturnT, typename JSArgT>
+auto fromJs(
+    jsi::Runtime& rt,
+    JSArgT&& value,
+    const std::shared_ptr<CallInvoker>&)
+    -> decltype(Bridging<remove_cvref_t<ReturnT>>::fromJs(
         rt,
-        convert(rt, std::forward<T>(value)),
+        convert(rt, std::forward<JSArgT>(value)))) {
+  return Bridging<remove_cvref_t<ReturnT>>::fromJs(
+      rt, convert(rt, std::forward<JSArgT>(value)));
+}
+
+template <typename ReturnT, typename JSArgT>
+auto fromJs(
+    jsi::Runtime& rt,
+    JSArgT&& value,
+    const std::shared_ptr<CallInvoker>& jsInvoker)
+    -> decltype(Bridging<remove_cvref_t<ReturnT>>::fromJs(
+        rt,
+        convert(rt, std::forward<JSArgT>(value)),
         jsInvoker)) {
-  return Bridging<remove_cvref_t<R>>::fromJs(
-      rt, convert(rt, std::forward<T>(value)), jsInvoker);
+  return Bridging<remove_cvref_t<ReturnT>>::fromJs(
+      rt, convert(rt, std::forward<JSArgT>(value)), jsInvoker);
 }
 
 template <typename T, std::enable_if_t<is_jsi_v<T>, int> = 0>
