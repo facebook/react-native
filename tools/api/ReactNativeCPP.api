@@ -4,8 +4,6 @@
  *
  * @file_count 1059
  * @generate-command: node tools/api/public-api.js
- *
- * @oncall react_native
  */
 
 

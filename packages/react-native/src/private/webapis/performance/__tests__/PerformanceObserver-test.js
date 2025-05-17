@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type Performance from '../Performance';
@@ -25,9 +24,8 @@ describe('PerformanceObserver', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    const Performance = require('../Performance').default;
     // $FlowExpectedError[cannot-write]
-    global.performance = new Performance();
+    global.performance = new (require('../Performance').default)();
     PerformanceObserver = require('../PerformanceObserver').PerformanceObserver;
   });
 

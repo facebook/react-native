@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 describe('no "@fantom_mode" in docblock', () => {

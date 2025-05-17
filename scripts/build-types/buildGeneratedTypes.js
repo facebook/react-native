@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../consts');

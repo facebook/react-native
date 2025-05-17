@@ -3,7 +3,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 declare type Print = (value: mixed) => string;
 declare type Indent = (value: string) => string;

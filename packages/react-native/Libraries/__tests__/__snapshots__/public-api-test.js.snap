@@ -4219,11 +4219,10 @@ declare export default typeof RCTNativeAppEventEmitter;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/AssetRegistry.js 1`] = `
-"declare const AssetRegistry: {
-  registerAsset: (asset: PackagerAsset) => number,
-  getAssetByID: (assetId: number) => PackagerAsset,
-};
-declare module.exports: typeof AssetRegistry;
+"export {
+  registerAsset,
+  getAssetByID,
+} from \\"@react-native/assets-registry/registry\\";
 "
 `;
 
@@ -8432,7 +8431,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
   | \\"web\\"
   | \\"native\\";
 type OptionalPlatformSelectSpec<T> = {
-  [_key in PlatformOSType]?: T,
+  [key in PlatformOSType]?: T,
 };
 export type PlatformSelectSpec<T> =
   | {

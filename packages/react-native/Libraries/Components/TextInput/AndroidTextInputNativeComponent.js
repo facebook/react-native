@@ -10,11 +10,7 @@
 
 import type {HostComponent} from '../../../src/private/types/HostComponent';
 import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
-import type {
-  ColorValue,
-  TextStyleProp,
-  ViewStyleProp,
-} from '../../StyleSheet/StyleSheet';
+import type {ColorValue, TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BubblingEventHandler,
   DirectEventHandler,

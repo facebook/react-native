@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  * @fantom_flags enableViewCulling:true
  * @fantom_flags enableSynchronousStateUpdates:true
  * @fantom_flags enableFixForParentTagDuringReparenting:true
