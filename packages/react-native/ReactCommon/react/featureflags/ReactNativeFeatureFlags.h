@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4123bc6f44835c022a1a5238908674c>>
+ * @generated SignedSource<<a0756c45d8e968e76f5d36393840ca42>>
  */
 
 /**
@@ -223,6 +223,11 @@ class ReactNativeFeatureFlags {
    * Set maxLines and ellipsization during Android layout creation
    */
   RN_EXPORT static bool incorporateMaxLinesDuringAndroidLayout();
+
+  /**
+   * Main queue sync dispatch that won't deadlock with sync render/events
+   */
+  RN_EXPORT static bool saferMainQueueSyncDispatch();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

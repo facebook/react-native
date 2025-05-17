@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d21af3f613aa450f25708c3da0cb6e97>>
+ * @generated SignedSource<<6bd5416072035f8ac33d650841bb2b76>>
  */
 
 /**
@@ -376,6 +376,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::incorporateMaxLinesDuringAndroidLayout();
+  }
+
+  bool saferMainQueueSyncDispatch() override {
+    auto value = values_["saferMainQueueSyncDispatch"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::saferMainQueueSyncDispatch();
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

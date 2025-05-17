@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d74dc8182a14fddbd7118149298515bd>>
+ * @generated SignedSource<<5fb05a9e1d08a9cc92d315154db3db08>>
  */
 
 /**
@@ -258,6 +258,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool incorporateMaxLinesDuringAndroidLayout() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("incorporateMaxLinesDuringAndroidLayout");
+    return method(javaProvider_);
+  }
+
+  bool saferMainQueueSyncDispatch() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("saferMainQueueSyncDispatch");
     return method(javaProvider_);
   }
 
@@ -516,6 +522,11 @@ bool JReactNativeFeatureFlagsCxxInterop::incorporateMaxLinesDuringAndroidLayout(
   return ReactNativeFeatureFlags::incorporateMaxLinesDuringAndroidLayout();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::saferMainQueueSyncDispatch(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::saferMainQueueSyncDispatch();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -713,6 +724,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "incorporateMaxLinesDuringAndroidLayout",
         JReactNativeFeatureFlagsCxxInterop::incorporateMaxLinesDuringAndroidLayout),
+      makeNativeMethod(
+        "saferMainQueueSyncDispatch",
+        JReactNativeFeatureFlagsCxxInterop::saferMainQueueSyncDispatch),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

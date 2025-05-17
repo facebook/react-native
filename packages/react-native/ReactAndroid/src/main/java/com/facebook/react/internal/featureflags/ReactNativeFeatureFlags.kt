@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e9a109fd77667dd0cb945ef6ef9737f2>>
+ * @generated SignedSource<<29fc8306d84a015708ae3b7cdc2b3fa6>>
  */
 
 /**
@@ -251,6 +251,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun incorporateMaxLinesDuringAndroidLayout(): Boolean = accessor.incorporateMaxLinesDuringAndroidLayout()
+
+  /**
+   * Main queue sync dispatch that won't deadlock with sync render/events
+   */
+  @JvmStatic
+  public fun saferMainQueueSyncDispatch(): Boolean = accessor.saferMainQueueSyncDispatch()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
