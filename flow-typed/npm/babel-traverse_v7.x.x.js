@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 // The sections between BEGIN GENERATED and END GENERATED are generated

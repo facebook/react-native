@@ -17,4 +17,4 @@ const FileReaderModule = {
   },
 };
 
-module.exports = FileReaderModule;
+export default FileReaderModule;

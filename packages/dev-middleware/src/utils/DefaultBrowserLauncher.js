@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 import type {BrowserLauncher} from '../types/BrowserLauncher';

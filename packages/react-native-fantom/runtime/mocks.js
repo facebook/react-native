@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 export const MOCK_FN_TAG: symbol = Symbol('mock function');

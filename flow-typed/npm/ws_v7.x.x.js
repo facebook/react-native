@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 declare type ws$PerMessageDeflateOptions = {

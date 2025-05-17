@@ -11,7 +11,6 @@
 'use strict';
 
 import type {WithAnimatedValue} from '../Animated/createAnimatedComponent';
-import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 import type {ImageResizeMode} from './../Image/ImageResizeMode';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,

@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 import type {ReactTestRenderer} from 'react-test-renderer';

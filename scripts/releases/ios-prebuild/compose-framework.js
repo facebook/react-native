@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 const {HEADERS_FOLDER, TARGET_FOLDER} = require('./constants');
