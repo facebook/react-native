@@ -19,7 +19,7 @@ const RCTRefreshControl: HostComponent<{}> = requireNativeComponent<{}>(
   'RCTRefreshControl',
 );
 
-class RefreshControlMock extends React.Component<{...}> {
+export default class RefreshControlMock extends React.Component<{...}> {
   static latestRef: ?RefreshControlMock;
   componentDidMount() {
     RefreshControlMock.latestRef = this;
@@ -28,5 +28,3 @@ class RefreshControlMock extends React.Component<{...}> {
     return <RCTRefreshControl />;
   }
 }
-
-module.exports = RefreshControlMock;
