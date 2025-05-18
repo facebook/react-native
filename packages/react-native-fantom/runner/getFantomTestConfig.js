@@ -56,6 +56,9 @@ const FANTOM_BENCHMARK_FILENAME_RE = /[Bb]enchmark-itest\./g;
 const FANTOM_BENCHMARK_SUITE_RE =
   /\n(Fantom\.)?unstable_benchmark(\s*)\.suite\(/g;
 
+const FANTOM_BENCHMARK_DEFAULT_MODE: FantomTestConfigMode =
+  FantomTestConfigMode.Optimized;
+
 /**
  * Extracts the Fantom configuration from the test file, specified as part of
  * the docblock comment. E.g.:
@@ -123,7 +126,7 @@ export default function getFantomTestConfig(
       FANTOM_BENCHMARK_FILENAME_RE.test(testPath) ||
       FANTOM_BENCHMARK_SUITE_RE.test(testContents)
     ) {
-      config.mode = FantomTestConfigMode.Optimized;
+      config.mode = FANTOM_BENCHMARK_DEFAULT_MODE;
     }
   }
 
