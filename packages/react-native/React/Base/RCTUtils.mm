@@ -383,21 +383,27 @@ CGFloat RCTFontSizeMultiplier(void)
   return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
 }
 
+UIDeviceOrientation RCTDeviceOrientation(void) {
+  return [[UIDevice currentDevice] orientation];
+}
+
 CGSize RCTScreenSize(void)
 {
-  // FIXME: this caches whatever the bounds were when it was first called, and then
-  // doesn't update when the device is rotated. We need to find another thread-
-  // safe way to get the screen size.
-
-  static CGSize size;
+  static CGSize portraitSize;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTUnsafeExecuteOnMainQueueSync(^{
-      size = [UIScreen mainScreen].bounds.size;
+      CGSize screenSize = [UIScreen mainScreen].bounds.size;
+      portraitSize = CGSizeMake(MIN(screenSize.width, screenSize.height),
+                                MAX(screenSize.width, screenSize.height));
     });
   });
-
-  return size;
+  
+  if (UIDeviceOrientationIsLandscape(RCTDeviceOrientation())) {
+    return CGSizeMake(portraitSize.height, portraitSize.width);
+  } else {
+    return CGSizeMake(portraitSize.width, portraitSize.height);
+  }
 }
 
 CGSize RCTViewportSize(void)
