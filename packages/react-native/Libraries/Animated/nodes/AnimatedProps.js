@@ -19,6 +19,7 @@ import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
 import invariant from 'invariant';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 
 export type AnimatedPropsAllowlist = $ReadOnly<{
   style?: ?AnimatedStyleAllowlist,
@@ -140,6 +141,10 @@ export default class AnimatedProps extends AnimatedNode {
         props[key] = maybeNode.__getValue();
       } else if (maybeNode instanceof AnimatedEvent) {
         props[key] = maybeNode.__getHandler();
+      }
+      if (key === 'style' && Array.isArray(maybeNode)) {
+        // $FlowFixMe[incompatible-call]
+        props[key] = flattenStyle(maybeNode);
       }
     }
 
