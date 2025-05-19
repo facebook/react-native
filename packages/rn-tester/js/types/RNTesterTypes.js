@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-
 export type RNTesterModuleExample = $ReadOnly<{
   name?: string,
   title: string,
@@ -18,7 +16,7 @@ export type RNTesterModuleExample = $ReadOnly<{
   expect?: string,
   hidden?: boolean,
   scrollable?: boolean,
-  render: ({testID?: ?string}) => React.Node,
+  render: component(),
 }>;
 
 export type RNTesterModule = $ReadOnly<{

@@ -15,7 +15,7 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 import hotdog from '../../assets/hotdog.jpg';
 import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
-import TextInlineViewsExample from './TextInlineViewsExample';
+import TextSharedExamples from './TextSharedExamples';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
@@ -1064,13 +1064,6 @@ const examples = [
     },
   },
   {
-    title: 'Empty Text',
-    description: "It's ok to have Text with zero or null children.",
-    render: function (): React.Node {
-      return <Text />;
-    },
-  },
-  {
     title: 'Toggling Attributes',
     render: function (): React.MixedElement {
       return <AttributeToggler />;
@@ -1590,7 +1583,7 @@ const examples = [
       );
     },
   },
-  TextInlineViewsExample,
+  ...TextSharedExamples,
 ];
 
 module.exports = ({
