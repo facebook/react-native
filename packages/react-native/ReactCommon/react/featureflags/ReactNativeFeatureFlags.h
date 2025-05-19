@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4123bc6f44835c022a1a5238908674c>>
+ * @generated SignedSource<<c47af8c08fd28df8f937a2f24caf037d>>
  */
 
 /**
@@ -148,6 +148,11 @@ class ReactNativeFeatureFlags {
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
    */
   RN_EXPORT static bool enableMainQueueModulesOnIOS();
+
+  /**
+   * Enable NSNull conversion when handling module arguments on iOS
+   */
+  RN_EXPORT static bool enableModuleArgumentNSNullConversionIOS();
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing

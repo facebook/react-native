@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29691b2062c240377834a01ced24c71c>>
+ * @generated SignedSource<<59389d8c10c88130087eea3c5e049c1d>>
  * @flow strict
  * @noformat
  */
@@ -73,6 +73,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
+  enableModuleArgumentNSNullConversionIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNetworkEventReporting: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
@@ -273,6 +274,10 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
  */
 export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
+/**
+ * Enable NSNull conversion when handling module arguments on iOS
+ */
+export const enableModuleArgumentNSNullConversionIOS: Getter<boolean> = createNativeFlagGetter('enableModuleArgumentNSNullConversionIOS', true);
 /**
  * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
  */
