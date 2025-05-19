@@ -82,7 +82,8 @@ const FANTOM_BENCHMARK_DEFAULT_MODE: FantomTestConfigMode =
  * - `fantom_mode`: specifies the level of optimization to compile the test
  *  with. Valid values are `dev` and `opt`.
  * - `fantom_hermes_variant`: specifies the Hermes variant to use to run the
- *  test. Valid values are `hermes`, `static_hermes` and `static_hermes_trunk`.
+ *  test. Valid values are `hermes`, `static_hermes` and
+ *  `static_hermes_experimental`.
  * - `fantom_flags`: specifies the configuration for common and JS-only feature
  *  flags. They can be specified in the same pragma or in different ones, and
  *  the format is `<flag_name>:<value>`.
@@ -152,11 +153,10 @@ export default function getFantomTestConfig(
         config.hermesVariant = HermesVariant.Hermes;
         break;
       case 'static_hermes':
-      case 'static_hermes_stable':
-        config.hermesVariant = HermesVariant.StaticHermesStable;
+        config.hermesVariant = HermesVariant.StaticHermes;
         break;
-      case 'static_hermes_trunk':
-        config.hermesVariant = HermesVariant.StaticHermesTrunk;
+      case 'static_hermes_experimental':
+        config.hermesVariant = HermesVariant.StaticHermesExperimental;
         break;
       default:
         throw new Error(`Invalid Fantom Hermes mode: ${hermesVariant}`);
