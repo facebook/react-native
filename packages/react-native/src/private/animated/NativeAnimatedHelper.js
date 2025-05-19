@@ -97,6 +97,10 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
         // is possible because # arguments is fixed for each operation. For more
         // details, see `NativeAnimatedModule.queueAndExecuteBatchedOperations`.
         singleOpQueue.push(operationID, ...args);
+        if (shouldSignalBatch) {
+          clearImmediate(flushQueueImmediate);
+          flushQueueImmediate = setImmediate(API.flushQueue);
+        }
       };
     }
   } else {
