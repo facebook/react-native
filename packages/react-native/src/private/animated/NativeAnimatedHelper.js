@@ -57,7 +57,7 @@ const eventListenerAnimationFinishedCallbacks: {
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
-const shouldSignalBatch =
+const shouldSignalBatch: boolean =
   ReactNativeFeatureFlags.animatedShouldSignalBatch() ||
   ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
@@ -440,6 +440,7 @@ export default {
   generateNewAnimationId,
   assertNativeAnimatedModule,
   shouldUseNativeDriver,
+  shouldSignalBatch,
   transformDataType,
   // $FlowExpectedError[unsafe-getters-setters] - unsafe getter lint suppression
   // $FlowExpectedError[missing-type-arg] - unsafe getter lint suppression
