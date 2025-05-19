@@ -9,7 +9,7 @@
  */
 
 import type {TestSuiteResult} from '../runtime/setup';
-import type {AsyncCommandResult} from './utils';
+import type {AsyncCommandResult, HermesVariant} from './utils';
 
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
@@ -21,7 +21,9 @@ import {
 } from './snapshotUtils';
 import {
   getBuckModesForPlatform,
+  getBuckOptionsForHermes,
   getDebugInfoFromCommandResult,
+  getHermesCompilerTarget,
   getShortHash,
   isRunningFromCI,
   printConsoleLog,
@@ -125,16 +127,19 @@ function generateBytecodeBundle({
   sourcePath,
   bytecodePath,
   isOptimizedMode,
+  hermesVariant,
 }: {
   sourcePath: string,
   bytecodePath: string,
   isOptimizedMode: boolean,
+  hermesVariant: HermesVariant,
 }): void {
   const hermesCompilerCommandResult = runBuck2Sync(
     [
       'run',
       ...getBuckModesForPlatform(isOptimizedMode),
-      '//xplat/hermes/tools/hermesc:hermesc',
+      ...getBuckOptionsForHermes(hermesVariant),
+      getHermesCompilerTarget(hermesVariant),
       '--',
       '-emit-binary',
       isOptimizedMode ? '-O' : null,
@@ -232,6 +237,7 @@ module.exports = async function runTest(
       sourcePath: testJSBundlePath,
       bytecodePath: testBytecodeBundlePath,
       isOptimizedMode: testConfig.mode === FantomTestConfigMode.Optimized,
+      hermesVariant: testConfig.hermesVariant,
     });
   }
 
@@ -241,6 +247,7 @@ module.exports = async function runTest(
       ...getBuckModesForPlatform(
         testConfig.mode === FantomTestConfigMode.Optimized,
       ),
+      ...getBuckOptionsForHermes(testConfig.hermesVariant),
       '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
       '--',
       '--bundlePath',
