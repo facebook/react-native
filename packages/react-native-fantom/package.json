@@ -1,7 +1,7 @@
 {
   "name": "@react-native/fantom",
   "private": true,
-  "version": "0.80.0-rc.1",
+  "version": "0.80.0-rc.2",
   "main": "src/index.js",
   "description": "Internal integration testing and benchmarking tool for React Native",
   "peerDependencies": {
