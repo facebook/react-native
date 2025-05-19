@@ -80,6 +80,8 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
+  std::optional<double> getMarkTime(const std::string& markName) const;
+
   PerformanceMark reportMark(
       const std::string& name,
       const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
@@ -88,9 +90,6 @@ class PerformanceEntryReporter {
       const std::string& name,
       double startTime,
       double endTime,
-      const std::optional<double>& duration = std::nullopt,
-      const std::optional<std::string>& startMark = std::nullopt,
-      const std::optional<std::string>& endMark = std::nullopt,
       const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
           trackMetadata = std::nullopt);
 
@@ -128,8 +127,6 @@ class PerformanceEntryReporter {
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
   std::function<double()> timeStampProvider_ = nullptr;
-
-  double getMarkTime(const std::string& markName) const;
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {

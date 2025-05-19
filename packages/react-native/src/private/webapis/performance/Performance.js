@@ -17,6 +17,7 @@ import type {
 } from './PerformanceEntry';
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
+import DOMException from '../errors/DOMException';
 import {setPlatformObject} from '../webidl/PlatformObjects';
 import {EventCounts} from './EventTiming';
 import {
@@ -192,15 +193,22 @@ export default class Performance {
     let computedDuration = duration;
 
     if (NativePerformance?.measureWithResult) {
-      [computedStartTime, computedDuration] =
-        NativePerformance.measureWithResult(
-          measureName,
-          startTime,
-          endTime,
-          duration,
-          startMarkName,
-          endMarkName,
+      try {
+        [computedStartTime, computedDuration] =
+          NativePerformance.measureWithResult(
+            measureName,
+            startTime,
+            endTime,
+            duration,
+            startMarkName,
+            endMarkName,
+          );
+      } catch (error) {
+        throw new DOMException(
+          "Failed to execute 'measure' on 'Performance': " + error.message,
+          'SyntaxError',
         );
+      }
     } else {
       warnNoNativePerformance();
     }
