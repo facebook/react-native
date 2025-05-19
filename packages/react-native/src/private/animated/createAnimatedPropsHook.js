@@ -66,9 +66,13 @@ export default function createAnimatedPropsHook(
     );
 
     useEffect(() => {
-      // If multiple components call `flushQueue`, the first one will flush the
-      // queue and subsequent ones will do nothing.
-      NativeAnimatedHelper.API.flushQueue();
+      // Animated queue flush is handled deterministically in setImmediate for the following feature flags:
+      // animatedShouldSignalBatch, cxxNativeAnimatedEnabled
+      if (!NativeAnimatedHelper.shouldSignalBatch) {
+        // If multiple components call `flushQueue`, the first one will flush the
+        // queue and subsequent ones will do nothing.
+        NativeAnimatedHelper.API.flushQueue();
+      }
       let drivenAnimationEndedListener: ?EventSubscription = null;
       if (node.__isNative) {
         drivenAnimationEndedListener =
