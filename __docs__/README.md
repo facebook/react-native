@@ -45,6 +45,7 @@ TODO: Explain the different components of React Native at a high level.
     - UI / Fabric
       - Events
       - Shadow Tree Lifecycle
+        - [Runtime Shadow Node Reference Update](../packages/react-native/ReactCommon/react/renderer/core/__docs__/RSNRU.md)
       - Layout
       - Mounting
     - Native Modules / TurboModules
