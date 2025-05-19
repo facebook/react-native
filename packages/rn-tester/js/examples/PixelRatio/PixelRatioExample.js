@@ -12,11 +12,12 @@
 
 import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
-import React, {useState} from 'react';
+import * as React from 'react';
+import {useContext, useState} from 'react';
 import {Button, PixelRatio, StyleSheet, TextInput, View} from 'react-native';
 
 function LayoutSizeToPixel() {
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
   const [layoutDPSize, setLayoutDPSize] = useState<number>(0);
   const pixelSize = PixelRatio.getPixelSizeForLayoutSize(
     layoutDPSize ? layoutDPSize : 0,
@@ -54,7 +55,7 @@ function LayoutSizeToPixel() {
 }
 
 function RoundToNearestPixel() {
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
   const [layoutDPSizeText, setLayoutDPSizeText] = useState('');
   const layoutDPSize = parseFloat(layoutDPSizeText);
 

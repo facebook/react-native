@@ -10,7 +10,6 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
 #include <atomic>
 #include <memory>
@@ -23,7 +22,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Modern(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now,
+      std::function<HighResTimeStamp()> now,
       RuntimeSchedulerTaskErrorHandler onTaskError);
 
   /*
@@ -77,7 +76,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleIdleTask(
       jsi::Function&& callback,
-      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+      HighResDuration customTimeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept override;
 
   /*
@@ -86,7 +85,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleIdleTask(
       RawCallback&& callback,
-      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+      HighResDuration customTimeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept override;
 
   /*
@@ -118,7 +117,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  RuntimeSchedulerTimePoint now() const noexcept override;
+  HighResTimeStamp now() const noexcept override;
 
   /*
    * Expired task is a task that should have been already executed. Designed to
@@ -162,10 +161,10 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       taskQueue_;
 
   Task* currentTask_{};
-  RuntimeSchedulerTimePoint lastYieldingOpportunity_;
-  RuntimeSchedulerDuration longestPeriodWithoutYieldingOpportunity_{};
+  HighResTimeStamp lastYieldingOpportunity_;
+  HighResDuration longestPeriodWithoutYieldingOpportunity_;
 
-  void markYieldingOpportunity(RuntimeSchedulerTimePoint currentTime);
+  void markYieldingOpportunity(HighResTimeStamp currentTime);
 
   /**
    * This protects the access to `taskQueue_` and `isevent loopScheduled_`.
@@ -179,7 +178,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   void runEventLoop(jsi::Runtime& runtime, bool onlyExpired);
 
   std::shared_ptr<Task> selectTask(
-      RuntimeSchedulerTimePoint currentTime,
+      HighResTimeStamp currentTime,
       bool onlyExpired);
 
   void scheduleTask(std::shared_ptr<Task> task);
@@ -193,7 +192,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   void runEventLoopTick(
       jsi::Runtime& runtime,
       Task& task,
-      RuntimeSchedulerTimePoint currentTime);
+      HighResTimeStamp taskStartTime);
 
   void executeTask(
       jsi::Runtime& runtime,
@@ -207,14 +206,14 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   void reportLongTasks(
       const Task& task,
-      RuntimeSchedulerTimePoint startTime,
-      RuntimeSchedulerTimePoint endTime);
+      HighResTimeStamp startTime,
+      HighResTimeStamp endTime);
 
   /*
    * Returns a time point representing the current point in time. May be called
    * from multiple threads.
    */
-  std::function<RuntimeSchedulerTimePoint()> now_;
+  std::function<HighResTimeStamp()> now_;
 
   /*
    * Flag indicating if callback on JavaScript queue has been
@@ -225,8 +224,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
   std::unordered_set<SurfaceId> surfaceIdsWithPendingRenderingUpdates_;
 
-  ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
-      nullptr};
+  std::atomic<ShadowTreeRevisionConsistencyManager*>
+      shadowTreeRevisionConsistencyManager_{nullptr};
 
   PerformanceEntryReporter* performanceEntryReporter_{nullptr};
   RuntimeSchedulerEventTimingDelegate* eventTimingDelegate_{nullptr};

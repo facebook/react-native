@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import * as EnvironmentOptions from './EnvironmentOptions';
@@ -18,6 +17,36 @@ import os from 'os';
 import {SourceMapConsumer} from 'source-map';
 
 const BUCK_ISOLATION_DIR = 'react-native-fantom-buck-out';
+
+export enum HermesVariant {
+  Hermes,
+  StaticHermesStable,
+  StaticHermesTrunk,
+}
+
+export function getBuckOptionsForHermes(
+  variant: HermesVariant,
+): $ReadOnlyArray<string> {
+  switch (variant) {
+    case HermesVariant.Hermes:
+      return [];
+    case HermesVariant.StaticHermesStable:
+      return ['-c hermes.static_hermes=stable'];
+    case HermesVariant.StaticHermesTrunk:
+      return ['-c hermes.static_hermes=trunk'];
+  }
+}
+
+export function getHermesCompilerTarget(variant: HermesVariant): string {
+  switch (variant) {
+    case HermesVariant.Hermes:
+      return '//xplat/hermes/tools/hermesc:hermesc';
+    case HermesVariant.StaticHermesStable:
+      return '//xplat/shermes/stable:hermesc';
+    case HermesVariant.StaticHermesTrunk:
+      return '//xplat/static_h:hermesc';
+  }
+}
 
 export function getBuckModesForPlatform(
   enableRelease: boolean = false,

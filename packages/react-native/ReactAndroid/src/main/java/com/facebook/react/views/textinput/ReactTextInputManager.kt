@@ -926,7 +926,7 @@ public open class ReactTextInputManager public constructor() :
         }
 
         if (shouldBlur) {
-          editText.clearFocus()
+          editText.clearFocusAndMaybeRefocus()
         }
 
         // Prevent default behavior except when we want it to insert a newline.

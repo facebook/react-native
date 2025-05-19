@@ -12,6 +12,7 @@
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useState} from 'react';
 import {
   Button,
   Linking,
@@ -65,7 +66,7 @@ class OpenSettingsExample extends React.Component<Props, any> {
 }
 
 const SendIntentButton = ({action, extras}: Props) => {
-  const [isOpeningIntent, setIsOpeningIntent] = React.useState(false);
+  const [isOpeningIntent, setIsOpeningIntent] = useState(false);
 
   const handleIntent = async () => {
     setIsOpeningIntent(true);

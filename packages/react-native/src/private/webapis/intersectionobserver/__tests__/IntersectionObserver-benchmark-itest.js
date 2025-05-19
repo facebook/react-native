@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
@@ -19,6 +18,7 @@ import type IntersectionObserverType from 'react-native/src/private/webapis/inte
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {createRef} from 'react';
 import ScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
 import View from 'react-native/Libraries/Components/View/View';
 import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';
@@ -28,10 +28,10 @@ declare const IntersectionObserver: Class<IntersectionObserverType>;
 
 setUpIntersectionObserver();
 
-const nodeRef = React.createRef<HostInstance>();
+const nodeRef = createRef<HostInstance>();
 let node: ReactNativeElement;
 
-const scrollViewRef = React.createRef<HostInstance>();
+const scrollViewRef = createRef<HostInstance>();
 let scrollViewNode: ReactNativeElement;
 let observer: IntersectionObserverType;
 const VIEWPORT_HEIGHT = 100;

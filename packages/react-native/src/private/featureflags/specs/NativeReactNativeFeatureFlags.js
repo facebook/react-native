@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f7a71e787a709f4b1057a35b933b8360>>
+ * @generated SignedSource<<59ebee6019b99a8c6a29dfc1eb036194>>
  * @flow strict
+ * @noformat
  */
 
 /**
@@ -26,6 +27,7 @@ export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +animatedShouldSignalBatch?: () => boolean;
+  +avoidCeilingAvailableAndroidTextWidth?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
   +disableMainQueueSyncDispatchIOS?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
@@ -42,11 +44,9 @@ export interface Spec extends TurboModule {
   +enableFixForParentTagDuringReparenting?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
-  +enableJSRuntimeGCOnMemoryPressureOnIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableMainQueueModulesOnIOS?: () => boolean;
-  +enableModuleArgumentNSNullConversionIOS?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
   +enableNetworkEventReporting?: () => boolean;
   +enableNewBackgroundAndBorderDrawables?: () => boolean;

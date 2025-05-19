@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTFollyConvert.h"
+#import "FollyConvert.h"
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>

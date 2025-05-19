@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {SnapshotConfig} from '../runtime/snapshotContext';
@@ -41,7 +40,6 @@ module.exports = function entrypointTemplate({
  * ${'@'}generated
  * @noformat
  * @noflow
- * @oncall react_native
  */
 
 import {registerTest} from '${setupModulePath}';

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ba8046e25d88c81c989d7a89c4051d0b>>
+ * @generated SignedSource<<cf8c08ef77d045a6b0671139c7a003ad>>
  */
 
 /**
@@ -34,6 +34,7 @@ class ReactNativeFeatureFlagsAccessor {
 
   bool commonTestFlag();
   bool animatedShouldSignalBatch();
+  bool avoidCeilingAvailableAndroidTextWidth();
   bool cxxNativeAnimatedEnabled();
   bool disableMainQueueSyncDispatchIOS();
   bool disableMountItemReorderingAndroid();
@@ -50,11 +51,9 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFixForParentTagDuringReparenting();
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSViewClipToPaddingBox();
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableMainQueueModulesOnIOS();
-  bool enableModuleArgumentNSNullConversionIOS();
   bool enableNativeCSSParsing();
   bool enableNetworkEventReporting();
   bool enableNewBackgroundAndBorderDrawables();
@@ -92,10 +91,11 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 49> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 48> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
+  std::atomic<std::optional<bool>> avoidCeilingAvailableAndroidTextWidth_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
   std::atomic<std::optional<bool>> disableMainQueueSyncDispatchIOS_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -112,11 +112,9 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFixForParentTagDuringReparenting_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
-  std::atomic<std::optional<bool>> enableJSRuntimeGCOnMemoryPressureOnIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableMainQueueModulesOnIOS_;
-  std::atomic<std::optional<bool>> enableModuleArgumentNSNullConversionIOS_;
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
   std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;

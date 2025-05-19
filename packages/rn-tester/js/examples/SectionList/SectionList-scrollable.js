@@ -28,6 +28,7 @@ import {
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useRef, useState} from 'react';
 import {
   Alert,
   Animated,
@@ -178,12 +179,12 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
     [{nativeEvent: {contentOffset: {y: scrollPos}}}],
     {useNativeDriver: true},
   );
-  const [filterText, setFilterText] = React.useState('');
-  const [virtualized, setVirtualized] = React.useState(true);
-  const [logViewable, setLogViewable] = React.useState(false);
-  const [debug, setDebug] = React.useState(false);
-  const [inverted, setInverted] = React.useState(false);
-  const [data, setData] = React.useState(genNewerItems(1000));
+  const [filterText, setFilterText] = useState('');
+  const [virtualized, setVirtualized] = useState(true);
+  const [logViewable, setLogViewable] = useState(false);
+  const [debug, setDebug] = useState(false);
+  const [inverted, setInverted] = useState(false);
+  const [data, setData] = useState(genNewerItems(1000));
 
   const filterRegex = new RegExp(String(filterText), 'i');
   const filter = (item: Item) =>
@@ -212,7 +213,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
     setData([...data.slice(0, index), item, ...data.slice(index + 1)]);
   };
 
-  const ref = React.useRef<?SectionList<SectionBase<any>>>(null);
+  const ref = useRef<?SectionList<SectionBase<any>>>(null);
   const scrollToLocation = (sectionIndex: number, itemIndex: number) => {
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     if (ref != null && ref.current?.scrollToLocation != null) {

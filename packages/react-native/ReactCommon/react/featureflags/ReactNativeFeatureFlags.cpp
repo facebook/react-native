@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d673e832da03d659e99627d0c8c58ee6>>
+ * @generated SignedSource<<88fdbea2f97f628187164a47a9737da0>>
  */
 
 /**
@@ -32,6 +32,10 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
 
 bool ReactNativeFeatureFlags::animatedShouldSignalBatch() {
   return getAccessor().animatedShouldSignalBatch();
+}
+
+bool ReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth() {
+  return getAccessor().avoidCeilingAvailableAndroidTextWidth();
 }
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
@@ -98,10 +102,6 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
 }
 
-bool ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS() {
-  return getAccessor().enableJSRuntimeGCOnMemoryPressureOnIOS();
-}
-
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
   return getAccessor().enableLayoutAnimationsOnAndroid();
 }
@@ -112,10 +112,6 @@ bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
 
 bool ReactNativeFeatureFlags::enableMainQueueModulesOnIOS() {
   return getAccessor().enableMainQueueModulesOnIOS();
-}
-
-bool ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS() {
-  return getAccessor().enableModuleArgumentNSNullConversionIOS();
 }
 
 bool ReactNativeFeatureFlags::enableNativeCSSParsing() {

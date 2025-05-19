@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  * @fantom_flags fixMappingOfEventPrioritiesBetweenFabricAndReact:true
  */
 
@@ -17,7 +16,13 @@ import type {HostInstance} from 'react-native';
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
-import {startTransition, useDeferredValue, useEffect, useState} from 'react';
+import {
+  createRef,
+  startTransition,
+  useDeferredValue,
+  useEffect,
+  useState,
+} from 'react';
 import {Text, TextInput} from 'react-native';
 import {NativeEventCategory} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
@@ -29,9 +34,9 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 describe('discrete event category', () => {
   it('interrupts React rendering and higher priority update is committed first', () => {
     const root = Fantom.createRoot();
-    const textInputRef = React.createRef<HostInstance>();
-    const importantTextNodeRef = React.createRef<HostInstance>();
-    const deferredTextNodeRef = React.createRef<HostInstance>();
+    const textInputRef = createRef<HostInstance>();
+    const importantTextNodeRef = createRef<HostInstance>();
+    const deferredTextNodeRef = createRef<HostInstance>();
     let interruptRendering = false;
     let effectMock = jest.fn();
     let afterUpdate;
@@ -134,9 +139,9 @@ describe('discrete event category', () => {
 describe('continuous event category', () => {
   it('interrupts React rendering but update from continous event is delayed', () => {
     const root = Fantom.createRoot();
-    const textInputRef = React.createRef<HostInstance>();
-    const importantTextNodeRef = React.createRef<HostInstance>();
-    const deferredTextNodeRef = React.createRef<HostInstance>();
+    const textInputRef = createRef<HostInstance>();
+    const importantTextNodeRef = createRef<HostInstance>();
+    const deferredTextNodeRef = createRef<HostInstance>();
     let interruptRendering = false;
     let effectMock = jest.fn();
 

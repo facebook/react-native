@@ -241,7 +241,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem(
           "alignment", alignment, textAttributes.alignment),
       debugStringConvertibleItem(
-          "baseWritingDirection",
+          "writingDirection",
           baseWritingDirection,
           textAttributes.baseWritingDirection),
       debugStringConvertibleItem(

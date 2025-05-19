@@ -12,6 +12,7 @@ import type {RNTesterModuleExample} from '../../../types/RNTesterTypes';
 import type {PointerEvent} from 'react-native';
 
 import * as React from 'react';
+import {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -43,7 +44,7 @@ function getModifiersText(evt: PointerEvent['nativeEvent']): string {
 }
 
 function ManyPointersPropertiesExample(): React.Node {
-  const [data, setData] = React.useState<{}>({});
+  const [data, setData] = useState<{}>({});
   const onPointerMove = (event: PointerEvent) => {
     const pointerId = event.nativeEvent.pointerId;
     // $FlowFixMe[invalid-computed-prop]

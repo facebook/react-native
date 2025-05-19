@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
@@ -166,11 +165,6 @@ test('shadow node expires when replaced by null', () => {
     root.render(<View>{null}</View>);
   });
 
-  // TODO (T223254666): Delete this and figure out why test fails.
-  Fantom.runTask(() => {
-    root.render(<View>{null}</View>);
-  });
-
   expect(getReferenceCount()).toBe(0);
 });
 
@@ -189,15 +183,6 @@ test('shadow node expires when replaced by another view', () => {
 
   expect(getReferenceCount()).toBeGreaterThan(0);
 
-  Fantom.runTask(() => {
-    root.render(
-      <View>
-        <View key="b" />
-      </View>,
-    );
-  });
-
-  // TODO (T223254666): Delete this and figure out why test fails.
   Fantom.runTask(() => {
     root.render(
       <View>

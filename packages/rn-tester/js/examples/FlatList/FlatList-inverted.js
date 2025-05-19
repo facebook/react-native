@@ -12,10 +12,11 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import BaseFlatListExample from './BaseFlatListExample';
 import * as React from 'react';
+import {useState} from 'react';
 
 export function FlatList_inverted(): React.Node {
-  const [output, setOutput] = React.useState('inverted false');
-  const [exampleProps, setExampleProps] = React.useState({
+  const [output, setOutput] = useState('inverted false');
+  const [exampleProps, setExampleProps] = useState({
     inverted: false,
   });
 

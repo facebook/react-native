@@ -95,12 +95,6 @@ module.exports = async (github, context, labelWithContext) => {
       );
       await requestAuthorFeedback();
       return;
-    case 'Newer Patch Available':
-      await addComment(
-        `> [!TIP]\n` +
-          `> **Newer version available**: You are on a supported minor version, but it looks like there's a newer patch available - ${labelWithContext.newestPatch}. Please [upgrade](https://reactnative.dev/docs/upgrading) to the highest patch for your minor or latest and verify if the issue persists (alternatively, create a new project and repro the issue in it). If it does not repro, please let us know so we can close out this issue. This helps us ensure we are looking at issues that still exist in the most recent releases.`,
-      );
-      return;
     case 'Needs: Version Info':
       await addComment(
         `> [!WARNING]\n` +

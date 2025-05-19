@@ -70,6 +70,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    avoidCeilingAvailableAndroidTextWidth: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Do not incorrectly ceil the available width of an Android text layout',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'stable',
+    },
     cxxNativeAnimatedEnabled: {
       defaultValue: false,
       metadata: {
@@ -234,15 +244,6 @@ const definitions: FeatureFlagDefinitions = {
         description: 'iOS Views will clip to their padding box vs border box',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableJSRuntimeGCOnMemoryPressureOnIOS: {
-      defaultValue: false,
-      metadata: {
-        description: 'Trigger JS runtime GC on memory pressure event on iOS',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -659,6 +660,17 @@ const definitions: FeatureFlagDefinitions = {
           'Function used to enable / disabled Layout Animations in React Native.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    reduceDefaultPropsInView: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-5-12',
+        description:
+          'Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

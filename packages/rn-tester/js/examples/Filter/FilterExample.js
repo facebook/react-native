@@ -14,6 +14,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
+import {useState} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 
 const alphaHotdog = require('../../assets/alpha-hotdog.png');
@@ -34,6 +35,7 @@ function StaticViewAndImage(props: Props): React.Node {
           <Text>Hello world!</Text>
         </View>
       </View>
+      {/* $FlowFixMe - ImageStyle is not compatible with ViewStyle */}
       <Image
         source={props.imageSource ?? hotdog}
         style={[props.style, styles.commonImage]}
@@ -53,7 +55,7 @@ function StaticViewAndImageComparison(props: Props): React.Node {
 }
 
 function StaticViewAndImageWithState(props: Props): React.Node {
-  const [s, setS] = React.useState(true);
+  const [s, setS] = useState(true);
   setTimeout(() => setS(!s), 5000);
 
   return (

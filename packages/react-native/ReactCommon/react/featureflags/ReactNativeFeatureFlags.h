@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8a04886fbdf69e38ccd2864f264f0ed>>
+ * @generated SignedSource<<a4123bc6f44835c022a1a5238908674c>>
  */
 
 /**
@@ -48,6 +48,11 @@ class ReactNativeFeatureFlags {
    * Enables start- and finishOperationBatch on any platform.
    */
   RN_EXPORT static bool animatedShouldSignalBatch();
+
+  /**
+   * Do not incorrectly ceil the available width of an Android text layout
+   */
+  RN_EXPORT static bool avoidCeilingAvailableAndroidTextWidth();
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
@@ -130,11 +135,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
-   * Trigger JS runtime GC on memory pressure event on iOS
-   */
-  RN_EXPORT static bool enableJSRuntimeGCOnMemoryPressureOnIOS();
-
-  /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnAndroid();
@@ -148,11 +148,6 @@ class ReactNativeFeatureFlags {
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
    */
   RN_EXPORT static bool enableMainQueueModulesOnIOS();
-
-  /**
-   * Enable NSNull conversion when handling module arguments on iOS
-   */
-  RN_EXPORT static bool enableModuleArgumentNSNullConversionIOS();
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing

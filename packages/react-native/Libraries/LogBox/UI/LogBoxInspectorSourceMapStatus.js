@@ -17,6 +17,7 @@ import Text from '../../Text/Text';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 
 type Props = $ReadOnly<{
   onPress?: ?(event: GestureResponderEvent) => void,
@@ -24,12 +25,12 @@ type Props = $ReadOnly<{
 }>;
 
 function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     animation: null,
     rotate: null,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.status === 'PENDING') {
       if (state.animation == null) {
         const animated = new Animated.Value(0);

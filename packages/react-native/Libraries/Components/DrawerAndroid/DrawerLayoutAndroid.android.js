@@ -28,6 +28,7 @@ import AndroidDrawerLayoutNativeComponent, {
 } from './AndroidDrawerLayoutNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {createRef} from 'react';
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
@@ -76,9 +77,7 @@ class DrawerLayoutAndroid
 
   // $FlowFixMe[missing-local-annot]
   _nativeRef =
-    React.createRef<
-      React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
-    >();
+    createRef<React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>>();
 
   state: DrawerLayoutAndroidState = {
     drawerOpened: false,

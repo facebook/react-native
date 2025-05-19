@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<98aef43726551cf6ff3155bbcb34f1f5>>
+ * @generated SignedSource<<829c85b56fbeaf01ece2d1dd84ecde8e>>
  */
 
 /**
@@ -33,6 +33,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool animatedShouldSignalBatch() override {
     return false;
+  }
+
+  bool avoidCeilingAvailableAndroidTextWidth() override {
+    return true;
   }
 
   bool cxxNativeAnimatedEnabled() override {
@@ -99,10 +103,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    return false;
-  }
-
   bool enableLayoutAnimationsOnAndroid() override {
     return false;
   }
@@ -113,10 +113,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableMainQueueModulesOnIOS() override {
     return false;
-  }
-
-  bool enableModuleArgumentNSNullConversionIOS() override {
-    return true;
   }
 
   bool enableNativeCSSParsing() override {

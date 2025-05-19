@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {EventReporter} from '../types/EventReporter';
@@ -43,11 +42,14 @@ const WS_CLOSURE_CODE = {
   INTERNAL_ERROR: 1011,
 };
 
+// should be aligned with
+// https://github.com/facebook/react-native-devtools-frontend/blob/3d17e0fd462dc698db34586697cce2371b25e0d3/front_end/ui/legacy/components/utils/TargetDetachedDialog.ts#L50-L64
 export const WS_CLOSE_REASON = {
-  PAGE_NOT_FOUND: 'Debugger Page Not Found',
-  DEVICE_DISCONNECTED: 'Corresponding Device Disconnected',
-  RECREATING_DEVICE: 'Recreating Device Connection',
-  RECREATING_DEBUGGER: 'Recreating Debugger Connection',
+  PAGE_NOT_FOUND: '[PAGE_NOT_FOUND] Debugger page not found',
+  CONNECTION_LOST: '[CONNECTION_LOST] Connection lost to corresponding device',
+  RECREATING_DEVICE: '[RECREATING_DEVICE] Recreating device connection',
+  NEW_DEBUGGER_OPENED:
+    '[NEW_DEBUGGER_OPENED] New debugger opened for the same app instance',
 };
 
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
@@ -219,7 +221,7 @@ export default class Device {
         // Device disconnected - close debugger connection.
         this.#terminateDebuggerConnection(
           WS_CLOSURE_CODE.NORMAL,
-          WS_CLOSE_REASON.DEVICE_DISCONNECTED,
+          WS_CLOSE_REASON.CONNECTION_LOST,
         );
         clearInterval(this.#pagesPollingIntervalId);
       }
@@ -336,7 +338,7 @@ export default class Device {
     // Disconnect current debugger if we already have debugger connected.
     this.#terminateDebuggerConnection(
       WS_CLOSURE_CODE.NORMAL,
-      WS_CLOSE_REASON.RECREATING_DEBUGGER,
+      WS_CLOSE_REASON.NEW_DEBUGGER_OPENED,
     );
 
     this.#deviceEventReporter?.logConnection('debugger', {

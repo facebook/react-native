@@ -190,7 +190,10 @@ export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
 export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
-export type { WithAnimatedValue } from \\"./createAnimatedComponent\\";
+export type {
+  WithAnimatedValue,
+  AnimatedProps,
+} from \\"./createAnimatedComponent\\";
 export type { AnimatedComponentType as AnimatedComponent } from \\"./createAnimatedComponent\\";
 declare export const add: typeof AnimatedImplementation.add;
 declare export const attachNativeEvent: typeof AnimatedImplementation.attachNativeEvent;
@@ -904,7 +907,7 @@ declare export default class AnimatedObject extends AnimatedWithChildren {
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedProps.js 1`] = `
 "export type AnimatedPropsAllowlist = $ReadOnly<{
   style?: ?AnimatedStyleAllowlist,
-  [string]: true,
+  [key: string]: true | AnimatedStyleAllowlist,
 }>;
 type TargetViewInstance = React.ElementRef<React.ElementType>;
 declare export default class AnimatedProps extends AnimatedNode {
@@ -1077,7 +1080,12 @@ exports[`public API should not change unintentionally Libraries/Animated/useAnim
 `;
 
 exports[`public API should not change unintentionally Libraries/AppState/AppState.js 1`] = `
-"export type AppStateStatus = \\"inactive\\" | \\"background\\" | \\"active\\";
+"export type AppStateStatus =
+  | \\"inactive\\"
+  | \\"background\\"
+  | \\"active\\"
+  | \\"extension\\"
+  | \\"unknown\\";
 type AppStateEventDefinitions = {
   change: [AppStateStatus],
   memoryWarning: [],
@@ -1485,11 +1493,11 @@ export type ActivityIndicatorProps = $ReadOnly<{
   color?: ?ColorValue,
   size?: ?IndicatorSize,
 }>;
-declare const ActivityIndicatorWithRef: component(
+declare const ActivityIndicator: component(
   ref?: React.RefSetter<HostComponent<empty>>,
   ...props: ActivityIndicatorProps
 );
-declare export default typeof ActivityIndicatorWithRef;
+declare export default typeof ActivityIndicator;
 "
 `;
 
@@ -1818,11 +1826,12 @@ declare export default function useAndroidRippleForView(
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.js 1`] = `
 "export type { ProgressBarAndroidProps };
+type Omit<T, K> = T extends any ? Pick<T, Exclude<$Keys<T>, K>> : T;
 declare let ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<ProgressBarAndroidNativeComponentType>,
   >,
-  ...props: ProgressBarAndroidProps
+  ...props: Omit<ProgressBarAndroidProps, empty>
 );
 declare export default typeof ProgressBarAndroid;
 "
@@ -1835,30 +1844,38 @@ declare export default typeof ProgressBarAndroidNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroidTypes.js 1`] = `
-"type ProgressBarAndroidStyleAttrProp =
-  | {
-      styleAttr: \\"Horizontal\\",
-      indeterminate: false,
-      progress: number,
-    }
-  | {
-      styleAttr:
-        | \\"Horizontal\\"
-        | \\"Normal\\"
-        | \\"Small\\"
-        | \\"Large\\"
-        | \\"Inverse\\"
-        | \\"SmallInverse\\"
-        | \\"LargeInverse\\",
-      indeterminate: true,
-    };
-export type ProgressBarAndroidProps = $ReadOnly<{
-  ...ViewProps,
-  ...ProgressBarAndroidStyleAttrProp,
+"type DeterminateProgressBarAndroidStyleAttrProp = {
+  styleAttr: \\"Horizontal\\",
+  indeterminate: false,
+  progress: number,
+};
+type IndeterminateProgressBarAndroidStyleAttrProp = {
+  styleAttr:
+    | \\"Horizontal\\"
+    | \\"Normal\\"
+    | \\"Small\\"
+    | \\"Large\\"
+    | \\"Inverse\\"
+    | \\"SmallInverse\\"
+    | \\"LargeInverse\\",
+  indeterminate: true,
+};
+type ProgressBarAndroidBaseProps = $ReadOnly<{
   animating?: ?boolean,
   color?: ?ColorValue,
   testID?: ?string,
 }>;
+export type ProgressBarAndroidProps =
+  | $ReadOnly<{
+      ...ViewProps,
+      ...ProgressBarAndroidBaseProps,
+      ...DeterminateProgressBarAndroidStyleAttrProp,
+    }>
+  | $ReadOnly<{
+      ...ViewProps,
+      ...ProgressBarAndroidBaseProps,
+      ...IndeterminateProgressBarAndroidStyleAttrProp,
+    }>;
 "
 `;
 
@@ -2213,11 +2230,11 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 interface Instance extends React.ElementRef<typeof Animated.View> {
   +setNextHeaderY: (number) => void;
 }
-declare const ScrollViewStickyHeaderWithForwardedRef: component(
+declare const ScrollViewStickyHeader: component(
   ref: React.RefSetter<Instance>,
   ...props: ScrollViewStickyHeaderProps
 );
-declare export default typeof ScrollViewStickyHeaderWithForwardedRef;
+declare export default typeof ScrollViewStickyHeader;
 "
 `;
 
@@ -3496,11 +3513,10 @@ declare export default typeof ReactNativeViewAttributes;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
 "export type Props = ViewProps;
-declare const View: component(
+declare export default component(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
-declare export default typeof View;
 "
 `;
 
@@ -4119,11 +4135,7 @@ exports[`public API should not change unintentionally Libraries/Debugging/Debugg
   highlightElements(elements: ElementRectangle[]): void,
   clearElementsHighlight(): void,
 };
-declare const DebuggingOverlayWithForwardedRef: component(
-  ref: React.RefSetter<DebuggingOverlayHandle>,
-  ...props: {}
-);
-declare export default typeof DebuggingOverlayWithForwardedRef;
+declare export default component(ref: React.RefSetter<DebuggingOverlayHandle>);
 "
 `;
 
@@ -4172,7 +4184,7 @@ declare export default class NativeEventEmitter<
   > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
-  constructor(nativeModule: ?NativeModule): void;
+  constructor(nativeModule?: ?NativeModule): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
@@ -4207,11 +4219,10 @@ declare export default typeof RCTNativeAppEventEmitter;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/AssetRegistry.js 1`] = `
-"declare const AssetRegistry: {
-  registerAsset: (asset: PackagerAsset) => number,
-  getAssetByID: (assetId: number) => PackagerAsset,
-};
-declare module.exports: typeof AssetRegistry;
+"export {
+  registerAsset,
+  getAssetByID,
+} from \\"@react-native/assets-registry/registry\\";
 "
 `;
 
@@ -7113,7 +7124,9 @@ declare export const setStyleAttributePreprocessor: (
   property: string,
   process: (nextProp: any) => any
 ) => void;
-declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
+declare export const create: <+S: ____Styles_Internal>(
+  obj: S & ____Styles_Internal
+) => $ReadOnly<S>;
 "
 `;
 
@@ -7518,7 +7531,8 @@ export type ____ImageStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
+  overflow?: \\"visible\\" | \\"hidden\\",
 }>;
 export type ____ImageStyle_Internal = $ReadOnly<{
   ...____ImageStyle_InternalCore,
@@ -7529,7 +7543,7 @@ export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
 }>;
 export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
   ...____DangerouslyImpreciseStyle_InternalCore,
@@ -7816,8 +7830,7 @@ declare export default typeof TextImpl;
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/TextAncestor.js 1`] = `
-"declare const React: $FlowFixMe;
-declare const TextAncestorContext: React.Context<boolean>;
+"declare const TextAncestorContext: React.Context<boolean>;
 declare export default typeof TextAncestorContext;
 "
 `;
@@ -7874,23 +7887,9 @@ export type TextPropsAndroid = {
   minimumFontScale?: ?number,
 };
 type TextBaseProps = $ReadOnly<{
-  accessible?: ?boolean,
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
-  accessibilityHint?: ?Stringish,
-  accessibilityLanguage?: ?Stringish,
-  accessibilityLabel?: ?Stringish,
-  accessibilityRole?: ?AccessibilityRole,
-  accessibilityState?: ?AccessibilityState,
-  \\"aria-label\\"?: ?string,
   allowFontScaling?: ?boolean,
   android_hyphenationFrequency?: ?(\\"normal\\" | \\"none\\" | \\"full\\"),
-  \\"aria-busy\\"?: ?boolean,
-  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
-  \\"aria-disabled\\"?: ?boolean,
-  \\"aria-expanded\\"?: ?boolean,
-  \\"aria-selected\\"?: ?boolean,
-  \\"aria-labelledby\\"?: ?string,
   children?: ?React.Node,
   ellipsizeMode?: ?(\\"clip\\" | \\"head\\" | \\"middle\\" | \\"tail\\"),
   id?: string,
@@ -7921,6 +7920,7 @@ export type TextProps = $ReadOnly<{
   ...TextPropsIOS,
   ...TextPropsAndroid,
   ...TextBaseProps,
+  ...AccessibilityProps,
 }>;
 "
 `;
@@ -8431,7 +8431,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
   | \\"web\\"
   | \\"native\\";
 type OptionalPlatformSelectSpec<T> = {
-  [_key in PlatformOSType]?: T,
+  [key in PlatformOSType]?: T,
 };
 export type PlatformSelectSpec<T> =
   | {
@@ -8949,7 +8949,7 @@ declare export default typeof rejectionTrackingOptions;
 
 exports[`public API should not change unintentionally Libraries/vendor/core/ErrorUtils.js 1`] = `
 "type ErrorHandler = (error: mixed, isFatal: boolean) => void;
-type Fn<Args, Return> = (...Args) => Return;
+type Fn<Args: $ReadOnlyArray<mixed>, Return> = (...Args) => Return;
 export type ErrorUtils = {
   applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(
     fun: Fn<TArgs, TOut>,
@@ -9091,6 +9091,7 @@ export type {
   SectionListProps,
   SectionListRenderItem,
   SectionListRenderItemInfo,
+  SectionListData,
 } from \\"./Libraries/Lists/SectionList\\";
 export { default as SectionList } from \\"./Libraries/Lists/SectionList\\";
 export type {

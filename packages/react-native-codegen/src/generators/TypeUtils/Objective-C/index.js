@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 function wrapOptional(type: string, isRequired: boolean): string {

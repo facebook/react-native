@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall flow
  */
 
 // Adapted from https://github.com/flow-typed/flow-typed/blob/main/definitions/environments/node/flow_v0.261.x-/node.js

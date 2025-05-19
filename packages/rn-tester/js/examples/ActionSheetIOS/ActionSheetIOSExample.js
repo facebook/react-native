@@ -13,6 +13,7 @@
 import type {HostInstance} from 'react-native';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import {createRef} from 'react';
 
 const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 const React = require('react');
@@ -207,7 +208,7 @@ class ActionSheetAnchorExample extends React.Component<
     clicked: 'none',
   };
 
-  anchorRef: {current: null | HostInstance} = React.createRef();
+  anchorRef: {current: null | HostInstance} = createRef();
 
   render(): React.Node {
     return (
@@ -434,7 +435,7 @@ class ShareScreenshotAnchorExample extends React.Component<
     text: '',
   };
 
-  anchorRef: {current: null | HostInstance} = React.createRef();
+  anchorRef: {current: null | HostInstance} = createRef();
 
   render(): React.Node {
     return (

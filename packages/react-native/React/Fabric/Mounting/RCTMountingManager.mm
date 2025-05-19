@@ -11,7 +11,6 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponent.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <cxxreact/TraceSection.h>
@@ -19,6 +18,7 @@
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/mounting/TelemetryController.h>
+#import <react/utils/FollyConvert.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>

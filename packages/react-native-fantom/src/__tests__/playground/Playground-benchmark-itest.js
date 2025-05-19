@@ -6,16 +6,20 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-// eslint-disable-next-line no-unused-vars
 import * as Fantom from '@react-native/fantom';
 
-describe('Playground', () => {
-  it('...', () => {
+Fantom.unstable_benchmark
+  .suite('Playground benchmark')
+  .test('Variant 1', () => {
+    // Add your tests here, but do NOT commit them.
+  })
+  .test('Variant 2', () => {
+    // Add your tests here, but do NOT commit them.
+  })
+  .test('Variant 3', () => {
     // Add your tests here, but do NOT commit them.
   });
-});

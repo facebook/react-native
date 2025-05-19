@@ -17,7 +17,7 @@ import RNTesterText from '../../components/RNTesterText';
 import checkImageSource from './check.png';
 import mixedCheckboxImageSource from './mixed.png';
 import uncheckImageSource from './uncheck.png';
-import React, {createRef} from 'react';
+import React, {createRef, useEffect, useRef, useState} from 'react';
 import {
   AccessibilityInfo,
   Alert,
@@ -1314,7 +1314,7 @@ class AnnounceForAccessibility extends React.Component<{}> {
 }
 
 function SetAccessibilityFocusExample(props: {}): React.Node {
-  const myRef = React.useRef<?React.ElementRef<typeof RNTesterText>>(null);
+  const myRef = useRef<?React.ElementRef<typeof RNTesterText>>(null);
 
   const onPress = () => {
     if (myRef && myRef.current) {
@@ -1561,8 +1561,8 @@ function DisplayOptionStatusExample({
   optionChecker: () => Promise<boolean>,
   optionName: string,
 }) {
-  const [statusEnabled, setStatusEnabled] = React.useState(false);
-  React.useEffect(() => {
+  const [statusEnabled, setStatusEnabled] = useState(false);
+  useEffect(() => {
     const listener = AccessibilityInfo.addEventListener(
       // $FlowFixMe[prop-missing]
       // $FlowFixMe[invalid-computed-prop]
@@ -1589,7 +1589,7 @@ function DisplayOptionStatusExample({
 }
 
 function AccessibilityExpandedExample(): React.Node {
-  const [expand, setExpanded] = React.useState(false);
+  const [expand, setExpanded] = useState(false);
   const expandAction = {name: 'expand'};
   const collapseAction = {name: 'collapse'};
   return (

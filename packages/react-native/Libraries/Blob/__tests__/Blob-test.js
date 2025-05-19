@@ -5,17 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
-jest.setMock('../../BatchedBridge/NativeModules', {
+jest.mock('../../BatchedBridge/NativeModules', () => ({
   __esModule: true,
   default: {
-    BlobModule: require('../__mocks__/BlobModule'),
+    BlobModule: require('../__mocks__/BlobModule').default,
   },
-});
+}));
 
 const Blob = require('../Blob').default;
 

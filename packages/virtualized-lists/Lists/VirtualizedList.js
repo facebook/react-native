@@ -54,6 +54,7 @@ import {
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {cloneElement, isValidElement} from 'react';
 import {
   I18nManager,
   Platform,
@@ -902,7 +903,7 @@ class VirtualizedList extends StateSafePureComponent<
       return element;
     }
 
-    return React.cloneElement(element, {
+    return cloneElement(element, {
       onLayout: (event: LayoutChangeEvent) => {
         this._onLayoutEmpty(event);
         // $FlowFixMe[prop-missing] React.Element internal inspection
@@ -934,7 +935,7 @@ class VirtualizedList extends StateSafePureComponent<
       if (stickyIndicesFromProps.has(0)) {
         stickyHeaderIndices.push(0);
       }
-      const element = React.isValidElement(ListHeaderComponent) ? (
+      const element = isValidElement(ListHeaderComponent) ? (
         ListHeaderComponent
       ) : (
         // $FlowFixMe[not-a-component]
@@ -967,7 +968,7 @@ class VirtualizedList extends StateSafePureComponent<
     // 2a. Add a cell for ListEmptyComponent if applicable
     const itemCount = this.props.getItemCount(data);
     if (itemCount === 0 && ListEmptyComponent) {
-      const element: ExactReactElement_DEPRECATED<any> = ((React.isValidElement(
+      const element: ExactReactElement_DEPRECATED<any> = ((isValidElement(
         ListEmptyComponent,
       ) ? (
         ListEmptyComponent
@@ -1057,7 +1058,7 @@ class VirtualizedList extends StateSafePureComponent<
 
     // 3. Add cell for ListFooterComponent
     if (ListFooterComponent) {
-      const element = React.isValidElement(ListFooterComponent) ? (
+      const element = isValidElement(ListFooterComponent) ? (
         ListFooterComponent
       ) : (
         // $FlowFixMe[not-a-component]
@@ -1129,7 +1130,7 @@ class VirtualizedList extends StateSafePureComponent<
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
         }}>
-        {React.cloneElement(
+        {cloneElement(
           (
             this.props.renderScrollComponent ||
             this._defaultRenderScrollComponent

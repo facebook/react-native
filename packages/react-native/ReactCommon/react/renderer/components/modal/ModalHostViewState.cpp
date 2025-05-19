@@ -9,7 +9,7 @@
 
 namespace facebook::react {
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ModalHostViewState::getDynamic() const {
   return folly::dynamic::object("screenWidth", screenSize.width)(
       "screenHeight", screenSize.height);

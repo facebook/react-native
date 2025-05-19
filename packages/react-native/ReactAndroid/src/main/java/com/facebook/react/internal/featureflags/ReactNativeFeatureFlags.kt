@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c71ae86b45746f5779500addc87be534>>
+ * @generated SignedSource<<e9a109fd77667dd0cb945ef6ef9737f2>>
  */
 
 /**
@@ -41,6 +41,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
+
+  /**
+   * Do not incorrectly ceil the available width of an Android text layout
+   */
+  @JvmStatic
+  public fun avoidCeilingAvailableAndroidTextWidth(): Boolean = accessor.avoidCeilingAvailableAndroidTextWidth()
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
@@ -139,12 +145,6 @@ public object ReactNativeFeatureFlags {
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
 
   /**
-   * Trigger JS runtime GC on memory pressure event on iOS
-   */
-  @JvmStatic
-  public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean = accessor.enableJSRuntimeGCOnMemoryPressureOnIOS()
-
-  /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
    */
   @JvmStatic
@@ -161,12 +161,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMainQueueModulesOnIOS(): Boolean = accessor.enableMainQueueModulesOnIOS()
-
-  /**
-   * Enable NSNull conversion when handling module arguments on iOS
-   */
-  @JvmStatic
-  public fun enableModuleArgumentNSNullConversionIOS(): Boolean = accessor.enableModuleArgumentNSNullConversionIOS()
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing

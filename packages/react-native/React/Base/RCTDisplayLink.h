@@ -10,11 +10,18 @@
 @protocol RCTBridgeModule;
 @class RCTModuleData;
 
+@protocol RCTDisplayLinkModuleHolder
+- (id<RCTBridgeModule>)instance;
+- (Class)moduleClass;
+- (dispatch_queue_t)methodQueue;
+@end
+
 @interface RCTDisplayLink : NSObject
 
 - (instancetype)init;
 - (void)invalidate;
-- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:(RCTModuleData *)moduleData;
+- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
+                     withModuleHolder:(id<RCTDisplayLinkModuleHolder>)moduleHolder;
 - (void)addToRunLoop:(NSRunLoop *)runLoop;
 
 @end

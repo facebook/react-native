@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<81c91cde8240784faee5ce5392a24bd4>>
+ * @generated SignedSource<<c39d0c1834797b3309b4fc5ce814280c>>
  */
 
 /**
@@ -31,6 +31,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
 
   @DoNotStrip @JvmStatic public external fun animatedShouldSignalBatch(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun avoidCeilingAvailableAndroidTextWidth(): Boolean
 
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedEnabled(): Boolean
 
@@ -64,15 +66,11 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableMainQueueModulesOnIOS(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableModuleArgumentNSNullConversionIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableNativeCSSParsing(): Boolean
 

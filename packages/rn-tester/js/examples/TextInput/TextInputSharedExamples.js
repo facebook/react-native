@@ -18,7 +18,7 @@ import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ExampleTextInput from './ExampleTextInput';
 import * as React from 'react';
-import {useContext, useState} from 'react';
+import {createRef, memo, useContext, useState} from 'react';
 import {
   Button,
   Platform,
@@ -216,11 +216,11 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 type ExampleRef = {current: null | React.ElementRef<typeof ExampleTextInput>};
 
 class BlurOnSubmitExample extends React.Component<{...}> {
-  ref1: ExampleRef = React.createRef();
-  ref2: ExampleRef = React.createRef();
-  ref3: ExampleRef = React.createRef();
-  ref4: ExampleRef = React.createRef();
-  ref5: ExampleRef = React.createRef();
+  ref1: ExampleRef = createRef();
+  ref2: ExampleRef = createRef();
+  ref3: ExampleRef = createRef();
+  ref4: ExampleRef = createRef();
+  ref5: ExampleRef = createRef();
 
   render(): React.Node {
     return (
@@ -272,17 +272,17 @@ class BlurOnSubmitExample extends React.Component<{...}> {
 }
 
 class SubmitBehaviorExample extends React.Component<{...}> {
-  ref1: ExampleRef = React.createRef();
-  ref2: ExampleRef = React.createRef();
-  ref3: ExampleRef = React.createRef();
-  ref4: ExampleRef = React.createRef();
-  ref5: ExampleRef = React.createRef();
-  ref6: ExampleRef = React.createRef();
-  ref7: ExampleRef = React.createRef();
-  ref8: ExampleRef = React.createRef();
-  ref9: ExampleRef = React.createRef();
-  ref10: ExampleRef = React.createRef();
-  ref11: ExampleRef = React.createRef();
+  ref1: ExampleRef = createRef();
+  ref2: ExampleRef = createRef();
+  ref3: ExampleRef = createRef();
+  ref4: ExampleRef = createRef();
+  ref5: ExampleRef = createRef();
+  ref6: ExampleRef = createRef();
+  ref7: ExampleRef = createRef();
+  ref8: ExampleRef = createRef();
+  ref9: ExampleRef = createRef();
+  ref10: ExampleRef = createRef();
+  ref11: ExampleRef = createRef();
 
   render(): React.Node {
     return (
@@ -608,7 +608,7 @@ class SelectionExample extends React.Component<
 }
 
 function UncontrolledExample() {
-  const [isFocused, setIsFocused] = React.useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
     <ExampleTextInput
@@ -621,7 +621,7 @@ function UncontrolledExample() {
   );
 }
 
-const TextStylesExample = React.memo(() => {
+const TextStylesExample = memo(() => {
   const theme = useContext(RNTesterThemeContext);
 
   return (
@@ -887,10 +887,10 @@ function AutogrowingTextInputExample({
   style,
   ...props
 }: React.ElementConfig<typeof TextInput>) {
-  const [multiline, setMultiline] = React.useState(true);
-  const [fullWidth, setFullWidth] = React.useState(true);
-  const [text, setText] = React.useState('');
-  const [contentSize, setContentSize] = React.useState({width: 0, height: 0});
+  const [multiline, setMultiline] = useState(true);
+  const [fullWidth, setFullWidth] = useState(true);
+  const [text, setText] = useState('');
+  const [contentSize, setContentSize] = useState({width: 0, height: 0});
 
   return (
     <View>

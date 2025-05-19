@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<332b368a2c8b14c5d3f7a749c38b78a2>>
+ * @generated SignedSource<<d74dc8182a14fddbd7118149298515bd>>
  */
 
 /**
@@ -48,6 +48,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool animatedShouldSignalBatch() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("animatedShouldSignalBatch");
+    return method(javaProvider_);
+  }
+
+  bool avoidCeilingAvailableAndroidTextWidth() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("avoidCeilingAvailableAndroidTextWidth");
     return method(javaProvider_);
   }
 
@@ -147,12 +153,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableJSRuntimeGCOnMemoryPressureOnIOS");
-    return method(javaProvider_);
-  }
-
   bool enableLayoutAnimationsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnAndroid");
@@ -168,12 +168,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableMainQueueModulesOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMainQueueModulesOnIOS");
-    return method(javaProvider_);
-  }
-
-  bool enableModuleArgumentNSNullConversionIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableModuleArgumentNSNullConversionIOS");
     return method(javaProvider_);
   }
 
@@ -347,6 +341,11 @@ bool JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch(
   return ReactNativeFeatureFlags::animatedShouldSignalBatch();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::avoidCeilingAvailableAndroidTextWidth(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
@@ -427,11 +426,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableJSRuntimeGCOnMemoryPressureOnIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -445,11 +439,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
 bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing(
@@ -620,6 +609,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "animatedShouldSignalBatch",
         JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch),
       makeNativeMethod(
+        "avoidCeilingAvailableAndroidTextWidth",
+        JReactNativeFeatureFlagsCxxInterop::avoidCeilingAvailableAndroidTextWidth),
+      makeNativeMethod(
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
       makeNativeMethod(
@@ -668,9 +660,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
       makeNativeMethod(
-        "enableJSRuntimeGCOnMemoryPressureOnIOS",
-        JReactNativeFeatureFlagsCxxInterop::enableJSRuntimeGCOnMemoryPressureOnIOS),
-      makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),
       makeNativeMethod(
@@ -679,9 +668,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableMainQueueModulesOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS),
-      makeNativeMethod(
-        "enableModuleArgumentNSNullConversionIOS",
-        JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS),
       makeNativeMethod(
         "enableNativeCSSParsing",
         JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing),

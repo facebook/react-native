@@ -6,26 +6,25 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-const sortPropertiesVisitor = require('../sortProperties.js');
+const sortUnionsVisitor = require('../sortUnions.js');
 const babel = require('@babel/core');
 const {promises: fs} = require('fs');
 const path = require('path');
 
 async function translate(code: string): Promise<string> {
   const result = await babel.transformAsync(code, {
-    plugins: ['@babel/plugin-syntax-typescript', sortPropertiesVisitor],
+    plugins: ['@babel/plugin-syntax-typescript', sortUnionsVisitor],
   });
 
   return result.code;
 }
 
-describe('sortProperties', () => {
-  test('should divide type properties into methods, functions and others and sort them within each group', async () => {
+describe('sortUnions', () => {
+  test('should sort union members', async () => {
     const code = await fs.readFile(
-      path.join(__dirname, '../__fixtures__/sortProperties.d.ts'),
+      path.join(__dirname, '../__fixtures__/sortUnions.d.ts'),
       'utf-8',
     );
     const result = await translate(code);

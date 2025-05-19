@@ -9,10 +9,11 @@
  */
 
 import * as React from 'react';
+import {createContext} from 'react';
 
 type Value = {horizontal: boolean} | null;
 
-const ScrollViewContext: React.Context<Value> = React.createContext(null);
+const ScrollViewContext: React.Context<Value> = createContext(null);
 if (__DEV__) {
   ScrollViewContext.displayName = 'ScrollViewContext';
 }

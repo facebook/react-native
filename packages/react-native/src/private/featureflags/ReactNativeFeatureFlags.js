@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ef023f2c39d9b297ea94f39c418da2d>>
+ * @generated SignedSource<<29691b2062c240377834a01ced24c71c>>
  * @flow strict
+ * @noformat
  */
 
 /**
@@ -37,6 +38,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   enableVirtualViewDoubleStateHidden: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
+  reduceDefaultPropsInView: Getter<boolean>,
   scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
@@ -51,6 +53,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
+  avoidCeilingAvailableAndroidTextWidth: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
@@ -67,11 +70,9 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
-  enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
-  enableModuleArgumentNSNullConversionIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNetworkEventReporting: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
@@ -151,6 +152,11 @@ export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaSc
 export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
 
 /**
+ * Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.
+ */
+export const reduceDefaultPropsInView: Getter<boolean> = createJavaScriptFlagGetter('reduceDefaultPropsInView', true);
+
+/**
  * Changes the cleanup of `AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).
  */
 export const scheduleAnimatedCleanupInMicrotask: Getter<boolean> = createJavaScriptFlagGetter('scheduleAnimatedCleanupInMicrotask', true);
@@ -187,6 +193,10 @@ export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = create
  * Enables start- and finishOperationBatch on any platform.
  */
 export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter('animatedShouldSignalBatch', false);
+/**
+ * Do not incorrectly ceil the available width of an Android text layout
+ */
+export const avoidCeilingAvailableAndroidTextWidth: Getter<boolean> = createNativeFlagGetter('avoidCeilingAvailableAndroidTextWidth', true);
 /**
  * Use a C++ implementation of Native Animated instead of the platform implementation.
  */
@@ -252,10 +262,6 @@ export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativ
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
 /**
- * Trigger JS runtime GC on memory pressure event on iOS
- */
-export const enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean> = createNativeFlagGetter('enableJSRuntimeGCOnMemoryPressureOnIOS', false);
-/**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
 export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnAndroid', false);
@@ -267,10 +273,6 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
  */
 export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
-/**
- * Enable NSNull conversion when handling module arguments on iOS
- */
-export const enableModuleArgumentNSNullConversionIOS: Getter<boolean> = createNativeFlagGetter('enableModuleArgumentNSNullConversionIOS', true);
 /**
  * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
  */

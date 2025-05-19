@@ -57,6 +57,12 @@ class EventEmitter {
    */
   void setEnabled(bool enabled) const;
 
+  /*
+   * Sets a weak reference to the cooresponding ShadowNodeFamily
+   */
+  void setShadowNodeFamily(
+      std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) const;
+
   const SharedEventTarget& getEventTarget() const;
 
   /*
@@ -106,6 +112,7 @@ class EventEmitter {
   friend class UIManagerBinding;
 
   mutable SharedEventTarget eventTarget_;
+  mutable std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily_;
 
   EventDispatcher::Weak eventDispatcher_;
   mutable int enableCounter_{0};

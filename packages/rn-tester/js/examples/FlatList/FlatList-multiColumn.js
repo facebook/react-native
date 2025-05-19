@@ -27,17 +27,18 @@ import {
 } from '../../components/ListExampleShared';
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
+import * as React from 'react';
+import {useState} from 'react';
 import {Alert, FlatList, StyleSheet, View} from 'react-native';
 import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
 function MultiColumnExample(): React.Node {
-  const [data, setData] = React.useState(genNewerItems(1000));
-  const [filterText, setFilterText] = React.useState('');
-  const [fixedHeight, setFixedHeight] = React.useState(true);
-  const [logViewable, setLogViewable] = React.useState(false);
-  const [numColumns, setNumColumns] = React.useState(2);
-  const [virtualized, setVirtualized] = React.useState(true);
+  const [data, setData] = useState(genNewerItems(1000));
+  const [filterText, setFilterText] = useState('');
+  const [fixedHeight, setFixedHeight] = useState(true);
+  const [logViewable, setLogViewable] = useState(false);
+  const [numColumns, setNumColumns] = useState(2);
+  const [virtualized, setVirtualized] = useState(true);
 
   const _onChangeFilterText = (_filterText: string) => {
     setFilterText(_filterText);
@@ -66,6 +67,7 @@ function MultiColumnExample(): React.Node {
     return {length, offset: length * index, index};
   };
 
+  // eslint-disable-next-line react/no-unstable-nested-components
   const _renderItemComponent = ({
     item,
   }: ListRenderItemInfo<any | Item>): $FlowFixMe => {

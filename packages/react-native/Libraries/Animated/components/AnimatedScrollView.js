@@ -9,7 +9,10 @@
  */
 
 import type {____ViewStyle_Internal} from '../../StyleSheet/StyleSheetTypes';
-import type {AnimatedComponentType} from '../createAnimatedComponent';
+import type {
+  AnimatedComponentType,
+  AnimatedProps,
+} from '../createAnimatedComponent';
 
 import RefreshControl from '../../Components/RefreshControl/RefreshControl';
 import ScrollView from '../../Components/ScrollView/ScrollView';
@@ -21,7 +24,7 @@ import useMergeRefs from '../../Utilities/useMergeRefs';
 import createAnimatedComponent from '../createAnimatedComponent';
 import useAnimatedProps from '../useAnimatedProps';
 import * as React from 'react';
-import {useMemo} from 'react';
+import {cloneElement, useMemo} from 'react';
 
 type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
 type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
@@ -32,55 +35,54 @@ type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
 const AnimatedScrollView: AnimatedComponentType<
   AnimatedScrollViewProps,
   AnimatedScrollViewInstance,
-> = React.forwardRef(
-  function AnimatedScrollViewWithOrWithoutInvertedRefreshControl(
-    props,
-    forwardedRef,
+> = function AnimatedScrollViewWithOrWithoutInvertedRefreshControl({
+  ref: forwardedRef,
+  ...props
+}: {
+  ref?: React.RefSetter<AnimatedScrollViewInstance>,
+  ...AnimatedProps<AnimatedScrollViewProps>,
+}) {
+  // (Android only) When a ScrollView has a RefreshControl and
+  // any `style` property set with an Animated.Value, the CSS
+  // gets incorrectly applied twice. This is because ScrollView
+  // swaps the parent/child relationship of itself and the
+  // RefreshControl component (see ScrollView.js for more details).
+  if (
+    Platform.OS === 'android' &&
+    props.refreshControl != null &&
+    props.style != null
   ) {
-    // (Android only) When a ScrollView has a RefreshControl and
-    // any `style` property set with an Animated.Value, the CSS
-    // gets incorrectly applied twice. This is because ScrollView
-    // swaps the parent/child relationship of itself and the
-    // RefreshControl component (see ScrollView.js for more details).
-    if (
-      Platform.OS === 'android' &&
-      props.refreshControl != null &&
-      props.style != null
-    ) {
-      return (
-        // $FlowFixMe - It should return an Animated ScrollView but it returns a ScrollView with Animated props applied.
-        <AnimatedScrollViewWithInvertedRefreshControl
-          scrollEventThrottle={0.0001}
-          {...props}
-          ref={forwardedRef}
-          // $FlowFixMe[incompatible-type]
-          refreshControl={props.refreshControl}
-        />
-      );
-    } else {
-      return (
-        <AnimatedScrollViewWithoutInvertedRefreshControl
-          scrollEventThrottle={0.0001}
-          {...props}
-          ref={forwardedRef}
-        />
-      );
-    }
-  },
-);
+    return (
+      // $FlowFixMe - It should return an Animated ScrollView but it returns a ScrollView with Animated props applied.
+      <AnimatedScrollViewWithInvertedRefreshControl
+        scrollEventThrottle={0.0001}
+        {...props}
+        ref={forwardedRef}
+        // $FlowFixMe[incompatible-type]
+        refreshControl={props.refreshControl}
+      />
+    );
+  } else {
+    return (
+      <AnimatedScrollViewWithoutInvertedRefreshControl
+        scrollEventThrottle={0.0001}
+        {...props}
+        ref={forwardedRef}
+      />
+    );
+  }
+};
 
-const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
-  // $FlowFixMe[incompatible-call]
-  function AnimatedScrollViewWithInvertedRefreshControl(
-    props: {
-      ...React.ElementConfig<typeof ScrollView>,
-      // $FlowFixMe[unclear-type] Same Flow type as `refreshControl` in ScrollView
-      refreshControl: ExactReactElement_DEPRECATED<any>,
-    },
-    forwardedRef:
-      | {current: AnimatedScrollViewInstance | null, ...}
-      | ((AnimatedScrollViewInstance | null) => mixed),
-  ) {
+const AnimatedScrollViewWithInvertedRefreshControl =
+  function AnimatedScrollViewWithInvertedRefreshControl({
+    ref: forwardedRef,
+    ...props
+  }: {
+    ref?: React.RefSetter<AnimatedScrollViewInstance>,
+    ...React.ElementConfig<typeof ScrollView>,
+    // $FlowFixMe[unclear-type] Same Flow type as `refreshControl` in ScrollView
+    refreshControl: ExactReactElement_DEPRECATED<any>,
+  }) {
     // Split `props` into the animate-able props for the parent (RefreshControl)
     // and child (ScrollView).
     const {intermediatePropsForRefreshControl, intermediatePropsForScrollView} =
@@ -102,7 +104,7 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
     // NOTE: Assumes that refreshControl.ref` and `refreshControl.style` can be
     // safely clobbered.
     const refreshControl: ExactReactElement_DEPRECATED<typeof RefreshControl> =
-      React.cloneElement(props.refreshControl, {
+      cloneElement(props.refreshControl, {
         ...refreshControlAnimatedProps,
         ref: refreshControlRef,
       });
@@ -134,8 +136,7 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
         )}
       />
     );
-  },
-);
+  };
 
 const AnimatedScrollViewWithoutInvertedRefreshControl =
   createAnimatedComponent(ScrollView);

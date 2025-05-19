@@ -92,4 +92,62 @@ TEST_F(BridgingTest, callFromJsTest) {
   EXPECT_TRUE(called);
 }
 
+struct MethodReturnTypeCastingTestObject {
+ public:
+  explicit MethodReturnTypeCastingTestObject(int value) : value_(value) {}
+
+  int toInteger() const {
+    return value_;
+  }
+
+ private:
+  int value_;
+};
+
+template <>
+struct Bridging<MethodReturnTypeCastingTestObject> {
+  static MethodReturnTypeCastingTestObject fromJs(
+      jsi::Runtime& /*rt*/,
+      const jsi::Value& value) {
+    return MethodReturnTypeCastingTestObject(
+        static_cast<int>(value.asNumber()));
+  }
+
+  static int toJs(
+      jsi::Runtime& /*rt*/,
+      const MethodReturnTypeCastingTestObject& value) {
+    return value.toInteger();
+  }
+};
+
+struct MethodReturnTypeCastingTestClass {
+  explicit MethodReturnTypeCastingTestClass(
+      std::shared_ptr<CallInvoker> invoker)
+      : invoker_(std::move(invoker)) {}
+
+  // This is the key, return type is not a primitive, but an object with defined
+  // bridging template.
+  MethodReturnTypeCastingTestObject
+  add(jsi::Runtime& /*unused*/, int a, int b) {
+    return MethodReturnTypeCastingTestObject(a + b);
+  }
+
+ private:
+  std::shared_ptr<CallInvoker> invoker_;
+};
+
+TEST_F(BridgingTest, methodReturnTypeCastingTest) {
+  auto instance = MethodReturnTypeCastingTestClass(invoker);
+
+  EXPECT_EQ(
+      2,
+      bridging::callFromJs<int>(
+          rt,
+          &MethodReturnTypeCastingTestClass::add,
+          invoker,
+          &instance,
+          1,
+          1));
+}
+
 } // namespace facebook::react

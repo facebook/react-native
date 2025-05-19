@@ -6,12 +6,11 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {PluginObj} from '@babel/core';
 
-function createReplaceDefaultExportName(filePath: string): PluginObj<mixed> {
+function createDefaultExportNameReplacer(filePath: string): PluginObj<mixed> {
   return {
     visitor: {
       Identifier(node) {
@@ -29,4 +28,4 @@ function createReplaceDefaultExportName(filePath: string): PluginObj<mixed> {
   };
 }
 
-module.exports = createReplaceDefaultExportName;
+module.exports = createDefaultExportNameReplacer;
