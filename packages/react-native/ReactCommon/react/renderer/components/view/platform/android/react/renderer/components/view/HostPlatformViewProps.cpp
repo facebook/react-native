@@ -475,10 +475,10 @@ inline static void updateAccessibilityStateProp(
   if (!oldState.has_value() || newState->checked != oldState->checked) {
     switch (newState->checked) {
       case AccessibilityState::Unchecked:
-        resultState["checked"] = "unchecked";
+        resultState["checked"] = false;
         break;
       case AccessibilityState::Checked:
-        resultState["checked"] = "checked";
+        resultState["checked"] = true;
         break;
       case AccessibilityState::Mixed:
         resultState["checked"] = "mixed";
