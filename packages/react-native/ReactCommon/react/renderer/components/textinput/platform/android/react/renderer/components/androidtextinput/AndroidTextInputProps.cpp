@@ -11,6 +11,7 @@
 #include <react/renderer/components/textinput/baseConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/utils/FloatComparison.h>
 
 namespace facebook::react {
 
@@ -397,13 +398,15 @@ folly::dynamic AndroidTextInputProps::getDiffProps(
     result["adjustsFontSizeToFit"] = paragraphAttributes.adjustsFontSizeToFit;
   }
 
-  if (paragraphAttributes.minimumFontSize !=
-      oldProps->paragraphAttributes.minimumFontSize) {
+  if (!floatEquality(
+          paragraphAttributes.minimumFontSize,
+          oldProps->paragraphAttributes.minimumFontSize)) {
     result["minimumFontSize"] = paragraphAttributes.minimumFontSize;
   }
 
-  if (paragraphAttributes.maximumFontSize !=
-      oldProps->paragraphAttributes.maximumFontSize) {
+  if (!floatEquality(
+          paragraphAttributes.maximumFontSize,
+          oldProps->paragraphAttributes.maximumFontSize)) {
     result["maximumFontSize"] = paragraphAttributes.maximumFontSize;
   }
 
