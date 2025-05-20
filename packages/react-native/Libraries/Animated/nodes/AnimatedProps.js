@@ -19,7 +19,6 @@ import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
 import invariant from 'invariant';
-import flattenStyle from '../../StyleSheet/flattenStyle';
 
 export type AnimatedPropsAllowlist = $ReadOnly<{
   style?: ?AnimatedStyleAllowlist,
@@ -134,7 +133,6 @@ export default class AnimatedProps extends AnimatedNode {
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
       const maybeNode = this.#props[key];
-
       if (key === 'style' && maybeNode instanceof AnimatedStyle) {
         props[key] = maybeNode.__getValueWithStaticStyle(staticProps.style);
       } else if (maybeNode instanceof AnimatedNode) {
@@ -143,8 +141,13 @@ export default class AnimatedProps extends AnimatedNode {
         props[key] = maybeNode.__getHandler();
       }
       if (key === 'style' && Array.isArray(maybeNode)) {
-        // $FlowFixMe[incompatible-call]
-        props[key] = flattenStyle(maybeNode);
+        props[key] = maybeNode.map(style => {
+          const node = AnimatedStyle.from(style, undefined);
+          if (node instanceof AnimatedStyle) {
+            return node.__getValueWithStaticStyle(style);
+          }
+          return style;
+        });
       }
     }
 
