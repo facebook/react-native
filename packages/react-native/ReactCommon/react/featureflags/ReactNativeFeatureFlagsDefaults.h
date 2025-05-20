@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c7ee2c12cbd79f431d5e61a8e5e8e860>>
+ * @generated SignedSource<<1a4bc240cbc6dbdac756555f98f69147>>
  */
 
 /**
@@ -104,7 +104,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableIntersectionObserverEventLoopIntegration() override {
-    return false;
+    return true;
   }
 
   bool enableLayoutAnimationsOnAndroid() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<faa532fc9396b30f13cb55f59fbe7f8e>>
+ * @generated SignedSource<<81be36e22e6ec5f6720c89089d725086>>
  * @flow strict
  * @noformat
  */
@@ -265,7 +265,7 @@ export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGe
 /**
  * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
  */
-export const enableIntersectionObserverEventLoopIntegration: Getter<boolean> = createNativeFlagGetter('enableIntersectionObserverEventLoopIntegration', false);
+export const enableIntersectionObserverEventLoopIntegration: Getter<boolean> = createNativeFlagGetter('enableIntersectionObserverEventLoopIntegration', true);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
