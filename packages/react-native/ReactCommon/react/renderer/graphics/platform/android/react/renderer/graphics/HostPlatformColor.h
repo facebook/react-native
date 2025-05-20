@@ -41,7 +41,7 @@ inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
       (float)((color >> 24) & 0xff) / ratio};
 }
 
-bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
+inline bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
   return colorComponentsFromHostPlatformColor(color).alpha > 0;
 }
 

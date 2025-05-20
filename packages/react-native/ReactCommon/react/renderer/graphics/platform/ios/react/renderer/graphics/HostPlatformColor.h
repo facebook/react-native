@@ -88,7 +88,7 @@ inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
   return color.getColorComponents();
 }
 
-bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
+inline bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
   return colorComponentsFromHostPlatformColor(color).alpha > 0;
 }
 

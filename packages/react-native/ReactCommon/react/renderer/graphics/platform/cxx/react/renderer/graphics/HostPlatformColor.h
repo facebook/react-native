@@ -59,7 +59,7 @@ inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
       static_cast<float>(alphaFromHostPlatformColor(color)) / ratio};
 }
 
-bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
+inline bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
   return colorComponentsFromHostPlatformColor(color).alpha > 0;
 }
 
