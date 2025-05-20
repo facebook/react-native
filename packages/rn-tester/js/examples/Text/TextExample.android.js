@@ -16,7 +16,7 @@ import hotdog from '../../assets/hotdog.jpg';
 import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
 import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
-import TextInlineViewsExample from './TextInlineViewsExample';
+import TextSharedExamples from './TextSharedExamples';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
@@ -1462,13 +1462,6 @@ const examples = [
     },
   },
   {
-    title: 'Empty Text',
-    name: 'emptyText',
-    render(): React.Node {
-      return <Text />;
-    },
-  },
-  {
     title: 'Toggling Attributes',
     name: 'togglingAttributes',
     render(): React.Node {
@@ -1713,7 +1706,7 @@ const examples = [
       );
     },
   },
-  TextInlineViewsExample,
+  ...TextSharedExamples,
 ];
 
 const styles = StyleSheet.create({
