@@ -33,7 +33,19 @@ const prebuildLog = createLogger('Prebuild');
 const {version: currentVersion} = require(packageJsonPath);
 
 async function main() {
-  prebuildLog('Prebuilding React Native iOS...');
+  const rawBuildType = process.argv[2]
+    ? process.argv[2].toLowerCase()
+    : 'debug';
+
+  if (rawBuildType !== 'debug' && rawBuildType !== 'release') {
+    throw new Error(
+      `Invalid build type: ${rawBuildType}. Expected 'debug' or 'release'`,
+    );
+  }
+
+  const buildType = rawBuildType;
+
+  prebuildLog(`Prebuilding React Native iOS for ${buildType}...`);
 
   throwIfOnEden();
 
@@ -114,9 +126,12 @@ async function main() {
     };
 
     // HERMES ARTIFACTS
-    await prepareHermesArtifactsAsync(currentVersion, 'debug');
+    await prepareHermesArtifactsAsync(currentVersion, buildType);
 
-    await prepareReactNativeDependenciesArtifactsAsync(currentVersion, 'debug');
+    await prepareReactNativeDependenciesArtifactsAsync(
+      currentVersion,
+      buildType,
+    );
 
     // CODEGEN
     const codegenPath = path.join(root, '.build/codegen');
