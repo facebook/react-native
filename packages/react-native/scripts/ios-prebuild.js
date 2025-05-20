@@ -17,6 +17,15 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..');
+const packageJsonPath = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'package.json',
+);
+
+// $FlowIgnore[unsupported-syntax]
+const {version: currentVersion} = require(packageJsonPath);
+
 async function main() {
   console.log('Prebuilding React Native iOS...');
   console.log('');
@@ -93,6 +102,9 @@ async function main() {
       });
     };
 
+    // HERMES ARTIFACTS
+    await prepareHermesArtifactsAsync(currentVersion, 'release');
+
     // CODEGEN
     console.log('Running codegen...');
     const codegenPath = path.join(root, '.build/codegen');
@@ -101,13 +113,6 @@ async function main() {
     const command = `node scripts/generate-codegen-artifacts -p "${root}" -o "${codegenPath}"  -t ios`;
     console.log(command);
     execSync(command, {stdio: 'inherit'});
-
-    // HERMES ARTIFACTS
-    console.log('Download hermes...');
-    // Temporary hardcoded hermes version to make the script work
-    // We will make it right in a future diff.
-    // TODO: T223708709
-    await prepareHermesArtifactsAsync('0.80.0-rc.0', 'debug');
 
     // LINKING
     link('Libraries/WebSocket/', 'React');
