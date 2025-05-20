@@ -248,7 +248,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableIntersectionObserverEventLoopIntegration: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-04-16',
         description:
