@@ -302,16 +302,7 @@ void RCTExecuteOnMainQueue(dispatch_block_t block)
 // unless you know what you are doing.
 void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
 {
-  if (RCTIsMainQueue()) {
-    block();
-  } else {
-    if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
-      RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: Sync dispatches to the main queue can deadlock React Native.");
-    }
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      block();
-    });
-  }
+  RCTUnsafeExecuteOnMainQueueSyncWithError(block, @"Sync dispatches to the main queue can deadlock React Native.");
 }
 
 // Please do not use this method
@@ -320,14 +311,16 @@ void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *
 {
   if (RCTIsMainQueue()) {
     block();
-  } else {
-    if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
-      RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: %@", context);
-    }
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      block();
-    });
+    return;
   }
+
+  if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+    RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: %@", context);
+  }
+
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    block();
+  });
 }
 
 static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
@@ -335,19 +328,24 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   // The solution was borrowed from a post by Sophie Alpert:
   // https://sophiebits.com/2014/04/02/dispatch-once-initialization-on-the-main-thread
   // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
-  if (RCTIsMainQueue()) {
+  auto executeOnce = ^{
     dispatch_once(onceToken, block);
-  } else {
-    if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
-      if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
-        RCTLogError(
-            @"RCTUnsafeExecuteOnMainQueueOnceSync: Sync dispatches to the main queue can deadlock React Native.");
-      }
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        dispatch_once(onceToken, block);
-      });
-    }
+  };
+
+  if (RCTIsMainQueue()) {
+    executeOnce();
+    return;
   }
+
+  if (!DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+    return;
+  }
+
+  if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+    RCTLogError(@"RCTUnsafeExecuteOnMainQueueOnceSync: Sync dispatches to the main queue can deadlock React Native.");
+  }
+
+  dispatch_sync(dispatch_get_main_queue(), executeOnce);
 }
 
 CGFloat RCTScreenScale(void)
