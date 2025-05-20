@@ -26,7 +26,7 @@ import type {
   TargetCapabilityFlags,
 } from './types';
 
-import CDPMessagesLogging from './CDPMessagesLogging';
+import CdpDebugLogging from './CdpDebugLogging';
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
 import invariant from 'invariant';
@@ -140,7 +140,7 @@ export default class Device {
   #serverRelativeBaseUrl: URL;
 
   // Logging reporting batches of cdp messages
-  #cdpMessagesLogging: CDPMessagesLogging;
+  #cdpDebugLogging: CdpDebugLogging;
 
   constructor(deviceOptions: DeviceOptions) {
     this.#dangerouslyConstruct(deviceOptions);
@@ -158,7 +158,7 @@ export default class Device {
     deviceRelativeBaseUrl,
     isProfilingBuild,
   }: DeviceOptions) {
-    this.#cdpMessagesLogging = new CDPMessagesLogging();
+    this.#cdpDebugLogging = new CdpDebugLogging();
     this.#id = id;
     this.#name = name;
     this.#app = app;
@@ -190,7 +190,7 @@ export default class Device {
             this.#lastGetPagesMessage = message;
           }
         } else {
-          this.#cdpMessagesLogging.log('DeviceToProxy', message);
+          this.#cdpDebugLogging.log('DeviceToProxy', message);
         }
         this.#handleMessageFromDevice(parsedMessage);
       } catch (error) {
@@ -371,7 +371,7 @@ export default class Device {
             sendMessage: message => {
               try {
                 const payload = JSON.stringify(message);
-                this.#cdpMessagesLogging.log('ProxyToDebugger', payload);
+                this.#cdpDebugLogging.log('ProxyToDebugger', payload);
                 socket.send(payload);
               } catch {}
             },
@@ -389,7 +389,7 @@ export default class Device {
                     wrappedEvent: JSON.stringify(message),
                   },
                 });
-                this.#cdpMessagesLogging.log('DebuggerToProxy', payload);
+                this.#cdpDebugLogging.log('DebuggerToProxy', payload);
                 this.#deviceSocket.send(payload);
               } catch {}
             },
@@ -410,7 +410,7 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call]
     socket.on('message', (message: string) => {
-      this.#cdpMessagesLogging.log('DebuggerToProxy', message);
+      this.#cdpDebugLogging.log('DebuggerToProxy', message);
       const debuggerRequest = JSON.parse(message);
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: this.#debuggerConnection?.pageId ?? null,
@@ -455,12 +455,12 @@ export default class Device {
       }
     });
 
-    const cdpMessagesLogging = this.#cdpMessagesLogging;
+    const cdpDebugLogging = this.#cdpDebugLogging;
     // $FlowFixMe[method-unbinding]
     const sendFunc = socket.send;
     // $FlowFixMe[cannot-write]
     socket.send = function (message: string) {
-      cdpMessagesLogging.log('ProxyToDebugger', message);
+      cdpDebugLogging.log('ProxyToDebugger', message);
       return sendFunc.call(socket, message);
     };
   }
@@ -638,7 +638,7 @@ export default class Device {
     try {
       const messageToSend = JSON.stringify(message);
       if (message.event !== 'getPages') {
-        this.#cdpMessagesLogging.log('ProxyToDevice', messageToSend);
+        this.#cdpDebugLogging.log('ProxyToDevice', messageToSend);
       }
       this.#deviceSocket.send(messageToSend);
     } catch (error) {}
