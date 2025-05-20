@@ -14,7 +14,7 @@ bool isColorMeaningful(const SharedColor& color) noexcept {
     return false;
   }
 
-  return colorComponentsFromColor(color).alpha > 0;
+  return hostPlatformColorIsColorMeaningful(*color);
 }
 
 // Create Color from float RGBA values in [0, 1] range

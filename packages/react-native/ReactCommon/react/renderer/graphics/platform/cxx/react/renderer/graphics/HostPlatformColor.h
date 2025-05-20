@@ -25,6 +25,10 @@ hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
   return (a & 0xff) << 24 | (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
 }
 
+bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
+  return colorComponentsFromHostPlatformColor(color).alpha > 0;
+}
+
 inline Color hostPlatformColorFromComponents(ColorComponents components) {
   float ratio = 255;
   return hostPlatformColorFromRGBA(
