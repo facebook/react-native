@@ -52,13 +52,6 @@ class NativeMutationObserver
       jsi::Runtime& runtime,
       NativeMutationObserverObserveOptions options);
 
-  // TODO: remove in the next version
-  [[deprecated("use unobserveAll instead")]]
-  void unobserve(
-      jsi::Runtime& runtime,
-      MutationObserverId mutationObserverId,
-      jsi::Object targetShadowNode);
-
   void unobserveAll(
       jsi::Runtime& runtime,
       MutationObserverId mutationObserverId);
