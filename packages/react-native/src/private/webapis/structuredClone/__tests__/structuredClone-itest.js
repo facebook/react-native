@@ -23,6 +23,7 @@ import EventTarget from 'react-native/src/private/webapis/dom/events/EventTarget
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import DOMException from 'react-native/src/private/webapis/errors/DOMException';
 import IntersectionObserver from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
+import IntersectionObserverEntry from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserverEntry';
 import MutationObserver from 'react-native/src/private/webapis/mutationobserver/MutationObserver';
 import structuredClone from 'react-native/src/private/webapis/structuredClone/structuredClone';
 
@@ -390,18 +391,17 @@ describe('structuredClone', () => {
 
         const entries: Array<mixed> = [];
         Fantom.runTask(() => {
-          const observer = new IntersectionObserver(e => {
+          const observer = new IntersectionObserver((e, self) => {
             entries.push(...e);
+            self.disconnect();
           });
 
           observer.observe(ensureInstance(ref.current, ReactNativeElement));
-
-          Fantom.scheduleTask(() => {
-            observer.disconnect();
-          });
         });
 
-        expectDataCloneError(() => structuredClone(entries[0]));
+        const entry = ensureInstance(entries[0], IntersectionObserverEntry);
+
+        expectDataCloneError(() => structuredClone(entry));
       });
 
       it('does NOT clone MutationObserver', () => {
