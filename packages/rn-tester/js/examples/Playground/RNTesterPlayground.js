@@ -12,17 +12,13 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View, Animated} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 function Playground() {
   return (
     <View style={styles.container}>
       <RNTesterText>
-        <Animated.View style={[
-          {backgroundColor: 'red',width: 100,height: 100},
-          {transform: [{translateX: 200}]},
-          [{transform: [{translateY: 300}]}],
-         ]}/>
+        Edit "RNTesterPlayground.js" to change this file
       </RNTesterText>
     </View>
   );
