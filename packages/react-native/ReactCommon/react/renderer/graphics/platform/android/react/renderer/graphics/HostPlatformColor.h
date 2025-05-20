@@ -15,8 +15,7 @@ namespace facebook::react {
 using Color = int32_t;
 
 namespace HostPlatformColor {
-static const facebook::react::Color UndefinedColor =
-    std::numeric_limits<facebook::react::Color>::max();
+constexpr facebook::react::Color UndefinedColor = 0;
 }
 
 inline Color
