@@ -11,6 +11,9 @@
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const stream = require('stream');
+const {promisify} = require('util');
+const pipeline = promisify(stream.pipeline);
 
 /**
  * Downloads hermes artifacts from the specified version and build type. If you want to specify a specific
@@ -58,8 +61,8 @@ async function prepareHermesArtifactsAsync(
       return artifactsPath;
     }
 
-    const sourceType = hermesSourceType(resolvedVersion, buildType);
-    localPath = resolveSourceFromSourceType(
+    const sourceType = await hermesSourceType(resolvedVersion, buildType);
+    localPath = await resolveSourceFromSourceType(
       sourceType,
       resolvedVersion,
       buildType,
@@ -160,68 +163,82 @@ function getNightlyTarballUrl(
   buildType /*: 'debug' | 'release' */,
 ) /*: string */ {
   const params = `r=snapshots&g=com.facebook.react&a=react-native-artifacts&c=hermes-ios-${buildType}&e=tar.gz&v=${version}-SNAPSHOT`;
-  return resolveUrlRedirects(
-    `https://oss.sonatype.org/service/local/artifact/maven/redirect?${params}`,
-  );
+  return `https://oss.sonatype.org/service/local/artifact/maven/redirect?${params}`;
 }
 
-function resolveUrlRedirects(url /*: string */) /*: string */ {
-  // Synchronously resolve the final URL after redirects using curl
+/**
+ * Resolves URL redirects using fetch instead of curl
+ */
+async function resolveUrlRedirects(url /*: string */) /*: Promise<string> */ {
   try {
-    return execSync(`curl -Ls -o /dev/null -w '%{url_effective}' "${url}"`)
-      .toString()
-      .trim();
+    const response /*: Response */ = await fetch(url, {
+      method: 'HEAD',
+      redirect: 'follow',
+    });
+
+    return response.url;
   } catch (e) {
     hermesLog(`Failed to resolve URL redirects\n${e}`, 'error');
     return url;
   }
 }
 
-function hermesArtifactExists(tarballUrl /*: string */) /*: boolean */ {
+/**
+ * Checks if a Hermes artifact exists at the given URL using fetch instead of curl
+ */
+async function hermesArtifactExists(
+  tarballUrl /*: string */,
+) /*: Promise<boolean> */ {
   try {
-    const code = execSync(
-      `curl -o /dev/null --silent -Iw '%{http_code}' -L "${tarballUrl}"`,
-    )
-      .toString()
-      .trim();
-    return code === '200';
+    const response /*: Response */ = await fetch(tarballUrl, {
+      method: 'HEAD',
+    });
+
+    return response.status === 200;
   } catch (e) {
     return false;
   }
 }
 
-function hermesSourceType(
+/**
+ * Determines the source type for Hermes based on availability
+ */
+async function hermesSourceType(
   version /*: string */,
   buildType /*: 'debug' | 'release' */,
-) /*: HermesEngineSourceType */ {
+) /*: Promise<HermesEngineSourceType> */ {
   if (hermesEngineTarballEnvvarDefined()) {
     hermesLog('Using local prebuild tarball');
     return HermesEngineSourceTypes.LOCAL_PREBUILT_TARBALL;
   }
-  if (hermesArtifactExists(getTarballUrl(version, buildType))) {
+
+  const tarballUrl = getTarballUrl(version, buildType);
+  if (await hermesArtifactExists(tarballUrl)) {
     hermesLog(`Using download prebuild ${buildType} tarball`);
     return HermesEngineSourceTypes.DOWNLOAD_PREBUILD_TARBALL;
   }
-  if (
-    hermesArtifactExists(
-      getNightlyTarballUrl(version, buildType).replace(/\\/g, ''),
-    )
-  ) {
+
+  // For nightly tarball, we need to resolve redirects first
+  const nightlyUrl = await resolveUrlRedirects(
+    getNightlyTarballUrl(version, buildType),
+  );
+  if (await hermesArtifactExists(nightlyUrl)) {
     hermesLog('Using download prebuild nightly tarball');
     return HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
   }
+
   hermesLog(
     'Using download prebuild nightly tarball - this is a fallback and might not work.',
   );
   return HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
 }
 
-function resolveSourceFromSourceType(
+async function resolveSourceFromSourceType(
   sourceType /*: HermesEngineSourceType */,
   version /*: string */,
   buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string*/,
-) /*: string */ {
+) /*: Promise<string> */ {
   switch (sourceType) {
     case HermesEngineSourceTypes.LOCAL_PREBUILT_TARBALL:
       return localPrebuiltTarball();
@@ -243,7 +260,7 @@ function localPrebuiltTarball() /*: string */ {
     hermesLog(
       `Using pre-built binary from local path defined by HERMES_ENGINE_TARBALL_PATH envvar: ${tarballPath}`,
     );
-    return `file://${tarballPath}`;
+    return tarballPath;
   }
   abort(
     `[Hermes] HERMES_ENGINE_TARBALL_PATH is set, but points to a non-existing file: "${tarballPath ?? 'unknown'}"\nIf you don't want to use tarball, run 'unset HERMES_ENGINE_TARBALL_PATH'`,
@@ -251,54 +268,87 @@ function localPrebuiltTarball() /*: string */ {
   return '';
 }
 
-function downloadPrebuildTarball(
+async function downloadPrebuildTarball(
   version /*: string */,
   buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string*/,
-) /*: string */ {
+) /*: Promise<string> */ {
   const url = getTarballUrl(version, buildType);
   hermesLog(`Using release tarball from URL: ${url}`);
   return downloadStableHermes(version, buildType, artifactsPath);
 }
 
-function downloadPrebuiltNightlyTarball(
+async function downloadPrebuiltNightlyTarball(
   version /*: string */,
   buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string*/,
-) /*: string */ {
-  const url = getNightlyTarballUrl(version, buildType);
+) /*: Promise<string> */ {
+  const url = await resolveUrlRedirects(
+    getNightlyTarballUrl(version, buildType),
+  );
   hermesLog(`Using nightly tarball from URL: ${url}`);
   return downloadHermesTarball(url, version, buildType, artifactsPath);
 }
 
-function downloadStableHermes(
+async function downloadStableHermes(
   version /*: string */,
   buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string */,
-) /*: string */ {
+) /*: Promise<string> */ {
   const tarballUrl = getTarballUrl(version, buildType);
   return downloadHermesTarball(tarballUrl, version, buildType, artifactsPath);
 }
 
-function downloadHermesTarball(
+/**
+ * Downloads a Hermes tarball using fetch instead of curl
+ */
+async function downloadHermesTarball(
   tarballUrl /*: string */,
   version /*: string */,
   buildType /*: 'debug' | 'release' */,
   artifactsPath /*: string */,
-) /*: string */ {
+) /*: Promise<string> */ {
   const destPath = buildType
     ? `${artifactsPath}/hermes-ios-${version}-${buildType}.tar.gz`
     : `${artifactsPath}/hermes-ios-${version}.tar.gz`;
+
   if (!fs.existsSync(destPath)) {
     const tmpFile = `${artifactsPath}/hermes-ios.download`;
     try {
       fs.mkdirSync(artifactsPath, {recursive: true});
       hermesLog(`Downloading Hermes tarball from ${tarballUrl}`);
-      execSync(
-        `curl "${tarballUrl}" -Lo "${tmpFile}" && mv "${tmpFile}" "${destPath}"`,
-      );
+
+      const response /*: Response */ = await fetch(tarballUrl);
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to download: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      // Create a write stream to the temporary file
+      const fileStream = fs.createWriteStream(tmpFile);
+
+      // Use Node.js stream pipeline to safely pipe the response body to the file
+      if (response.body) {
+        await pipeline(response.body, fileStream);
+      } else {
+        // For older fetch implementations that don't support response.body as a stream
+        const buffer = await response.arrayBuffer();
+
+        fs.writeFileSync(tmpFile, Buffer.from(buffer));
+      }
+
+      // Move the temporary file to the destination path
+      fs.renameSync(tmpFile, destPath);
     } catch (e) {
-      abort(`Failed to download Hermes tarball from ${tarballUrl}`);
+      // Clean up the temporary file if it exists
+      if (fs.existsSync(tmpFile)) {
+        fs.unlinkSync(tmpFile);
+      }
+      abort(
+        `Failed to download Hermes tarball from ${tarballUrl}: ${e.message}`,
+      );
     }
   }
   return destPath;
