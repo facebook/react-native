@@ -80,16 +80,16 @@ hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
   return Color(colorComponents);
 }
 
-bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
-  return colorComponentsFromHostPlatformColor(color).alpha > 0;
-}
-
 inline Color hostPlatformColorFromComponents(ColorComponents components) {
   return Color(components);
 }
 
 inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
   return color.getColorComponents();
+}
+
+bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
+  return colorComponentsFromHostPlatformColor(color).alpha > 0;
 }
 
 inline float alphaFromHostPlatformColor(Color color) {
