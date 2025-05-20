@@ -72,6 +72,28 @@ export default class CDPMessagesLogging {
       let timeout: Timeout | null = null;
 
       this.#cdpMessagesLoggingBatchingFn[destination] = (message: string) => {
+        if (message.length > 1024 * 100) {
+          const messagePreview = JSON.stringify(
+            JSON.parse(message, (key, value) => {
+              if (Array.isArray(value)) {
+                return '[ARRAY]';
+              }
+              if (typeof value === 'string' && value.length > 50) {
+                return value.slice(0, 50) + '...';
+              }
+              return value;
+            }),
+            null,
+            2,
+          );
+          debug(
+            '%s A large message (%s MB) was %s- %s',
+            getCDPLogPrefix(destination),
+            (message.length / (1024 * 1024)).toFixed(2),
+            destination.startsWith('Proxy') ? '  sent  ' : 'received',
+            messagePreview,
+          );
+        }
         if (timeout == null) {
           timeout = setTimeout<$ReadOnlyArray<CDPMessageDestination>>(() => {
             debug(
