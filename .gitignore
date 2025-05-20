@@ -127,6 +127,7 @@ vendor/
 
 # Swift Package build folder
 /packages/react-native/.build
+/packages/react-native/.swiftpm
 
 # @react-native/codegen
 /packages/react-native/React/FBReactNativeSpec/
