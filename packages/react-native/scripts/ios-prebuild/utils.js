@@ -28,7 +28,7 @@ function createFolderIfNotExists(folderPath /*:string*/) /*: string */ {
 
 function throwIfOnEden() {
   try {
-    execSync('eden info');
+    execSync('eden info', {stdio: 'ignore'});
   } catch (error) {
     // eden info failed, we are not on Eden, do nothing
     return;
@@ -37,4 +37,24 @@ function throwIfOnEden() {
   throw new Error('Cannot prepare the iOS prebuilds on an Eden checkout');
 }
 
-module.exports = {createFolderIfNotExists, throwIfOnEden};
+function prebuildLog(
+  message /*: string */,
+  level /*: 'info' | 'warning' | 'error' */ = 'warning',
+) {
+  // Simple log coloring for terminal output
+  const prefix = '[Prebuild] ';
+  let colorFn = (x /*:string*/) => x;
+  if (process.stdout.isTTY) {
+    if (level === 'info') colorFn = x => `\x1b[32m${x}\x1b[0m`;
+    else if (level === 'error') colorFn = x => `\x1b[31m${x}\x1b[0m`;
+    else colorFn = x => `\x1b[33m${x}\x1b[0m`;
+  }
+
+  console.log(colorFn(prefix + message));
+}
+
+module.exports = {
+  createFolderIfNotExists,
+  throwIfOnEden,
+  prebuildLog,
+};
