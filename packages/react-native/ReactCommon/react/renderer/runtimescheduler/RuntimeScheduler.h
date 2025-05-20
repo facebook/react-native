@@ -14,6 +14,7 @@
 #include <react/renderer/runtimescheduler/Task.h>
 #include <react/timing/primitives.h>
 #include "RuntimeSchedulerEventTimingDelegate.h"
+#include "RuntimeSchedulerIntersectionObserverDelegate.h"
 
 namespace facebook::react {
 
@@ -60,6 +61,9 @@ class RuntimeSchedulerBase {
       PerformanceEntryReporter* reporter) = 0;
   virtual void setEventTimingDelegate(
       RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) = 0;
+  virtual void setIntersectionObserverDelegate(
+      RuntimeSchedulerIntersectionObserverDelegate*
+          intersectionObserverDelegate) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -171,6 +175,10 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
 
   void setEventTimingDelegate(
       RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
+
+  void setIntersectionObserverDelegate(
+      RuntimeSchedulerIntersectionObserverDelegate*
+          intersectionObserverDelegate) override;
 
  private:
   // Actual implementation, stored as a unique pointer to simplify memory

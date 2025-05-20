@@ -151,6 +151,10 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   void setEventTimingDelegate(
       RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
 
+  void setIntersectionObserverDelegate(
+      RuntimeSchedulerIntersectionObserverDelegate*
+          intersectionObserverDelegate) override;
+
  private:
   std::atomic<uint_fast8_t> syncTaskRequests_{0};
 
@@ -229,6 +233,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   PerformanceEntryReporter* performanceEntryReporter_{nullptr};
   RuntimeSchedulerEventTimingDelegate* eventTimingDelegate_{nullptr};
+  RuntimeSchedulerIntersectionObserverDelegate* intersectionObserverDelegate_{
+      nullptr};
 
   RuntimeSchedulerTaskErrorHandler onTaskError_;
 };

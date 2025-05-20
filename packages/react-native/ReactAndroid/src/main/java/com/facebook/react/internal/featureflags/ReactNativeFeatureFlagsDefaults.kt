@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f357475254104729cc7910c14e1c1fb>>
+ * @generated SignedSource<<a8fa2410598d311ea5256aee7658ab3c>>
  */
 
 /**
@@ -60,6 +60,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
+
+  override fun enableIntersectionObserverEventLoopIntegration(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 

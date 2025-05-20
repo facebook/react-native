@@ -97,7 +97,7 @@ class NativeIntersectionObserver
 
   static UIManager& getUIManagerFromRuntime(jsi::Runtime& runtime);
   static NativeIntersectionObserverEntry convertToNativeModuleEntry(
-      IntersectionObserverEntry entry,
+      const IntersectionObserverEntry& entry,
       jsi::Runtime& runtime);
 };
 
