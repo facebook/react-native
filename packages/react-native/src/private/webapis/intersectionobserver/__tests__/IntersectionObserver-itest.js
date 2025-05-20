@@ -1577,5 +1577,41 @@ describe('IntersectionObserver', () => {
 
       expect(callback).not.toHaveBeenCalled();
     });
+
+    it('should not dispatch pending entries when disconnecting', () => {
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      const nodeRef = createRef<HostInstance>();
+
+      Fantom.runTask(() => {
+        root.render(<View ref={nodeRef} style={{width: 100, height: 100}} />);
+      });
+
+      const node = ensureReactNativeElement(nodeRef.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback);
+
+        // At the end of the current tick, we schedule the execution of the
+        // intersection observer callback with the initial state of the
+        // target.
+        observer.observe(node);
+
+        // This is executed in the next tick, before the intersection observer
+        // callback is called.
+        Fantom.scheduleTask(() => {
+          expect(intersectionObserverCallback).not.toHaveBeenCalled();
+
+          observer.disconnect();
+        });
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(0);
+    });
   });
 });
