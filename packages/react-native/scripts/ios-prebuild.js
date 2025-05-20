@@ -109,7 +109,7 @@ async function main() {
     };
 
     // HERMES ARTIFACTS
-    await prepareHermesArtifactsAsync(currentVersion, 'release');
+    await prepareHermesArtifactsAsync(currentVersion, 'debug');
 
     // CODEGEN
     const codegenPath = path.join(root, '.build/codegen');
