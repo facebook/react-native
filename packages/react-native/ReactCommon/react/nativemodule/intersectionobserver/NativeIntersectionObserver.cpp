@@ -70,12 +70,20 @@ jsi::Object NativeIntersectionObserver::observeV2(
   auto shadowNode =
       shadowNodeFromValue(runtime, std::move(options.targetShadowNode));
   auto shadowNodeFamily = shadowNode->getFamilyShared();
+
+  std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily;
+  if (options.rootShadowNode.isObject()) {
+    observationRootShadowNodeFamily =
+        shadowNodeFromValue(runtime, options.rootShadowNode)->getFamilyShared();
+  }
+
   auto thresholds = options.thresholds;
   auto rootThresholds = options.rootThresholds;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   intersectionObserverManager_.observe(
       intersectionObserverId,
+      observationRootShadowNodeFamily,
       shadowNodeFamily,
       thresholds,
       rootThresholds,

@@ -22,6 +22,8 @@ using NativeIntersectionObserverObserveOptions =
     NativeIntersectionObserverNativeIntersectionObserverObserveOptions<
         // intersectionObserverId
         NativeIntersectionObserverIntersectionObserverId,
+        // rootShadowNode
+        jsi::Value,
         // targetShadowNode
         jsi::Object,
         // thresholds
