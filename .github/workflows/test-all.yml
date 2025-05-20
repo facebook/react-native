@@ -147,15 +147,12 @@ jobs:
     continue-on-error: true
     strategy:
       fail-fast: false
-      matrix:
-        jsengine: [Hermes, JSC]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          jsengine: ${{ matrix.jsengine }}
           use-frameworks: DynamicFrameworks
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
@@ -171,15 +168,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [Hermes, JSC]
         architecture: [NewArch, OldArch]
         flavor: [Debug, Release]
         exclude: # We don't want to test the Old Arch in Release for E2E
-          - jsengine: Hermes
-            architecture: OldArch
-            flavor: Release
-          - jsengine: JSC
-            architecture: OldArch
+          - architecture: OldArch
             flavor: Release
     steps:
       - name: Checkout
@@ -187,7 +179,6 @@ jobs:
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          jsengine: ${{ matrix.jsengine }}
           architecture: ${{ matrix.architecture }}
           run-unit-tests: "false"
           use-frameworks: StaticLibraries
@@ -207,7 +198,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [Hermes, JSC]
         architecture: [NewArch]
         flavor: [Debug, Release]
     steps:
@@ -216,7 +206,7 @@ jobs:
       - name: Download App
         uses: actions/download-artifact@v4
         with:
-          name: RNTesterApp-${{ matrix.architecture }}-${{ matrix.jsengine }}-${{ matrix.flavor }}
+          name: RNTesterApp-${{ matrix.architecture }}-${{ matrix.flavor }}
           path: /tmp/RNTesterBuild/RNTester.app
       - name: Check downloaded folder content
         run: ls -lR /tmp/RNTesterBuild
@@ -227,7 +217,6 @@ jobs:
         with:
           app-path: "/tmp/RNTesterBuild/RNTester.app"
           app-id: com.meta.RNTester.localDevelopment
-          jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro/
           flavor: ${{ matrix.flavor }}
 
@@ -242,7 +231,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [Hermes, JSC]
         flavor: [Debug, Release]
         architecture: [OldArch, NewArch]
     steps:
@@ -318,7 +306,6 @@ jobs:
         with:
           app-path: "/tmp/RNTestProject/Build/Products/${{ matrix.flavor }}-iphonesimulator/RNTestProject.app"
           app-id: org.reactjs.native.example.RNTestProject
-          jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
@@ -332,7 +319,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [Hermes, JSC]
         flavor: [debug, release]
         architecture: [OldArch, NewArch]
     steps:
@@ -385,11 +371,6 @@ jobs:
             sed -i 's/newArchEnabled=true/newArchEnabled=false/' android/gradle.properties
           fi
 
-          if [[ ${{matrix.jsengine}} == "JSC" ]]; then
-            echo "Using JSC instead of Hermes"
-            sed -i 's/hermesEnabled=true/hermesEnabled=false/' android/gradle.properties
-          fi
-
           # Build
           cd android
           CAPITALIZED_FLAVOR=$(echo "${{ matrix.flavor }}" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
@@ -401,7 +382,6 @@ jobs:
         with:
           app-path: /tmp/RNTestProject/android/app/build/outputs/apk/${{ matrix.flavor }}/app-${{ matrix.flavor }}.apk
           app-id: com.rntestproject
-          jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
           install-java: 'false'
           flavor: ${{ matrix.flavor }}
@@ -469,7 +449,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [hermes, jsc]
         flavor: [debug, release]
     steps:
       - name: Checkout
@@ -481,17 +460,16 @@ jobs:
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
-          name: rntester-${{ matrix.jsengine }}-${{ matrix.flavor }}
-          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
+          name: rntester-${{ matrix.flavor }}
+          path: ./packages/rn-tester/android/app/build/outputs/apk/hermes/${{ matrix.flavor }}/
       - name: Print folder structure
-        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/hermes/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         timeout-minutes: 60
         with:
-          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/app-${{ matrix.jsengine }}-x86-${{ matrix.flavor }}.apk
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/hermes/${{ matrix.flavor }}/app-hermes-x86-${{ matrix.flavor }}.apk
           app-id: com.facebook.react.uiapp
-          jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro
           flavor: ${{ matrix.flavor }}
 
@@ -543,7 +521,6 @@ jobs:
       matrix:
         flavor: [Debug, Release]
         architecture: [NewArch, OldArch]
-        jsengine: [Hermes, JSC]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -568,16 +545,13 @@ jobs:
       - name: Prepare the Helloworld application
         shell: bash
         run: node ./scripts/e2e/init-project-e2e.js --useHelloWorld --pathToLocalReactNative "$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)"
-      - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to ${{ matrix.architecture }}, and using the ${{ matrix.jsengine }} JS engine.
+      - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to ${{ matrix.architecture }}.
         shell: bash
         run: |
           cd packages/helloworld/android
           args=()
           if [[ ${{ matrix.architecture }} == "OldArch" ]]; then
             args+=(--arch old)
-          fi
-          if [[ ${{ matrix.jsengine }} == "JSC" ]]; then
-            args+=(--jsvm jsc)
           fi
           if [[ ${{ matrix.flavor }} == "Release" ]]; then
             args+=(--prod)
@@ -586,7 +560,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.4
         with:
-          name: helloworld-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
+          name: helloworld-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-hermes
           path: ./packages/helloworld/android/app/build/outputs/apk/
           compression-level: 0
 
@@ -614,12 +588,10 @@ jobs:
     strategy:
       matrix:
         flavor: [Debug, Release]
-        jsengine: [Hermes, JSC]
         use_frameworks: [StaticLibraries, DynamicFrameworks]
         exclude:
           # This config is tested with Ruby 3.2.0. Let's not double test it.
           - flavor: Debug
-            jsengine: Hermes
             use_frameworks: StaticLibraries
     env:
       PROJECT_NAME: iOSTemplateProject
@@ -631,7 +603,6 @@ jobs:
       - uses: ./.github/actions/test-ios-helloworld
         with:
           flavor: ${{ matrix.flavor }}
-          jsengine: ${{ matrix.jsengine }}
           use-frameworks: ${{ matrix.use_frameworks }}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}

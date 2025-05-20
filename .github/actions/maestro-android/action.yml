@@ -7,9 +7,6 @@ inputs:
   app-id:
     required: true
     description: The id of the app to test
-  jsengine:
-    required: true
-    description: The js engine we are using
   maestro-flow:
     required: true
     description: the folder that contains the maestro tests
@@ -79,7 +76,7 @@ runs:
       uses: actions/upload-artifact@v4.3.4
       if: always()
       with:
-        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}_${{ inputs.architecture }}
+        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.flavor }}_${{ inputs.architecture }}
         path: |
           report.xml
           screen.mp4
@@ -87,5 +84,5 @@ runs:
       if: steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.architecture }}
+        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.flavor }}-${{ inputs.architecture }}
         path: /tmp/MaestroLogs
