@@ -49,6 +49,7 @@ function ModalPresentation() {
 
   const onRequestClose = useCallback(() => {
     console.log('onRequestClose');
+    setProps(prev => ({...prev, visible: false}));
   }, []);
 
   const [props, setProps] = useState<ModalProps>({
