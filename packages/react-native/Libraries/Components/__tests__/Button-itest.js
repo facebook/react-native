@@ -33,9 +33,7 @@ describe('<Button>', () => {
         ).toEqual(
           // Upper case on Android (also used by Fantom)
           <rn-view backgroundColor="rgba(33, 150, 243, 255)">
-            <rn-paragraph
-              backgroundColor="rgba(255, 255, 255, 127)"
-              foregroundColor="rgba(255, 255, 255, 255)">
+            <rn-paragraph foregroundColor="rgba(255, 255, 255, 255)">
               HELLO
             </rn-paragraph>
           </rn-view>,
@@ -57,9 +55,7 @@ describe('<Button>', () => {
             .toJSX(),
         ).toEqual(
           <rn-view backgroundColor="rgba(0, 0, 255, 255)">
-            <rn-paragraph
-              backgroundColor="rgba(255, 255, 255, 127)"
-              foregroundColor="rgba(255, 255, 255, 255)">
+            <rn-paragraph foregroundColor="rgba(255, 255, 255, 255)">
               HELLO
             </rn-paragraph>
           </rn-view>,
@@ -105,9 +101,7 @@ describe('<Button>', () => {
             .toJSX(),
         ).toEqual(
           <rn-view backgroundColor="rgba(223, 223, 223, 255)">
-            <rn-paragraph
-              backgroundColor="rgba(255, 255, 255, 127)"
-              foregroundColor="rgba(161, 161, 161, 255)">
+            <rn-paragraph foregroundColor="rgba(161, 161, 161, 255)">
               HELLO
             </rn-paragraph>
           </rn-view>,
@@ -189,9 +183,7 @@ describe('<Button>', () => {
             .toJSX(),
         ).toEqual(
           <rn-view backgroundColor="rgba(33, 150, 243, 255)">
-            <rn-paragraph
-              backgroundColor="rgba(255, 255, 255, 127)"
-              foregroundColor="rgba(255, 255, 255, 255)">
+            <rn-paragraph foregroundColor="rgba(255, 255, 255, 255)">
               HELLO
             </rn-paragraph>
           </rn-view>,
@@ -233,9 +225,7 @@ describe('<Button>', () => {
             .toJSX(),
         ).toEqual(
           <rn-view backgroundColor="rgba(223, 223, 223, 255)">
-            <rn-paragraph
-              backgroundColor="rgba(255, 255, 255, 127)"
-              foregroundColor="rgba(161, 161, 161, 255)">
+            <rn-paragraph foregroundColor="rgba(161, 161, 161, 255)">
               HELLO
             </rn-paragraph>
           </rn-view>,
