@@ -16,7 +16,7 @@ const fs = require('fs');
  * @param {string} folderPath - The path to the folder
  * @returns {string} The path to the created or existing folder
  */
-function createFolderIfNotExists(folderPath /*:string*/) /*: string*/ {
+function createFolderIfNotExists(folderPath /*:string*/) /*: string */ {
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath, {recursive: true});
     if (!fs.existsSync(folderPath)) {
@@ -37,7 +37,4 @@ function throwIfOnEden() {
   throw new Error('Cannot prepare the iOS prebuilds on an Eden checkout');
 }
 
-module.exports = {
-  createFolderIfNotExists,
-  throwIfOnEden,
-};
+module.exports = {createFolderIfNotExists, throwIfOnEden};
