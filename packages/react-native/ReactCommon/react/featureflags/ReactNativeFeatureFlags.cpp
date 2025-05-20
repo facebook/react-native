@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<88fdbea2f97f628187164a47a9737da0>>
+ * @generated SignedSource<<e4946f3e524cd7571fc62c721d611d19>>
  */
 
 /**
@@ -100,6 +100,10 @@ bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
+}
+
+bool ReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration() {
+  return getAccessor().enableIntersectionObserverEventLoopIntegration();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {

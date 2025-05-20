@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d74dc8182a14fddbd7118149298515bd>>
+ * @generated SignedSource<<93037428475b39d3f2c208e1326b3e86>>
  */
 
 /**
@@ -150,6 +150,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableIOSViewClipToPaddingBox() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSViewClipToPaddingBox");
+    return method(javaProvider_);
+  }
+
+  bool enableIntersectionObserverEventLoopIntegration() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIntersectionObserverEventLoopIntegration");
     return method(javaProvider_);
   }
 
@@ -426,6 +432,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverEventLoopIntegration(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -659,6 +670,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
+      makeNativeMethod(
+        "enableIntersectionObserverEventLoopIntegration",
+        JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverEventLoopIntegration),
       makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),

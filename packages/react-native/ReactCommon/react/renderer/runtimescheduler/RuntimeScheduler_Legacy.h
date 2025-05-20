@@ -134,6 +134,10 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   void setEventTimingDelegate(
       RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
 
+  void setIntersectionObserverDelegate(
+      RuntimeSchedulerIntersectionObserverDelegate*
+          intersectionObserverDelegate) override;
+
  private:
   std::priority_queue<
       std::shared_ptr<Task>,

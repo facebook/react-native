@@ -7,6 +7,7 @@
 
 #include "NativeIntersectionObserver.h"
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
@@ -98,12 +99,16 @@ void NativeIntersectionObserver::connect(
     AsyncCallback<> notifyIntersectionObserversCallback) {
   auto& uiManager = getUIManagerFromRuntime(runtime);
   intersectionObserverManager_.connect(
-      uiManager, notifyIntersectionObserversCallback);
+      *RuntimeSchedulerBinding::getBinding(runtime)->getRuntimeScheduler(),
+      uiManager,
+      std::move(notifyIntersectionObserversCallback));
 }
 
 void NativeIntersectionObserver::disconnect(jsi::Runtime& runtime) {
   auto& uiManager = getUIManagerFromRuntime(runtime);
-  intersectionObserverManager_.disconnect(uiManager);
+  intersectionObserverManager_.disconnect(
+      *RuntimeSchedulerBinding::getBinding(runtime)->getRuntimeScheduler(),
+      uiManager);
 }
 
 std::vector<NativeIntersectionObserverEntry>
@@ -123,7 +128,7 @@ NativeIntersectionObserver::takeRecords(jsi::Runtime& runtime) {
 
 NativeIntersectionObserverEntry
 NativeIntersectionObserver::convertToNativeModuleEntry(
-    IntersectionObserverEntry entry,
+    const IntersectionObserverEntry& entry,
     jsi::Runtime& runtime) {
   RectAsTuple targetRect = {
       entry.targetRect.origin.x,

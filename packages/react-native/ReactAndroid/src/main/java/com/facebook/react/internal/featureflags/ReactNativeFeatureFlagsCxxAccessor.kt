@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a5cd689229d4e0c31070123045e84da>>
+ * @generated SignedSource<<5609be38b50c62ff5097b3571940f400>>
  */
 
 /**
@@ -39,6 +39,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
+  private var enableIntersectionObserverEventLoopIntegrationCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
@@ -236,6 +237,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableIOSViewClipToPaddingBox()
       enableIOSViewClipToPaddingBoxCache = cached
+    }
+    return cached
+  }
+
+  override fun enableIntersectionObserverEventLoopIntegration(): Boolean {
+    var cached = enableIntersectionObserverEventLoopIntegrationCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableIntersectionObserverEventLoopIntegration()
+      enableIntersectionObserverEventLoopIntegrationCache = cached
     }
     return cached
   }

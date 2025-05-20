@@ -204,6 +204,12 @@ void RuntimeScheduler_Legacy::setEventTimingDelegate(
   // No-op in the legacy scheduler
 }
 
+void RuntimeScheduler_Legacy::setIntersectionObserverDelegate(
+    RuntimeSchedulerIntersectionObserverDelegate*
+    /*intersectionObserverDelegate*/) {
+  // No-op in the legacy scheduler
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Legacy::scheduleWorkLoopIfNecessary() {

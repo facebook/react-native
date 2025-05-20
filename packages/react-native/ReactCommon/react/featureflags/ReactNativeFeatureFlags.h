@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4123bc6f44835c022a1a5238908674c>>
+ * @generated SignedSource<<83ef02f26eaf2d847efd7042ae6d1dfc>>
  */
 
 /**
@@ -133,6 +133,11 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
+   */
+  RN_EXPORT static bool enableIntersectionObserverEventLoopIntegration();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.

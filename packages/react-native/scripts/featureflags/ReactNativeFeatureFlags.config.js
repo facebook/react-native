@@ -247,6 +247,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableIntersectionObserverEventLoopIntegration: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-16',
+        description:
+          'Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableLayoutAnimationsOnAndroid: {
       defaultValue: false,
       metadata: {

@@ -57,10 +57,8 @@ class IntersectionObserver {
     return intersectionObserverId_;
   }
 
-  bool isTargetShadowNodeFamily(
-      const ShadowNodeFamily& shadowNodeFamily) const {
-    return std::addressof(*targetShadowNodeFamily_) ==
-        std::addressof(shadowNodeFamily);
+  ShadowNodeFamily::Shared getTargetShadowNodeFamily() const {
+    return targetShadowNodeFamily_;
   }
 
   std::vector<Float> getThresholds() const {
