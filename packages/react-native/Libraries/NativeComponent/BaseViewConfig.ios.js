@@ -232,14 +232,14 @@ const validAttributesForNonEventProps = {
   filter:
     NativeReactNativeFeatureFlags != null &&
     ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? true
+      ? (true as const)
       : {
           process: require('../StyleSheet/processFilter').default,
         },
   boxShadow:
     NativeReactNativeFeatureFlags != null &&
     ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? true
+      ? (true as const)
       : {
           process: require('../StyleSheet/processBoxShadow').default,
         },
@@ -369,7 +369,7 @@ const validAttributesForNonEventProps = {
   direction: true,
 
   style: ReactNativeStyleAttributes,
-};
+} as const;
 
 // Props for bubbling and direct events
 const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
