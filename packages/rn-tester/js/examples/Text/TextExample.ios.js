@@ -296,7 +296,11 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
     const marker = (
       <View style={{width: 20, height: 20, backgroundColor: 'gray'}} />
     );
-    const subtitleStyle = {fontSize: 16, marginTop: 8, fontWeight: 'bold'};
+    const subtitleStyle = {
+      fontSize: 16,
+      marginTop: 8,
+      fontWeight: 'bold' as const,
+    };
 
     return (
       <View>
@@ -1475,7 +1479,7 @@ const examples = [
   {
     title: 'Dynamic Type (iOS only)',
     render: function (): React.Node {
-      const boldStyle = {fontWeight: 'bold'};
+      const boldStyle = {fontWeight: 'bold' as const};
       const boxStyle = {
         borderWidth: 1,
         padding: 8,

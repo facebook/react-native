@@ -190,7 +190,7 @@ const transform /*: BabelTransformer['transform'] */ = ({
   try {
     const babelConfig = {
       // ES modules require sourceType='module' but OSS may not always want that
-      sourceType: 'unambiguous',
+      sourceType: 'unambiguous' as const,
       ...buildBabelConfig(filename, options, plugins),
       caller: {name: 'metro', bundler: 'metro', platform: options.platform},
       ast: true,

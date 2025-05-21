@@ -1117,7 +1117,11 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
   const marker = (
     <View style={{width: 20, height: 20, backgroundColor: 'gray'}} />
   );
-  const subtitleStyle = {fontSize: 16, marginTop: 8, fontWeight: 'bold'};
+  const subtitleStyle = {
+    fontSize: 16,
+    marginTop: 8,
+    fontWeight: 'bold' as const,
+  };
 
   return (
     <View>

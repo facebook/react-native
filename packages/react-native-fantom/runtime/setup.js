@@ -331,10 +331,10 @@ function runSpec(spec: Spec): TestCaseResult {
     spec.implementation();
     invokeHooks(spec.parentContext, 'afterEachHooks');
 
-    status = 'passed';
+    status = 'passed' as const;
   } catch (e) {
     error = e;
-    status = 'failed';
+    status = 'failed' as const;
   }
 
   result.status = status;

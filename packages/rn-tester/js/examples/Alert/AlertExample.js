@@ -240,7 +240,7 @@ const PromptOptions = () => {
     },
     {
       text: 'Custom Cancel',
-      style: 'cancel',
+      style: 'cancel' as const,
     },
   ];
 
@@ -397,7 +397,7 @@ export const examples = [
   },
   {
     title: 'Alert with many Buttons',
-    platform: 'ios',
+    platform: 'ios' as const,
     description: 'It can be used when more than three actions are required.',
     render(): React.Node {
       return <AlertWithManyButtons />;
@@ -405,7 +405,7 @@ export const examples = [
   },
   {
     title: 'Alert with cancelable={true}',
-    platform: 'android',
+    platform: 'android' as const,
     description:
       'By passing cancelable={false} prop to alerts on Android, they can be dismissed by tapping outside of the alert box.',
     render(): React.Node {
@@ -414,7 +414,7 @@ export const examples = [
   },
   {
     title: 'Alert with styles',
-    platform: 'ios',
+    platform: 'ios' as const,
     description:
       "Alert buttons can be styled. There are three button styles - 'default' | 'cancel' | 'destructive'.",
     render(): React.Node {
@@ -423,7 +423,7 @@ export const examples = [
   },
   {
     title: 'Alert with styles + preferred',
-    platform: 'ios',
+    platform: 'ios' as const,
     description:
       "Alert buttons with 'isPreferred' will be emphasized, even over cancel buttons",
     render(): React.Node {
@@ -432,14 +432,14 @@ export const examples = [
   },
   {
     title: 'Prompt Options',
-    platform: 'ios',
+    platform: 'ios' as const,
     render(): React.Node {
       return <PromptOptions />;
     },
   },
   {
     title: 'Prompt Types',
-    platform: 'ios',
+    platform: 'ios' as const,
     render(): React.Node {
       return <PromptTypes />;
     },
