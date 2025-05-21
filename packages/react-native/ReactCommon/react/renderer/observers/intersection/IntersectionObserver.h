@@ -40,6 +40,7 @@ class IntersectionObserver {
  public:
   IntersectionObserver(
       IntersectionObserverObserverId intersectionObserverId,
+      std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily,
       ShadowNodeFamily::Shared targetShadowNodeFamily,
       std::vector<Float> thresholds,
       std::optional<std::vector<Float>> rootThresholds = std::nullopt);
@@ -57,10 +58,8 @@ class IntersectionObserver {
     return intersectionObserverId_;
   }
 
-  bool isTargetShadowNodeFamily(
-      const ShadowNodeFamily& shadowNodeFamily) const {
-    return std::addressof(*targetShadowNodeFamily_) ==
-        std::addressof(shadowNodeFamily);
+  ShadowNodeFamily::Shared getTargetShadowNodeFamily() const {
+    return targetShadowNodeFamily_;
   }
 
   std::vector<Float> getThresholds() const {
@@ -83,6 +82,7 @@ class IntersectionObserver {
       double time);
 
   IntersectionObserverObserverId intersectionObserverId_;
+  std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily_;
   ShadowNodeFamily::Shared targetShadowNodeFamily_;
   std::vector<Float> thresholds_;
   std::optional<std::vector<Float>> rootThresholds_;

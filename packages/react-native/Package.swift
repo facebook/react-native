@@ -38,13 +38,15 @@ class RNTarget: BaseTarget {
   let dependencies: [String]
   let sources: [String]?
   let publicHeadersPath: String?
+  let defines: [CXXSetting]
 
-  init(name: String, path: String, searchPaths: [String] = [], linkedFrameworks: [String] = [], excludedPaths: [String] = [], dependencies: [String] = [], sources: [String]? = nil, publicHeadersPath: String? = ".") {
+  init(name: String, path: String, searchPaths: [String] = [], linkedFrameworks: [String] = [], excludedPaths: [String] = [], dependencies: [String] = [], sources: [String]? = nil, publicHeadersPath: String? = ".", defines: [CXXSetting] = []) {
     self.linkedFrameworks = linkedFrameworks
     self.excludedPaths = excludedPaths
     self.dependencies = dependencies
     self.sources = sources
     self.publicHeadersPath = publicHeadersPath
+    self.defines = defines
 
     super.init(name: name, path: path, searchPaths: searchPaths)
   }
@@ -65,7 +67,8 @@ class RNTarget: BaseTarget {
       dependencies: self.dependencies,
       sources: self.sources,
       publicHeadersPath: self.publicHeadersPath,
-      linkerSettings: linkerSettings
+      linkerSettings: linkerSettings,
+      defines: self.defines
     )
   }
 }
@@ -165,7 +168,11 @@ let reactJsInspectorNetwork = RNTarget(
   name: .reactJsInspectorNetwork,
   path: "ReactCommon/jsinspector-modern/network",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
-  dependencies: [.reactNativeDependencies]
+  dependencies: [.reactNativeDependencies],
+  defines: [
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
+  ]
 )
 
 let reactJsInspector = RNTarget(
@@ -173,7 +180,11 @@ let reactJsInspector = RNTarget(
   path: "ReactCommon/jsinspector-modern",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
   excludedPaths: ["tracing", "network", "tests"],
-  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .jsi, .reactJsInspectorTracing, .reactJsInspectorNetwork]
+  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .jsi, .reactJsInspectorTracing, .reactJsInspectorNetwork],
+  defines: [
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
+  ]
 )
 
 let reactCxxReact = RNTarget(
@@ -203,7 +214,10 @@ let reactHermes = RNTarget(
   path: "ReactCommon/hermes",
   searchPaths: ["ReactCommon", RuntimeExecutorPath],
   excludedPaths: ["inspector-modern/chrome/tests"],
-  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactJsiExecutor, .reactJsInspector, .reactJsInspectorTracing, .reactPerfLogger, .hermesPrebuilt, .jsi]
+  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactJsiExecutor, .reactJsInspector, .reactJsInspectorTracing, .reactPerfLogger, .hermesPrebuilt, .jsi],
+  defines: [
+    CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
+  ]
 )
 
 let reactPerformanceTimeline = RNTarget(
@@ -258,7 +272,7 @@ let reactTurboModuleCore = RNTarget(
   name: .reactTurboModuleCore,
   path: "ReactCommon/react/nativemodule/core",
   searchPaths: ["ReactCommon", CallInvokerPath, "ReactCommon/react/nativemodule/core", "ReactCommon/react/nativemodule/core/platform/ios"],
-  excludedPaths: ["platform/android"],
+  excludedPaths: ["platform/android", "iostests"],
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleBridging, .yoga]
 )
 
@@ -331,7 +345,7 @@ let reactRuntimeApple = RNTarget(
   path: "ReactCommon/react/runtime/platform/ios",
   searchPaths: ["ReactCommon", RuntimeExecutorPath, CallInvokerPath, ReactFBReactNativeSpecPath, FBLazyVectorPath],
   excludedPaths: ["ReactCommon/RCTJscInstance.mm"],
-  dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactRCTFabric, .reactCoreModules, .reactTurboModuleCore, .hermesPrebuilt]
+  dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactRCTFabric, .reactCoreModules, .reactTurboModuleCore, .hermesPrebuilt, .reactUtils]
 )
 
 let reactCore = RNTarget(
@@ -454,7 +468,7 @@ let reactRCTAnimation = RNTarget(
   name: .reactRCTAnimation,
   path: "Libraries/NativeAnimation",
   searchPaths: ["ReactCommon", ReactFBReactNativeSpecPath, FBLazyVectorPath, CallInvokerPath],
-  dependencies: [.rctTypesafety, .jsi, .reactFeatureFlags, .yoga, .reactTurboModuleCore]
+  dependencies: [.reactNativeDependencies, .rctTypesafety, .jsi, .reactFeatureFlags, .yoga, .reactTurboModuleCore, .reactUtils]
 )
 
 let reactRCTImage = RNTarget(
@@ -648,7 +662,8 @@ extension Target {
     dependencies: [String] = [],
     sources: [String]? = nil,
     publicHeadersPath: String? = ".",
-    linkerSettings: [LinkerSetting] = []
+    linkerSettings: [LinkerSetting] = [],
+    defines: [CXXSetting] = []
   ) -> Target {
     let dependencies = dependencies.map { Dependency.byNameItem(name: $0, condition: nil) }
     let excludes = excludedPaths
@@ -666,10 +681,9 @@ extension Target {
       [
         .unsafeFlags(["-std=c++20"]),
         .define("DEBUG", .when(configuration: .debug)),
+        .define("NDEBUG", .when(configuration: .release)),
         .define("USE_HERMES", to: "1"),
-        // TODO: T223727527 Why doesn't it pick up this when DEBUG is set??
-        .define("RCT_ENABLE_INSPECTOR", to: "1", .when(configuration: .debug)),
-      ] + cxxCommonHeaderPaths
+      ] + defines + cxxCommonHeaderPaths
 
     return .target(
       name: name,

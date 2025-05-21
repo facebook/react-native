@@ -68,8 +68,8 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
 
   void schedulerShouldSynchronouslyUpdateViewOnUIThread(facebook::react::Tag tag, const folly::dynamic &props) override
   {
-    // Does nothing.
-    // This delegate method is not currently used on iOS.
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSynchronouslyUpdateViewOnUIThread:tag props:props];
   }
 
  private:

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ca26f44c99c295a66e9bb4c0042b2a67>>
+ * @generated SignedSource<<425dc272cba3224430f9948e6773b30f>>
  */
 
 /**
@@ -216,6 +216,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
   }
 
+  bool enableIntersectionObserverEventLoopIntegration() override {
+    auto value = values_["enableIntersectionObserverEventLoopIntegration"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableIntersectionObserverEventLoopIntegration();
+  }
+
   bool enableLayoutAnimationsOnAndroid() override {
     auto value = values_["enableLayoutAnimationsOnAndroid"];
     if (!value.isNull()) {
@@ -241,15 +250,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableMainQueueModulesOnIOS();
-  }
-
-  bool enableModuleArgumentNSNullConversionIOS() override {
-    auto value = values_["enableModuleArgumentNSNullConversionIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableModuleArgumentNSNullConversionIOS();
   }
 
   bool enableNativeCSSParsing() override {

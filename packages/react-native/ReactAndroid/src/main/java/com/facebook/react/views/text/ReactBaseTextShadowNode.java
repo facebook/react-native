@@ -109,7 +109,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (child instanceof ReactRawTextShadowNode) {
         String childText = ((ReactRawTextShadowNode) child).getText();
         if (childText != null) {
-          sb.append(TextTransform.applyNonNull(childText, textAttributes.getTextTransform()));
+          sb.append(TextTransform.applyNonNull(childText, textAttributes.textTransform));
         }
       } else if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode(
@@ -264,8 +264,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
       // TextInput).
-      sb.append(
-          TextTransform.applyNonNull(text, textShadowNode.mTextAttributes.getTextTransform()));
+      sb.append(TextTransform.applyNonNull(text, textShadowNode.mTextAttributes.textTransform));
     }
 
     buildSpannedFromShadowNode(textShadowNode, sb, ops, null, supportsInlineViews, inlineViews, 0);
@@ -633,20 +632,21 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = PROP_TEXT_TRANSFORM)
   public void setTextTransform(@Nullable String textTransform) {
+    TextTransform textTransformEnum = TextTransform.UNSET;
     if (textTransform == null) {
-      mTextAttributes.setTextTransform(TextTransform.UNSET);
+      textTransformEnum = TextTransform.UNSET;
     } else if ("none".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.NONE);
+      textTransformEnum = TextTransform.NONE;
     } else if ("uppercase".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.UPPERCASE);
+      textTransformEnum = TextTransform.UPPERCASE;
     } else if ("lowercase".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.LOWERCASE);
+      textTransformEnum = TextTransform.LOWERCASE;
     } else if ("capitalize".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.CAPITALIZE);
+      textTransformEnum = TextTransform.CAPITALIZE;
     } else {
       FLog.w(ReactConstants.TAG, "Invalid textTransform: " + textTransform);
-      mTextAttributes.setTextTransform(TextTransform.UNSET);
     }
+    mTextAttributes.textTransform = textTransformEnum;
     markUpdated();
   }
 

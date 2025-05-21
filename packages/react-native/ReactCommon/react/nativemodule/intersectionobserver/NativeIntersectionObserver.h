@@ -22,6 +22,8 @@ using NativeIntersectionObserverObserveOptions =
     NativeIntersectionObserverNativeIntersectionObserverObserveOptions<
         // intersectionObserverId
         NativeIntersectionObserverIntersectionObserverId,
+        // rootShadowNode
+        jsi::Value,
         // targetShadowNode
         jsi::Object,
         // thresholds
@@ -97,7 +99,7 @@ class NativeIntersectionObserver
 
   static UIManager& getUIManagerFromRuntime(jsi::Runtime& runtime);
   static NativeIntersectionObserverEntry convertToNativeModuleEntry(
-      IntersectionObserverEntry entry,
+      const IntersectionObserverEntry& entry,
       jsi::Runtime& runtime);
 };
 

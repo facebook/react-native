@@ -225,6 +225,12 @@ void RuntimeScheduler_Modern::setEventTimingDelegate(
   eventTimingDelegate_ = eventTimingDelegate;
 }
 
+void RuntimeScheduler_Modern::setIntersectionObserverDelegate(
+    RuntimeSchedulerIntersectionObserverDelegate*
+        intersectionObserverDelegate) {
+  intersectionObserverDelegate_ = intersectionObserverDelegate;
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
@@ -347,8 +353,17 @@ void RuntimeScheduler_Modern::runEventLoopTick(
 void RuntimeScheduler_Modern::updateRendering() {
   TraceSection s("RuntimeScheduler::updateRendering");
 
+  // This is the integration of the Event Timing API in the Event Loop.
+  // See https://w3c.github.io/event-timing/#sec-modifications-HTML
   if (eventTimingDelegate_ != nullptr) {
     eventTimingDelegate_->dispatchPendingEventTimingEntries(
+        surfaceIdsWithPendingRenderingUpdates_);
+  }
+
+  // This is the integration of the Intersection Observer API in the Event Loop.
+  // See
+  if (intersectionObserverDelegate_ != nullptr) {
+    intersectionObserverDelegate_->updateIntersectionObservations(
         surfaceIdsWithPendingRenderingUpdates_);
   }
 

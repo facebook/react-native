@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b11650946b8961533c2d581919ad7beb>>
+ * @generated SignedSource<<93037428475b39d3f2c208e1326b3e86>>
  */
 
 /**
@@ -153,6 +153,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableIntersectionObserverEventLoopIntegration() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIntersectionObserverEventLoopIntegration");
+    return method(javaProvider_);
+  }
+
   bool enableLayoutAnimationsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnAndroid");
@@ -168,12 +174,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableMainQueueModulesOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMainQueueModulesOnIOS");
-    return method(javaProvider_);
-  }
-
-  bool enableModuleArgumentNSNullConversionIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableModuleArgumentNSNullConversionIOS");
     return method(javaProvider_);
   }
 
@@ -432,6 +432,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverEventLoopIntegration(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -445,11 +450,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
 bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing(
@@ -671,6 +671,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
       makeNativeMethod(
+        "enableIntersectionObserverEventLoopIntegration",
+        JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverEventLoopIntegration),
+      makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),
       makeNativeMethod(
@@ -679,9 +682,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableMainQueueModulesOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS),
-      makeNativeMethod(
-        "enableModuleArgumentNSNullConversionIOS",
-        JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS),
       makeNativeMethod(
         "enableNativeCSSParsing",
         JReactNativeFeatureFlagsCxxInterop::enableNativeCSSParsing),

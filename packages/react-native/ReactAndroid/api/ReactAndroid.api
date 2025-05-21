@@ -5062,13 +5062,13 @@ public final class com/facebook/react/uimanager/events/TouchEventType$Companion 
 	public final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
 }
 
-public final class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {
+public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {
 	public fun <init> ()V
-	public final fun applyLayoutUpdate (Landroid/view/View;IIII)V
-	public final fun deleteView (Landroid/view/View;Lcom/facebook/react/uimanager/layoutanimation/LayoutAnimationListener;)V
+	public fun applyLayoutUpdate (Landroid/view/View;IIII)V
+	public fun deleteView (Landroid/view/View;Lcom/facebook/react/uimanager/layoutanimation/LayoutAnimationListener;)V
 	public final fun initializeFromConfig (Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V
-	public final fun reset ()V
-	public final fun shouldAnimateLayout (Landroid/view/View;)Z
+	public fun reset ()V
+	public fun shouldAnimateLayout (Landroid/view/View;)Z
 }
 
 public abstract interface class com/facebook/react/uimanager/layoutanimation/LayoutAnimationListener {
@@ -6451,28 +6451,26 @@ public class com/facebook/react/views/text/TextAttributeProps {
 	public fun isUnderlineTextDecorationSet ()Z
 }
 
-public class com/facebook/react/views/text/TextAttributes {
+public final class com/facebook/react/views/text/TextAttributes {
 	public static final field DEFAULT_MAX_FONT_SIZE_MULTIPLIER F
 	public fun <init> ()V
-	public fun applyChild (Lcom/facebook/react/views/text/TextAttributes;)Lcom/facebook/react/views/text/TextAttributes;
-	public fun getAllowFontScaling ()Z
-	public fun getEffectiveFontSize ()I
-	public fun getEffectiveLetterSpacing ()F
-	public fun getEffectiveLineHeight ()F
-	public fun getEffectiveMaxFontSizeMultiplier ()F
-	public fun getFontSize ()F
-	public fun getHeightOfTallestInlineViewOrImage ()F
-	public fun getLetterSpacing ()F
-	public fun getLineHeight ()F
-	public fun getMaxFontSizeMultiplier ()F
-	public fun getTextTransform ()Lcom/facebook/react/views/text/TextTransform;
-	public fun setAllowFontScaling (Z)V
-	public fun setFontSize (F)V
-	public fun setHeightOfTallestInlineViewOrImage (F)V
-	public fun setLetterSpacing (F)V
-	public fun setLineHeight (F)V
-	public fun setMaxFontSizeMultiplier (F)V
-	public fun setTextTransform (Lcom/facebook/react/views/text/TextTransform;)V
+	public final fun applyChild (Lcom/facebook/react/views/text/TextAttributes;)Lcom/facebook/react/views/text/TextAttributes;
+	public final fun getAllowFontScaling ()Z
+	public final fun getEffectiveFontSize ()I
+	public final fun getEffectiveLetterSpacing ()F
+	public final fun getEffectiveLineHeight ()F
+	public final fun getEffectiveMaxFontSizeMultiplier ()F
+	public final fun getFontSize ()F
+	public final fun getHeightOfTallestInlineViewOrImage ()F
+	public final fun getLetterSpacing ()F
+	public final fun getLineHeight ()F
+	public final fun getMaxFontSizeMultiplier ()F
+	public final fun setAllowFontScaling (Z)V
+	public final fun setFontSize (F)V
+	public final fun setHeightOfTallestInlineViewOrImage (F)V
+	public final fun setLetterSpacing (F)V
+	public final fun setLineHeight (F)V
+	public final fun setMaxFontSizeMultiplier (F)V
 	public fun toString ()Ljava/lang/String;
 }
 

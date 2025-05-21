@@ -108,38 +108,21 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   reporter->reportMark("mark2", 2);
 
   reporter->reportMeasure("measure0", 0, 2);
-  reporter->reportMeasure("measure1", 0, 2, 4);
-  reporter->reportMeasure("measure2", 0, 0, std::nullopt, "mark1", "mark2");
-  reporter->reportMeasure("measure3", 0, 0, 5, "mark1");
-  reporter->reportMeasure(
-      "measure4", 1.5, 0, std::nullopt, std::nullopt, "mark2");
-
-  reporter->setTimeStampProvider([]() { return 3.5; });
-  reporter->reportMeasure("measure5", 0, 0, std::nullopt, "mark2");
+  reporter->reportMeasure("measure1", 0, 3);
 
   reporter->reportMark("mark3", 2.5);
-  reporter->reportMeasure("measure6", 2.0, 2.0);
-  reporter->reportMark("mark4", 2.1);
+  reporter->reportMeasure("measure2", 2.0, 2.0);
   reporter->reportMark("mark4", 3.0);
-  // Uses the last reported time for mark4
-  reporter->reportMeasure("measure7", 0, 0, std::nullopt, "mark1", "mark4");
 
   const auto entries = toSorted(reporter->getEntries());
 
   const std::vector<PerformanceEntry> expected = {
       PerformanceMark{{.name = "mark0", .startTime = 0, .duration = 0}},
       PerformanceMeasure{{.name = "measure0", .startTime = 0, .duration = 2}},
-      PerformanceMeasure{{.name = "measure1", .startTime = 0, .duration = 4}},
+      PerformanceMeasure{{.name = "measure1", .startTime = 0, .duration = 3}},
       PerformanceMark{{.name = "mark1", .startTime = 1, .duration = 0}},
-      PerformanceMeasure{{.name = "measure2", .startTime = 1, .duration = 1}},
-      PerformanceMeasure{{.name = "measure7", .startTime = 1, .duration = 2}},
-      PerformanceMeasure{{.name = "measure3", .startTime = 1, .duration = 5}},
-      PerformanceMeasure{
-          {.name = "measure4", .startTime = 1.5, .duration = 0.5}},
       PerformanceMark{{.name = "mark2", .startTime = 2, .duration = 0}},
-      PerformanceMeasure{{.name = "measure6", .startTime = 2, .duration = 0}},
-      PerformanceMeasure{{.name = "measure5", .startTime = 2, .duration = 1.5}},
-      PerformanceMark{{.name = "mark4", .startTime = 2.1, .duration = 0}},
+      PerformanceMeasure{{.name = "measure2", .startTime = 2, .duration = 0}},
       PerformanceMark{{.name = "mark3", .startTime = 2.5, .duration = 0}},
       PerformanceMark{{.name = "mark4", .startTime = 3, .duration = 0}}};
 
@@ -160,11 +143,9 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
   reporter->reportMark("mark2", 2);
 
   reporter->reportMeasure("common_name", 0, 2);
-  reporter->reportMeasure("measure1", 0, 2, 4);
-  reporter->reportMeasure("measure2", 0, 0, std::nullopt, "mark1", "mark2");
-  reporter->reportMeasure("measure3", 0, 0, 5, "mark1");
-  reporter->reportMeasure(
-      "measure4", 1.5, 0, std::nullopt, std::nullopt, "mark2");
+  reporter->reportMeasure("measure1", 0, 3);
+  reporter->reportMeasure("measure2", 1, 6);
+  reporter->reportMeasure("measure3", 1.5, 2);
 
   {
     const auto allEntries = toSorted(reporter->getEntries());
@@ -172,12 +153,11 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
         PerformanceMark{{.name = "common_name", .startTime = 0, .duration = 0}},
         PerformanceMeasure{
             {.name = "common_name", .startTime = 0, .duration = 2}},
-        PerformanceMeasure{{.name = "measure1", .startTime = 0, .duration = 4}},
+        PerformanceMeasure{{.name = "measure1", .startTime = 0, .duration = 3}},
         PerformanceMark{{.name = "mark1", .startTime = 1, .duration = 0}},
-        PerformanceMeasure{{.name = "measure2", .startTime = 1, .duration = 1}},
-        PerformanceMeasure{{.name = "measure3", .startTime = 1, .duration = 5}},
+        PerformanceMeasure{{.name = "measure2", .startTime = 1, .duration = 5}},
         PerformanceMeasure{
-            {.name = "measure4", .startTime = 1.5, .duration = 0.5}},
+            {.name = "measure3", .startTime = 1.5, .duration = 0.5}},
         PerformanceMark{{.name = "mark2", .startTime = 2, .duration = 0}}};
     ASSERT_EQ(expected, allEntries);
   }
@@ -198,11 +178,10 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
     const std::vector<PerformanceEntry> expected = {
         PerformanceMeasure{
             {.name = "common_name", .startTime = 0, .duration = 2}},
-        PerformanceMeasure{{.name = "measure1", .startTime = 0, .duration = 4}},
-        PerformanceMeasure{{.name = "measure2", .startTime = 1, .duration = 1}},
-        PerformanceMeasure{{.name = "measure3", .startTime = 1, .duration = 5}},
+        PerformanceMeasure{{.name = "measure1", .startTime = 0, .duration = 3}},
+        PerformanceMeasure{{.name = "measure2", .startTime = 1, .duration = 5}},
         PerformanceMeasure{
-            {.name = "measure4", .startTime = 1.5, .duration = 0.5}}};
+            {.name = "measure3", .startTime = 1.5, .duration = 0.5}}};
     ASSERT_EQ(expected, measures);
   }
 
@@ -233,11 +212,9 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearMarks) {
   reporter->reportMark("mark2", 2);
 
   reporter->reportMeasure("common_name", 0, 2);
-  reporter->reportMeasure("measure1", 0, 2, 4);
-  reporter->reportMeasure("measure2", 0, 0, std::nullopt, "mark1", "mark2");
-  reporter->reportMeasure("measure3", 0, 0, 5, "mark1");
-  reporter->reportMeasure(
-      "measure4", 1.5, 0, std::nullopt, std::nullopt, "mark2");
+  reporter->reportMeasure("measure1", 0, 3);
+  reporter->reportMeasure("measure2", 1, 6);
+  reporter->reportMeasure("measure3", 1.5, 2);
 
   reporter->clearEntries(PerformanceEntryType::MARK, "common_name");
 

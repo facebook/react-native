@@ -130,15 +130,46 @@ double NativePerformance::markWithResult(
 }
 
 std::tuple<double, double> NativePerformance::measureWithResult(
-    jsi::Runtime& rt,
+    jsi::Runtime& runtime,
     std::string name,
     double startTime,
     double endTime,
     std::optional<double> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
-  auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
-      name, startTime, endTime, duration, startMark, endMark);
+  auto reporter = PerformanceEntryReporter::getInstance();
+
+  DOMHighResTimeStamp startTimeValue = startTime;
+  // If the start time mark name is specified, it takes precedence over the
+  // startTime parameter, which can be set to 0 by default from JavaScript.
+  if (startMark) {
+    if (auto startMarkBufferedTime = reporter->getMarkTime(*startMark)) {
+      startTimeValue = *startMarkBufferedTime;
+    } else {
+      throw jsi::JSError(
+          runtime, "The mark '" + *startMark + "' does not exist.");
+    }
+  }
+
+  DOMHighResTimeStamp endTimeValue = endTime;
+  // If the end time mark name is specified, it takes precedence over the
+  // startTime parameter, which can be set to 0 by default from JavaScript.
+  if (endMark) {
+    if (auto endMarkBufferedTime = reporter->getMarkTime(*endMark)) {
+      endTimeValue = *endMarkBufferedTime;
+    } else {
+      throw jsi::JSError(
+          runtime, "The mark '" + *endMark + "' does not exist.");
+    }
+  } else if (duration) {
+    endTimeValue = startTimeValue + *duration;
+  } else if (endTimeValue < startTimeValue) {
+    // The end time is not specified, take the current time, according to the
+    // standard
+    endTimeValue = reporter->getCurrentTimeStamp();
+  }
+
+  auto entry = reporter->reportMeasure(name, startTime, endTime);
   return std::tuple{entry.startTime, entry.duration};
 }
 

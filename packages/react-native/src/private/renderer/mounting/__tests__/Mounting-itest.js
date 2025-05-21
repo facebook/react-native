@@ -231,125 +231,159 @@ describe('ViewFlattening', () => {
       'Insert {type: "View", parentNativeID: "J", index: 1, nativeID: "B"}',
     ]);
   });
-});
 
-test('parent-child switching from unflattened-flattened to flattened-unflattened', () => {
-  const root = Fantom.createRoot();
+  test('parent-child switching from unflattened-flattened to flattened-unflattened', () => {
+    const root = Fantom.createRoot();
 
-  Fantom.runTask(() => {
-    root.render(
-      <View
-        style={{
-          marginTop: 100,
-          opacity: 0,
-        }}>
+    Fantom.runTask(() => {
+      root.render(
         <View
           style={{
-            marginTop: 50,
-          }}>
-          <View
-            nativeID={'child'}
-            style={{height: 10, width: 10, backgroundColor: 'red'}}
-          />
-        </View>
-      </View>,
-    );
-  });
-
-  expect(root.takeMountingManagerLogs()).toEqual([
-    'Update {type: "RootView", nativeID: (root)}',
-    'Create {type: "View", nativeID: (N/A)}',
-    'Create {type: "View", nativeID: "child"}',
-    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
-    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
-  ]);
-
-  // force view to be flattened.
-  Fantom.runTask(() => {
-    root.render(
-      <View
-        style={{
-          marginTop: 100,
-        }}>
-        <View
-          style={{
-            marginTop: 50,
+            marginTop: 100,
             opacity: 0,
           }}>
           <View
-            nativeID={'child'}
-            style={{height: 10, width: 10, backgroundColor: 'red'}}
-          />
-        </View>
-      </View>,
-    );
-  });
+            style={{
+              marginTop: 50,
+            }}>
+            <View
+              nativeID={'child'}
+              style={{height: 10, width: 10, backgroundColor: 'red'}}
+            />
+          </View>
+        </View>,
+      );
+    });
 
-  expect(root.takeMountingManagerLogs()).toEqual([
-    'Update {type: "View", nativeID: "child"}',
-    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
-    'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
-    'Delete {type: "View", nativeID: (N/A)}',
-    'Create {type: "View", nativeID: (N/A)}',
-    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
-    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
-  ]);
-});
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "child"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
 
-test('parent-child switching from flattened-unflattened to unflattened-flattened', () => {
-  const root = Fantom.createRoot();
-
-  Fantom.runTask(() => {
-    root.render(
-      <View
-        style={{
-          marginTop: 100,
-        }}>
+    // force view to be flattened.
+    Fantom.runTask(() => {
+      root.render(
         <View
           style={{
-            marginTop: 50,
+            marginTop: 100,
+          }}>
+          <View
+            style={{
+              marginTop: 50,
+              opacity: 0,
+            }}>
+            <View
+              nativeID={'child'}
+              style={{height: 10, width: 10, backgroundColor: 'red'}}
+            />
+          </View>
+        </View>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "View", nativeID: "child"}',
+      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+      'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+      'Delete {type: "View", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
+  });
+
+  test('parent-child switching from flattened-unflattened to unflattened-flattened', () => {
+    const root = Fantom.createRoot();
+
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          style={{
+            marginTop: 100,
+          }}>
+          <View
+            style={{
+              marginTop: 50,
+              opacity: 0,
+            }}>
+            <View nativeID={'child'} style={{height: 10, width: 10}} />
+          </View>
+        </View>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "child"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
+
+    // force view to be flattened.
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          style={{
+            marginTop: 100,
             opacity: 0,
           }}>
-          <View nativeID={'child'} style={{height: 10, width: 10}} />
-        </View>
-      </View>,
-    );
+          <View
+            style={{
+              marginTop: 50,
+            }}>
+            <View nativeID={'child'} style={{height: 10, width: 10}} />
+          </View>
+        </View>,
+      );
+    });
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "View", nativeID: "child"}',
+      'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+      'Delete {type: "View", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    ]);
   });
 
-  expect(root.takeMountingManagerLogs()).toEqual([
-    'Update {type: "RootView", nativeID: (root)}',
-    'Create {type: "View", nativeID: (N/A)}',
-    'Create {type: "View", nativeID: "child"}',
-    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
-    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
-  ]);
+  test('#51378: view with rgba(255,255,255,127/256) background color is not flattened', () => {
+    const root = Fantom.createRoot();
 
-  // force view to be flattened.
-  Fantom.runTask(() => {
-    root.render(
-      <View
-        style={{
-          marginTop: 100,
-          opacity: 0,
-        }}>
+    Fantom.runTask(() => {
+      root.render(
         <View
           style={{
-            marginTop: 50,
-          }}>
-          <View nativeID={'child'} style={{height: 10, width: 10}} />
-        </View>
-      </View>,
+            width: 100,
+            height: 100,
+            backgroundColor: `rgba(255, 255, 255, ${127 / 256})`,
+          }}
+        />,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
+
+    expect(
+      root
+        .getRenderedOutput({props: ['width', 'height', 'backgroundColor']})
+        .toJSX(),
+    ).toEqual(
+      <rn-view
+        width="100.000000"
+        height="100.000000"
+        backgroundColor="rgba(255, 255, 255, 127)"
+      />,
     );
   });
-  expect(root.takeMountingManagerLogs()).toEqual([
-    'Update {type: "View", nativeID: "child"}',
-    'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
-    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
-    'Delete {type: "View", nativeID: (N/A)}',
-    'Create {type: "View", nativeID: (N/A)}',
-    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
-    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
-  ]);
 });
 
 describe('reconciliation of setNativeProps and React commit', () => {

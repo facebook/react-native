@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9556039e7dc730c92d0f10973a24f858>>
+ * @generated SignedSource<<867dd37ee489203791b933b87562fc67>>
  */
 
 /**
@@ -51,10 +51,10 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFixForParentTagDuringReparenting();
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSViewClipToPaddingBox();
+  bool enableIntersectionObserverEventLoopIntegration();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableMainQueueModulesOnIOS();
-  bool enableModuleArgumentNSNullConversionIOS();
   bool enableNativeCSSParsing();
   bool enableNetworkEventReporting();
   bool enableNewBackgroundAndBorderDrawables();
@@ -113,10 +113,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFixForParentTagDuringReparenting_;
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
+  std::atomic<std::optional<bool>> enableIntersectionObserverEventLoopIntegration_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableMainQueueModulesOnIOS_;
-  std::atomic<std::optional<bool>> enableModuleArgumentNSNullConversionIOS_;
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
   std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;

@@ -34,6 +34,9 @@ NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
 // Determines if a given image URL refers to a image in Home directory (~)
 BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 
+// Returns the current device's orientation
+UIDeviceOrientation RCTDeviceOrientation(void);
+
 // Whether the New Architecture is enabled or not
 BOOL RCTIsNewArchEnabled(void)
 {
@@ -299,16 +302,7 @@ void RCTExecuteOnMainQueue(dispatch_block_t block)
 // unless you know what you are doing.
 void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
 {
-  if (RCTIsMainQueue()) {
-    block();
-  } else {
-    if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
-      RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: Sync dispatches to the main queue can deadlock React Native.");
-    }
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      block();
-    });
-  }
+  RCTUnsafeExecuteOnMainQueueSyncWithError(block, @"Sync dispatches to the main queue can deadlock React Native.");
 }
 
 // Please do not use this method
@@ -317,14 +311,16 @@ void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *
 {
   if (RCTIsMainQueue()) {
     block();
-  } else {
-    if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
-      RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: %@", context);
-    }
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      block();
-    });
+    return;
   }
+
+  if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+    RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: %@", context);
+  }
+
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    block();
+  });
 }
 
 static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
@@ -332,19 +328,24 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   // The solution was borrowed from a post by Sophie Alpert:
   // https://sophiebits.com/2014/04/02/dispatch-once-initialization-on-the-main-thread
   // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
-  if (RCTIsMainQueue()) {
+  auto executeOnce = ^{
     dispatch_once(onceToken, block);
-  } else {
-    if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
-      if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
-        RCTLogError(
-            @"RCTUnsafeExecuteOnMainQueueOnceSync: Sync dispatches to the main queue can deadlock React Native.");
-      }
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        dispatch_once(onceToken, block);
-      });
-    }
+  };
+
+  if (RCTIsMainQueue()) {
+    executeOnce();
+    return;
   }
+
+  if (!DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+    return;
+  }
+
+  if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
+    RCTLogError(@"RCTUnsafeExecuteOnMainQueueOnceSync: Sync dispatches to the main queue can deadlock React Native.");
+  }
+
+  dispatch_sync(dispatch_get_main_queue(), executeOnce);
 }
 
 CGFloat RCTScreenScale(void)
@@ -383,21 +384,27 @@ CGFloat RCTFontSizeMultiplier(void)
   return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
 }
 
+UIDeviceOrientation RCTDeviceOrientation(void)
+{
+  return [[UIDevice currentDevice] orientation];
+}
+
 CGSize RCTScreenSize(void)
 {
-  // FIXME: this caches whatever the bounds were when it was first called, and then
-  // doesn't update when the device is rotated. We need to find another thread-
-  // safe way to get the screen size.
-
-  static CGSize size;
+  static CGSize portraitSize;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTUnsafeExecuteOnMainQueueSync(^{
-      size = [UIScreen mainScreen].bounds.size;
+      CGSize screenSize = [UIScreen mainScreen].bounds.size;
+      portraitSize = CGSizeMake(MIN(screenSize.width, screenSize.height), MAX(screenSize.width, screenSize.height));
     });
   });
 
-  return size;
+  if (UIDeviceOrientationIsLandscape(RCTDeviceOrientation())) {
+    return CGSizeMake(portraitSize.height, portraitSize.width);
+  } else {
+    return CGSizeMake(portraitSize.width, portraitSize.height);
+  }
 }
 
 CGSize RCTViewportSize(void)

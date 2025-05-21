@@ -27,10 +27,11 @@ surface. If the intersection triggers a state change, the notification is
 dispatched to the JavaScript observers.
 
 For the initial intersection notification (which is meant to report the state at
-the time of observation), this system checks if there are pending transactions
-for the given surface. If there are, we just wait for the transaction to be
-mounted and use the mount hook to report the initial notification. If there
-aren't, we dispatch the notification immediately.
+the time of observation), we run a step in the Event Loop as specified in the
+Web spec (via `RuntimeSchedulerIntersectionObserverDelegate`), where we check if
+there are pending transactions for the given surface. If there are, we just wait
+for the transaction to be mounted and use the mount hook to report the initial
+notification. If there aren't, we dispatch the notification immediately.
 
 ## 🔗 Relationship with other systems
 

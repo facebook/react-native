@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dda2c8e708159781036c15150a93bc8f>>
+ * @generated SignedSource<<0d1e4f0581e3aa90e18dc70ccee8a50a>>
  */
 
 /**
@@ -371,6 +371,24 @@ bool ReactNativeFeatureFlagsAccessor::enableIOSViewClipToPaddingBox() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::enableIntersectionObserverEventLoopIntegration() {
+  auto flagValue = enableIntersectionObserverEventLoopIntegration_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(19, "enableIntersectionObserverEventLoopIntegration");
+
+    flagValue = currentProvider_->enableIntersectionObserverEventLoopIntegration();
+    enableIntersectionObserverEventLoopIntegration_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::enableLayoutAnimationsOnAndroid() {
   auto flagValue = enableLayoutAnimationsOnAndroid_.load();
 
@@ -380,7 +398,7 @@ bool ReactNativeFeatureFlagsAccessor::enableLayoutAnimationsOnAndroid() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(19, "enableLayoutAnimationsOnAndroid");
+    markFlagAsAccessed(20, "enableLayoutAnimationsOnAndroid");
 
     flagValue = currentProvider_->enableLayoutAnimationsOnAndroid();
     enableLayoutAnimationsOnAndroid_ = flagValue;
@@ -398,7 +416,7 @@ bool ReactNativeFeatureFlagsAccessor::enableLayoutAnimationsOnIOS() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(20, "enableLayoutAnimationsOnIOS");
+    markFlagAsAccessed(21, "enableLayoutAnimationsOnIOS");
 
     flagValue = currentProvider_->enableLayoutAnimationsOnIOS();
     enableLayoutAnimationsOnIOS_ = flagValue;
@@ -416,28 +434,10 @@ bool ReactNativeFeatureFlagsAccessor::enableMainQueueModulesOnIOS() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(21, "enableMainQueueModulesOnIOS");
+    markFlagAsAccessed(22, "enableMainQueueModulesOnIOS");
 
     flagValue = currentProvider_->enableMainQueueModulesOnIOS();
     enableMainQueueModulesOnIOS_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::enableModuleArgumentNSNullConversionIOS() {
-  auto flagValue = enableModuleArgumentNSNullConversionIOS_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(22, "enableModuleArgumentNSNullConversionIOS");
-
-    flagValue = currentProvider_->enableModuleArgumentNSNullConversionIOS();
-    enableModuleArgumentNSNullConversionIOS_ = flagValue;
   }
 
   return flagValue.value();

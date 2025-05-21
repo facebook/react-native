@@ -126,4 +126,11 @@ void RuntimeScheduler::setEventTimingDelegate(
   return runtimeSchedulerImpl_->setEventTimingDelegate(eventTimingDelegate);
 }
 
+void RuntimeScheduler::setIntersectionObserverDelegate(
+    RuntimeSchedulerIntersectionObserverDelegate*
+        intersectionObserverDelegate) {
+  return runtimeSchedulerImpl_->setIntersectionObserverDelegate(
+      intersectionObserverDelegate);
+}
+
 } // namespace facebook::react

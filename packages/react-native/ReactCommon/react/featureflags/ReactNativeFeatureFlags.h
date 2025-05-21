@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c47af8c08fd28df8f937a2f24caf037d>>
+ * @generated SignedSource<<83ef02f26eaf2d847efd7042ae6d1dfc>>
  */
 
 /**
@@ -135,6 +135,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
+   * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
+   */
+  RN_EXPORT static bool enableIntersectionObserverEventLoopIntegration();
+
+  /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnAndroid();
@@ -148,11 +153,6 @@ class ReactNativeFeatureFlags {
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
    */
   RN_EXPORT static bool enableMainQueueModulesOnIOS();
-
-  /**
-   * Enable NSNull conversion when handling module arguments on iOS
-   */
-  RN_EXPORT static bool enableModuleArgumentNSNullConversionIOS();
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing

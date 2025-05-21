@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cac0bb7b4f25d369550064d60b8f48f6>>
+ * @generated SignedSource<<43590bc324e803ccf299e2a6ae6c5304>>
  */
 
 /**
@@ -145,6 +145,12 @@ public object ReactNativeFeatureFlags {
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
 
   /**
+   * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
+   */
+  @JvmStatic
+  public fun enableIntersectionObserverEventLoopIntegration(): Boolean = accessor.enableIntersectionObserverEventLoopIntegration()
+
+  /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
    */
   @JvmStatic
@@ -161,12 +167,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMainQueueModulesOnIOS(): Boolean = accessor.enableMainQueueModulesOnIOS()
-
-  /**
-   * Enable NSNull conversion when handling module arguments on iOS
-   */
-  @JvmStatic
-  public fun enableModuleArgumentNSNullConversionIOS(): Boolean = accessor.enableModuleArgumentNSNullConversionIOS()
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing

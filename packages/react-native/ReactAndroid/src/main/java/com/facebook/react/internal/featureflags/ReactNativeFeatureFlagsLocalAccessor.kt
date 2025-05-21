@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dce5453cd5fff3afb47e56335bf63443>>
+ * @generated SignedSource<<efc16fdb113176b932c0005118e7b48c>>
  */
 
 /**
@@ -43,10 +43,10 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
+  private var enableIntersectionObserverEventLoopIntegrationCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
-  private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
@@ -264,6 +264,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun enableIntersectionObserverEventLoopIntegration(): Boolean {
+    var cached = enableIntersectionObserverEventLoopIntegrationCache
+    if (cached == null) {
+      cached = currentProvider.enableIntersectionObserverEventLoopIntegration()
+      accessedFeatureFlags.add("enableIntersectionObserverEventLoopIntegration")
+      enableIntersectionObserverEventLoopIntegrationCache = cached
+    }
+    return cached
+  }
+
   override fun enableLayoutAnimationsOnAndroid(): Boolean {
     var cached = enableLayoutAnimationsOnAndroidCache
     if (cached == null) {
@@ -290,16 +300,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableMainQueueModulesOnIOS()
       accessedFeatureFlags.add("enableMainQueueModulesOnIOS")
       enableMainQueueModulesOnIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableModuleArgumentNSNullConversionIOS(): Boolean {
-    var cached = enableModuleArgumentNSNullConversionIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableModuleArgumentNSNullConversionIOS()
-      accessedFeatureFlags.add("enableModuleArgumentNSNullConversionIOS")
-      enableModuleArgumentNSNullConversionIOSCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<18fbe55eaefa17a3432b199121dedc62>>
+ * @generated SignedSource<<e4946f3e524cd7571fc62c721d611d19>>
  */
 
 /**
@@ -102,6 +102,10 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
 }
 
+bool ReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration() {
+  return getAccessor().enableIntersectionObserverEventLoopIntegration();
+}
+
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
   return getAccessor().enableLayoutAnimationsOnAndroid();
 }
@@ -112,10 +116,6 @@ bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
 
 bool ReactNativeFeatureFlags::enableMainQueueModulesOnIOS() {
   return getAccessor().enableMainQueueModulesOnIOS();
-}
-
-bool ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS() {
-  return getAccessor().enableModuleArgumentNSNullConversionIOS();
 }
 
 bool ReactNativeFeatureFlags::enableNativeCSSParsing() {
