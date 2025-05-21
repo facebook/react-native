@@ -26,60 +26,63 @@ using RuntimeExecutor =
     std::function<void(std::function<void(jsi::Runtime& runtime)>&& callback)>;
 
 /*
- * Executes a `callback` in a *synchronous* manner on the same thread using
- * given `RuntimeExecutor`.
- * Use this method when the caller needs to *be blocked* by executing the
- * `callback` and requires that the callback will be executed on the same
- * thread.
- * Example order of events (when not a sync call in runtimeExecutor callback):
+ * Executes a callback (i.e: `jsWork`) in a *synchronous* manner on the same
+ * thread using given `RuntimeExecutor`. Use this method when the caller needs
+ * to *be blocked* by executing the callback and requires that the callback will
+ * be executed on the same thread.
+ * Example order of events (when not a sync call in runtimeExecutor
+ * jsWork):
  * - [UI thread] Lock all mutexes at start
- * - [UI thread] runtimeCaptured.lock before callback
- * - [JS thread] Set runtimePtr in runtimeExecutor callback
- * - [JS thread] runtimeCaptured.unlock in runtimeExecutor callback
- * - [UI thread] Call callback
- * - [JS thread] callbackExecuted.lock in runtimeExecutor callback
- * - [UI thread] callbackExecuted.unlock after callback
- * - [UI thread] jsBlockExecuted.lock after callback
- * - [JS thread] jsBlockExecuted.unlock in runtimeExecutor callback
+ * - [UI thread] Schedule "runtime capture block" on js thread
+ * - [UI thread] Wait for runtime capture: runtimeCaptured.lock()
+ * - [JS thread] Capture runtime by setting runtimePtr
+ * - [JS thread] Signal runtime captured: runtimeCaptured.unlock()
+ * - [UI thread] Call jsWork using runtimePtr
+ * - [JS thread] Wait until jsWork done: jsWorkDone.lock()
+ * - [UI thread] Signal jsWork done: jsWorkDone.unlock()
+ * - [UI thread] Wait until runtime capture block finished:
+ *               runtimeCaptureBlockDone.lock()
+ * - [JS thread] Signal runtime capture block is finished:
+ *               runtimeCaptureBlockDone.unlock()
  */
 inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,
-    std::function<void(jsi::Runtime& runtime)>&& callback) noexcept {
+    std::function<void(jsi::Runtime& runtime)>&& jsWork) noexcept {
   // Note: We need the third mutex to get back to the main thread before
   // the lambda is finished (because all mutexes are allocated on the stack).
 
   std::mutex runtimeCaptured;
-  std::mutex callbackExecuted;
-  std::mutex jsBlockExecuted;
+  std::mutex jsWorkDone;
+  std::mutex runtimeCaptureBlockDone;
 
   runtimeCaptured.lock();
-  callbackExecuted.lock();
-  jsBlockExecuted.lock();
+  jsWorkDone.lock();
+  runtimeCaptureBlockDone.lock();
 
-  jsi::Runtime* runtimePtr;
+  jsi::Runtime* runtimePtr = nullptr;
 
   auto threadId = std::this_thread::get_id();
-
-  runtimeExecutor([&](jsi::Runtime& runtime) {
+  auto runtimeCaptureBlock = [&](jsi::Runtime& runtime) {
     runtimePtr = &runtime;
 
     if (threadId == std::this_thread::get_id()) {
       // In case of a synchronous call, we should unlock mutexes and return.
       runtimeCaptured.unlock();
-      jsBlockExecuted.unlock();
+      runtimeCaptureBlockDone.unlock();
       return;
     }
 
     runtimeCaptured.unlock();
-    // `callback` is called somewhere here.
-    callbackExecuted.lock();
-    jsBlockExecuted.unlock();
-  });
+    // `jsWork` is called somewhere here.
+    jsWorkDone.lock();
+    runtimeCaptureBlockDone.unlock();
+  };
+  runtimeExecutor(std::move(runtimeCaptureBlock));
 
   runtimeCaptured.lock();
-  callback(*runtimePtr);
-  callbackExecuted.unlock();
-  jsBlockExecuted.lock();
+  jsWork(*runtimePtr);
+  jsWorkDone.unlock();
+  runtimeCaptureBlockDone.lock();
 }
 
 template <typename DataT>
