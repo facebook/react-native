@@ -25,7 +25,7 @@ class MockEventLogger : public EventLogger {
   EventTag onEventStart(
       std::string_view /*name*/,
       SharedEventTarget /*target*/,
-      std::optional<DOMHighResTimeStamp> /*eventStartTimeStamp*/) override {
+      std::optional<HighResTimeStamp> /*eventStartTimeStamp*/) override {
     return EMPTY_EVENT_TAG;
   }
   void onEventProcessingStart(EventTag /*tag*/) override {}

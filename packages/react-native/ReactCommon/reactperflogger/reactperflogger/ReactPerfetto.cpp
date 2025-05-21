@@ -80,13 +80,17 @@ perfetto::Track getPerfettoWebPerfTrackAsync(const std::string& trackName) {
 }
 
 // Perfetto's monotonic clock seems to match the std::chrono::steady_clock we
-// use in JSExecutor::performanceNow on Android platforms, but if that
+// use in HighResTimeStamp on Android platforms, but if that
 // assumption is incorrect we may need to manually offset perfetto timestamps.
-uint64_t performanceNowToPerfettoTraceTime(double perfNowTime) {
-  if (perfNowTime == 0) {
-    return perfetto::TrackEvent::GetTraceTimeNs();
-  }
-  return static_cast<uint64_t>(perfNowTime * 1.e6);
+uint64_t highResTimeStampToPerfettoTraceTime(HighResTimeStamp timestamp) {
+  auto chronoDurationSinceSteadyClockEpoch =
+      timestamp.toChronoSteadyClockTimePoint().time_since_epoch();
+  auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
+      chronoDurationSinceSteadyClockEpoch);
+
+  return std::chrono::duration_cast<std::chrono::duration<std::uint64_t>>(
+             nanoseconds)
+      .count();
 }
 
 } // namespace facebook::react

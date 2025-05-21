@@ -11,39 +11,6 @@
 
 namespace facebook::react {
 
-using Clock = std::chrono::steady_clock;
-using TimePoint = std::chrono::time_point<Clock>;
-
-TEST(chronoToDOMHighResTimeStamp, withDurations) {
-  EXPECT_EQ(chronoToDOMHighResTimeStamp(std::chrono::nanoseconds(10)), 0.00001);
-  EXPECT_EQ(chronoToDOMHighResTimeStamp(std::chrono::microseconds(10)), 0.01);
-  EXPECT_EQ(chronoToDOMHighResTimeStamp(std::chrono::milliseconds(10)), 10.0);
-  EXPECT_EQ(chronoToDOMHighResTimeStamp(std::chrono::seconds(10)), 10000.0);
-  EXPECT_EQ(
-      chronoToDOMHighResTimeStamp(
-          std::chrono::seconds(1) + std::chrono::nanoseconds(20)),
-      1000.000020);
-}
-
-TEST(chronoToDOMHighResTimeStamp, withTimePoints) {
-  EXPECT_EQ(
-      chronoToDOMHighResTimeStamp(TimePoint(std::chrono::nanoseconds(10))),
-      0.00001);
-  EXPECT_EQ(
-      chronoToDOMHighResTimeStamp(TimePoint(std::chrono::microseconds(10))),
-      0.01);
-  EXPECT_EQ(
-      chronoToDOMHighResTimeStamp(TimePoint(std::chrono::milliseconds(10))),
-      10.0);
-  EXPECT_EQ(
-      chronoToDOMHighResTimeStamp(TimePoint(std::chrono::seconds(10))),
-      10000.0);
-  EXPECT_EQ(
-      chronoToDOMHighResTimeStamp(
-          TimePoint(std::chrono::seconds(1) + std::chrono::nanoseconds(20))),
-      1000.000020);
-}
-
 TEST(HighResDuration, CorrectlyConvertsToDOMHighResTimeStamp) {
   EXPECT_EQ(
       HighResDuration::fromNanoseconds(10).toDOMHighResTimeStamp(), 0.00001);
