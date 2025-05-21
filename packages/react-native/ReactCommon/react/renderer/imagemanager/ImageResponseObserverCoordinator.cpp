@@ -116,4 +116,13 @@ void ImageResponseObserverCoordinator::nativeImageResponseFailed(
   }
 }
 
+void ImageResponseObserverCoordinator::reset() const {
+  mutex_.lock();
+  status_ = ImageResponse::Status::Loading;
+  imageData_.reset();
+  imageMetadata_.reset();
+  imageErrorData_.reset();
+  mutex_.unlock();
+}
+
 } // namespace facebook::react
