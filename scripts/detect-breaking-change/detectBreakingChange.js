@@ -11,16 +11,31 @@
 
 const babel = require('@babel/core');
 const generate = require('@babel/generator').default;
-const {execSync} = require('child_process');
 const traverse = require('@babel/traverse').default;
 // $FlowFixMe[prop-missing]
 const {VISITOR_KEYS} = require('@babel/types');
+const {execSync} = require('child_process');
 
 const ROLLUP_PATH = 'packages/react-native/types/rollup.d.ts';
 const BREAKING = true;
 const NOT_BREAKING = false;
 
-async function detectBreakingChange() {
+export type Context = {
+  statementName: string,
+};
+
+type Cache = {
+  previous: {
+    internal: Array<BabelNodeExportNamedDeclaration>,
+    external: Array<BabelNodeExportNamedDeclaration>,
+  },
+  new: {
+    internal: Array<BabelNodeExportNamedDeclaration>,
+    external: Array<BabelNodeExportNamedDeclaration>,
+  },
+};
+
+function detectBreakingChange() {
   const rollups = getRollups();
   if (!rollups) {
     console.log('No rollups found');
@@ -54,16 +69,7 @@ function analyzeStatements(
       internal: [],
       external: [],
     },
-  } as {
-    previous: {
-      internal: Array<BabelNodeExportNamedDeclaration>,
-      external: Array<BabelNodeExportNamedDeclaration>,
-    },
-    new: {
-      internal: Array<BabelNodeExportNamedDeclaration>,
-      external: Array<BabelNodeExportNamedDeclaration>,
-    },
-  };
+  } as Cache;
 
   // ImportDeclaration should not have impact on the API
   // If the imported type is used, it will be compared in the next steps
@@ -124,7 +130,10 @@ function analyzeStatements(
     }
     const isDiff = didStatementChange(previousNode, newNode);
     if (isDiff) {
-      traverseSubtrees(previousNode, newNode);
+      const context: Context = {
+        statementName: name,
+      };
+      traverseSubtrees(previousNode, newNode, context);
       // Let analyze all statements and gather some logs
       console.log(`Breaking change detected for ${name}`);
       isBreaking = true;
@@ -136,8 +145,10 @@ function analyzeStatements(
   return NOT_BREAKING;
 }
 
-function getExportedNodesNames(nodes: Array<BabelNodeExportNamedDeclaration>) {
-  const nodeNames = [];
+function getExportedNodesNames(
+  nodes: Array<BabelNodeExportNamedDeclaration>,
+): Array<[string, BabelNodeExportNamedDeclaration]> {
+  const nodeNames: Array<[string, BabelNodeExportNamedDeclaration]> = [];
   nodes.forEach(node => {
     if (node.declaration) {
       const name = getExportedNodeName(node);
@@ -235,26 +246,32 @@ function getRollups(): null | {previousRollup: string, currentRollup: string} {
   return {previousRollup, currentRollup};
 }
 
-function traverseSubtrees(prevTree: BabelNode, newTree: BabelNode): boolean {
+function traverseSubtrees(
+  prevTree: BabelNode,
+  newTree: BabelNode,
+  ctx: Context,
+): void {
   if (prevTree.type !== newTree.type) {
-    return BREAKING;
+    return;
   }
 
   if (prevTree.type === undefined || prevTree.type === null) {
-    return NOT_BREAKING;
+    return;
   }
 
   // $FlowFixMe[incompatible-use]
   const keys = VISITOR_KEYS[prevTree.type];
 
   if (!keys) {
-    return NOT_BREAKING;
+    return;
   }
 
-  let isBreaking = false;
-
   if (prevTree.type === 'TSUnionType' && newTree.type === 'TSUnionType') {
-    analyzeLiteralUnionType(prevTree, newTree);
+    return analyzeLiteralUnionType(prevTree, newTree, ctx);
+  }
+
+  if (prevTree.type === 'TSTypeLiteral' && newTree.type === 'TSTypeLiteral') {
+    return analyzeTypeLiteral(prevTree, newTree, ctx);
   }
 
   for (const key of keys) {
@@ -269,42 +286,38 @@ function traverseSubtrees(prevTree: BabelNode, newTree: BabelNode): boolean {
     }
 
     if (Array.isArray(prevChild) && !Array.isArray(newChild)) {
-      return BREAKING;
+      return;
     }
 
     if (Array.isArray(prevChild)) {
-      isBreaking ||= traverseMultiple(prevChild, newChild);
+      traverseMultiple(prevChild, newChild, ctx);
     } else {
-      isBreaking ||= traverseSubtrees(prevChild, newChild);
+      traverseSubtrees(prevChild, newChild, ctx);
     }
   }
-
-  return isBreaking ? BREAKING : NOT_BREAKING;
 }
 
 function traverseMultiple(
   prevTrees: Array<BabelNode>,
   newTrees: Array<BabelNode>,
-): boolean {
+  ctx: Context,
+) {
   if (prevTrees.length !== newTrees.length) {
-    return BREAKING;
+    return;
   }
-
-  let isBreaking = false;
 
   for (let i = 0; i < prevTrees.length; i++) {
     const prevTree = prevTrees[i];
     const newTree = newTrees[i];
-    isBreaking ||= traverseSubtrees(prevTree, newTree);
+    traverseSubtrees(prevTree, newTree, ctx);
   }
-
-  return isBreaking ? BREAKING : NOT_BREAKING;
 }
 
 function analyzeLiteralUnionType(
   prevNode: BabelNodeTSUnionType,
   newNode: BabelNodeTSUnionType,
-): boolean {
+  ctx: Context,
+): void {
   const isPrevLiteralUnion = prevNode.types.every(
     type => type.type === 'TSLiteralType',
   );
@@ -312,8 +325,8 @@ function analyzeLiteralUnionType(
     type => type.type === 'TSLiteralType',
   );
 
-  if (isPrevLiteralUnion !== isNewLiteralUnion) return BREAKING;
-  if (!isPrevLiteralUnion && !isNewLiteralUnion) return NOT_BREAKING;
+  if (isPrevLiteralUnion !== isNewLiteralUnion) return;
+  if (!isPrevLiteralUnion && !isNewLiteralUnion) return;
 
   const prevLiteralTypes = prevNode.types.map(type =>
     String(type.literal?.value),
@@ -322,31 +335,164 @@ function analyzeLiteralUnionType(
     String(type.literal?.value),
   );
 
-  if (prevLiteralTypes.length > newLiteralTypes.length) return BREAKING;
+  if (prevLiteralTypes.length > newLiteralTypes.length) return;
   if (prevLiteralTypes.length === newLiteralTypes.length) {
     const typesSet = new Set(newLiteralTypes);
     prevLiteralTypes.forEach(type => {
       if (!typesSet.has(type)) {
-        console.log(`Could not match previous literal type: ${type}`);
-        return BREAKING;
+        console.log(
+          `Could not match previous literal type: ${type} in ${ctx.statementName}`,
+        );
+        return;
       }
     });
   } else {
     const typesSet = new Set(newLiteralTypes);
     prevLiteralTypes.forEach(type => {
       if (!typesSet.has(type)) {
-        console.log(`Could not match previous literal type: ${type}`);
-        return BREAKING;
+        console.log(
+          `Could not match previous literal type: ${type} in ${ctx.statementName}`,
+        );
+        return;
       }
       typesSet.delete(type);
     });
     const remainingTypes = Array.from(typesSet);
     remainingTypes.forEach(type => {
-      console.log(`New type added to the union: ${type}`);
+      console.log(
+        `New type added to the union: ${type} in ${ctx.statementName}`,
+      );
     });
   }
 
-  return NOT_BREAKING;
+  return;
+}
+
+function analyzeTypeLiteral(
+  prevNode: BabelNodeTSTypeLiteral,
+  newNode: BabelNodeTSTypeLiteral,
+  ctx: Context,
+): void {
+  type Pair = Map<'previous' | 'new', BabelNodeTSPropertySignature>;
+  const mapping: Array<[string, Pair]> = [];
+
+  const prevPropertySignatures = prevNode.members.filter(
+    member => member.type === 'TSPropertySignature',
+  );
+  const newPropertySignatures = newNode.members.filter(
+    member => member.type === 'TSPropertySignature',
+  );
+
+  const prevPropertiesMapping = getPropertiesMapping(prevPropertySignatures);
+  const newPropertiesMapping = Object.fromEntries(
+    getPropertiesMapping(newPropertySignatures),
+  );
+
+  // pair properties by names
+  for (const [name, prevProperty] of prevPropertiesMapping) {
+    if (newPropertiesMapping[name]) {
+      const pairMap: Pair = new Map();
+      pairMap.set('new', newPropertiesMapping[name]);
+      pairMap.set('previous', prevProperty);
+      delete newPropertiesMapping[name];
+    } else {
+      // might be removed or renamed
+      console.log(
+        `Property ${name} was not detected in new ${ctx.statementName}`,
+      );
+      // TODO: handle removed/renamed properties
+    }
+  }
+
+  // Check if there are new properties
+  const restNewProperties = Object.keys(newPropertiesMapping);
+  restNewProperties.forEach(name => {
+    // TODO: new properties may also be breaking
+    console.log(`New property ${name} added in ${ctx.statementName}`);
+  });
+
+  // compare matched properties
+  for (const [name, pair] of mapping) {
+    const previousProperty = pair.get('previous');
+    const newProperty = pair.get('new');
+
+    if (!previousProperty || !newProperty) {
+      throw new Error('Property in pair is undefined');
+    }
+
+    analyzeProperties(previousProperty, newProperty, ctx);
+  }
+
+  return;
+}
+
+function getPropertiesMapping(
+  properties: Array<BabelNodeTSPropertySignature>,
+): Array<[string, BabelNodeTSPropertySignature]> {
+  const propertiesMapping: Array<[string, BabelNodeTSPropertySignature]> = [];
+  properties.forEach(property => {
+    if (property.key.type === 'Identifier') {
+      propertiesMapping.push([property.key.name, property]);
+    }
+  });
+
+  return propertiesMapping;
+}
+
+function getNameFromExpression(node: BabelNodeExpression): string | null {
+  if (node.type === 'Identifier') {
+    return node.name;
+  }
+
+  return null;
+}
+
+function analyzeProperties(
+  prev: BabelNodeTSPropertySignature,
+  current: BabelNodeTSPropertySignature,
+  ctx: Context,
+) {
+  const prevName = getNameFromExpression(prev.key);
+  const currentName = getNameFromExpression(current.key);
+
+  if (prevName !== currentName && prevName !== null && currentName !== null) {
+    console.log(`Previous property ${prevName} renamed to ${currentName}`);
+  }
+
+  if (prev.optional !== current.optional) {
+    const name = getNameFromExpression(current.key);
+    if (prev.optional === true) {
+      // TODO: Removing optional property is breaking, for instance passing to a function:
+      // type A = {foo?: string}
+      // function foo(a: A) {...}
+      console.log(
+        `Optional property ${name ? `"${name}"` : ''} removed in ${ctx.statementName}`,
+      );
+    } else {
+      // TODO: Adding optional property is breaking, for instance passing a callback:
+      // type A = {foo: string}
+      // function foo(cb: (a: A) => void) {...}
+      console.log(
+        `Optional property "${name ? `"${name}"` : ''}" added in ${ctx.statementName}`,
+      );
+    }
+  }
+
+  // TODO: Determine what to do in this case
+  if (prev.readonly !== current.readonly) {
+    const name = getNameFromExpression(current.key);
+    if (prev.readonly === true) {
+      console.log(
+        `Readonly property ${name ? `"${name}"` : ''} removed in ${ctx.statementName}`,
+      );
+    } else {
+      console.log(
+        `Readonly property "${name ? `"${name}"` : ''}" added in ${ctx.statementName}`,
+      );
+    }
+  }
+
+  // TODO: Recurrent call
 }
 
 module.exports = detectBreakingChange;
