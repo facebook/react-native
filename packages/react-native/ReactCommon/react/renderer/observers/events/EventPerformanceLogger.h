@@ -32,7 +32,7 @@ class EventPerformanceLogger : public EventLogger,
   EventTag onEventStart(
       std::string_view name,
       SharedEventTarget target,
-      std::optional<HighResTimeStamp> eventStartTimeStamp =
+      std::optional<DOMHighResTimeStamp> eventStartTimeStamp =
           std::nullopt) override;
   void onEventProcessingStart(EventTag tag) override;
   void onEventProcessingEnd(EventTag tag) override;
@@ -47,15 +47,15 @@ class EventPerformanceLogger : public EventLogger,
 
   void shadowTreeDidMount(
       const RootShadowNode::Shared& rootShadowNode,
-      HighResTimeStamp mountTime) noexcept override;
+      double mountTime) noexcept override;
 
  private:
   struct EventEntry {
     std::string_view name;
     SharedEventTarget target{nullptr};
-    HighResTimeStamp startTime;
-    std::optional<HighResTimeStamp> processingStartTime;
-    std::optional<HighResTimeStamp> processingEndTime;
+    DOMHighResTimeStamp startTime;
+    std::optional<DOMHighResTimeStamp> processingStartTime;
+    std::optional<DOMHighResTimeStamp> processingEndTime;
 
     bool isWaitingForMount{false};
 

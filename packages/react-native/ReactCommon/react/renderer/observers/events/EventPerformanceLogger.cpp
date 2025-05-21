@@ -105,7 +105,7 @@ EventPerformanceLogger::EventPerformanceLogger(
 EventTag EventPerformanceLogger::onEventStart(
     std::string_view name,
     SharedEventTarget target,
-    std::optional<HighResTimeStamp> eventStartTimeStamp) {
+    std::optional<DOMHighResTimeStamp> eventStartTimeStamp) {
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return EMPTY_EVENT_TAG;
@@ -123,7 +123,7 @@ EventTag EventPerformanceLogger::onEventStart(
 
   // The event start timestamp may be provided by the caller in order to
   // specify the platform specific event start time.
-  HighResTimeStamp timeStamp = eventStartTimeStamp
+  DOMHighResTimeStamp timeStamp = eventStartTimeStamp
       ? *eventStartTimeStamp
       : performanceEntryReporter->getCurrentTimeStamp();
   {
@@ -213,7 +213,7 @@ void EventPerformanceLogger::dispatchPendingEventTimingEntries(
 
 void EventPerformanceLogger::shadowTreeDidMount(
     const RootShadowNode::Shared& rootShadowNode,
-    HighResTimeStamp mountTime) noexcept {
+    double mountTime) noexcept {
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return;

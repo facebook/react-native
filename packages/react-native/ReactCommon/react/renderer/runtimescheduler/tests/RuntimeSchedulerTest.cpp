@@ -12,7 +12,6 @@
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#include <chrono>
 #include <memory>
 #include <semaphore>
 #include <variant>
@@ -1258,9 +1257,8 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
       [startTime](const auto& entryDetails) {
         EXPECT_EQ(entryDetails.entryType, PerformanceEntryType::LONGTASK);
         EXPECT_EQ(
-            entryDetails.startTime.toDOMHighResTimeStamp(),
-            startTime.toDOMHighResTimeStamp() + 100);
-        EXPECT_EQ(entryDetails.duration, HighResDuration::fromMilliseconds(50));
+            entryDetails.startTime, startTime.toDOMHighResTimeStamp() + 100);
+        EXPECT_EQ(entryDetails.duration, 50);
       },
       entry);
 }
@@ -1346,10 +1344,8 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
       [startTime](const auto& entryDetails) {
         EXPECT_EQ(entryDetails.entryType, PerformanceEntryType::LONGTASK);
         EXPECT_EQ(
-            entryDetails.startTime.toDOMHighResTimeStamp(),
-            startTime.toDOMHighResTimeStamp() + 100);
-        EXPECT_EQ(
-            entryDetails.duration, HighResDuration::fromMilliseconds(120));
+            entryDetails.startTime, startTime.toDOMHighResTimeStamp() + 100);
+        EXPECT_EQ(entryDetails.duration, 120);
       },
       entry);
 }

@@ -8,7 +8,6 @@
 #pragma once
 
 #include <react/timing/primitives.h>
-
 #include <optional>
 #include <string>
 #include <variant>
@@ -29,8 +28,8 @@ enum class PerformanceEntryType {
 
 struct AbstractPerformanceEntry {
   std::string name;
-  HighResTimeStamp startTime;
-  HighResDuration duration = HighResDuration::zero();
+  DOMHighResTimeStamp startTime;
+  DOMHighResTimeStamp duration = 0;
 };
 
 struct PerformanceMark : AbstractPerformanceEntry {
@@ -44,8 +43,8 @@ struct PerformanceMeasure : AbstractPerformanceEntry {
 
 struct PerformanceEventTiming : AbstractPerformanceEntry {
   static constexpr PerformanceEntryType entryType = PerformanceEntryType::EVENT;
-  HighResTimeStamp processingStart;
-  HighResTimeStamp processingEnd;
+  DOMHighResTimeStamp processingStart;
+  DOMHighResTimeStamp processingEnd;
   PerformanceEntryInteractionId interactionId;
 };
 
@@ -58,13 +57,13 @@ struct PerformanceResourceTiming : AbstractPerformanceEntry {
   static constexpr PerformanceEntryType entryType =
       PerformanceEntryType::RESOURCE;
   /** Aligns with `startTime`. */
-  HighResTimeStamp fetchStart;
-  HighResTimeStamp requestStart;
-  std::optional<HighResTimeStamp> connectStart;
-  std::optional<HighResTimeStamp> connectEnd;
-  std::optional<HighResTimeStamp> responseStart;
+  DOMHighResTimeStamp fetchStart;
+  DOMHighResTimeStamp requestStart;
+  std::optional<DOMHighResTimeStamp> connectStart;
+  std::optional<DOMHighResTimeStamp> connectEnd;
+  std::optional<DOMHighResTimeStamp> responseStart;
   /** Aligns with `duration`. */
-  std::optional<HighResTimeStamp> responseEnd;
+  std::optional<DOMHighResTimeStamp> responseEnd;
   std::optional<int> responseStatus;
 };
 

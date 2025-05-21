@@ -283,14 +283,14 @@ void IntersectionObserverManager::updateIntersectionObservations(
 
 void IntersectionObserverManager::shadowTreeDidMount(
     const RootShadowNode::Shared& rootShadowNode,
-    HighResTimeStamp time) noexcept {
+    double time) noexcept {
   updateIntersectionObservations(
       rootShadowNode->getSurfaceId(), rootShadowNode.get(), time);
 }
 
 void IntersectionObserverManager::shadowTreeDidUnmount(
     SurfaceId surfaceId,
-    HighResTimeStamp time) noexcept {
+    double time) noexcept {
   updateIntersectionObservations(surfaceId, nullptr, time);
 }
 
@@ -299,7 +299,7 @@ void IntersectionObserverManager::shadowTreeDidUnmount(
 void IntersectionObserverManager::updateIntersectionObservations(
     SurfaceId surfaceId,
     const RootShadowNode* rootShadowNode,
-    HighResTimeStamp time) {
+    double time) {
   TraceSection s("IntersectionObserverManager::updateIntersectionObservations");
 
   std::vector<IntersectionObserverEntry> entries;

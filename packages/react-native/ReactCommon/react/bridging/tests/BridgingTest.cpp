@@ -784,7 +784,7 @@ TEST_F(BridgingTest, highResTimeStampTest) {
       bridging::fromJs<HighResTimeStamp>(
           rt, bridging::toJs(rt, timestamp), invoker));
 
-  auto duration = HighResDuration::fromNanoseconds(1);
+  HighResDuration duration = HighResDuration::fromNanoseconds(1);
   EXPECT_EQ(
       duration,
       bridging::fromJs<HighResDuration>(

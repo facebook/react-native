@@ -32,7 +32,7 @@ using NativePerformancePerformanceObserverObserveOptions =
         // buffered
         std::optional<bool>,
         // durationThreshold
-        std::optional<HighResDuration>>;
+        std::optional<double>>;
 
 template <>
 struct Bridging<PerformanceEntryType> {
@@ -52,21 +52,21 @@ struct Bridging<PerformanceEntryType> {
 struct NativePerformanceEntry {
   std::string name;
   PerformanceEntryType entryType;
-  HighResTimeStamp startTime;
-  HighResDuration duration;
+  DOMHighResTimeStamp startTime;
+  DOMHighResTimeStamp duration;
 
   // For PerformanceEventTiming only
-  std::optional<HighResTimeStamp> processingStart;
-  std::optional<HighResTimeStamp> processingEnd;
+  std::optional<DOMHighResTimeStamp> processingStart;
+  std::optional<DOMHighResTimeStamp> processingEnd;
   std::optional<PerformanceEntryInteractionId> interactionId;
 
   // For PerformanceResourceTiming only
-  std::optional<HighResTimeStamp> fetchStart;
-  std::optional<HighResTimeStamp> requestStart;
-  std::optional<HighResTimeStamp> connectStart;
-  std::optional<HighResTimeStamp> connectEnd;
-  std::optional<HighResTimeStamp> responseStart;
-  std::optional<HighResTimeStamp> responseEnd;
+  std::optional<DOMHighResTimeStamp> fetchStart;
+  std::optional<DOMHighResTimeStamp> requestStart;
+  std::optional<DOMHighResTimeStamp> connectStart;
+  std::optional<DOMHighResTimeStamp> connectEnd;
+  std::optional<DOMHighResTimeStamp> responseStart;
+  std::optional<DOMHighResTimeStamp> responseEnd;
   std::optional<int> responseStatus;
 };
 
@@ -86,23 +86,23 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 #pragma mark - DOM Performance (High Resolution Time) (https://www.w3.org/TR/hr-time-3/#dom-performance)
 
   // https://www.w3.org/TR/hr-time-3/#now-method
-  HighResTimeStamp now(jsi::Runtime& rt);
+  double now(jsi::Runtime& rt);
 
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 
   // https://w3c.github.io/user-timing/#mark-method
-  HighResTimeStamp markWithResult(
+  double markWithResult(
       jsi::Runtime& rt,
       std::string name,
-      std::optional<HighResTimeStamp> startTime);
+      std::optional<double> startTime);
 
   // https://w3c.github.io/user-timing/#measure-method
-  std::tuple<HighResTimeStamp, HighResDuration> measureWithResult(
+  std::tuple<double, double> measureWithResult(
       jsi::Runtime& rt,
       std::string name,
-      HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
-      std::optional<HighResDuration> duration,
+      double startTime,
+      double endTime,
+      std::optional<double> duration,
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
 

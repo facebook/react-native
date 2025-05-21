@@ -13,6 +13,8 @@
 #include <fbsystrace.h>
 #endif
 
+#include <chrono>
+
 namespace facebook::react {
 
 namespace {
@@ -28,9 +30,10 @@ std::string toPerfettoTrackName(
       : PERFETTO_DEFAULT_TRACK_NAME;
 }
 #elif defined(WITH_FBSYSTRACE)
-int64_t getDeltaNanos(HighResTimeStamp jsTime) {
-  auto now = HighResTimeStamp::now();
-  return (jsTime - now).toNanoseconds();
+int64_t getDeltaNanos(double jsTime) {
+  auto now = std::chrono::steady_clock::now().time_since_epoch();
+  return static_cast<int64_t>(jsTime * 1.e6) -
+      std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
 }
 #endif
 
@@ -48,8 +51,8 @@ int64_t getDeltaNanos(HighResTimeStamp jsTime) {
 
 /* static */ void ReactPerfettoLogger::measure(
     const std::string_view& eventName,
-    HighResTimeStamp startTime,
-    HighResTimeStamp endTime,
+    double startTime,
+    double endTime,
     const std::optional<std::string_view>& trackName) {
 #if defined(WITH_PERFETTO)
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
@@ -58,9 +61,9 @@ int64_t getDeltaNanos(HighResTimeStamp jsTime) {
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
         track,
-        highResTimeStampToPerfettoTraceTime(startTime));
+        performanceNowToPerfettoTraceTime(startTime));
     TRACE_EVENT_END(
-        "react-native", track, highResTimeStampToPerfettoTraceTime(endTime));
+        "react-native", track, performanceNowToPerfettoTraceTime(endTime));
   }
 #elif defined(WITH_FBSYSTRACE)
   static int cookie = 0;
@@ -74,7 +77,7 @@ int64_t getDeltaNanos(HighResTimeStamp jsTime) {
 
 /* static */ void ReactPerfettoLogger::mark(
     const std::string_view& eventName,
-    HighResTimeStamp startTime,
+    double startTime,
     const std::optional<std::string_view>& trackName) {
 #if defined(WITH_PERFETTO)
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
@@ -82,7 +85,7 @@ int64_t getDeltaNanos(HighResTimeStamp jsTime) {
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
         getPerfettoWebPerfTrackSync(toPerfettoTrackName(trackName)),
-        highResTimeStampToPerfettoTraceTime(startTime));
+        performanceNowToPerfettoTraceTime(startTime));
   }
 #elif defined(WITH_FBSYSTRACE)
   static const char* kTrackName = "# Web Performance: Markers";

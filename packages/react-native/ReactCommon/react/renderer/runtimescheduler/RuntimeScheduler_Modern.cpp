@@ -460,10 +460,12 @@ void RuntimeScheduler_Modern::reportLongTasks(
     return;
   }
 
-  if (longestPeriodWithoutYieldingOpportunity_ >=
-      LONG_TASK_DURATION_THRESHOLD) {
-    auto duration = endTime - startTime;
-    reporter->reportLongTask(startTime, duration);
+  auto checkedDurationMs =
+      longestPeriodWithoutYieldingOpportunity_.toDOMHighResTimeStamp();
+  if (checkedDurationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
+    auto durationMs = (endTime - startTime).toDOMHighResTimeStamp();
+    auto startTimeMs = startTime.toDOMHighResTimeStamp();
+    reporter->reportLongTask(startTimeMs, durationMs);
   }
 }
 

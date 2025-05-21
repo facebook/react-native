@@ -35,11 +35,11 @@ using FrontendChannel = std::function<void(std::string_view messageJson)>;
  */
 struct ResourceTimingData {
   std::string url;
-  HighResTimeStamp fetchStart;
-  HighResTimeStamp requestStart;
-  std::optional<HighResTimeStamp> connectStart;
-  std::optional<HighResTimeStamp> connectEnd;
-  std::optional<HighResTimeStamp> responseStart;
+  DOMHighResTimeStamp fetchStart;
+  DOMHighResTimeStamp requestStart;
+  std::optional<DOMHighResTimeStamp> connectStart;
+  std::optional<DOMHighResTimeStamp> connectEnd;
+  std::optional<DOMHighResTimeStamp> responseStart;
   std::optional<int> responseStatus;
 };
 

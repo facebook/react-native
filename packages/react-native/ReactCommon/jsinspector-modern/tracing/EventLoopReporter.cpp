@@ -8,7 +8,6 @@
 #include "EventLoopReporter.h"
 
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
-#include <react/timing/primitives.h>
 #include "PerformanceTracer.h"
 #endif
 

@@ -10,8 +10,10 @@
 #include "RAMBundleRegistry.h"
 
 #include <jsinspector-modern/ReactCdp.h>
+#include <react/timing/primitives.h>
 
 #include <array>
+#include <chrono>
 
 namespace facebook::react {
 
@@ -27,8 +29,8 @@ std::string JSExecutor::getSyntheticBundlePath(
   return buffer.data();
 }
 
-HighResTimeStamp JSExecutor::performanceNow() {
-  return HighResTimeStamp::now();
+double JSExecutor::performanceNow() {
+  return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
 }
 
 jsinspector_modern::RuntimeTargetDelegate&

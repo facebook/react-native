@@ -10,7 +10,6 @@
 #ifdef WITH_PERFETTO
 
 #include <perfetto.h>
-#include <react/timing/primitives.h>
 #include <reactperflogger/ReactPerfettoCategories.h>
 #include <string>
 
@@ -21,7 +20,7 @@ void initializePerfetto();
 perfetto::Track getPerfettoWebPerfTrackSync(const std::string& trackName);
 perfetto::Track getPerfettoWebPerfTrackAsync(const std::string& trackName);
 
-uint64_t highResTimeStampToPerfettoTraceTime(HighResTimeStamp timestamp);
+uint64_t performanceNowToPerfettoTraceTime(double perfNowTime);
 
 } // namespace facebook::react
 

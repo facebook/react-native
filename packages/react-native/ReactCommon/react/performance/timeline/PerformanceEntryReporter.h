@@ -27,8 +27,7 @@ constexpr size_t EVENT_BUFFER_SIZE = 150;
 constexpr size_t LONG_TASK_BUFFER_SIZE = 200;
 constexpr size_t RESOURCE_TIMING_BUFFER_SIZE = 250;
 
-constexpr HighResDuration LONG_TASK_DURATION_THRESHOLD =
-    HighResDuration::fromMilliseconds(50);
+constexpr DOMHighResTimeStamp LONG_TASK_DURATION_THRESHOLD_MS = 50.0;
 
 class PerformanceEntryReporter {
  public:
@@ -67,9 +66,9 @@ class PerformanceEntryReporter {
       PerformanceEntryType entryType,
       const std::string& entryName);
 
-  HighResTimeStamp getCurrentTimeStamp() const;
+  DOMHighResTimeStamp getCurrentTimeStamp() const;
 
-  void setTimeStampProvider(std::function<HighResTimeStamp()> provider) {
+  void setTimeStampProvider(std::function<DOMHighResTimeStamp()> provider) {
     timeStampProvider_ = std::move(provider);
   }
 
@@ -81,38 +80,37 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
-  std::optional<HighResTimeStamp> getMarkTime(
-      const std::string& markName) const;
+  std::optional<double> getMarkTime(const std::string& markName) const;
 
   PerformanceMark reportMark(
       const std::string& name,
-      const std::optional<HighResTimeStamp>& startTime = std::nullopt);
+      const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
 
   PerformanceMeasure reportMeasure(
       const std::string& name,
-      HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
+      double startTime,
+      double endTime,
       const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
           trackMetadata = std::nullopt);
 
   void reportEvent(
       std::string name,
-      HighResTimeStamp startTime,
-      HighResDuration duration,
-      HighResTimeStamp processingStart,
-      HighResTimeStamp processingEnd,
+      double startTime,
+      double duration,
+      double processingStart,
+      double processingEnd,
       uint32_t interactionId);
 
-  void reportLongTask(HighResTimeStamp startTime, HighResDuration duration);
+  void reportLongTask(double startTime, double duration);
 
   PerformanceResourceTiming reportResourceTiming(
       const std::string& url,
-      HighResTimeStamp fetchStart,
-      HighResTimeStamp requestStart,
-      std::optional<HighResTimeStamp> connectStart,
-      std::optional<HighResTimeStamp> connectEnd,
-      HighResTimeStamp responseStart,
-      HighResTimeStamp responseEnd,
+      DOMHighResTimeStamp fetchStart,
+      DOMHighResTimeStamp requestStart,
+      std::optional<DOMHighResTimeStamp> connectStart,
+      std::optional<DOMHighResTimeStamp> connectEnd,
+      DOMHighResTimeStamp responseStart,
+      DOMHighResTimeStamp responseEnd,
       const std::optional<int>& responseStatus);
 
  private:
@@ -128,7 +126,7 @@ class PerformanceEntryReporter {
 
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  std::function<HighResTimeStamp()> timeStampProvider_ = nullptr;
+  std::function<double()> timeStampProvider_ = nullptr;
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
