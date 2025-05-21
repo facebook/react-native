@@ -47,7 +47,7 @@ type CircleBlockProps = $ReadOnly<{
 
 function CircleBlock({children, style}: CircleBlockProps): React.Node {
   const circleStyle = {
-    flexDirection: 'row' as const,
+    flexDirection: 'row',
     backgroundColor: '#f6f7f8',
     borderWidth: 0.5,
     borderColor: '#d6d7da',

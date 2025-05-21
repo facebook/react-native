@@ -541,10 +541,10 @@ const userSelectToSelectableMap = {
 };
 
 const verticalAlignToTextAlignVerticalMap = {
-  auto: 'auto' as const,
-  top: 'top' as const,
-  bottom: 'bottom' as const,
-  middle: 'center' as const,
+  auto: 'auto',
+  top: 'top',
+  bottom: 'bottom',
+  middle: 'center',
 };
 
 export default TextImpl;

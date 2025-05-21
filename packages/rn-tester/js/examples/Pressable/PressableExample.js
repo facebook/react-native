@@ -428,7 +428,7 @@ const examples = [
     title: 'Pressable with Ripple and Animated child',
     description:
       ('Pressable can have an AnimatedComponent as a direct child.': string),
-    platform: 'android' as const,
+    platform: 'android',
     render: function (): React.Node {
       const mScale = new Animated.Value(1);
       Animated.timing(mScale, {
@@ -455,10 +455,10 @@ const examples = [
     title: 'Pressable with custom Ripple',
     description:
       ("Pressable can specify ripple's radius, color and borderless params": string),
-    platform: 'android' as const,
+    platform: 'android',
     render: function (): React.Node {
       const nativeFeedbackButton = {
-        textAlign: 'center' as const,
+        textAlign: 'center',
         margin: 10,
       };
       return (
@@ -543,7 +543,7 @@ const examples = [
     render: function (): React.Node {
       return <ForceTouchExample />;
     },
-    platform: 'ios' as const,
+    platform: 'ios',
   },
   {
     title: 'Pressable Hit Slop',

@@ -30,23 +30,23 @@ export type NativeTextProps = $ReadOnly<{
 
 const textViewConfig = {
   validAttributes: {
-    isHighlighted: true as const,
-    isPressable: true as const,
-    numberOfLines: true as const,
-    ellipsizeMode: true as const,
-    allowFontScaling: true as const,
-    dynamicTypeRamp: true as const,
-    maxFontSizeMultiplier: true as const,
-    disabled: true as const,
-    selectable: true as const,
-    selectionColor: true as const,
-    adjustsFontSizeToFit: true as const,
-    minimumFontScale: true as const,
-    textBreakStrategy: true as const,
-    onTextLayout: true as const,
-    dataDetectorType: true as const,
-    android_hyphenationFrequency: true as const,
-    lineBreakStrategyIOS: true as const,
+    isHighlighted: true,
+    isPressable: true,
+    numberOfLines: true,
+    ellipsizeMode: true,
+    allowFontScaling: true,
+    dynamicTypeRamp: true,
+    maxFontSizeMultiplier: true,
+    disabled: true,
+    selectable: true,
+    selectionColor: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
+    textBreakStrategy: true,
+    onTextLayout: true,
+    dataDetectorType: true,
+    android_hyphenationFrequency: true,
+    lineBreakStrategyIOS: true,
   },
   directEventTypes: {
     topTextLayout: {
@@ -58,9 +58,9 @@ const textViewConfig = {
 
 const virtualTextViewConfig = {
   validAttributes: {
-    isHighlighted: true as const,
-    isPressable: true as const,
-    maxFontSizeMultiplier: true as const,
+    isHighlighted: true,
+    isPressable: true,
+    maxFontSizeMultiplier: true,
   },
   uiViewClassName: 'RCTVirtualText',
 };

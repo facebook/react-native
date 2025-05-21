@@ -97,10 +97,9 @@ type HermesEngineSourceType =
 */
 
 const HermesEngineSourceTypes = {
-  LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball' as const,
-  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball' as const,
-  DOWNLOAD_PREBUILT_NIGHTLY_TARBALL:
-    'download_prebuilt_nightly_tarball' as const,
+  LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
+  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
+  DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
 };
 
 /**

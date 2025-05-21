@@ -40,11 +40,11 @@ test('passes for identical configs', () => {
     },
     uiViewClassName: 'RCTView',
     validAttributes: {
-      collapsable: true as const,
-      nativeID: true as const,
+      collapsable: true,
+      nativeID: true,
       style: {
-        height: true as const,
-        width: true as const,
+        height: true,
+        width: true,
       },
     },
   };
@@ -70,11 +70,11 @@ test('passes for identical configs', () => {
     },
     uiViewClassName: 'RCTView',
     validAttributes: {
-      collapsable: true as const,
-      nativeID: true as const,
+      collapsable: true,
+      nativeID: true,
       style: {
-        height: true as const,
-        width: true as const,
+        height: true,
+        width: true,
       },
     },
   };
@@ -190,11 +190,11 @@ test('allows static viewconfigs to have more properties than native viewconfigs'
   const staticViewConfig = {
     uiViewClassName: 'RCTView',
     validAttributes: {
-      collapsable: true as const,
-      nativeID: true as const,
+      collapsable: true,
+      nativeID: true,
       style: {
-        height: true as const,
-        width: true as const,
+        height: true,
+        width: true,
       },
     },
   };

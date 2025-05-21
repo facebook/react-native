@@ -74,8 +74,8 @@ async function processRNTesterCommandResult(
       parsed = JSON.parse(line);
     } catch {
       parsed = {
-        type: 'console-log' as const,
-        level: 'info' as const,
+        type: 'console-log',
+        level: 'info',
         message: line,
       };
     }
