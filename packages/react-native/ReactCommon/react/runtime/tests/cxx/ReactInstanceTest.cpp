@@ -417,9 +417,10 @@ TEST_F(ReactInstanceTest, testSetIntervalWithInvalidArgs) {
   EXPECT_EQ(
       getErrorMessage("setInterval();"),
       "setInterval must be called with at least one argument (the function to call).");
-  EXPECT_EQ(
-      getErrorMessage("setInterval('invalid', 100);"),
-      "The first argument to setInterval must be a function.");
+
+  auto val = eval("setInterval('invalid', 100)");
+  expectNoError();
+  EXPECT_EQ(val.asNumber(), 0);
 }
 
 TEST_F(ReactInstanceTest, testClearInterval) {
