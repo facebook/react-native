@@ -238,6 +238,20 @@ class HighResTimeStamp {
         .toDOMHighResTimeStamp();
   }
 
+  // This method is expected to be used only when converting time stamps from
+  // external systems.
+  static constexpr HighResTimeStamp fromChronoSteadyClockTimePoint(
+      std::chrono::steady_clock::time_point chronoTimePoint) {
+    return HighResTimeStamp(chronoTimePoint);
+  }
+
+  // This method is provided for convenience, if you need to convert
+  // HighResTimeStamp to some common epoch with time stamps from other sources.
+  constexpr std::chrono::steady_clock::time_point toChronoSteadyClockTimePoint()
+      const {
+    return chronoTimePoint_;
+  }
+
   constexpr bool operator==(const HighResTimeStamp& rhs) const {
     return chronoTimePoint_ == rhs.chronoTimePoint_;
   }

@@ -128,4 +128,11 @@ TEST(HighResTimeStamp, ComparisonOperators) {
   EXPECT_FALSE(now >= later);
 }
 
+TEST(HighResTimeStamp, SteadyClockTimePointConversion) {
+  [[maybe_unused]] auto timestamp =
+      HighResTimeStamp::now().toChronoSteadyClockTimePoint();
+
+  EXPECT_TRUE(decltype(timestamp)::clock::is_steady);
+}
+
 } // namespace facebook::react
