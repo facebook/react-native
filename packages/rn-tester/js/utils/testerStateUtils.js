@@ -19,8 +19,8 @@ import type {
 import RNTesterList from './RNTesterList';
 
 export const Screens = {
-  COMPONENTS: 'components',
-  APIS: 'apis',
+  COMPONENTS: 'components' as const,
+  APIS: 'apis' as const,
   PLAYGROUNDS: 'playgrounds',
 };
 
@@ -106,14 +106,14 @@ export const getExamplesListWithRecentlyUsed = ({
     ],
     [Screens.APIS]: [
       {
-        key: 'RECENT_APIS',
+        key: 'RECENT_APIS' as const,
         data: recentlyUsedAPIs,
-        title: 'Recently viewed',
+        title: 'Recently viewed' as const,
       },
       {
-        key: 'APIS',
+        key: 'APIS' as const,
         data: apis.sort((a, b) => a.module.title.localeCompare(b.module.title)),
-        title: 'APIs',
+        title: 'APIs' as const,
       },
     ],
   };

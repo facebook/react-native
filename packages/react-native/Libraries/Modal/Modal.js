@@ -279,7 +279,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
           : this.props.backdropColor ?? 'white',
     };
 
-    let animationType = this.props.animationType || 'none';
+    let animationType = this.props.animationType || ('none' as const);
 
     let presentationStyle = this.props.presentationStyle;
     if (!presentationStyle) {

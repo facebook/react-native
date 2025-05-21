@@ -977,14 +977,14 @@ function buildNativeModulesDiff(
   );
 
   const newType = {
-    type: 'ObjectTypeAnnotation',
+    type: 'ObjectTypeAnnotation' as const,
     properties: [
       ...newerNativeModule.spec.methods,
       ...newerNativeModule.spec.eventEmitters,
     ],
   };
   const oldType = {
-    type: 'ObjectTypeAnnotation',
+    type: 'ObjectTypeAnnotation' as const,
     properties: [
       ...olderNativeModule.spec.methods,
       ...olderNativeModule.spec.eventEmitters,
@@ -1074,13 +1074,13 @@ function buildNativeComponentsDiff(
         );
 
         const newCommands = {
-          type: 'ObjectTypeAnnotation',
+          type: 'ObjectTypeAnnotation' as const,
           properties: [command],
         };
         const oldCommands =
           oldCommand != null
             ? {
-                type: 'ObjectTypeAnnotation',
+                type: 'ObjectTypeAnnotation' as const,
                 properties: [oldCommand],
               }
             : null;
@@ -1124,7 +1124,7 @@ function buildNativeComponentsDiff(
       // We have to do this to remove the .defaults from the props and get it into
       // standard JavaScript shapes.
       const newConvertedProps = {
-        type: 'ObjectTypeAnnotation',
+        type: 'ObjectTypeAnnotation' as const,
         properties: newerComponent.props.map(prop => ({
           name: prop.name,
           optional: prop.optional,
@@ -1132,7 +1132,7 @@ function buildNativeComponentsDiff(
         })),
       };
       const oldConvertedProps = {
-        type: 'ObjectTypeAnnotation',
+        type: 'ObjectTypeAnnotation' as const,
         properties: olderComponent.props.map(prop => ({
           name: prop.name,
           optional: prop.optional,
