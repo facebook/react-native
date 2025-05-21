@@ -267,7 +267,9 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithoutDelay) {
   EXPECT_CALL(
       *mockRegistry_,
       createTimer(_, 0)); // If delay is not provided, it should use 0
-  eval("setTimeout(() => {});");
+  auto val = eval("setTimeout(() => {});");
+  expectNoError();
+  EXPECT_EQ(val.asNumber(), 1); // First timer id should start at 1
 }
 
 TEST_F(ReactInstanceTest, testSetTimeoutWithPassThroughArgs) {
