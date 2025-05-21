@@ -42,7 +42,7 @@ function getCDPLogPrefix(destination: CDPMessageDestination): string {
   );
 }
 
-export default class CDPMessagesLogging {
+export default class CdpDebugLogging {
   #cdpMessagesLoggingBatchingFn: {
     [CDPMessageDestination]: (message: string) => void,
   } = {
