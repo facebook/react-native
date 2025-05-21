@@ -557,7 +557,7 @@ void bindNativePerformanceNow(Runtime& runtime) {
              const jsi::Value&,
              const jsi::Value* args,
              size_t /*count*/) {
-            return HighResTimeStamp::now().toDOMHighResTimeStamp();
+            return JSExecutor::performanceNow().toDOMHighResTimeStamp();
           }));
 }
 

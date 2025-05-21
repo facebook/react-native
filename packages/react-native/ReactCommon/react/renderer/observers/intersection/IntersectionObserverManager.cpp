@@ -98,7 +98,7 @@ void IntersectionObserverManager::observe(
 
     if (!hasPendingTransactions) {
       auto entry = observer->updateIntersectionObservation(
-          *rootShadowNode, HighResTimeStamp::now());
+          *rootShadowNode, JSExecutor::performanceNow());
       if (entry) {
         {
           std::unique_lock lock(pendingEntriesMutex_);
@@ -266,7 +266,7 @@ void IntersectionObserverManager::updateIntersectionObservations(
     }
 
     auto entry = observer->updateIntersectionObservation(
-        *rootShadowNode, HighResTimeStamp::now());
+        *rootShadowNode, JSExecutor::performanceNow());
     if (entry) {
       {
         std::unique_lock lock(pendingEntriesMutex_);

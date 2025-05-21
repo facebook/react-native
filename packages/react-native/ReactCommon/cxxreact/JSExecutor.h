@@ -139,6 +139,8 @@ class RN_EXPORT JSExecutor {
       uint32_t bundleId,
       const std::string& bundlePath);
 
+  static HighResTimeStamp performanceNow();
+
   /**
    * Get a reference to the \c RuntimeTargetDelegate owned (or implemented) by
    * this executor. This reference must remain valid for the duration of the

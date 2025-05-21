@@ -117,7 +117,7 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
-  return HighResTimeStamp::now();
+  return JSExecutor::performanceNow();
 }
 
 HighResTimeStamp NativePerformance::markWithResult(
