@@ -37,10 +37,6 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
   return supportedEntryTypes;
 }
 
-double performanceNow() {
-  return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
-}
-
 #if defined(__clang__)
 #define NO_DESTROY [[clang::no_destroy]]
 #else
@@ -83,9 +79,9 @@ PerformanceEntryReporter::PerformanceEntryReporter()
 #endif
 }
 
-DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
+HighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
   return timeStampProvider_ != nullptr ? timeStampProvider_()
-                                       : performanceNow();
+                                       : HighResTimeStamp::now();
 }
 
 std::vector<PerformanceEntryType>
@@ -173,7 +169,7 @@ void PerformanceEntryReporter::clearEntries(
 
 PerformanceMark PerformanceEntryReporter::reportMark(
     const std::string& name,
-    const std::optional<DOMHighResTimeStamp>& startTime) {
+    const std::optional<HighResTimeStamp>& startTime) {
   // Resolve timings
   auto startTimeVal = startTime ? *startTime : getCurrentTimeStamp();
   const auto entry = PerformanceMark{{.name = name, .startTime = startTimeVal}};
@@ -193,11 +189,11 @@ PerformanceMark PerformanceEntryReporter::reportMark(
 
 PerformanceMeasure PerformanceEntryReporter::reportMeasure(
     const std::string& name,
-    DOMHighResTimeStamp startTime,
-    DOMHighResTimeStamp endTime,
+    HighResTimeStamp startTime,
+    HighResTimeStamp endTime,
     const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
         trackMetadata) {
-  DOMHighResTimeStamp duration = endTime - startTime;
+  HighResDuration duration = endTime - startTime;
 
   const auto entry = PerformanceMeasure{
       {.name = std::string(name),
@@ -217,7 +213,7 @@ PerformanceMeasure PerformanceEntryReporter::reportMeasure(
   return entry;
 }
 
-std::optional<DOMHighResTimeStamp> PerformanceEntryReporter::getMarkTime(
+std::optional<HighResTimeStamp> PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
   std::shared_lock lock(buffersMutex_);
 
@@ -231,10 +227,10 @@ std::optional<DOMHighResTimeStamp> PerformanceEntryReporter::getMarkTime(
 
 void PerformanceEntryReporter::reportEvent(
     std::string name,
-    DOMHighResTimeStamp startTime,
-    DOMHighResTimeStamp duration,
-    DOMHighResTimeStamp processingStart,
-    DOMHighResTimeStamp processingEnd,
+    HighResTimeStamp startTime,
+    HighResDuration duration,
+    HighResTimeStamp processingStart,
+    HighResTimeStamp processingEnd,
     uint32_t interactionId) {
   eventCounts_[name]++;
 
@@ -260,8 +256,8 @@ void PerformanceEntryReporter::reportEvent(
 }
 
 void PerformanceEntryReporter::reportLongTask(
-    DOMHighResTimeStamp startTime,
-    DOMHighResTimeStamp duration) {
+    HighResTimeStamp startTime,
+    HighResDuration duration) {
   const auto entry = PerformanceLongTaskTiming{
       {.name = std::string{"self"},
        .startTime = startTime,
@@ -277,12 +273,12 @@ void PerformanceEntryReporter::reportLongTask(
 
 PerformanceResourceTiming PerformanceEntryReporter::reportResourceTiming(
     const std::string& url,
-    DOMHighResTimeStamp fetchStart,
-    DOMHighResTimeStamp requestStart,
-    std::optional<DOMHighResTimeStamp> connectStart,
-    std::optional<DOMHighResTimeStamp> connectEnd,
-    DOMHighResTimeStamp responseStart,
-    DOMHighResTimeStamp responseEnd,
+    HighResTimeStamp fetchStart,
+    HighResTimeStamp requestStart,
+    std::optional<HighResTimeStamp> connectStart,
+    std::optional<HighResTimeStamp> connectEnd,
+    HighResTimeStamp responseStart,
+    HighResTimeStamp responseEnd,
     const std::optional<int>& responseStatus) {
   const auto entry = PerformanceResourceTiming{
       {.name = url, .startTime = fetchStart},
@@ -313,9 +309,7 @@ void PerformanceEntryReporter::traceMark(const PerformanceMark& entry) const {
     auto [trackName, eventName] = parseTrackName(entry.name);
 
     if (performanceTracer.isTracing()) {
-      performanceTracer.reportMark(
-          entry.name,
-          HighResTimeStamp::fromDOMHighResTimeStamp(entry.startTime));
+      performanceTracer.reportMark(entry.name, entry.startTime);
     }
 
     if (ReactPerfettoLogger::isTracing()) {
@@ -339,10 +333,7 @@ void PerformanceEntryReporter::traceMeasure(
         trackMetadata = {.track = trackName.value()};
       }
       performanceTracer.reportMeasure(
-          eventName,
-          HighResTimeStamp::fromDOMHighResTimeStamp(entry.startTime),
-          HighResDuration::fromDOMHighResTimeStamp(entry.duration),
-          trackMetadata);
+          eventName, entry.startTime, entry.duration, trackMetadata);
     }
 
     if (ReactPerfettoLogger::isTracing()) {
