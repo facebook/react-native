@@ -86,9 +86,9 @@ export type ModalBaseProps = {
    */
   visible?: ?boolean,
   /**
-   * The `onRequestClose` callback is called when the user taps the hardware back button on Android or the menu button on Apple TV.
+   * The `onRequestClose` callback is called when the user taps the hardware back button on Android, dismisses the sheet using a gesture on iOS or the menu button on Apple TV.
    *
-   * This is required on Apple TV and Android.
+   * This is required on iOS and Android.
    */
   // onRequestClose?: (event: NativeSyntheticEvent<any>) => void;
   onRequestClose?: ?DirectEventHandler<null>,
@@ -190,6 +190,12 @@ function confirmProps(props: ModalProps) {
     ) {
       console.warn(
         'Modal with translucent navigation bar and without translucent status bar is not supported.',
+      );
+    }
+
+    if (!props.onRequestClose) {
+      console.warn(
+        'Modal requires the onRequestClose prop. This is necessary to prevent state corruption.',
       );
     }
   }
