@@ -35,4 +35,7 @@ inline static DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 
   return data;
 }
+
+void unsafeExecuteOnMainThreadSync(std::function<void()> runnable);
+
 } // namespace facebook::react

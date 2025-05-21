@@ -41,4 +41,7 @@ Pod::Spec.new do |s|
   }
 
   s.dependency "React-jsi", version
+  s.dependency "React-debug", version
+  s.dependency "React-featureflags", version
+  s.dependency "React-utils", version
 end
