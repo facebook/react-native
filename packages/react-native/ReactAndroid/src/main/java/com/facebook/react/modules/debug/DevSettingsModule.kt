@@ -8,9 +8,9 @@
 package com.facebook.react.modules.debug
 
 import com.facebook.fbreact.specs.NativeDevSettingsSpec
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.module.annotations.ReactModule
 
@@ -50,8 +50,7 @@ public class DevSettingsModule(
 
   override fun addMenuItem(title: String) {
     devSupportManager.addCustomDevOption(title) {
-      val data = Arguments.createMap()
-      data.putString("title", title)
+      val data = buildReadableMap { put("title", title) }
       val reactApplicationContext = reactApplicationContextIfActiveOrWarn
       reactApplicationContext?.emitDeviceEvent("didPressMenuItem", data)
     }
@@ -71,5 +70,9 @@ public class DevSettingsModule(
 
   override fun removeListeners(count: Double) {
     // iOS only
+  }
+
+  public companion object {
+    public const val NAME: String = NativeDevSettingsSpec.NAME
   }
 }

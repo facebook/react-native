@@ -28,7 +28,7 @@ internal class OpacityAnimation(view: View, private val startOpacity: Float, end
 
   init {
     setAnimationListener(OpacityAnimationListener(view))
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "OpacityAnimation", LegacyArchitectureLogLevel.WARNING)
   }
 

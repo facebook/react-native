@@ -5,6 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Suppress unused import warning to ensure the correct `use` extension is applied.
+// Removing [androidx.core.content.res.use] import causes Kotlin to fallback to `kotlin.io.use`,
+// which expects `AutoCloseable`.
+// However, `TypedArray` is not `AutoCloseable`, and this mismatch can lead to crashes like
+// IncompatibleClassChangeError.
+@file:Suppress("UnusedImport")
+
 package com.facebook.react.views.text
 
 import android.content.Context

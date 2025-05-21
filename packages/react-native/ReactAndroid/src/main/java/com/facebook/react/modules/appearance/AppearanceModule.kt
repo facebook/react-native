@@ -11,9 +11,9 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.facebook.fbreact.specs.NativeAppearanceSpec
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 
 /** Module that exposes the user's preferred color scheme. */
@@ -54,8 +54,8 @@ constructor(
     // Attempt to use the Activity context first in order to get the most up to date
     // scheme. This covers the scenario when AppCompatDelegate.setDefaultNightMode()
     // is called directly (which can occur in Brownfield apps for example).
-    val activity = getCurrentActivity()
-    return colorSchemeForCurrentConfiguration(activity ?: getReactApplicationContext())
+    val activity = reactApplicationContext.getCurrentActivity()
+    return colorSchemeForCurrentConfiguration(activity ?: reactApplicationContext)
   }
 
   public override fun setColorScheme(style: String) {
@@ -89,8 +89,7 @@ constructor(
 
   /** Sends an event to the JS instance that the preferred color scheme has changed. */
   public fun emitAppearanceChanged(colorScheme: String) {
-    val appearancePreferences = Arguments.createMap()
-    appearancePreferences.putString("colorScheme", colorScheme)
+    val appearancePreferences = buildReadableMap { put("colorScheme", colorScheme) }
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     reactApplicationContext?.emitDeviceEvent(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences)
   }

@@ -63,11 +63,11 @@ kotlin { jvmToolchain(17) }
 
 tasks.withType<KotlinCompile>().configureEach {
   compilerOptions {
-    apiVersion.set(KotlinVersion.KOTLIN_1_7)
+    apiVersion.set(KotlinVersion.KOTLIN_1_8)
     // See comment above on JDK 11 support
     jvmTarget.set(JvmTarget.JVM_11)
-    allWarningsAsErrors =
-        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
+    allWarningsAsErrors.set(
+        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false)
   }
 }
 

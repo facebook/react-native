@@ -17,6 +17,7 @@
 
 import type EventTarget from './EventTarget';
 
+import {setPlatformObject} from '../../webidl/PlatformObjects';
 import {
   COMPOSED_PATH_KEY,
   CURRENT_TARGET_KEY,
@@ -234,3 +235,5 @@ export type EventPhase =
   | (typeof Event)['CAPTURING_PHASE']
   | (typeof Event)['AT_TARGET']
   | (typeof Event)['BUBBLING_PHASE'];
+
+setPlatformObject(Event);

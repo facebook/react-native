@@ -52,7 +52,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 public class NativeViewHierarchyOptimizer {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "NativeViewHierarchyOptimizer", LegacyArchitectureLogLevel.WARNING);
   }
 
@@ -462,9 +462,9 @@ public class NativeViewHierarchyOptimizer {
       return false;
     }
 
-    ReadableMapKeySetIterator keyIterator = props.mBackingMap.keySetIterator();
+    ReadableMapKeySetIterator keyIterator = props.internal_backingMap().keySetIterator();
     while (keyIterator.hasNextKey()) {
-      if (!ViewProps.isLayoutOnly(props.mBackingMap, keyIterator.nextKey())) {
+      if (!ViewProps.isLayoutOnly(props.internal_backingMap(), keyIterator.nextKey())) {
         return false;
       }
     }

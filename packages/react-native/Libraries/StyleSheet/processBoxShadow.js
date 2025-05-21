@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react-native
  */
 
 import type {ProcessedColorValue} from './processColor';

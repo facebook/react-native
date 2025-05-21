@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f830c2d7a18fc8ec2e58f753c556d552>>
+ * @generated SignedSource<<0d1e4f0581e3aa90e18dc70ccee8a50a>>
  */
 
 /**
@@ -65,6 +65,24 @@ bool ReactNativeFeatureFlagsAccessor::animatedShouldSignalBatch() {
   return flagValue.value();
 }
 
+bool ReactNativeFeatureFlagsAccessor::avoidCeilingAvailableAndroidTextWidth() {
+  auto flagValue = avoidCeilingAvailableAndroidTextWidth_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(2, "avoidCeilingAvailableAndroidTextWidth");
+
+    flagValue = currentProvider_->avoidCeilingAvailableAndroidTextWidth();
+    avoidCeilingAvailableAndroidTextWidth_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 bool ReactNativeFeatureFlagsAccessor::cxxNativeAnimatedEnabled() {
   auto flagValue = cxxNativeAnimatedEnabled_.load();
 
@@ -74,7 +92,7 @@ bool ReactNativeFeatureFlagsAccessor::cxxNativeAnimatedEnabled() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(2, "cxxNativeAnimatedEnabled");
+    markFlagAsAccessed(3, "cxxNativeAnimatedEnabled");
 
     flagValue = currentProvider_->cxxNativeAnimatedEnabled();
     cxxNativeAnimatedEnabled_ = flagValue;
@@ -92,7 +110,7 @@ bool ReactNativeFeatureFlagsAccessor::disableMainQueueSyncDispatchIOS() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(3, "disableMainQueueSyncDispatchIOS");
+    markFlagAsAccessed(4, "disableMainQueueSyncDispatchIOS");
 
     flagValue = currentProvider_->disableMainQueueSyncDispatchIOS();
     disableMainQueueSyncDispatchIOS_ = flagValue;
@@ -110,10 +128,28 @@ bool ReactNativeFeatureFlagsAccessor::disableMountItemReorderingAndroid() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(4, "disableMountItemReorderingAndroid");
+    markFlagAsAccessed(5, "disableMountItemReorderingAndroid");
 
     flagValue = currentProvider_->disableMountItemReorderingAndroid();
     disableMountItemReorderingAndroid_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableAccessibilityOrder() {
+  auto flagValue = enableAccessibilityOrder_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(6, "enableAccessibilityOrder");
+
+    flagValue = currentProvider_->enableAccessibilityOrder();
+    enableAccessibilityOrder_ = flagValue;
   }
 
   return flagValue.value();
@@ -128,7 +164,7 @@ bool ReactNativeFeatureFlagsAccessor::enableAccumulatedUpdatesInRawPropsAndroid(
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(5, "enableAccumulatedUpdatesInRawPropsAndroid");
+    markFlagAsAccessed(7, "enableAccumulatedUpdatesInRawPropsAndroid");
 
     flagValue = currentProvider_->enableAccumulatedUpdatesInRawPropsAndroid();
     enableAccumulatedUpdatesInRawPropsAndroid_ = flagValue;
@@ -146,7 +182,7 @@ bool ReactNativeFeatureFlagsAccessor::enableBridgelessArchitecture() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(6, "enableBridgelessArchitecture");
+    markFlagAsAccessed(8, "enableBridgelessArchitecture");
 
     flagValue = currentProvider_->enableBridgelessArchitecture();
     enableBridgelessArchitecture_ = flagValue;
@@ -164,10 +200,64 @@ bool ReactNativeFeatureFlagsAccessor::enableCppPropsIteratorSetter() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(7, "enableCppPropsIteratorSetter");
+    markFlagAsAccessed(9, "enableCppPropsIteratorSetter");
 
     flagValue = currentProvider_->enableCppPropsIteratorSetter();
     enableCppPropsIteratorSetter_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableCustomFocusSearchOnClippedElementsAndroid() {
+  auto flagValue = enableCustomFocusSearchOnClippedElementsAndroid_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(10, "enableCustomFocusSearchOnClippedElementsAndroid");
+
+    flagValue = currentProvider_->enableCustomFocusSearchOnClippedElementsAndroid();
+    enableCustomFocusSearchOnClippedElementsAndroid_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableDestroyShadowTreeRevisionAsync() {
+  auto flagValue = enableDestroyShadowTreeRevisionAsync_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(11, "enableDestroyShadowTreeRevisionAsync");
+
+    flagValue = currentProvider_->enableDestroyShadowTreeRevisionAsync();
+    enableDestroyShadowTreeRevisionAsync_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableDoubleMeasurementFixAndroid() {
+  auto flagValue = enableDoubleMeasurementFixAndroid_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(12, "enableDoubleMeasurementFixAndroid");
+
+    flagValue = currentProvider_->enableDoubleMeasurementFixAndroid();
+    enableDoubleMeasurementFixAndroid_ = flagValue;
   }
 
   return flagValue.value();
@@ -182,7 +272,7 @@ bool ReactNativeFeatureFlagsAccessor::enableEagerRootViewAttachment() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(8, "enableEagerRootViewAttachment");
+    markFlagAsAccessed(13, "enableEagerRootViewAttachment");
 
     flagValue = currentProvider_->enableEagerRootViewAttachment();
     enableEagerRootViewAttachment_ = flagValue;
@@ -200,7 +290,7 @@ bool ReactNativeFeatureFlagsAccessor::enableFabricLogs() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(9, "enableFabricLogs");
+    markFlagAsAccessed(14, "enableFabricLogs");
 
     flagValue = currentProvider_->enableFabricLogs();
     enableFabricLogs_ = flagValue;
@@ -218,10 +308,46 @@ bool ReactNativeFeatureFlagsAccessor::enableFabricRenderer() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(10, "enableFabricRenderer");
+    markFlagAsAccessed(15, "enableFabricRenderer");
 
     flagValue = currentProvider_->enableFabricRenderer();
     enableFabricRenderer_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableFixForParentTagDuringReparenting() {
+  auto flagValue = enableFixForParentTagDuringReparenting_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(16, "enableFixForParentTagDuringReparenting");
+
+    flagValue = currentProvider_->enableFixForParentTagDuringReparenting();
+    enableFixForParentTagDuringReparenting_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableFontScaleChangesUpdatingLayout() {
+  auto flagValue = enableFontScaleChangesUpdatingLayout_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(17, "enableFontScaleChangesUpdatingLayout");
+
+    flagValue = currentProvider_->enableFontScaleChangesUpdatingLayout();
+    enableFontScaleChangesUpdatingLayout_ = flagValue;
   }
 
   return flagValue.value();
@@ -236,7 +362,7 @@ bool ReactNativeFeatureFlagsAccessor::enableIOSViewClipToPaddingBox() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(11, "enableIOSViewClipToPaddingBox");
+    markFlagAsAccessed(18, "enableIOSViewClipToPaddingBox");
 
     flagValue = currentProvider_->enableIOSViewClipToPaddingBox();
     enableIOSViewClipToPaddingBox_ = flagValue;
@@ -245,8 +371,8 @@ bool ReactNativeFeatureFlagsAccessor::enableIOSViewClipToPaddingBox() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::enableJSRuntimeGCOnMemoryPressureOnIOS() {
-  auto flagValue = enableJSRuntimeGCOnMemoryPressureOnIOS_.load();
+bool ReactNativeFeatureFlagsAccessor::enableIntersectionObserverEventLoopIntegration() {
+  auto flagValue = enableIntersectionObserverEventLoopIntegration_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
@@ -254,10 +380,10 @@ bool ReactNativeFeatureFlagsAccessor::enableJSRuntimeGCOnMemoryPressureOnIOS() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(12, "enableJSRuntimeGCOnMemoryPressureOnIOS");
+    markFlagAsAccessed(19, "enableIntersectionObserverEventLoopIntegration");
 
-    flagValue = currentProvider_->enableJSRuntimeGCOnMemoryPressureOnIOS();
-    enableJSRuntimeGCOnMemoryPressureOnIOS_ = flagValue;
+    flagValue = currentProvider_->enableIntersectionObserverEventLoopIntegration();
+    enableIntersectionObserverEventLoopIntegration_ = flagValue;
   }
 
   return flagValue.value();
@@ -272,7 +398,7 @@ bool ReactNativeFeatureFlagsAccessor::enableLayoutAnimationsOnAndroid() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(13, "enableLayoutAnimationsOnAndroid");
+    markFlagAsAccessed(20, "enableLayoutAnimationsOnAndroid");
 
     flagValue = currentProvider_->enableLayoutAnimationsOnAndroid();
     enableLayoutAnimationsOnAndroid_ = flagValue;
@@ -290,28 +416,10 @@ bool ReactNativeFeatureFlagsAccessor::enableLayoutAnimationsOnIOS() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(14, "enableLayoutAnimationsOnIOS");
+    markFlagAsAccessed(21, "enableLayoutAnimationsOnIOS");
 
     flagValue = currentProvider_->enableLayoutAnimationsOnIOS();
     enableLayoutAnimationsOnIOS_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::enableLongTaskAPI() {
-  auto flagValue = enableLongTaskAPI_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(15, "enableLongTaskAPI");
-
-    flagValue = currentProvider_->enableLongTaskAPI();
-    enableLongTaskAPI_ = flagValue;
   }
 
   return flagValue.value();
@@ -326,7 +434,7 @@ bool ReactNativeFeatureFlagsAccessor::enableMainQueueModulesOnIOS() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(16, "enableMainQueueModulesOnIOS");
+    markFlagAsAccessed(22, "enableMainQueueModulesOnIOS");
 
     flagValue = currentProvider_->enableMainQueueModulesOnIOS();
     enableMainQueueModulesOnIOS_ = flagValue;
@@ -344,10 +452,28 @@ bool ReactNativeFeatureFlagsAccessor::enableNativeCSSParsing() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(17, "enableNativeCSSParsing");
+    markFlagAsAccessed(23, "enableNativeCSSParsing");
 
     flagValue = currentProvider_->enableNativeCSSParsing();
     enableNativeCSSParsing_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enableNetworkEventReporting() {
+  auto flagValue = enableNetworkEventReporting_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(24, "enableNetworkEventReporting");
+
+    flagValue = currentProvider_->enableNetworkEventReporting();
+    enableNetworkEventReporting_ = flagValue;
   }
 
   return flagValue.value();
@@ -362,10 +488,28 @@ bool ReactNativeFeatureFlagsAccessor::enableNewBackgroundAndBorderDrawables() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(18, "enableNewBackgroundAndBorderDrawables");
+    markFlagAsAccessed(25, "enableNewBackgroundAndBorderDrawables");
 
     flagValue = currentProvider_->enableNewBackgroundAndBorderDrawables();
     enableNewBackgroundAndBorderDrawables_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::enablePreparedTextLayout() {
+  auto flagValue = enablePreparedTextLayout_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(26, "enablePreparedTextLayout");
+
+    flagValue = currentProvider_->enablePreparedTextLayout();
+    enablePreparedTextLayout_ = flagValue;
   }
 
   return flagValue.value();
@@ -380,7 +524,7 @@ bool ReactNativeFeatureFlagsAccessor::enablePropsUpdateReconciliationAndroid() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(19, "enablePropsUpdateReconciliationAndroid");
+    markFlagAsAccessed(27, "enablePropsUpdateReconciliationAndroid");
 
     flagValue = currentProvider_->enablePropsUpdateReconciliationAndroid();
     enablePropsUpdateReconciliationAndroid_ = flagValue;
@@ -389,8 +533,8 @@ bool ReactNativeFeatureFlagsAccessor::enablePropsUpdateReconciliationAndroid() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::enableReportEventPaintTime() {
-  auto flagValue = enableReportEventPaintTime_.load();
+bool ReactNativeFeatureFlagsAccessor::enableResourceTimingAPI() {
+  auto flagValue = enableResourceTimingAPI_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
@@ -398,10 +542,10 @@ bool ReactNativeFeatureFlagsAccessor::enableReportEventPaintTime() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(20, "enableReportEventPaintTime");
+    markFlagAsAccessed(28, "enableResourceTimingAPI");
 
-    flagValue = currentProvider_->enableReportEventPaintTime();
-    enableReportEventPaintTime_ = flagValue;
+    flagValue = currentProvider_->enableResourceTimingAPI();
+    enableResourceTimingAPI_ = flagValue;
   }
 
   return flagValue.value();
@@ -416,28 +560,10 @@ bool ReactNativeFeatureFlagsAccessor::enableSynchronousStateUpdates() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(21, "enableSynchronousStateUpdates");
+    markFlagAsAccessed(29, "enableSynchronousStateUpdates");
 
     flagValue = currentProvider_->enableSynchronousStateUpdates();
     enableSynchronousStateUpdates_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::enableUIConsistency() {
-  auto flagValue = enableUIConsistency_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(22, "enableUIConsistency");
-
-    flagValue = currentProvider_->enableUIConsistency();
-    enableUIConsistency_ = flagValue;
   }
 
   return flagValue.value();
@@ -452,7 +578,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewCulling() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(23, "enableViewCulling");
+    markFlagAsAccessed(30, "enableViewCulling");
 
     flagValue = currentProvider_->enableViewCulling();
     enableViewCulling_ = flagValue;
@@ -470,7 +596,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewRecycling() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(24, "enableViewRecycling");
+    markFlagAsAccessed(31, "enableViewRecycling");
 
     flagValue = currentProvider_->enableViewRecycling();
     enableViewRecycling_ = flagValue;
@@ -488,7 +614,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewRecyclingForText() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(25, "enableViewRecyclingForText");
+    markFlagAsAccessed(32, "enableViewRecyclingForText");
 
     flagValue = currentProvider_->enableViewRecyclingForText();
     enableViewRecyclingForText_ = flagValue;
@@ -506,7 +632,7 @@ bool ReactNativeFeatureFlagsAccessor::enableViewRecyclingForView() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(26, "enableViewRecyclingForView");
+    markFlagAsAccessed(33, "enableViewRecyclingForView");
 
     flagValue = currentProvider_->enableViewRecyclingForView();
     enableViewRecyclingForView_ = flagValue;
@@ -524,28 +650,10 @@ bool ReactNativeFeatureFlagsAccessor::fixMappingOfEventPrioritiesBetweenFabricAn
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(27, "fixMappingOfEventPrioritiesBetweenFabricAndReact");
+    markFlagAsAccessed(34, "fixMappingOfEventPrioritiesBetweenFabricAndReact");
 
     flagValue = currentProvider_->fixMappingOfEventPrioritiesBetweenFabricAndReact();
     fixMappingOfEventPrioritiesBetweenFabricAndReact_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {
-  auto flagValue = fixMountingCoordinatorReportedPendingTransactionsOnAndroid_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(28, "fixMountingCoordinatorReportedPendingTransactionsOnAndroid");
-
-    flagValue = currentProvider_->fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-    fixMountingCoordinatorReportedPendingTransactionsOnAndroid_ = flagValue;
   }
 
   return flagValue.value();
@@ -560,7 +668,7 @@ bool ReactNativeFeatureFlagsAccessor::fuseboxEnabledRelease() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(29, "fuseboxEnabledRelease");
+    markFlagAsAccessed(35, "fuseboxEnabledRelease");
 
     flagValue = currentProvider_->fuseboxEnabledRelease();
     fuseboxEnabledRelease_ = flagValue;
@@ -578,7 +686,7 @@ bool ReactNativeFeatureFlagsAccessor::fuseboxNetworkInspectionEnabled() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(30, "fuseboxNetworkInspectionEnabled");
+    markFlagAsAccessed(36, "fuseboxNetworkInspectionEnabled");
 
     flagValue = currentProvider_->fuseboxNetworkInspectionEnabled();
     fuseboxNetworkInspectionEnabled_ = flagValue;
@@ -587,8 +695,8 @@ bool ReactNativeFeatureFlagsAccessor::fuseboxNetworkInspectionEnabled() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::removeTurboModuleManagerDelegateMutex() {
-  auto flagValue = removeTurboModuleManagerDelegateMutex_.load();
+bool ReactNativeFeatureFlagsAccessor::incorporateMaxLinesDuringAndroidLayout() {
+  auto flagValue = incorporateMaxLinesDuringAndroidLayout_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
@@ -596,28 +704,10 @@ bool ReactNativeFeatureFlagsAccessor::removeTurboModuleManagerDelegateMutex() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(31, "removeTurboModuleManagerDelegateMutex");
+    markFlagAsAccessed(37, "incorporateMaxLinesDuringAndroidLayout");
 
-    flagValue = currentProvider_->removeTurboModuleManagerDelegateMutex();
-    removeTurboModuleManagerDelegateMutex_ = flagValue;
-  }
-
-  return flagValue.value();
-}
-
-bool ReactNativeFeatureFlagsAccessor::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() {
-  auto flagValue = throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS_.load();
-
-  if (!flagValue.has_value()) {
-    // This block is not exclusive but it is not necessary.
-    // If multiple threads try to initialize the feature flag, we would only
-    // be accessing the provider multiple times but the end state of this
-    // instance and the returned flag value would be the same.
-
-    markFlagAsAccessed(32, "throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS");
-
-    flagValue = currentProvider_->throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
-    throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS_ = flagValue;
+    flagValue = currentProvider_->incorporateMaxLinesDuringAndroidLayout();
+    incorporateMaxLinesDuringAndroidLayout_ = flagValue;
   }
 
   return flagValue.value();
@@ -632,10 +722,28 @@ bool ReactNativeFeatureFlagsAccessor::traceTurboModulePromiseRejectionsOnAndroid
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(33, "traceTurboModulePromiseRejectionsOnAndroid");
+    markFlagAsAccessed(38, "traceTurboModulePromiseRejectionsOnAndroid");
 
     flagValue = currentProvider_->traceTurboModulePromiseRejectionsOnAndroid();
     traceTurboModulePromiseRejectionsOnAndroid_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::updateRuntimeShadowNodeReferencesOnCommit() {
+  auto flagValue = updateRuntimeShadowNodeReferencesOnCommit_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(39, "updateRuntimeShadowNodeReferencesOnCommit");
+
+    flagValue = currentProvider_->updateRuntimeShadowNodeReferencesOnCommit();
+    updateRuntimeShadowNodeReferencesOnCommit_ = flagValue;
   }
 
   return flagValue.value();
@@ -650,7 +758,7 @@ bool ReactNativeFeatureFlagsAccessor::useAlwaysAvailableJSErrorHandling() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(34, "useAlwaysAvailableJSErrorHandling");
+    markFlagAsAccessed(40, "useAlwaysAvailableJSErrorHandling");
 
     flagValue = currentProvider_->useAlwaysAvailableJSErrorHandling();
     useAlwaysAvailableJSErrorHandling_ = flagValue;
@@ -659,8 +767,8 @@ bool ReactNativeFeatureFlagsAccessor::useAlwaysAvailableJSErrorHandling() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::useEditTextStockAndroidFocusBehavior() {
-  auto flagValue = useEditTextStockAndroidFocusBehavior_.load();
+bool ReactNativeFeatureFlagsAccessor::useAndroidTextLayoutWidthDirectly() {
+  auto flagValue = useAndroidTextLayoutWidthDirectly_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
@@ -668,10 +776,10 @@ bool ReactNativeFeatureFlagsAccessor::useEditTextStockAndroidFocusBehavior() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(35, "useEditTextStockAndroidFocusBehavior");
+    markFlagAsAccessed(41, "useAndroidTextLayoutWidthDirectly");
 
-    flagValue = currentProvider_->useEditTextStockAndroidFocusBehavior();
-    useEditTextStockAndroidFocusBehavior_ = flagValue;
+    flagValue = currentProvider_->useAndroidTextLayoutWidthDirectly();
+    useAndroidTextLayoutWidthDirectly_ = flagValue;
   }
 
   return flagValue.value();
@@ -686,7 +794,7 @@ bool ReactNativeFeatureFlagsAccessor::useFabricInterop() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(36, "useFabricInterop");
+    markFlagAsAccessed(42, "useFabricInterop");
 
     flagValue = currentProvider_->useFabricInterop();
     useFabricInterop_ = flagValue;
@@ -704,7 +812,7 @@ bool ReactNativeFeatureFlagsAccessor::useNativeViewConfigsInBridgelessMode() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(37, "useNativeViewConfigsInBridgelessMode");
+    markFlagAsAccessed(43, "useNativeViewConfigsInBridgelessMode");
 
     flagValue = currentProvider_->useNativeViewConfigsInBridgelessMode();
     useNativeViewConfigsInBridgelessMode_ = flagValue;
@@ -722,7 +830,7 @@ bool ReactNativeFeatureFlagsAccessor::useOptimizedEventBatchingOnAndroid() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(38, "useOptimizedEventBatchingOnAndroid");
+    markFlagAsAccessed(44, "useOptimizedEventBatchingOnAndroid");
 
     flagValue = currentProvider_->useOptimizedEventBatchingOnAndroid();
     useOptimizedEventBatchingOnAndroid_ = flagValue;
@@ -740,10 +848,28 @@ bool ReactNativeFeatureFlagsAccessor::useRawPropsJsiValue() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(39, "useRawPropsJsiValue");
+    markFlagAsAccessed(45, "useRawPropsJsiValue");
 
     flagValue = currentProvider_->useRawPropsJsiValue();
     useRawPropsJsiValue_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+bool ReactNativeFeatureFlagsAccessor::useShadowNodeStateOnClone() {
+  auto flagValue = useShadowNodeStateOnClone_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(46, "useShadowNodeStateOnClone");
+
+    flagValue = currentProvider_->useShadowNodeStateOnClone();
+    useShadowNodeStateOnClone_ = flagValue;
   }
 
   return flagValue.value();
@@ -758,7 +884,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(40, "useTurboModuleInterop");
+    markFlagAsAccessed(47, "useTurboModuleInterop");
 
     flagValue = currentProvider_->useTurboModuleInterop();
     useTurboModuleInterop_ = flagValue;
@@ -776,7 +902,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(41, "useTurboModules");
+    markFlagAsAccessed(48, "useTurboModules");
 
     flagValue = currentProvider_->useTurboModules();
     useTurboModules_ = flagValue;

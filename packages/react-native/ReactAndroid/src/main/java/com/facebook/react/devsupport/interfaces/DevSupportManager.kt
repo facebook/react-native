@@ -68,8 +68,6 @@ public interface DevSupportManager : JSExceptionHandler {
 
   public fun reloadJSFromServer(bundleURL: String, callback: BundleLoadCallback)
 
-  public fun loadSplitBundleFromServer(bundlePath: String, callback: DevSplitBundleCallback)
-
   public fun isPackagerRunning(callback: PackagerStatusCallback)
 
   public fun setHotModuleReplacementEnabled(isHotModuleReplacementEnabled: Boolean)

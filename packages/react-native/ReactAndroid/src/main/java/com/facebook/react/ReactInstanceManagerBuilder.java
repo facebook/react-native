@@ -24,7 +24,6 @@ import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
-import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
@@ -46,12 +45,11 @@ import java.util.List;
 import java.util.Map;
 
 /** Builder class for {@link ReactInstanceManager} */
-@StableReactNativeAPI
 @LegacyArchitecture
 public class ReactInstanceManagerBuilder {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "ReactInstanceManagerBuilder", LegacyArchitectureLogLevel.WARNING);
   }
 

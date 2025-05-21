@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a98f50869ebeb68bd94bca19b7b40123>>
+ * @generated SignedSource<<1a4bc240cbc6dbdac756555f98f69147>>
  */
 
 /**
@@ -35,6 +35,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool avoidCeilingAvailableAndroidTextWidth() override {
+    return true;
+  }
+
   bool cxxNativeAnimatedEnabled() override {
     return false;
   }
@@ -44,6 +48,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableMountItemReorderingAndroid() override {
+    return false;
+  }
+
+  bool enableAccessibilityOrder() override {
     return false;
   }
 
@@ -59,6 +67,18 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableCustomFocusSearchOnClippedElementsAndroid() override {
+    return true;
+  }
+
+  bool enableDestroyShadowTreeRevisionAsync() override {
+    return false;
+  }
+
+  bool enableDoubleMeasurementFixAndroid() override {
+    return false;
+  }
+
   bool enableEagerRootViewAttachment() override {
     return false;
   }
@@ -71,12 +91,20 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableFixForParentTagDuringReparenting() override {
+    return false;
+  }
+
+  bool enableFontScaleChangesUpdatingLayout() override {
+    return false;
+  }
+
   bool enableIOSViewClipToPaddingBox() override {
     return false;
   }
 
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    return false;
+  bool enableIntersectionObserverEventLoopIntegration() override {
+    return true;
   }
 
   bool enableLayoutAnimationsOnAndroid() override {
@@ -87,10 +115,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool enableLongTaskAPI() override {
-    return false;
-  }
-
   bool enableMainQueueModulesOnIOS() override {
     return false;
   }
@@ -99,7 +123,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableNetworkEventReporting() override {
+    return false;
+  }
+
   bool enableNewBackgroundAndBorderDrawables() override {
+    return true;
+  }
+
+  bool enablePreparedTextLayout() override {
     return false;
   }
 
@@ -107,15 +139,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableReportEventPaintTime() override {
+  bool enableResourceTimingAPI() override {
     return false;
   }
 
   bool enableSynchronousStateUpdates() override {
-    return false;
-  }
-
-  bool enableUIConsistency() override {
     return false;
   }
 
@@ -139,10 +167,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
-    return false;
-  }
-
   bool fuseboxEnabledRelease() override {
     return false;
   }
@@ -151,15 +175,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool removeTurboModuleManagerDelegateMutex() override {
-    return false;
-  }
-
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
-    return false;
+  bool incorporateMaxLinesDuringAndroidLayout() override {
+    return true;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
+    return false;
+  }
+
+  bool updateRuntimeShadowNodeReferencesOnCommit() override {
     return false;
   }
 
@@ -167,7 +191,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool useEditTextStockAndroidFocusBehavior() override {
+  bool useAndroidTextLayoutWidthDirectly() override {
     return true;
   }
 
@@ -184,6 +208,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useRawPropsJsiValue() override {
+    return false;
+  }
+
+  bool useShadowNodeStateOnClone() override {
     return false;
   }
 

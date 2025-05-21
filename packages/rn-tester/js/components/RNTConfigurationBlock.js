@@ -12,6 +12,7 @@
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
+import {useContext} from 'react';
 import {StyleSheet, View} from 'react-native';
 
 type Props = $ReadOnly<{
@@ -23,7 +24,7 @@ type Props = $ReadOnly<{
  * Container view for a block of configuration options for an example.
  */
 export default function RNTConfigurationBlock(props: Props): React.Node {
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
   return (
     <View
       style={StyleSheet.compose(styles.container, {

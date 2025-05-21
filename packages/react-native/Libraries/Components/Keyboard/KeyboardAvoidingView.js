@@ -24,6 +24,7 @@ import AccessibilityInfo from '../AccessibilityInfo/AccessibilityInfo';
 import View from '../View/View';
 import Keyboard from './Keyboard';
 import * as React from 'react';
+import {createRef} from 'react';
 
 export type KeyboardAvoidingViewProps = $ReadOnly<{
   ...ViewProps,
@@ -73,7 +74,7 @@ class KeyboardAvoidingView extends React.Component<
   constructor(props: KeyboardAvoidingViewProps) {
     super(props);
     this.state = {bottom: 0};
-    this.viewRef = React.createRef();
+    this.viewRef = createRef();
   }
 
   async _relativeKeyboardHeight(

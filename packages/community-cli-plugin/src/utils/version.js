@@ -6,11 +6,10 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {Config} from '@react-native-community/cli-types';
-import type TerminalReporter from 'metro/src/lib/TerminalReporter';
+import type {TerminalReporter} from 'metro';
 
 import chalk from 'chalk';
 import semver from 'semver';

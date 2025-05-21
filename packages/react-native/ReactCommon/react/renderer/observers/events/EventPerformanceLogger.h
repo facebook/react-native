@@ -11,8 +11,10 @@
 #include <react/renderer/core/EventLogger.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerEventTimingDelegate.h>
 #include <react/renderer/uimanager/UIManagerMountHook.h>
+
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string_view>
 #include <unordered_map>
 
@@ -30,8 +32,8 @@ class EventPerformanceLogger : public EventLogger,
   EventTag onEventStart(
       std::string_view name,
       SharedEventTarget target,
-      DOMHighResTimeStamp eventStartTimeStamp =
-          DOM_HIGH_RES_TIME_STAMP_UNSET) override;
+      std::optional<DOMHighResTimeStamp> eventStartTimeStamp =
+          std::nullopt) override;
   void onEventProcessingStart(EventTag tag) override;
   void onEventProcessingEnd(EventTag tag) override;
 
@@ -51,9 +53,9 @@ class EventPerformanceLogger : public EventLogger,
   struct EventEntry {
     std::string_view name;
     SharedEventTarget target{nullptr};
-    DOMHighResTimeStamp startTime{0.0};
-    DOMHighResTimeStamp processingStartTime{0.0};
-    DOMHighResTimeStamp processingEndTime{0.0};
+    DOMHighResTimeStamp startTime;
+    std::optional<DOMHighResTimeStamp> processingStartTime;
+    std::optional<DOMHighResTimeStamp> processingEndTime;
 
     bool isWaitingForMount{false};
 
@@ -62,7 +64,7 @@ class EventPerformanceLogger : public EventLogger,
     PerformanceEntryInteractionId interactionId{0};
 
     bool isWaitingForDispatch() {
-      return processingEndTime == 0.0;
+      return !processingEndTime.has_value();
     }
   };
 

@@ -12,7 +12,7 @@
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/Size.h>
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -38,7 +38,7 @@ class ScrollViewState final {
    */
   Size getContentSize() const;
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   ScrollViewState(const ScrollViewState& previousState, folly::dynamic data)
       : contentOffset(
             {(Float)data["contentOffsetLeft"].getDouble(),

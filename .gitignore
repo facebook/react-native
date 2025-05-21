@@ -30,6 +30,7 @@ project.xcworkspace
 /packages/rn-tester/android/app/gradle/
 /packages/rn-tester/android/app/gradlew
 /packages/rn-tester/android/app/gradlew.bat
+/packages/react-native/build/
 /packages/react-native/ReactAndroid/build/
 /packages/react-native/ReactAndroid/.cxx/
 /packages/react-native/ReactAndroid/gradle/
@@ -123,6 +124,9 @@ vendor/
 /packages/rn-tester/Pods/*
 !/packages/rn-tester/Pods/__offline_mirrors_hermes__
 !/packages/rn-tester/Pods/__offline_mirrors_jsc__
+
+# Swift Package build folder
+/packages/react-native/.build
 
 # @react-native/codegen
 /packages/react-native/React/FBReactNativeSpec/

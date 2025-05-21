@@ -10,8 +10,15 @@
 
 // flowlint unsafe-getters-setters:off
 
+import {setPlatformObject} from '../webidl/PlatformObjects';
+
 export type DOMHighResTimeStamp = number;
-export type PerformanceEntryType = 'mark' | 'measure' | 'event' | 'longtask';
+export type PerformanceEntryType =
+  | 'mark'
+  | 'measure'
+  | 'event'
+  | 'longtask'
+  | 'resource';
 
 export type PerformanceEntryJSON = {
   name: string,
@@ -64,5 +71,7 @@ export class PerformanceEntry {
     };
   }
 }
+
+setPlatformObject(PerformanceEntry);
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;

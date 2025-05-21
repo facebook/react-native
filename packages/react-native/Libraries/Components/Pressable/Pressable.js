@@ -24,7 +24,7 @@ import useAndroidRippleForView, {
   type PressableAndroidRippleConfig,
 } from './useAndroidRippleForView';
 import * as React from 'react';
-import {useMemo, useRef, useState} from 'react';
+import {memo, useMemo, useRef, useState} from 'react';
 
 type ViewStyleProp = React.ElementConfig<typeof View>['style'];
 
@@ -152,7 +152,10 @@ type PressableBaseProps = $ReadOnly<{
 }>;
 
 export type PressableProps = $ReadOnly<{
-  ...ViewProps,
+  // Pressability may override `onMouseEnter` and `onMouseLeave` to
+  // implement `onHoverIn` and `onHoverOut` in a platform-agnostic way.
+  // Hover events should be used instead of mouse events.
+  ...Omit<ViewProps, 'onMouseEnter' | 'onMouseLeave'>,
   ...PressableBaseProps,
 }>;
 
@@ -162,10 +165,13 @@ type Instance = React.ElementRef<typeof View>;
  * Component used to build display components that should respond to whether the
  * component is currently pressed or not.
  */
-function Pressable(
-  props: PressableProps,
-  forwardedRef: React.RefSetter<Instance>,
-): React.Node {
+function Pressable({
+  ref: forwardedRef,
+  ...props
+}: {
+  ref?: React.RefSetter<Instance>,
+  ...PressableProps,
+}): React.Node {
   const {
     accessible,
     accessibilityState,
@@ -328,7 +334,7 @@ function usePressState(forcePressed: boolean): [boolean, (boolean) => void] {
   return [pressed || forcePressed, setPressed];
 }
 
-const MemoedPressable = React.memo(React.forwardRef(Pressable));
+const MemoedPressable = memo(Pressable);
 MemoedPressable.displayName = 'Pressable';
 
 export default (MemoedPressable: component(

@@ -12,10 +12,10 @@
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxUtils.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
+#import <react/utils/FollyConvert.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #ifdef WITH_FBSYSTRACE
@@ -104,7 +104,7 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
   dispatch_block_t block = [weakBridge, weakModuleData, methodId, params = std::move(params), callId, isSyncModule] {
 #ifdef WITH_FBSYSTRACE
     if (callId != -1) {
-      fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+      fbsystrace_end_async_flow(TRACE_TAG_REACT, "native", callId);
     }
 #else
     (void)(callId);

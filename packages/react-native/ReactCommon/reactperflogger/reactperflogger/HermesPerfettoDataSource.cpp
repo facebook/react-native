@@ -106,7 +106,9 @@ void logHermesProfileToPerfetto(const std::string& traceStr) {
 } // namespace
 
 void HermesPerfettoDataSource::OnStart(const StartArgs&) {
-  facebook::hermes::HermesRuntime::enableSamplingProfiler(SAMPLING_HZ);
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->enableSamplingProfiler(SAMPLING_HZ);
   TRACE_EVENT_INSTANT(
       "react-native",
       perfetto::DynamicString{"Profiling Started"},
@@ -117,14 +119,18 @@ void HermesPerfettoDataSource::OnStart(const StartArgs&) {
 void HermesPerfettoDataSource::OnFlush(const FlushArgs&) {
   // NOTE: We write data during OnFlush and not OnStop because we can't
   //       use the TRACE_EVENT macros in OnStop.
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
   std::stringstream stream;
-  facebook::hermes::HermesRuntime::dumpSampledTraceToStream(stream);
+  hermesAPI->dumpSampledTraceToStream(stream);
   std::string trace = stream.str();
   logHermesProfileToPerfetto(trace);
 }
 
 void HermesPerfettoDataSource::OnStop(const StopArgs& a) {
-  facebook::hermes::HermesRuntime::disableSamplingProfiler();
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->disableSamplingProfiler();
 }
 
 } // namespace facebook::react

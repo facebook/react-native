@@ -6,12 +6,12 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {FeatureFlagValue} from '../../../packages/react-native/scripts/featureflags/types';
 
 import ReactNativeFeatureFlags from '../../../packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config';
+import {HermesVariant} from './utils';
 import fs from 'fs';
 // $FlowExpectedError[untyped-import]
 import {extract, parse} from 'jest-docblock';
@@ -41,6 +41,7 @@ export type FantomTestConfigReactInternalFeatureFlags = {
 
 export type FantomTestConfig = {
   mode: FantomTestConfigMode,
+  hermesVariant: HermesVariant,
   flags: {
     common: FantomTestConfigCommonFeatureFlags,
     jsOnly: FantomTestConfigJsOnlyFeatureFlags,
@@ -51,11 +52,16 @@ export type FantomTestConfig = {
 const DEFAULT_MODE: FantomTestConfigMode =
   FantomTestConfigMode.DevelopmentWithSource;
 
+const DEFAULT_HERMES_MODE: HermesVariant = HermesVariant.Hermes;
+
 const FANTOM_FLAG_FORMAT = /^(\w+):(\w+)$/;
 
 const FANTOM_BENCHMARK_FILENAME_RE = /[Bb]enchmark-itest\./g;
 const FANTOM_BENCHMARK_SUITE_RE =
   /\n(Fantom\.)?unstable_benchmark(\s*)\.suite\(/g;
+
+const FANTOM_BENCHMARK_DEFAULT_MODE: FantomTestConfigMode =
+  FantomTestConfigMode.Optimized;
 
 /**
  * Extracts the Fantom configuration from the test file, specified as part of
@@ -65,6 +71,7 @@ const FANTOM_BENCHMARK_SUITE_RE =
  * /**
  *  * @flow strict-local
  *  * @fantom_mode opt
+ *  * @fantom_hermes_variant static_hermes
  *  * @fantom_flags commonTestFlag:true
  *  * @fantom_flags jsOnlyTestFlag:true
  *  * @fantom_react_fb_flags reactInternalFlag:true
@@ -74,6 +81,9 @@ const FANTOM_BENCHMARK_SUITE_RE =
  * The supported options are:
  * - `fantom_mode`: specifies the level of optimization to compile the test
  *  with. Valid values are `dev` and `opt`.
+ * - `fantom_hermes_variant`: specifies the Hermes variant to use to run the
+ *  test. Valid values are `hermes`, `static_hermes` and
+ *  `static_hermes_experimental`.
  * - `fantom_flags`: specifies the configuration for common and JS-only feature
  *  flags. They can be specified in the same pragma or in different ones, and
  *  the format is `<flag_name>:<value>`.
@@ -88,6 +98,7 @@ export default function getFantomTestConfig(
 
   const config: FantomTestConfig = {
     mode: DEFAULT_MODE,
+    hermesVariant: DEFAULT_HERMES_MODE,
     flags: {
       common: {},
       jsOnly: {
@@ -124,7 +135,31 @@ export default function getFantomTestConfig(
       FANTOM_BENCHMARK_FILENAME_RE.test(testPath) ||
       FANTOM_BENCHMARK_SUITE_RE.test(testContents)
     ) {
-      config.mode = FantomTestConfigMode.Optimized;
+      config.mode = FANTOM_BENCHMARK_DEFAULT_MODE;
+    }
+  }
+
+  const maybeHermesVariant = pragmas.fantom_hermes_variant;
+
+  if (maybeHermesVariant != null) {
+    if (Array.isArray(maybeHermesVariant)) {
+      throw new Error('Expected a single value for @fantom_hermes_variant');
+    }
+
+    const hermesVariant = maybeHermesVariant;
+
+    switch (hermesVariant) {
+      case 'hermes':
+        config.hermesVariant = HermesVariant.Hermes;
+        break;
+      case 'static_hermes':
+        config.hermesVariant = HermesVariant.StaticHermes;
+        break;
+      case 'static_hermes_experimental':
+        config.hermesVariant = HermesVariant.StaticHermesExperimental;
+        break;
+      default:
+        throw new Error(`Invalid Fantom Hermes mode: ${hermesVariant}`);
     }
   }
 

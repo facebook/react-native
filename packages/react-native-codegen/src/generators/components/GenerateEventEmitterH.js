@@ -337,6 +337,7 @@ module.exports = {
         return components;
       })
       .filter(Boolean)
+      // $FlowFixMe[unsafe-object-assign]
       .reduce((acc, components) => Object.assign(acc, components), {});
 
     const extraIncludes = new Set<string>();

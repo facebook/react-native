@@ -17,12 +17,11 @@ import type {
   SectionData,
   VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
-import type {ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
 import VirtualizedLists from '@react-native/virtualized-lists';
 import * as React from 'react';
-import {forwardRef, useImperativeHandle, useRef} from 'react';
+import {useImperativeHandle, useRef} from 'react';
 
 const VirtualizedSectionList = VirtualizedLists.VirtualizedSectionList;
 
@@ -169,13 +168,19 @@ export type Props<ItemT, SectionT = DefaultSectionT> = $ReadOnly<{
 const SectionList: component(
   ref?: React.RefSetter<any>,
   ...Props<any, DefaultSectionT>
-) = forwardRef<Props<any, DefaultSectionT>, any>((props, ref) => {
+) = ({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<any>,
+  ...Props<any, DefaultSectionT>,
+}) => {
   const propsWithDefaults = {
     stickySectionHeadersEnabled: Platform.OS === 'ios',
     ...props,
   };
 
-  const wrapperRef = useRef<?ElementRef<typeof VirtualizedSectionList>>();
+  const wrapperRef = useRef<?React.ElementRef<typeof VirtualizedSectionList>>();
 
   useImperativeHandle(
     ref,
@@ -238,6 +243,6 @@ const SectionList: component(
       getItem={(items, index) => items[index]}
     />
   );
-});
+};
 
 export default SectionList;

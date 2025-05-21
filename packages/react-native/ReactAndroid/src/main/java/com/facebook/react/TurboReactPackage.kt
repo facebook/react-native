@@ -10,4 +10,4 @@ package com.facebook.react
 @Deprecated(
     message = "Use BaseReactPackage instead",
     replaceWith = ReplaceWith(expression = "BaseReactPackage"))
-public abstract class TurboReactPackage : BaseReactPackage() {}
+public abstract class TurboReactPackage : BaseReactPackage()

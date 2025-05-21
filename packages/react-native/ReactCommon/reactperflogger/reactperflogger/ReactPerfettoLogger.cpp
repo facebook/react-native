@@ -43,7 +43,7 @@ int64_t getDeltaNanos(double jsTime) {
 #if defined(WITH_PERFETTO)
   return TRACE_EVENT_CATEGORY_ENABLED("react-native");
 #elif defined(WITH_FBSYSTRACE)
-  return fbsystrace_is_tracing(TRACE_TAG_REACT_APPS);
+  return fbsystrace_is_tracing(TRACE_TAG_REACT);
 #else
   return false;
 #endif
@@ -68,9 +68,9 @@ int64_t getDeltaNanos(double jsTime) {
 #elif defined(WITH_FBSYSTRACE)
   static int cookie = 0;
   fbsystrace_begin_async_section_with_timedelta(
-      TRACE_TAG_REACT_APPS, eventName.data(), cookie, getDeltaNanos(startTime));
+      TRACE_TAG_REACT, eventName.data(), cookie, getDeltaNanos(startTime));
   fbsystrace_end_async_section_with_timedelta(
-      TRACE_TAG_REACT_APPS, eventName.data(), cookie, getDeltaNanos(endTime));
+      TRACE_TAG_REACT, eventName.data(), cookie, getDeltaNanos(endTime));
   cookie++;
 #endif
 }
@@ -90,10 +90,7 @@ int64_t getDeltaNanos(double jsTime) {
 #elif defined(WITH_FBSYSTRACE)
   static const char* kTrackName = "# Web Performance: Markers";
   fbsystrace_instant_for_track_with_timedelta(
-      TRACE_TAG_REACT_APPS,
-      kTrackName,
-      eventName.data(),
-      getDeltaNanos(startTime));
+      TRACE_TAG_REACT, kTrackName, eventName.data(), getDeltaNanos(startTime));
 #endif
 }
 

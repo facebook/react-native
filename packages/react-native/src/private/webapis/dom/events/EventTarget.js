@@ -15,6 +15,7 @@
 
 import type {EventPhase} from './Event';
 
+import {setPlatformObject} from '../../webidl/PlatformObjects';
 import Event from './Event';
 import {
   getStopImmediatePropagationFlag,
@@ -228,6 +229,8 @@ export default class EventTarget {
     dispatch(this, event);
   }
 }
+
+setPlatformObject(EventTarget);
 
 function validateCallback(callback: EventListener, methodName: string): void {
   if (typeof callback !== 'function' && typeof callback !== 'object') {

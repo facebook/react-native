@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
@@ -20,6 +19,9 @@ import {LogBox, Text, View} from 'react-native';
 // If a test uses this, it should have a component frame.
 // This is a bug we'll fix in a followup.
 const BUG_WITH_COMPONENT_FRAMES: [] = [];
+
+// Disable the logic to make sure that LogBox is not installed in tests.
+Fantom.setLogBoxCheckEnabled(false);
 
 describe('LogBox', () => {
   let originalConsoleError;

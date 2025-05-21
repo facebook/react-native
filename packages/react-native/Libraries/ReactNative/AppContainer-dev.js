@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {
@@ -24,6 +23,7 @@ import LogBoxNotificationContainer from '../LogBox/LogBoxNotificationContainer';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {RootTagContext, createRootTag} from './RootTag';
 import * as React from 'react';
+import {useRef} from 'react';
 
 const {useEffect, useState, useCallback} = React;
 
@@ -53,7 +53,8 @@ const InspectorDeferred = ({
 }: InspectorDeferredProps) => {
   // D39382967 adds a require cycle: InitializeCore -> AppContainer -> Inspector -> InspectorPanel -> ScrollView -> InitializeCore
   // We can't remove it yet, fallback to dynamic require for now. This is the only reason why this logic is in a separate function.
-  const Inspector = require('../../src/private/inspector/Inspector').default;
+  const Inspector =
+    require('../../src/private/devsupport/devmenu/elementinspector/Inspector').default;
 
   return (
     <Inspector
@@ -74,7 +75,7 @@ const ReactDevToolsOverlayDeferred = ({
   reactDevToolsAgent,
 }: ReactDevToolsOverlayDeferredProps) => {
   const ReactDevToolsOverlay =
-    require('../../src/private/inspector/ReactDevToolsOverlay').default;
+    require('../../src/private/devsupport/devmenu/elementinspector/ReactDevToolsOverlay').default;
 
   return (
     <ReactDevToolsOverlay
@@ -94,9 +95,9 @@ const AppContainer = ({
   WrapperComponent,
   rootViewStyle,
 }: Props): React.Node => {
-  const appContainerRootViewRef: AppContainerRootViewRef = React.useRef(null);
-  const innerViewRef: InspectedViewRef = React.useRef(null);
-  const debuggingOverlayRef: DebuggingOverlayRef = React.useRef(null);
+  const appContainerRootViewRef: AppContainerRootViewRef = useRef(null);
+  const innerViewRef: InspectedViewRef = useRef(null);
+  const debuggingOverlayRef: DebuggingOverlayRef = useRef(null);
 
   useSubscribeToDebuggingOverlayRegistry(
     appContainerRootViewRef,

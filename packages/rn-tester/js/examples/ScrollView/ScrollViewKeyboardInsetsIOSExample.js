@@ -3,11 +3,14 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 'use strict';
 
 import * as React from 'react';
+import {useState} from 'react';
 import {
   FlatList,
   ScrollView,
@@ -19,10 +22,13 @@ import {
 } from 'react-native';
 
 export function ScrollViewKeyboardInsetsExample() {
-  const [automaticallyAdjustKeyboardInsets, setAutomaticallyAdjustKeyboardInsets] = React.useState(true);
-  const [flatList, setFlatList] = React.useState(false);
-  const [inverted, setInverted] = React.useState(false);
-  const [heightRestricted, setHeightRestricted] = React.useState(false);
+  const [
+    automaticallyAdjustKeyboardInsets,
+    setAutomaticallyAdjustKeyboardInsets,
+  ] = useState(true);
+  const [flatList, setFlatList] = useState(false);
+  const [inverted, setInverted] = useState(false);
+  const [heightRestricted, setHeightRestricted] = useState(false);
 
   const scrollViewProps = {
     style: heightRestricted && styles.scrollViewHeightRestricted,
@@ -32,13 +38,15 @@ export function ScrollViewKeyboardInsetsExample() {
   };
 
   const data = [...Array(20).keys()];
-  const renderItem = ({ item, index }) => {
-    const largeInput = (index % 5) === 4;
+  const renderItem = ({item, index}) => {
+    const largeInput = index % 5 === 4;
     return (
       <View key={item} style={styles.textInputRow}>
-        <TextInput placeholder={item.toString()}
-                   multiline={largeInput}
-                   style={[styles.textInput, largeInput && styles.textInputLarger]}/>
+        <TextInput
+          placeholder={item.toString()}
+          multiline={largeInput}
+          style={[styles.textInput, largeInput && styles.textInputLarger]}
+        />
       </View>
     );
   };
@@ -46,52 +54,67 @@ export function ScrollViewKeyboardInsetsExample() {
   return (
     <View style={styles.container}>
       <View style={styles.controlRow}>
-        <Text><Text style={styles.code}>automaticallyAdjustKeyboardInsets</Text> is {automaticallyAdjustKeyboardInsets + ''}</Text>
+        <Text>
+          <Text style={styles.code}>automaticallyAdjustKeyboardInsets</Text> is{' '}
+          {automaticallyAdjustKeyboardInsets + ''}
+        </Text>
         <Switch
           onValueChange={v => setAutomaticallyAdjustKeyboardInsets(v)}
           value={automaticallyAdjustKeyboardInsets}
-          style={styles.controlSwitch}/>
+          style={styles.controlSwitch}
+        />
       </View>
       <View style={styles.controlRow}>
-        <Text><Text style={styles.code}>FlatList</Text> is {flatList + ''}</Text>
+        <Text>
+          <Text style={styles.code}>FlatList</Text> is {flatList + ''}
+        </Text>
         <Switch
           onValueChange={v => setFlatList(v)}
           value={flatList}
-          style={styles.controlSwitch}/>
+          style={styles.controlSwitch}
+        />
       </View>
       {flatList && (
         <View style={styles.controlRow}>
-          <Text><Text style={styles.code}>inverted</Text> is {inverted + ''}</Text>
+          <Text>
+            <Text style={styles.code}>inverted</Text> is {inverted + ''}
+          </Text>
           <Switch
             onValueChange={v => setInverted(v)}
             value={inverted}
-            style={styles.controlSwitch}/>
+            style={styles.controlSwitch}
+          />
         </View>
       )}
       <View style={styles.controlRow}>
-        <Text><Text style={styles.code}>HeightRestricted</Text> is {heightRestricted + ''}</Text>
+        <Text>
+          <Text style={styles.code}>HeightRestricted</Text> is{' '}
+          {heightRestricted + ''}
+        </Text>
         <Switch
           onValueChange={v => setHeightRestricted(v)}
           value={heightRestricted}
-          style={styles.controlSwitch}/>
+          style={styles.controlSwitch}
+        />
       </View>
       <View style={styles.controlRow}>
-        <TextInput placeholder={'Text input outside scroll view'} style={styles.controlTextInput} />
+        <TextInput
+          placeholder={'Text input outside scroll view'}
+          style={styles.controlTextInput}
+        />
       </View>
-      {flatList
-        ? (
-          <FlatList
-            {...scrollViewProps}
-            inverted={inverted}
-            data={data}
-            renderItem={renderItem}/>
-        )
-        : (
-          <ScrollView {...scrollViewProps}>
-            {data.map((item, index) => renderItem({ item, index }))}
-          </ScrollView>
-        )
-      }
+      {flatList ? (
+        <FlatList
+          {...scrollViewProps}
+          inverted={inverted}
+          data={data}
+          renderItem={renderItem}
+        />
+      ) : (
+        <ScrollView {...scrollViewProps}>
+          {data.map((item, index) => renderItem({item, index}))}
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -136,8 +159,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  controlSwitch: {
-  },
+  controlSwitch: {},
   controlTextInput: {
     flex: 1,
     paddingVertical: 10,
@@ -159,6 +181,6 @@ exports.description =
 exports.examples = [
   {
     title: '<ScrollView> automaticallyAdjustKeyboardInsets Example',
-    render: (): React.Node => <ScrollViewKeyboardInsetsExample/>,
+    render: (): React.Node => <ScrollViewKeyboardInsetsExample />,
   },
 ];

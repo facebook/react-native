@@ -15,7 +15,7 @@ import com.facebook.yoga.YogaDirection
 @LegacyArchitecture
 internal object LayoutDirectionUtil {
   init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("LayoutDirectionUtil")
+    LegacyArchitectureLogger.assertLegacyArchitecture("LayoutDirectionUtil")
   }
 
   @JvmStatic

@@ -97,6 +97,11 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) override;
+  void uiManagerShouldAddEventListener(
+      std::shared_ptr<const EventListener> listener) final;
+  void uiManagerShouldRemoveEventListener(
+      const std::shared_ptr<const EventListener>& listener) final;
+  void uiManagerDidStartSurface(const ShadowTree& shadowTree) override;
 
 #pragma mark - ContextContainer
   ContextContainer::Shared getContextContainer() const;
@@ -110,6 +115,10 @@ class Scheduler final : public UIManagerDelegate {
   void addEventListener(std::shared_ptr<const EventListener> listener);
   void removeEventListener(
       const std::shared_ptr<const EventListener>& listener);
+
+#pragma mark - Surface start callback
+  void uiManagerShouldSetOnSurfaceStartCallback(
+      OnSurfaceStartCallback&& callback) override;
 
  private:
   friend class SurfaceHandler;
@@ -140,6 +149,9 @@ class Scheduler final : public UIManagerDelegate {
   ContextContainer::Shared contextContainer_;
 
   RuntimeScheduler* runtimeScheduler_{nullptr};
+
+  mutable std::shared_mutex onSurfaceStartCallbackMutex_;
+  OnSurfaceStartCallback onSurfaceStartCallback_;
 };
 
 } // namespace facebook::react

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b8e277be7a521cbc3c4034d127af0a8a>>
+ * @generated SignedSource<<9c7d04c48c4c5feb0d2fb250966550c8>>
  */
 
 /**
@@ -27,11 +27,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun animatedShouldSignalBatch(): Boolean = false
 
+  override fun avoidCeilingAvailableAndroidTextWidth(): Boolean = true
+
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
   override fun disableMainQueueSyncDispatchIOS(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
+
+  override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
@@ -39,35 +43,45 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableCppPropsIteratorSetter(): Boolean = false
 
+  override fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = true
+
+  override fun enableDestroyShadowTreeRevisionAsync(): Boolean = false
+
+  override fun enableDoubleMeasurementFixAndroid(): Boolean = false
+
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
 
+  override fun enableFixForParentTagDuringReparenting(): Boolean = false
+
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
+
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
-  override fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean = false
+  override fun enableIntersectionObserverEventLoopIntegration(): Boolean = true
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
-  override fun enableLongTaskAPI(): Boolean = false
-
   override fun enableMainQueueModulesOnIOS(): Boolean = false
 
   override fun enableNativeCSSParsing(): Boolean = false
 
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
+  override fun enableNetworkEventReporting(): Boolean = false
+
+  override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
+
+  override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
-  override fun enableReportEventPaintTime(): Boolean = false
+  override fun enableResourceTimingAPI(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
-
-  override fun enableUIConsistency(): Boolean = false
 
   override fun enableViewCulling(): Boolean = false
 
@@ -79,21 +93,19 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
-  override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
-
   override fun fuseboxEnabledRelease(): Boolean = false
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
-  override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
-
-  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = false
+  override fun incorporateMaxLinesDuringAndroidLayout(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
+  override fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = false
+
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
-  override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
+  override fun useAndroidTextLayoutWidthDirectly(): Boolean = true
 
   override fun useFabricInterop(): Boolean = true
 
@@ -102,6 +114,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
   override fun useRawPropsJsiValue(): Boolean = false
+
+  override fun useShadowNodeStateOnClone(): Boolean = false
 
   override fun useTurboModuleInterop(): Boolean = false
 

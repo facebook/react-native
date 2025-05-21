@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';

@@ -9,17 +9,17 @@ package com.facebook.react.bridge
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** This does nothing interesting, except avoid breaking existing code. */
 @DoNotStrip
-@LegacyArchitecture
+@InteropLegacyArchitecture
 public open class CxxModuleWrapper protected constructor(hybridData: HybridData) :
     CxxModuleWrapperBase(hybridData) {
   private companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("CxxModuleWrapper")
+      LegacyArchitectureLogger.assertLegacyArchitecture("CxxModuleWrapper")
     }
   }
 }

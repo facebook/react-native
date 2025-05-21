@@ -14,7 +14,7 @@ import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
-import type {KeyboardEvent} from 'react-native/Libraries/Components/Keyboard/Keyboard';
+import type {KeyboardEvent} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';

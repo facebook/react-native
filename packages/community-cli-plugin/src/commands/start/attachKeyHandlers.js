@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type TerminalReporter from 'metro/src/lib/TerminalReporter';
+import type {TerminalReporter} from 'metro';
 
 import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import chalk from 'chalk';

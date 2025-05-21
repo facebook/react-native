@@ -14,17 +14,6 @@
 
 namespace facebook::react {
 
-// We can't define this as type std::mutex because it gives error: declaration
-// requires a global destructor.
-inline std::mutex* mainThreadMutex = nullptr;
-
-inline std::mutex& getMainThreadMutex() {
-  if (mainThreadMutex == nullptr) {
-    mainThreadMutex = new std::mutex();
-  }
-  return *mainThreadMutex;
-}
-
 /*
  * Takes a function and calls it with a reference to a Runtime. The function
  * will be called when it is safe to do so (i.e. it ensures non-concurrent
@@ -44,14 +33,14 @@ using RuntimeExecutor =
  * thread.
  * Example order of events (when not a sync call in runtimeExecutor callback):
  * - [UI thread] Lock all mutexes at start
- * - [UI thread] mutex1.lock before callback
+ * - [UI thread] runtimeCaptured.lock before callback
  * - [JS thread] Set runtimePtr in runtimeExecutor callback
- * - [JS thread] mutex1.unlock in runtimeExecutor callback
+ * - [JS thread] runtimeCaptured.unlock in runtimeExecutor callback
  * - [UI thread] Call callback
- * - [JS thread] mutex2.lock in runtimeExecutor callback
- * - [UI thread] mutex2.unlock after callback
- * - [UI thread] mutex3.lock after callback
- * - [JS thread] mutex3.unlock in runtimeExecutor callback
+ * - [JS thread] callbackExecuted.lock in runtimeExecutor callback
+ * - [UI thread] callbackExecuted.unlock after callback
+ * - [UI thread] jsBlockExecuted.lock after callback
+ * - [JS thread] jsBlockExecuted.unlock in runtimeExecutor callback
  */
 inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,
@@ -59,14 +48,13 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
   // Note: We need the third mutex to get back to the main thread before
   // the lambda is finished (because all mutexes are allocated on the stack).
 
-  std::mutex mutex1;
-  std::mutex mutex2;
-  std::mutex mutex3;
+  std::mutex runtimeCaptured;
+  std::mutex callbackExecuted;
+  std::mutex jsBlockExecuted;
 
-  std::lock_guard<std::mutex> lock(getMainThreadMutex());
-  mutex1.lock();
-  mutex2.lock();
-  mutex3.lock();
+  runtimeCaptured.lock();
+  callbackExecuted.lock();
+  jsBlockExecuted.lock();
 
   jsi::Runtime* runtimePtr;
 
@@ -77,21 +65,21 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 
     if (threadId == std::this_thread::get_id()) {
       // In case of a synchronous call, we should unlock mutexes and return.
-      mutex1.unlock();
-      mutex3.unlock();
+      runtimeCaptured.unlock();
+      jsBlockExecuted.unlock();
       return;
     }
 
-    mutex1.unlock();
+    runtimeCaptured.unlock();
     // `callback` is called somewhere here.
-    mutex2.lock();
-    mutex3.unlock();
+    callbackExecuted.lock();
+    jsBlockExecuted.unlock();
   });
 
-  mutex1.lock();
+  runtimeCaptured.lock();
   callback(*runtimePtr);
-  mutex2.unlock();
-  mutex3.lock();
+  callbackExecuted.unlock();
+  jsBlockExecuted.lock();
 }
 
 template <typename DataT>

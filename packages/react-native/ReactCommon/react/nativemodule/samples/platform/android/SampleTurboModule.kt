@@ -7,9 +7,12 @@
 
 package com.facebook.fbreact.specs
 
+import android.net.Uri
 import android.os.Build
 import android.util.DisplayMetrics
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
@@ -24,6 +27,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
+import java.util.UUID
 
 @DoNotStrip
 @ReactModule(name = SampleTurboModule.NAME)
@@ -172,7 +176,7 @@ public class SampleTurboModule(private val context: ReactApplicationContext) :
 
   @DoNotStrip
   @Suppress("unused")
-  override fun getValueWithPromise(error: Boolean, promise: Promise?) {
+  override fun getValueWithPromise(error: Boolean, promise: Promise) {
     if (error) {
       promise?.reject(
           "code 1", "intentional promise rejection", Throwable("promise intentionally rejected"))
@@ -189,13 +193,13 @@ public class SampleTurboModule(private val context: ReactApplicationContext) :
 
   @DoNotStrip
   @Suppress("unused")
-  override fun getObjectThrows(arg: ReadableMap?): WritableMap? {
+  override fun getObjectThrows(arg: ReadableMap): WritableMap {
     error("Intentional exception from JVM getObjectThrows with $arg")
   }
 
   @DoNotStrip
   @Suppress("unused")
-  override fun promiseThrows(promise: Promise?) {
+  override fun promiseThrows(promise: Promise) {
     error("Intentional exception from JVM promiseThrows")
   }
 
@@ -207,15 +211,38 @@ public class SampleTurboModule(private val context: ReactApplicationContext) :
 
   @DoNotStrip
   @Suppress("unused")
-  override fun getObjectAssert(arg: ReadableMap?): WritableMap? {
+  override fun getObjectAssert(arg: ReadableMap): WritableMap? {
     assert(false) { "Intentional assert from JVM getObjectAssert with $arg" }
     return null
   }
 
   @DoNotStrip
   @Suppress("unused")
-  override fun promiseAssert(promise: Promise?) {
+  override fun promiseAssert(promise: Promise) {
     assert(false) { "Intentional assert from JVM promiseAssert" }
+  }
+
+  @DoNotStrip
+  @Suppress("unused")
+  override fun getImageUrl(promise: Promise) {
+    val activity = context.getCurrentActivity() as? ComponentActivity
+    if (activity != null) {
+      val key = UUID.randomUUID().toString()
+      activity.activityResultRegistry
+          .register(
+              key,
+              ActivityResultContracts.GetContent(),
+              { uri: Uri? ->
+                if (uri != null) {
+                  promise.resolve(uri.toString())
+                } else {
+                  promise.resolve(null)
+                }
+              })
+          .launch("image/*")
+    } else {
+      promise.reject("error", "Unable to obtain an image uri without current activity")
+    }
   }
 
   private fun log(method: String, input: Any?, output: Any?) {

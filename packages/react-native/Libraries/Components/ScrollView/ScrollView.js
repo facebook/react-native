@@ -26,11 +26,11 @@ import type {ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 import {
   HScrollContentViewNativeComponent,
   HScrollViewNativeComponent,
-} from '../../../src/private/components/HScrollViewNativeComponents';
+} from '../../../src/private/components/scrollview/HScrollViewNativeComponents';
 import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
-} from '../../../src/private/components/VScrollViewNativeComponents';
+} from '../../../src/private/components/scrollview/VScrollViewNativeComponents';
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -52,6 +52,7 @@ import invariant from 'invariant';
 import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {cloneElement} from 'react';
 
 /*
  * iOS scroll event timing nuances:
@@ -372,17 +373,20 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
    */
   persistentScrollbar?: ?boolean,
   /**
-   * Fades out the edges of the scroll content.
+   * Controls the fading effect at the edges of the scroll content.
    *
-   * If the value is greater than 0, the fading edges will be set accordingly
-   * to the current scroll direction and position,
-   * indicating if there is more content to show.
+   * A value greater than 0 will apply the fading effect, indicating more content is available
+   * to scroll.
+   *
+   * You can specify a single number to apply the same fading length to both edges.
+   * Alternatively, use an object with `start` and `end` properties to set different
+   * fading lengths for the start and end of the scroll content.
    *
    * The default value is 0.
    *
    * @platform android
    */
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | {start: number, end: number},
 }>;
 
 type StickyHeaderComponentType = component(
@@ -390,11 +394,7 @@ type StickyHeaderComponentType = component(
   ...ScrollViewStickyHeaderProps
 );
 
-export type ScrollViewProps = $ReadOnly<{
-  ...ViewProps,
-  ...ScrollViewPropsIOS,
-  ...ScrollViewPropsAndroid,
-
+type ScrollViewBaseProps = $ReadOnly<{
   /**
    * These styles will be applied to the scroll view content container which
    * wraps all of the child views. Example:
@@ -670,6 +670,13 @@ export type ScrollViewProps = $ReadOnly<{
    * measure, measureLayout, etc.
    */
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
+}>;
+
+export type ScrollViewProps = $ReadOnly<{
+  ...ViewProps,
+  ...ScrollViewPropsIOS,
+  ...ScrollViewPropsAndroid,
+  ...ScrollViewBaseProps,
 }>;
 
 type ScrollViewState = {
@@ -1162,6 +1169,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       // they are callable from the ref.
 
       // $FlowFixMe[prop-missing] - Known issue with appending custom methods.
+      // $FlowFixMe[unsafe-object-assign]
       const publicInstance: PublicScrollViewInstance = Object.assign(
         nativeInstance,
         {
@@ -1823,7 +1831,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
         // however, the ScrollView still needs the baseStyle to be scrollable
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         // $FlowFixMe[incompatible-call]
-        return React.cloneElement(
+        return cloneElement(
           refreshControl,
           {style: StyleSheet.compose(baseStyle, outer)},
           <NativeScrollView
@@ -1903,23 +1911,25 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
   return state;
 }
 
-// TODO: After upgrading to React 19, remove `forwardRef` from this component.
 // NOTE: This wrapper component is necessary because `ScrollView` is a class
 // component and we need to map `ref` to a differently named prop. This can be
 // removed when `ScrollView` is a functional component.
 const ScrollViewWrapper: component(
   ref?: React.RefSetter<PublicScrollViewInstance>,
   ...props: ScrollViewProps
-) = React.forwardRef(function Wrapper(
-  props: ScrollViewProps,
-  ref: ?React.RefSetter<PublicScrollViewInstance>,
-): React.Node {
+) = function Wrapper({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<PublicScrollViewInstance>,
+  ...ScrollViewProps,
+}): React.Node {
   return ref == null ? (
     <ScrollView {...props} />
   ) : (
     <ScrollView {...props} scrollViewRef={ref} />
   );
-});
+};
 ScrollViewWrapper.displayName = 'ScrollView';
 // $FlowExpectedError[prop-missing]
 ScrollViewWrapper.Context = ScrollViewContext;

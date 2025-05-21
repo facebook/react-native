@@ -28,6 +28,7 @@ import {
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
+import {useCallback, useEffect, useMemo, useReducer} from 'react';
 import {
   BackHandler,
   Button,
@@ -36,6 +37,7 @@ import {
   StyleSheet,
   View,
   useColorScheme,
+  useWindowDimensions,
 } from 'react-native';
 import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
@@ -63,7 +65,7 @@ const RNTesterApp = ({
   },
   customBackButton?: BackButton,
 }): React.Node => {
-  const [state, dispatch] = React.useReducer(
+  const [state, dispatch] = useReducer(
     RNTesterNavigationReducer,
     initialNavigationState,
   );
@@ -75,21 +77,24 @@ const RNTesterApp = ({
     activeModuleExampleKey,
     screen,
     recentlyUsed,
+    hadDeepLink,
   } = state;
 
-  const examplesList = React.useMemo(
+  const isScreenTiny = useWindowDimensions().height < 600;
+
+  const examplesList = useMemo(
     () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
     [recentlyUsed, testList],
   );
 
-  const handleBackPress = React.useCallback(() => {
+  const handleBackPress = useCallback(() => {
     if (activeModuleKey != null) {
       dispatch({type: RNTesterNavigationActionsType.BACK_BUTTON_PRESS});
     }
   }, [dispatch, activeModuleKey]);
 
   // Setup hardware back button press listener
-  React.useEffect(() => {
+  useEffect(() => {
     const handleHardwareBackPress = () => {
       if (activeModuleKey) {
         handleBackPress();
@@ -105,7 +110,7 @@ const RNTesterApp = ({
     return () => subscription.remove();
   }, [activeModuleKey, handleBackPress]);
 
-  const handleModuleCardPress = React.useCallback(
+  const handleModuleCardPress = useCallback(
     ({exampleType, key, title}: any) => {
       dispatch({
         type: RNTesterNavigationActionsType.MODULE_CARD_PRESS,
@@ -115,7 +120,7 @@ const RNTesterApp = ({
     [dispatch],
   );
 
-  const handleModuleExampleCardPress = React.useCallback(
+  const handleModuleExampleCardPress = useCallback(
     (exampleName: string) => {
       dispatch({
         type: RNTesterNavigationActionsType.EXAMPLE_CARD_PRESS,
@@ -125,7 +130,7 @@ const RNTesterApp = ({
     [dispatch],
   );
 
-  const handleNavBarPress = React.useCallback(
+  const handleNavBarPress = useCallback(
     (args: {screen: ScreenTypes}) => {
       if (args.screen === 'playgrounds') {
         dispatch({
@@ -147,13 +152,13 @@ const RNTesterApp = ({
   );
 
   // Setup Linking event subscription
-  const handleOpenUrlRequest = React.useCallback(
+  const handleOpenUrlRequest = useCallback(
     ({url}: {url: string, ...}) => {
       // Supported URL pattern(s):
       // *  rntester://example/<moduleKey>
       // *  rntester://example/<moduleKey>/<exampleKey>
       const match =
-        /^rntester:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
+        /^rntester(-legacy)?:\/\/example\/([a-zA-Z0-9_-]+)(?:\/([a-zA-Z0-9_-]+))?$/.exec(
           url,
         );
       if (!match) {
@@ -163,8 +168,8 @@ const RNTesterApp = ({
         return;
       }
 
-      const rawModuleKey = match[1];
-      const exampleKey = match[2];
+      const rawModuleKey = match[2];
+      const exampleKey = match[3];
 
       // For tooling compatibility, allow all these variants for each module key:
       const validModuleKeys = [
@@ -225,7 +230,7 @@ const RNTesterApp = ({
     },
     [dispatch],
   );
-  React.useEffect(() => {
+  useEffect(() => {
     // Initial deeplink
     Linking.getInitialURL()
       .then(url => url != null && handleOpenUrlRequest({url: url}))
@@ -265,16 +270,21 @@ const RNTesterApp = ({
   const activeExampleList =
     screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
 
+  // Hide chrome if we don't have much screen space and are showing UI for tests
+  const shouldHideChrome = isScreenTiny && hadDeepLink;
+
   return (
     <RNTesterThemeContext.Provider value={theme}>
-      <RNTTitleBar
-        title={title}
-        theme={theme}
-        documentationURL={activeModule?.documentationURL}>
-        {activeModule && BackButtonComponent ? (
-          <BackButtonComponent onBack={handleBackPress} />
-        ) : undefined}
-      </RNTTitleBar>
+      {!shouldHideChrome && (
+        <RNTTitleBar
+          title={title}
+          theme={theme}
+          documentationURL={activeModule?.documentationURL}>
+          {activeModule && BackButtonComponent ? (
+            <BackButtonComponent onBack={handleBackPress} />
+          ) : undefined}
+        </RNTTitleBar>
+      )}
       <View
         style={StyleSheet.compose(styles.container, {
           backgroundColor: theme.GroupedBackgroundColor,
@@ -292,13 +302,15 @@ const RNTesterApp = ({
           />
         )}
       </View>
-      <View style={styles.bottomNavbar}>
-        <RNTesterNavBar
-          screen={screen || Screens.COMPONENTS}
-          isExamplePageOpen={!!activeModule}
-          handleNavBarPress={handleNavBarPress}
-        />
-      </View>
+      {!shouldHideChrome && (
+        <View style={styles.bottomNavbar}>
+          <RNTesterNavBar
+            screen={screen || Screens.COMPONENTS}
+            isExamplePageOpen={!!activeModule}
+            handleNavBarPress={handleNavBarPress}
+          />
+        </View>
+      )}
       <ReportFullyDrawnView />
     </RNTesterThemeContext.Provider>
   );

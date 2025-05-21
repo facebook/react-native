@@ -20,7 +20,6 @@
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <ReactCommon/TurboModuleWithJSIBindings.h>
 #include <react/jni/CxxModuleWrapper.h>
 
 namespace facebook::react {
@@ -166,7 +165,6 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
 
   auto cxxModule = cxxDelegate->getTurboModule(name, jsCallInvoker_);
   if (cxxModule) {
-    TurboModuleWithJSIBindings::installJSIBindings(cxxModule, runtime);
     turboModuleCache_.insert({name, cxxModule});
     return cxxModule;
   }

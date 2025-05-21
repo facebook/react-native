@@ -9,14 +9,16 @@
  */
 
 'use strict';
+
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import BaseFlatListExample, {ITEM_HEIGHT} from './BaseFlatListExample';
 import * as React from 'react';
+import {useRef, useState} from 'react';
 import {FlatList} from 'react-native';
 
 export function FlatList_onStartReached(): React.Node {
-  const [output, setOutput] = React.useState('');
+  const [output, setOutput] = useState('');
   const exampleProps = {
     onStartReached: (info: {distanceFromStart: number, ...}) =>
       setOutput('onStartReached'),
@@ -28,7 +30,7 @@ export function FlatList_onStartReached(): React.Node {
       index,
     }),
   };
-  const ref = React.useRef<?FlatList<string>>(null);
+  const ref = useRef<?FlatList<string>>(null);
 
   const onTest = () => {
     ref.current?.scrollToOffset({offset: 0});

@@ -310,6 +310,24 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert(
           cachedMethodId);
 }
 
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl(
+    facebook::jsi::Runtime& rt,
+    TurboModule& turboModule,
+    const facebook::jsi::Value* args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule&>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          PromiseKind,
+          "getImageUrl",
+          "(Lcom/facebook/react/bridge/Promise;)V",
+          args,
+          count,
+          cachedMethodId);
+}
+
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
     const JavaTurboModule::InitParams& params)
     : JavaTurboModule(params) {
@@ -351,6 +369,8 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
       1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
   methodMap_["promiseAssert"] = MethodMetadata{
       0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
+  methodMap_["getImageUrl"] = MethodMetadata{
+      0, __hostFunction_NativeSampleTurboModuleSpecJSI_getImageUrl};
   eventEmitterMap_["onPress"] =
       std::make_shared<AsyncEventEmitter<folly::dynamic>>();
   eventEmitterMap_["onClick"] =
@@ -359,7 +379,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
       std::make_shared<AsyncEventEmitter<folly::dynamic>>();
   eventEmitterMap_["onSubmit"] =
       std::make_shared<AsyncEventEmitter<folly::dynamic>>();
-  setEventEmitterCallback(params.instance);
+  configureEventEmitterCallback();
 }
 
 std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(

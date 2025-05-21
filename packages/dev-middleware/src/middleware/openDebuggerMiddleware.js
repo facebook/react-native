@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
@@ -65,6 +64,7 @@ export default function openDebuggerMiddleware({
         /** @deprecated Will only match legacy Hermes targets */
         device?: string,
         launchId?: string,
+        telemetryInfo?: string,
         target?: string,
         ...
       } = paresedUrl.query;
@@ -146,7 +146,12 @@ export default function openDebuggerMiddleware({
                 experiments,
                 target.webSocketDebuggerUrl,
                 serverBaseUrl,
-                {launchId: query.launchId, useFuseboxEntryPoint},
+                {
+                  launchId: query.launchId,
+                  telemetryInfo: query.telemetryInfo,
+                  appId: target.appId,
+                  useFuseboxEntryPoint,
+                },
               ),
             );
             res.writeHead(200);
@@ -161,6 +166,8 @@ export default function openDebuggerMiddleware({
                 {
                   relative: true,
                   launchId: query.launchId,
+                  telemetryInfo: query.telemetryInfo,
+                  appId: target.appId,
                   useFuseboxEntryPoint,
                 },
               ),

@@ -10,11 +10,7 @@
 
 import type {HostComponent} from '../../../src/private/types/HostComponent';
 import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
-import type {
-  ColorValue,
-  TextStyleProp,
-  ViewStyleProp,
-} from '../../StyleSheet/StyleSheet';
+import type {ColorValue, TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BubblingEventHandler,
   DirectEventHandler,
@@ -70,7 +66,7 @@ export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
 export type NativeProps = $ReadOnly<{
   // This allows us to inherit everything from ViewProps except for style (see below)
   // This must be commented for Fabric codegen to work.
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
+  ...Omit<ViewProps, 'style'>,
 
   /**
    * Android props after this
@@ -658,6 +654,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     },
   },
   validAttributes: {
+    acceptDragAndDropTypes: true,
     maxFontSizeMultiplier: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,

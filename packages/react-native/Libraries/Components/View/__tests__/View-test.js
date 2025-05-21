@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -25,7 +24,7 @@ describe('View', () => {
   });
 
   it('has displayName', () => {
-    expect(View.displayName).toEqual('View');
+    expect(View.displayName ?? View.name).toEqual('View');
   });
 });
 

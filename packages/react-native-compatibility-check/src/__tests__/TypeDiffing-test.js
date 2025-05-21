@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 import convertPropToBasicTypes from '../convertPropToBasicTypes';
@@ -82,7 +81,7 @@ const [
   nativeTypeDiffingTypesAliases,
   nativeTypeDiffingTypesMethodParamLookup,
   nativeTypeDiffingTypesMethodLookup,
-  _,
+  ,
   nativeTypeDiffingTypesEnums,
 ] = getModule(
   'native-module-type-diffing-types',

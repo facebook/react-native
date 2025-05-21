@@ -22,25 +22,25 @@ import androidx.annotation.IntDef
             EventCategoryDef.DISCRETE,
             EventCategoryDef.CONTINUOUS])
 @Retention(AnnotationRetention.SOURCE)
-public annotation class EventCategoryDef {
-  public companion object {
+internal annotation class EventCategoryDef {
+  companion object {
     /** Start of a continuous event. To be used with touchStart. */
-    public const val CONTINUOUS_START: Int = 0
+    const val CONTINUOUS_START: Int = 0
 
     /** End of a continuous event. To be used with touchEnd. */
-    public const val CONTINUOUS_END: Int = 1
+    const val CONTINUOUS_END: Int = 1
 
     /**
      * Priority for this event will be determined from other events in the queue. If it is triggered
      * by continuous event, its priority will be default. If it is not triggered by continuous
      * event, its priority will be discrete.
      */
-    public const val UNSPECIFIED: Int = 2
+    const val UNSPECIFIED: Int = 2
 
     /** Forces discrete type for the event. Regardless if continuous event is ongoing. */
-    public const val DISCRETE: Int = 3
+    const val DISCRETE: Int = 3
 
     /** Forces continuous type for the event. Regardless if continuous event isn't ongoing. */
-    public const val CONTINUOUS: Int = 4
+    const val CONTINUOUS: Int = 4
   }
 }

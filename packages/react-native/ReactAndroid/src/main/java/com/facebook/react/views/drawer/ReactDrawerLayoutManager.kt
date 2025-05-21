@@ -76,7 +76,7 @@ public class ReactDrawerLayoutManager :
       }
 
       drawerPosition.type == ReadableType.String ->
-          setDrawerPositionInternal(view, drawerPosition.asString())
+          setDrawerPositionInternal(view, checkNotNull(drawerPosition.asString()))
 
       else -> {
         FLog.w(ReactConstants.TAG, "drawerPosition must be a string or int")

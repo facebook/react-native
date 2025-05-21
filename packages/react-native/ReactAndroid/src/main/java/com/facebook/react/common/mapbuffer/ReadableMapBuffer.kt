@@ -60,7 +60,7 @@ private constructor(
     get() = getKeyOffsetForBucketIndex(count)
 
   /**
-   * @param key Key to search for
+   * @param intKey Key to search for
    * @return the "bucket index" for a key or -1 if not found. It uses a binary search algorithm
    *   (log(n))
    */

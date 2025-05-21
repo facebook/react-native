@@ -45,7 +45,7 @@ extra["publishing_version"] = project.findProperty("VERSION_NAME")?.toString()!!
 // This is the version of CMake we're requesting to the Android SDK to use.
 // If missing it will be downloaded automatically. Only CMake versions shipped with the
 // Android SDK are supported (you can find them listed in the SDK Manager of Android Studio).
-val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
+val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.30.5"
 
 extra["cmake_version"] = cmakeVersion
 
@@ -407,6 +407,20 @@ val prepareGlog by
       outputDir.set(File(thirdPartyNdkDir, "glog"))
     }
 
+// Tasks used by Fantom to download the Native 3p dependencies used.
+val prepareNative3pDependencies by
+    tasks.registering {
+      dependsOn(
+          prepareBoost,
+          prepareDoubleConversion,
+          prepareFastFloat,
+          prepareFmt,
+          prepareFolly,
+          prepareGlog,
+          prepareGtest,
+      )
+    }
+
 val prepareKotlinBuildScriptModel by
     tasks.registering {
       // This task is run when Gradle Sync is running.
@@ -522,6 +536,7 @@ android {
     buildConfigField("boolean", "UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
+    resValue("string", "react_native_dev_server_ip", "localhost")
 
     testApplicationId = "com.facebook.react.tests.gradle"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -534,7 +549,8 @@ android {
             "-DREACT_BUILD_DIR=$buildDir",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_TOOLCHAIN=clang",
-            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+            "-DCMAKE_POLICY_DEFAULT_CMP0069=NEW")
 
         targets(
             "reactnative",
@@ -570,13 +586,7 @@ android {
       .dependsOn(
           buildCodegenCLI,
           "generateCodegenArtifactsFromSchema",
-          prepareBoost,
-          prepareDoubleConversion,
-          prepareFastFloat,
-          prepareFmt,
-          prepareFolly,
-          prepareGlog,
-          prepareGtest,
+          prepareNative3pDependencies,
           preparePrefab)
   tasks.getByName("generateCodegenSchemaFromJavaScript").dependsOn(buildCodegenCLI)
   prepareKotlinBuildScriptModel.dependsOn("preBuild")

@@ -24,10 +24,11 @@ add_library(
         reactnativejni_common
         OBJECT
           JDynamicNative.cpp
+          JReactMarker.cpp
           NativeArray.cpp
           NativeCommon.cpp
           NativeMap.cpp
-        OnLoad-common.cpp
+          OnLoad-common.cpp
           ReadableNativeArray.cpp
           ReadableNativeMap.cpp
           WritableNativeArray.cpp
@@ -36,7 +37,7 @@ add_library(
 target_merge_so(reactnativejni_common)
 target_include_directories(reactnativejni_common PUBLIC ../../)
 
-target_link_libraries(reactnativejni_common fbjni folly_runtime)
+target_link_libraries(reactnativejni_common fbjni folly_runtime react_cxxreact)
 target_compile_reactnative_options(reactnativejni_common PRIVATE)
 target_compile_options(reactnativejni_common PRIVATE -Wno-unused-lambda-capture)
 
@@ -55,7 +56,6 @@ add_library(
           JInspector.cpp
           JMessageQueueThread.cpp
           JReactCxxErrorHandler.cpp
-          JReactMarker.cpp
           JReactSoftExceptionLogger.cpp
           JRuntimeExecutor.cpp
           JRuntimeScheduler.cpp

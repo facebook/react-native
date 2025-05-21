@@ -112,7 +112,9 @@ ShadowNode::ShadowNode(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       state_(
           fragment.state ? fragment.state
-                         : sourceShadowNode.getMostRecentState()),
+                         : (ReactNativeFeatureFlags::useShadowNodeStateOnClone()
+                                ? sourceShadowNode.state_
+                                : sourceShadowNode.getMostRecentState())),
       orderIndex_(sourceShadowNode.orderIndex_),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
@@ -131,7 +133,7 @@ ShadowNode::ShadowNode(
   }
 }
 
-ShadowNode::Unshared ShadowNode::clone(
+std::shared_ptr<ShadowNode> ShadowNode::clone(
     const ShadowNodeFragment& fragment) const {
   const auto& family = *family_;
   const auto& componentDescriptor = family.componentDescriptor_;
@@ -189,12 +191,7 @@ const SharedEventEmitter& ShadowNode::getEventEmitter() const {
 }
 
 jsi::Value ShadowNode::getInstanceHandle(jsi::Runtime& runtime) const {
-  auto instanceHandle = family_->instanceHandle_;
-  if (instanceHandle == nullptr) {
-    return jsi::Value::null();
-  }
-
-  return instanceHandle->getInstanceHandle(runtime);
+  return family_->getInstanceHandle(runtime);
 }
 
 Tag ShadowNode::getTag() const {
@@ -308,20 +305,28 @@ void ShadowNode::setRuntimeShadowNodeReference(
   runtimeShadowNodeReference_ = runtimeShadowNodeReference;
 }
 
-void ShadowNode::transferRuntimeShadowNodeReference(
+void ShadowNode::updateRuntimeShadowNodeReference(
     const Shared& destinationShadowNode) const {
-  destinationShadowNode->runtimeShadowNodeReference_ =
-      runtimeShadowNodeReference_;
-
   if (auto reference = runtimeShadowNodeReference_.lock()) {
     reference->shadowNode = destinationShadowNode;
   }
 }
 
 void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode) const {
+  destinationShadowNode->runtimeShadowNodeReference_ =
+      runtimeShadowNodeReference_;
+
+  if (!ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+    updateRuntimeShadowNodeReference(destinationShadowNode);
+  }
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
     const Shared& destinationShadowNode,
     const ShadowNodeFragment& fragment) const {
-  if (useRuntimeShadowNodeReferenceUpdateOnThread &&
+  if ((ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() ||
+       useRuntimeShadowNodeReferenceUpdateOnThread) &&
       fragment.runtimeShadowNodeReference) {
     transferRuntimeShadowNodeReference(destinationShadowNode);
   }
@@ -331,14 +336,18 @@ const ShadowNodeFamily& ShadowNode::getFamily() const {
   return *family_;
 }
 
-ShadowNode::Unshared ShadowNode::cloneTree(
+ShadowNodeFamily::Shared ShadowNode::getFamilyShared() const {
+  return family_;
+}
+
+std::shared_ptr<ShadowNode> ShadowNode::cloneTree(
     const ShadowNodeFamily& shadowNodeFamily,
-    const std::function<ShadowNode::Unshared(const ShadowNode& oldShadowNode)>&
-        callback) const {
+    const std::function<std::shared_ptr<ShadowNode>(
+        const ShadowNode& oldShadowNode)>& callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.empty()) {
-    return ShadowNode::Unshared{nullptr};
+    return std::shared_ptr<ShadowNode>{nullptr};
   }
 
   auto& parent = ancestors.back();

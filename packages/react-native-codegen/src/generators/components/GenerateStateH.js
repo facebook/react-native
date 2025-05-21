@@ -33,7 +33,7 @@ const FileTemplate = ({
  */
 #pragma once
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -50,7 +50,7 @@ class ${stateName}State {
 public:
   ${stateName}State() = default;
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   ${stateName}State(${stateName}State const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const {
     return {};

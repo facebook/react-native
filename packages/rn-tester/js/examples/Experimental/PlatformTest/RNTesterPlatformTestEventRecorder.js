@@ -8,7 +8,7 @@
  * @flow
  */
 
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ViewProps} from 'react-native';
 
 import {useMemo} from 'react';
 
@@ -26,7 +26,7 @@ type EventRecord = {
   event: Object,
 };
 
-class RNTesterPlatformTestEventRecorder {
+export default class RNTesterPlatformTestEventRecorder {
   allRecords: Array<EventRecord> = [];
   relevantEvents: Array<string> = [];
   rawOrder: number = 1;
@@ -101,41 +101,34 @@ class RNTesterPlatformTestEventRecorder {
     };
   }
 
-  useRecorderTestEventHandlers(
+  createRecorderTestEventHandlers(
     targetNames: $ReadOnlyArray<string>,
     callback?: (event: Object, eventType: string, targetName: string) => void,
   ): $ReadOnly<{[targetName: string]: ViewProps}> {
-    // Yes this method exists as a class's prototype method but it will still only be used
-    // in functional components
-    // prettier-ignore
-    // $FlowFixMe[react-rule-hook]
-    return useMemo(() => { // eslint-disable-line react-hooks/rules-of-hooks
-      const result: {[targetName: string]: ViewProps} = {};
-      for (const targetName of targetNames) {
-        const recordedEventHandler =
-          this._generateRecordedEventHandlerWithCallback(
-            targetName,
-            (event, eventType) =>
-              callback && callback(event, eventType, targetName),
-          );
-        // $FlowFixMe[incompatible-call]
-        const eventListenerProps = this.relevantEvents.reduce(
-          (acc: ViewProps, eventName) => {
-            const eventPropName =
-              'on' + eventName[0].toUpperCase() + eventName.slice(1);
-            return {
-              ...acc,
-              [eventPropName]: (e => {
-                recordedEventHandler(e, eventName);
-              }) as $FlowFixMe,
-            };
-          },
-          {},
+    const result: {[targetName: string]: ViewProps} = {};
+    for (const targetName of targetNames) {
+      const recordedEventHandler =
+        this._generateRecordedEventHandlerWithCallback(
+          targetName,
+          (event, eventType) => callback?.(event, eventType, targetName),
         );
-        result[targetName] = eventListenerProps;
-      }
-      return result;
-    }, [callback, targetNames]);
+      // $FlowFixMe[incompatible-call]
+      const eventListenerProps = this.relevantEvents.reduce(
+        (acc: ViewProps, eventName) => {
+          const eventPropName =
+            'on' + eventName[0].toUpperCase() + eventName.slice(1);
+          return {
+            ...acc,
+            [eventPropName]: (e => {
+              recordedEventHandler(e, eventName);
+            }) as $FlowFixMe,
+          };
+        },
+        {},
+      );
+      result[targetName] = eventListenerProps;
+    }
+    return result;
   }
 
   getRecords(): Array<EventRecord> {
@@ -176,4 +169,13 @@ class RNTesterPlatformTestEventRecorder {
   }
 }
 
-export default RNTesterPlatformTestEventRecorder;
+export function useRecorderTestEventHandlers(
+  eventRecorder: RNTesterPlatformTestEventRecorder,
+  targetNames: $ReadOnlyArray<string>,
+  callback?: (event: Object, eventType: string, targetName: string) => void,
+): $ReadOnly<{[targetName: string]: ViewProps}> {
+  return useMemo(
+    () => eventRecorder.createRecorderTestEventHandlers(targetNames, callback),
+    [eventRecorder, targetNames, callback],
+  );
+}

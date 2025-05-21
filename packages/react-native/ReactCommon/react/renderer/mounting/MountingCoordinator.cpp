@@ -9,7 +9,9 @@
 
 #include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/utils/LowPriorityExecutor.h>
 #include <condition_variable>
 #include "updateMountedFlag.h"
 
@@ -186,6 +188,9 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction(
 #endif
 
   if (lastRevision_.has_value()) {
+    if (ReactNativeFeatureFlags::enableDestroyShadowTreeRevisionAsync()) {
+      LowPriorityExecutor::execute([toDelete = std::move(baseRevision_)]() {});
+    }
     baseRevision_ = std::move(*lastRevision_);
     lastRevision_.reset();
 

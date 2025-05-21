@@ -12,55 +12,57 @@
 namespace facebook::react::bridging {
 
 template <
-    typename T,
-    typename C,
-    typename R,
-    typename... Args,
-    typename... JSArgs>
-T callFromJs(
+    typename JSReturnT,
+    typename ClassT,
+    typename ReturnT,
+    typename... ArgsT,
+    typename... JSArgsT>
+JSReturnT callFromJs(
     jsi::Runtime& rt,
-    R (C::*method)(jsi::Runtime&, Args...),
+    ReturnT (ClassT::*method)(jsi::Runtime&, ArgsT...),
     const std::shared_ptr<CallInvoker>& jsInvoker,
-    C* instance,
-    JSArgs&&... args) {
+    ClassT* instance,
+    JSArgsT&&... args) {
   static_assert(
-      sizeof...(Args) == sizeof...(JSArgs), "Incorrect arguments length");
+      sizeof...(ArgsT) == sizeof...(JSArgsT), "Incorrect arguments length");
   static_assert(
-      (supportsFromJs<Args, JSArgs> && ...), "Incompatible arguments");
+      (supportsFromJs<ArgsT, JSArgsT> && ...), "Incompatible arguments");
 
-  if constexpr (std::is_void_v<T>) {
+  if constexpr (std::is_void_v<JSReturnT>) {
     (instance->*method)(
-        rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...);
+        rt, fromJs<ArgsT>(rt, std::forward<JSArgsT>(args), jsInvoker)...);
 
-  } else if constexpr (std::is_void_v<R>) {
+  } else if constexpr (std::is_void_v<ReturnT>) {
     static_assert(
-        std::is_same_v<T, jsi::Value>,
+        std::is_same_v<JSReturnT, jsi::Value>,
         "Void functions may only return undefined");
 
     (instance->*method)(
-        rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...);
+        rt, fromJs<ArgsT>(rt, std::forward<JSArgsT>(args), jsInvoker)...);
     return jsi::Value();
 
-  } else if constexpr (is_jsi_v<T>) {
-    static_assert(supportsToJs<R, T>, "Incompatible return type");
+  } else if constexpr (
+      is_jsi_v<JSReturnT> || supportsToJs<ReturnT, JSReturnT>) {
+    static_assert(supportsToJs<ReturnT, JSReturnT>, "Incompatible return type");
 
     return toJs(
         rt,
         (instance->*method)(
-            rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...),
+            rt, fromJs<ArgsT>(rt, std::forward<JSArgsT>(args), jsInvoker)...),
         jsInvoker);
-
-  } else if constexpr (is_optional_jsi_v<T>) {
+  } else if constexpr (is_optional_jsi_v<JSReturnT>) {
     static_assert(
-        is_optional_v<R>
-            ? supportsToJs<typename R::value_type, typename T::value_type>
-            : supportsToJs<R, typename T::value_type>,
+        is_optional_v<ReturnT>
+            ? supportsToJs<
+                  typename ReturnT::value_type,
+                  typename JSReturnT::value_type>
+            : supportsToJs<ReturnT, typename JSReturnT::value_type>,
         "Incompatible return type");
 
     auto result = toJs(
         rt,
         (instance->*method)(
-            rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...),
+            rt, fromJs<ArgsT>(rt, std::forward<JSArgsT>(args), jsInvoker)...),
         jsInvoker);
 
     if constexpr (std::is_same_v<decltype(result), jsi::Value>) {
@@ -71,20 +73,21 @@ T callFromJs(
 
     return convert(rt, std::move(result));
   } else {
-    static_assert(std::is_convertible_v<R, T>, "Incompatible return type");
+    static_assert(
+        std::is_convertible_v<ReturnT, JSReturnT>, "Incompatible return type");
     return (instance->*method)(
-        rt, fromJs<Args>(rt, std::forward<JSArgs>(args), jsInvoker)...);
+        rt, fromJs<ArgsT>(rt, std::forward<JSArgsT>(args), jsInvoker)...);
   }
 }
 
-template <typename R, typename... Args>
-constexpr size_t getParameterCount(R (*)(Args...)) {
-  return sizeof...(Args);
+template <typename ReturnT, typename... ArgsT>
+constexpr size_t getParameterCount(ReturnT (*)(ArgsT...)) {
+  return sizeof...(ArgsT);
 }
 
-template <typename C, typename R, typename... Args>
-constexpr size_t getParameterCount(R (C::*)(Args...)) {
-  return sizeof...(Args);
+template <typename Class, typename ReturnT, typename... ArgsT>
+constexpr size_t getParameterCount(ReturnT (Class::*)(ArgsT...)) {
+  return sizeof...(ArgsT);
 }
 
 } // namespace facebook::react::bridging

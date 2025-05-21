@@ -17,7 +17,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -28,7 +28,7 @@ class ImageStoreManagerTest {
 
   @Before
   fun setUp() {
-    reactApplicationContext = mock(ReactApplicationContext::class.java)
+    reactApplicationContext = mock<ReactApplicationContext>()
     imageStoreManager = ImageStoreManager(reactApplicationContext)
   }
 

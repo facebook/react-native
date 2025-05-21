@@ -8,10 +8,10 @@
  * @flow
  */
 
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PointerEvent, ViewProps} from 'react-native';
 
 import * as React from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 export default function EventfulView(props: {
@@ -36,8 +36,8 @@ export default function EventfulView(props: {
   log: string => void,
   ...ViewProps,
 }): React.Node {
-  const ref = React.useRef<?React.ElementRef<typeof View>>();
-  React.useEffect(() => {
+  const ref = useRef<?React.ElementRef<typeof View>>();
+  useEffect(() => {
     // $FlowFixMe[prop-missing] Using private property
     setTag(ref.current?._nativeTag);
   }, [ref]);
@@ -65,7 +65,7 @@ export default function EventfulView(props: {
     onCancelCapture,
     ...restProps
   } = props;
-  const [tag, setTag] = React.useState<?string>('');
+  const [tag, setTag] = useState<?string>('');
 
   const eventLog =
     (eventName: string, handler: ?(e: PointerEvent) => void) =>

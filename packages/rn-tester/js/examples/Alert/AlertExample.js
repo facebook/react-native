@@ -12,6 +12,7 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
+import {useState} from 'react';
 import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 
 // Shows log on the screen
@@ -46,7 +47,7 @@ const AlertWithDefaultButton = () => {
 };
 
 const AlertWithTwoButtons = () => {
-  const [message, setMessage] = React.useState('');
+  const [message, setMessage] = useState('');
 
   const alertMessage = 'Your subscription has expired!';
 
@@ -70,7 +71,7 @@ const AlertWithTwoButtons = () => {
 };
 
 const AlertWithThreeButtons = () => {
-  const [message, setMessage] = React.useState('');
+  const [message, setMessage] = useState('');
 
   const alertMessage = 'Do you want to save your changes?';
 
@@ -96,7 +97,7 @@ const AlertWithThreeButtons = () => {
 };
 
 const AlertWithManyButtons = () => {
-  const [message, setMessage] = React.useState('');
+  const [message, setMessage] = useState('');
 
   const alertMessage =
     'Credibly reintermediate next-generation potentialities after goal-oriented ' +
@@ -126,7 +127,7 @@ const AlertWithManyButtons = () => {
 };
 
 const AlertWithCancelableTrue = () => {
-  const [message, setMessage] = React.useState('');
+  const [message, setMessage] = useState('');
 
   const alertMessage = 'Tapping outside this dialog will dismiss this alert.';
 
@@ -158,7 +159,7 @@ const AlertWithCancelableTrue = () => {
 };
 
 const AlertWithStyles = () => {
-  const [message, setMessage] = React.useState('');
+  const [message, setMessage] = useState('');
 
   const alertMessage = 'Look at the button styles!';
 
@@ -195,7 +196,7 @@ const AlertWithStyles = () => {
 };
 
 const AlertWithStylesPreferred = () => {
-  const [message, setMessage] = React.useState('');
+  const [message, setMessage] = useState('');
 
   const alertMessage =
     "The Preferred button is styled with 'preferred', so it is emphasized over the cancel button.";
@@ -228,7 +229,7 @@ const AlertWithStylesPreferred = () => {
 };
 
 const PromptOptions = () => {
-  const [promptValue, setPromptValue] = React.useState<
+  const [promptValue, setPromptValue] = useState<
     string | {login: string, password: string},
   >('');
 

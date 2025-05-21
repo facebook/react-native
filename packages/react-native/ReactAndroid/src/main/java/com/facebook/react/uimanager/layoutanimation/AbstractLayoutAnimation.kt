@@ -99,7 +99,7 @@ internal abstract class AbstractLayoutAnimation {
 
   companion object {
     init {
-      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertLegacyArchitecture(
           "AbstractLayoutAnimation", LegacyArchitectureLogLevel.WARNING)
     }
 

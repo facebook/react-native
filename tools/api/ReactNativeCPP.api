@@ -4,8 +4,6 @@
  *
  * @file_count 1059
  * @generate-command: node tools/api/public-api.js
- *
- * @oncall react_native
  */
 
 
@@ -6709,17 +6707,11 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableLayoutAnimationsOnIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableLongTaskAPI(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableNewBackgroundAndBorderDrawables(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enablePropsUpdateReconciliationAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableReportEventPaintTime(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableSynchronousStateUpdates(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableUIConsistency(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableViewRecycling(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -6728,8 +6720,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fuseboxEnabledDebug(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -15809,19 +15799,14 @@ class NativeReactNativeFeatureFlags
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
-  bool enableLongTaskAPI(jsi::Runtime& runtime);
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
-  bool enableReportEventPaintTime(jsi::Runtime& runtime);
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
-  bool enableUIConsistency(jsi::Runtime& runtime);
   bool enableViewRecycling(jsi::Runtime& runtime);
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
   bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(
       jsi::Runtime& runtime);
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
-      jsi::Runtime& runtime);
   bool fuseboxEnabledDebug(jsi::Runtime& runtime);
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
   bool initEagerTurboModulesOnNativeModulesQueueAndroid(jsi::Runtime& runtime);
@@ -32949,8 +32934,6 @@ class UIManager final : public ShadowTreeDelegate {
   std::unique_ptr<LeakChecker> leakChecker_;
   std::unique_ptr<LazyShadowTreeRevisionConsistencyManager>
       lazyShadowTreeRevisionConsistencyManager_;
-  std::unique_ptr<LatestShadowTreeRevisionProvider>
-      latestShadowTreeRevisionProvider_;
 };
 } // namespace facebook::react
 
@@ -33057,16 +33040,6 @@ jsi::Value callMethodOfModule(
     const std::string& methodName,
     std::initializer_list<jsi::Value> args);
 }
-
-/// @src {packages/react-native/ReactCommon/react/renderer/uimanager/consistency/LatestShadowTreeRevisionProvider.h}:
-namespace facebook::react {
-class LatestShadowTreeRevisionProvider : public ShadowTreeRevisionProvider {
- public:
-  explicit LatestShadowTreeRevisionProvider(
-      ShadowTreeRegistry& shadowTreeRegistry);
-  RootShadowNode::Shared getCurrentRevision(SurfaceId surfaceId) override;
-};
-} // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/renderer/uimanager/consistency/LazyShadowTreeRevisionConsistencyManager.h}:
 namespace facebook::react {

@@ -10,11 +10,8 @@
 
 'use strict';
 
+import type {LayoutChangeEvent, LayoutRectangle} from 'react-native';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {
-  LayoutChangeEvent,
-  LayoutRectangle,
-} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const React = require('react');
 const ReactNative = require('react-native');

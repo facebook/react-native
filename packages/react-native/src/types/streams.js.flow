@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall flow
  */
 
 // Adapted from https://github.com/flow-typed/flow-typed/blob/main/definitions/environments/streams/flow_v0.261.x-/streams.js

@@ -6,15 +6,14 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Animated} from 'react-native';
+import NativeAnimatedHelper from 'react-native/src/private/animated/NativeAnimatedHelper';
 
 function mockNativeAnimatedHelperAPI() {
   const mocks = {
@@ -22,6 +21,7 @@ function mockNativeAnimatedHelperAPI() {
     disconnectAnimatedNodeFromView: jest.fn(),
   };
   // $FlowFixMe[cannot-write] - Switch to `jest.spyOn` when supported.
+  // $FlowFixMe[unsafe-object-assign]
   Object.assign(NativeAnimatedHelper.API, mocks);
   return mocks;
 }

@@ -10,18 +10,17 @@ package com.facebook.react.common
 import com.facebook.react.BuildConfig
 import kotlin.jvm.Throws
 
-public object ClassFinder {
+internal object ClassFinder {
 
   /**
    * We don't run the ModuleInfoProvider Annotation Processor in OSS, so there is no need to attempt
    * to call Class.forName() as we know for sure that those classes won't be there.
    */
-  @JvmStatic
-  public fun canLoadClassesFromAnnotationProcessors(): Boolean = BuildConfig.IS_INTERNAL_BUILD
+  @JvmStatic fun canLoadClassesFromAnnotationProcessors(): Boolean = BuildConfig.IS_INTERNAL_BUILD
 
   @JvmStatic
   @Throws(ClassNotFoundException::class)
-  public fun findClass(className: String): Class<*>? {
+  fun findClass(className: String): Class<*>? {
     if (canLoadClassesFromAnnotationProcessors().not()) {
       return null
     }

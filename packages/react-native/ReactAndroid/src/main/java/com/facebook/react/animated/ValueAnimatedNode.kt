@@ -38,7 +38,7 @@ internal open class ValueAnimatedNode(config: ReadableMap? = null) : AnimatedNod
   }
 
   fun onValueUpdate(): Unit {
-    valueListener?.onValueUpdate(getValue())
+    valueListener?.onValueUpdate(getValue() - offset, offset)
   }
 
   fun setValueListener(listener: AnimatedNodeValueListener?): Unit {

@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 import {create} from '../../../jest/renderer';
@@ -14,46 +16,84 @@ describe('<Button />', () => {
     expect(await create(<Button title="Test Button" />)).toMatchSnapshot();
   });
 
-  it('should be disabled and it should set accessibilityState to disabled when disabled={true}', async() => {
+  it('should be disabled and it should set accessibilityState to disabled when disabled={true}', async () => {
     expect(
-      await create(<Button title="Test Button" disabled={true} />)
+      await create(<Button title="Test Button" disabled={true} />),
     ).toMatchSnapshot();
   });
 
-  it('should be disabled when disabled={true} and accessibilityState={{disabled: true}}', async() => {
+  it('should be disabled when disabled={true} and accessibilityState={{disabled: true}}', async () => {
     expect(
-      await create(<Button title="Test Button" disabled={true} accessibilityState={{disabled: true}} />)
+      await create(
+        <Button
+          title="Test Button"
+          disabled={true}
+          accessibilityState={{disabled: true}}
+        />,
+      ),
     ).toMatchSnapshot();
   });
 
-  it('should be disabled when disabled is empty and accessibilityState={{disabled: true}}',async () => {
+  it('should be disabled when disabled is empty and accessibilityState={{disabled: true}}', async () => {
     expect(
-      await create(<Button title="Test Button" accessibilityState={{disabled: true}} />)
+      await create(
+        <Button title="Test Button" accessibilityState={{disabled: true}} />,
+      ),
     ).toMatchSnapshot();
   });
 
-  it('should overwrite accessibilityState with value of disabled prop', async() => {
-    expect(await create(<Button title="Test Button" disabled={true} accessibilityState={{disabled: false}} />)
+  it('should overwrite accessibilityState with value of disabled prop', async () => {
+    expect(
+      await create(
+        <Button
+          title="Test Button"
+          disabled={true}
+          accessibilityState={{disabled: false}}
+        />,
+      ),
     ).toMatchSnapshot();
   });
 
-  it('should not be disabled when disabled={false} and accessibilityState={{disabled: true}}', async() => {
-    expect(await create(<Button title="Test Button" disabled={false} accessibilityState={{disabled: true}} />)
+  it('should not be disabled when disabled={false} and accessibilityState={{disabled: true}}', async () => {
+    expect(
+      await create(
+        <Button
+          title="Test Button"
+          disabled={false}
+          accessibilityState={{disabled: true}}
+        />,
+      ),
     ).toMatchSnapshot();
   });
 
-  it('should not be disabled when disabled={false} and accessibilityState={{disabled: false}}', async() => {
-    expect(await create( <Button title="Test Button" disabled={false} accessibilityState={{disabled: false}} />)
+  it('should not be disabled when disabled={false} and accessibilityState={{disabled: false}}', async () => {
+    expect(
+      await create(
+        <Button
+          title="Test Button"
+          disabled={false}
+          accessibilityState={{disabled: false}}
+        />,
+      ),
     ).toMatchSnapshot();
   });
 
-  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}', async() => {
-    expect(await create( <Button title="Test Button" importantForAccessibility={'no-hide-descendants'} />)
+  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}', async () => {
+    expect(
+      await create(
+        <Button
+          title="Test Button"
+          importantForAccessibility={'no-hide-descendants'}
+        />,
+      ),
     ).toMatchSnapshot();
   });
 
-  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}', async() => {
-    expect( await create( <Button title="Test Button" importantForAccessibility={'no'} />)
+  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}', async () => {
+    expect(
+      await create(
+        <Button title="Test Button" importantForAccessibility={'no'} />,
+      ),
     ).toMatchSnapshot();
   });
 });

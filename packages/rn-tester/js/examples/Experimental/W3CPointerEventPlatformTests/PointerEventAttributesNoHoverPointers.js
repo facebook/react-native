@@ -9,11 +9,7 @@
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
-import type {HostInstance} from 'react-native';
-import type {
-  LayoutRectangle,
-  PointerEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {HostInstance, LayoutRectangle, PointerEvent} from 'react-native';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import {check_PointerEvent, useTestEventHandler} from './PointerEventSupport';

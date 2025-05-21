@@ -13,17 +13,17 @@ import android.text.Spanned
 import com.facebook.common.logging.FLog
 import kotlin.math.max
 
-public class SetSpanOperation(
+internal class SetSpanOperation(
     private val start: Int,
     private val end: Int,
-    @JvmField public val what: ReactSpan
+    @JvmField val what: ReactSpan
 ) {
   /**
    * @param builder Spannable string builder
    * @param priorityIndex index of this operation in the topological sorting which puts operations
    *   with higher priority before operations with lower priority.
    */
-  public fun execute(builder: SpannableStringBuilder, priorityIndex: Int) {
+  fun execute(builder: SpannableStringBuilder, priorityIndex: Int) {
     check(priorityIndex >= 0)
     // All spans will automatically extend to the right of the text, but not the left - except
     // for spans that start at the beginning of the text.
@@ -51,8 +51,8 @@ public class SetSpanOperation(
     builder.setSpan(what, start, end, spanFlags)
   }
 
-  public companion object {
+  companion object {
     private const val TAG = "SetSpanOperation"
-    public const val SPAN_MAX_PRIORITY: Int = Spanned.SPAN_PRIORITY shr Spanned.SPAN_PRIORITY_SHIFT
+    const val SPAN_MAX_PRIORITY: Int = Spanned.SPAN_PRIORITY shr Spanned.SPAN_PRIORITY_SHIFT
   }
 }

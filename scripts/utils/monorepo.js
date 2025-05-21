@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 const {REPO_ROOT} = require('../consts');

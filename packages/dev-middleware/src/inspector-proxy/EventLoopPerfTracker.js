@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 // $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS

@@ -289,12 +289,24 @@ static inline ViewEvents convertRawProp(
       "onPointerOver",
       sourceValue[Offset::PointerOver],
       defaultValue[Offset::PointerOver]);
+  result[Offset::PointerOverCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerOverCapture",
+      sourceValue[Offset::PointerOverCapture],
+      defaultValue[Offset::PointerOverCapture]);
   result[Offset::PointerOut] = convertRawProp(
       context,
       rawProps,
       "onPointerOut",
       sourceValue[Offset::PointerOut],
       defaultValue[Offset::PointerOut]);
+  result[Offset::PointerOutCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerOutCapture",
+      sourceValue[Offset::PointerOutCapture],
+      defaultValue[Offset::PointerOutCapture]);
   result[Offset::Click] = convertRawProp(
       context,
       rawProps,

@@ -15,6 +15,7 @@
 #include <react/bridging/Error.h>
 #include <react/bridging/EventEmitter.h>
 #include <react/bridging/Function.h>
+#include <react/bridging/HighResTimeStamp.h>
 #include <react/bridging/Number.h>
 #include <react/bridging/Object.h>
 #include <react/bridging/Promise.h>

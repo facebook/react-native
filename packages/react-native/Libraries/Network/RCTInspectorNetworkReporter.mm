@@ -23,6 +23,22 @@ Headers convertNSDictionaryToHeaders(const NSDictionary<NSString *, NSString *> 
   return responseHeaders;
 }
 
+std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
+{
+  const NSUInteger maxBodySize = 1024 * 1024; // 1MB
+  auto bodyLength = request.HTTPBody.length;
+  auto bytesToRead = std::min(bodyLength, maxBodySize);
+
+  auto body = std::string((const char *)request.HTTPBody.bytes, bytesToRead);
+
+  if (bytesToRead < bodyLength) {
+    body +=
+        "\n... [truncated, showing " + std::to_string(bytesToRead) + " of " + std::to_string(bodyLength) + " bytes]";
+  }
+
+  return body;
+}
+
 } // namespace
 #endif
 
@@ -39,7 +55,7 @@ Headers convertNSDictionaryToHeaders(const NSDictionary<NSString *, NSString *> 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: Process additional request info for CDP reporting
   requestInfo.headers = convertNSDictionaryToHeaders(request.allHTTPHeaderFields);
-  requestInfo.httpBody = std::string((const char *)request.HTTPBody.bytes, request.HTTPBody.length);
+  requestInfo.httpBody = convertRequestBodyToStringTruncated(request);
 #endif
 
   NetworkReporter::getInstance().reportRequestStart(

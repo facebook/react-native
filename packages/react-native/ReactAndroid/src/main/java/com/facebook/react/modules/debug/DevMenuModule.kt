@@ -15,7 +15,7 @@ import com.facebook.react.module.annotations.ReactModule
 
 /** Module that exposes the DevMenu to JS so that it can be used to programmatically open it. */
 @ReactModule(name = NativeDevMenuSpec.NAME)
-public class DevMenuModule(
+internal class DevMenuModule(
     reactContext: ReactApplicationContext?,
     private val devSupportManager: DevSupportManager
 ) : NativeDevMenuSpec(reactContext) {
@@ -38,5 +38,9 @@ public class DevMenuModule(
 
   override fun setHotLoadingEnabled(enabled: Boolean) {
     devSupportManager.setHotModuleReplacementEnabled(enabled)
+  }
+
+  public companion object {
+    public const val NAME: String = NativeDevMenuSpec.NAME
   }
 }

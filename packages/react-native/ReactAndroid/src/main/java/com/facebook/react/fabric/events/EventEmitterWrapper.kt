@@ -22,7 +22,7 @@ import com.facebook.react.uimanager.events.EventCategoryDef
  */
 @DoNotStripAny
 @SuppressLint("MissingNativeLoadLibrary")
-public class EventEmitterWrapper private constructor() : HybridClassBase() {
+internal class EventEmitterWrapper private constructor() : HybridClassBase() {
   private external fun dispatchEvent(
       eventName: String,
       params: NativeMap?,
@@ -40,11 +40,7 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
    * @param params [WritableMap] payload of the event
    */
   @Synchronized
-  public fun dispatch(
-      eventName: String,
-      params: WritableMap?,
-      @EventCategoryDef eventCategory: Int
-  ) {
+  fun dispatch(eventName: String, params: WritableMap?, @EventCategoryDef eventCategory: Int) {
     if (!isValid) {
       return
     }
@@ -52,7 +48,7 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
   }
 
   @Synchronized
-  public fun dispatchEventSynchronously(eventName: String, params: WritableMap?) {
+  fun dispatchEventSynchronously(eventName: String, params: WritableMap?) {
     if (!isValid) {
       return
     }
@@ -68,7 +64,7 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
    * @param params [WritableMap] payload of the event
    */
   @Synchronized
-  public fun dispatchUnique(eventName: String, params: WritableMap?) {
+  fun dispatchUnique(eventName: String, params: WritableMap?) {
     if (!isValid) {
       return
     }
@@ -76,7 +72,7 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
   }
 
   @Synchronized
-  public fun destroy() {
+  fun destroy() {
     if (isValid) {
       resetNative()
     }

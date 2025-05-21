@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 /*
@@ -26,7 +28,9 @@ const fs = require('fs');
 const buildGradleKtsPath = 'android/build.gradle.kts';
 const libsVersionsTomlPath = '../react-native/gradle/libs.versions.toml';
 
-console.log(`Updating ${buildGradleKtsPath} with versions from ${libsVersionsTomlPath}...`);
+console.log(
+  `Updating ${buildGradleKtsPath} with versions from ${libsVersionsTomlPath}...`,
+);
 
 let gradleContent = fs.readFileSync(buildGradleKtsPath, 'utf8');
 const tomlContent = fs.readFileSync(libsVersionsTomlPath, 'utf8');
@@ -39,7 +43,10 @@ gradleContent = gradleContent
   .replace('libs.versions.compileSdk.get().toInt()', compileSdk)
   .replace('libs.versions.minSdk.get().toInt()', minSdk)
   .replace('libs.versions.buildTools.get()', `"${buildTools}"`)
-  .replace('project(":packages:react-native:ReactAndroid")', '"com.facebook.react:react-android"');
+  .replace(
+    'project(":packages:react-native:ReactAndroid")',
+    '"com.facebook.react:react-android"',
+  );
 
 fs.writeFileSync(buildGradleKtsPath, gradleContent);
 

@@ -10,18 +10,21 @@ package com.facebook.react.runtime
 import android.app.Activity
 import android.content.Context
 import android.view.View
-import com.facebook.react.bridge.NativeMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.interfaces.fabric.SurfaceHandler
+import com.facebook.react.fabric.SurfaceHandlerBinding
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlagsDefaults
 import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.uimanager.events.EventDispatcher
+import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -33,24 +36,32 @@ import org.robolectric.shadows.ShadowInstrumentation
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(UnstableReactNativeAPI::class)
-@Config(shadows = [ShadowSoLoader::class])
+@Config(shadows = [ShadowSoLoader::class, ShadowNativeLoader::class])
 class ReactSurfaceTest {
   private lateinit var eventDispatcher: EventDispatcher
   private lateinit var reactHost: ReactHostImpl
   private lateinit var context: Context
   private lateinit var reactSurface: ReactSurfaceImpl
-  private lateinit var surfaceHandler: TestSurfaceHandler
+  private lateinit var surfaceHandler: SurfaceHandlerBinding
+  private var isSurfaceRunning: Boolean = false
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
+    ReactNativeFeatureFlags.override(ReactNativeNewArchitectureFeatureFlagsDefaults())
+
     eventDispatcher = mock()
     context = Robolectric.buildActivity(Activity::class.java).create().get()
+
     reactHost = mock()
     whenever(reactHost.startSurface(any())).thenAnswer(this::mockedStartSurface)
     whenever(reactHost.prerenderSurface(any())).thenAnswer(this::mockedStartSurface)
     whenever(reactHost.stopSurface(any())).thenAnswer(this::mockedStopSurface)
     whenever(reactHost.eventDispatcher).doReturn(eventDispatcher)
-    surfaceHandler = TestSurfaceHandler()
+
+    surfaceHandler = mock()
+    whenever(surfaceHandler.isRunning).thenAnswer { isSurfaceRunning }
+
     reactSurface = ReactSurfaceImpl(surfaceHandler, context)
     reactSurface.attachView(ReactSurfaceView(context, reactSurface))
   }
@@ -76,7 +87,7 @@ class ReactSurfaceTest {
     val task = reactSurface.prerender() as Task<Void>
     task.waitForCompletion()
     verify(reactHost).prerenderSurface(reactSurface)
-    Assertions.assertThat(surfaceHandler.isRunning).isTrue()
+    Assertions.assertThat(isSurfaceRunning).isTrue()
   }
 
   @Test
@@ -87,7 +98,7 @@ class ReactSurfaceTest {
     val task = reactSurface.start() as Task<Void>
     task.waitForCompletion()
     verify(reactHost).startSurface(reactSurface)
-    Assertions.assertThat(surfaceHandler.isRunning).isTrue()
+    Assertions.assertThat(isSurfaceRunning).isTrue()
   }
 
   @Test
@@ -114,12 +125,10 @@ class ReactSurfaceTest {
   fun testGetLayoutSpecs() {
     val measureSpecWidth = Int.MAX_VALUE
     val measureSpecHeight = Int.MIN_VALUE
-    Assertions.assertThat(surfaceHandler.widthMeasureSpec).isNotEqualTo(measureSpecWidth)
-    Assertions.assertThat(surfaceHandler.heightMeasureSpec).isNotEqualTo(measureSpecHeight)
     reactSurface.attach(reactHost)
     reactSurface.updateLayoutSpecs(measureSpecWidth, measureSpecHeight, 2, 3)
-    Assertions.assertThat(surfaceHandler.widthMeasureSpec).isEqualTo(measureSpecWidth)
-    Assertions.assertThat(surfaceHandler.heightMeasureSpec).isEqualTo(measureSpecHeight)
+    verify(surfaceHandler)
+        .setLayoutConstraints(measureSpecWidth, measureSpecHeight, 2, 3, true, false, 1.0f, 1.0f)
   }
 
   @Test
@@ -142,50 +151,12 @@ class ReactSurfaceTest {
   }
 
   private fun mockedStartSurface(inv: InvocationOnMock): Task<Void> {
-    surfaceHandler.start()
+    isSurfaceRunning = true
     return Task.forResult(null)
   }
 
   private fun mockedStopSurface(inv: InvocationOnMock): Task<Boolean> {
-    surfaceHandler.stop()
+    isSurfaceRunning = false
     return Task.forResult(true)
-  }
-
-  internal class TestSurfaceHandler : SurfaceHandler {
-    override var isRunning = false
-    override val moduleName = "TestSurfaceHandler"
-    override val surfaceId = 0
-
-    var heightMeasureSpec = 0
-    var widthMeasureSpec = 0
-
-    fun start() {
-      isRunning = true
-    }
-
-    fun stop() {
-      isRunning = false
-    }
-
-    override fun setMountable(mountable: Boolean) {
-      // no-op
-    }
-
-    override fun setLayoutConstraints(
-        widthMeasureSpec: Int,
-        heightMeasureSpec: Int,
-        offsetX: Int,
-        offsetY: Int,
-        doLeftAndRightSwapInRTL: Boolean,
-        isRTL: Boolean,
-        pixelDensity: Float
-    ) {
-      this.widthMeasureSpec = widthMeasureSpec
-      this.heightMeasureSpec = heightMeasureSpec
-    }
-
-    override fun setProps(props: NativeMap) {
-      // no-op
-    }
   }
 }

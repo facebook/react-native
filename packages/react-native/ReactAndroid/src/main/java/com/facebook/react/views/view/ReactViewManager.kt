@@ -104,8 +104,10 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
         val backgroundImageLayers = ArrayList<BackgroundImageLayer>(backgroundImage.size())
         for (i in 0 until backgroundImage.size()) {
           val backgroundImageMap = backgroundImage.getMap(i)
-          val layer = BackgroundImageLayer(backgroundImageMap, view.context)
-          backgroundImageLayers.add(layer)
+          val layer = BackgroundImageLayer.parse(backgroundImageMap, view.context)
+          if (layer != null) {
+            backgroundImageLayers.add(layer)
+          }
         }
         BackgroundStyleApplicator.setBackgroundImage(view, backgroundImageLayers)
       } else {
@@ -188,6 +190,10 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     when (hitSlop.type) {
       ReadableType.Map -> {
         val hitSlopMap = hitSlop.asMap()
+        if (hitSlopMap == null) {
+          view.setHitSlopRect(null)
+          return
+        }
         view.setHitSlopRect(
             Rect(
                 hitSlopMap.px("left"),

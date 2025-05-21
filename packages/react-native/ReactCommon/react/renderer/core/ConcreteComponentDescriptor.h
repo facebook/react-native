@@ -76,7 +76,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNode;
   }
 
-  ShadowNode::Unshared cloneShadowNode(
+  std::shared_ptr<ShadowNode> cloneShadowNode(
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment) const override {
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
@@ -171,8 +171,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         std::make_shared<EventTarget>(
             fragment.instanceHandle, fragment.surfaceId),
         eventDispatcher_);
-    return std::make_shared<ShadowNodeFamily>(
-        fragment, std::move(eventEmitter), eventDispatcher_, *this);
+    auto family = std::make_shared<ShadowNodeFamily>(
+        fragment, eventEmitter, eventDispatcher_, *this);
+    eventEmitter->setShadowNodeFamily(family);
+    return family;
   }
 
  protected:

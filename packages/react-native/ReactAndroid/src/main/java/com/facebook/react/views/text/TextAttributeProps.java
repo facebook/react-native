@@ -15,6 +15,7 @@ import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
@@ -31,6 +32,7 @@ import java.util.List;
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
 // TextAttributeProps (e.g. TextAlign)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextAttributeProps {
 
   // constants for Text Attributes serialization
@@ -323,7 +325,7 @@ public class TextAttributeProps {
     }
   }
 
-  private static String getStringProp(ReactStylesDiffMap mProps, String name) {
+  private static @Nullable String getStringProp(ReactStylesDiffMap mProps, String name) {
     if (mProps.hasKey(name)) {
       return mProps.getString(name);
     } else {
@@ -446,7 +448,7 @@ public class TextAttributeProps {
 
   private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
-    if (mIsColorSet) {
+    if (color != null) {
       mColor = color;
     }
   }
@@ -459,12 +461,12 @@ public class TextAttributeProps {
     return mBackgroundColor;
   }
 
-  private void setBackgroundColor(Integer color) {
+  private void setBackgroundColor(@Nullable Integer color) {
     // TODO: Don't apply background color to anchor TextView since it will be applied on the View
     // directly
     // if (!isVirtualAnchor()) {
     mIsBackgroundColorSet = (color != null);
-    if (mIsBackgroundColorSet) {
+    if (color != null) {
       mBackgroundColor = color;
     }
     // }
@@ -486,7 +488,7 @@ public class TextAttributeProps {
     return mFontStyle;
   }
 
-  public String getFontFamily() {
+  public @Nullable String getFontFamily() {
     return mFontFamily;
   }
 
@@ -592,7 +594,7 @@ public class TextAttributeProps {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
-  public String getFontFeatureSettings() {
+  public @Nullable String getFontFeatureSettings() {
     return mFontFeatureSettings;
   }
 
@@ -634,7 +636,7 @@ public class TextAttributeProps {
     return mIsLineThroughTextDecorationSet;
   }
 
-  private void setTextShadowOffset(ReadableMap offsetMap) {
+  private void setTextShadowOffset(@Nullable ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
 
@@ -722,7 +724,7 @@ public class TextAttributeProps {
     }
   }
 
-  public AccessibilityRole getAccessibilityRole() {
+  public @Nullable AccessibilityRole getAccessibilityRole() {
     return mAccessibilityRole;
   }
 
@@ -785,5 +787,25 @@ public class TextAttributeProps {
       }
     }
     return androidHyphenationFrequency;
+  }
+
+  public static @Nullable TextUtils.TruncateAt getEllipsizeMode(@Nullable String ellipsizeMode) {
+    @Nullable TextUtils.TruncateAt truncateAt = null;
+    if (ellipsizeMode != null) {
+      switch (ellipsizeMode) {
+        case "head":
+          truncateAt = TextUtils.TruncateAt.START;
+          break;
+        case "middle":
+          truncateAt = TextUtils.TruncateAt.MIDDLE;
+          break;
+        case "tail":
+          truncateAt = TextUtils.TruncateAt.END;
+          break;
+        case "clip":
+          truncateAt = null;
+      }
+    }
+    return truncateAt;
   }
 }

@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type TerminalReporter from 'metro/src/lib/TerminalReporter';
+import type {TerminalReporter} from 'metro';
 
 type LoggerFn = (...message: $ReadOnlyArray<string>) => void;
 

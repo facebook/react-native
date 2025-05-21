@@ -11,7 +11,6 @@
 #include <React/RCTBridgeProxy.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcherProtocol.h>
-#include <React/RCTFollyConvert.h>
 #include <React/RCTModuleData.h>
 #include <React/RCTModuleMethod.h>
 #include <React/RCTUIManager.h>
@@ -20,6 +19,7 @@
 #include <React/RCTViewManager.h>
 #include <folly/json.h>
 #include <objc/runtime.h>
+#include <react/utils/FollyConvert.h>
 
 using namespace facebook::react;
 

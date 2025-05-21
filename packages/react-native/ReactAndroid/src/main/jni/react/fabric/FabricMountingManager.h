@@ -60,6 +60,10 @@ class FabricMountingManager final {
 
   void onAllAnimationsComplete();
 
+  void synchronouslyUpdateViewOnUIThread(
+      Tag viewTag,
+      const folly::dynamic& props);
+
  private:
   bool isOnMainThread();
 

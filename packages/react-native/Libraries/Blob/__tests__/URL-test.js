@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -53,6 +52,10 @@ describe('URL', function () {
     expect(url.pathname).toBe('/docs/path');
     expect(url.port).toBe('8080');
     expect(url.search).toBe('?query=testQuery&key=value');
+    expect(url.protocol).toBe('https:');
+    expect(url.toString()).toBe(
+      'https://username:password@reactnative.dev:8080/docs/path?query=testQuery&key=value#fragment',
+    );
 
     // Test searchParams
     const searchParams = url.searchParams;

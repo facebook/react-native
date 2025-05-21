@@ -10,19 +10,20 @@
 
 'use strict';
 
-import type {Permission} from 'react-native/Libraries/PermissionsAndroid/PermissionsAndroid';
+import type {Permission} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
+import {useState} from 'react';
 import {PermissionsAndroid, StyleSheet, View} from 'react-native';
 
 function PermissionsExample() {
-  const [permission, setPermission] = React.useState<Permission>(
+  const [permission, setPermission] = useState<Permission>(
     PermissionsAndroid.PERMISSIONS.CAMERA,
   );
-  const [hasPermission, setHasPermission] = React.useState('Not Checked');
+  const [hasPermission, setHasPermission] = useState('Not Checked');
 
   const requestPermission = async () => {
     let result;
