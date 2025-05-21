@@ -5827,7 +5827,7 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
   object: T
 ): T;
 declare export function ConditionallyIgnoredEventHandlers<
-  T: { [name: string]: true },
+  const T: { +[name: string]: true },
 >(
   value: T
 ): T | void;

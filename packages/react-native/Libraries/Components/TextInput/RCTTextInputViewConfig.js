@@ -14,7 +14,7 @@ import {ConditionallyIgnoredEventHandlers} from '../../NativeComponent/ViewConfi
 
 type PartialViewConfigWithoutName = Omit<PartialViewConfig, 'uiViewClassName'>;
 
-const RCTTextInputViewConfig = {
+const RCTTextInputViewConfig: PartialViewConfigWithoutName = {
   bubblingEventTypes: {
     topBlur: {
       phasedRegistrationNames: {

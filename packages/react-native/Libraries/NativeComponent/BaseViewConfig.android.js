@@ -174,14 +174,14 @@ const validAttributesForNonEventProps = {
   boxShadow:
     NativeReactNativeFeatureFlags != null &&
     ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? true
+      ? (true as const)
       : {
           process: require('../StyleSheet/processBoxShadow').default,
         },
   filter:
     NativeReactNativeFeatureFlags != null &&
     ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? true
+      ? (true as const)
       : {
           process: require('../StyleSheet/processFilter').default,
         },
@@ -369,7 +369,7 @@ const validAttributesForNonEventProps = {
   },
   focusable: true,
   backfaceVisibility: true,
-};
+} as const;
 
 // Props for bubbling and direct events
 const validAttributesForEventProps = {
@@ -409,7 +409,7 @@ const validAttributesForEventProps = {
   onPointerOutCapture: true,
   onPointerOver: true,
   onPointerOverCapture: true,
-};
+} as const;
 
 /**
  * On Android, Props are derived from a ViewManager and its ShadowNode.
