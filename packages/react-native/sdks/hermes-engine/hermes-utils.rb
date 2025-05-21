@@ -6,6 +6,7 @@
 require 'net/http'
 require 'rexml/document'
 require 'open3' # [macOS]
+require 'json' # [macOS]
 
 HERMES_GITHUB_URL = "https://github.com/facebook/hermes.git"
 ENV_BUILD_FROM_SOURCE = "RCT_BUILD_HERMES_FROM_SOURCE"
@@ -238,22 +239,12 @@ end
 # [macOS react-native-macos does not publish macos specific hermes artifacts
 # so we attempt to find the latest patch version of the iOS artifacts and use that
 def findLastestVersionWithArtifact(version)
-    versionWithoutPatch = version.match(/^(\d+\.\d+)/)
-    xml_data, = Open3.capture3("curl -s https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/maven-metadata.xml")
-
-    metadata = REXML::Document.new(xml_data)
-    versions = metadata.elements.to_a('//metadata/versioning/versions/version')
-
-    # Extract version numbers and sort them
-    filtered_versions = versions.select { |version| version.text.match?(/^#{versionWithoutPatch}\.\d+$/) }
-    if filtered_versions.empty?
-        return
-    end
-
-    version_numbers = filtered_versions.map { |version| version.text }
-    sorted_versions = version_numbers.sort_by { |v| Gem::Version.new(v) }
-
-    return sorted_versions.last
+    # See https://central.sonatype.org/search/rest-api-guide/ for details on query params
+    versionWithoutPatch = "#{version.match(/^(\d+\.\d+)/)}"
+    res, = Open3.capture3("curl -s https://search.maven.org/solrsearch/select?q=g:com.facebook.react+AND+a:react-native-artifacts+AND+v:#{versionWithoutPatch}.*&core=gav&rows=1&wt=json")
+    wt = JSON.parse(res)
+    response = wt['response']
+    return response['docs'][0]['v'] unless response['numFound'] == 0
 end
 # macOS]
 
