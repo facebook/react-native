@@ -299,8 +299,9 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithInvalidArgs) {
       getErrorMessage("setTimeout();"),
       "setTimeout must be called with at least one argument (the function to call).");
 
-  eval("setTimeout('invalid');");
+  auto val = eval("setTimeout('invalid')");
   expectNoError();
+  EXPECT_EQ(val.asNumber(), 0);
 
   eval("setTimeout(() => {}, 'invalid');");
   expectNoError();
