@@ -16,8 +16,7 @@ ImageManager::ImageManager(const ContextContainer::Shared& contextContainer)
     : self_(new ImageFetcher(contextContainer)) {}
 
 ImageManager::~ImageManager() {
-  // @lint-ignore CLANGTIDY cppcoreguidelines-no-malloc
-  free(self_);
+  delete reinterpret_cast<ImageFetcher *>(self_);
 }
 
 ImageRequest ImageManager::requestImage(
