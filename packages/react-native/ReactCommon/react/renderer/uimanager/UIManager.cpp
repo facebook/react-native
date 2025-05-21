@@ -638,7 +638,7 @@ void UIManager::shadowTreeDidFinishTransaction(
 void UIManager::reportMount(SurfaceId surfaceId) const {
   TraceSection s("UIManager::reportMount");
 
-  auto time = JSExecutor::performanceNow();
+  auto time = HighResTimeStamp::now();
 
   auto rootShadowNode = RootShadowNode::Shared{};
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
