@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<425dc272cba3224430f9948e6773b30f>>
+ * @generated SignedSource<<cf289219c33b7098708a8a19faed5952>>
  */
 
 /**
@@ -304,6 +304,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableResourceTimingAPI();
+  }
+
+  bool enableSaferMainQueueSyncDispatchOnIOS() override {
+    auto value = values_["enableSaferMainQueueSyncDispatchOnIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableSaferMainQueueSyncDispatchOnIOS();
   }
 
   bool enableSynchronousStateUpdates() override {

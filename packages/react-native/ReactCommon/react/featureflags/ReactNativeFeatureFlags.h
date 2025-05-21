@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83ef02f26eaf2d847efd7042ae6d1dfc>>
+ * @generated SignedSource<<d7d37f59f34ae760cb038232da4e88e4>>
  */
 
 /**
@@ -183,6 +183,11 @@ class ReactNativeFeatureFlags {
    * Enables the reporting of network resource timings through `PerformanceObserver`.
    */
   RN_EXPORT static bool enableResourceTimingAPI();
+
+  /**
+   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
+   */
+  RN_EXPORT static bool enableSaferMainQueueSyncDispatchOnIOS();
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).

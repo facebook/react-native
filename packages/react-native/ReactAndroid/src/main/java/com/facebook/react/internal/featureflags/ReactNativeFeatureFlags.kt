@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43590bc324e803ccf299e2a6ae6c5304>>
+ * @generated SignedSource<<591d6b112aec9fc096a517b5570db15e>>
  */
 
 /**
@@ -203,6 +203,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableResourceTimingAPI(): Boolean = accessor.enableResourceTimingAPI()
+
+  /**
+   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
+   */
+  @JvmStatic
+  public fun enableSaferMainQueueSyncDispatchOnIOS(): Boolean = accessor.enableSaferMainQueueSyncDispatchOnIOS()
 
   /**
    * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).

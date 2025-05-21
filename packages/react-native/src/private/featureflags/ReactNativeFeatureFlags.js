@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<81be36e22e6ec5f6720c89089d725086>>
+ * @generated SignedSource<<da9a3f0922fe826a98465e81b806b0e6>>
  * @flow strict
  * @noformat
  */
@@ -80,6 +80,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableResourceTimingAPI: Getter<boolean>,
+  enableSaferMainQueueSyncDispatchOnIOS: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
@@ -302,6 +303,10 @@ export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNat
  * Enables the reporting of network resource timings through `PerformanceObserver`.
  */
 export const enableResourceTimingAPI: Getter<boolean> = createNativeFlagGetter('enableResourceTimingAPI', false);
+/**
+ * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
+ */
+export const enableSaferMainQueueSyncDispatchOnIOS: Getter<boolean> = createNativeFlagGetter('enableSaferMainQueueSyncDispatchOnIOS', false);
 /**
  * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
  */

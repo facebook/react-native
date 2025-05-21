@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<efc16fdb113176b932c0005118e7b48c>>
+ * @generated SignedSource<<df7adc0d47ad0ec39c12de8fdf1652bb>>
  */
 
 /**
@@ -53,6 +53,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableResourceTimingAPICache: Boolean? = null
+  private var enableSaferMainQueueSyncDispatchOnIOSCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
@@ -360,6 +361,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableResourceTimingAPI()
       accessedFeatureFlags.add("enableResourceTimingAPI")
       enableResourceTimingAPICache = cached
+    }
+    return cached
+  }
+
+  override fun enableSaferMainQueueSyncDispatchOnIOS(): Boolean {
+    var cached = enableSaferMainQueueSyncDispatchOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableSaferMainQueueSyncDispatchOnIOS()
+      accessedFeatureFlags.add("enableSaferMainQueueSyncDispatchOnIOS")
+      enableSaferMainQueueSyncDispatchOnIOSCache = cached
     }
     return cached
   }
