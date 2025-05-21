@@ -14,35 +14,21 @@
 namespace facebook::react::jsinspector_modern::tracing {
 
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
-namespace {
-
-inline uint64_t formatTimePointToUnixTimestamp(
-    std::chrono::steady_clock::time_point timestamp) {
-  return std::chrono::duration_cast<std::chrono::microseconds>(
-             timestamp.time_since_epoch())
-      .count();
-}
-
-} // namespace
 
 EventLoopReporter::EventLoopReporter(EventLoopPhase phase)
-    : startTimestamp_(std::chrono::steady_clock::now()), phase_(phase) {}
+    : startTimestamp_(HighResTimeStamp::now()), phase_(phase) {}
 
 EventLoopReporter::~EventLoopReporter() {
   PerformanceTracer& performanceTracer = PerformanceTracer::getInstance();
   if (performanceTracer.isTracing()) {
-    auto end = std::chrono::steady_clock::now();
+    auto end = HighResTimeStamp::now();
     switch (phase_) {
       case EventLoopPhase::Task:
-        performanceTracer.reportEventLoopTask(
-            formatTimePointToUnixTimestamp(startTimestamp_),
-            formatTimePointToUnixTimestamp(end));
+        performanceTracer.reportEventLoopTask(startTimestamp_, end);
         break;
 
       case EventLoopPhase::Microtasks:
-        performanceTracer.reportEventLoopMicrotasks(
-            formatTimePointToUnixTimestamp(startTimestamp_),
-            formatTimePointToUnixTimestamp(end));
+        performanceTracer.reportEventLoopMicrotasks(startTimestamp_, end);
         break;
 
       default:
