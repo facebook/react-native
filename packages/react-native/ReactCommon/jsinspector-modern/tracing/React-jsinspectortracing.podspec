@@ -47,7 +47,6 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "React-oscompat"
-  s.dependency "React-timing"
 
   add_rn_third_party_dependencies(s)
 end

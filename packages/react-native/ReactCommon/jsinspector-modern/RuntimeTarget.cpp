@@ -179,7 +179,7 @@ RuntimeTargetController::collectSamplingProfile() {
 
 void RuntimeTarget::registerForTracing() {
   jsExecutor_([](auto& /*runtime*/) {
-    tracing::PerformanceTracer::getInstance().reportJavaScriptThread();
+    PerformanceTracer::getInstance().reportJavaScriptThread();
   });
 }
 

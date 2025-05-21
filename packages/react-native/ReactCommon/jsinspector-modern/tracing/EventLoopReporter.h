@@ -7,9 +7,7 @@
 
 #pragma once
 
-#if defined(REACT_NATIVE_DEBUGGER_ENABLED)
-#include <react/timing/primitives.h>
-#endif
+#include <chrono>
 
 namespace facebook::react::jsinspector_modern::tracing {
 
@@ -31,7 +29,7 @@ struct EventLoopReporter {
 
  private:
 #if defined(REACT_NATIVE_DEBUGGER_ENABLED)
-  HighResTimeStamp startTimestamp_;
+  std::chrono::steady_clock::time_point startTimestamp_;
   EventLoopPhase phase_;
 #endif
 };

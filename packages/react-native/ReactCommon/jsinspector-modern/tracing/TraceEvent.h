@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <react/timing/primitives.h>
-
 #include <folly/dynamic.h>
 
-namespace facebook::react::jsinspector_modern::tracing {
+namespace facebook::react::jsinspector_modern {
+
+namespace {
 
 /**
  * A trace event to send to the debugger frontend, as defined by the Trace Event
@@ -42,7 +42,7 @@ struct TraceEvent {
   char ph;
 
   /** The tracing clock timestamp of the event, in microseconds (µs). */
-  HighResTimeStamp ts;
+  uint64_t ts;
 
   /** The process ID for the process that output this event. */
   uint64_t pid;
@@ -57,7 +57,9 @@ struct TraceEvent {
    * The duration of the event, in microseconds (µs). Only applicable to
    * complete events ("ph": "X").
    */
-  std::optional<HighResDuration> dur;
+  std::optional<uint64_t> dur;
 };
 
-} // namespace facebook::react::jsinspector_modern::tracing
+} // namespace
+
+} // namespace facebook::react::jsinspector_modern

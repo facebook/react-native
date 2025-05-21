@@ -6,10 +6,10 @@
  */
 
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
-#include <jsinspector-modern/tracing/Timing.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <chrono>
 #include <utility>
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -71,7 +71,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptyProfile) {
       PerformanceTracer::getInstance(), notificationCallback, 10);
 
   auto profile = createEmptyProfile();
-  auto tracingStartTime = HighResTimeStamp::now();
+  auto tracingStartTime = std::chrono::steady_clock::now();
 
   // Execute
   serializer.serializeAndNotify(profile, tracingStartTime);
@@ -119,7 +119,7 @@ TEST_F(
   samples.emplace_back(createSample(timestamp3, threadId, callStack3));
 
   auto profile = createProfileWithSamples(std::move(samples));
-  auto tracingStartTime = HighResTimeStamp::now();
+  auto tracingStartTime = std::chrono::steady_clock::now();
 
   // Execute
   serializer.serializeAndNotify(profile, tracingStartTime);
@@ -148,7 +148,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptySample) {
   samples.emplace_back(createSample(timestamp, threadId, emptyCallStack));
   auto profile = createProfileWithSamples(std::move(samples));
 
-  auto tracingStartTime = HighResTimeStamp::now();
+  auto tracingStartTime = std::chrono::steady_clock::now();
 
   // Mock the performance tracer methods
   folly::dynamic profileEvent = folly::dynamic::object;
@@ -189,7 +189,7 @@ TEST_F(
 
   auto profile = createProfileWithSamples(std::move(samples));
 
-  auto tracingStartTime = HighResTimeStamp::now();
+  auto tracingStartTime = std::chrono::steady_clock::now();
 
   // Execute
   serializer.serializeAndNotify(profile, tracingStartTime);
@@ -228,7 +228,7 @@ TEST_F(
   }
 
   auto profile = createProfileWithSamples(std::move(samples));
-  auto tracingStartTime = HighResTimeStamp::now();
+  auto tracingStartTime = std::chrono::steady_clock::now();
 
   // Execute
   serializer.serializeAndNotify(profile, tracingStartTime);
@@ -269,7 +269,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, ProfileChunkSizeLimit) {
   }
 
   auto profile = createProfileWithSamples(std::move(samples));
-  auto tracingStartTime = HighResTimeStamp::now();
+  auto tracingStartTime = std::chrono::steady_clock::now();
 
   // Execute
   serializer.serializeAndNotify(profile, tracingStartTime);

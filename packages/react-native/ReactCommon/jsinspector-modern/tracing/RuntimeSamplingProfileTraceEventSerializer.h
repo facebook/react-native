@@ -11,8 +11,6 @@
 #include "ProfileTreeNode.h"
 #include "RuntimeSamplingProfile.h"
 
-#include <react/timing/primitives.h>
-
 namespace facebook::react::jsinspector_modern::tracing {
 
 namespace {
@@ -38,7 +36,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
     ProfileChunk(
         uint16_t chunkSize,
         uint64_t chunkThreadId,
-        HighResTimeStamp chunkTimestamp)
+        uint64_t chunkTimestamp)
         : size(chunkSize), threadId(chunkThreadId), timestamp(chunkTimestamp) {
       samples.reserve(size);
       timeDeltas.reserve(size);
@@ -54,10 +52,10 @@ class RuntimeSamplingProfileTraceEventSerializer {
 
     std::vector<ProfileTreeNode> nodes;
     std::vector<uint32_t> samples;
-    std::vector<HighResDuration> timeDeltas;
+    std::vector<long long> timeDeltas;
     uint16_t size;
     uint64_t threadId;
-    HighResTimeStamp timestamp;
+    uint64_t timestamp;
   };
 
  public:
@@ -91,7 +89,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
    */
   void serializeAndNotify(
       const RuntimeSamplingProfile& profile,
-      HighResTimeStamp tracingStartTime);
+      std::chrono::steady_clock::time_point tracingStartTime);
 
  private:
   /**
@@ -104,7 +102,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
   void sendProfileTraceEvent(
       uint64_t threadId,
       uint16_t profileId,
-      HighResTimeStamp profileStartTimestamp) const;
+      uint64_t profileStartUnixTimestamp) const;
 
   /**
    * Encapsulates logic for processing the empty sample, when the VM was idling.
@@ -116,7 +114,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
   void chunkEmptySample(
       ProfileChunk& chunk,
       uint32_t idleNodeId,
-      HighResDuration samplesTimeDelta);
+      long long samplesTimeDelta);
 
   /**
    * Records ProfileChunk as a "ProfileChunk" Trace Event in traceEventBuffer_.
@@ -145,7 +143,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
       ProfileChunk& chunk,
       ProfileTreeNode& rootNode,
       uint32_t idleNodeId,
-      HighResDuration samplesTimeDelta,
+      long long samplesTimeDelta,
       NodeIdGenerator& nodeIdGenerator);
 
   /**
