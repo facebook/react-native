@@ -47,7 +47,13 @@ async function prepareHermesArtifactsAsync(
   // Only check if the artifacts folder exists if we are not using a local tarball
   if (!localPath) {
     // Resolve the version from the environment variable or use the default version
-    const resolvedVersion = process.env.HERMES_VERSION ?? version;
+    let resolvedVersion = process.env.HERMES_VERSION ?? version;
+
+    if (resolvedVersion === 'nightly') {
+      hermesLog('Using latest nightly tarball');
+      const hermesVersion = await getNightlyVersionFromNPM();
+      resolvedVersion = hermesVersion;
+    }
 
     // Check if the Hermes artifacts are already downloaded
     if (
@@ -87,6 +93,23 @@ async function prepareHermesArtifactsAsync(
   }
 
   return artifactsPath;
+}
+
+async function getNightlyVersionFromNPM() /*: Promise<string> */ {
+  const npmResponse /*: Response */ = await fetch(
+    'https://registry.npmjs.org/react-native/nightly',
+  );
+
+  if (!npmResponse.ok) {
+    throw new Error(
+      `Couldn't get an answer from NPM: ${npmResponse.status} ${npmResponse.statusText}`,
+    );
+  }
+
+  const json = await npmResponse.json();
+  const latestNightly = json.version;
+  hermesLog(`Using version ${latestNightly}`);
+  return latestNightly;
 }
 
 /*::
