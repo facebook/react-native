@@ -20,6 +20,7 @@ export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
       <View>
         <View style={[styles.subjectContainer, {height}]}>
           <Text
+            testID="adjusting-text"
             adjustsFontSizeToFit={true}
             numberOfLines={1}
             style={styles.subjectText}>
@@ -28,13 +29,25 @@ export default function TextAdjustsDynamicLayoutExample(props: {}): React.Node {
         </View>
       </View>
       <View style={styles.row}>
-        <Button onPress={() => setHeight(20)} title="Set Height to 20" />
+        <Button
+          testID="set-height-20"
+          onPress={() => setHeight(20)}
+          title="Set Height to 20"
+        />
       </View>
       <View style={styles.row}>
-        <Button onPress={() => setHeight(40)} title="Set Height to 40" />
+        <Button
+          testID="set-height-40"
+          onPress={() => setHeight(40)}
+          title="Set Height to 40"
+        />
       </View>
       <View style={styles.row}>
-        <Button onPress={() => setHeight(60)} title="Set Height to 60" />
+        <Button
+          testID="set-height-60"
+          onPress={() => setHeight(60)}
+          title="Set Height to 60"
+        />
       </View>
     </>
   );

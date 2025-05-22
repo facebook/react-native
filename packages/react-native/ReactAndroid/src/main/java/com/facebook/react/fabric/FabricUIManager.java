@@ -673,6 +673,7 @@ public class FabricUIManager
             getYogaSize(minWidth, maxWidth),
             getYogaMeasureMode(minWidth, maxWidth),
             getYogaSize(minHeight, maxHeight),
+            getYogaMeasureMode(minHeight, maxHeight),
             null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
 
     int maximumNumberOfLines =
