@@ -8,6 +8,7 @@
  */
 
 import * as React from 'react';
+import AnimatedStyle from '../nodes/AnimatedStyle';
 
 const {create, unmount, update} = require('../../../jest/renderer');
 const {PlatformColor} = require('../../StyleSheet/PlatformColorValueTypes');
@@ -243,6 +244,59 @@ describe('Animated', () => {
         useNativeDriver: false,
       }).start(callback);
       expect(callback).toBeCalled();
+    });
+
+    it('renders animated and primitive style correctly', async () => {
+      const callback = jest.fn();
+      const anim = new Animated.Value(100);
+      const staticProps = {
+        style: [
+          {
+            backgroundColor: 'red',
+            opacity: 100,
+          },
+          {
+            transform: [
+              {
+                translateX: anim,
+              },
+            ],
+          },
+          {
+            transform: [
+              {
+                translateY: 100,
+              },
+            ],
+          },
+        ],
+      };
+      const staticPropsWithoutAnim = {
+        style: [
+          {
+            backgroundColor: 'red',
+            opacity: 100,
+          },
+          {
+            transform: [
+              {
+                translateX: 100,
+              },
+            ],
+          },
+          {
+            transform: [
+              {
+                translateY: 100,
+              },
+            ],
+          },
+        ],
+      };
+      const node = new AnimatedProps(staticProps, callback);
+      expect(node.__getValueWithStaticProps(staticProps)).toStrictEqual(
+        staticPropsWithoutAnim,
+      );
     });
 
     it('send toValue when a critically damped spring stops', () => {
