@@ -4,29 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
-import type {HostComponent} from '../../../../src/private/types/HostComponent';
+import type {HostComponent} from '../src/private/types/HostComponent';
 
-import requireNativeComponent from '../../../ReactNative/requireNativeComponent';
+import requireNativeComponent from '../Libraries/ReactNative/requireNativeComponent';
 import * as React from 'react';
 
 const RCTRefreshControl: HostComponent<{}> = requireNativeComponent<{}>(
   'RCTRefreshControl',
 );
 
-class RefreshControlMock extends React.Component<{...}> {
+export default class RefreshControlMock extends React.Component<{...}> {
   static latestRef: ?RefreshControlMock;
+
+  render(): React.Node {
+    return <RCTRefreshControl />;
+  }
+
   componentDidMount() {
     RefreshControlMock.latestRef = this;
   }
-  render(): React.MixedElement {
-    return <RCTRefreshControl />;
-  }
 }
-
-module.exports = RefreshControlMock;
