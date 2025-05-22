@@ -803,7 +803,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
-    if (!java.lang.Float.isNaN(effectiveLetterSpacing)) {
+    if (!effectiveLetterSpacing.isNaN()) {
       workingText.setSpan(
           CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length, spanFlags)
     }
@@ -820,7 +820,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     val lineHeight = textAttributes.effectiveLineHeight
-    if (!java.lang.Float.isNaN(lineHeight)) {
+    if (!lineHeight.isNaN()) {
       workingText.setSpan(CustomLineHeightSpan(lineHeight), 0, workingText.length, spanFlags)
     }
   }
@@ -995,7 +995,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
   public fun setBorderRadius(borderRadius: Float, position: Int) {
     val radius =
-        if (java.lang.Float.isNaN(borderRadius)) {
+        if (borderRadius.isNaN()) {
           null
         } else {
           LengthPercentage(toDIPFromPixel(borderRadius), LengthPercentageType.POINT)
@@ -1052,7 +1052,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     setTextSize(TypedValue.COMPLEX_UNIT_PX, textAttributes.effectiveFontSize.toFloat())
 
     val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
-    if (!java.lang.Float.isNaN(effectiveLetterSpacing)) {
+    if (!effectiveLetterSpacing.isNaN()) {
       letterSpacing = effectiveLetterSpacing
     }
   }

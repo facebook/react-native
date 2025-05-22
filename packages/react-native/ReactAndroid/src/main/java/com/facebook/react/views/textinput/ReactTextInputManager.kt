@@ -807,7 +807,7 @@ public open class ReactTextInputManager public constructor() :
       defaultFloat = Float.NaN)
   public fun setBorderRadius(view: ReactEditText, index: Int, borderRadius: Float) {
     val radius =
-        if (java.lang.Float.isNaN(borderRadius)) {
+        if (borderRadius.isNaN()) {
           null
         } else {
           LengthPercentage(borderRadius, LengthPercentageType.POINT)

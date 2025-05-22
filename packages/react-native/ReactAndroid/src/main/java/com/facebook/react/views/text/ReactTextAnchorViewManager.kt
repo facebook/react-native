@@ -129,7 +129,7 @@ internal abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?>
       defaultFloat = Float.NaN)
   public fun setBorderRadius(view: ReactTextView, index: Int, borderRadius: Float) {
     val radius =
-        if (java.lang.Float.isNaN(borderRadius)) {
+        if (borderRadius.isNaN()) {
           null
         } else {
           LengthPercentage(borderRadius, LengthPercentageType.POINT)
