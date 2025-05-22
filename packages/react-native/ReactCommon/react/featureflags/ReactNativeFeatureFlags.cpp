@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e4946f3e524cd7571fc62c721d611d19>>
+ * @generated SignedSource<<93732ba9ac614907d5795f53b72ede4b>>
  */
 
 /**
@@ -140,6 +140,10 @@ bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
 
 bool ReactNativeFeatureFlags::enableResourceTimingAPI() {
   return getAccessor().enableResourceTimingAPI();
+}
+
+bool ReactNativeFeatureFlags::enableSaferMainQueueSyncDispatchOnIOS() {
+  return getAccessor().enableSaferMainQueueSyncDispatchOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableSynchronousStateUpdates() {

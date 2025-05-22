@@ -14,6 +14,7 @@
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <memory>
 #include <semaphore>
+#include <thread>
 #include <variant>
 
 #include "StubClock.h"

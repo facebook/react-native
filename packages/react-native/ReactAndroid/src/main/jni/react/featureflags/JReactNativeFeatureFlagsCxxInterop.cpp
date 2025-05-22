@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<93037428475b39d3f2c208e1326b3e86>>
+ * @generated SignedSource<<4d082fd3570d7f7c8488a5158e366055>>
  */
 
 /**
@@ -210,6 +210,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableResourceTimingAPI() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableResourceTimingAPI");
+    return method(javaProvider_);
+  }
+
+  bool enableSaferMainQueueSyncDispatchOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSaferMainQueueSyncDispatchOnIOS");
     return method(javaProvider_);
   }
 
@@ -482,6 +488,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableResourceTimingAPI(
   return ReactNativeFeatureFlags::enableResourceTimingAPI();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableSaferMainQueueSyncDispatchOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableSaferMainQueueSyncDispatchOnIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableSynchronousStateUpdates(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableSynchronousStateUpdates();
@@ -700,6 +711,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableResourceTimingAPI",
         JReactNativeFeatureFlagsCxxInterop::enableResourceTimingAPI),
+      makeNativeMethod(
+        "enableSaferMainQueueSyncDispatchOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableSaferMainQueueSyncDispatchOnIOS),
       makeNativeMethod(
         "enableSynchronousStateUpdates",
         JReactNativeFeatureFlagsCxxInterop::enableSynchronousStateUpdates),

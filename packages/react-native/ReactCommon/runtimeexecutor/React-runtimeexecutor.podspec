@@ -25,8 +25,23 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = "ReactCommon/*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
+  s.public_header_files    = "ReactCommon/*.h", "platform/ios/**/*.h"
   s.header_dir             = "ReactCommon"
 
+  if ENV['USE_FRAMEWORKS']
+    s.module_name            = "React_runtimeexecutor"
+  end
+
+  s.pod_target_xcconfig    = {
+    "USE_HEADERMAP" => "NO",
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_TARGET_SRCROOT)/platform/ios\"",
+    "DEFINES_MODULE" => "YES"
+  }
+
   s.dependency "React-jsi", version
+  s.dependency "React-debug", version
+  s.dependency "React-featureflags", version
+  s.dependency "React-utils", version
 end

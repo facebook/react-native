@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9c7d04c48c4c5feb0d2fb250966550c8>>
+ * @generated SignedSource<<14de8b7e421c3ed57d65e96bf6e16856>>
  */
 
 /**
@@ -80,6 +80,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
   override fun enableResourceTimingAPI(): Boolean = false
+
+  override fun enableSaferMainQueueSyncDispatchOnIOS(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
