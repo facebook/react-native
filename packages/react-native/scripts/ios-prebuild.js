@@ -10,6 +10,9 @@
 
 const {prepareHermesArtifactsAsync} = require('./ios-prebuild/hermes');
 const {
+  prepareReactNativeDependenciesArtifactsAsync,
+} = require('./ios-prebuild/reactNativeDependencies');
+const {
   createFolderIfNotExists,
   prebuildLog,
   throwIfOnEden,
@@ -110,6 +113,8 @@ async function main() {
 
     // HERMES ARTIFACTS
     await prepareHermesArtifactsAsync(currentVersion, 'debug');
+
+    await prepareReactNativeDependenciesArtifactsAsync(currentVersion, 'debug');
 
     // CODEGEN
     const codegenPath = path.join(root, '.build/codegen');
