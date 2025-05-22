@@ -10,9 +10,9 @@
 
 'use strict';
 
-import type {HostComponent} from '../../../../src/private/types/HostComponent';
+import type {HostComponent} from '../src/private/types/HostComponent';
 
-import requireNativeComponent from '../../../ReactNative/requireNativeComponent';
+import requireNativeComponent from '../Libraries/ReactNative/requireNativeComponent';
 import * as React from 'react';
 
 const RCTRefreshControl: HostComponent<{}> = requireNativeComponent<{}>(
