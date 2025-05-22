@@ -27,10 +27,6 @@ std::string JSExecutor::getSyntheticBundlePath(
   return buffer.data();
 }
 
-HighResTimeStamp JSExecutor::performanceNow() {
-  return HighResTimeStamp::now();
-}
-
 jsinspector_modern::RuntimeTargetDelegate&
 JSExecutor::getRuntimeTargetDelegate() {
   if (!runtimeTargetDelegate_) {
