@@ -28,6 +28,8 @@ describe('SchemaValidator', () => {
   it('fails on components across modules with same name', () => {
     const fixture: SchemaType = {
       modules: {
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         Module1: {
           type: 'Component',
           components: {
@@ -44,6 +46,8 @@ describe('SchemaValidator', () => {
             },
           },
         },
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         Module2: {
           type: 'Component',
           components: {

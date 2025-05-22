@@ -422,6 +422,8 @@ describe('buildSchemaFromConfigType', () => {
       astMock,
       wrapComponentSchemaMock,
       buildComponentSchemaMock,
+      /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */
       buildModuleSchemaMock,
       parser,
       flowTranslateTypeAnnotation,

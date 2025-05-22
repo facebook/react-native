@@ -53,6 +53,8 @@ function CircleBlock({children, style}: CircleBlockProps): React.Node {
     borderColor: '#d6d7da',
     marginBottom: 2,
   };
+  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+   * https://fburl.com/workplace/6291gfvu */
   return <View style={[circleStyle, style]}>{children}</View>;
 }
 

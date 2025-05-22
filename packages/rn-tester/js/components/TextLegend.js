@@ -204,11 +204,17 @@ export default function TextLegend(): React.Node {
           onTextLayout={event => {
             setTextMetrics(event.nativeEvent.lines);
           }}
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           style={{
             fontSize: fontSize,
             textAlign: alignment,
           }}>
-          {PANGRAMS[language]}
+          {
+            /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+             * https://fburl.com/workplace/6291gfvu */
+            PANGRAMS[language]
+          }
         </RNTesterText>
       </View>
       <View style={styles.row}>

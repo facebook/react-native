@@ -83,11 +83,15 @@ function PointerEventClickTouchHierarchyTestCase(
       <EventTracker
         id="parent"
         eventsRef={eventsInOrder}
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         eventsToTrack={eventsToTrack}
         style={styles.targetParent}>
         <EventTracker
           id="child"
           eventsRef={eventsInOrder}
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           style={styles.target}
         />

@@ -201,6 +201,8 @@ function ScrollViewScrollToExample(): React.Node {
   return (
     <View>
       {scrolledToTop ? (
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         <RNTesterText style={textStyle}>scrolledToTop invoked</RNTesterText>
       ) : null}
       <ScrollView
@@ -644,6 +646,8 @@ const SnapToOptions = () => {
 
   return (
     <View>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         snapToAlignment={snapToAlignment}
@@ -836,6 +840,8 @@ const OnScrollOptions = () => {
   return (
     <View>
       <RNTesterText>onScroll: {onScrollDrag}</RNTesterText>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         onScrollBeginDrag={() => setOnScrollDrag('onScrollBeginDrag')}
@@ -972,6 +978,8 @@ const KeyboardExample = () => {
         value={textInputValue}
         onChangeText={val => setTextInputValue(val)}
       />
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         keyboardDismissMode={keyboardDismissMode}
@@ -1098,6 +1106,8 @@ const IndicatorStyle = () => {
   const [indicatorStyle, setIndicatorStyle] = useState('default');
   return (
     <View>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         indicatorStyle={indicatorStyle}
@@ -1168,6 +1178,8 @@ const DecelerationRateExample = () => {
   const [decelRate, setDecelRate] = useState('normal');
   return (
     <View>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         decelerationRate={decelRate}
@@ -1203,6 +1215,8 @@ const ContentExample = () => {
     useState('never');
   return (
     <View>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         canCancelContentTouches={canCancelContentTouches}
