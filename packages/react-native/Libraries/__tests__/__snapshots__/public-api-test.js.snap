@@ -1343,6 +1343,7 @@ declare export class URL {
 
 exports[`public API should not change unintentionally Libraries/Blob/URLSearchParams.js.flow 1`] = `
 "declare export class URLSearchParams {
+  +size: number;
   constructor(
     params?: Record<string, string> | string | Array<[string, string]>
   ): void;
