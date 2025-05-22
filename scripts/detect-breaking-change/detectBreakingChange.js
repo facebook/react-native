@@ -15,24 +15,20 @@ const traverse = require('@babel/traverse').default;
 // $FlowFixMe[prop-missing]
 const {VISITOR_KEYS} = require('@babel/types');
 const {execSync} = require('child_process');
+const fs = require('fs');
 
 const ROLLUP_PATH = 'packages/react-native/types/rollup.d.ts';
-const BREAKING = true;
-const NOT_BREAKING = false;
+const BREAKING = 0;
+const POTENTIALLY_NOT_BREAKING = 1;
+const NOT_BREAKING = 2;
 
 export type Context = {
   statementName: string,
 };
 
 type Cache = {
-  previous: {
-    internal: Array<BabelNodeExportNamedDeclaration>,
-    external: Array<BabelNodeExportNamedDeclaration>,
-  },
-  new: {
-    internal: Array<BabelNodeExportNamedDeclaration>,
-    external: Array<BabelNodeExportNamedDeclaration>,
-  },
+  old: Array<BabelNodeExportNamedDeclaration>,
+  new: Array<BabelNodeExportNamedDeclaration>,
 };
 
 function detectBreakingChange() {
@@ -50,30 +46,24 @@ function detectBreakingChange() {
     plugins: ['@babel/plugin-syntax-typescript'],
   });
 
-  const prevoiusStatements = previousRollupAST.program.body;
+  const oldStatements = previousRollupAST.program.body;
   const currentStatements = currentRollupAST.program.body;
-  const result = analyzeStatements(prevoiusStatements, currentStatements);
-  console.log(`IS BREAKING: ${result ? 'YES' : 'NO'}`);
+  const result = analyzeStatements(oldStatements, currentStatements);
+  console.log(`RESULT: ${resultToString(result)}`);
 }
 
 function analyzeStatements(
-  prevoiusStatements: Array<BabelNodeStatement>,
+  oldStatements: Array<BabelNodeStatement>,
   currentStatements: Array<BabelNodeStatement>,
-): boolean {
+): number {
   const cache = {
-    previous: {
-      internal: [],
-      external: [],
-    },
-    new: {
-      internal: [],
-      external: [],
-    },
+    old: [],
+    new: [],
   } as Cache;
 
   // ImportDeclaration should not have impact on the API
   // If the imported type is used, it will be compared in the next steps
-  const prevoiusStatementsFiltered = prevoiusStatements.filter(
+  const oldStatementsFiltered = oldStatements.filter(
     statement => statement.type !== 'ImportDeclaration',
   );
   const currentStatementsFiltered = currentStatements.filter(
@@ -83,34 +73,30 @@ function analyzeStatements(
   const categorize = (statements: any, mapping: any) => {
     statements.forEach(statement => {
       if (statement.type === 'ExportNamedDeclaration') {
-        mapping.external.push(statement);
-      } else {
-        mapping.internal.push(statement);
+        mapping.push(statement);
       }
     });
   };
 
-  categorize(prevoiusStatementsFiltered, cache.previous);
+  categorize(oldStatementsFiltered, cache.old);
   categorize(currentStatementsFiltered, cache.new);
 
-  if (cache.new.external.length < cache.previous.external.length) {
+  if (cache.new.length < cache.old.length) {
     console.log('External statement removed');
     return BREAKING;
   }
 
-  // Create mapping between previous and new statements
-  type Pair = Map<'previous' | 'new', BabelNodeExportNamedDeclaration>;
+  // Create a mapping between old and new statements
+  type Pair = Map<'old' | 'new', BabelNodeExportNamedDeclaration>;
   const mapping: Array<[string, Pair]> = [];
-  const previousNodesMapping = getExportedNodesNames(cache.previous.external);
-  const newNodesMapping = Object.fromEntries(
-    getExportedNodesNames(cache.new.external),
-  );
+  const oldNodesMapping = getExportedNodesNames(cache.old);
+  const newNodesMapping = Object.fromEntries(getExportedNodesNames(cache.new));
 
-  for (const [name, previousNode] of previousNodesMapping) {
+  for (const [name, oldNode] of oldNodesMapping) {
     if (newNodesMapping[name]) {
       const pairMap: Pair = new Map();
       pairMap.set('new', newNodesMapping[name]);
-      pairMap.set('previous', previousNode);
+      pairMap.set('old', oldNode);
       mapping.push([name, pairMap]);
     } else {
       // There is no statement of that name in the new rollup which means that:
@@ -121,26 +107,22 @@ function analyzeStatements(
     }
   }
 
-  let isBreaking = false;
   for (const [name, pair] of mapping) {
-    const previousNode = pair.get('previous');
+    const previousNode = pair.get('old');
     const newNode = pair.get('new');
     if (!previousNode || !newNode) {
       throw new Error('Node in pair is undefined');
     }
-    const isDiff = didStatementChange(previousNode, newNode);
-    if (isDiff) {
-      const context: Context = {
-        statementName: name,
-      };
-      traverseSubtrees(previousNode, newNode, context);
-      // Let analyze all statements and gather some logs
-      console.log(`Breaking change detected for ${name}`);
-      isBreaking = true;
+    if (didStatementChange(previousNode, newNode)) {
+      console.log(`Statement ${name} changed`);
+      return BREAKING;
     }
   }
 
-  if (isBreaking) return BREAKING;
+  if (cache.new.length > cache.old.length) {
+    console.log('New statement added');
+    return POTENTIALLY_NOT_BREAKING;
+  }
 
   return NOT_BREAKING;
 }
@@ -202,6 +184,7 @@ function didStatementChange(
 ) {
   const previousCode = getMinifiedCode(previousAST);
   const newCode = getMinifiedCode(newAST);
+  // console.log({previousCode}, {newCode})
   return previousCode !== newCode;
 }
 
@@ -212,287 +195,60 @@ function getMinifiedCode(ast: BabelNodeStatement) {
 }
 
 function getRollups(): null | {previousRollup: string, currentRollup: string} {
-  let commits: Array<string> = [];
-  try {
-    commits = execSync('git log --format="%H" -n 2')
-      .toString()
-      .trim()
-      .split('\n');
-    if (commits.length < 2) {
-      throw new Error('Not enough commits');
-    }
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
+  // let commits: Array<string> = [];
+  // try {
+  //   commits = execSync('git log --format="%H" -n 2')
+  //     .toString()
+  //     .trim()
+  //     .split('\n');
+  //   if (commits.length < 2) {
+  //     throw new Error('Not enough commits');
+  //   }
+  // } catch (error) {
+  //   console.error(error);
+  //   return null;
+  // }
 
-  const currentCommit = commits[0];
-  const previousCommit = commits[1];
-  let previousRollup = '';
-  let currentRollup = '';
+  // const currentCommit = commits[0];
+  // const previousCommit = commits[1];
+  // let previousRollup = '';
+  // let currentRollup = '';
 
-  try {
-    previousRollup = execSync(
-      `git show ${previousCommit}:${ROLLUP_PATH}`,
-    ).toString();
-    currentRollup = execSync(
-      `git show ${currentCommit}:${ROLLUP_PATH}`,
-    ).toString();
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
+  // try {
+  //   previousRollup = execSync(
+  //     `git show ${previousCommit}:${ROLLUP_PATH}`,
+  //   ).toString();
+  //   currentRollup = execSync(
+  //     `git show ${currentCommit}:${ROLLUP_PATH}`,
+  //   ).toString();
+  // } catch (error) {
+  //   console.error(error);
+  //   return null;
+  // }
+
+  const currentRollup = fs.readFileSync(
+    'packages/react-native/types/rollup-new.d.ts',
+    'utf8',
+  );
+  const previousRollup = fs.readFileSync(
+    'packages/react-native/types/rollup-old.d.ts',
+    'utf8',
+  );
 
   return {previousRollup, currentRollup};
 }
 
-function traverseSubtrees(
-  prevTree: BabelNode,
-  newTree: BabelNode,
-  ctx: Context,
-): void {
-  if (prevTree.type !== newTree.type) {
-    return;
+function resultToString(res: number): string {
+  switch (res) {
+    case BREAKING:
+      return 'BREAKING';
+    case POTENTIALLY_NOT_BREAKING:
+      return 'POTENTIALLY_NOT_BREAKING';
+    case NOT_BREAKING:
+      return 'NOT_BREAKING';
+    default:
+      throw new Error('Unknown result in resultToString');
   }
-
-  if (prevTree.type === undefined || prevTree.type === null) {
-    return;
-  }
-
-  // $FlowFixMe[incompatible-use]
-  const keys = VISITOR_KEYS[prevTree.type];
-
-  if (!keys) {
-    return;
-  }
-
-  if (prevTree.type === 'TSUnionType' && newTree.type === 'TSUnionType') {
-    return analyzeLiteralUnionType(prevTree, newTree, ctx);
-  }
-
-  if (prevTree.type === 'TSTypeLiteral' && newTree.type === 'TSTypeLiteral') {
-    return analyzeTypeLiteral(prevTree, newTree, ctx);
-  }
-
-  for (const key of keys) {
-    const prevChild = prevTree[key];
-    const newChild = newTree[key];
-
-    if (
-      prevChild === newChild &&
-      (newChild === undefined || newChild === null)
-    ) {
-      continue;
-    }
-
-    if (Array.isArray(prevChild) && !Array.isArray(newChild)) {
-      return;
-    }
-
-    if (Array.isArray(prevChild)) {
-      traverseMultiple(prevChild, newChild, ctx);
-    } else {
-      traverseSubtrees(prevChild, newChild, ctx);
-    }
-  }
-}
-
-function traverseMultiple(
-  prevTrees: Array<BabelNode>,
-  newTrees: Array<BabelNode>,
-  ctx: Context,
-) {
-  if (prevTrees.length !== newTrees.length) {
-    return;
-  }
-
-  for (let i = 0; i < prevTrees.length; i++) {
-    const prevTree = prevTrees[i];
-    const newTree = newTrees[i];
-    traverseSubtrees(prevTree, newTree, ctx);
-  }
-}
-
-function analyzeLiteralUnionType(
-  prevNode: BabelNodeTSUnionType,
-  newNode: BabelNodeTSUnionType,
-  ctx: Context,
-): void {
-  const isPrevLiteralUnion = prevNode.types.every(
-    type => type.type === 'TSLiteralType',
-  );
-  const isNewLiteralUnion = newNode.types.every(
-    type => type.type === 'TSLiteralType',
-  );
-
-  if (isPrevLiteralUnion !== isNewLiteralUnion) return;
-  if (!isPrevLiteralUnion && !isNewLiteralUnion) return;
-
-  const prevLiteralTypes = prevNode.types.map(type =>
-    String(type.literal?.value),
-  );
-  const newLiteralTypes = newNode.types.map(type =>
-    String(type.literal?.value),
-  );
-
-  if (prevLiteralTypes.length > newLiteralTypes.length) return;
-  if (prevLiteralTypes.length === newLiteralTypes.length) {
-    const typesSet = new Set(newLiteralTypes);
-    prevLiteralTypes.forEach(type => {
-      if (!typesSet.has(type)) {
-        console.log(
-          `Could not match previous literal type: ${type} in ${ctx.statementName}`,
-        );
-        return;
-      }
-    });
-  } else {
-    const typesSet = new Set(newLiteralTypes);
-    prevLiteralTypes.forEach(type => {
-      if (!typesSet.has(type)) {
-        console.log(
-          `Could not match previous literal type: ${type} in ${ctx.statementName}`,
-        );
-        return;
-      }
-      typesSet.delete(type);
-    });
-    const remainingTypes = Array.from(typesSet);
-    remainingTypes.forEach(type => {
-      console.log(
-        `New type added to the union: ${type} in ${ctx.statementName}`,
-      );
-    });
-  }
-
-  return;
-}
-
-function analyzeTypeLiteral(
-  prevNode: BabelNodeTSTypeLiteral,
-  newNode: BabelNodeTSTypeLiteral,
-  ctx: Context,
-): void {
-  type Pair = Map<'previous' | 'new', BabelNodeTSPropertySignature>;
-  const mapping: Array<[string, Pair]> = [];
-
-  const prevPropertySignatures = prevNode.members.filter(
-    member => member.type === 'TSPropertySignature',
-  );
-  const newPropertySignatures = newNode.members.filter(
-    member => member.type === 'TSPropertySignature',
-  );
-
-  const prevPropertiesMapping = getPropertiesMapping(prevPropertySignatures);
-  const newPropertiesMapping = Object.fromEntries(
-    getPropertiesMapping(newPropertySignatures),
-  );
-
-  // pair properties by names
-  for (const [name, prevProperty] of prevPropertiesMapping) {
-    if (newPropertiesMapping[name]) {
-      const pairMap: Pair = new Map();
-      pairMap.set('new', newPropertiesMapping[name]);
-      pairMap.set('previous', prevProperty);
-      delete newPropertiesMapping[name];
-    } else {
-      // might be removed or renamed
-      console.log(
-        `Property ${name} was not detected in new ${ctx.statementName}`,
-      );
-      // TODO: handle removed/renamed properties
-    }
-  }
-
-  // Check if there are new properties
-  const restNewProperties = Object.keys(newPropertiesMapping);
-  restNewProperties.forEach(name => {
-    // TODO: new properties may also be breaking
-    console.log(`New property ${name} added in ${ctx.statementName}`);
-  });
-
-  // compare matched properties
-  for (const [name, pair] of mapping) {
-    const previousProperty = pair.get('previous');
-    const newProperty = pair.get('new');
-
-    if (!previousProperty || !newProperty) {
-      throw new Error('Property in pair is undefined');
-    }
-
-    analyzeProperties(previousProperty, newProperty, ctx);
-  }
-
-  return;
-}
-
-function getPropertiesMapping(
-  properties: Array<BabelNodeTSPropertySignature>,
-): Array<[string, BabelNodeTSPropertySignature]> {
-  const propertiesMapping: Array<[string, BabelNodeTSPropertySignature]> = [];
-  properties.forEach(property => {
-    if (property.key.type === 'Identifier') {
-      propertiesMapping.push([property.key.name, property]);
-    }
-  });
-
-  return propertiesMapping;
-}
-
-function getNameFromExpression(node: BabelNodeExpression): string | null {
-  if (node.type === 'Identifier') {
-    return node.name;
-  }
-
-  return null;
-}
-
-function analyzeProperties(
-  prev: BabelNodeTSPropertySignature,
-  current: BabelNodeTSPropertySignature,
-  ctx: Context,
-) {
-  const prevName = getNameFromExpression(prev.key);
-  const currentName = getNameFromExpression(current.key);
-
-  if (prevName !== currentName && prevName !== null && currentName !== null) {
-    console.log(`Previous property ${prevName} renamed to ${currentName}`);
-  }
-
-  if (prev.optional !== current.optional) {
-    const name = getNameFromExpression(current.key);
-    if (prev.optional === true) {
-      // TODO: Removing optional property is breaking, for instance passing to a function:
-      // type A = {foo?: string}
-      // function foo(a: A) {...}
-      console.log(
-        `Optional property ${name ? `"${name}"` : ''} removed in ${ctx.statementName}`,
-      );
-    } else {
-      // TODO: Adding optional property is breaking, for instance passing a callback:
-      // type A = {foo: string}
-      // function foo(cb: (a: A) => void) {...}
-      console.log(
-        `Optional property "${name ? `"${name}"` : ''}" added in ${ctx.statementName}`,
-      );
-    }
-  }
-
-  // TODO: Determine what to do in this case
-  if (prev.readonly !== current.readonly) {
-    const name = getNameFromExpression(current.key);
-    if (prev.readonly === true) {
-      console.log(
-        `Readonly property ${name ? `"${name}"` : ''} removed in ${ctx.statementName}`,
-      );
-    } else {
-      console.log(
-        `Readonly property "${name ? `"${name}"` : ''}" added in ${ctx.statementName}`,
-      );
-    }
-  }
-
-  // TODO: Recurrent call
 }
 
 module.exports = detectBreakingChange;
