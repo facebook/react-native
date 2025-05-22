@@ -8,12 +8,15 @@
  * @format
  */
 
+const {createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
 const {promisify} = require('util');
+
 const pipeline = promisify(stream.pipeline);
+const hermesLog = createLogger('Hermes');
 
 /**
  * Downloads hermes artifacts from the specified version and build type. If you want to specify a specific
@@ -380,22 +383,6 @@ async function downloadHermesTarball(
 function abort(message /*: string */) {
   hermesLog(message, 'error');
   throw new Error(message);
-}
-
-function hermesLog(
-  message /*: string */,
-  level /*: 'info' | 'warning' | 'error' */ = 'warning',
-) {
-  // Simple log coloring for terminal output
-  const prefix = '[Hermes] ';
-  let colorFn = (x /*:string*/) => x;
-  if (process.stdout.isTTY) {
-    if (level === 'info') colorFn = x => `\x1b[32m${x}\x1b[0m`;
-    else if (level === 'error') colorFn = x => `\x1b[31m${x}\x1b[0m`;
-    else colorFn = x => `\x1b[33m${x}\x1b[0m`;
-  }
-
-  console.log(colorFn(prefix + message));
 }
 
 module.exports = {
