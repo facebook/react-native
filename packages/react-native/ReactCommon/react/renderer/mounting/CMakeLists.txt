@@ -30,6 +30,7 @@ target_link_libraries(react_renderer_mounting
         react_utils
         rrc_root
         rrc_view
+        rrc_scrollview
         yoga)
 target_compile_reactnative_options(react_renderer_mounting PRIVATE "Fabric")
 target_compile_options(react_renderer_mounting PRIVATE -Wpedantic)
