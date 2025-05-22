@@ -87,7 +87,7 @@ struct RawEvent {
   // The client may specify a platform-specific timestamp for the event start
   // time, for example when MotionEvent was triggered on the Android native
   // side.
-  std::optional<DOMHighResTimeStamp> eventStartTimeStamp = std::nullopt;
+  std::optional<HighResTimeStamp> eventStartTimeStamp = std::nullopt;
 };
 
 } // namespace facebook::react

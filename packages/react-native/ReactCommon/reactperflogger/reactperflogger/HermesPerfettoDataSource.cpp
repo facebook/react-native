@@ -113,7 +113,7 @@ void HermesPerfettoDataSource::OnStart(const StartArgs&) {
       "react-native",
       perfetto::DynamicString{"Profiling Started"},
       getPerfettoWebPerfTrackSync("JS Sampling"),
-      performanceNowToPerfettoTraceTime(0));
+      perfetto::TrackEvent::GetTraceTimeNs());
 }
 
 void HermesPerfettoDataSource::OnFlush(const FlushArgs&) {

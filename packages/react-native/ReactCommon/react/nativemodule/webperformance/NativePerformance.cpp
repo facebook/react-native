@@ -116,30 +116,31 @@ std::shared_ptr<PerformanceObserver> tryGetObserver(
 NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
-double NativePerformance::now(jsi::Runtime& /*rt*/) {
+HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
   return JSExecutor::performanceNow();
 }
 
-double NativePerformance::markWithResult(
+HighResTimeStamp NativePerformance::markWithResult(
     jsi::Runtime& rt,
     std::string name,
-    std::optional<double> startTime) {
+    std::optional<HighResTimeStamp> startTime) {
   auto entry =
       PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
   return entry.startTime;
 }
 
-std::tuple<double, double> NativePerformance::measureWithResult(
+std::tuple<HighResTimeStamp, HighResDuration>
+NativePerformance::measureWithResult(
     jsi::Runtime& runtime,
     std::string name,
-    double startTime,
-    double endTime,
-    std::optional<double> duration,
+    HighResTimeStamp startTime,
+    HighResTimeStamp endTime,
+    std::optional<HighResDuration> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
   auto reporter = PerformanceEntryReporter::getInstance();
 
-  DOMHighResTimeStamp startTimeValue = startTime;
+  HighResTimeStamp startTimeValue = startTime;
   // If the start time mark name is specified, it takes precedence over the
   // startTime parameter, which can be set to 0 by default from JavaScript.
   if (startMark) {
@@ -151,7 +152,7 @@ std::tuple<double, double> NativePerformance::measureWithResult(
     }
   }
 
-  DOMHighResTimeStamp endTimeValue = endTime;
+  HighResTimeStamp endTimeValue = endTime;
   // If the end time mark name is specified, it takes precedence over the
   // startTime parameter, which can be set to 0 by default from JavaScript.
   if (endMark) {
@@ -345,7 +346,8 @@ void NativePerformance::observe(
     return;
   }
 
-  auto durationThreshold = options.durationThreshold.value_or(0.0);
+  auto durationThreshold =
+      options.durationThreshold.value_or(HighResDuration::zero());
 
   // observer of type multiple
   if (options.entryTypes.has_value()) {
