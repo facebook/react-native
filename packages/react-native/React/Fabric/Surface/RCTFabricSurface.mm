@@ -21,6 +21,7 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
+#import <react/renderer/core/ReactRootViewTagGenerator.h>
 #import <react/renderer/mounting/MountingCoordinator.h>
 #import <react/utils/FollyConvert.h>
 
@@ -56,8 +57,7 @@ using namespace facebook::react;
   if (self = [super init]) {
     _surfacePresenter = surfacePresenter;
 
-    _surfaceHandler =
-        SurfaceHandler{RCTStringFromNSString(moduleName), (SurfaceId)[RCTAllocateRootViewTag() integerValue]};
+    _surfaceHandler = SurfaceHandler{RCTStringFromNSString(moduleName), getNextRootViewTag()};
     _surfaceHandler->setProps(convertIdToFollyDynamic(initialProperties));
 
     [_surfacePresenter registerSurface:self];
