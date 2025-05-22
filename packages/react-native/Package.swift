@@ -344,7 +344,7 @@ let reactRuntimeApple = RNTarget(
   name: .reactRuntimeApple,
   path: "ReactCommon/react/runtime/platform/ios",
   searchPaths: ["ReactCommon", RuntimeExecutorPath, CallInvokerPath, ReactFBReactNativeSpecPath, FBLazyVectorPath],
-  excludedPaths: ["ReactCommon/RCTJscInstance.mm"],
+  excludedPaths: ["ReactCommon/RCTJscInstance.mm", "ReactCommon/metainternal"],
   dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactRCTFabric, .reactCoreModules, .reactTurboModuleCore, .hermesPrebuilt, .reactUtils]
 )
 
