@@ -14,7 +14,7 @@ const {
 } = require('./ios-prebuild/reactNativeDependencies');
 const {
   createFolderIfNotExists,
-  prebuildLog,
+  createLogger,
   throwIfOnEden,
 } = require('./ios-prebuild/utils');
 const {execSync} = require('child_process');
@@ -26,6 +26,8 @@ const packageJsonPath = path.join(
   REACT_NATIVE_PACKAGE_ROOT_FOLDER,
   'package.json',
 );
+
+const prebuildLog = createLogger('Prebuild');
 
 // $FlowIgnore[unsupported-syntax]
 const {version: currentVersion} = require(packageJsonPath);
