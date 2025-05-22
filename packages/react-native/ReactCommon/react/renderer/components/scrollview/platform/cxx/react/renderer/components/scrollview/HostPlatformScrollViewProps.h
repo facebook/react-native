@@ -7,9 +7,8 @@
 
 #pragma once
 
-#include <react/renderer/components/scrollview/HostPlatformScrollViewProps.h>
+#include <react/renderer/components/scrollview/BaseScrollViewProps.h>
 
 namespace facebook::react {
-using ScrollViewProps = HostPlatformScrollViewProps;
-using SharedScrollViewProps = std::shared_ptr<const ScrollViewProps>;
+using HostPlatformScrollViewProps = BaseScrollViewProps;
 } // namespace facebook::react
