@@ -9,7 +9,11 @@
  */
 
 import type {TestSuiteResult} from '../runtime/setup';
-import type {AsyncCommandResult, HermesVariant} from './utils';
+import type {
+  AsyncCommandResult,
+  ConsoleLogMessage,
+  HermesVariant,
+} from './utils';
 
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
@@ -69,7 +73,7 @@ async function processRNTesterCommandResult(
       return;
     }
 
-    let parsed;
+    let parsed: ConsoleLogMessage;
     try {
       parsed = JSON.parse(line);
     } catch {

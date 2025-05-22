@@ -28,7 +28,7 @@ const {TestModule} = NativeModules;
  * image with the new one and make sure they are the same.
  */
 
-const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'];
+const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'] as const;
 
 function ImageCachePolicyTest(): React.Node {
   const [state, setState] = useState({

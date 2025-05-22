@@ -30,7 +30,7 @@ import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 
-const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
+const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'] as const;
 
 /**
  * React component that wraps the platform `DrawerLayout` (Android only). The

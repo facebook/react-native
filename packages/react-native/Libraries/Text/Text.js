@@ -545,6 +545,6 @@ const verticalAlignToTextAlignVerticalMap = {
   top: 'top',
   bottom: 'bottom',
   middle: 'center',
-};
+} as const;
 
 export default TextImpl;
