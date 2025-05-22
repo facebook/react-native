@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <jsinspector-modern/tracing/Timing.h>
+#include <react/timing/primitives.h>
+
 #include <folly/dynamic.h>
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -18,10 +21,15 @@ struct TraceEventProfileChunk {
   /// Will be sent as part of the "ProfileChunk" trace event.
   struct TimeDeltas {
     folly::dynamic toDynamic() const {
-      return folly::dynamic::array(deltas.begin(), deltas.end());
+      auto value = folly::dynamic::array();
+      value.reserve(deltas.size());
+      for (const auto& delta : deltas) {
+        value.push_back(highResDurationToTracingClockDuration(delta));
+      }
+      return value;
     }
 
-    std::vector<long long> deltas;
+    std::vector<HighResDuration> deltas;
   };
 
   /// Contains Profile information that will be emitted in this chunk: nodes and
