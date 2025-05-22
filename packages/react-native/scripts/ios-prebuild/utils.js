@@ -37,24 +37,28 @@ function throwIfOnEden() {
   throw new Error('Cannot prepare the iOS prebuilds on an Eden checkout');
 }
 
-function prebuildLog(
-  message /*: string */,
-  level /*: 'info' | 'warning' | 'error' */ = 'warning',
-) {
-  // Simple log coloring for terminal output
-  const prefix = '[Prebuild] ';
-  let colorFn = (x /*:string*/) => x;
-  if (process.stdout.isTTY) {
-    if (level === 'info') colorFn = x => `\x1b[32m${x}\x1b[0m`;
-    else if (level === 'error') colorFn = x => `\x1b[31m${x}\x1b[0m`;
-    else colorFn = x => `\x1b[33m${x}\x1b[0m`;
-  }
+function createLogger(
+  prefix /*: string */,
+) /*: (message: string, level?: 'info' | 'warning' | 'error') => void */ {
+  return function (
+    message /*: string */,
+    level /*: 'info' | 'warning' | 'error' */ = 'info',
+  ) {
+    // Simple log coloring for terminal output
+    const resolvedPrefix = `[${prefix}] `;
+    let colorFn = (x /*:string*/) => x;
+    if (process.stdout.isTTY) {
+      if (level === 'info') colorFn = x => `\x1b[32m${x}\x1b[0m`;
+      else if (level === 'error') colorFn = x => `\x1b[31m${x}\x1b[0m`;
+      else colorFn = x => `\x1b[33m${x}\x1b[0m`;
+    }
 
-  console.log(colorFn(prefix + message));
+    console.log(colorFn(resolvedPrefix) + message);
+  };
 }
 
 module.exports = {
   createFolderIfNotExists,
   throwIfOnEden,
-  prebuildLog,
+  createLogger,
 };
