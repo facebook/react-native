@@ -9,6 +9,7 @@
 #include "Timing.h"
 
 #include <oscompat/OSCompat.h>
+#include <react/timing/primitives.h>
 
 #include <folly/json.h>
 
