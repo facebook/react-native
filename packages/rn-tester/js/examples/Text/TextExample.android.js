@@ -1121,6 +1121,8 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
 
   return (
     <View>
+      {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <RNTesterText style={subtitleStyle}>{'Nested <Text/>s:'}</RNTesterText>
       <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
         {marker}
@@ -1128,6 +1130,8 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         {marker}
       </View>
 
+      {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <RNTesterText style={subtitleStyle}>
         {'Array of <Text/>s in <View>:'}
       </RNTesterText>
@@ -1137,6 +1141,8 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         {marker}
       </View>
 
+      {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <RNTesterText style={subtitleStyle}>
         {'Interleaving <View> and <Text>:'}
       </RNTesterText>
@@ -1158,6 +1164,8 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         {marker}
       </View>
 
+      {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <RNTesterText style={subtitleStyle}>
         {'Multi-line interleaved <View> and <Text>:'}
       </RNTesterText>
@@ -1175,6 +1183,8 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         </RNTesterText>
       </View>
 
+      {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <RNTesterText style={subtitleStyle}>
         {'Multi-line <Text> alignment'}
       </RNTesterText>
@@ -1194,6 +1204,8 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         </View>
       </View>
 
+      {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <RNTesterText style={subtitleStyle}>{'<TextInput/>:'}</RNTesterText>
       <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
         {marker}
@@ -1201,6 +1213,8 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
         {marker}
       </View>
 
+      {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <RNTesterText style={subtitleStyle}>
         {'<TextInput multiline/>:'}
       </RNTesterText>

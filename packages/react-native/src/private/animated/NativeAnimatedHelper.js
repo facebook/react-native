@@ -107,6 +107,8 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
     for (let ii = 0, length = methodNames.length; ii < length; ii++) {
       const methodName = methodNames[ii];
       nativeOperations[methodName] = (...args) => {
+        /* $FlowFixMe[prop-missing] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         const method = nullthrows(NativeAnimatedModule)[methodName];
         // If queueing is explicitly on, *or* the queue has not yet
         // been flushed, use the queue. This is to prevent operations

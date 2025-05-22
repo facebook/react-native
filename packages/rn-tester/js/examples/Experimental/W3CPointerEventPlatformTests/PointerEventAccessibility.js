@@ -29,12 +29,16 @@ export default function PointerEventAccessibility(props: {}): React.MixedElement
       <View style={styles.clickableContainer}>
         <EventTracker
           id="pointer-parent"
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           style={styles.targetParent}
           onAnyEvent={onAnyEvent}
           focusable={true}>
           <EventTracker
             id="pointer-child"
+            /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+             * https://fburl.com/workplace/6291gfvu */
             eventsToTrack={eventsToTrack}
             onAnyEvent={onAnyEvent}
             style={styles.target}

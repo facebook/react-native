@@ -61,6 +61,8 @@ async function main() {
       'keep-scratch': keepScratch,
       'create-diff': createDiff,
     },
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help === true) {

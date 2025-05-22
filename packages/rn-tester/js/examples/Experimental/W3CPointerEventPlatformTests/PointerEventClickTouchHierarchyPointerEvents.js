@@ -97,12 +97,16 @@ function PointerEventClickTouchHierarchyPointerEventsTestCase(
     <View>
       <View style={styles.parentContainer}>
         <PointerEventBoxParentChild
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           childStyle={styles.targetBoxOnly}
           pointerEvents="box-only"
           eventsRef={eventsInOrder}
         />
         <PointerEventBoxParentChild
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           childStyle={styles.targetBoxNone}
           pointerEvents="box-none"
@@ -114,12 +118,16 @@ function PointerEventClickTouchHierarchyPointerEventsTestCase(
           }}
         />
         <PointerEventBoxParentChild
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           childStyle={styles.targetAuto}
           pointerEvents="auto"
           eventsRef={eventsInOrder}
         />
         <PointerEventBoxParentChild
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           childStyle={styles.targetNone}
           pointerEvents="none"
