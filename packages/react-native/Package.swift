@@ -13,7 +13,7 @@ import PackageDescription
  To build React Native, you need to follow these steps:
  1. inside the `react-native` root folder, run `yarn install`
  2. `cd packages/react-native`
- 3. `RNDEP_VERSION=nightly HERMES_VERSION=nightly node scripts/prebuild-ios`
+ 3. `RN_DEP_VERSION=nightly HERMES_VERSION=nightly node scripts/prebuild-ios`
  4. `open Package.swift`
  5. Build in Xcode.
 
