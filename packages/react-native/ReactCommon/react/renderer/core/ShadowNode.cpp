@@ -50,7 +50,7 @@ ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
 Props::Shared ShadowNode::propsForClonedShadowNode(
     const ShadowNode& sourceShadowNode,
     const Props::Shared& props) {
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
   bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
   if (!hasBeenMounted && sourceNodeHasRawProps && props) {

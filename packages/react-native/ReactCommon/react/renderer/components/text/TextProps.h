@@ -35,10 +35,8 @@ class TextProps : public Props, public BaseTextProps {
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
 
-#ifdef ANDROID
-
+#ifdef RN_SERIALIZABLE_STATE
   folly::dynamic getDiffProps(const Props* prevProps) const override;
-
 #endif
 };
 
