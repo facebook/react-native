@@ -44,7 +44,6 @@
 flow-typed/
 packages/react-native/interface.js
 packages/react-native/flow/
-packages/react-native/src/types/
 
 [options]
 enums=true
