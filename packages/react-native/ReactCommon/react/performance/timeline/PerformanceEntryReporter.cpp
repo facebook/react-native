@@ -37,10 +37,6 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
   return supportedEntryTypes;
 }
 
-uint64_t timestampToMicroseconds(DOMHighResTimeStamp timestamp) {
-  return static_cast<uint64_t>(timestamp * 1000);
-}
-
 double performanceNow() {
   return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
 }
@@ -312,13 +308,14 @@ PerformanceResourceTiming PerformanceEntryReporter::reportResourceTiming(
 
 void PerformanceEntryReporter::traceMark(const PerformanceMark& entry) const {
   auto& performanceTracer =
-      jsinspector_modern::PerformanceTracer::getInstance();
+      jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (ReactPerfettoLogger::isTracing() || performanceTracer.isTracing()) {
     auto [trackName, eventName] = parseTrackName(entry.name);
 
     if (performanceTracer.isTracing()) {
       performanceTracer.reportMark(
-          entry.name, timestampToMicroseconds(entry.startTime));
+          entry.name,
+          HighResTimeStamp::fromDOMHighResTimeStamp(entry.startTime));
     }
 
     if (ReactPerfettoLogger::isTracing()) {
@@ -330,7 +327,7 @@ void PerformanceEntryReporter::traceMark(const PerformanceMark& entry) const {
 void PerformanceEntryReporter::traceMeasure(
     const PerformanceMeasure& entry) const {
   auto& performanceTracer =
-      jsinspector_modern::PerformanceTracer::getInstance();
+      jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (performanceTracer.isTracing() || ReactPerfettoLogger::isTracing()) {
     auto [trackName, eventName] = parseTrackName(entry.name);
 
@@ -343,8 +340,8 @@ void PerformanceEntryReporter::traceMeasure(
       }
       performanceTracer.reportMeasure(
           eventName,
-          timestampToMicroseconds(entry.startTime),
-          timestampToMicroseconds(entry.duration),
+          HighResTimeStamp::fromDOMHighResTimeStamp(entry.startTime),
+          HighResDuration::fromDOMHighResTimeStamp(entry.duration),
           trackMetadata);
     }
 
