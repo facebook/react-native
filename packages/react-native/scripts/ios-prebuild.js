@@ -156,6 +156,7 @@ async function main() {
     link('Libraries/Blob', 'React');
     link('Libraries/NativeAnimation', 'React');
     link('Libraries/LinkingIOS', 'React');
+    link('Libraries/Settings', 'React');
 
     link('ReactCommon/hermes', 'reacthermes');
     link('ReactCommon/hermes', 'jsireact');

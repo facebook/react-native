@@ -514,6 +514,13 @@ let reactRCTLinking = RNTarget(
   dependencies: [.jsi, .reactTurboModuleCore]
 )
 
+let reactSettings = RNTarget(
+  name: .reactSettings,
+  path: "Libraries/Settings",
+  searchPaths: ["ReactCommon", ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  dependencies: [.reactTurboModuleCore, .yoga]
+)
+
 let targets = [
   reactDebug,
   jsi,
@@ -567,6 +574,7 @@ let targets = [
   reactFeatureflagsNativemodule,
   reactNativeModuleDom,
   reactAppDelegate,
+  reactSettings,
 ]
 
 let package = Package(
@@ -646,6 +654,7 @@ extension String {
   static let reactFeatureflagsNativemodule = "React-featureflagsnativemodule"
   static let reactNativeModuleDom = "React-domnativemodule"
   static let reactAppDelegate = "React-RCTAppDelegate"
+  static let reactSettings = "React-RCTSettings"
 }
 
 func relativeSearchPath(_ depth: Int, _ path: String) -> String {
