@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
@@ -19,7 +18,7 @@ import {
   useColorScheme,
 } from 'react-native';
 
-function App(): React.Node {
+function App(): React.ReactNode {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
