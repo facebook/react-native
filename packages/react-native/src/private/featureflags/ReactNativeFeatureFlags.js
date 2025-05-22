@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<81be36e22e6ec5f6720c89089d725086>>
+ * @generated SignedSource<<5444da353f6ccef6d92284563dc84810>>
  * @flow strict
  * @noformat
  */
@@ -69,6 +69,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFabricRenderer: Getter<boolean>,
   enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
+  enableGracefulUnregisteredComponentFailureAndroid: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableIntersectionObserverEventLoopIntegration: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
@@ -258,6 +259,10 @@ export const enableFixForParentTagDuringReparenting: Getter<boolean> = createNat
  * Enables font scale changes updating layout for measurable nodes.
  */
 export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', false);
+/**
+ * Enables gracefuly failure when an unregistered component is rendered in Android.
+ */
+export const enableGracefulUnregisteredComponentFailureAndroid: Getter<boolean> = createNativeFlagGetter('enableGracefulUnregisteredComponentFailureAndroid', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */
