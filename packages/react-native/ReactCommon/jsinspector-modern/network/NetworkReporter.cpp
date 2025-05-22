@@ -78,7 +78,7 @@ void NetworkReporter::reportRequestStart(
     int encodedDataLength,
     const std::optional<ResponseInfo>& redirectResponse) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
 
     // All builds: Annotate PerformanceResourceTiming metadata
     {
@@ -127,7 +127,7 @@ void NetworkReporter::reportRequestStart(
 
 void NetworkReporter::reportConnectionTiming(const std::string& requestId) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
 
     // All builds: Annotate PerformanceResourceTiming metadata
     {
@@ -168,7 +168,7 @@ void NetworkReporter::reportResponseStart(
     const ResponseInfo& responseInfo,
     int encodedDataLength) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
 
     // All builds: Annotate PerformanceResourceTiming metadata
     {
@@ -205,7 +205,7 @@ void NetworkReporter::reportResponseStart(
 
 void NetworkReporter::reportDataReceived(const std::string& requestId) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
 
     // All builds: Annotate PerformanceResourceTiming metadata
     {
@@ -233,7 +233,7 @@ void NetworkReporter::reportResponseEnd(
     const std::string& requestId,
     int encodedDataLength) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    double now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
 
     // All builds: Report PerformanceResourceTiming event
     {

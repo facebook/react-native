@@ -49,7 +49,7 @@ using NativeIntersectionObserverEntry =
         // isIntersectingAboveThresholds
         bool,
         // time
-        double>;
+        HighResTimeStamp>;
 
 template <>
 struct Bridging<NativeIntersectionObserverEntry>

@@ -55,9 +55,10 @@ class IntersectionObserverManager final
 
   void shadowTreeDidMount(
       const RootShadowNode::Shared& rootShadowNode,
-      double time) noexcept override;
+      HighResTimeStamp time) noexcept override;
 
-  void shadowTreeDidUnmount(SurfaceId surfaceId, double time) noexcept override;
+  void shadowTreeDidUnmount(SurfaceId surfaceId, HighResTimeStamp time) noexcept
+      override;
 
  private:
   mutable std::unordered_map<
@@ -92,7 +93,7 @@ class IntersectionObserverManager final
   void updateIntersectionObservations(
       SurfaceId surfaceId,
       const RootShadowNode* rootShadowNode,
-      double time);
+      HighResTimeStamp time);
 
   const IntersectionObserver& getRegisteredIntersectionObserver(
       SurfaceId surfaceId,

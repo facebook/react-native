@@ -34,8 +34,7 @@ class EventLogger {
   virtual EventTag onEventStart(
       std::string_view name,
       SharedEventTarget target,
-      std::optional<DOMHighResTimeStamp> eventStartTimeStamp =
-          std::nullopt) = 0;
+      std::optional<HighResTimeStamp> eventStartTimeStamp = std::nullopt) = 0;
 
   /*
    * Called when event starts getting dispatched (processed by the handlers, if

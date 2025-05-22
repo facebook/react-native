@@ -104,7 +104,7 @@ static Float getHighestThresholdCrossed(
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservation(
     const RootShadowNode& rootShadowNode,
-    double time) {
+    HighResTimeStamp time) {
   const auto layoutableRootShadowNode =
       dynamic_cast<const LayoutableShadowNode*>(&rootShadowNode);
 
@@ -169,7 +169,7 @@ IntersectionObserver::updateIntersectionObservation(
 
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservationForSurfaceUnmount(
-    double time) {
+    HighResTimeStamp time) {
   return setNotIntersectingState(Rect{}, Rect{}, Rect{}, time);
 }
 
@@ -180,7 +180,7 @@ IntersectionObserver::setIntersectingState(
     const Rect& intersectionRect,
     Float threshold,
     Float rootThreshold,
-    double time) {
+    HighResTimeStamp time) {
   auto newState =
       IntersectionObserverState::Intersecting(threshold, rootThreshold);
 
@@ -206,7 +206,7 @@ IntersectionObserver::setNotIntersectingState(
     const Rect& rootBoundingRect,
     const Rect& targetBoundingRect,
     const Rect& intersectionRect,
-    double time) {
+    HighResTimeStamp time) {
   if (state_ != IntersectionObserverState::NotIntersecting()) {
     state_ = IntersectionObserverState::NotIntersecting();
     IntersectionObserverEntry entry{
