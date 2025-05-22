@@ -44,7 +44,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     bool correctlyStartedPerformanceTracer =
-        PerformanceTracer::getInstance().startTracing();
+        tracing::PerformanceTracer::getInstance().startTracing();
 
     if (!correctlyStartedPerformanceTracer) {
       frontendChannel_(cdp::jsonError(
@@ -56,7 +56,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     instanceAgent_->startTracing();
-    instanceTracingStartTimestamp_ = std::chrono::steady_clock::now();
+    instanceTracingStartTimestamp_ = HighResTimeStamp::now();
     frontendChannel_(cdp::jsonResult(req.id));
 
     return true;
@@ -73,7 +73,8 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     instanceAgent_->stopTracing();
 
-    PerformanceTracer& performanceTracer = PerformanceTracer::getInstance();
+    tracing::PerformanceTracer& performanceTracer =
+        tracing::PerformanceTracer::getInstance();
     bool correctlyStopped = performanceTracer.stopTracing();
     if (!correctlyStopped) {
       frontendChannel_(cdp::jsonError(
