@@ -49,6 +49,10 @@ inline float blueFromHostPlatformColor(Color color) {
   return static_cast<uint8_t>((color >> 0) & 0xff);
 }
 
+inline bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
+  return alphaFromHostPlatformColor(color) > 0;
+}
+
 inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
   float ratio = 255;
   return ColorComponents{
