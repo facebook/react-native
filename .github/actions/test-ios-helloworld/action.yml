@@ -83,7 +83,13 @@ runs:
 
         yarn bootstrap ios "${args[@]}" | cat
 
-    - name: Build HelloWorld  project
+    - name: Run Helloworld tests
+      shell: bash
+      run: |
+        cd packages/helloworld
+        yarn test
+
+    - name: Build HelloWorld project
       shell: bash
       run: |
         cd packages/helloworld
