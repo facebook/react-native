@@ -134,6 +134,16 @@ Available pragmas:
     - `opt`: optimized and using Hermes bytecode, default for benchmarks.
     - `dev-bytecode`: development but using Hermes bytecode instead of plain
       text JavaScript code.
+- `@fantom_react_fb_flags`: used to set overrides for internal React flags set
+  in ReactNativeInternalFeatureFlags (Meta use only)
+
+### Debugging
+
+To debug, run your fantom test with the flag `FANTOM_ENABLE_CPP_DEBUGGING`
+
+```shell
+FANTOM_ENABLE_CPP_DEBUGGING=1 yarn fantom [optional test pattern]
+```
 
 ### FAQ
 
