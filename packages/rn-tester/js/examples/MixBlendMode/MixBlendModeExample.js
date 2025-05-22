@@ -131,7 +131,7 @@ const mixBlendModes = [
   'saturation',
   'color',
   'luminosity',
-];
+] as const;
 
 const examples: Array<RNTesterModuleExample> = mixBlendModes.map(mode => ({
   title: mode,

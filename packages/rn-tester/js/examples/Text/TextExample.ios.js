@@ -1438,7 +1438,12 @@ const examples = [
   {
     title: 'Line Break Strategy',
     render: function (): React.Node {
-      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
+      const lineBreakStrategy = [
+        'none',
+        'standard',
+        'hangul-word',
+        'push-out',
+      ] as const;
       const textByCode = {
         en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
         ko: '한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행',

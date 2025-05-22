@@ -152,7 +152,7 @@ const PASSTHROUGH_PROPS = [
   'onFocus',
   'onLayout',
   'testID',
-];
+] as const;
 
 /**
  * Do not use unless you have a very good reason.

@@ -188,7 +188,7 @@ const transform /*: BabelTransformer['transform'] */ = ({
     : process.env.BABEL_ENV || 'production';
 
   try {
-    const babelConfig = {
+    const babelConfig /*: BabelCoreOptions */ = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
       ...buildBabelConfig(filename, options, plugins),

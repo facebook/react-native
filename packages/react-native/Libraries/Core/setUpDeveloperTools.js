@@ -23,17 +23,19 @@ if (__DEV__) {
     // TODO(T214991636): Remove legacy Metro log forwarding
     if (console._isPolyfilled) {
       // We assume full control over the console and send JavaScript logs to Metro.
-      [
-        'trace',
-        'info',
-        'warn',
-        'error',
-        'log',
-        'group',
-        'groupCollapsed',
-        'groupEnd',
-        'debug',
-      ].forEach(level => {
+      (
+        [
+          'trace',
+          'info',
+          'warn',
+          'error',
+          'log',
+          'group',
+          'groupCollapsed',
+          'groupEnd',
+          'debug',
+        ] as const
+      ).forEach(level => {
         const originalFunction = console[level];
         console[level] = function (...args: $ReadOnlyArray<mixed>) {
           HMRClient.log(level, args);

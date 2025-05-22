@@ -22,7 +22,7 @@ export const Screens = {
   COMPONENTS: 'components',
   APIS: 'apis',
   PLAYGROUNDS: 'playgrounds',
-};
+} as const;
 
 export const initialNavigationState: RNTesterNavigationState = {
   activeModuleKey: null,

@@ -320,7 +320,7 @@ function runSpec(spec: Spec): TestCaseResult {
     return result;
   }
 
-  let status;
+  let status: 'passed' | 'failed' | 'pending';
   let error;
 
   const start = Date.now();

@@ -21,7 +21,7 @@ const importantForAccessibilityValues = [
   'yes',
   'no',
   'no-hide-descendants',
-];
+] as const;
 
 type AccessibilityAndroidExampleState = {
   count: number,
