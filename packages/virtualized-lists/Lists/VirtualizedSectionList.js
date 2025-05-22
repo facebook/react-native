@@ -611,7 +611,7 @@ function ItemWithSeparator<ItemT>(
   );
 }
 
-export default VirtualizedSectionList as component<
+const VirtualizedSectionListComponent = VirtualizedSectionList as component<
   ItemT,
   SectionT: SectionBase<ItemT, DefaultSectionT> = DefaultSectionT,
 >(
@@ -623,3 +623,10 @@ export default VirtualizedSectionList as component<
   >,
   ...VirtualizedSectionListProps<ItemT, SectionT>
 );
+
+export default VirtualizedSectionListComponent;
+
+export type AnyVirtualizedSectionList = typeof VirtualizedSectionListComponent<
+  any,
+  any,
+>;
