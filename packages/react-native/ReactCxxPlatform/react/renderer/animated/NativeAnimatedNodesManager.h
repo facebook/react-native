@@ -138,19 +138,7 @@ class NativeAnimatedNodesManager
       bool layoutStyleUpdated,
       bool forceFabricCommit);
 
-  /**
-   * Commits all pending animated property updates to their respective views.
-   *
-   * This method is the final step in the animation pipeline that applies
-   * calculated property values to the actual UI components. It uses
-   * Fabric-based updates if layout properties are affected, otherwise uses
-   * direct manipulation.
-   *
-   * returns boolean indicating whether any changes were committed to views.
-   *         Returns true if no changes were made, which helps the animation
-   *         system determine if animations are still active.
-   */
-  bool commitProps();
+  void commitProps();
 
   void scheduleOnUI(UiTask&& task) {
     std::lock_guard<std::mutex> lock(uiTasksMutex_);
@@ -175,7 +163,7 @@ class NativeAnimatedNodesManager
  private:
   void stopRenderCallbackIfNeeded();
 
-  bool onAnimationFrame(uint64_t timestamp);
+  void onAnimationFrame(uint64_t timestamp);
 
   bool isAnimationUpdateNeeded() const;
 
@@ -206,8 +194,6 @@ class NativeAnimatedNodesManager
 
   std::mutex uiTasksMutex_;
   std::vector<UiTask> operations_;
-
-  bool isGestureAnimationInProgress_{false};
 
   // React context required to commit props onto Component View
   DirectManipulationCallback directManipulationCallback_;

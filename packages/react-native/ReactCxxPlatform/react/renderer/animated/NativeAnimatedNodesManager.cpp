@@ -418,15 +418,9 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
       }
     }
 
-    if (foundAtLeastOneDriver && !isGestureAnimationInProgress_) {
-      // There is an animation driver handling this event and
-      // gesture driven animation has not been started yet.
-      isGestureAnimationInProgress_ = true;
-      // Some platforms (e.g. iOS) have UI tick listener disable
-      // when there are no active animations. Calling
-      // `startRenderCallbackIfNeeded` will call platform specific code to
-      // register UI tick listener.
-      startRenderCallbackIfNeeded();
+    if (foundAtLeastOneDriver) {
+      updateNodes();
+      commitProps();
     }
   }
 }
@@ -455,14 +449,6 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
         self->onRender();
       }
     });
-
-    if (isOnRenderThread_) {
-      // Calling startOnRenderCallback_ will register a UI tick listener.
-      // The UI ticker listener will not be called until the next frame.
-      // That's why, in case this is called from the UI thread, we need to
-      // proactivelly trigger the animation loop to avoid showing stale frames.
-      onRender();
-    }
   }
 }
 
@@ -473,8 +459,7 @@ void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() {
 }
 
 bool NativeAnimatedNodesManager::isAnimationUpdateNeeded() const {
-  return !activeAnimations_.empty() || !updatedNodeTags_.empty() ||
-      isGestureAnimationInProgress_;
+  return !activeAnimations_.empty() || !updatedNodeTags_.empty();
 }
 
 void NativeAnimatedNodesManager::updateNodes(
@@ -642,7 +627,7 @@ void NativeAnimatedNodesManager::updateNodes(
   updatedNodeTags_.clear();
 }
 
-bool NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
+void NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
   // Run all active animations
   auto hasFinishedAnimations = false;
   std::set<int> finishedAnimationValueNodes;
@@ -674,7 +659,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
     }
   }
 
-  return commitProps();
+  commitProps();
 }
 
 std::optional<folly::dynamic> NativeAnimatedNodesManager::managedProps(
@@ -759,25 +744,15 @@ void NativeAnimatedNodesManager::onRender() {
                   std::chrono::steady_clock::now().time_since_epoch())
                   .count();
 
-    auto containsChange =
-        onAnimationFrame(static_cast<uint64_t>(ms * TicksPerMs));
+    onAnimationFrame(static_cast<uint64_t>(ms * TicksPerMs));
+  }
 
-    if (!containsChange) {
-      // The last animation tick didn't result in any changes to the UI.
-      // It is safe to assume any gesture animation that was in progress has
-      // completed.
-      isGestureAnimationInProgress_ = false;
-    }
-  } else {
-    // There is no active animation. Stop the render callback.
+  if (!isAnimationUpdateNeeded()) {
     stopRenderCallbackIfNeeded();
   }
 }
 
-bool NativeAnimatedNodesManager::commitProps() {
-  bool containsChange =
-      !updateViewProps_.empty() || !updateViewPropsDirect_.empty();
-
+void NativeAnimatedNodesManager::commitProps() {
   if (fabricCommitCallback_ != nullptr) {
     if (!updateViewProps_.empty()) {
       fabricCommitCallback_(updateViewProps_);
@@ -797,8 +772,6 @@ bool NativeAnimatedNodesManager::commitProps() {
     LOG(ERROR)
         << "Failed to commit native animation, since direct manipulation callback is not set";
   }
-
-  return containsChange;
 }
 
 } // namespace facebook::react
