@@ -592,7 +592,7 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
 }
 #endif
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 
 static folly::dynamic convertScrollViewMaintainVisibleContentPosition(
     const ScrollViewMaintainVisibleContentPosition& value) {

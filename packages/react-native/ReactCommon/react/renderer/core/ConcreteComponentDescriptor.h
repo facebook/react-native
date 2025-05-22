@@ -119,7 +119,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
     if (ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
       const auto& dynamic = shadowNodeProps->rawProps;
 #else
       const auto& dynamic = static_cast<folly::dynamic>(rawProps);

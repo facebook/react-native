@@ -42,12 +42,10 @@ class BaseTextProps {
   SharedDebugStringConvertibleList getDebugProps() const;
 #endif
 
-#ifdef ANDROID
-
+#ifdef RN_SERIALIZABLE_STATE
   void appendTextAttributesProps(
       folly::dynamic& result,
       const BaseTextProps* prevProps) const;
-
 #endif
 };
 

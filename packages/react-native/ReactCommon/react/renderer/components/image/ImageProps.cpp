@@ -174,7 +174,7 @@ void ImageProps::setProp(
   }
 }
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 
 static folly::dynamic convertImageSource(const ImageSource& imageSource) {
   folly::dynamic imageSourceResult = folly::dynamic::object();
