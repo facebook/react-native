@@ -116,7 +116,7 @@ function checkExistingVersion(
   const hermesXCFramework = path.join(
     artifactsPath,
     'destroot',
-    'Libraries',
+    'Library',
     'Frameworks',
     'universal',
     'hermes.xcframework',
