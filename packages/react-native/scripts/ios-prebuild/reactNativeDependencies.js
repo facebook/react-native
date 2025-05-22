@@ -20,7 +20,7 @@ const dependencyLog = createLogger('ReactNativeDependencies');
 
 /**
  * Downloads ReactNativeDependencies artifacts from the specified version and build type. If you want to specify a specific
- * version of ReactNativeDependencies, use the RNDEP_VERSION environment variable. The path to the artifacts will be inside
+ * version of ReactNativeDependencies, use the RN_DEP_VERSION environment variable. The path to the artifacts will be inside
  * the packages/react-native/third-party folder.
  */
 async function prepareReactNativeDependenciesArtifactsAsync(
@@ -39,7 +39,7 @@ async function prepareReactNativeDependenciesArtifactsAsync(
   const versionFilePath = path.join(artifactsPath, 'version.txt');
 
   // Resolve the version from the environment variable or use the default version
-  let resolvedVersion = process.env.RNDEP_VERSION ?? version;
+  let resolvedVersion = process.env.RN_DEP_VERSION ?? version;
 
   if (resolvedVersion === 'nightly') {
     dependencyLog('Using latest nightly tarball');
