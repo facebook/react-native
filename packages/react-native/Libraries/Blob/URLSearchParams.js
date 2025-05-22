@@ -13,6 +13,10 @@
 export class URLSearchParams {
   _searchParams: Map<string, string[]> = new Map();
 
+  get size(): number {
+    return this._searchParams.size;
+  }
+
   constructor(params?: Record<string, string> | string | [string, string][]) {
     if (params === null) {
       return;
