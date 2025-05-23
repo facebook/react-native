@@ -65,6 +65,10 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
       startOnRenderCallback_(std::move(startOnRenderCallback)),
       stopOnRenderCallback_(std::move(stopOnRenderCallback)) {}
 
+NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
+  stopRenderCallbackIfNeeded();
+}
+
 std::optional<double> NativeAnimatedNodesManager::getValue(Tag tag) {
   auto node = getAnimatedNode<ValueAnimatedNode>(tag);
   if (node) {
@@ -466,7 +470,7 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   }
 }
 
-void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() {
+void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
   if (stopOnRenderCallback_) {
     stopOnRenderCallback_();
   }

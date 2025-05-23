@@ -57,7 +57,7 @@ class NativeAnimatedNodesManager
       StartOnRenderCallback&& startOnRenderCallback = nullptr,
       StopOnRenderCallback&& stopOnRenderCallback = nullptr) noexcept;
 
-  ~NativeAnimatedNodesManager() = default;
+  ~NativeAnimatedNodesManager() noexcept;
 
   template <
       typename T,
@@ -173,7 +173,7 @@ class NativeAnimatedNodesManager
   bool isOnRenderThread() const;
 
  private:
-  void stopRenderCallbackIfNeeded();
+  void stopRenderCallbackIfNeeded() noexcept;
 
   bool onAnimationFrame(uint64_t timestamp);
 
