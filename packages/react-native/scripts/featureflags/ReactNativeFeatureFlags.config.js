@@ -632,17 +632,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableVirtualViewDoubleStateHidden: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-05-10',
-        description:
-          'Enables a VirtualView workaround that triggers a second state update when changing to hidden mode.',
-        expectedReleaseValue: false,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
       metadata: {
