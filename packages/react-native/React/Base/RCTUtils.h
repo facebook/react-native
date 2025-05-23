@@ -54,6 +54,7 @@ RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block,
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGFloat RCTFontSizeMultiplier(void);
+RCT_EXTERN CGFloat RCTFontSizeMultiplierForCategory(NSString * _Nullable categoryName);
 RCT_EXTERN CGSize RCTScreenSize(void);
 RCT_EXTERN CGSize RCTViewportSize(void);
 

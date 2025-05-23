@@ -180,7 +180,22 @@ using namespace facebook::react;
   layoutContext.pointScaleFactor = RCTScreenScale();
   layoutContext.swapLeftAndRightInRTL =
       [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL];
-  layoutContext.fontSizeMultiplier = RCTFontSizeMultiplier();
+
+  CGFloat globalFontSizeMultiplier = RCTFontSizeMultiplier();
+  if (RCTRunningInAppExtension() && fabs(globalFontSizeMultiplier) < 0.001) {
+    // In an app extension, RCTFontSizeMultiplier() returns 0.0 because RCTSharedApplication() is nil.
+    // We need to get the category from the view's trait collection.
+    NSString *category = nil;
+    if (self->_view) { // Ensure _view is not nil before accessing traitCollection
+        category = self->_view.traitCollection.preferredContentSizeCategory;
+    }
+    if (!category) { // Default if view or traitCollection or category itself is nil
+        category = UIContentSizeCategoryLarge;
+    }
+    layoutContext.fontSizeMultiplier = RCTFontSizeMultiplierForCategory(category);
+  } else {
+    layoutContext.fontSizeMultiplier = globalFontSizeMultiplier;
+  }
 
   _surfaceHandler->constraintLayout(layoutConstraints, layoutContext);
 }

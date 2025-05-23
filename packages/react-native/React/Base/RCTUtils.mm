@@ -360,12 +360,13 @@ CGFloat RCTScreenScale(void)
   return screenScale;
 }
 
-CGFloat RCTFontSizeMultiplier(void)
-{
-  static NSDictionary<NSString *, NSNumber *> *mapping;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    mapping = @{
+// Static map for font size multipliers
+static NSDictionary<NSString *, NSNumber *> *gFontSizeMultiplierMapping;
+static dispatch_once_t gOnceTokenFontSizeMultiplier;
+
+static void EnsureFontSizeMultiplierMappingInitialized() {
+  dispatch_once(&gOnceTokenFontSizeMultiplier, ^{
+    gFontSizeMultiplierMapping = @{
       UIContentSizeCategoryExtraSmall : @0.823,
       UIContentSizeCategorySmall : @0.882,
       UIContentSizeCategoryMedium : @0.941,
@@ -380,8 +381,25 @@ CGFloat RCTFontSizeMultiplier(void)
       UIContentSizeCategoryAccessibilityExtraExtraExtraLarge : @3.571
     };
   });
+}
 
-  return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
+CGFloat RCTFontSizeMultiplier(void)
+{
+  EnsureFontSizeMultiplierMappingInitialized();
+  return gFontSizeMultiplierMapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
+}
+
+CGFloat RCTFontSizeMultiplierForCategory(NSString * _Nullable categoryName)
+{
+  EnsureFontSizeMultiplierMappingInitialized();
+  if (!categoryName) {
+    return 1.0f;
+  }
+  NSNumber *multiplier = gFontSizeMultiplierMapping[categoryName];
+  if (!multiplier) {
+    return 1.0f;
+  }
+  return multiplier.floatValue;
 }
 
 UIDeviceOrientation RCTDeviceOrientation(void)
