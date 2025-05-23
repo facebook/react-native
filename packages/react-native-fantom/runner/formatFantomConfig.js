@@ -9,7 +9,7 @@
  */
 
 import type {FeatureFlagValue} from '../../../packages/react-native/scripts/featureflags/types';
-import type {FantomTestConfig} from '../runner/getFantomTestConfig';
+import type {FantomTestConfig} from '../runner/getFantomTestConfigs';
 import type {HermesVariant} from '../runner/utils';
 
 import {
@@ -18,7 +18,7 @@ import {
   DEFAULT_MODE,
   FantomTestConfigHermesVariant,
   FantomTestConfigMode,
-} from '../runner/getFantomTestConfig';
+} from '../runner/getFantomTestConfigs';
 
 function formatFantomMode(mode: FantomTestConfigMode): string {
   switch (mode) {

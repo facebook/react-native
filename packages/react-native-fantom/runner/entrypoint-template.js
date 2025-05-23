@@ -12,7 +12,7 @@ import type {SnapshotConfig} from '../runtime/snapshotContext';
 import type {
   FantomTestConfigJsOnlyFeatureFlags,
   FantomTestConfigReactInternalFeatureFlags,
-} from './getFantomTestConfig';
+} from './getFantomTestConfigs';
 
 module.exports = function entrypointTemplate({
   testPath,
