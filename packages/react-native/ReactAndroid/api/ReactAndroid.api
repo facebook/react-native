@@ -6565,7 +6565,6 @@ public class com/facebook/react/views/textinput/ReactEditText : androidx/appcomp
 	public fun addTextChangedListener (Landroid/text/TextWatcher;)V
 	protected final fun applyTextAttributes ()V
 	public final fun canUpdateWithEventCount (I)Z
-	public fun clearFocus ()V
 	protected final fun finalize ()V
 	public final fun getBorderColor (I)I
 	protected final fun getContainsImages ()Z

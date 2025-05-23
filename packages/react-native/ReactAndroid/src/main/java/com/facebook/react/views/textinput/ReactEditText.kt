@@ -35,6 +35,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
@@ -359,9 +360,24 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
       super.onTextContextMenuItem(
           if (id == android.R.id.paste) android.R.id.pasteAsPlainText else id)
 
-  override fun clearFocus() {
-    super.clearFocus()
+  internal fun clearFocusAndMaybeRefocus() {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || !isInTouchMode) {
+      super.clearFocus()
+    } else {
+      // Avoid refocusing to a new view on old versions of Android by default
+      // by preventing `requestFocus()` on the rootView from moving focus to any child.
+      // https://cs.android.com/android/_/android/platform/frameworks/base/+/bdc66cb5a0ef513f4306edf9156cc978b08e06e4
+      val rootViewGroup = rootView as ViewGroup
+      val oldDescendantFocusability = rootViewGroup.descendantFocusability
+      rootViewGroup.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
+      super.clearFocus()
+      rootViewGroup.descendantFocusability = oldDescendantFocusability
+    }
     hideSoftKeyboard()
+  }
+
+  internal fun clearFocusFromJS() {
+    clearFocusAndMaybeRefocus()
   }
 
   // For cases like autoFocus, or ref.focus() where we request focus programmatically and not
@@ -596,10 +612,6 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
   public fun requestFocusFromJS() {
     requestFocusProgrammatically()
-  }
-
-  internal fun clearFocusFromJS() {
-    clearFocus()
   }
 
   public fun incrementAndGetEventCounter(): Int = ++nativeEventCount
