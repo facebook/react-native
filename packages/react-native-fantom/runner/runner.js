@@ -17,6 +17,7 @@ import type {
 
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
+import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfig from './getFantomTestConfig';
 import {FantomTestConfigMode} from './getFantomTestConfig';
 import {
@@ -291,6 +292,32 @@ module.exports = async function runTest(
         symbolicateStackTrace(sourceMapPath, maybeStackTrace),
       ),
     })) ?? [];
+
+  // Display the Fantom test configuration as a suffix of the name of the root
+  // `describe` block of the test, or adds one if the test doesn't have it.
+  const maybeCommonAncestor = testResults[0]?.ancestorTitles?.[0];
+  if (
+    maybeCommonAncestor != null &&
+    testResults.every(
+      result => result.ancestorTitles?.[0] === maybeCommonAncestor,
+    )
+  ) {
+    testResults.forEach(result => {
+      const formattedFantomConfig = formatFantomConfig(testConfig);
+      if (formattedFantomConfig) {
+        result.ancestorTitles[0] += ` (${formattedFantomConfig})`;
+      }
+    });
+  } else {
+    testResults.forEach(result => {
+      const formattedFantomConfig = formatFantomConfig(testConfig);
+      if (formattedFantomConfig) {
+        result.ancestorTitles.unshift(
+          `${path.basename(testPath, '-itest.js')} (${formatFantomConfig(testConfig)})`,
+        );
+      }
+    });
+  }
 
   const snapshotResults = nullthrows(processedResult.testResults).map(
     testResult => testResult.snapshotResults,

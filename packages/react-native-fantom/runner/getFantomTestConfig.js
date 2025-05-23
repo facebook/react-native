@@ -39,20 +39,32 @@ export type FantomTestConfigReactInternalFeatureFlags = {
   [key: string]: FeatureFlagValue,
 };
 
+export type FantomTestConfigFeatureFlags = {
+  common: FantomTestConfigCommonFeatureFlags,
+  jsOnly: FantomTestConfigJsOnlyFeatureFlags,
+  reactInternal: FantomTestConfigReactInternalFeatureFlags,
+};
+
 export type FantomTestConfig = {
   mode: FantomTestConfigMode,
   hermesVariant: HermesVariant,
-  flags: {
-    common: FantomTestConfigCommonFeatureFlags,
-    jsOnly: FantomTestConfigJsOnlyFeatureFlags,
-    reactInternal: FantomTestConfigReactInternalFeatureFlags,
-  },
+  flags: FantomTestConfigFeatureFlags,
 };
 
-const DEFAULT_MODE: FantomTestConfigMode =
+export const FantomTestConfigHermesVariant = HermesVariant;
+
+export const DEFAULT_MODE: FantomTestConfigMode =
   FantomTestConfigMode.DevelopmentWithSource;
 
-const DEFAULT_HERMES_MODE: HermesVariant = HermesVariant.Hermes;
+export const DEFAULT_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
+
+export const DEFAULT_FEATURE_FLAGS: FantomTestConfigFeatureFlags = {
+  common: {},
+  jsOnly: {
+    enableAccessToHostTreeInFabric: true,
+  },
+  reactInternal: {},
+};
 
 const FANTOM_FLAG_FORMAT = /^(\w+):(\w+)$/;
 
@@ -98,13 +110,17 @@ export default function getFantomTestConfig(
 
   const config: FantomTestConfig = {
     mode: DEFAULT_MODE,
-    hermesVariant: DEFAULT_HERMES_MODE,
+    hermesVariant: DEFAULT_HERMES_VARIANT,
     flags: {
-      common: {},
-      jsOnly: {
-        enableAccessToHostTreeInFabric: true,
+      common: {
+        ...DEFAULT_FEATURE_FLAGS.common,
       },
-      reactInternal: {},
+      jsOnly: {
+        ...DEFAULT_FEATURE_FLAGS.jsOnly,
+      },
+      reactInternal: {
+        ...DEFAULT_FEATURE_FLAGS.reactInternal,
+      },
     },
   };
 
