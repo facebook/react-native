@@ -115,7 +115,7 @@ static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::St
 static NSArray *convertJSIArrayToNSArray(
     jsi::Runtime &runtime,
     const jsi::Array &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
     BOOL useNSNull)
 {
   size_t size = value.size(runtime);
@@ -125,13 +125,13 @@ static NSArray *convertJSIArrayToNSArray(
     id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, useNSNull);
     [result addObject:convertedObject ? convertedObject : (id)kCFNull];
   }
-  return [result copy];
+  return result;
 }
 
 static NSDictionary *convertJSIObjectToNSDictionary(
     jsi::Runtime &runtime,
     const jsi::Object &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
     BOOL useNSNull)
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
@@ -145,13 +145,13 @@ static NSDictionary *convertJSIObjectToNSDictionary(
       result[k] = v;
     }
   }
-  return [result copy];
+  return result;
 }
 
 static RCTResponseSenderBlock
-convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, std::shared_ptr<CallInvoker> jsInvoker)
+convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, const std::shared_ptr<CallInvoker> &jsInvoker)
 {
-  __block std::optional<AsyncCallback<>> callback({rt, std::move(function), std::move(jsInvoker)});
+  __block std::optional<AsyncCallback<>> callback({rt, std::move(function), jsInvoker});
   return ^(NSArray *args) {
     if (!callback) {
       LOG(FATAL) << "Callback arg cannot be called more than once";
@@ -166,22 +166,17 @@ convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, std::sh
   };
 }
 
-id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
-{
-  return convertJSIValueToObjCObject(runtime, value, jsInvoker, NO);
-}
-
 id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
     BOOL useNSNull)
 {
   if (value.isUndefined() || (value.isNull() && !useNSNull)) {
     return nil;
   }
   if (value.isNull() && useNSNull) {
-    return [NSNull null];
+    return (id)kCFNull;
   }
   if (value.isBool()) {
     return @(value.getBool());
@@ -253,7 +248,8 @@ static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, N
 
 } // namespace TurboModuleConvertUtils
 
-jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
+jsi::Value
+ObjCTurboModule::createPromise(jsi::Runtime &runtime, const std::string &methodName, PromiseInvocationBlock invoke)
 {
   if (!invoke) {
     return jsi::Value::undefined();
@@ -272,6 +268,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           2,
           [invokeCopy, jsInvoker = jsInvoker_, moduleName = name_, methodName](
               jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+            // FIXME: do not allocate this upfront
             std::string moduleMethod = moduleName + "." + methodName + "()";
 
             if (count != 2) {
@@ -624,8 +621,7 @@ void ObjCTurboModule::setInvocationArg(
    * Convert arg to ObjC objects.
    */
   BOOL enableModuleArgumentNSNullConversionIOS = ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
-  id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(
-      runtime, arg, jsInvoker_, enableModuleArgumentNSNullConversionIOS);
+  id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_, enableModuleArgumentNSNullConversionIOS);
   if (objCArg) {
     NSString *methodNameNSString = @(methodName);
 
@@ -643,7 +639,7 @@ void ObjCTurboModule::setInvocationArg(
           id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
           id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
 
-          if (enableModuleArgumentNSNullConversionIOS && convertedObjCArg == [NSNull null]) {
+          if (enableModuleArgumentNSNullConversionIOS && convertedObjCArg == (id)kCFNull) {
             return;
           }
 
@@ -819,7 +815,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
 BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
   return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] &&
-      ![methodArgConversionSelectors_[methodName][argIndex] isEqual:[NSNull null]];
+      ![methodArgConversionSelectors_[methodName][argIndex] isEqual:(id)kCFNull];
 }
 
 SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, size_t argIndex)
@@ -840,7 +836,7 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
 
     methodArgConversionSelectors_[methodName] = [NSMutableArray arrayWithCapacity:argCount];
     for (int i = 0; i < argCount; i += 1) {
-      [methodArgConversionSelectors_[methodName] addObject:[NSNull null]];
+      [methodArgConversionSelectors_[methodName] addObject:(id)kCFNull];
     }
   }
 

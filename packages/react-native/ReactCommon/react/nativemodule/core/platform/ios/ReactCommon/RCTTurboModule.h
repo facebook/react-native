@@ -31,12 +31,11 @@ using EventEmitterCallback = std::function<void(const std::string &, id)>;
 
 namespace TurboModuleConvertUtils {
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
-id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
 id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    BOOL useNSNull);
+    const std::shared_ptr<CallInvoker> &jsInvoker,
+    BOOL useNSNull = NO);
 } // namespace TurboModuleConvertUtils
 
 template <>
@@ -165,7 +164,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       NSMutableArray *retainedObjectsForInvocation);
 
   using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
-  jsi::Value createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke);
+  jsi::Value createPromise(jsi::Runtime &runtime, const std::string &methodName, PromiseInvocationBlock invoke);
 };
 
 } // namespace facebook::react
