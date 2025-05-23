@@ -300,7 +300,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableModuleArgumentNSNullConversionIOS: {
-      defaultValue: true,
+      defaultValue: false,
       metadata: {
         description:
           'Enable NSNull conversion when handling module arguments on iOS',
