@@ -6,7 +6,6 @@
  *
  * @format
  * @flow strict
- * @jsdoc
  */
 
 import NativeVibration from './NativeVibration';
