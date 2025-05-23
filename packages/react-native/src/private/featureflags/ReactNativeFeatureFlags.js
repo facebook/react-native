@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cbcc6da9a0d0652dddd99977690a258a>>
+ * @generated SignedSource<<4d96a5f9132ea827faeb183fe8bbf095>>
  * @flow strict
  * @noformat
  */
@@ -281,7 +281,7 @@ export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGett
 /**
  * Enable NSNull conversion when handling module arguments on iOS
  */
-export const enableModuleArgumentNSNullConversionIOS: Getter<boolean> = createNativeFlagGetter('enableModuleArgumentNSNullConversionIOS', true);
+export const enableModuleArgumentNSNullConversionIOS: Getter<boolean> = createNativeFlagGetter('enableModuleArgumentNSNullConversionIOS', false);
 /**
  * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
  */

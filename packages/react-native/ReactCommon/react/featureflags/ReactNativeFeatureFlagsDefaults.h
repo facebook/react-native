@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c80be05a320b2cb0e78865492f503922>>
+ * @generated SignedSource<<6692978a1497fa9e99d539511388c9fa>>
  */
 
 /**
@@ -124,7 +124,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableModuleArgumentNSNullConversionIOS() override {
-    return true;
+    return false;
   }
 
   bool enableNativeCSSParsing() override {
