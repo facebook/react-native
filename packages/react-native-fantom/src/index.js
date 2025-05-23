@@ -522,10 +522,12 @@ export const unstable_benchmark = Benchmark;
 
 type FantomConstants = $ReadOnly<{
   isRunningFromCI: boolean,
+  fantomConfigSummary: string,
 }>;
 
 let constants: FantomConstants = {
   isRunningFromCI: false,
+  fantomConfigSummary: '',
 };
 
 export function getConstants(): FantomConstants {
