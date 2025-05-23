@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {AssetData} from 'metro/src/Assets';
+import type {AssetData} from 'metro';
 
 import assetPathUtils from './assetPathUtils';
 import fs from 'fs';
