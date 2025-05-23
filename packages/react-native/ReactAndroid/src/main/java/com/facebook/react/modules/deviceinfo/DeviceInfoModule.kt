@@ -18,6 +18,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder.getDisplayMetricsWritab
 import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNotInitialized
 
 /** Module that exposes Android Constants to JS. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeDeviceInfoSpec.NAME)
 internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     NativeDeviceInfoSpec(reactContext), LifecycleEventListener {
