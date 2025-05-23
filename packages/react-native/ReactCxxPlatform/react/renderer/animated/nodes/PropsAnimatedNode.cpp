@@ -11,6 +11,7 @@
 
 #include "PropsAnimatedNode.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/animated/NativeAnimatedAllowlist.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/nodes/ColorAnimatedNode.h>
@@ -57,23 +58,16 @@ PropsAnimatedNode::PropsAnimatedNode(
 }
 
 void PropsAnimatedNode::connectToView(Tag viewTag) {
-  if (connectedViewTag_) {
-    throw std::invalid_argument(
-        "Animated node " + std::to_string(tag_) +
-        " has already been attached to a view already exists.");
-    return;
-  }
+  react_native_assert(
+      connectedViewTag_ == animated::undefinedAnimatedNodeIdentifier &&
+      "Animated node has already been attached to a view already exists.");
   connectedViewTag_ = viewTag;
 }
 
 void PropsAnimatedNode::disconnectFromView(Tag viewTag) {
-  if (connectedViewTag_ == animated::undefinedAnimatedNodeIdentifier) {
-    return;
-  } else if (connectedViewTag_ != viewTag) {
-    throw std::invalid_argument(
-        "Attempting to disconnect view that has not been connected with the given animated node.");
-    return;
-  }
+  react_native_assert(
+      connectedViewTag_ == viewTag &&
+      "Attempting to disconnect view that has not been connected with the given animated node.");
   connectedViewTag_ = animated::undefinedAnimatedNodeIdentifier;
 }
 
