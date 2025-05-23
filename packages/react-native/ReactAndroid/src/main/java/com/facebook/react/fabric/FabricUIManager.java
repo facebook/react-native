@@ -29,7 +29,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.util.Preconditions;
-import androidx.core.view.ViewCompat.FocusRealDirection;
+import androidx.core.view.ViewCompat.FocusDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -275,7 +275,7 @@ public class FabricUIManager
    *     view, returns null if no view could be found
    */
   public @Nullable Integer findNextFocusableElement(
-      int parentTag, int focusedTag, @FocusRealDirection int direction) {
+      int parentTag, int focusedTag, @FocusDirection int direction) {
     if (mBinding == null) {
       return null;
     }
@@ -294,6 +294,12 @@ public class FabricUIManager
         break;
       case View.FOCUS_LEFT:
         generalizedDirection = 3;
+        break;
+      case View.FOCUS_FORWARD:
+        generalizedDirection = 4;
+        break;
+      case View.FOCUS_BACKWARD:
+        generalizedDirection = 5;
         break;
       default:
         return null;
