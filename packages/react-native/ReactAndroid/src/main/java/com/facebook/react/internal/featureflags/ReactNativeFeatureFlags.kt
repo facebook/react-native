@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43590bc324e803ccf299e2a6ae6c5304>>
+ * @generated SignedSource<<62715a19c87a010716eb7d2e904258fa>>
  */
 
 /**
@@ -137,6 +137,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFontScaleChangesUpdatingLayout(): Boolean = accessor.enableFontScaleChangesUpdatingLayout()
+
+  /**
+   * Applies base offset for each line of text separately on iOS.
+   */
+  @JvmStatic
+  public fun enableIOSTextBaselineOffsetPerLine(): Boolean = accessor.enableIOSTextBaselineOffsetPerLine()
 
   /**
    * iOS Views will clip to their padding box vs border box

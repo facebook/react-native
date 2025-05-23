@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2b128035e6890d34737a2cfc5d8fa5ad>>
+ * @generated SignedSource<<e640d7299f0b0624f9dce91e7a39604c>>
  * @flow strict
  * @noformat
  */
@@ -68,6 +68,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFabricRenderer: Getter<boolean>,
   enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
+  enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableIntersectionObserverEventLoopIntegration: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
@@ -252,6 +253,10 @@ export const enableFixForParentTagDuringReparenting: Getter<boolean> = createNat
  * Enables font scale changes updating layout for measurable nodes.
  */
 export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', false);
+/**
+ * Applies base offset for each line of text separately on iOS.
+ */
+export const enableIOSTextBaselineOffsetPerLine: Getter<boolean> = createNativeFlagGetter('enableIOSTextBaselineOffsetPerLine', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */

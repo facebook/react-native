@@ -237,6 +237,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableIOSTextBaselineOffsetPerLine: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-21',
+        description:
+          'Applies base offset for each line of text separately on iOS.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
       metadata: {

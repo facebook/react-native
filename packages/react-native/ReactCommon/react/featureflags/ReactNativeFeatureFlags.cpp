@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e4946f3e524cd7571fc62c721d611d19>>
+ * @generated SignedSource<<9f34463a7cddcfd1a76631041297c4b7>>
  */
 
 /**
@@ -96,6 +96,10 @@ bool ReactNativeFeatureFlags::enableFixForParentTagDuringReparenting() {
 
 bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
   return getAccessor().enableFontScaleChangesUpdatingLayout();
+}
+
+bool ReactNativeFeatureFlags::enableIOSTextBaselineOffsetPerLine() {
+  return getAccessor().enableIOSTextBaselineOffsetPerLine();
 }
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {

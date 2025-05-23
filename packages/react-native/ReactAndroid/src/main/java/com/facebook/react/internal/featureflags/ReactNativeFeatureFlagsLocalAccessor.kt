@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<efc16fdb113176b932c0005118e7b48c>>
+ * @generated SignedSource<<d2f4ae1cd4e33cb59903c3b2c3ef0fc2>>
  */
 
 /**
@@ -42,6 +42,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFabricRendererCache: Boolean? = null
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
+  private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableIntersectionObserverEventLoopIntegrationCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
@@ -250,6 +251,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableFontScaleChangesUpdatingLayout()
       accessedFeatureFlags.add("enableFontScaleChangesUpdatingLayout")
       enableFontScaleChangesUpdatingLayoutCache = cached
+    }
+    return cached
+  }
+
+  override fun enableIOSTextBaselineOffsetPerLine(): Boolean {
+    var cached = enableIOSTextBaselineOffsetPerLineCache
+    if (cached == null) {
+      cached = currentProvider.enableIOSTextBaselineOffsetPerLine()
+      accessedFeatureFlags.add("enableIOSTextBaselineOffsetPerLine")
+      enableIOSTextBaselineOffsetPerLineCache = cached
     }
     return cached
   }

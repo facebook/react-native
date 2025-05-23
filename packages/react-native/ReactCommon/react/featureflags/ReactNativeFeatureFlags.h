@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83ef02f26eaf2d847efd7042ae6d1dfc>>
+ * @generated SignedSource<<cb84333e310cfc1a6a77f1b376723e93>>
  */
 
 /**
@@ -128,6 +128,11 @@ class ReactNativeFeatureFlags {
    * Enables font scale changes updating layout for measurable nodes.
    */
   RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
+
+  /**
+   * Applies base offset for each line of text separately on iOS.
+   */
+  RN_EXPORT static bool enableIOSTextBaselineOffsetPerLine();
 
   /**
    * iOS Views will clip to their padding box vs border box
