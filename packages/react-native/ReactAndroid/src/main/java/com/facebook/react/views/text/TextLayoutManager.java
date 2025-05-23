@@ -612,6 +612,7 @@ public class TextLayoutManager {
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       float height,
+      YogaMeasureMode heightYogaMeasureMode,
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     Spannable text =
         getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
@@ -668,7 +669,7 @@ public class TextLayoutManager {
           width,
           YogaMeasureMode.EXACTLY,
           height,
-          YogaMeasureMode.UNDEFINED,
+          heightYogaMeasureMode,
           minimumFontSize,
           maximumNumberOfLines,
           includeFontPadding,
@@ -799,6 +800,7 @@ public class TextLayoutManager {
             width,
             widthYogaMeasureMode,
             height,
+            heightYogaMeasureMode,
             reactTextViewManagerCallback);
 
     int maximumNumberOfLines =
@@ -1080,6 +1082,7 @@ public class TextLayoutManager {
             width,
             YogaMeasureMode.EXACTLY,
             height,
+            YogaMeasureMode.EXACTLY,
             null);
     return FontMetricsUtil.getFontMetrics(
         layout.getText(), layout, Preconditions.checkNotNull(sTextPaintInstance.get()), context);
