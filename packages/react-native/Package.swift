@@ -116,6 +116,7 @@ let reactFeatureFlags = RNTarget(
 let reactPerfLogger = RNTarget(
   name: .reactPerfLogger,
   path: "ReactCommon/reactperflogger",
+  searchPaths: ["ReactCommon"],
   excludedPaths: ["fusebox"]
 )
 
