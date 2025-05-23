@@ -74,7 +74,6 @@
   "files": [
     "build.gradle.kts",
     "cli.js",
-    "flow",
     "gradle.properties",
     "gradle/libs.versions.toml",
     "index.js",
