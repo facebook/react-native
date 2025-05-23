@@ -2672,13 +2672,12 @@ type TextInputContentSizeChangeEventData = $ReadOnly<{
 }>;
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
+export type TextInputBlurEvent = BlurEvent;
+export type TextInputFocusEvent = FocusEvent;
 type TargetEvent = $ReadOnly<{
   target: number,
   ...
 }>;
-type TextInputFocusEventData = TargetEvent;
-export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type Selection = $ReadOnly<{
   start: number,
   end: number,
@@ -3010,10 +3009,12 @@ export type TextInputType = InternalTextInput & TextInputComponentStatics;
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
 "export type {
   AutoCapitalize,
+  BlurEvent,
   EnterKeyHintType,
   EnterKeyHintTypeAndroid,
   EnterKeyHintTypeIOS,
   EnterKeyHintTypeOptions,
+  FocusEvent,
   InputModeOptions,
   KeyboardType,
   KeyboardTypeAndroid,

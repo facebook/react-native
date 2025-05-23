@@ -17,6 +17,8 @@ import {
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {TextStyle} from '../../StyleSheet/StyleSheetTypes';
 import {
+  BlurEvent,
+  FocusEvent,
   NativeSyntheticEvent,
   NativeTouchEvent,
   TargetedEvent,
@@ -455,7 +457,7 @@ export interface TextInputAndroidProps {
 }
 
 /**
- * @deprecated Use `TextInputFocusEvent` instead
+ * @deprecated Use `FocusEvent` instead
  */
 export interface TextInputFocusEventData extends TargetedEvent {
   text: string;
@@ -464,6 +466,7 @@ export interface TextInputFocusEventData extends TargetedEvent {
 
 /**
  * @see TextInputProps.onFocus
+ * @deprecated Use `FocusEvent` instead
  */
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
@@ -809,8 +812,11 @@ export interface TextInputProps
 
   /**
    * Callback that is called when the text input is blurred
+   *
+   * Note: If you are trying to find the last value of TextInput, you can use the `onEndEditing`
+   * event, which is fired upon completion of editing.
    */
-  onBlur?: ((e: TextInputFocusEvent) => void) | undefined;
+  onBlur?: ((e: BlurEvent) => void) | undefined;
 
   /**
    * Callback that is called when the text input's text changes.
@@ -859,7 +865,7 @@ export interface TextInputProps
   /**
    * Callback that is called when the text input is focused
    */
-  onFocus?: ((e: TextInputFocusEvent) => void) | undefined;
+  onFocus?: ((e: FocusEvent) => void) | undefined;
 
   /**
    * Callback that is called when the text input selection is changed.
