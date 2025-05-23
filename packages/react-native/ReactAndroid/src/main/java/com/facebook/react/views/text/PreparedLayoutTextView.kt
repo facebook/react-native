@@ -52,11 +52,6 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
 
         clickableSpans = value?.text?.let { filterClickableSpans(it) } ?: emptyList()
 
-        // T221698736: This and `accessible` prop can clobber each other, and ShadowTree does not
-        // know
-        // about this. Need to figure out desired behavior for controlling implicit focusability.
-        isFocusable = clickableSpans.isNotEmpty()
-
         field = value
         invalidate()
       }
@@ -92,7 +87,6 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
   public fun recycleView(): Unit {
     initView()
     BackgroundStyleApplicator.reset(this)
-    isFocusable = false
     overflow = Overflow.HIDDEN
   }
 
