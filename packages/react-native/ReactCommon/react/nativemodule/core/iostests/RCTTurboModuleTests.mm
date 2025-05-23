@@ -9,14 +9,21 @@
 
 #import <ReactCommon/RCTTurboModule.h>
 #import <hermes/hermes.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import <OCMock/OCMock.h>
 
 using namespace facebook::react;
 
-@protocol RCTTestTurboModule <RCTBridgeModule, RCTTurboModule>
+@interface RCTTestTurboModule : NSObject <RCTBridgeModule>
 
-- (void)testMethodWhichTakesObject:(id)object;
+@end
+
+@implementation RCTTestTurboModule
+
+RCT_EXPORT_MODULE()
+
+RCT_EXPORT_METHOD(testMethodWhichTakesObject : (id)object) {}
 
 @end
 
@@ -37,13 +44,13 @@ class StubNativeMethodCallInvoker : public NativeMethodCallInvoker {
 
 @implementation RCTTurboModuleTests {
   std::unique_ptr<ObjCTurboModule> module_;
-  id<RCTTestTurboModule> instance_;
+  RCTTestTurboModule *instance_;
 }
 
 - (void)setUp
 {
   [super setUp];
-  instance_ = OCMProtocolMock(@protocol(RCTTestTurboModule));
+  instance_ = OCMClassMock([RCTTestTurboModule class]);
 
   ObjCTurboModule::InitParams params = {
       .moduleName = "TestModule",
@@ -82,11 +89,14 @@ class StubNativeMethodCallInvoker : public NativeMethodCallInvoker {
   OCMVerify(OCMTimes(1), [instance_ testMethodWhichTakesObject:@{@"foo" : @"bar"}]);
 
   // Object with key without value
-  args[0].asObject(*rt).setProperty(*rt, "foo", "facebook::jsi::Value::undefined()");
+  args[0].asObject(*rt).setProperty(*rt, "foo", facebook::jsi::Value::null());
   module_->invokeObjCMethod(
       *rt, VoidKind, "testMethodWhichTakesObject", @selector(testMethodWhichTakesObject:), args, 1);
-  // FIXME this should be called with @{@"foo": kCFNull}
-  OCMVerify(OCMTimes(1), [instance_ testMethodWhichTakesObject:@{}]);
+  if (ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS()) {
+    OCMVerify(OCMTimes(1), [instance_ testMethodWhichTakesObject:@{@"foo" : (id)kCFNull}]);
+  } else {
+    OCMVerify(OCMTimes(2), [instance_ testMethodWhichTakesObject:@{}]);
+  }
 
   // Null
   args[0] = facebook::jsi::Value::null();

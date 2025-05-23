@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2f4ae1cd4e33cb59903c3b2c3ef0fc2>>
+ * @generated SignedSource<<ebf6d5811f40eedd906c015283f5757f>>
  */
 
 /**
@@ -48,6 +48,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueModulesOnIOSCache: Boolean? = null
+  private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
@@ -311,6 +312,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableMainQueueModulesOnIOS()
       accessedFeatureFlags.add("enableMainQueueModulesOnIOS")
       enableMainQueueModulesOnIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableModuleArgumentNSNullConversionIOS(): Boolean {
+    var cached = enableModuleArgumentNSNullConversionIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableModuleArgumentNSNullConversionIOS()
+      accessedFeatureFlags.add("enableModuleArgumentNSNullConversionIOS")
+      enableModuleArgumentNSNullConversionIOSCache = cached
     }
     return cached
   }
