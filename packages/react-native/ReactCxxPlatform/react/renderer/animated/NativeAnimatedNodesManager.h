@@ -71,35 +71,35 @@ class NativeAnimatedNodesManager
     return nullptr;
   }
 
-  std::optional<double> getValue(Tag tag);
+  std::optional<double> getValue(Tag tag) noexcept;
 
   // graph
 
-  void createAnimatedNode(Tag tag, const folly::dynamic& config);
+  void createAnimatedNode(Tag tag, const folly::dynamic& config) noexcept;
 
-  void connectAnimatedNodes(Tag parentTag, Tag childTag);
+  void connectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
 
-  void connectAnimatedNodeToView(Tag propsNodeTag, Tag viewTag);
+  void connectAnimatedNodeToView(Tag propsNodeTag, Tag viewTag) noexcept;
 
-  void disconnectAnimatedNodes(Tag parentTag, Tag childTag);
+  void disconnectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
 
-  void disconnectAnimatedNodeFromView(Tag propsNodeTag, Tag viewTag);
+  void disconnectAnimatedNodeFromView(Tag propsNodeTag, Tag viewTag) noexcept;
 
-  void restoreDefaultValues(Tag tag);
+  void restoreDefaultValues(Tag tag) noexcept;
 
-  void dropAnimatedNode(Tag tag);
+  void dropAnimatedNode(Tag tag) noexcept;
 
   // mutations
 
   void setAnimatedNodeValue(Tag tag, double value);
 
-  void setAnimatedNodeOffset(Tag tag, double offset);
+  void setAnimatedNodeOffset(Tag tag, double offset) noexcept;
 
-  void flattenAnimatedNodeOffset(Tag tag);
+  void flattenAnimatedNodeOffset(Tag tag) noexcept;
 
-  void extractAnimatedNodeOffset(Tag tag);
+  void extractAnimatedNodeOffset(Tag tag) noexcept;
 
-  void updateAnimatedNodeConfig(Tag tag, const folly::dynamic& config);
+  void updateAnimatedNodeConfig(Tag tag, const folly::dynamic& config) noexcept;
 
   // drivers
 
@@ -107,36 +107,38 @@ class NativeAnimatedNodesManager
       int animationId,
       Tag animatedNodeTag,
       const folly::dynamic& config,
-      const std::optional<AnimationEndCallback>& endCallback);
+      const std::optional<AnimationEndCallback>& endCallback) noexcept;
 
-  void stopAnimation(int animationId, bool isTrackingAnimation = false);
+  void stopAnimation(
+      int animationId,
+      bool isTrackingAnimation = false) noexcept;
 
   void addAnimatedEventToView(
       Tag viewTag,
       const std::string& eventName,
-      const folly::dynamic& eventMapping);
+      const folly::dynamic& eventMapping) noexcept;
 
   void removeAnimatedEventFromView(
       Tag viewTag,
       const std::string& eventName,
-      Tag animatedValueTag);
+      Tag animatedValueTag) noexcept;
 
-  std::shared_ptr<EventEmitterListener> getEventEmitterListener() {
+  std::shared_ptr<EventEmitterListener> getEventEmitterListener() noexcept {
     return ensureEventEmitterListener();
   }
   // listeners
 
   void startListeningToAnimatedNodeValue(
       Tag tag,
-      ValueListenerCallback&& callback);
+      ValueListenerCallback&& callback) noexcept;
 
-  void stopListeningToAnimatedNodeValue(Tag tag);
+  void stopListeningToAnimatedNodeValue(Tag tag) noexcept;
 
   void schedulePropsCommit(
       Tag viewTag,
       const folly::dynamic& props,
       bool layoutStyleUpdated,
-      bool forceFabricCommit);
+      bool forceFabricCommit) noexcept;
 
   /**
    * Commits all pending animated property updates to their respective views.
@@ -166,31 +168,32 @@ class NativeAnimatedNodesManager
 
   void startRenderCallbackIfNeeded();
 
-  void updateNodes(const std::set<int>& finishedAnimationValueNodes = {});
+  void updateNodes(
+      const std::set<int>& finishedAnimationValueNodes = {}) noexcept;
 
-  std::optional<folly::dynamic> managedProps(Tag tag);
+  std::optional<folly::dynamic> managedProps(Tag tag) noexcept;
 
-  bool isOnRenderThread() const;
+  bool isOnRenderThread() const noexcept;
 
  private:
   void stopRenderCallbackIfNeeded() noexcept;
 
   bool onAnimationFrame(uint64_t timestamp);
 
-  bool isAnimationUpdateNeeded() const;
+  bool isAnimationUpdateNeeded() const noexcept;
 
   void stopAnimationsForNode(Tag nodeTag);
 
-  std::shared_ptr<EventEmitterListener> ensureEventEmitterListener();
+  std::shared_ptr<EventEmitterListener> ensureEventEmitterListener() noexcept;
 
   void handleAnimatedEvent(
       Tag tag,
       const std::string& eventName,
-      const EventPayload& payload);
+      const EventPayload& payload) noexcept;
 
   std::unique_ptr<AnimatedNode> animatedNode(
       Tag tag,
-      const folly::dynamic& config);
+      const folly::dynamic& config) noexcept;
 
   std::unordered_map<Tag, std::shared_ptr<AnimatedNode>> animatedNodes_;
   std::unordered_map<Tag, Tag> connectedAnimatedNodes_;
