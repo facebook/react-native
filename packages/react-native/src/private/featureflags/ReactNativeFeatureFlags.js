@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<81be36e22e6ec5f6720c89089d725086>>
+ * @generated SignedSource<<2b128035e6890d34737a2cfc5d8fa5ad>>
  * @flow strict
  * @noformat
  */
@@ -35,7 +35,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
-  enableVirtualViewDoubleStateHidden: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   reduceDefaultPropsInView: Getter<boolean>,
@@ -136,11 +135,6 @@ export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptF
  * Enables VirtualView debug features such as logging and overlays.
  */
 export const enableVirtualViewDebugFeatures: Getter<boolean> = createJavaScriptFlagGetter('enableVirtualViewDebugFeatures', false);
-
-/**
- * Enables a VirtualView workaround that triggers a second state update when changing to hidden mode.
- */
-export const enableVirtualViewDoubleStateHidden: Getter<boolean> = createJavaScriptFlagGetter('enableVirtualViewDoubleStateHidden', false);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
