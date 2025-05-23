@@ -4,11 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags enableFixForParentTagDuringReparenting:true
+ * @fantom_flags enableSynchronousStateUpdates:true
+ * @fantom_flags enableViewCulling:true
  * @flow strict-local
  * @format
- * @fantom_flags enableViewCulling:true
- * @fantom_flags enableSynchronousStateUpdates:true
- * @fantom_flags enableFixForParentTagDuringReparenting:true
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
