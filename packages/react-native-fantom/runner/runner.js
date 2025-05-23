@@ -18,8 +18,8 @@ import type {
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import formatFantomConfig from './formatFantomConfig';
-import getFantomTestConfig from './getFantomTestConfig';
-import {FantomTestConfigMode} from './getFantomTestConfig';
+import getFantomTestConfigs from './getFantomTestConfigs';
+import {FantomTestConfigMode} from './getFantomTestConfigs';
 import {
   getInitialSnapshotData,
   updateSnapshotsAndGetJestSnapshotResult,
@@ -187,7 +187,8 @@ module.exports = async function runTest(
 
   const startTime = Date.now();
 
-  const testConfig = getFantomTestConfig(testPath);
+  const testContents = fs.readFileSync(testPath, 'utf8');
+  const testConfigs = getFantomTestConfigs(testPath, testContents);
 
   const metroConfig = await Metro.loadConfig({
     config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
@@ -199,127 +200,136 @@ module.exports = async function runTest(
     '../../react-native/src/private/featureflags/ReactNativeFeatureFlags.js',
   );
 
-  const entrypointContents = entrypointTemplate({
-    testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
-    setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
-    featureFlagsModulePath: `${path.relative(BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
-    featureFlags: testConfig.flags.jsOnly,
-    reactInternalFeatureFlags: testConfig.flags.reactInternal,
-    snapshotConfig: {
-      updateSnapshot: snapshotState._updateSnapshot,
-      data: getInitialSnapshotData(snapshotState),
-    },
-    isRunningFromCI: isRunningFromCI(),
-  });
+  const testResultsByConfig = [];
 
-  const entrypointPath = path.join(
-    BUILD_OUTPUT_PATH,
-    `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
-  );
-  const testJSBundlePath = entrypointPath + '.bundle.js';
-  const testBytecodeBundlePath = testJSBundlePath + '.hbc';
-
-  fs.mkdirSync(path.dirname(entrypointPath), {recursive: true});
-  fs.writeFileSync(entrypointPath, entrypointContents, 'utf8');
-
-  const sourceMapPath = path.join(
-    path.dirname(testJSBundlePath),
-    path.basename(testJSBundlePath, '.js') + '.map',
-  );
-
-  await Metro.runBuild(metroConfig, {
-    entry: entrypointPath,
-    out: testJSBundlePath,
-    platform: 'android',
-    minify: testConfig.mode === FantomTestConfigMode.Optimized,
-    dev: testConfig.mode !== FantomTestConfigMode.Optimized,
-    sourceMap: true,
-    sourceMapUrl: sourceMapPath,
-  });
-
-  if (testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource) {
-    generateBytecodeBundle({
-      sourcePath: testJSBundlePath,
-      bytecodePath: testBytecodeBundlePath,
-      isOptimizedMode: testConfig.mode === FantomTestConfigMode.Optimized,
-      hermesVariant: testConfig.hermesVariant,
+  for (const testConfig of testConfigs) {
+    const entrypointContents = entrypointTemplate({
+      testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
+      setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
+      featureFlagsModulePath: `${path.relative(BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
+      featureFlags: testConfig.flags.jsOnly,
+      reactInternalFeatureFlags: testConfig.flags.reactInternal,
+      snapshotConfig: {
+        updateSnapshot: snapshotState._updateSnapshot,
+        data: getInitialSnapshotData(snapshotState),
+      },
+      isRunningFromCI: isRunningFromCI(),
     });
-  }
 
-  const rnTesterCommandResult = runBuck2(
-    [
-      'run',
-      ...getBuckModesForPlatform(
-        testConfig.mode === FantomTestConfigMode.Optimized,
-      ),
-      ...getBuckOptionsForHermes(testConfig.hermesVariant),
-      '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
-      '--',
-      '--bundlePath',
-      testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
-        ? testJSBundlePath
-        : testBytecodeBundlePath,
-      '--featureFlags',
-      JSON.stringify(testConfig.flags.common),
-      '--minLogLevel',
-      EnvironmentOptions.printCLIOutput ? 'info' : 'error',
-    ],
-    {
-      withFDB: EnvironmentOptions.enableCppDebugging,
-    },
-  );
+    const entrypointPath = path.join(
+      BUILD_OUTPUT_PATH,
+      `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
+    );
+    const testJSBundlePath = entrypointPath + '.bundle.js';
+    const testBytecodeBundlePath = testJSBundlePath + '.hbc';
 
-  const processedResult = await processRNTesterCommandResult(
-    rnTesterCommandResult,
-  );
+    fs.mkdirSync(path.dirname(entrypointPath), {recursive: true});
+    fs.writeFileSync(entrypointPath, entrypointContents, 'utf8');
 
-  const testResultError = processedResult.error;
-  if (testResultError) {
-    const error = new Error(testResultError.message);
-    error.stack = symbolicateStackTrace(sourceMapPath, testResultError.stack);
-    throw error;
+    const sourceMapPath = path.join(
+      path.dirname(testJSBundlePath),
+      path.basename(testJSBundlePath, '.js') + '.map',
+    );
+
+    await Metro.runBuild(metroConfig, {
+      entry: entrypointPath,
+      out: testJSBundlePath,
+      platform: 'android',
+      minify: testConfig.mode === FantomTestConfigMode.Optimized,
+      dev: testConfig.mode !== FantomTestConfigMode.Optimized,
+      sourceMap: true,
+      sourceMapUrl: sourceMapPath,
+    });
+
+    if (testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource) {
+      generateBytecodeBundle({
+        sourcePath: testJSBundlePath,
+        bytecodePath: testBytecodeBundlePath,
+        isOptimizedMode: testConfig.mode === FantomTestConfigMode.Optimized,
+        hermesVariant: testConfig.hermesVariant,
+      });
+    }
+
+    const rnTesterCommandResult = runBuck2(
+      [
+        'run',
+        ...getBuckModesForPlatform(
+          testConfig.mode === FantomTestConfigMode.Optimized,
+        ),
+        ...getBuckOptionsForHermes(testConfig.hermesVariant),
+        '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
+        '--',
+        '--bundlePath',
+        testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
+          ? testJSBundlePath
+          : testBytecodeBundlePath,
+        '--featureFlags',
+        JSON.stringify(testConfig.flags.common),
+        '--minLogLevel',
+        EnvironmentOptions.printCLIOutput ? 'info' : 'error',
+      ],
+      {
+        withFDB: EnvironmentOptions.enableCppDebugging,
+      },
+    );
+
+    const processedResult = await processRNTesterCommandResult(
+      rnTesterCommandResult,
+    );
+
+    const testResultError = processedResult.error;
+    if (testResultError) {
+      const error = new Error(testResultError.message);
+      error.stack = symbolicateStackTrace(sourceMapPath, testResultError.stack);
+      throw error;
+    }
+
+    const testResults =
+      nullthrows(processedResult.testResults).map(testResult => ({
+        ancestorTitles: [] as Array<string>,
+        failureDetails: [] as Array<string>,
+        testFilePath: testPath,
+        ...testResult,
+        failureMessages: testResult.failureMessages.map(maybeStackTrace =>
+          symbolicateStackTrace(sourceMapPath, maybeStackTrace),
+        ),
+        snapshotResults: testResult.snapshotResults,
+      })) ?? [];
+
+    // Display the Fantom test configuration as a suffix of the name of the root
+    // `describe` block of the test, or adds one if the test doesn't have it.
+    const maybeCommonAncestor = testResults[0]?.ancestorTitles?.[0];
+    if (
+      maybeCommonAncestor != null &&
+      testResults.every(
+        result => result.ancestorTitles?.[0] === maybeCommonAncestor,
+      )
+    ) {
+      testResults.forEach(result => {
+        const formattedFantomConfig = formatFantomConfig(testConfig);
+        if (formattedFantomConfig) {
+          result.ancestorTitles[0] += ` (${formattedFantomConfig})`;
+        }
+      });
+    } else {
+      testResults.forEach(result => {
+        const formattedFantomConfig = formatFantomConfig(testConfig);
+        if (formattedFantomConfig) {
+          result.ancestorTitles.unshift(
+            `${path.basename(testPath, '-itest.js')} (${formatFantomConfig(testConfig)})`,
+          );
+        }
+      });
+    }
+
+    testResultsByConfig.push(testResults);
   }
 
   const endTime = Date.now();
 
-  const testResults =
-    nullthrows(processedResult.testResults).map(testResult => ({
-      ancestorTitles: [] as Array<string>,
-      failureDetails: [] as Array<string>,
-      testFilePath: testPath,
-      ...testResult,
-      failureMessages: testResult.failureMessages.map(maybeStackTrace =>
-        symbolicateStackTrace(sourceMapPath, maybeStackTrace),
-      ),
-    })) ?? [];
+  const testResults = testResultsByConfig.flat();
 
-  // Display the Fantom test configuration as a suffix of the name of the root
-  // `describe` block of the test, or adds one if the test doesn't have it.
-  const maybeCommonAncestor = testResults[0]?.ancestorTitles?.[0];
-  if (
-    maybeCommonAncestor != null &&
-    testResults.every(
-      result => result.ancestorTitles?.[0] === maybeCommonAncestor,
-    )
-  ) {
-    testResults.forEach(result => {
-      const formattedFantomConfig = formatFantomConfig(testConfig);
-      if (formattedFantomConfig) {
-        result.ancestorTitles[0] += ` (${formattedFantomConfig})`;
-      }
-    });
-  } else {
-    testResults.forEach(result => {
-      const formattedFantomConfig = formatFantomConfig(testConfig);
-      if (formattedFantomConfig) {
-        result.ancestorTitles.unshift(
-          `${path.basename(testPath, '-itest.js')} (${formatFantomConfig(testConfig)})`,
-        );
-      }
-    });
-  }
-
-  const snapshotResults = nullthrows(processedResult.testResults).map(
+  const snapshotResults = testResults.map(
     testResult => testResult.snapshotResults,
   );
 
