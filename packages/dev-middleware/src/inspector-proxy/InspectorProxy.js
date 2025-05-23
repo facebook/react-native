@@ -49,8 +49,8 @@ const INTERNAL_ERROR_CODE = 1011;
 // should be aligned with
 // https://github.com/facebook/react-native-devtools-frontend/blob/3d17e0fd462dc698db34586697cce2371b25e0d3/front_end/ui/legacy/components/utils/TargetDetachedDialog.ts#L50-L64
 const INTERNAL_ERROR_MESSAGES = {
-  UREGISTERED_DEVICE:
-    '[UREGISTERED_DEVICE] Debugger connection attempted for a device that was not registered',
+  UNREGISTERED_DEVICE:
+    '[UNREGISTERED_DEVICE] Debugger connection attempted for a device that was not registered',
   INCORRECT_URL:
     '[INCORRECT_URL] Incorrect URL - device and page IDs must be provided',
 };
@@ -520,7 +520,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         }
 
         if (device == null) {
-          throw new Error(INTERNAL_ERROR_MESSAGES.UREGISTERED_DEVICE);
+          throw new Error(INTERNAL_ERROR_MESSAGES.UNREGISTERED_DEVICE);
         }
 
         this.#logger?.info(
