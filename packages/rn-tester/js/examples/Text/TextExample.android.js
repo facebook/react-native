@@ -62,7 +62,7 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
       fontSize: this.state.fontSize,
     };
     return (
-      <View>
+      <View testID="text-with-toggle-attributes">
         <RNTesterText style={curStyle}>
           Tap the controls below to change attributes.
         </RNTesterText>
@@ -75,11 +75,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
           </RNTesterText>
         </RNTesterText>
         <RNTesterText>
-          <RNTesterText onPress={this.toggleWeight}>Toggle Weight</RNTesterText>
-          {' (with highlight onPress)'}
+          <RNTesterText onPress={this.toggleWeight} testID="toggle-weight">
+            Toggle Weight
+          </RNTesterText>
         </RNTesterText>
-        <RNTesterText onPress={this.increaseSize} suppressHighlighting={true}>
-          Increase Size (suppressHighlighting true)
+        <RNTesterText onPress={this.increaseSize} testID="increase-size">
+          Increase Size
         </RNTesterText>
       </View>
     );
@@ -1478,9 +1479,7 @@ const examples = [
   {
     title: 'Toggling Attributes',
     name: 'togglingAttributes',
-    render(): React.Node {
-      return <AttributeToggler />;
-    },
+    render: AttributeToggler,
   },
   {
     title: 'backgroundColor attribute',
