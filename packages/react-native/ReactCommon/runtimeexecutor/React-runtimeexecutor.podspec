@@ -44,4 +44,7 @@ Pod::Spec.new do |s|
                                "DEFINES_MODULE" => "YES" }
 
   s.dependency "React-jsi", version
+  s.dependency "React-featureflags", version
+  add_dependency(s, "React-debug")
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 end
