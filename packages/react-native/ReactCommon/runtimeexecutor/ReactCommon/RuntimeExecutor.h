@@ -43,7 +43,7 @@ using RuntimeExecutor =
  */
 inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,
-    std::function<void(jsi::Runtime&)>&& runtimeWork) noexcept {
+    std::function<void(jsi::Runtime&)>&& runtimeWork) {
   std::promise<jsi::Runtime*> runtime;
   std::promise<void> runtimeCaptureBlockDone;
   std::promise<void> runtimeWorkDone;
@@ -75,7 +75,7 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 template <typename DataT>
 inline static DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,
-    std::function<DataT(jsi::Runtime& runtime)>&& runtimeWork) noexcept {
+    std::function<DataT(jsi::Runtime& runtime)>&& runtimeWork) {
   DataT data;
 
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
