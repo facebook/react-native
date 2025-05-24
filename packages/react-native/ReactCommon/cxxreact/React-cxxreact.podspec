@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-callinvoker", version
-  s.dependency "React-runtimeexecutor", version
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-logger", version
