@@ -8,6 +8,7 @@
 #include "RuntimeScheduler_Legacy.h"
 #include "SchedulerPriorityUtils.h"
 
+#include <ReactCommon/RuntimeExecutorSyncUIThreadUtils.h>
 #include <cxxreact/TraceSection.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <utility>
