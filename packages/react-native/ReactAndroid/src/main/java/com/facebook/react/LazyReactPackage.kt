@@ -45,16 +45,14 @@ public abstract class LazyReactPackage : ReactPackage {
                 var position = 0
 
                 return object : Iterator<ModuleHolder> {
-                    override fun hasNext(): Boolean {
-                        return position < nativeModules.size
-                    }
+                    override fun hasNext(): Boolean = position < nativeModules.size
 
                     override fun next(): ModuleHolder {
                         val moduleSpec = nativeModules[position++]
                         val name = moduleSpec.name
+                        val reactModuleInfo = reactModuleInfoMap[name]
 
-                        return reactModuleInfoMap[name].let moduleHolder@{ reactModuleInfo ->
-                            if (reactModuleInfo == null) {
+                        return if (reactModuleInfo == null) {
                                 val module: NativeModule
                                 ReactMarker.logMarker(
                                     ReactMarkerConstants.CREATE_MODULE_START,
@@ -65,12 +63,9 @@ public abstract class LazyReactPackage : ReactPackage {
                                 } finally {
                                     ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END)
                                 }
-                                return@moduleHolder ModuleHolder(module)
+                                ModuleHolder(module)
                             } else {
-                                return@moduleHolder ModuleHolder(
-                                    reactModuleInfo,
-                                    moduleSpec.provider,
-                                )
+                                ModuleHolder(reactModuleInfo, moduleSpec.provider)
                             }
                         }
                     }
@@ -110,9 +105,7 @@ public abstract class LazyReactPackage : ReactPackage {
      * @param reactContext react application context that can be used to create View Managers.
      * @return list of module specs that can create the View Managers.
      */
-    public fun getViewManagers(reactContext: ReactApplicationContext): List<ModuleSpec> {
-        return emptyList()
-    }
+    public fun getViewManagers(reactContext: ReactApplicationContext): List<ModuleSpec> = emptyList()
 
     override fun createViewManagers(
         reactContext: ReactApplicationContext
@@ -122,9 +115,10 @@ public abstract class LazyReactPackage : ReactPackage {
             return emptyList()
         }
 
-        val viewManagers: MutableList<ViewManager<*, *>> = ArrayList()
-        for (moduleSpec in viewManagerModuleSpecs) {
-            viewManagers.add(moduleSpec.provider.get() as ViewManager<*, *>)
+        val viewManagers: MutableList<ViewManager<*, *>> = buildList {
+            for (moduleSpec in viewManagerModuleSpecs) {
+                add(moduleSpec.provider.get() as ViewManager<*, *>)
+            }
         }
         return viewManagers
     }
