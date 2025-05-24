@@ -35,7 +35,7 @@ void AnimatedNode::removeChild(const Tag tag) {
   }
 }
 
-std::shared_ptr<AnimatedNode> AnimatedNode::getChildNode(Tag tag) {
+AnimatedNode* AnimatedNode::getChildNode(Tag tag) {
   if (const auto manager = manager_.lock()) {
     if (children_.find(tag) != children_.end()) {
       return manager->getAnimatedNode<AnimatedNode>(tag);

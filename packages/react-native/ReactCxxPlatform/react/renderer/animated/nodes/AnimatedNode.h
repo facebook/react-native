@@ -97,7 +97,7 @@ class AnimatedNode {
   static constexpr int INITIAL_BFS_COLOR = 0;
 
  protected:
-  std::shared_ptr<AnimatedNode> getChildNode(Tag tag);
+  AnimatedNode* getChildNode(Tag tag);
   Tag tag_{0};
   std::weak_ptr<NativeAnimatedNodesManager> manager_;
   AnimatedNodeType type_;

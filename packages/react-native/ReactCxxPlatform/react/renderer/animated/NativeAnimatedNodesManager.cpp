@@ -38,7 +38,7 @@ namespace facebook::react {
 namespace {
 
 struct NodesQueueItem {
-  std::shared_ptr<AnimatedNode> node;
+  AnimatedNode* node;
   bool connectedToFinishedAnimation;
 };
 
@@ -489,7 +489,7 @@ void NativeAnimatedNodesManager::updateNodes(
 
   const auto is_node_connected_to_finished_animation =
       [&finishedAnimationValueNodes](
-          const std::shared_ptr<AnimatedNode>& node,
+          AnimatedNode* node,
           int nodeTag,
           bool parentFinishedAnimation) -> bool {
     return parentFinishedAnimation ||
@@ -522,7 +522,7 @@ void NativeAnimatedNodesManager::updateNodes(
         const auto connectedToFinishedAnimation =
             is_node_connected_to_finished_animation(node, nodeTag, false);
         nodesQueue.emplace_back(
-            NodesQueueItem{std::move(node), connectedToFinishedAnimation});
+            NodesQueueItem{node, connectedToFinishedAnimation});
       }
     }
   }
@@ -544,7 +544,7 @@ void NativeAnimatedNodesManager::updateNodes(
             is_node_connected_to_finished_animation(
                 child, childTag, nextNode.connectedToFinishedAnimation);
         nodesQueue.emplace_back(
-            NodesQueueItem{std::move(child), connectedToFinishedAnimation});
+            NodesQueueItem{child, connectedToFinishedAnimation});
       }
     }
   }
@@ -575,7 +575,7 @@ void NativeAnimatedNodesManager::updateNodes(
         const auto connectedToFinishedAnimation =
             is_node_connected_to_finished_animation(node, nodeTag, false);
         nodesQueue.emplace_back(
-            NodesQueueItem{std::move(node), connectedToFinishedAnimation});
+            NodesQueueItem{node, connectedToFinishedAnimation});
       }
     }
   }
@@ -589,8 +589,7 @@ void NativeAnimatedNodesManager::updateNodes(
     nodesQueue.pop_front();
     if (nextNode.connectedToFinishedAnimation &&
         nextNode.node->type() == AnimatedNodeType::Props) {
-      if (auto propsNode =
-              std::static_pointer_cast<PropsAnimatedNode>(nextNode.node)) {
+      if (auto propsNode = dynamic_cast<PropsAnimatedNode*>(nextNode.node)) {
         propsNode->update(/*forceFabricCommit*/ true);
       };
     } else {
@@ -609,7 +608,7 @@ void NativeAnimatedNodesManager::updateNodes(
             is_node_connected_to_finished_animation(
                 child, childTag, nextNode.connectedToFinishedAnimation);
         nodesQueue.emplace_back(
-            NodesQueueItem{std::move(child), connectedToFinishedAnimation});
+            NodesQueueItem{child, connectedToFinishedAnimation});
       }
 #ifdef REACT_NATIVE_DEBUG
       else if (child->bfsColor == animatedGraphBFSColor_) {
@@ -706,7 +705,7 @@ void NativeAnimatedNodesManager::startListeningToAnimatedNodeValue(
     ValueListenerCallback&& callback) noexcept {
   if (auto iter = animatedNodes_.find(tag); iter != animatedNodes_.end() &&
       iter->second->type() == AnimatedNodeType::Value) {
-    static_pointer_cast<ValueAnimatedNode>(iter->second)
+    static_cast<ValueAnimatedNode*>(iter->second.get())
         ->setValueListener(std::move(callback));
   } else {
     LOG(ERROR) << "startListeningToAnimatedNodeValue: Animated node [" << tag
@@ -718,7 +717,7 @@ void NativeAnimatedNodesManager::stopListeningToAnimatedNodeValue(
     Tag tag) noexcept {
   if (auto iter = animatedNodes_.find(tag); iter != animatedNodes_.end() &&
       iter->second->type() == AnimatedNodeType::Value) {
-    static_pointer_cast<ValueAnimatedNode>(iter->second)
+    static_cast<ValueAnimatedNode*>(iter->second.get())
         ->setValueListener(nullptr);
   } else {
     LOG(ERROR) << "stopListeningToAnimatedNodeValue: Animated node [" << tag
