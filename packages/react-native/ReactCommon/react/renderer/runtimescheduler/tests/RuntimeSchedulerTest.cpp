@@ -15,6 +15,7 @@
 #include <chrono>
 #include <memory>
 #include <semaphore>
+#include <thread>
 #include <variant>
 
 #include "StubClock.h"
