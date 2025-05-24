@@ -117,8 +117,14 @@ vendor/
 /packages/helloworld/ios/build/
 /packages/helloworld/ios/Pods/
 /packages/helloworld/ios/Podfile.lock
+/packages/rn-tester/bin/
+/packages/rn-tester/cache/
+/packages/rn-tester/extensions/
+/packages/rn-tester/gems/
+/packages/rn-tester/specifications/
 /packages/rn-tester/Gemfile.lock
 /packages/**/RCTLegacyInteropComponents.mm
+/packages/sourcemap.ios.map
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
