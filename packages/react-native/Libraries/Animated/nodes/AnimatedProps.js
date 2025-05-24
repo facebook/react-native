@@ -86,7 +86,7 @@ export default class AnimatedProps extends AnimatedNode {
   #nodes: $ReadOnlyArray<AnimatedNode>;
   #props: {[string]: mixed};
   #target: ?TargetView = null;
-
+  #allowlist: ?AnimatedPropsAllowlist;
   constructor(
     inputProps: {[string]: mixed},
     callback: () => void,
@@ -99,6 +99,7 @@ export default class AnimatedProps extends AnimatedNode {
     this.#nodes = nodes;
     this.#props = props;
     this.#callback = callback;
+    this.#allowlist = allowlist;
   }
 
   __getValue(): Object {
@@ -133,13 +134,21 @@ export default class AnimatedProps extends AnimatedNode {
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
       const maybeNode = this.#props[key];
-
       if (key === 'style' && maybeNode instanceof AnimatedStyle) {
         props[key] = maybeNode.__getValueWithStaticStyle(staticProps.style);
       } else if (maybeNode instanceof AnimatedNode) {
         props[key] = maybeNode.__getValue();
       } else if (maybeNode instanceof AnimatedEvent) {
         props[key] = maybeNode.__getHandler();
+      }
+      if (key === 'style' && Array.isArray(maybeNode)) {
+        props[key] = maybeNode.map(style => {
+          const node = AnimatedStyle.from(style, this.#allowlist?.style);
+          if (node instanceof AnimatedStyle) {
+            return node.__getValueWithStaticStyle(style);
+          }
+          return style;
+        });
       }
     }
 
