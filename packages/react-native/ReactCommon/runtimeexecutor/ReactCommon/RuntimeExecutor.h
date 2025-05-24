@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <mutex>
+#include <future>
 #include <thread>
 
 #include <jsi/jsi.h>
@@ -26,71 +26,61 @@ using RuntimeExecutor =
     std::function<void(std::function<void(jsi::Runtime& runtime)>&& callback)>;
 
 /*
- * Executes a `callback` in a *synchronous* manner on the same thread using
- * given `RuntimeExecutor`.
- * Use this method when the caller needs to *be blocked* by executing the
- * `callback` and requires that the callback will be executed on the same
- * thread.
- * Example order of events (when not a sync call in runtimeExecutor callback):
- * - [UI thread] Lock all mutexes at start
- * - [UI thread] runtimeCaptured.lock before callback
- * - [JS thread] Set runtimePtr in runtimeExecutor callback
- * - [JS thread] runtimeCaptured.unlock in runtimeExecutor callback
- * - [UI thread] Call callback
- * - [JS thread] callbackExecuted.lock in runtimeExecutor callback
- * - [UI thread] callbackExecuted.unlock after callback
- * - [UI thread] jsBlockExecuted.lock after callback
- * - [JS thread] jsBlockExecuted.unlock in runtimeExecutor callback
+ * Schedules `runtimeWork` to be executed on the same thread using the
+ * `RuntimeExecutor`, and blocks on its completion.
+ *
+ * Example:
+ * - [UI thread] Schedule `runtimeCaptureBlock` on js thread
+ * - [UI thread] Wait for runtime capture: await(runtime)
+ * - [JS thread] Capture runtime for ui thread: resolve(runtime, &rt);
+ * - [JS thread] Wait until runtimeWork done: await(runtimeWorkDone)
+ * - [UI thread] Call runtimeWork: runtimeWork(*runtimePrt);
+ * - [UI thread] Signal runtimeWork done: resolve(runtimeWorkDone)
+ * - [UI thread] Wait until runtime capture block finished:
+ *               await(runtimeCaptureBlockDone);
+ * - [JS thread] Signal runtime capture block is finished:
+ *               resolve(runtimeCaptureBlockDone);
  */
 inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,
-    std::function<void(jsi::Runtime& runtime)>&& callback) noexcept {
-  // Note: We need the third mutex to get back to the main thread before
-  // the lambda is finished (because all mutexes are allocated on the stack).
+    std::function<void(jsi::Runtime&)>&& runtimeWork) {
+  std::promise<jsi::Runtime*> runtime;
+  std::promise<void> runtimeCaptureBlockDone;
+  std::promise<void> runtimeWorkDone;
 
-  std::mutex runtimeCaptured;
-  std::mutex callbackExecuted;
-  std::mutex jsBlockExecuted;
+  auto callingThread = std::this_thread::get_id();
 
-  runtimeCaptured.lock();
-  callbackExecuted.lock();
-  jsBlockExecuted.lock();
+  auto runtimeCaptureBlock = [&](jsi::Runtime& rt) {
+    runtime.set_value(&rt);
 
-  jsi::Runtime* runtimePtr;
-
-  auto threadId = std::this_thread::get_id();
-
-  runtimeExecutor([&](jsi::Runtime& runtime) {
-    runtimePtr = &runtime;
-
-    if (threadId == std::this_thread::get_id()) {
-      // In case of a synchronous call, we should unlock mutexes and return.
-      runtimeCaptured.unlock();
-      jsBlockExecuted.unlock();
-      return;
+    auto runtimeThread = std::this_thread::get_id();
+    if (callingThread != runtimeThread) {
+      // Block `runtimeThread` on execution of `runtimeWork` on `callingThread`.
+      runtimeWorkDone.get_future().wait();
     }
 
-    runtimeCaptured.unlock();
-    // `callback` is called somewhere here.
-    callbackExecuted.lock();
-    jsBlockExecuted.unlock();
-  });
+    // TODO(T225331233): This is likely unnecessary. Remove it.
+    runtimeCaptureBlockDone.set_value();
+  };
+  runtimeExecutor(std::move(runtimeCaptureBlock));
 
-  runtimeCaptured.lock();
-  callback(*runtimePtr);
-  callbackExecuted.unlock();
-  jsBlockExecuted.lock();
+  jsi::Runtime* runtimePtr = runtime.get_future().get();
+  runtimeWork(*runtimePtr);
+  runtimeWorkDone.set_value();
+
+  // TODO(T225331233): This is likely unnecessary. Remove it.
+  runtimeCaptureBlockDone.get_future().wait();
 }
 
 template <typename DataT>
 inline static DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,
-    std::function<DataT(jsi::Runtime& runtime)>&& callback) noexcept {
+    std::function<DataT(jsi::Runtime& runtime)>&& runtimeWork) {
   DataT data;
 
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor,
-      [&](jsi::Runtime& runtime) { data = callback(runtime); });
+      [&](jsi::Runtime& runtime) { data = runtimeWork(runtime); });
 
   return data;
 }
