@@ -52,5 +52,6 @@ Pod::Spec.new do |s|
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-runtimescheduler"
   add_dependency(s, "React-RCTFBReactNativeSpec")
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
 
 end
