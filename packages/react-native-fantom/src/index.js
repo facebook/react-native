@@ -617,6 +617,19 @@ export function createShadowNodeReferenceCounter(
 }
 
 /**
+ * Returns a function that returns the current revision number for the supplied
+ * element's shadow node.
+ *
+ * @param node The node for which to create a revision getter.
+ */
+export function createShadowNodeRevisionGetter(
+  node: ReactNativeElement,
+): () => ?number {
+  let shadowNode = getNativeNodeReference(node);
+  return NativeFantom.createShadowNodeRevisionGetter(shadowNode);
+}
+
+/**
  * Saves a heap snapshot after forcing garbage collection.
  *
  * The heapsnapshot is saved to the filename supplied as an argument.
