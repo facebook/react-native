@@ -2,7 +2,7 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 ---
 - runFlow: ./helpers/launch-app-and-search.yml
 - inputText:
-    text: "New Architecture Examples"
+    text: "New Architecture"
 - assertVisible:
     id: "New Architecture Examples"
 - tapOn:

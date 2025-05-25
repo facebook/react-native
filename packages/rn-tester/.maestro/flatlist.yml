@@ -1,10 +1,12 @@
 appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
 ---
-- runFlow: ./helpers/launch-app-and-search.yml
-- inputText:
-    text: "Flatlist"
-- assertVisible:
-    id: "Flatlist"
+- launchApp
+- assertVisible: "Components"
+- scrollUntilVisible:
+    element:
+      id: "Flatlist"
+    direction: DOWN
+    speed: 40
 - tapOn:
     id: "Flatlist"
 - tapOn:

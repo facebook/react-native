@@ -1,10 +1,12 @@
 appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
 ---
-- runFlow: ./helpers/launch-app-and-search.yml
-- inputText:
-    text: "Modal"
-- assertVisible:
-    id: "Modal"
+- launchApp
+- assertVisible: "Components"
+- scrollUntilVisible:
+    element:
+      id: "Modal"
+    direction: DOWN
+    speed: 60
 - tapOn:
     id: "Modal"
 - assertVisible:

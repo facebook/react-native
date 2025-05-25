@@ -7,7 +7,7 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     id: "apis-tab"
 - runFlow: ./helpers/search.yml
 - inputText:
-    text: "Legacy Native Module"
+    text: "Legacy Native"
 - assertVisible:
     id: "Legacy Native Module"
 - tapOn:

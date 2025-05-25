@@ -12,7 +12,8 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 - tapOn:
     id: "example_search"
 - inputText:
-    text: "Background Color and Border Width"
+    text: "Background Color"
+- hideKeyboard
 - assertVisible: "Text with background color only"
 - assertVisible: "Text with background color and uniform borderRadii"
 - assertVisible: "Text with background color and non-uniform borders"
