@@ -33,7 +33,7 @@ async function main() {
     console.log(`
   Usage: node ./scripts/build-types
 
-  [Experimental] Build generated TypeScript types for react-native.
+  Build generated TypeScript types for react-native.
     `);
     process.exitCode = 0;
     return;
@@ -46,22 +46,10 @@ async function main() {
   console.log(
     '\n' +
       chalk.bold.inverse.yellow(
-        'EXPERIMENTAL - Building generated react-native package types',
+        'Building generated react-native package types',
       ) +
       '\n',
   );
-
-  try {
-    // $FlowIgnore[cannot-resolve-module]
-    const prepareFlowApiTranslator = require('./prepare-flow-api-translator');
-    await prepareFlowApiTranslator();
-  } catch (e) {
-    console.warn(
-      chalk.yellow(
-        'WARNING: Failed to build flow-api-translator from source. Using npm version (may be out of date).',
-      ),
-    );
-  }
 
   await buildGeneratedTypes();
 }
