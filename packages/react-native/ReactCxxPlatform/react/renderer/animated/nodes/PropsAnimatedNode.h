@@ -22,7 +22,7 @@ class PropsAnimatedNode final : public AnimatedNode {
   PropsAnimatedNode(
       Tag tag,
       const folly::dynamic& config,
-      const std::shared_ptr<NativeAnimatedNodesManager>& manager);
+      NativeAnimatedNodesManager& manager);
   void connectToView(Tag viewTag);
   void disconnectFromView(Tag viewTag);
   void restoreDefaultValues();

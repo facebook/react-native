@@ -20,7 +20,7 @@ class TrackingAnimatedNode final : public AnimatedNode {
   TrackingAnimatedNode(
       Tag tag,
       const folly::dynamic& config,
-      const std::shared_ptr<NativeAnimatedNodesManager>& manager);
+      NativeAnimatedNodesManager& manager);
 
   void update() override;
 

@@ -21,7 +21,7 @@ class StyleAnimatedNode final : public AnimatedNode {
   StyleAnimatedNode(
       Tag tag,
       const folly::dynamic& config,
-      const std::shared_ptr<NativeAnimatedNodesManager>& manager);
+      NativeAnimatedNodesManager& manager);
   void update() override;
 
   const folly::dynamic& getProps() const {

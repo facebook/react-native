@@ -18,7 +18,7 @@ namespace facebook::react {
 ValueAnimatedNode::ValueAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : AnimatedNode(tag, config, manager, AnimatedNodeType::Value) {
   auto value = 0.0;
   auto offset = 0.0;
@@ -87,7 +87,7 @@ void ValueAnimatedNode::setValueListener(ValueListenerCallback&& callback) {
 OperatorAnimatedNode::OperatorAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : ValueAnimatedNode(tag, config, manager) {
   const auto& input = getConfig()["input"];
   react_native_assert(

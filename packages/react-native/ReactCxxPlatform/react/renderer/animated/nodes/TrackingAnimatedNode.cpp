@@ -19,26 +19,24 @@ namespace facebook::react {
 TrackingAnimatedNode::TrackingAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : AnimatedNode(tag, config, manager, AnimatedNodeType::Tracking),
       animationId_(static_cast<int>(getConfig()["animationId"].asInt())),
       toValueNodeId_(static_cast<Tag>(getConfig()["toValue"].asInt())),
       valueNodeId_(static_cast<Tag>(getConfig()["value"].asInt())) {}
 
 void TrackingAnimatedNode::update() {
-  if (const auto manager = manager_.lock()) {
-    if (const auto toValueNode =
-            manager->getAnimatedNode<ValueAnimatedNode>(toValueNodeId_)) {
-      // In case the animation is already running, we need to stop it to free up
-      // the animationId key in the active animations map in the animation
-      // manager.
-      manager->stopAnimation(animationId_, true);
-      auto animationConfig = getConfig()["animationConfig"];
-      animationConfig["toValue"] = toValueNode->value();
+  if (const auto toValueNode =
+          manager_->getAnimatedNode<ValueAnimatedNode>(toValueNodeId_)) {
+    // In case the animation is already running, we need to stop it to free up
+    // the animationId key in the active animations map in the animation
+    // manager.
+    manager_->stopAnimation(animationId_, true);
+    auto animationConfig = getConfig()["animationConfig"];
+    animationConfig["toValue"] = toValueNode->value();
 
-      manager->startAnimatingNode(
-          animationId_, valueNodeId_, animationConfig, std::nullopt);
-    }
+    manager_->startAnimatingNode(
+        animationId_, valueNodeId_, animationConfig, std::nullopt);
   }
 };
 

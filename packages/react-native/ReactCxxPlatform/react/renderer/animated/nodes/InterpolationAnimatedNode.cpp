@@ -21,7 +21,7 @@ namespace facebook::react {
 InterpolationAnimatedNode::InterpolationAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : ValueAnimatedNode(tag, config, manager) {
   // inputRange example: [0, 1, 10], [1, 1.4, 1.5]
   const auto& nodeConfig = getConfig();
@@ -51,14 +51,12 @@ void InterpolationAnimatedNode::update() {
     return;
   }
 
-  if (const auto manager = manager_.lock()) {
-    if (const auto node =
-            manager->getAnimatedNode<ValueAnimatedNode>(parentTag_)) {
-      if (isColorValue_) {
-        setRawValue(interpolateColor(node->value()));
-      } else {
-        setRawValue(interpolateValue(node->value()));
-      }
+  if (const auto node =
+          manager_->getAnimatedNode<ValueAnimatedNode>(parentTag_)) {
+    if (isColorValue_) {
+      setRawValue(interpolateColor(node->value()));
+    } else {
+      setRawValue(interpolateValue(node->value()));
     }
   }
 }
