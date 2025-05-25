@@ -197,7 +197,7 @@ class NativeAnimatedNodesManager
 
   std::unordered_map<Tag, std::unique_ptr<AnimatedNode>> animatedNodes_;
   std::unordered_map<Tag, Tag> connectedAnimatedNodes_;
-  std::unordered_map<int, std::shared_ptr<AnimationDriver>> activeAnimations_;
+  std::unordered_map<int, std::unique_ptr<AnimationDriver>> activeAnimations_;
   std::unordered_map<
       EventAnimationDriverKey,
       std::vector<std::unique_ptr<EventAnimationDriver>>,
