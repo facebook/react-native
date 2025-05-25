@@ -1,4 +1,4 @@
-name: Prebuild iOS
+name: Prebuild iOS Dependencies
 
 on:
   workflow_call: # this directive allow us to call this workflow from other workflows
