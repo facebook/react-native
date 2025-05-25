@@ -15,5 +15,5 @@
 #warning \
     "[DEPRECATION] `React/RCTFollyconvert.h` is deprecated and will be removed in the future. \
     If this warning appears due to a library, please open an issue in that library, and ask for an update. \
-    Please, replace the `#include <React/RCTFollyConver.h>` statements \
+    Please, replace the `#include <React/RCTFollyConvert.h>` statements \
     with `#include <react/utils/FollyConvert.h>`."
