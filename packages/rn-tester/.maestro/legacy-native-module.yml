@@ -5,10 +5,7 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     text: "APIs"
 - tapOn:
     id: "apis-tab"
-- assertVisible:
-    id: "explorer_search"
-- tapOn:
-    id: "explorer_search"
+- runFlow: ./helpers/search.yml
 - inputText:
     text: "Legacy Native Module"
 - assertVisible:

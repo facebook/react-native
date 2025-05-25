@@ -1,11 +1,6 @@
 appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
 ---
-- launchApp
-- assertVisible: "Components"
-- assertVisible:
-    id: "explorer_search"
-- tapOn:
-    id: "explorer_search"
+- runFlow: ./helpers/launch-app-and-search.yml
 - inputText:
     text: "Text"
 - assertVisible:
