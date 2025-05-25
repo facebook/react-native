@@ -18,13 +18,11 @@ namespace facebook::react {
 
 void AdditionAnimatedNode::update() {
   auto rawValue = 0.0;
-  if (const auto manager = manager_.lock()) {
-    for (const auto tag : inputNodes_) {
-      const auto node = manager->getAnimatedNode<ValueAnimatedNode>(tag);
-      react_native_assert(
-          node && "Invalid node tag set as input for AdditionAnimatedNode");
-      rawValue += node->value();
-    }
+  for (const auto tag : inputNodes_) {
+    const auto node = manager_->getAnimatedNode<ValueAnimatedNode>(tag);
+    react_native_assert(
+        node && "Invalid node tag set as input for AdditionAnimatedNode");
+    rawValue += node->value();
   }
   setRawValue(rawValue);
 }

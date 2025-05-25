@@ -24,7 +24,7 @@ class ValueAnimatedNode : public AnimatedNode {
   ValueAnimatedNode(
       Tag tag,
       const folly::dynamic& config,
-      const std::shared_ptr<NativeAnimatedNodesManager>& manager);
+      NativeAnimatedNodesManager& manager);
   double value();
   double rawValue();
   bool setRawValue(double value);
@@ -54,7 +54,7 @@ class OperatorAnimatedNode : public ValueAnimatedNode {
   OperatorAnimatedNode(
       Tag tag,
       const folly::dynamic& config,
-      const std::shared_ptr<NativeAnimatedNodesManager>& manager);
+      NativeAnimatedNodesManager& manager);
 
  protected:
   std::vector<Tag> inputNodes_{};

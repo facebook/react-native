@@ -18,21 +18,19 @@ namespace facebook::react {
 DiffClampAnimatedNode::DiffClampAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : ValueAnimatedNode(tag, config, manager),
       inputNodeTag_(static_cast<Tag>(getConfig()["input"].asDouble())),
       min_(getConfig()["min"].asDouble()),
       max_(getConfig()["max"].asDouble()) {}
 
 void DiffClampAnimatedNode::update() {
-  if (const auto manager = manager_.lock()) {
-    if (const auto node =
-            manager->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_)) {
-      const auto value = node->value();
-      const auto diff = value - lastValue_;
-      lastValue_ = value;
-      setRawValue(std::clamp(this->value() + diff, min_, max_));
-    }
+  if (const auto node =
+          manager_->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_)) {
+    const auto value = node->value();
+    const auto diff = value - lastValue_;
+    lastValue_ = value;
+    setRawValue(std::clamp(this->value() + diff, min_, max_));
   }
 }
 

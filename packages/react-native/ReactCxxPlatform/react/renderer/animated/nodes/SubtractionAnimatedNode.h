@@ -21,7 +21,7 @@ class SubtractionAnimatedNode final : public OperatorAnimatedNode {
   SubtractionAnimatedNode(
       Tag tag,
       const folly::dynamic& config,
-      const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+      NativeAnimatedNodesManager& manager)
       : OperatorAnimatedNode(tag, config, manager) {}
 
   void update() override;

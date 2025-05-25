@@ -95,47 +95,33 @@ std::unique_ptr<AnimatedNode> NativeAnimatedNodesManager::animatedNode(
 
   switch (type.value()) {
     case AnimatedNodeType::Style:
-      return std::make_unique<StyleAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<StyleAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Value:
-      return std::make_unique<ValueAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<ValueAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Color:
-      return std::make_unique<ColorAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<ColorAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Props:
-      return std::make_unique<PropsAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<PropsAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Tracking:
-      return std::make_unique<TrackingAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<TrackingAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Interpolation:
-      return std::make_unique<InterpolationAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<InterpolationAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Transform:
-      return std::make_unique<TransformAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<TransformAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Subtraction:
-      return std::make_unique<SubtractionAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<SubtractionAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Addition:
-      return std::make_unique<AdditionAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<AdditionAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Multiplication:
-      return std::make_unique<MultiplicationAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<MultiplicationAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Division:
-      return std::make_unique<DivisionAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<DivisionAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Modulus:
-      return std::make_unique<ModulusAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<ModulusAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Diffclamp:
-      return std::make_unique<DiffClampAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<DiffClampAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Round:
-      return std::make_unique<RoundAnimatedNode>(
-          tag, config, shared_from_this());
+      return std::make_unique<RoundAnimatedNode>(tag, config, *this);
     default:
       LOG(WARNING) << "Cannot create AnimatedNode of type " << typeName
                    << ", it's not implemented yet";
