@@ -427,13 +427,11 @@ std::shared_ptr<EventEmitterListener>
 NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
   if (!eventEmitterListener_) {
     eventEmitterListener_ = std::make_shared<EventEmitterListener>(
-        [weakSelf = weak_from_this()](
+        [this](
             Tag tag,
             const std::string& eventName,
             const EventPayload& payload) -> bool {
-          if (auto self = weakSelf.lock()) {
-            self->handleAnimatedEvent(tag, eventName, payload);
-          }
+          handleAnimatedEvent(tag, eventName, payload);
           return false;
         });
   }
@@ -442,11 +440,7 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   if (startOnRenderCallback_) {
-    startOnRenderCallback_([weakSelf = weak_from_this()]() {
-      if (auto self = weakSelf.lock()) {
-        self->onRender();
-      }
-    });
+    startOnRenderCallback_([this]() { onRender(); });
 
     if (isOnRenderThread_) {
       // Calling startOnRenderCallback_ will register a UI tick listener.
