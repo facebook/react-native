@@ -41,8 +41,7 @@ template <>
 struct Bridging<EndResult>
     : NativeAnimatedTurboModuleEndResultBridging<EndResult> {};
 
-class NativeAnimatedNodesManager
-    : public std::enable_shared_from_this<NativeAnimatedNodesManager> {
+class NativeAnimatedNodesManager {
  public:
   using DirectManipulationCallback =
       std::function<void(Tag, const folly::dynamic&)>;
