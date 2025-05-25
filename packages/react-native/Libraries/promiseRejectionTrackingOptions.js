@@ -41,30 +41,17 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       }
     }
 
-    const warning = `Possible unhandled promise rejection (id: ${id}):\n${
-      message ?? ''
-    }`;
-    if (__DEV__) {
-      LogBox.addLog({
-        level: 'warn',
-        message: {
-          content: warning,
-          substitutions: [],
-        },
-        componentStack: [],
-        componentStackType: null,
-        stack,
-        category: 'possible_unhandled_promise_rejection',
-      });
-    } else {
-      console.warn(warning);
-    }
+    // We overwrite the stack by the extracted rejection stack if available
+    const rejectionPrefix = `Uncaught (in promise, id ${id})`;
+    const rejectionError = new Error(`${rejectionPrefix} ${message ?? ''}`);
+    rejectionError.stack = `${rejectionPrefix} ${stack ?? ''}`;
+    console.error(rejectionError);
   },
   onHandled: id => {
     const warning =
       `Promise rejection handled (id: ${id})\n` +
       'This means you can ignore any previous messages of the form ' +
-      `"Possible unhandled promise rejection (id: ${id}):"`;
+      `"Uncaught (in promise, id ${id})"`;
     console.warn(warning);
   },
 };
