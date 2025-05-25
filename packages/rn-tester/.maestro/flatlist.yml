@@ -2,11 +2,14 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 ---
 - launchApp
 - assertVisible: "Components"
-- scrollUntilVisible:
-    element:
-      id: "Flatlist"
-    direction: DOWN
-    speed: 40
+- assertVisible:
+    id: "explorer_search"
+- tapOn:
+    id: "explorer_search"
+- inputText:
+    text: "Flatlist"
+- assertVisible:
+    id: "Flatlist"
 - tapOn:
     id: "Flatlist"
 - tapOn:
