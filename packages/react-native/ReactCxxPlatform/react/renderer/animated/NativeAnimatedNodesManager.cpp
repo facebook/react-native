@@ -299,30 +299,30 @@ void NativeAnimatedNodesManager::startAnimatingNode(
   if (auto iter = activeAnimations_.find(animationId);
       iter != activeAnimations_.end()) {
     // reset animation config
-    auto animation = iter->second;
+    auto& animation = iter->second;
     animation->updateConfig(config);
   } else if (animatedNodes_.contains(animatedNodeTag)) {
     auto type = config["type"].asString();
     auto typeEnum = AnimationDriver::getDriverTypeByName(type);
-    std::shared_ptr<AnimationDriver> animation = nullptr;
+    std::unique_ptr<AnimationDriver> animation = nullptr;
     if (typeEnum) {
       switch (typeEnum.value()) {
         case AnimationDriverType::Frames: {
-          animation = std::make_shared<FrameAnimationDriver>(
+          animation = std::make_unique<FrameAnimationDriver>(
               animationId, animatedNodeTag, endCallback, config, this);
         } break;
         case AnimationDriverType::Spring: {
-          animation = std::make_shared<SpringAnimationDriver>(
+          animation = std::make_unique<SpringAnimationDriver>(
               animationId, animatedNodeTag, endCallback, config, this);
         } break;
         case AnimationDriverType::Decay: {
-          animation = std::make_shared<DecayAnimationDriver>(
+          animation = std::make_unique<DecayAnimationDriver>(
               animationId, animatedNodeTag, endCallback, config, this);
         } break;
       }
       if (animation) {
-        activeAnimations_.insert({animationId, animation});
         animation->startAnimation();
+        activeAnimations_.insert({animationId, std::move(animation)});
       }
     } else {
       LOG(ERROR) << "Unknown AnimationDriver type " << type;
