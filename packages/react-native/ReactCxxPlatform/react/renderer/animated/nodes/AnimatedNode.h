@@ -14,7 +14,6 @@
 #include <folly/dynamic.h>
 #include <react/debug/flags.h>
 #include <react/renderer/core/ReactPrimitives.h>
-#include <memory>
 
 namespace facebook::react {
 
@@ -44,7 +43,7 @@ class AnimatedNode {
       folly::dynamic config,
       // TODO: T190028913 maybe pass in strongly typed data when constructing
       // AnimatedNode
-      const std::shared_ptr<NativeAnimatedNodesManager>& manager,
+      NativeAnimatedNodesManager& manager,
       AnimatedNodeType type);
 
   // Detach Node
@@ -99,7 +98,7 @@ class AnimatedNode {
  protected:
   AnimatedNode* getChildNode(Tag tag);
   Tag tag_{0};
-  std::weak_ptr<NativeAnimatedNodesManager> manager_;
+  NativeAnimatedNodesManager* manager_;
   AnimatedNodeType type_;
   std::unordered_set<Tag> children_{};
 

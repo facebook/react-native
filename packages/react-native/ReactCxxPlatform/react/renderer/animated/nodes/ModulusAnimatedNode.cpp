@@ -18,17 +18,15 @@ namespace facebook::react {
 ModulusAnimatedNode::ModulusAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : ValueAnimatedNode(tag, config, manager),
       inputNodeTag_(static_cast<Tag>(getConfig()["input"].asInt())),
       modulus_(getConfig()["modulus"].asDouble()) {}
 
 void ModulusAnimatedNode::update() {
-  if (const auto manager = manager_.lock()) {
-    if (const auto node =
-            manager->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_)) {
-      setRawValue(std::fmod(node->value(), modulus_));
-    }
+  if (const auto node =
+          manager_->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_)) {
+    setRawValue(std::fmod(node->value(), modulus_));
   }
 }
 
