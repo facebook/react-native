@@ -12,8 +12,6 @@
 
 namespace facebook::react {
 
-class UIManagerBinding;
-
 class UIManagerNativeAnimatedDelegateImpl
     : public UIManagerNativeAnimatedDelegate {
  public:
@@ -25,6 +23,7 @@ class UIManagerNativeAnimatedDelegateImpl
  private:
   std::weak_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
 };
+
 class AnimatedMountingOverrideDelegate;
 
 class NativeAnimatedNodesManagerProvider {
@@ -50,7 +49,6 @@ class NativeAnimatedNodesManagerProvider {
 
  private:
   std::shared_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
-  std::weak_ptr<UIManagerBinding> uiManagerBinding_;
 
   std::shared_ptr<EventEmitterListenerContainer> eventEmitterListenerContainer_;
   std::shared_ptr<EventEmitterListener> eventEmitterListener_;

@@ -9,16 +9,17 @@
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
 
 AnimatedMountingOverrideDelegate::AnimatedMountingOverrideDelegate(
     std::function<folly::dynamic(Tag)> getAnimatedManagedProps,
-    std::weak_ptr<UIManagerBinding> uiManagerBinding)
+    const Scheduler& scheduler)
     : MountingOverrideDelegate(),
       getAnimatedManagedProps_(std::move(getAnimatedManagedProps)),
-      uiManagerBinding_(std::move(uiManagerBinding)){};
+      scheduler_(&scheduler){};
 
 bool AnimatedMountingOverrideDelegate::shouldOverridePullTransaction() const {
   return getAnimatedManagedProps_ != nullptr;
@@ -63,27 +64,22 @@ AnimatedMountingOverrideDelegate::pullTransaction(
     if (modifiedProps.empty()) {
       filteredMutations.emplace_back(mutation);
     } else {
-      if (auto uiManagerBinding = uiManagerBinding_.lock()) {
-        auto* scheduler = static_cast<Scheduler*>(
-            uiManagerBinding->getUIManager().getDelegate());
-        react_native_assert(scheduler);
-        if (const auto* componentDescriptor =
-                scheduler
-                    ->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
-                        mutation.newChildShadowView.componentHandle)) {
-          PropsParserContext propsParserContext{
-              mutation.newChildShadowView.surfaceId,
-              *scheduler->getContextContainer()};
-          auto modifiedNewChildShadowView = mutation.newChildShadowView;
-          modifiedNewChildShadowView.props = componentDescriptor->cloneProps(
-              propsParserContext,
-              mutation.newChildShadowView.props,
-              RawProps(std::move(modifiedProps)));
-          filteredMutations.emplace_back(ShadowViewMutation::UpdateMutation(
-              mutation.oldChildShadowView,
-              std::move(modifiedNewChildShadowView),
-              mutation.parentTag));
-        }
+      if (const auto* componentDescriptor =
+              scheduler_
+                  ->findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+                      mutation.newChildShadowView.componentHandle)) {
+        PropsParserContext propsParserContext{
+            mutation.newChildShadowView.surfaceId,
+            *scheduler_->getContextContainer()};
+        auto modifiedNewChildShadowView = mutation.newChildShadowView;
+        modifiedNewChildShadowView.props = componentDescriptor->cloneProps(
+            propsParserContext,
+            mutation.newChildShadowView.props,
+            RawProps(std::move(modifiedProps)));
+        filteredMutations.emplace_back(ShadowViewMutation::UpdateMutation(
+            mutation.oldChildShadowView,
+            std::move(modifiedNewChildShadowView),
+            mutation.parentTag));
       }
     }
   }

@@ -11,19 +11,18 @@
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/scheduler/Scheduler.h>
 #include <functional>
 #include <optional>
 
 namespace facebook::react {
 
-class UIManagerBinding;
+class Scheduler;
 
 class AnimatedMountingOverrideDelegate : public MountingOverrideDelegate {
  public:
   AnimatedMountingOverrideDelegate(
       std::function<folly::dynamic(Tag)> getAnimatedManagedProps,
-      std::weak_ptr<UIManagerBinding> uiManagerBinding);
+      const Scheduler& scheduler);
 
   bool shouldOverridePullTransaction() const override;
 
@@ -36,7 +35,7 @@ class AnimatedMountingOverrideDelegate : public MountingOverrideDelegate {
  private:
   std::function<folly::dynamic(Tag)> getAnimatedManagedProps_;
 
-  std::weak_ptr<UIManagerBinding> uiManagerBinding_;
+  const Scheduler* scheduler_;
 };
 
 } // namespace facebook::react
