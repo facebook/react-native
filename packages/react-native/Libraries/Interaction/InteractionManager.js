@@ -15,7 +15,6 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
-const infoLog = require('../Utilities/infoLog').default;
 const TaskQueue = require('./TaskQueue').default;
 const invariant = require('invariant');
 
@@ -74,7 +73,7 @@ const InteractionManagerImpl = {
    * Notify manager that an interaction has started.
    */
   createInteractionHandle(): Handle {
-    DEBUG && infoLog('InteractionManager: create interaction handle');
+    DEBUG && console.log('InteractionManager: create interaction handle');
     _scheduleUpdate();
     const handle = ++_inc;
     _addInteractionSet.add(handle);
@@ -85,7 +84,7 @@ const InteractionManagerImpl = {
    * Notify manager that an interaction has completed.
    */
   clearInteractionHandle(handle: Handle) {
-    DEBUG && infoLog('InteractionManager: clear interaction handle');
+    DEBUG && console.log('InteractionManager: clear interaction handle');
     invariant(!!handle, 'InteractionManager: Must provide a handle to clear.');
     _scheduleUpdate();
     _addInteractionSet.delete(handle);

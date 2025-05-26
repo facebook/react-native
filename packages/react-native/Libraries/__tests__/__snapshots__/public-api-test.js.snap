@@ -8766,12 +8766,6 @@ declare export default typeof dismissKeyboard;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/infoLog.js 1`] = `
-"declare function infoLog(...args: Array<mixed>): void;
-declare export default typeof infoLog;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Utilities/logError.js 1`] = `
 "declare const logError: (...args: $ReadOnlyArray<mixed>) => void;
 declare export default typeof logError;
