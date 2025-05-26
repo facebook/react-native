@@ -56,6 +56,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-debug")
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 
-  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 end

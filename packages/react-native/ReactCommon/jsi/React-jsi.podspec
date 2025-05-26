@@ -42,11 +42,7 @@ Pod::Spec.new do |s|
                       "jsi/jsilib-windows.cpp",
                       "**/test/*"
                      ]
-  if js_engine == :hermes
-    # JSI is a part of hermes-engine. Including them also in react-native will violate the One Definition Rulle.
-    files_to_exclude += [ "jsi/jsi.cpp" ]
-    s.dependency "hermes-engine"
-  end
+
   s.exclude_files = files_to_exclude
 
   add_rn_third_party_dependencies(s)

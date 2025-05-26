@@ -51,7 +51,6 @@ Pod::Spec.new do |s|
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/bridging", :additional_framework_paths => ["react/nativemodule/bridging"])
 
-  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 
   s.script_phases = [
