@@ -14,7 +14,7 @@
 namespace facebook::react {
 
 AnimatedMountingOverrideDelegate::AnimatedMountingOverrideDelegate(
-    std::function<std::optional<folly::dynamic>(Tag)> getAnimatedManagedProps,
+    std::function<folly::dynamic(Tag)> getAnimatedManagedProps,
     std::weak_ptr<UIManagerBinding> uiManagerBinding)
     : MountingOverrideDelegate(),
       getAnimatedManagedProps_(std::move(getAnimatedManagedProps)),
@@ -39,8 +39,9 @@ AnimatedMountingOverrideDelegate::pullTransaction(
   for (const auto& mutation : mutations) {
     if (mutation.type == ShadowViewMutation::Update) {
       const auto tag = mutation.newChildShadowView.tag;
-      if (auto props = getAnimatedManagedProps_(tag)) {
-        animatedManagedProps.insert({tag, std::move(*props)});
+      auto props = getAnimatedManagedProps_(tag);
+      if (!props.isNull()) {
+        animatedManagedProps.insert({tag, std::move(props)});
       }
     }
   }

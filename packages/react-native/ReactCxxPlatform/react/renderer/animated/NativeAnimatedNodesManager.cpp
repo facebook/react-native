@@ -640,8 +640,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
   return commitProps();
 }
 
-std::optional<folly::dynamic> NativeAnimatedNodesManager::managedProps(
-    Tag tag) noexcept {
+folly::dynamic NativeAnimatedNodesManager::managedProps(Tag tag) noexcept {
   std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
   const auto iter = connectedAnimatedNodes_.find(tag);
   if (iter != connectedAnimatedNodes_.end()) {
@@ -650,7 +649,7 @@ std::optional<folly::dynamic> NativeAnimatedNodesManager::managedProps(
     }
   }
 
-  return {};
+  return nullptr;
 }
 
 bool NativeAnimatedNodesManager::isOnRenderThread() const noexcept {
