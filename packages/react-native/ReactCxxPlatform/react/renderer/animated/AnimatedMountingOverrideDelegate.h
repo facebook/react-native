@@ -22,7 +22,7 @@ class UIManagerBinding;
 class AnimatedMountingOverrideDelegate : public MountingOverrideDelegate {
  public:
   AnimatedMountingOverrideDelegate(
-      std::function<std::optional<folly::dynamic>(Tag)> getAnimatedManagedProps,
+      std::function<folly::dynamic(Tag)> getAnimatedManagedProps,
       std::weak_ptr<UIManagerBinding> uiManagerBinding);
 
   bool shouldOverridePullTransaction() const override;
@@ -34,7 +34,7 @@ class AnimatedMountingOverrideDelegate : public MountingOverrideDelegate {
       ShadowViewMutationList mutations) const override;
 
  private:
-  std::function<std::optional<folly::dynamic>(Tag)> getAnimatedManagedProps_;
+  std::function<folly::dynamic(Tag)> getAnimatedManagedProps_;
 
   std::weak_ptr<UIManagerBinding> uiManagerBinding_;
 };

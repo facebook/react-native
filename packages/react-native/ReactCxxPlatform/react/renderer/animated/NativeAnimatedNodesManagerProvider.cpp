@@ -100,12 +100,12 @@ NativeAnimatedNodesManagerProvider::getOrCreate(jsi::Runtime& runtime) {
               [nativeAnimatedNodesManager =
                    std::weak_ptr<NativeAnimatedNodesManager>(
                        nativeAnimatedNodesManager_)](
-                  Tag tag) -> std::optional<folly::dynamic> {
+                  Tag tag) -> folly::dynamic {
                 if (auto nativeAnimatedNodesManagerStrong =
                         nativeAnimatedNodesManager.lock()) {
                   return nativeAnimatedNodesManagerStrong->managedProps(tag);
                 }
-                return std::nullopt;
+                return nullptr;
               },
               uiManagerBinding_);
 
