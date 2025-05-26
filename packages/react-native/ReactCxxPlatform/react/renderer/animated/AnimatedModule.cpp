@@ -79,20 +79,17 @@ void AnimatedModule::getValue(
 void AnimatedModule::startListeningToAnimatedNodeValue(
     jsi::Runtime& /*rt*/,
     Tag tag) {
-  addOperation([tag, weakThis = weak_from_this()](
-                   NativeAnimatedNodesManager& nodesManager) {
+  addOperation([tag, this](NativeAnimatedNodesManager& nodesManager) {
     nodesManager.startListeningToAnimatedNodeValue(
-        tag, [weakThis, tag](double value) {
-          if (auto strongThis = weakThis.lock()) {
-            strongThis->emitDeviceEvent(
-                "onAnimatedValueUpdate",
-                [tag, value](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
-                  auto arg = jsi::Object(rt);
-                  arg.setProperty(rt, "tag", jsi::Value(tag));
-                  arg.setProperty(rt, "value", jsi::Value(value));
-                  args.emplace_back(rt, arg);
-                });
-          }
+        tag, [this, tag](double value) {
+          emitDeviceEvent(
+              "onAnimatedValueUpdate",
+              [tag, value](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+                auto arg = jsi::Object(rt);
+                arg.setProperty(rt, "tag", jsi::Value(tag));
+                arg.setProperty(rt, "value", jsi::Value(value));
+                args.emplace_back(rt, arg);
+              });
         });
   });
 }
