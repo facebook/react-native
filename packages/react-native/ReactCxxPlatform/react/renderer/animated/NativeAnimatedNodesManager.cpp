@@ -253,28 +253,6 @@ void NativeAnimatedNodesManager::stopAnimationsForNode(Tag nodeTag) {
   }
 }
 
-void NativeAnimatedNodesManager::setAnimatedNodeOffset(
-    Tag /*tag*/,
-    double /*offset*/) noexcept {
-  LOG(WARNING) << "SetAnimatedNodeOffset is unimplemented";
-}
-
-void NativeAnimatedNodesManager::flattenAnimatedNodeOffset(
-    Tag /*tag*/) noexcept {
-  LOG(WARNING) << "FlattenAnimatedNodeOffset is unimplemented";
-}
-
-void NativeAnimatedNodesManager::extractAnimatedNodeOffset(
-    Tag /*tag*/) noexcept {
-  LOG(WARNING) << "ExtractAnimatedNodeOffset is unimplemented";
-}
-
-void NativeAnimatedNodesManager::updateAnimatedNodeConfig(
-    Tag /*tag*/,
-    const folly::dynamic& /*config*/) noexcept {
-  LOG(WARNING) << "UpdateAnimatedNodeConfig is unimplemented";
-}
-
 // drivers
 
 void NativeAnimatedNodesManager::startAnimatingNode(
