@@ -24,6 +24,7 @@ const numberOfMaxWorkers = argv.maxWorkers || 1;
 let exitCode;
 
 const JEST_BINARY = argv.jestBinary || './node_modules/.bin/jest';
+const FLOW_BINARY = argv.flowBinary;
 const YARN_BINARY = argv.yarnBinary || 'yarn';
 
 function describe(message) {
@@ -55,7 +56,11 @@ try {
   }
 
   describe('Test: Flow check');
-  if (exec(`${YARN_BINARY} run flow-check`).code) {
+  const flowCommand =
+    FLOW_BINARY == null
+      ? `${YARN_BINARY} run flow-check`
+      : `${FLOW_BINARY} check`;
+  if (exec(flowCommand).code) {
     echo('Failed to run flow.');
     exitCode = 1;
     throw Error(exitCode);
@@ -103,7 +108,7 @@ try {
   }
 
   describe('Test: TypeScript tests');
-  if (exec(`${YARN_BINARY} run test-typescript-offline`).code) {
+  if (exec(`${YARN_BINARY} run test-typescript`).code) {
     echo('Failed to run TypeScript tests.');
     exitCode = 1;
     throw Error(exitCode);

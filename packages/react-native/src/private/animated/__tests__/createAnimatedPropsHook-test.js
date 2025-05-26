@@ -6,68 +6,15 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type {ReactNativeFeatureFlagsJsOnlyOverrides} from '../../featureflags/ReactNativeFeatureFlags';
-
 import {create, update} from '../../../../jest/renderer';
+import {AnimatedEvent} from '../../../../Libraries/Animated/AnimatedEvent';
+import createAnimatedPropsHook from '../createAnimatedPropsHook';
 import {useLayoutEffect} from 'react';
 
 describe('useAnimatedProps', () => {
-  function importModules(overrides: ReactNativeFeatureFlagsJsOnlyOverrides) {
-    const ReactNativeFeatureFlags = require('../../featureflags/ReactNativeFeatureFlags');
-
-    // Make sure to setup overrides before importing any modules.
-    ReactNativeFeatureFlags.override(overrides);
-
-    return {
-      // $FlowIgnore[unsafe-getters-setters]
-      get AnimatedEvent() {
-        return require('../../../../Libraries/Animated/AnimatedEvent')
-          .AnimatedEvent;
-      },
-      // $FlowIgnore[unsafe-getters-setters]
-      get createAnimatedPropsHook() {
-        return require('../createAnimatedPropsHook').default;
-      },
-    };
-  }
-
-  beforeEach(() => {
-    jest.resetModules();
-  });
-
-  it('returns a new ref callback when `props` changes', async () => {
-    const {createAnimatedPropsHook} = importModules({
-      avoidAnimatedRefInvalidation: () => false,
-    });
-    const useAnimatedProps = createAnimatedPropsHook(null);
-
-    const refs = [];
-    function Sentinel(props: {[string]: mixed}): React.Node {
-      const [, ref] = useAnimatedProps<{[string]: mixed}, mixed>(props);
-      useLayoutEffect(() => {
-        refs.push(ref);
-      }, [ref]);
-      return null;
-    }
-
-    const root = await create(<Sentinel foo={1} />);
-    expect(refs.length).toBe(1);
-    expect(refs[0]).toBeInstanceOf(Function);
-
-    await update(root, <Sentinel foo={2} />);
-    expect(refs.length).toBe(2);
-    expect(refs[1]).toBeInstanceOf(Function);
-
-    expect(refs[0]).not.toBe(refs[1]);
-  });
-
   it('returns the same ref callback when `props` changes', async () => {
-    const {createAnimatedPropsHook} = importModules({
-      avoidAnimatedRefInvalidation: () => true,
-    });
     const useAnimatedProps = createAnimatedPropsHook(null);
 
     const refs = [];
@@ -88,9 +35,6 @@ describe('useAnimatedProps', () => {
   });
 
   it('returns the same ref callback when `AnimatedEvent` is the same', async () => {
-    const {AnimatedEvent, createAnimatedPropsHook} = importModules({
-      avoidAnimatedRefInvalidation: () => true,
-    });
     const useAnimatedProps = createAnimatedPropsHook(null);
 
     const refs = [];
@@ -113,9 +57,6 @@ describe('useAnimatedProps', () => {
   });
 
   it('returns a new ref callback when `AnimatedEvent` changes', async () => {
-    const {AnimatedEvent, createAnimatedPropsHook} = importModules({
-      avoidAnimatedRefInvalidation: () => true,
-    });
     const useAnimatedProps = createAnimatedPropsHook(null);
 
     const refs = [];

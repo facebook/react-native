@@ -25,7 +25,6 @@
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
@@ -41,6 +40,7 @@
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/FollyConvert.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "ObjCTimerRegistry.h"
@@ -68,6 +68,35 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
   sRuntimeDiagnosticFlags = [flags copy];
 }
+
+@interface RCTBridgelessDisplayLinkModuleHolder : NSObject <RCTDisplayLinkModuleHolder>
+- (instancetype)initWithModule:(id<RCTBridgeModule>)module;
+@end
+
+@implementation RCTBridgelessDisplayLinkModuleHolder {
+  id<RCTBridgeModule> _module;
+}
+- (instancetype)initWithModule:(id<RCTBridgeModule>)module
+{
+  _module = module;
+  return self;
+}
+
+- (id<RCTBridgeModule>)instance
+{
+  return _module;
+}
+
+- (Class)moduleClass
+{
+  return [_module class];
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return _module.methodQueue;
+}
+@end
 
 @interface RCTInstance () <RCTTurboModuleManagerDelegate>
 @end
@@ -131,12 +160,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
     _launchOptions = launchOptions;
 
-    if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(_handleMemoryWarning)
-                                                   name:UIApplicationDidReceiveMemoryWarningNotification
-                                                 object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_handleMemoryWarning)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
 
     [self _start];
   }
@@ -145,11 +172,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)dealloc
 {
-  if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIApplicationDidReceiveMemoryWarningNotification
-                                                  object:nil];
-  }
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:UIApplicationDidReceiveMemoryWarningNotification
+                                                object:nil];
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
@@ -322,24 +347,29 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
      * will wait until this module init finishes, before executing the js bundle.
      */
     NSArray<NSString *> *modulesRequiringMainQueueSetup = [_delegate unstableModulesRequiringMainQueueSetup];
-    if ([modulesRequiringMainQueueSetup count] > 0) {
-      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-      _waitUntilModuleSetupComplete = ^{
-        if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
-          RCTLogError(
-              @"Timed out waiting for native modules to be setup on the main queue: %@",
-              modulesRequiringMainQueueSetup);
-        };
-      };
 
-      // TODO(T218039767): Integrate perf logging into main queue module init
-      RCTExecuteOnMainQueue(^{
-        for (NSString *moduleName in modulesRequiringMainQueueSetup) {
-          [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
-        }
-        dispatch_semaphore_signal(semaphore);
-      });
-    }
+    std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
+    std::shared_ptr<std::condition_variable> cv = std::make_shared<std::condition_variable>();
+    std::shared_ptr<bool> isReady = std::make_shared<bool>(false);
+
+    _waitUntilModuleSetupComplete = ^{
+      std::unique_lock<std::mutex> lock(*mutex);
+      cv->wait(lock, [isReady] { return *isReady; });
+    };
+
+    // TODO(T218039767): Integrate perf logging into main queue module init
+    RCTExecuteOnMainQueue(^{
+      for (NSString *moduleName in modulesRequiringMainQueueSetup) {
+        [self->_bridgeModuleDecorator.moduleRegistry moduleForName:[moduleName UTF8String]];
+      }
+
+      RCTScreenSize();
+      RCTScreenScale();
+
+      std::lock_guard<std::mutex> lock(*mutex);
+      *isReady = true;
+      cv->notify_all();
+    });
   }
 
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
@@ -397,13 +427,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
 
     // Set up Display Link
-    RCTModuleData *timingModuleData = [[RCTModuleData alloc] initWithModuleInstance:timing
-                                                                             bridge:nil
-                                                                     moduleRegistry:nil
-                                                            viewRegistry_DEPRECATED:nil
-                                                                      bundleManager:nil
-                                                                  callableJSModules:nil];
-    [strongSelf->_displayLink registerModuleForFrameUpdates:timing withModuleData:timingModuleData];
+    id<RCTDisplayLinkModuleHolder> moduleHolder = [[RCTBridgelessDisplayLinkModuleHolder alloc] initWithModule:timing];
+    [strongSelf->_displayLink registerModuleForFrameUpdates:timing withModuleHolder:moduleHolder];
     [strongSelf->_displayLink addToRunLoop:[NSRunLoop currentRunLoop]];
 
     // Attempt to load bundle synchronously, fallback to asynchronously.
@@ -502,7 +527,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
         if (error) {
           [strongSelf handleBundleLoadingError:error];
-          [strongSelf invalidate];
           return;
         }
         // DevSettings module is needed by _loadScriptFromSource's callback so prior initialization is required
@@ -512,14 +536,19 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
         // Set up hot module reloading in Dev only.
         [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
         [devSettings setupHMRClientWithBundleURL:sourceURL];
-
+#if RCT_DEV
         [strongSelf _logOldArchitectureWarnings];
+#endif
       }];
 }
 
 - (void)_logOldArchitectureWarnings
 {
-  NSMutableArray<NSString *> *modulesInOldArchMode = getModulesLoadedWithOldArch();
+  if (!RCTAreLegacyLogsEnabled()) {
+    return;
+  }
+
+  NSArray<NSString *> *modulesInOldArchMode = [getModulesLoadedWithOldArch() copy];
   if (modulesInOldArchMode.count > 0) {
     NSMutableString *moduleList = [NSMutableString new];
     for (NSString *moduleName in modulesInOldArchMode) {
@@ -528,7 +557,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     RCTLogWarn(
         @"The following modules have been registered using a RCT_EXPORT_MODULE. That's a Legacy Architecture API. Please migrate to the new approach as described in the https://reactnative.dev/docs/next/turbo-native-modules-introduction#register-the-native-module-in-your-app website or open a PR in the library repository:\n%@",
         moduleList);
-    [modulesInOldArchMode removeAllObjects];
   }
 }
 
@@ -600,7 +628,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                             name:errorData[@"name"]
                   componentStack:errorData[@"componentStack"]
                      exceptionId:error.id
-                         isFatal:errorData[@"isFatal"]
+                         isFatal:[errorData[@"isFatal"] boolValue]
                        extraData:errorData[@"extraData"]]) {
     JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
     id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];

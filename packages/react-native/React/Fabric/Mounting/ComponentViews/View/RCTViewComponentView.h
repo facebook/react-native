@@ -82,6 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)accessibilityLabelForCoopting;
 
 /*
+ * This View has no label and will look to coopt something below it
+ */
+- (BOOL)wantsToCooptLabel;
+
+/*
  * This is a fragment of temporary workaround that we need only temporary and will get rid of soon.
  */
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN;

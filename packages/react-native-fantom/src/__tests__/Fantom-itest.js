@@ -6,16 +6,17 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {Root} from '@react-native/fantom';
+import type {HostInstance} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
-import {Modal, ScrollView, Text, TextInput, View} from 'react-native';
+import {createRef} from 'react';
+import {LogBox, Modal, ScrollView, Text, TextInput, View} from 'react-native';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
@@ -78,16 +79,6 @@ describe('Fantom', () => {
       expect(task).toHaveBeenCalledTimes(1);
     });
 
-    // TODO: fix error handling and make this pass
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('should re-throw errors from the task synchronously', () => {
-      expect(() => {
-        Fantom.runTask(() => {
-          throw new Error('test error');
-        });
-      }).toThrow('test error');
-    });
-
     it('should exhaust the microtask queue synchronously', () => {
       const lastMicrotask = jest.fn();
 
@@ -104,18 +95,6 @@ describe('Fantom', () => {
       expect(lastMicrotask).toHaveBeenCalledTimes(1);
     });
 
-    // TODO: fix error handling and make this pass
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('should re-throw errors from microtasks synchronously', () => {
-      expect(() => {
-        Fantom.runTask(() => {
-          queueMicrotask(() => {
-            throw new Error('test error');
-          });
-        });
-      }).toThrow('test error');
-    });
-
     it('should run async tasks synchronously', () => {
       let completed = false;
 
@@ -127,42 +106,191 @@ describe('Fantom', () => {
       expect(completed).toBe(true);
     });
 
-    // TODO: when error handling is fixed, this should verify using `toThrow`
-    it('should throw when running a task inside another task', () => {
-      let threw = false;
-
-      Fantom.runTask(() => {
-        // TODO replace with expect(() => { ... }).toThrow() when error handling is fixed
-        try {
-          Fantom.runTask(() => {});
-        } catch {
-          threw = true;
-        }
+    describe('error handling', () => {
+      afterEach(() => {
+        Fantom.setLogBoxCheckEnabled(true);
+        LogBox.uninstall();
       });
-      expect(threw).toBe(true);
 
-      threw = false;
+      // TODO: T223804378 when error handling is fixed, this should verify using `toThrow`
+      it('should throw when running a task inside another task', () => {
+        let threw = false;
 
-      Fantom.runTask(() => {
-        queueMicrotask(() => {
+        Fantom.runTask(() => {
+          // TODO replace with expect(() => { ... }).toThrow() when error handling is fixed
           try {
             Fantom.runTask(() => {});
           } catch {
             threw = true;
           }
         });
+        expect(threw).toBe(true);
+
+        threw = false;
+
+        Fantom.runTask(() => {
+          queueMicrotask(() => {
+            try {
+              Fantom.runTask(() => {});
+            } catch {
+              threw = true;
+            }
+          });
+        });
+        expect(threw).toBe(true);
       });
-      expect(threw).toBe(true);
-    });
 
-    it('should error when any scheduled tasks remain after the test', () => {
-      Fantom.scheduleTask(() => {});
-      expect(() => NativeFantom.validateEmptyMessageQueue()).toThrow(
-        'Exception in HostFunction: MessageQueue is not empty',
-      );
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should re-throw errors from the task synchronously', () => {
+        expect(() => {
+          Fantom.runTask(() => {
+            throw new Error('test error');
+          });
+        }).toThrow('test error');
+      });
 
-      // Flushing queue to avoid this test failing
-      Fantom.runWorkLoop();
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should re-throw errors from microtasks synchronously', () => {
+        expect(() => {
+          Fantom.runTask(() => {
+            queueMicrotask(() => {
+              throw new Error('test error');
+            });
+          });
+        }).toThrow('test error');
+      });
+
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should not run subsequent tasks after an error in a task', () => {
+        Fantom.scheduleTask(() => {
+          throw new Error('test error');
+        });
+
+        const subsequentTask = jest.fn();
+        Fantom.scheduleTask(subsequentTask);
+
+        try {
+          Fantom.runWorkLoop();
+        } catch {}
+
+        expect(subsequentTask).not.toHaveBeenCalled();
+      });
+
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should not run subsequent tasks after an error in a microtask', () => {
+        Fantom.scheduleTask(() => {
+          queueMicrotask(() => {
+            throw new Error('test error');
+          });
+        });
+
+        const subsequentTask = jest.fn();
+        Fantom.scheduleTask(subsequentTask);
+
+        try {
+          Fantom.runWorkLoop();
+        } catch {}
+
+        expect(subsequentTask).not.toHaveBeenCalled();
+      });
+
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should not run subsequent microtasks after an error in a task', () => {
+        const subsequentMicrotask = jest.fn();
+
+        Fantom.runTask(() => {
+          queueMicrotask(subsequentMicrotask);
+
+          throw new Error('test error');
+        });
+
+        try {
+          Fantom.runWorkLoop();
+        } catch {}
+
+        expect(subsequentMicrotask).not.toHaveBeenCalled();
+      });
+
+      // TODO: fix error handling and make this pass
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('should not run subsequent microtasks after an error in a microtask', () => {
+        const subsequentMicrotask = jest.fn();
+
+        Fantom.runTask(() => {
+          queueMicrotask(() => {
+            throw new Error('test error');
+          });
+          queueMicrotask(subsequentMicrotask);
+        });
+
+        try {
+          Fantom.runWorkLoop();
+        } catch {}
+
+        expect(subsequentMicrotask).not.toHaveBeenCalled();
+      });
+
+      it('should error when any scheduled tasks remain after the test', () => {
+        Fantom.scheduleTask(() => {});
+        expect(() => NativeFantom.validateEmptyMessageQueue()).toThrow(
+          'Exception in HostFunction: MessageQueue is not empty',
+        );
+
+        // Flushing queue to avoid this test failing
+        Fantom.runWorkLoop();
+      });
+
+      describe('when LogBox is installed', () => {
+        let originalConsoleError;
+
+        beforeEach(() => {
+          LogBox.install();
+
+          originalConsoleError = console.error;
+
+          // $FlowExpectedError[cannot-write]
+          console.error = jest.fn();
+        });
+
+        afterEach(() => {
+          LogBox.uninstall();
+
+          // $FlowExpectedError[cannot-write]
+          console.error = originalConsoleError;
+        });
+
+        it('should throw an error when running a task', () => {
+          const expectedErrorMessage =
+            'Cannot run work loop while LogBox is installed, as LogBox intercepts errors thrown in tests.' +
+            ' If you are installing LogBox unintentionally using `InitializeCore`, replace it with `@react-native/fantom/src/setUpDefaultReactNativeEnvironment` to avoid this problem.';
+
+          expect(() => {
+            Fantom.runTask(() => {});
+          }).toThrow(expectedErrorMessage);
+
+          expect(console.error).toHaveBeenCalledTimes(1);
+          expect(console.error).toHaveBeenCalledWith(expectedErrorMessage);
+
+          // We need to do this cleanup or Fantom will fail the test for us.
+          LogBox.uninstall();
+          Fantom.runWorkLoop();
+        });
+
+        it('should not throw an error if setLogBoxCheckEnabled is set to false', () => {
+          Fantom.setLogBoxCheckEnabled(false);
+
+          expect(() => {
+            Fantom.runTask(() => {});
+          }).not.toThrow();
+
+          expect(console.error).not.toHaveBeenCalled();
+        });
+      });
     });
   });
 
@@ -410,7 +538,7 @@ describe('Fantom', () => {
             },
           ],
           props: {
-            foregroundColor: 'rgba(255, 255, 255, 127)',
+            foregroundColor: 'rgba(0, 0, 0, 0)',
           },
           type: 'Paragraph',
         });
@@ -421,22 +549,16 @@ describe('Fantom', () => {
   describe('runOnUIThread + enqueueNativeEvent', () => {
     it('sends event without payload', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
 
       let focusEvent = jest.fn();
 
+      const ref = createRef<HostInstance>();
+
       Fantom.runTask(() => {
-        root.render(
-          <TextInput
-            onFocus={focusEvent}
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<TextInput onFocus={focusEvent} ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
@@ -454,7 +576,7 @@ describe('Fantom', () => {
 
     it('sends event with payload', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = createRef<HostInstance>();
       const onChange = jest.fn();
 
       Fantom.runTask(() => {
@@ -463,14 +585,12 @@ describe('Fantom', () => {
             onChange={event => {
               onChange(event.nativeEvent);
             }}
-            ref={node => {
-              maybeNode = node;
-            }}
+            ref={ref}
           />,
         );
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       Fantom.runOnUIThread(() => {
         Fantom.enqueueNativeEvent(element, 'change', {
@@ -487,7 +607,7 @@ describe('Fantom', () => {
 
     it('it batches events with isUnique option', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = createRef<HostInstance>();
       const onScroll = jest.fn();
 
       Fantom.runTask(() => {
@@ -496,22 +616,27 @@ describe('Fantom', () => {
             onScroll={event => {
               onScroll(event.nativeEvent);
             }}
-            ref={node => {
-              maybeNode = node;
-            }}
+            ref={ref}
           />,
         );
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       Fantom.runOnUIThread(() => {
-        Fantom.enqueueNativeEvent(element, 'scroll', {
-          contentOffset: {
-            x: 0,
-            y: 1,
+        Fantom.enqueueNativeEvent(
+          element,
+          'scroll',
+          {
+            contentOffset: {
+              x: 0,
+              y: 1,
+            },
           },
-        });
+          {
+            isUnique: true,
+          },
+        );
         Fantom.enqueueNativeEvent(
           element,
           'scroll',
@@ -541,22 +666,15 @@ describe('Fantom', () => {
   describe('dispatchNativeEvent', () => {
     it('flushes the event and runs the work loop', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = createRef<HostInstance>();
 
       let focusEvent = jest.fn();
 
       Fantom.runTask(() => {
-        root.render(
-          <TextInput
-            onFocus={focusEvent}
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<TextInput onFocus={focusEvent} ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
@@ -569,19 +687,13 @@ describe('Fantom', () => {
   describe('enqueueScrollEvent', () => {
     it('throws error if called on node that is not scroll view', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<View ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(() => {
         Fantom.runOnUIThread(() => {
@@ -597,8 +709,8 @@ describe('Fantom', () => {
 
     it('delivers onScroll event and affects position of elements on screen', () => {
       const root = Fantom.createRoot();
-      let maybeScrollViewNode;
-      let maybeNode;
+      const viewRef = createRef<HostInstance>();
+      const scrollViewRef = createRef<HostInstance>();
       const onScroll = jest.fn();
 
       Fantom.runTask(() => {
@@ -607,21 +719,14 @@ describe('Fantom', () => {
             onScroll={event => {
               onScroll(event.nativeEvent);
             }}
-            ref={node => {
-              maybeScrollViewNode = node;
-            }}>
-            <View
-              style={{width: 1, height: 2, top: 3}}
-              ref={node => {
-                maybeNode = node;
-              }}
-            />
+            ref={scrollViewRef}>
+            <View style={{width: 1, height: 2, top: 3}} ref={viewRef} />
           </ScrollView>,
         );
       });
 
       const scrollViewElement = ensureInstance(
-        maybeScrollViewNode,
+        scrollViewRef.current,
         ReactNativeElement,
       );
 
@@ -636,7 +741,7 @@ describe('Fantom', () => {
 
       expect(onScroll).toHaveBeenCalledTimes(1);
 
-      const viewElement = ensureInstance(maybeNode, ReactNativeElement);
+      const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
 
       let rect;
 
@@ -673,19 +778,13 @@ describe('Fantom', () => {
   describe('scrollTo', () => {
     it('throws error if called on node that is not scroll view', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<View ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(() => {
         Fantom.scrollTo(element, {
@@ -699,8 +798,8 @@ describe('Fantom', () => {
 
     it('delivers onScroll event and affects position of elements on screen', () => {
       const root = Fantom.createRoot();
-      let maybeScrollViewNode;
-      let maybeNode;
+      const scrollViewRef = createRef<HostInstance>();
+      const viewRef = createRef<HostInstance>();
       const onScroll = jest.fn();
 
       Fantom.runTask(() => {
@@ -709,32 +808,29 @@ describe('Fantom', () => {
             onScroll={event => {
               onScroll(event.nativeEvent);
             }}
-            ref={node => {
-              maybeScrollViewNode = node;
-            }}>
-            <View
-              style={{width: 1, height: 2, top: 3}}
-              ref={node => {
-                maybeNode = node;
-              }}
-            />
+            ref={scrollViewRef}>
+            <View style={{width: 1, height: 2, top: 3}} ref={viewRef} />
           </ScrollView>,
         );
       });
 
       const scrollViewElement = ensureInstance(
-        maybeScrollViewNode,
+        scrollViewRef.current,
         ReactNativeElement,
       );
+
+      expect(scrollViewElement.scrollTop).toBe(0);
 
       Fantom.scrollTo(scrollViewElement, {
         x: 0,
         y: 1,
       });
 
+      expect(scrollViewElement.scrollTop).toBe(1);
+
       expect(onScroll).toHaveBeenCalledTimes(1);
 
-      const viewElement = ensureInstance(maybeNode, ReactNativeElement);
+      const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
 
       let rect;
 
@@ -794,19 +890,13 @@ describe('Fantom', () => {
   describe('enqueueModalSizeUpdate', () => {
     it('throws error if called on node that is not <Modal />', () => {
       const root = Fantom.createRoot();
-      let maybeNode;
+      const ref = createRef<HostInstance>();
 
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={node => {
-              maybeNode = node;
-            }}
-          />,
-        );
+        root.render(<View ref={ref} />);
       });
 
-      const element = ensureInstance(maybeNode, ReactNativeElement);
+      const element = ensureInstance(ref.current, ReactNativeElement);
 
       expect(() => {
         Fantom.runOnUIThread(() => {
@@ -822,26 +912,21 @@ describe('Fantom', () => {
 
     it('change size of <Modal />', () => {
       const root = Fantom.createRoot();
-      let maybeModalNode;
-      let maybeViewNode;
+      const modalNodeRef = createRef<HostInstance>();
+      const viewNodeRef = createRef<HostInstance>();
 
       Fantom.runTask(() => {
         root.render(
-          <Modal
-            ref={(node: ?React.ElementRef<typeof Modal>) => {
-              maybeModalNode = node;
-            }}>
-            <View
-              style={{width: '50%', height: '25%'}}
-              ref={node => {
-                maybeViewNode = node;
-              }}
-            />
+          <Modal ref={modalNodeRef}>
+            <View style={{width: '50%', height: '25%'}} ref={viewNodeRef} />
           </Modal>,
         );
       });
 
-      const modalElement = ensureInstance(maybeModalNode, ReactNativeElement);
+      const modalElement = ensureInstance(
+        modalNodeRef.current,
+        ReactNativeElement,
+      );
 
       Fantom.runOnUIThread(() => {
         Fantom.enqueueModalSizeUpdate(modalElement, {
@@ -852,7 +937,10 @@ describe('Fantom', () => {
 
       Fantom.runWorkLoop();
 
-      const viewElement = ensureInstance(maybeViewNode, ReactNativeElement);
+      const viewElement = ensureInstance(
+        viewNodeRef.current,
+        ReactNativeElement,
+      );
 
       const boundingClientRect = viewElement.getBoundingClientRect();
       expect(boundingClientRect.height).toBe(25);

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -31,6 +31,8 @@ function URLComponent(props: Props) {
       <RNTesterText testID="URL-password">{`password: ${parsedUrl.password}`}</RNTesterText>
       <RNTesterText testID="URL-username">{`username: ${parsedUrl.username}`}</RNTesterText>
       <RNTesterText testID="URL-pathname">{`pathname: ${parsedUrl.pathname}`}</RNTesterText>
+      <RNTesterText testID="URL-protocol">{`protocol: ${parsedUrl.protocol}`}</RNTesterText>
+      <RNTesterText testID="URL-toString">{`toString: ${parsedUrl.toString()}`}</RNTesterText>
       <RNTesterText testID="URL-port">{`port: ${parsedUrl.port}`}</RNTesterText>
       <RNTesterText testID="URL-search">{`search: ${parsedUrl.search}`}</RNTesterText>
       <RNTesterText testID="URL-search-params">{`searchParams: ${parsedUrl.searchParams.toString()}`}</RNTesterText>

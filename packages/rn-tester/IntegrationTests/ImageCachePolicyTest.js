@@ -4,13 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
-import type {ImageURISource} from 'react-native/Libraries/Image/ImageSource';
+import type {ImageURISource} from 'react-native';
 
 import * as React from 'react';
 import {useEffect, useState} from 'react';
@@ -28,7 +28,7 @@ const {TestModule} = NativeModules;
  * image with the new one and make sure they are the same.
  */
 
-const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'];
+const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'] as const;
 
 function ImageCachePolicyTest(): React.Node {
   const [state, setState] = useState({

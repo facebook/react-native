@@ -16,11 +16,11 @@ namespace facebook::react {
 
 IntersectionObserver::IntersectionObserver(
     IntersectionObserverObserverId intersectionObserverId,
-    ShadowNode::Shared targetShadowNode,
+    ShadowNodeFamily::Shared targetShadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds)
     : intersectionObserverId_(intersectionObserverId),
-      targetShadowNode_(std::move(targetShadowNode)),
+      targetShadowNodeFamily_(std::move(targetShadowNodeFamily)),
       thresholds_(std::move(thresholds)),
       rootThresholds_(std::move(rootThresholds)) {}
 
@@ -104,7 +104,7 @@ static Float getHighestThresholdCrossed(
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservation(
     const RootShadowNode& rootShadowNode,
-    double time) {
+    HighResTimeStamp time) {
   const auto layoutableRootShadowNode =
       dynamic_cast<const LayoutableShadowNode*>(&rootShadowNode);
 
@@ -112,8 +112,7 @@ IntersectionObserver::updateIntersectionObservation(
       layoutableRootShadowNode != nullptr &&
       "RootShadowNode instances must always inherit from LayoutableShadowNode.");
 
-  auto targetAncestors =
-      targetShadowNode_->getFamily().getAncestors(rootShadowNode);
+  auto targetAncestors = targetShadowNodeFamily_->getAncestors(rootShadowNode);
 
   // Absolute coordinates of the root
   auto rootBoundingRect = getRootBoundingRect(*layoutableRootShadowNode);
@@ -170,7 +169,7 @@ IntersectionObserver::updateIntersectionObservation(
 
 std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservationForSurfaceUnmount(
-    double time) {
+    HighResTimeStamp time) {
   return setNotIntersectingState(Rect{}, Rect{}, Rect{}, time);
 }
 
@@ -181,7 +180,7 @@ IntersectionObserver::setIntersectingState(
     const Rect& intersectionRect,
     Float threshold,
     Float rootThreshold,
-    double time) {
+    HighResTimeStamp time) {
   auto newState =
       IntersectionObserverState::Intersecting(threshold, rootThreshold);
 
@@ -189,7 +188,7 @@ IntersectionObserver::setIntersectingState(
     state_ = newState;
     IntersectionObserverEntry entry{
         intersectionObserverId_,
-        targetShadowNode_,
+        targetShadowNodeFamily_,
         targetBoundingRect,
         rootBoundingRect,
         intersectionRect,
@@ -207,12 +206,12 @@ IntersectionObserver::setNotIntersectingState(
     const Rect& rootBoundingRect,
     const Rect& targetBoundingRect,
     const Rect& intersectionRect,
-    double time) {
+    HighResTimeStamp time) {
   if (state_ != IntersectionObserverState::NotIntersecting()) {
     state_ = IntersectionObserverState::NotIntersecting();
     IntersectionObserverEntry entry{
         intersectionObserverId_,
-        targetShadowNode_,
+        targetShadowNodeFamily_,
         targetBoundingRect,
         rootBoundingRect,
         intersectionRect,

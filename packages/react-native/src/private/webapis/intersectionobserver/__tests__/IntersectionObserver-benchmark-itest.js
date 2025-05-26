@@ -4,20 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags enableAccessToHostTreeInFabric:true enableIntersectionObserverEventLoopIntegration:*
  * @flow strict-local
  * @format
- * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type IntersectionObserverType from '../IntersectionObserver';
 import type {Root} from '@react-native/fantom';
+import type {HostInstance} from 'react-native';
+import type IntersectionObserverType from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {createRef} from 'react';
 import ScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
 import View from 'react-native/Libraries/Components/View/View';
 import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';
@@ -27,10 +28,10 @@ declare const IntersectionObserver: Class<IntersectionObserverType>;
 
 setUpIntersectionObserver();
 
-let maybeNode;
+const nodeRef = createRef<HostInstance>();
 let node: ReactNativeElement;
 
-let maybeScrollViewNode;
+const scrollViewRef = createRef<HostInstance>();
 let scrollViewNode: ReactNativeElement;
 let observer: IntersectionObserverType;
 const VIEWPORT_HEIGHT = 100;
@@ -106,17 +107,10 @@ Fantom.unstable_benchmark
       beforeEach: () => {
         mockCallback = jest.fn();
         Fantom.runTask(() => {
-          root.render(
-            <View
-              style={{width: 100, height: 10}}
-              ref={receivedNode => {
-                maybeNode = receivedNode;
-              }}
-            />,
-          );
+          root.render(<View style={{width: 100, height: 10}} ref={nodeRef} />);
           observer = new IntersectionObserver(mockCallback);
         });
-        node = ensureInstance(maybeNode, ReactNativeElement);
+        node = ensureInstance(nodeRef.current, ReactNativeElement);
       },
       afterEach: () => {
         expect(mockCallback).toHaveBeenCalledTimes(1);
@@ -137,10 +131,7 @@ Fantom.unstable_benchmark
       beforeEach: () => {
         Fantom.runTask(() => {
           root.render(
-            <ScrollView
-              ref={receivedNode => {
-                maybeScrollViewNode = receivedNode;
-              }}>
+            <ScrollView ref={scrollViewRef}>
               {renderElementAtYScrollPosition(
                 VIEWPORT_HEIGHT + 50,
                 <View style={{width: 100, height: 10}} />,
@@ -149,7 +140,7 @@ Fantom.unstable_benchmark
           );
         });
         scrollViewNode = ensureInstance(
-          maybeScrollViewNode,
+          scrollViewRef.current,
           ReactNativeElement,
         );
       },
@@ -167,10 +158,7 @@ Fantom.unstable_benchmark
       beforeEach: () => {
         Fantom.runTask(() => {
           root.render(
-            <ScrollView
-              ref={receivedNode => {
-                maybeScrollViewNode = receivedNode;
-              }}>
+            <ScrollView ref={scrollViewRef}>
               {renderElementAtYScrollPosition(
                 -5,
                 <View style={{width: 100, height: 10}} />,
@@ -179,7 +167,7 @@ Fantom.unstable_benchmark
           );
         });
         scrollViewNode = ensureInstance(
-          maybeScrollViewNode,
+          scrollViewRef.current,
           ReactNativeElement,
         );
       },
@@ -199,27 +187,19 @@ Fantom.unstable_benchmark
 
         Fantom.runTask(() => {
           root.render(
-            <ScrollView
-              ref={receivedNode => {
-                maybeScrollViewNode = receivedNode;
-              }}>
+            <ScrollView ref={scrollViewRef}>
               {renderElementAtYScrollPosition(
                 VIEWPORT_HEIGHT + 50,
-                <View
-                  ref={receivedNode => {
-                    maybeNode = receivedNode;
-                  }}
-                  style={{width: 100, height: 10}}
-                />,
+                <View ref={nodeRef} style={{width: 100, height: 10}} />,
               )}
             </ScrollView>,
           );
         });
         scrollViewNode = ensureInstance(
-          maybeScrollViewNode,
+          scrollViewRef.current,
           ReactNativeElement,
         );
-        node = ensureInstance(maybeNode, ReactNativeElement);
+        node = ensureInstance(nodeRef.current, ReactNativeElement);
         Fantom.runTask(() => {
           observer = new IntersectionObserver(mockCallback, {});
           observer.observe(node);
@@ -247,27 +227,19 @@ Fantom.unstable_benchmark
 
         Fantom.runTask(() => {
           root.render(
-            <ScrollView
-              ref={receivedNode => {
-                maybeScrollViewNode = receivedNode;
-              }}>
+            <ScrollView ref={scrollViewRef}>
               {renderElementAtYScrollPosition(
                 -5,
-                <View
-                  ref={receivedNode => {
-                    maybeNode = receivedNode;
-                  }}
-                  style={{width: 100, height: 10}}
-                />,
+                <View ref={nodeRef} style={{width: 100, height: 10}} />,
               )}
             </ScrollView>,
           );
         });
         scrollViewNode = ensureInstance(
-          maybeScrollViewNode,
+          scrollViewRef.current,
           ReactNativeElement,
         );
-        node = ensureInstance(maybeNode, ReactNativeElement);
+        node = ensureInstance(nodeRef.current, ReactNativeElement);
         Fantom.runTask(() => {
           observer = new IntersectionObserver(mockCallback, {threshold: 1});
           observer.observe(node);

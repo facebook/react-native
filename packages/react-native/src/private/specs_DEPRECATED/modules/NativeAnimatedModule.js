@@ -13,7 +13,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import shouldUseTurboAnimatedModule from '../../../../Libraries/Animated/shouldUseTurboAnimatedModule';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-type EndResult = {finished: boolean, value?: number, ...};
+type EndResult = {finished: boolean, value?: number, offset?: number, ...};
 type EndCallback = (result: EndResult) => void;
 type SaveValueCallback = (value: number) => void;
 

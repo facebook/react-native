@@ -4,16 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
 import type {Item} from '../../components/ListExampleShared';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type FlatList from 'react-native/Libraries/Lists/FlatList';
-import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {FlatList, ListRenderItemInfo} from 'react-native';
 
 import {
   FooterComponent,

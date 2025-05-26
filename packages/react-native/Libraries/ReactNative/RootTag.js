@@ -9,11 +9,11 @@
  */
 
 import * as React from 'react';
+import {createContext} from 'react';
 
 export opaque type RootTag = number;
 
-export const RootTagContext: React.Context<RootTag> =
-  React.createContext<RootTag>(0);
+export const RootTagContext: React.Context<RootTag> = createContext<RootTag>(0);
 
 if (__DEV__) {
   RootTagContext.displayName = 'RootTagContext';

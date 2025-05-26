@@ -36,7 +36,7 @@ public data class LengthPercentage(
         }
         ReadableType.String -> {
           val s = dynamic.asString()
-          if (s.endsWith("%")) {
+          if (s != null && s.endsWith("%")) {
             try {
               val value = s.substring(0, s.length - 1).toFloat()
               if (value >= 0f) {

@@ -23,7 +23,7 @@ public interface TaskInterface<TResult> {
    * @return true if the task completed (has a result, an error, or was cancelled). false otherwise.
    */
   @Throws(InterruptedException::class)
-  public fun waitForCompletion(duration: Long, timeUnit: TimeUnit?): Boolean
+  public fun waitForCompletion(duration: Long, timeUnit: TimeUnit): Boolean
 
   /** @return The result of the task, if set. null otherwise. */
   public fun getResult(): TResult?

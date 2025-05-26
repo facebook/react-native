@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -14,12 +14,13 @@ import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
-import type {KeyboardTypeOptions} from 'react-native/Libraries/Components/TextInput/TextInput';
+import type {KeyboardTypeOptions} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';
 import TextInputSharedExamples from './TextInputSharedExamples';
 import React from 'react';
+import {useRef} from 'react';
 import {
   Alert,
   Button,
@@ -210,9 +211,9 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
 }
 
 const TextInputWithFocusButton = () => {
-  const inputToFocusRef = React.useRef<React.ElementRef<
-    typeof TextInput,
-  > | null>(null);
+  const inputToFocusRef = useRef<React.ElementRef<typeof TextInput> | null>(
+    null,
+  );
   return (
     <View>
       <ExampleTextInput
@@ -372,7 +373,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         'phone-pad',
         'decimal-pad',
         'ascii-capable-number-pad',
-      ];
+      ] as const;
       const examples = keyboardTypesWithDoneButton.map(type => {
         return (
           <WithLabel key={'keyboardType: ' + type} label={type}>
@@ -433,7 +434,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
   {
     title: 'Keyboard appearance',
     render: function (): React.Node {
-      const keyboardAppearance = ['default', 'light', 'dark'];
+      const keyboardAppearance = ['default', 'light', 'dark'] as const;
       const examples = keyboardAppearance.map(type => {
         return (
           <WithLabel key={type} label={type}>
@@ -459,7 +460,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         'yahoo',
         'done',
         'emergency-call',
-      ];
+      ] as const;
       const examples = returnKeyTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
@@ -524,7 +525,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         'while-editing',
         'unless-editing',
         'always',
-      ];
+      ] as const;
       const examples = clearButtonModes.map(mode => {
         return (
           <WithLabel key={mode} label={mode}>
@@ -917,7 +918,12 @@ const textInputExamples: Array<RNTesterModuleExample> = [
   {
     title: 'Line Break Strategy',
     render: function (): React.Node {
-      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
+      const lineBreakStrategy = [
+        'none',
+        'standard',
+        'hangul-word',
+        'push-out',
+      ] as const;
       const textByCode = {
         en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
         ko: '한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행',
@@ -995,7 +1001,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         'head',
         'middle',
         'tail',
-      ];
+      ] as const;
       const textByCode = {
         en: 'verylongtext-dummydummydummydummydummydummydummydummydummydummydummydummy',
         ko: '한글개행한글개행-한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행',

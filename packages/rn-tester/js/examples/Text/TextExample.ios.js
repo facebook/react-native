@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -15,7 +15,7 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 import hotdog from '../../assets/hotdog.jpg';
 import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
-import TextInlineViewsExample from './TextInlineViewsExample';
+import TextSharedExamples from './TextSharedExamples';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
@@ -300,6 +300,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
 
     return (
       <View>
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'Nested <Text/>s:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -307,6 +309,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'Array of <Text/>s in <View>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -314,6 +318,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -333,6 +339,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>
           {'Multi-line interleaved <View> and <Text>:'}
         </Text>
@@ -350,6 +358,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           </Text>
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'Multi-line <Text> alignment'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
@@ -367,6 +377,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           </View>
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -374,6 +386,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'<TextInput multiline/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -1064,13 +1078,6 @@ const examples = [
     },
   },
   {
-    title: 'Empty Text',
-    description: "It's ok to have Text with zero or null children.",
-    render: function (): React.Node {
-      return <Text />;
-    },
-  },
-  {
     title: 'Toggling Attributes',
     render: function (): React.MixedElement {
       return <AttributeToggler />;
@@ -1445,7 +1452,12 @@ const examples = [
   {
     title: 'Line Break Strategy',
     render: function (): React.Node {
-      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
+      const lineBreakStrategy = [
+        'none',
+        'standard',
+        'hangul-word',
+        'push-out',
+      ] as const;
       const textByCode = {
         en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
         ko: '한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행',
@@ -1495,6 +1507,8 @@ const examples = [
             sizes change relative to each other.
           </Text>
           <View style={boxStyle}>
+            {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+             * https://fburl.com/workplace/6291gfvu */}
             <Text style={boldStyle}>With `dynamicTypeRamp`:</Text>
             <Text style={{fontSize: 34}} dynamicTypeRamp="largeTitle">
               Large Title
@@ -1531,6 +1545,8 @@ const examples = [
             </Text>
           </View>
           <View style={boxStyle}>
+            {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+             * https://fburl.com/workplace/6291gfvu */}
             <Text style={boldStyle}>Without `dynamicTypeRamp`:</Text>
             <Text style={{fontSize: 34}}>Large Title</Text>
             <Text style={{fontSize: 28}}>Title</Text>
@@ -1590,7 +1606,7 @@ const examples = [
       );
     },
   },
-  TextInlineViewsExample,
+  ...TextSharedExamples,
 ];
 
 module.exports = ({

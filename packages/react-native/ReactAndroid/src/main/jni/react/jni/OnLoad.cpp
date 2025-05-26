@@ -15,14 +15,9 @@
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapperBase.h"
 #include "InspectorNetworkRequestListener.h"
-#include "JCallback.h"
-#include "JDynamicNative.h"
 #include "JInspector.h"
-#include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ReactInstanceManagerInspectorTarget.h"
-#include "WritableNativeArray.h"
-#include "WritableNativeMap.h"
 
 #ifndef WITH_GLOGINIT
 #define WITH_GLOGINIT 1
@@ -44,18 +39,8 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     gloginit::initialize();
     FLAGS_minloglevel = 0;
 #endif
-
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
-    JCxxCallbackImpl::registerNatives();
-    NativeArray::registerNatives();
-    ReadableNativeArray::registerNatives();
-    WritableNativeArray::registerNatives();
-    NativeMap::registerNatives();
-    ReadableNativeMap::registerNatives();
-    WritableNativeMap::registerNatives();
-    JDynamicNative::registerNatives();
-    JReactMarker::registerNatives();
     JInspector::registerNatives();
     ReactInstanceManagerInspectorTarget::registerNatives();
     InspectorNetworkRequestListener::registerNatives();

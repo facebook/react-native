@@ -19,7 +19,7 @@ import com.facebook.react.module.annotations.ReactModule
  * it can e.g. release any resources, stop timers etc.
  */
 @ReactModule(name = NativeHeadlessJsTaskSupportSpec.NAME)
-public open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationContext?) :
+internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationContext?) :
     NativeHeadlessJsTaskSupportSpec(reactContext) {
   override fun notifyTaskRetry(taskIdDouble: Double, promise: Promise) {
     val taskId = taskIdDouble.toInt()

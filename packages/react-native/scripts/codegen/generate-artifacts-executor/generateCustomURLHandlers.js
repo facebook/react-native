@@ -30,6 +30,8 @@ function generateCustomURLHandlers(libraries, outputDir) {
   const imageDataDecoderModules = new Set();
   const urlRequestHandlersModules = new Set();
 
+  const wrapInArrayIfNecessary = value =>
+    Array.isArray(value) || value == null ? value : [value];
   // Old API
   for (const library of libraries) {
     const modulesConformingToProtocol =
@@ -38,13 +40,19 @@ function generateCustomURLHandlers(libraries, outputDir) {
       continue;
     }
 
-    modulesConformingToProtocol.RCTImageURLLoader.forEach(moduleName => {
+    wrapInArrayIfNecessary(
+      modulesConformingToProtocol.RCTImageURLLoader,
+    )?.forEach(moduleName => {
       imageURLLoaderModules.add(moduleName);
     });
-    modulesConformingToProtocol.RCTImageDataDecoder.forEach(moduleName => {
+    wrapInArrayIfNecessary(
+      modulesConformingToProtocol.RCTImageDataDecoder,
+    )?.forEach(moduleName => {
       imageDataDecoderModules.add(moduleName);
     });
-    modulesConformingToProtocol.RCTURLRequestHandler.forEach(moduleName => {
+    wrapInArrayIfNecessary(
+      modulesConformingToProtocol.RCTURLRequestHandler,
+    )?.forEach(moduleName => {
       urlRequestHandlersModules.add(moduleName);
     });
   }

@@ -32,6 +32,6 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
 
   s.subspec "Fabric" do |ss|
-    ss.pod_target_xcconfig  = { "OTHER_CFLAGS" => "$(inherited)" }
+    ss.pod_target_xcconfig  = { "OTHER_CFLAGS" => "$(inherited)", "DEFINES_MODULE" => "YES" }
   end
 end

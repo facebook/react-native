@@ -16,11 +16,7 @@ import type {
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-import {
-  type ColorValue,
-  type TextStyleProp,
-  type ViewStyleProp,
-} from '../../StyleSheet/StyleSheet';
+import {type ColorValue, type TextStyleProp} from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
 /**
@@ -515,6 +511,26 @@ export type TextInputAndroidProps = $ReadOnly<{
 
 type TextInputBaseProps = $ReadOnly<{
   /**
+   * When provided, the text input will only accept drag and drop events for the specified
+   * types. If null or not provided, the text input will accept all types of drag and drop events.
+   * An empty array will accept no drag and drop events.
+   * Defaults to null.
+   *
+   * On Android, types must correspond to MIME types from ClipData:
+   * https://developer.android.com/reference/android/content/ClipData
+   * (e.g. "text/plain" or "image/*")
+   *
+   * On iOS, types must correspond to UTIs:
+   * https://developer.apple.com/documentation/uniformtypeidentifiers
+   * (e.g. "public.plain-text" or "public.image")
+   *
+   * *NOTE*: This prop is experimental and its API may change in the future. Use at your own risk.
+   *
+   * @see https://developer.android.com/reference/android/content/ClipData for more information on MIME types
+   */
+  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
+
+  /**
    * Can tell `TextInput` to automatically capitalize certain characters.
    *
    * - `characters`: all characters.
@@ -1005,10 +1021,15 @@ type TextInputBaseProps = $ReadOnly<{
    * unwanted edits without flicker.
    */
   value?: ?Stringish,
+
+  /**
+   * Align the input text to the left, center, or right sides of the input field.
+   */
+  textAlign?: ?('left' | 'center' | 'right'),
 }>;
 
 export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
+  ...Omit<ViewProps, 'style'>,
   ...TextInputIOSProps,
   ...TextInputAndroidProps,
   ...TextInputBaseProps,

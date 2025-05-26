@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 // Modified from https://raw.githubusercontent.com/flow-typed/flow-typed/master/definitions/npm/jest_v29.x.x/flow_v0.134.x-/jest_v29.x.x.js
 // Modifications are explained inline by comments beginning with `// MODIFIED`.
 
 // MODIFIED: Added ESLint suppression comment - no-unused-vars doesn't understand declaration files
-/* eslint-disable no-unused-vars */
 
 type JestMockFn<TArguments: $ReadOnlyArray<mixed>, TReturn> = {
   (...args: TArguments): TReturn,

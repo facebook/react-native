@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {HostInstance} from '../../src/private/types/HostInstance';
@@ -13,7 +13,6 @@ import type {
   InternalInstanceHandle,
   Node,
 } from '../Renderer/shims/ReactNativeTypes';
-import type {ElementRef, ElementType} from 'react';
 
 import {
   onCaughtError,
@@ -21,6 +20,8 @@ import {
   onUncaughtError,
 } from '../../src/private/renderer/errorhandling/ErrorHandlers';
 import {type RootTag} from './RootTag';
+import * as React from 'react';
+
 export function renderElement({
   element,
   rootTag,
@@ -58,9 +59,9 @@ export function renderElement({
   }
 }
 
-export function findHostInstance_DEPRECATED<TElementType: ElementType>(
+export function findHostInstance_DEPRECATED<TElementType: React.ElementType>(
   // $FlowFixMe[incompatible-call]
-  componentOrHandle: ?(ElementRef<TElementType> | number),
+  componentOrHandle: ?(React.ElementRef<TElementType> | number),
 ): ?HostInstance {
   return require('../Renderer/shims/ReactNative').default.findHostInstance_DEPRECATED(
     // $FlowFixMe[incompatible-call]
@@ -68,9 +69,9 @@ export function findHostInstance_DEPRECATED<TElementType: ElementType>(
   );
 }
 
-export function findNodeHandle<TElementType: ElementType>(
+export function findNodeHandle<TElementType: React.ElementType>(
   // $FlowFixMe[incompatible-call]
-  componentOrHandle: ?(ElementRef<TElementType> | number),
+  componentOrHandle: ?(React.ElementRef<TElementType> | number),
 ): ?number {
   return require('../Renderer/shims/ReactNative').default.findNodeHandle(
     // $FlowFixMe[incompatible-call]

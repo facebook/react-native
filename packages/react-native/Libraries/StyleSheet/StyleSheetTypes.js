@@ -10,8 +10,7 @@
 
 'use strict';
 
-import type {AnimatedBaseProps} from '../Animated/createAnimatedComponent';
-import type AnimatedNode from '../Animated/nodes/AnimatedNode';
+import type {WithAnimatedValue} from '../Animated/createAnimatedComponent';
 import type {ImageResizeMode} from './../Image/ImageResizeMode';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
@@ -21,6 +20,7 @@ import type {
   ____ViewStyle_InternalOverrides,
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
+import type {ColorValue} from './StyleSheet';
 
 export type {____TransformStyle_Internal};
 
@@ -38,8 +38,7 @@ export type EdgeInsetsValue = {
   bottom: number,
 };
 
-export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
-export type AnimatableNumericValue = number | AnimatedNode;
+export type DimensionValue = number | string | 'auto' | null;
 
 export type CursorValue = 'auto' | 'pointer';
 
@@ -694,7 +693,7 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
    * Sets the drop shadow opacity (multiplied by the color's alpha component)
    * @platform ios
    */
-  shadowOpacity?: AnimatableNumericValue,
+  shadowOpacity?: number,
   /**
    * Sets the drop shadow blur radius
    * @platform ios
@@ -726,8 +725,8 @@ export type DropShadowValue = {
   color?: ____ColorValue_Internal,
 };
 
-export type GradientValue = {
-  type: 'linearGradient',
+type LinearGradientValue = {
+  type: 'linear-gradient',
   // Angle or direction enums
   direction?: string,
   colorStops: $ReadOnlyArray<{
@@ -735,6 +734,50 @@ export type GradientValue = {
     positions?: $ReadOnlyArray<string>,
   }>,
 };
+
+type RadialExtent =
+  | 'closest-corner'
+  | 'closest-side'
+  | 'farthest-corner'
+  | 'farthest-side';
+export type RadialGradientPosition =
+  | {
+      top: number | string,
+      left: number | string,
+    }
+  | {
+      top: number | string,
+      right: number | string,
+    }
+  | {
+      bottom: number | string,
+      left: number | string,
+    }
+  | {
+      bottom: number | string,
+      right: number | string,
+    };
+
+export type RadialGradientShape = 'circle' | 'ellipse';
+export type RadialGradientSize =
+  | RadialExtent
+  | {
+      x: string | number,
+      y: string | number,
+    };
+
+type RadialGradientValue = {
+  type: 'radial-gradient',
+  shape: RadialGradientShape,
+  size: RadialGradientSize,
+  position: RadialGradientPosition,
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    positions?: $ReadOnlyArray<string>,
+  }>,
+};
+
+export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
 
 export type BoxShadowValue = {
   offsetX: number | string,
@@ -777,39 +820,39 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: AnimatableNumericValue | string,
-  borderBottomEndRadius?: AnimatableNumericValue | string,
-  borderBottomLeftRadius?: AnimatableNumericValue | string,
-  borderBottomRightRadius?: AnimatableNumericValue | string,
-  borderBottomStartRadius?: AnimatableNumericValue | string,
-  borderEndEndRadius?: AnimatableNumericValue | string,
-  borderEndStartRadius?: AnimatableNumericValue | string,
-  borderStartEndRadius?: AnimatableNumericValue | string,
-  borderStartStartRadius?: AnimatableNumericValue | string,
-  borderTopEndRadius?: AnimatableNumericValue | string,
-  borderTopLeftRadius?: AnimatableNumericValue | string,
-  borderTopRightRadius?: AnimatableNumericValue | string,
-  borderTopStartRadius?: AnimatableNumericValue | string,
+  borderRadius?: number | string,
+  borderBottomEndRadius?: number | string,
+  borderBottomLeftRadius?: number | string,
+  borderBottomRightRadius?: number | string,
+  borderBottomStartRadius?: number | string,
+  borderEndEndRadius?: number | string,
+  borderEndStartRadius?: number | string,
+  borderStartEndRadius?: number | string,
+  borderStartStartRadius?: number | string,
+  borderTopEndRadius?: number | string,
+  borderTopLeftRadius?: number | string,
+  borderTopRightRadius?: number | string,
+  borderTopStartRadius?: number | string,
   borderStyle?: 'solid' | 'dotted' | 'dashed',
-  borderWidth?: AnimatableNumericValue,
-  borderBottomWidth?: AnimatableNumericValue,
-  borderEndWidth?: AnimatableNumericValue,
-  borderLeftWidth?: AnimatableNumericValue,
-  borderRightWidth?: AnimatableNumericValue,
-  borderStartWidth?: AnimatableNumericValue,
-  borderTopWidth?: AnimatableNumericValue,
-  opacity?: AnimatableNumericValue,
+  borderWidth?: number,
+  borderBottomWidth?: number,
+  borderEndWidth?: number,
+  borderLeftWidth?: number,
+  borderRightWidth?: number,
+  borderStartWidth?: number,
+  borderTopWidth?: number,
+  opacity?: number,
   outlineColor?: ____ColorValue_Internal,
-  outlineOffset?: AnimatableNumericValue,
+  outlineOffset?: number,
   outlineStyle?: 'solid' | 'dotted' | 'dashed',
-  outlineWidth?: AnimatableNumericValue,
+  outlineWidth?: number,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
   cursor?: CursorValue,
   boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
   filter?: $ReadOnlyArray<FilterFunction> | string,
   mixBlendMode?: ____BlendMode_Internal,
-  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
+  experimental_backgroundImage?: $ReadOnlyArray<BackgroundImageValue> | string,
   isolation?: 'auto' | 'isolate',
 }>;
 
@@ -958,7 +1001,8 @@ export type ____ImageStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
+  overflow?: 'visible' | 'hidden',
 }>;
 
 export type ____ImageStyle_Internal = $ReadOnly<{
@@ -971,7 +1015,7 @@ export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
 }>;
 
 export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
@@ -992,9 +1036,8 @@ export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
 
-export type ____DangerouslyImpreciseAnimatedStyleProp_Internal = StyleProp<
-  Partial<AnimatedBaseProps<____DangerouslyImpreciseStyle_Internal>>,
->;
+export type ____DangerouslyImpreciseAnimatedStyleProp_Internal =
+  WithAnimatedValue<StyleProp<Partial<____DangerouslyImpreciseStyle_Internal>>>;
 
 export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,

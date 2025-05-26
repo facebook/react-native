@@ -1,9 +1,6 @@
 name: test-ios-rntester
 description: Test iOS RNTester
 inputs:
-  jsengine:
-    description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
-    default: Hermes
   use-frameworks:
     description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
     default: StaticLibraries
@@ -48,7 +45,7 @@ runs:
         name: hermes-darwin-bin-${{ inputs.flavor }}
         path: ${{ inputs.hermes-tarball-artifacts-dir }}
     - name: Setup ruby
-      uses: ruby/setup-ruby@v1.170.0
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Prepare IOS Tests
@@ -104,7 +101,6 @@ runs:
       uses: ./.github/actions/setup-xcode-build-cache
       with:
         hermes-version: ${{ inputs.hermes-version }}
-        jsengine: ${{ inputs.jsengine }}
         architecture: ${{ inputs.architecture }}
         use-frameworks: ${{ inputs.use-frameworks }}
         flavor: ${{ inputs.flavor }}
@@ -112,11 +108,7 @@ runs:
     - name: Install CocoaPods dependencies
       shell: bash
       run: |
-        if [[ ${{ inputs.jsengine }} == "JSC" ]]; then
-          export USE_HERMES=0
-        else
-          export HERMES_ENGINE_TARBALL_PATH=$HERMES_ENGINE_TARBALL_PATH
-        fi
+        export HERMES_ENGINE_TARBALL_PATH=$HERMES_ENGINE_TARBALL_PATH
 
         if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
           export USE_FRAMEWORKS=dynamic
@@ -170,7 +162,7 @@ runs:
       if: ${{ inputs.use-frameworks == 'StaticLibraries' && inputs.ruby-version == '2.6.10' }} # This is needed to avoid conflicts with the artifacts
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: RNTesterApp-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
+        name: RNTesterApp-${{ inputs.architecture }}-${{ inputs.flavor }}
         path: ${{ env.app-path }}
     - name: Store test results
       if: ${{ inputs.run-unit-tests == 'true' }}

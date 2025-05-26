@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
@@ -85,6 +86,15 @@ HostPlatformViewProps::HostPlatformViewProps(
                     rawProps,
                     "renderToHardwareTextureAndroid",
                     sourceProps.renderToHardwareTextureAndroid,
+                    {})),
+      screenReaderFocusable(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.screenReaderFocusable
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "screenReaderFocusable",
+                    sourceProps.screenReaderFocusable,
                     {})) {}
 
 #define VIEW_EVENT_CASE(eventType)                      \
@@ -119,6 +129,7 @@ void HostPlatformViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(hasTVPreferredFocus);
     RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing);
     RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(screenReaderFocusable);
   }
 }
 
@@ -133,7 +144,7 @@ SharedDebugStringConvertibleList HostPlatformViewProps::getDebugProps() const {
 }
 #endif
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 
 inline static void updateEventProp(
     folly::dynamic& result,
@@ -321,6 +332,8 @@ static void updateBorderColorsProps(
       newBorderColor.bottom,
       oldBorderColor.bottom);
   updateBorderColorPropValue(
+      result, "borderEndColor", newBorderColor.end, oldBorderColor.end);
+  updateBorderColorPropValue(
       result, "borderStartColor", newBorderColor.start, oldBorderColor.start);
   updateBorderColorPropValue(
       result, "borderBlockColor", newBorderColor.block, oldBorderColor.block);
@@ -462,10 +475,10 @@ inline static void updateAccessibilityStateProp(
   if (!oldState.has_value() || newState->checked != oldState->checked) {
     switch (newState->checked) {
       case AccessibilityState::Unchecked:
-        resultState["checked"] = "unchecked";
+        resultState["checked"] = false;
         break;
       case AccessibilityState::Checked:
-        resultState["checked"] = "checked";
+        resultState["checked"] = true;
         break;
       case AccessibilityState::Mixed:
         resultState["checked"] = "mixed";
@@ -476,6 +489,54 @@ inline static void updateAccessibilityStateProp(
     }
   }
   result["accessibilityState"] = resultState;
+}
+
+static folly::dynamic toDynamic(const std::vector<BoxShadow>& boxShadow) {
+  folly::dynamic boxShadowResult = folly::dynamic::array();
+  for (const auto& boxShadowValue : boxShadow) {
+    folly::dynamic boxShadowValueResult = folly::dynamic::object();
+    boxShadowValueResult["offsetX"] = boxShadowValue.offsetX;
+    boxShadowValueResult["offsetY"] = boxShadowValue.offsetY;
+    boxShadowValueResult["blurRadius"] = boxShadowValue.blurRadius;
+    boxShadowValueResult["spreadDistance"] = boxShadowValue.spreadDistance;
+    boxShadowValueResult["color"] = *boxShadowValue.color;
+    boxShadowValueResult["inset"] = boxShadowValue.inset;
+    boxShadowResult.push_back(boxShadowValueResult);
+  }
+  return boxShadowResult;
+}
+
+static folly::dynamic toDynamic(const std::vector<FilterFunction>& filter) {
+  folly::dynamic filterResult = folly::dynamic::array();
+  for (const auto& filterFunction : filter) {
+    folly::dynamic filterFunctionResult = folly::dynamic::object();
+    std::string typeKey = toString(filterFunction.type);
+    if (std::holds_alternative<Float>(filterFunction.parameters)) {
+      filterFunctionResult[typeKey] =
+          std::get<Float>(filterFunction.parameters);
+    } else if (std::holds_alternative<DropShadowParams>(
+                   filterFunction.parameters)) {
+      const auto& parameters =
+          std::get<DropShadowParams>(filterFunction.parameters);
+      folly::dynamic parametersResult = folly::dynamic::object();
+      parametersResult["offsetX"] = parameters.offsetX;
+      parametersResult["offsetY"] = parameters.offsetY;
+      parametersResult["standardDeviation"] = parameters.standardDeviation;
+      parametersResult["color"] = *parameters.color;
+      filterFunctionResult[typeKey] = parametersResult;
+    }
+    filterResult.push_back(filterFunctionResult);
+  }
+  return filterResult;
+}
+
+static folly::dynamic toDynamic(const EdgeInsets& edgeInsets) {
+  folly::dynamic edgeInsetsResult = folly::dynamic::object();
+  edgeInsetsResult["left"] = edgeInsets.left;
+  edgeInsetsResult["top"] = edgeInsets.top;
+  edgeInsetsResult["right"] = edgeInsets.right;
+  edgeInsetsResult["bottom"] = edgeInsets.bottom;
+  return edgeInsetsResult;
 }
 
 folly::dynamic HostPlatformViewProps::getDiffProps(
@@ -514,12 +575,46 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["renderToHardwareTextureAndroid"] = renderToHardwareTextureAndroid;
   }
 
+  if (screenReaderFocusable != oldProps->screenReaderFocusable) {
+    result["screenReaderFocusable"] = screenReaderFocusable;
+  }
+
+  if (role != oldProps->role) {
+    result["role"] = toString(role);
+  }
+
   if (opacity != oldProps->opacity) {
     result["opacity"] = opacity;
   }
 
   if (backgroundColor != oldProps->backgroundColor) {
     result["backgroundColor"] = *backgroundColor;
+  }
+
+  if (outlineColor != oldProps->outlineColor) {
+    result["outlineColor"] = *outlineColor;
+  }
+
+  if (outlineOffset != oldProps->outlineOffset) {
+    result["outlineOffset"] = outlineOffset;
+  }
+
+  if (outlineStyle != oldProps->outlineStyle) {
+    switch (outlineStyle) {
+      case OutlineStyle::Solid:
+        result["outlineStyle"] = "solid";
+        break;
+      case OutlineStyle::Dotted:
+        result["outlineStyle"] = "dotted";
+        break;
+      case OutlineStyle::Dashed:
+        result["outlineStyle"] = "dashed";
+        break;
+    }
+  }
+
+  if (outlineWidth != oldProps->outlineWidth) {
+    result["outlineWidth"] = outlineWidth;
   }
 
   if (shadowColor != oldProps->shadowColor) {
@@ -554,6 +649,18 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["zIndex"] = zIndex.value();
   }
 
+  if (boxShadow != oldProps->boxShadow) {
+    result["boxShadow"] = toDynamic(boxShadow);
+  }
+
+  if (filter != oldProps->filter) {
+    result["filter"] = toDynamic(filter);
+  }
+
+  if (mixBlendMode != oldProps->mixBlendMode) {
+    result["mixBlendMode"] = toString(mixBlendMode);
+  }
+
   if (pointerEvents != oldProps->pointerEvents) {
     std::string value;
     switch (pointerEvents) {
@@ -572,12 +679,16 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     }
   }
 
+  if (hitSlop != oldProps->hitSlop) {
+    result["hitSlop"] = toDynamic(hitSlop);
+  }
+
   if (nativeId != oldProps->nativeId) {
-    result["nativeId"] = nativeId;
+    result["nativeID"] = nativeId;
   }
 
   if (testId != oldProps->testId) {
-    result["testId"] = testId;
+    result["testID"] = testId;
   }
 
   if (accessible != oldProps->accessible) {
@@ -662,10 +773,28 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
         result,
         events,
         oldProps->events,
+        ViewEvents::Offset::PointerOverCapture,
+        "onPointerOverCapture");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
         ViewEvents::Offset::PointerOut,
         "onPointerOut");
     updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerOutCapture,
+        "onPointerOutCapture");
+    updateEventProp(
         result, events, oldProps->events, ViewEvents::Offset::Click, "onClick");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ClickCapture,
+        "onClickCapture");
     updateEventProp(
         result,
         events,
@@ -821,6 +950,14 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
       accessibilityLabelledByValues.push_back(accessibilityLabelledByValue);
     }
     result["accessibilityLabelledBy"] = accessibilityLabelledByValues;
+  }
+
+  if (accessibilityOrder != oldProps->accessibilityOrder) {
+    auto accessibilityChildrenIds = folly::dynamic::array();
+    for (const auto& accessibilityChildId : accessibilityOrder) {
+      accessibilityChildrenIds.push_back(accessibilityChildId);
+    }
+    result["experimental_accessibilityOrder"] = accessibilityChildrenIds;
   }
 
   if (accessibilityLiveRegion != oldProps->accessibilityLiveRegion) {

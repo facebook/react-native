@@ -118,7 +118,7 @@ void JavaNativeModule::invoke(
                     "invoke");
 #ifdef WITH_FBSYSTRACE
         if (callId != -1) {
-          fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+          fbsystrace_end_async_flow(TRACE_TAG_REACT, "native", callId);
         }
 #endif
         invokeMethod(

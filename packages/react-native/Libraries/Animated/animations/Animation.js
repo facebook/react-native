@@ -13,10 +13,14 @@ import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedProps from '../nodes/AnimatedProps';
 
-export type EndResult = {finished: boolean, value?: number, ...};
+export type EndResult = {
+  finished: boolean,
+  value?: number,
+  offset?: number,
+  ...
+};
 export type EndCallback = (result: EndResult) => void;
 
 export type AnimationConfig = $ReadOnly<{
@@ -141,9 +145,9 @@ export default class Animation {
           // When using natively driven animations, once the animation completes,
           // we need to ensure that the JS side nodes are synced with the updated
           // values.
-          const {value} = result;
+          const {value, offset} = result;
           if (value != null) {
-            animatedValue.__onAnimatedValueUpdateReceived(value);
+            animatedValue.__onAnimatedValueUpdateReceived(value, offset);
 
             if (this.__isLooping === true) {
               return;

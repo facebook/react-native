@@ -37,7 +37,7 @@ class MultipartStreamReaderTest {
             super.onChunkComplete(headers, body, done)
 
             assertThat(done).isTrue
-            assertThat(headers!!["Content-Type"]).isEqualTo("application/json; charset=utf-8")
+            assertThat(headers["Content-Type"]).isEqualTo("application/json; charset=utf-8")
             assertThat(body.readUtf8()).isEqualTo("{}")
           }
         }
@@ -125,7 +125,7 @@ class MultipartStreamReaderTest {
     var callCount = 0
       private set
 
-    override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
+    override fun onChunkComplete(headers: Map<String, String>, body: Buffer, isLastChunk: Boolean) {
       callCount++
     }
 

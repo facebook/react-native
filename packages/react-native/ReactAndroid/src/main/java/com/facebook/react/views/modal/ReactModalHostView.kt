@@ -20,11 +20,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStructure
-import android.view.Window
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
+import androidx.activity.ComponentDialog
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -49,10 +50,10 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
+import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.setSystemBarsTranslucency
-import java.util.Objects
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -71,7 +72,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
     ViewGroup(context), LifecycleEventListener {
 
   @get:VisibleForTesting
-  public var dialog: Dialog? = null
+  public var dialog: ComponentDialog? = null
     private set
 
   public var transparent: Boolean = false
@@ -260,17 +261,34 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
 
     val currentActivity = getCurrentActivity()
-    val newDialog = Dialog(currentActivity ?: context, theme)
+    val newDialog = ComponentDialog(currentActivity ?: context, theme)
     dialog = newDialog
-    Objects.requireNonNull<Window>(newDialog.window)
-        .setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+    val window = requireNotNull(newDialog.window)
+    window.setFlags(
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
     newDialog.setContentView(contentView)
     updateProperties()
 
     newDialog.setOnShowListener(onShowListener)
+
+    val handleCloseAction: () -> Unit = {
+      val listener =
+          checkNotNull(onRequestCloseListener) {
+            "onRequestClose callback must be set if back key is expected to close the modal"
+          }
+      listener.onRequestClose(newDialog)
+    }
+
+    val backPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+          override fun handleOnBackPressed() {
+            handleCloseAction()
+          }
+        }
+
+    newDialog.onBackPressedDispatcher.addCallback(newDialog, backPressedCallback)
     newDialog.setOnKeyListener(
         object : DialogInterface.OnKeyListener {
           override fun onKey(dialog: DialogInterface, keyCode: Int, event: KeyEvent): Boolean {
@@ -280,11 +298,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
               // to whether or not to allow the back/escape key to close the dialog. If it chooses
               // to, it can just set visible to false on the Modal and the Modal will go away
               if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
-                val listener =
-                    checkNotNull(onRequestCloseListener) {
-                      "onRequestClose callback must be set if back key is expected to close the modal"
-                    }
-                listener.onRequestClose(dialog)
+                handleCloseAction()
                 return true
               } else {
                 // We redirect the rest of the key events to the current activity, since the
@@ -301,19 +315,19 @@ public class ReactModalHostView(context: ThemedReactContext) :
           }
         })
 
-    newDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     if (hardwareAccelerated) {
-      newDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
+      window.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
     }
     val flagSecureSet = isFlagSecureSet(currentActivity)
     if (flagSecureSet) {
-      newDialog.window?.setFlags(
+      window.setFlags(
           WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
     }
     if (currentActivity?.isFinishing == false) {
       newDialog.show()
       updateSystemAppearance()
-      newDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+      window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
     }
   }
 

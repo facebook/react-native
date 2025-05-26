@@ -103,7 +103,7 @@ static ShadowNode::ListOfShared cloneSharedShadowNodeList(
   return result;
 }
 
-static inline ShadowNode::Unshared messWithChildren(
+static inline std::shared_ptr<ShadowNode> messWithChildren(
     const Entropy& entropy,
     const ShadowNode& shadowNode) {
   auto children = shadowNode.getChildren();
@@ -114,7 +114,7 @@ static inline ShadowNode::Unshared messWithChildren(
        std::make_shared<const ShadowNode::ListOfShared>(children)});
 }
 
-static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
+static inline std::shared_ptr<ShadowNode> messWithLayoutableOnlyFlag(
     const Entropy& entropy,
     const ShadowNode& shadowNode) {
   auto oldProps = shadowNode.getProps();
@@ -171,7 +171,7 @@ static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
 
 // Similar to `messWithLayoutableOnlyFlag` but has a 50/50 chance of flattening
 // (or unflattening) a node's children.
-static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
+static inline std::shared_ptr<ShadowNode> messWithNodeFlattenednessFlags(
     const Entropy& entropy,
     const ShadowNode& shadowNode) {
   ContextContainer contextContainer{};
@@ -212,7 +212,7 @@ static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
   return shadowNode.clone({newProps});
 }
 
-static inline ShadowNode::Unshared messWithYogaStyles(
+static inline std::shared_ptr<ShadowNode> messWithYogaStyles(
     const Entropy& entropy,
     const ShadowNode& shadowNode) {
   folly::dynamic dynamic = folly::dynamic::object();
@@ -250,8 +250,9 @@ static inline ShadowNode::Unshared messWithYogaStyles(
   return shadowNode.clone({newProps});
 }
 
-using ShadowNodeAlteration = std::function<
-    ShadowNode::Unshared(const Entropy& entropy, const ShadowNode& shadowNode)>;
+using ShadowNodeAlteration = std::function<std::shared_ptr<ShadowNode>(
+    const Entropy& entropy,
+    const ShadowNode& shadowNode)>;
 
 static inline void alterShadowTree(
     const Entropy& entropy,

@@ -747,6 +747,14 @@ jsi::Value UIManagerBinding::get(
     return {serialize(ReactEventPriority::Discrete)};
   }
 
+  if (methodName == "unstable_ContinuousEventPriority") {
+    return {serialize(ReactEventPriority::Continuous)};
+  }
+
+  if (methodName == "unstable_IdleEventPriority") {
+    return {serialize(ReactEventPriority::Idle)};
+  }
+
   if (methodName == "findShadowNodeByTag_DEPRECATED") {
     auto paramCount = 1;
     return jsi::Function::createFromHostFunction(

@@ -4,21 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 import type {ExtendedError} from '../../../../Libraries/Core/ExtendedError';
-import type {Component as ReactComponent} from 'react';
 
 import ExceptionsManager, {
   SyntheticError,
 } from '../../../../Libraries/Core/ExceptionsManager';
+import * as React from 'react';
 
 type ErrorInfo = {
   +componentStack?: ?string,
   // $FlowFixMe[unclear-type] unknown props and state.
-  +errorBoundary?: ?ReactComponent<any, any>,
+  +errorBoundary?: ?React.Component<any, any>,
 };
 
 function getExtendedError(

@@ -13,8 +13,6 @@
 #include <fbsystrace.h>
 #endif
 
-#include <chrono>
-
 namespace facebook::react {
 
 namespace {
@@ -30,10 +28,9 @@ std::string toPerfettoTrackName(
       : PERFETTO_DEFAULT_TRACK_NAME;
 }
 #elif defined(WITH_FBSYSTRACE)
-int64_t getDeltaNanos(double jsTime) {
-  auto now = std::chrono::steady_clock::now().time_since_epoch();
-  return static_cast<int64_t>(jsTime * 1.e6) -
-      std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
+int64_t getDeltaNanos(HighResTimeStamp jsTime) {
+  auto now = HighResTimeStamp::now();
+  return (jsTime - now).toNanoseconds();
 }
 #endif
 
@@ -43,7 +40,7 @@ int64_t getDeltaNanos(double jsTime) {
 #if defined(WITH_PERFETTO)
   return TRACE_EVENT_CATEGORY_ENABLED("react-native");
 #elif defined(WITH_FBSYSTRACE)
-  return fbsystrace_is_tracing(TRACE_TAG_REACT_APPS);
+  return fbsystrace_is_tracing(TRACE_TAG_REACT);
 #else
   return false;
 #endif
@@ -51,8 +48,8 @@ int64_t getDeltaNanos(double jsTime) {
 
 /* static */ void ReactPerfettoLogger::measure(
     const std::string_view& eventName,
-    double startTime,
-    double endTime,
+    HighResTimeStamp startTime,
+    HighResTimeStamp endTime,
     const std::optional<std::string_view>& trackName) {
 #if defined(WITH_PERFETTO)
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
@@ -61,23 +58,23 @@ int64_t getDeltaNanos(double jsTime) {
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
         track,
-        performanceNowToPerfettoTraceTime(startTime));
+        highResTimeStampToPerfettoTraceTime(startTime));
     TRACE_EVENT_END(
-        "react-native", track, performanceNowToPerfettoTraceTime(endTime));
+        "react-native", track, highResTimeStampToPerfettoTraceTime(endTime));
   }
 #elif defined(WITH_FBSYSTRACE)
   static int cookie = 0;
   fbsystrace_begin_async_section_with_timedelta(
-      TRACE_TAG_REACT_APPS, eventName.data(), cookie, getDeltaNanos(startTime));
+      TRACE_TAG_REACT, eventName.data(), cookie, getDeltaNanos(startTime));
   fbsystrace_end_async_section_with_timedelta(
-      TRACE_TAG_REACT_APPS, eventName.data(), cookie, getDeltaNanos(endTime));
+      TRACE_TAG_REACT, eventName.data(), cookie, getDeltaNanos(endTime));
   cookie++;
 #endif
 }
 
 /* static */ void ReactPerfettoLogger::mark(
     const std::string_view& eventName,
-    double startTime,
+    HighResTimeStamp startTime,
     const std::optional<std::string_view>& trackName) {
 #if defined(WITH_PERFETTO)
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
@@ -85,8 +82,12 @@ int64_t getDeltaNanos(double jsTime) {
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
         getPerfettoWebPerfTrackSync(toPerfettoTrackName(trackName)),
-        performanceNowToPerfettoTraceTime(startTime));
+        highResTimeStampToPerfettoTraceTime(startTime));
   }
+#elif defined(WITH_FBSYSTRACE)
+  static const char* kTrackName = "# Web Performance: Markers";
+  fbsystrace_instant_for_track_with_timedelta(
+      TRACE_TAG_REACT, kTrackName, eventName.data(), getDeltaNanos(startTime));
 #endif
 }
 

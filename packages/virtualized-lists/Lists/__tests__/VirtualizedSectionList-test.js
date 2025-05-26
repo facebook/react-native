@@ -6,12 +6,11 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
-import type {SectionBase} from 'react-native/Libraries/Lists/SectionList';
+import type {SectionBase} from 'react-native';
 
 import nullthrows from 'nullthrows';
 

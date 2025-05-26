@@ -33,22 +33,23 @@ class AccessibilityProps {
 
   bool accessible{false};
   std::optional<AccessibilityState> accessibilityState{std::nullopt};
-  std::string accessibilityLabel{""};
+  std::string accessibilityLabel;
   std::vector<std::string> accessibilityOrder{};
   AccessibilityLabelledBy accessibilityLabelledBy{};
   AccessibilityLiveRegion accessibilityLiveRegion{
       AccessibilityLiveRegion::None};
   AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
-  std::string accessibilityRole{""};
-  std::string accessibilityHint{""};
-  std::string accessibilityLanguage{""};
-  std::string accessibilityLargeContentTitle{""};
+  std::string accessibilityRole;
+  std::string accessibilityHint;
+  std::string accessibilityLanguage;
+  std::string accessibilityLargeContentTitle;
   AccessibilityValue accessibilityValue;
   std::vector<AccessibilityAction> accessibilityActions{};
   bool accessibilityShowsLargeContentViewer{false};
   bool accessibilityViewIsModal{false};
   bool accessibilityElementsHidden{false};
   bool accessibilityIgnoresInvertColors{false};
+  bool accessibilityRespondsToUserInteraction{};
   bool onAccessibilityTap{};
   bool onAccessibilityMagicTap{};
   bool onAccessibilityEscape{};
@@ -56,7 +57,7 @@ class AccessibilityProps {
   ImportantForAccessibility importantForAccessibility{
       ImportantForAccessibility::Auto};
   Role role{Role::None};
-  std::string testId{""};
+  std::string testId;
 
 #pragma mark - DebugStringConvertible
 

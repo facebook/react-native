@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -22,6 +22,7 @@ exports.description = 'Usage of legacy Native Module';
 exports.examples = [
   {
     title: 'SampleLegacyModule',
+    name: 'SampleLegacyModule',
     render: function (): React.MixedElement {
       return <SampleLegacyModuleExample />;
     },

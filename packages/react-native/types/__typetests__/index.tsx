@@ -34,7 +34,6 @@ import {
   ColorValue,
   DevSettings,
   DeviceEventEmitter,
-  DeviceEventEmitterStatic,
   Dimensions,
   DrawerLayoutAndroid,
   DrawerSlideEvent,
@@ -50,6 +49,7 @@ import {
   ImageBackground,
   ImageErrorEvent,
   ImageLoadEvent,
+  // @ts-ignore
   ImageResizeMode,
   ImageResolvedAssetSource,
   ImageStyle,
@@ -64,6 +64,7 @@ import {
   Modal,
   MouseEvent,
   NativeEventEmitter,
+  // @ts-ignore
   NativeModule, // Not actually exported, not sure why
   NativeModules,
   NativeScrollEvent,
@@ -75,6 +76,7 @@ import {
   ProgressBarAndroid,
   PushNotificationIOS,
   RefreshControl,
+  // @ts-ignore
   RegisteredStyle,
   ScaledSize,
   ScrollView,
@@ -97,6 +99,7 @@ import {
   TextInputEndEditingEvent,
   TextInputFocusEvent,
   TextInputKeyPressEvent,
+  // @ts-ignore
   TextInputScrollEvent,
   TextInputSelectionChangeEvent,
   TextInputSubmitEditingEvent,
@@ -116,12 +119,14 @@ import {
   requireNativeComponent,
   useColorScheme,
   useWindowDimensions,
+  // @ts-ignore
   SectionListData,
   ToastAndroid,
   Touchable,
   LayoutAnimation,
   processColor,
   experimental_LayoutConformance as LayoutConformance,
+  ViewProps,
 } from 'react-native';
 
 declare module 'react-native' {
@@ -233,10 +238,10 @@ const fontVariantStyle: StyleProp<TextStyle> = {
   fontVariant: ['tabular-nums'],
 };
 
-const viewProperty = StyleSheet.flatten(viewStyle).backgroundColor;
-const textProperty = StyleSheet.flatten(textStyle).fontSize;
-const imageProperty = StyleSheet.flatten(imageStyle).resizeMode;
-const fontVariantProperty = StyleSheet.flatten(fontVariantStyle).fontVariant;
+const viewProperty = StyleSheet.flatten(viewStyle)?.backgroundColor;
+const textProperty = StyleSheet.flatten(textStyle)?.fontSize;
+const imageProperty = StyleSheet.flatten(imageStyle)?.resizeMode;
+const fontVariantProperty = StyleSheet.flatten(fontVariantStyle)?.fontVariant;
 
 // correct use of the StyleSheet.flatten
 const styleArray: StyleProp<ViewStyle>[] = [];
@@ -261,25 +266,6 @@ const styleDimensionValueValidAuto: ViewStyle = {
 
 const styleDimensionValueValidPct: ViewStyle = {
   width: '5%',
-};
-
-const styleDimensionValueValidAnimated: ViewStyle = {
-  width: new Animated.Value(5),
-};
-
-const styleDimensionValueInvalid1: ViewStyle = {
-  // @ts-expect-error
-  width: '5',
-};
-
-const styleDimensionValueInvalid2: ViewStyle = {
-  // @ts-expect-error
-  width: '5px',
-};
-
-const styleDimensionValueInvalid3: ViewStyle = {
-  // @ts-expect-error
-  width: 'A%',
 };
 
 // StyleSheet.compose
@@ -401,10 +387,13 @@ const testNativeSyntheticEvent = <T extends {}>(
   e.isTrusted;
   e.nativeEvent;
   e.target;
-  e.target.measure(() => {});
   e.timeStamp;
   e.type;
   e.nativeEvent;
+
+  if (typeof e.target !== 'number') {
+    e.target?.measure(() => {});
+  }
 };
 
 function eventHandler<T extends React.BaseSyntheticEvent>(e: T) {}
@@ -427,10 +416,10 @@ class CustomView extends React.Component {
 }
 
 class Welcome extends React.Component<
-  ElementProps<View> & {color: string; bgColor?: null | undefined | string}
+  ViewProps & {color: string; bgColor?: null | undefined | string}
 > {
-  rootViewRef = React.createRef<View>();
-  customViewRef = React.createRef<CustomView>();
+  rootViewRef = React.createRef<React.ComponentRef<typeof View>>();
+  customViewRef = React.createRef<React.ComponentRef<typeof CustomView>>();
 
   testNativeMethods() {
     if (this.rootViewRef.current != null) {
@@ -498,7 +487,7 @@ function TouchableTest() {
 }
 
 export class TouchableHighlightTest extends React.Component {
-  buttonRef = React.createRef<React.ElementRef<typeof TouchableHighlight>>();
+  buttonRef = React.createRef<React.ComponentRef<typeof TouchableHighlight>>();
 
   render() {
     return (
@@ -525,7 +514,7 @@ export class TouchableHighlightTest extends React.Component {
 }
 
 export class TouchableOpacityTest extends React.Component {
-  buttonRef = React.createRef<React.ElementRef<typeof TouchableOpacity>>();
+  buttonRef = React.createRef<React.ComponentRef<typeof TouchableOpacity>>();
 
   render() {
     return (
@@ -637,7 +626,9 @@ export class TouchableNativeFeedbackTest extends React.Component {
 
 // PressableTest
 export class PressableTest extends React.Component<{}> {
-  private readonly myRef: React.RefObject<View | null> = React.createRef();
+  private readonly myRef: React.RefObject<React.ComponentRef<
+    typeof View
+  > | null> = React.createRef();
 
   onPressButton = (e: GestureResponderEvent) => {
     e.persist();
@@ -720,7 +711,7 @@ export class PressableTest extends React.Component<{}> {
 }
 
 // App State
-function appStateListener(state: string) {
+function appStateListener(state?: string) {
   console.log('New state: ' + state);
 }
 
@@ -747,7 +738,7 @@ const AppStateExample = () => {
   React.useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
-        appState.current.match(/inactive|background/) &&
+        appState.current?.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
         console.log('App has come to the foreground!');
@@ -1155,10 +1146,10 @@ class InputAccessoryViewTest extends React.Component {
   }
 }
 
-// DeviceEventEmitterStatic
-const deviceEventEmitterStatic: DeviceEventEmitterStatic = DeviceEventEmitter;
-deviceEventEmitterStatic.addListener('keyboardWillShow', data => true);
-deviceEventEmitterStatic.addListener('keyboardWillShow', data => true, {});
+// DeviceEventEmitter
+const deviceEventEmitter: typeof DeviceEventEmitter = DeviceEventEmitter;
+deviceEventEmitter.addListener('keyboardWillShow', data => true);
+deviceEventEmitter.addListener('keyboardWillShow', data => true, {});
 
 // NativeEventEmitter - Android
 const androidEventEmitter = new NativeEventEmitter();
@@ -1322,7 +1313,6 @@ class TextTest extends React.Component {
       <Text
         allowFontScaling={false}
         ellipsizeMode="head"
-        lineBreakMode="clip"
         numberOfLines={2}
         onLayout={this.handleOnLayout}
         onTextLayout={this.handleOnTextLayout}
@@ -1423,9 +1413,9 @@ export class ImageTest extends React.Component {
 }
 
 export class ImageBackgroundProps extends React.Component {
-  private _imageRef: Image | null = null;
+  private _imageRef: React.ComponentRef<typeof Image> | null = null;
 
-  setImageRef = (image: Image) => {
+  setImageRef = (image: React.ComponentRef<typeof Image>) => {
     this._imageRef = image;
   };
 
@@ -1575,7 +1565,7 @@ class BridgedComponentTest extends React.Component {
 }
 
 const SafeAreaViewTest = () => {
-  const viewRef = React.createRef<React.ElementRef<typeof View>>();
+  const viewRef = React.createRef<React.ComponentRef<typeof View>>();
 
   return (
     <>
@@ -1600,7 +1590,7 @@ const SafeAreaViewTest = () => {
 };
 
 const SwitchRefTest = () => {
-  const switchRef = React.createRef<React.ElementRef<typeof Switch>>();
+  const switchRef = React.createRef<React.ComponentRef<typeof Switch>>();
 
   return (
     <>
@@ -1854,7 +1844,9 @@ const PlatformTest = () => {
 };
 
 const PlatformConstantsTest = () => {
-  const testing: boolean = Platform.constants.isTesting;
+  if (Platform.OS !== 'web') {
+    const testing: boolean = Platform.constants.isTesting;
+  }
   if (Platform.OS === 'ios') {
     const hasForceTouch: boolean = Platform.constants.forceTouchAvailable;
   } else if (Platform.OS === 'android') {
@@ -1993,6 +1985,7 @@ const ProgressBarAndroidTest = () => {
     color="white"
     styleAttr="Horizontal"
     progress={0.42}
+    indeterminate={false}
   />;
 };
 
@@ -2011,7 +2004,7 @@ const PushNotificationTest = () => {
     alertTitle: 'Hello!',
     applicationIconBadgeNumber: 999,
     category: 'engagement',
-    fireDate: new Date().toISOString(),
+    fireDate: +new Date(),
     isSilent: false,
     repeatInterval: 'minute',
     userInfo: {
@@ -2103,7 +2096,7 @@ const AccessibilityCustomActionsTest = () => {
 
 // DrawerLayoutAndroidTest
 export class DrawerLayoutAndroidTest extends React.Component {
-  drawerRef = React.createRef<DrawerLayoutAndroid>();
+  drawerRef = React.createRef<React.ComponentRef<typeof DrawerLayoutAndroid>>();
 
   readonly styles = StyleSheet.create({
     container: {

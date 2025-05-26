@@ -84,6 +84,20 @@ inline const Runtime::PointerValue* Runtime::getPointerValue(
   return value.data_.pointer.ptr_;
 }
 
+inline void Runtime::setRuntimeData(
+    const UUID& uuid,
+    const std::shared_ptr<void>& data) {
+  auto* dataPtr = new std::shared_ptr<void>(data);
+  setRuntimeDataImpl(uuid, dataPtr, [](const void* data) {
+    delete (const std::shared_ptr<void>*)data;
+  });
+}
+
+inline std::shared_ptr<void> Runtime::getRuntimeData(const UUID& uuid) {
+  auto* data = (const std::shared_ptr<void>*)getRuntimeDataImpl(uuid);
+  return data ? *data : nullptr;
+}
+
 Value Object::getPrototype(Runtime& runtime) const {
   return runtime.getPrototypeOf(*this);
 }

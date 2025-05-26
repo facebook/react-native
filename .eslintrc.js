@@ -31,13 +31,21 @@ module.exports = {
         'ft-flow/define-flow-type': 0,
         'ft-flow/use-flow-type': 0,
         'lint/sort-imports': 1,
-        // flow handles this check for us, so it's not required
+        // Flow handles these checks for us, so they aren't required
         'no-undef': 0,
+        'no-unreachable': 0,
+      },
+    },
+    {
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      rules: {
+        '@react-native/no-deep-imports': 0,
       },
     },
     {
       files: [
-        './packages/react-native/**/*.{js,flow}',
+        './packages/react-native/Libraries/**/*.{js,flow}',
+        './packages/react-native/src/**/*.{js,flow}',
         './packages/assets/registry.js',
       ],
       parser: 'hermes-eslint',
@@ -56,9 +64,10 @@ module.exports = {
       },
     },
     {
-      files: ['flow-typed/**/*.js'],
+      files: ['flow-typed/**/*.js', 'packages/react-native/flow/**/*'],
       rules: {
         'lint/valid-flow-typed-signature': 2,
+        'no-shadow': 0,
         'no-unused-vars': 0,
         quotes: 0,
       },
@@ -76,6 +85,7 @@ module.exports = {
         'lint/require-extends-error': 2,
         'lint/no-react-node-imports': 2,
         'lint/no-react-default-imports': 2,
+        'lint/no-react-named-type-imports': 2,
       },
     },
     {
@@ -127,7 +137,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/*-itest{.fb,}.js'],
+      files: ['**/__tests__/**'],
       rules: {
         'lint/no-react-native-imports': 'off',
       },

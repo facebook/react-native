@@ -33,7 +33,7 @@ import com.facebook.react.uimanager.events.EventDispatcherProvider;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class UIManagerHelper {
 
-  private static final String TAG = UIManagerHelper.class.getName();
+  private static final String TAG = "UIManagerHelper";
   public static final int PADDING_START_INDEX = 0;
   public static final int PADDING_END_INDEX = 1;
   public static final int PADDING_TOP_INDEX = 2;
@@ -78,7 +78,7 @@ public class UIManagerHelper {
     // - BridgeReactContext is compiled-out when UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true
     //
     // To detect a potential regression we add the following assertion ERROR
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "UIManagerHelper.getUIManager(context, uiManagerType)", LegacyArchitectureLogLevel.ERROR);
     if (!context.hasCatalystInstance()) {
       ReactSoftExceptionLogger.logSoftException(

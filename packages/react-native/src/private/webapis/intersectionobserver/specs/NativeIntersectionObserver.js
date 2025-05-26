@@ -30,9 +30,20 @@ export type NativeIntersectionObserverObserveOptions = {
   rootThresholds?: ?$ReadOnlyArray<number>,
 };
 
+export type NativeIntersectionObserverToken = mixed;
+
 export interface Spec extends TurboModule {
+  // TODO(T223605846): Remove legacy observe method
   +observe: (options: NativeIntersectionObserverObserveOptions) => void;
+  // TODO(T223605846): Remove legacy unobserve method
   +unobserve: (intersectionObserverId: number, targetShadowNode: mixed) => void;
+  +observeV2?: (
+    options: NativeIntersectionObserverObserveOptions,
+  ) => NativeIntersectionObserverToken;
+  +unobserveV2?: (
+    intersectionObserverId: number,
+    token: NativeIntersectionObserverToken,
+  ) => void;
   +connect: (notifyIntersectionObserversCallback: () => void) => void;
   +disconnect: () => void;
   +takeRecords: () => $ReadOnlyArray<NativeIntersectionObserverEntry>;

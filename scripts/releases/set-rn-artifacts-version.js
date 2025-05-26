@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 /*::
@@ -46,6 +45,8 @@ const config = {
 async function main() {
   const {
     values: {help, 'build-type': buildType, 'to-version': toVersion},
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help) {
@@ -79,6 +80,7 @@ async function updateReactNativeArtifacts(
   const versionInfo = parseVersion(version, buildType);
 
   await updateSourceFiles(versionInfo);
+  await updateTestFiles(versionInfo);
   await updateGradleFile(versionInfo.version);
 }
 
@@ -114,6 +116,40 @@ function updateSourceFiles(
       require('./templates/ReactNativeVersion.js-template')(templateData),
     ),
   ]);
+}
+
+function updateTestFiles(
+  versionInfo /*: Version */,
+) /*: Promise<Array<void>>*/ {
+  const oldVersion = /"\d+\.\d+\.\d+(-rc\.\d+)?\\/g;
+  const newVersion = `"${versionInfo.version}\\`;
+
+  const snapshotTestPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'packages',
+    'react-native',
+    'scripts',
+    'codegen',
+    '__tests__',
+    '__snapshots__',
+    'generate-artifacts-executor-test.js.snap',
+  );
+
+  const promise /*: Promise<void> */ = new Promise(async (resolve, reject) => {
+    try {
+      let snapshot = String(await fs.readFile(snapshotTestPath, 'utf8')).trim();
+      // Replace all occurrences of the old version pattern with the new version
+      snapshot = snapshot.replaceAll(oldVersion, newVersion);
+      await fs.writeFile(snapshotTestPath, snapshot, {encoding: 'utf8'});
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+  return Promise.all([promise]);
 }
 
 async function updateGradleFile(version /*: string */) /*: Promise<void> */ {

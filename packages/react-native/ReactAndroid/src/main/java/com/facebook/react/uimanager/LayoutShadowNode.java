@@ -40,7 +40,7 @@ import com.facebook.yoga.YogaWrap;
 @LegacyArchitecture
 public class LayoutShadowNode extends ReactShadowNodeImpl {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "LayoutShadowNode", LegacyArchitectureLogLevel.WARNING);
   }
 

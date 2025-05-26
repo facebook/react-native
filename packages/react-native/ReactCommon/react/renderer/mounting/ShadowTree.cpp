@@ -31,7 +31,7 @@ using CommitMode = ShadowTree::CommitMode;
  * of calling, the function returns `nullptr` (as an indication that no
  * additional work is required).
  */
-static ShadowNode::Unshared progressState(const ShadowNode& shadowNode) {
+static std::shared_ptr<ShadowNode> progressState(const ShadowNode& shadowNode) {
   auto isStateChanged = false;
   auto areChildrenChanged = false;
 
@@ -78,7 +78,7 @@ static ShadowNode::Unshared progressState(const ShadowNode& shadowNode) {
  * The function uses a given base tree to exclude unchanged (equal) parts
  * of the three from the traversing.
  */
-static ShadowNode::Unshared progressState(
+static std::shared_ptr<ShadowNode> progressState(
     const ShadowNode& shadowNode,
     const ShadowNode& baseShadowNode) {
   // The intuition behind the complexity:
@@ -357,7 +357,8 @@ void ShadowTree::mount(ShadowTreeRevision revision, bool mountSynchronously)
 
 void ShadowTree::commitEmptyTree() const {
   commit(
-      [](const RootShadowNode& oldRootShadowNode) -> RootShadowNode::Unshared {
+      [](const RootShadowNode& oldRootShadowNode)
+          -> std::shared_ptr<RootShadowNode> {
         return std::make_shared<RootShadowNode>(
             oldRootShadowNode,
             ShadowNodeFragment{

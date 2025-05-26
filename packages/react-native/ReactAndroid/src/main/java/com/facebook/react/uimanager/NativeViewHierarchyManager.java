@@ -71,7 +71,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 public class NativeViewHierarchyManager {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "NativeViewHierarchyManager", LegacyArchitectureLogLevel.WARNING);
   }
 
@@ -179,7 +179,7 @@ public class NativeViewHierarchyManager {
     }
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_VIEW, "NativeViewHierarchyManager_updateLayout")
+            Systrace.TRACE_TAG_REACT, "NativeViewHierarchyManager_updateLayout")
         .arg("parentTag", parentTag)
         .arg("tag", tag)
         .flush();
@@ -242,7 +242,7 @@ public class NativeViewHierarchyManager {
         updateLayout(viewToUpdate, x, y, width, height);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -286,8 +286,7 @@ public class NativeViewHierarchyManager {
           (initialProps != null ? initialProps.toString() : "<null>"));
     }
     UiThreadUtil.assertOnUiThread();
-    SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_VIEW, "NativeViewHierarchyManager_createView")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "NativeViewHierarchyManager_createView")
         .arg("tag", tag)
         .arg("className", className)
         .flush();
@@ -299,7 +298,7 @@ public class NativeViewHierarchyManager {
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 

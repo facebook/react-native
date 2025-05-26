@@ -20,7 +20,7 @@ public interface UIManager : PerformanceCounter {
   @UiThread
   @ThreadConfined(ThreadConfined.UI)
   @Deprecated("")
-  public fun <T : View?> addRootView(rootView: T, initialProps: WritableMap?): Int
+  public fun <T : View> addRootView(rootView: T, initialProps: WritableMap?): Int
 
   /** Registers a new root view with width and height. */
   @AnyThread
@@ -92,7 +92,7 @@ public interface UIManager : PerformanceCounter {
    */
   @UiThread
   @ThreadConfined(ThreadConfined.UI)
-  public fun synchronouslyUpdateViewOnUIThread(reactTag: Int, props: ReadableMap?)
+  public fun synchronouslyUpdateViewOnUIThread(reactTag: Int, props: ReadableMap)
 
   /**
    * Dispatch an accessibility event to a view asynchronously.
@@ -109,14 +109,14 @@ public interface UIManager : PerformanceCounter {
    *
    * @param listener
    */
-  public fun addUIManagerEventListener(listener: UIManagerListener?)
+  public fun addUIManagerEventListener(listener: UIManagerListener)
 
   /**
    * Unregister a [UIManagerListener] from this UIManager to stop receiving lifecycle callbacks.
    *
    * @param listener
    */
-  public fun removeUIManagerEventListener(listener: UIManagerListener?)
+  public fun removeUIManagerEventListener(listener: UIManagerListener)
 
   /**
    * Resolves a view based on its reactTag. Do not mutate properties on this view that are already

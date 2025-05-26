@@ -6,8 +6,8 @@
  */
 
 import React
-import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import React_RCTAppDelegate
 import UIKit
 
 @main

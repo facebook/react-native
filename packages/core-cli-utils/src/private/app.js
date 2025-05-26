@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {Task} from './types';
@@ -102,7 +101,8 @@ export const tasks = {
     };
 
     return options.mode === 'bundle'
-      ? Object.assign(steps, bundleApp(options, ...args))
+      ? // $FlowFixMe[unsafe-object-assign]
+        Object.assign(steps, bundleApp(options, ...args))
       : steps;
   },
 };

@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @polyfill
- * @nolint
  * @format
+ * @nolint
+ * @polyfill
  */
 
 'use client';
 
-/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void, no-control-regex  */
+/* eslint-disable no-shadow, eqeqeq, no-unused-vars, no-void, no-control-regex  */
 
 /**
  * This pipes all of our console logging functions to native logging so that

@@ -9,15 +9,15 @@ package com.facebook.react.modules.share
 
 import android.content.Intent
 import com.facebook.fbreact.specs.NativeShareModuleSpec
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = NativeShareModuleSpec.NAME)
-public class ShareModule(reactContext: ReactApplicationContext) :
+internal class ShareModule(reactContext: ReactApplicationContext) :
     NativeShareModuleSpec(reactContext) {
 
   /**
@@ -28,7 +28,7 @@ public class ShareModule(reactContext: ReactApplicationContext) :
    * @param content the data to send
    * @param dialogTitle the title of the chooser dialog
    */
-  public override fun share(content: ReadableMap?, dialogTitle: String?, promise: Promise) {
+  override fun share(content: ReadableMap?, dialogTitle: String?, promise: Promise) {
     if (content == null) {
       promise.reject(ERROR_INVALID_CONTENT, "Content cannot be null")
       return
@@ -44,24 +44,23 @@ public class ShareModule(reactContext: ReactApplicationContext) :
       }
       val chooser = Intent.createChooser(intent, dialogTitle)
       chooser.addCategory(Intent.CATEGORY_DEFAULT)
-      val currentActivity = getCurrentActivity()
+      val currentActivity = reactApplicationContext.getCurrentActivity()
       if (currentActivity != null) {
         currentActivity.startActivity(chooser)
       } else {
-        getReactApplicationContext().startActivity(chooser)
+        reactApplicationContext.startActivity(chooser)
       }
-      val result = Arguments.createMap()
-      result.putString("action", ACTION_SHARED)
+      val result = buildReadableMap { put("action", ACTION_SHARED) }
       promise.resolve(result)
     } catch (e: Exception) {
       promise.reject(ERROR_UNABLE_TO_OPEN_DIALOG, "Failed to open share dialog")
     }
   }
 
-  public companion object {
-    public const val NAME: String = NativeShareModuleSpec.NAME
+  companion object {
+    const val NAME: String = NativeShareModuleSpec.NAME
     private const val ACTION_SHARED: String = "sharedAction"
-    public const val ERROR_INVALID_CONTENT: String = "E_INVALID_CONTENT"
+    const val ERROR_INVALID_CONTENT: String = "E_INVALID_CONTENT"
     private const val ERROR_UNABLE_TO_OPEN_DIALOG: String = "E_UNABLE_TO_OPEN_DIALOG"
   }
 }

@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 import {format} from 'node:util';
@@ -77,7 +76,7 @@ describe('Native Animated', () => {
       const {Animated} = importModules();
 
       const opacity = new Animated.Value(0);
-      const ref = React.createRef(null);
+      const ref = createRef(null);
 
       Animated.timing(opacity, {
         toValue: 10,
@@ -1085,7 +1084,7 @@ describe('Native Animated', () => {
       const {Animated} = importModules();
 
       const opacity = new Animated.Value(0);
-      const ref = React.createRef(null);
+      const ref = createRef(null);
 
       await create(<Animated.View ref={ref} style={{opacity}} />);
 

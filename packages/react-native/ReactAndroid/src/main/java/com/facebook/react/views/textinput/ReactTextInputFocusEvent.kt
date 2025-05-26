@@ -22,7 +22,7 @@ internal class ReactTextInputFocusEvent(surfaceId: Int, viewId: Int) :
 
   override fun getEventName(): String = EVENT_NAME
 
-  override fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     return Arguments.createMap().apply { putInt("target", viewTag) }
   }
 

@@ -4,13 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
-import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from 'react-native';
 
 import React from 'react';
 import {Pressable, StyleSheet, Text} from 'react-native';

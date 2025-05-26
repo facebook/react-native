@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 // flow-typed signature: 79cfa6bcaa67fdb60f10d320da0470fc

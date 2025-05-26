@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
@@ -83,11 +83,15 @@ function PointerEventClickTouchHierarchyTestCase(
       <EventTracker
         id="parent"
         eventsRef={eventsInOrder}
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         eventsToTrack={eventsToTrack}
         style={styles.targetParent}>
         <EventTracker
           id="child"
           eventsRef={eventsInOrder}
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           style={styles.target}
         />

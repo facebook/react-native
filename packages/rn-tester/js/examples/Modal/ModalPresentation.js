@@ -11,7 +11,7 @@
 /* eslint-disable no-alert */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {ModalProps} from 'react-native/Libraries/Modal/Modal';
+import type {ModalProps} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
@@ -21,20 +21,20 @@ import * as React from 'react';
 import {useCallback, useContext, useState} from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
 
-const animationTypes = ['slide', 'none', 'fade'];
+const animationTypes = ['slide', 'none', 'fade'] as const;
 const presentationStyles = [
   'fullScreen',
   'pageSheet',
   'formSheet',
   'overFullScreen',
-];
+] as const;
 const supportedOrientations = [
   'portrait',
   'portrait-upside-down',
   'landscape',
   'landscape-left',
   'landscape-right',
-];
+] as const;
 
 const backdropColors = ['red', 'blue', undefined];
 

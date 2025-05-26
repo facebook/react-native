@@ -15,9 +15,9 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = NativeLogBoxSpec.NAME)
-public class LogBoxModule(
+internal class LogBoxModule(
     reactContext: ReactApplicationContext?,
-    private val devSupportManager: DevSupportManager
+    devSupportManager: DevSupportManager
 ) : NativeLogBoxSpec(reactContext) {
   private val surfaceDelegate: SurfaceDelegate =
       devSupportManager.createSurfaceDelegate(NAME)
@@ -45,7 +45,7 @@ public class LogBoxModule(
     UiThreadUtil.runOnUiThread { surfaceDelegate.destroyContentView() }
   }
 
-  public companion object {
-    public const val NAME: String = "LogBox"
+  companion object {
+    const val NAME: String = "LogBox"
   }
 }

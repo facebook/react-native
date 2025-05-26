@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import * as EnvironmentOptions from './EnvironmentOptions';
@@ -18,6 +17,36 @@ import os from 'os';
 import {SourceMapConsumer} from 'source-map';
 
 const BUCK_ISOLATION_DIR = 'react-native-fantom-buck-out';
+
+export enum HermesVariant {
+  Hermes,
+  StaticHermes, // Static Hermes Stable
+  StaticHermesExperimental, // Static Hermes Trunk
+}
+
+export function getBuckOptionsForHermes(
+  variant: HermesVariant,
+): $ReadOnlyArray<string> {
+  switch (variant) {
+    case HermesVariant.Hermes:
+      return [];
+    case HermesVariant.StaticHermes:
+      return ['-c hermes.static_hermes=stable'];
+    case HermesVariant.StaticHermesExperimental:
+      return ['-c hermes.static_hermes=trunk'];
+  }
+}
+
+export function getHermesCompilerTarget(variant: HermesVariant): string {
+  switch (variant) {
+    case HermesVariant.Hermes:
+      return '//xplat/hermes/tools/hermesc:hermesc';
+    case HermesVariant.StaticHermes:
+      return '//xplat/shermes/stable:hermesc';
+    case HermesVariant.StaticHermesExperimental:
+      return '//xplat/static_h:hermesc';
+  }
+}
 
 export function getBuckModesForPlatform(
   enableRelease: boolean = false,
@@ -42,7 +71,7 @@ export function getBuckModesForPlatform(
       throw new Error(`Unsupported platform: ${os.platform()}`);
   }
 
-  return ['@//xplat/mode/react-native/force-cxx-platform', osPlatform];
+  return ['@//xplat/mode/react-native/granite', osPlatform];
 }
 
 export type AsyncCommandResult = {

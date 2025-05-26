@@ -22,6 +22,10 @@ RCT_EXTERN void RCTSetNewArchEnabled(BOOL enabled) __attribute__((deprecated(
     "This function is now no-op. You need to modify the Info.plist adding a RCTNewArchEnabled bool property to control whether the New Arch is enabled or not")));
 ;
 
+// Whether React native should output logs for modules and components used
+// through the interop layers
+RCT_EXTERN BOOL RCTAreLegacyLogsEnabled(void);
+
 // JSON serialization/deserialization
 RCT_EXTERN NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error);
 RCT_EXTERN id __nullable RCTJSONParse(NSString *__nullable jsonString, NSError **error);
@@ -45,6 +49,7 @@ RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 // Legacy function to execute the specified block on the main queue synchronously.
 // Please do not use this unless you know what you're doing.
 RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
+RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *context);
 
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);

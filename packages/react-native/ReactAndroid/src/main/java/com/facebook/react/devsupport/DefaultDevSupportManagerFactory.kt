@@ -95,19 +95,15 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       redBoxHandler: RedBoxHandler?,
       devBundleDownloadListener: DevBundleDownloadListener?,
       minNumShakes: Int,
-      customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+      customPackagerCommandHandlers: Map<String, RequestHandler>?,
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
       pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
       useDevSupport: Boolean
   ): DevSupportManager =
-      if (!useDevSupport) {
-        if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
-          PerftestDevSupportManager(applicationContext)
-        } else {
-          ReleaseDevSupportManager()
-        }
-      } else {
+      if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
+        PerftestDevSupportManager(applicationContext)
+      } else if (useDevSupport) {
         BridgelessDevSupportManager(
             applicationContext,
             reactInstanceManagerHelper,
@@ -120,6 +116,8 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
             surfaceDelegateFactory,
             devLoadingViewManager,
             pausedInDebuggerOverlayManager)
+      } else {
+        ReleaseDevSupportManager()
       }
 
   private companion object {

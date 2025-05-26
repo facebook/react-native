@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {HostInstance} from '../../../src/private/types/HostInstance';
@@ -26,11 +26,11 @@ import type {ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 import {
   HScrollContentViewNativeComponent,
   HScrollViewNativeComponent,
-} from '../../../src/private/components/HScrollViewNativeComponents';
+} from '../../../src/private/components/scrollview/HScrollViewNativeComponents';
 import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
-} from '../../../src/private/components/VScrollViewNativeComponents';
+} from '../../../src/private/components/scrollview/VScrollViewNativeComponents';
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -52,6 +52,7 @@ import invariant from 'invariant';
 import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {cloneElement} from 'react';
 
 /*
  * iOS scroll event timing nuances:
@@ -134,16 +135,33 @@ export interface ScrollViewScrollToOptions {
 
 // Public methods for ScrollView
 export interface ScrollViewImperativeMethods {
-  +getScrollResponder: ScrollView['getScrollResponder'];
-  +getScrollableNode: ScrollView['getScrollableNode'];
-  +getInnerViewNode: ScrollView['getInnerViewNode'];
-  +getInnerViewRef: ScrollView['getInnerViewRef'];
-  +getNativeScrollRef: ScrollView['getNativeScrollRef'];
-  +scrollTo: ScrollView['scrollTo'];
-  +scrollToEnd: ScrollView['scrollToEnd'];
-  +flashScrollIndicators: ScrollView['flashScrollIndicators'];
-  +scrollResponderZoomTo: ScrollView['scrollResponderZoomTo'];
-  +scrollResponderScrollNativeHandleToKeyboard: ScrollView['scrollResponderScrollNativeHandleToKeyboard'];
+  +getScrollResponder: () => ScrollResponderType;
+  +getScrollableNode: () => ?number;
+  +getInnerViewNode: () => ?number;
+  +getInnerViewRef: () => InnerViewInstance | null;
+  +getNativeScrollRef: () => HostInstance | null;
+  +scrollTo: (
+    options?: ScrollViewScrollToOptions | number,
+    deprecatedX?: number,
+    deprecatedAnimated?: boolean,
+  ) => void;
+  +scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
+  +flashScrollIndicators: () => void;
+  +scrollResponderZoomTo: (
+    rect: {
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      animated?: boolean,
+    },
+    animated?: boolean, // deprecated, put this inside the rect argument instead
+  ) => void;
+  +scrollResponderScrollNativeHandleToKeyboard: (
+    nodeHandle: number | HostInstance,
+    additionalOffset?: number,
+    preventNegativeScrollOffset?: boolean,
+  ) => void;
 }
 
 export type DecelerationRateType = 'fast' | 'normal' | number;
@@ -355,17 +373,20 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
    */
   persistentScrollbar?: ?boolean,
   /**
-   * Fades out the edges of the scroll content.
+   * Controls the fading effect at the edges of the scroll content.
    *
-   * If the value is greater than 0, the fading edges will be set accordingly
-   * to the current scroll direction and position,
-   * indicating if there is more content to show.
+   * A value greater than 0 will apply the fading effect, indicating more content is available
+   * to scroll.
+   *
+   * You can specify a single number to apply the same fading length to both edges.
+   * Alternatively, use an object with `start` and `end` properties to set different
+   * fading lengths for the start and end of the scroll content.
    *
    * The default value is 0.
    *
    * @platform android
    */
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | {start: number, end: number},
 }>;
 
 type StickyHeaderComponentType = component(
@@ -373,11 +394,7 @@ type StickyHeaderComponentType = component(
   ...ScrollViewStickyHeaderProps
 );
 
-export type ScrollViewProps = $ReadOnly<{
-  ...ViewProps,
-  ...ScrollViewPropsIOS,
-  ...ScrollViewPropsAndroid,
-
+type ScrollViewBaseProps = $ReadOnly<{
   /**
    * These styles will be applied to the scroll view content container which
    * wraps all of the child views. Example:
@@ -655,6 +672,13 @@ export type ScrollViewProps = $ReadOnly<{
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
 }>;
 
+export type ScrollViewProps = $ReadOnly<{
+  ...ViewProps,
+  ...ScrollViewPropsIOS,
+  ...ScrollViewPropsAndroid,
+  ...ScrollViewBaseProps,
+}>;
+
 type ScrollViewState = {
   layoutHeight: ?number,
 };
@@ -820,26 +844,28 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    * implement this method so that they can be composed while providing access
    * to the underlying scroll responder's methods.
    */
-  getScrollResponder: () => ScrollResponderType = () => {
-    // $FlowFixMe[unclear-type]
-    return ((this: any): ScrollResponderType);
-  };
+  getScrollResponder: ScrollViewImperativeMethods['getScrollResponder'] =
+    () => {
+      // $FlowFixMe[unclear-type]
+      return ((this: any): ScrollResponderType);
+    };
 
-  getScrollableNode: () => ?number = () => {
+  getScrollableNode: ScrollViewImperativeMethods['getScrollableNode'] = () => {
     return findNodeHandle<$FlowFixMe>(this.getNativeScrollRef());
   };
 
-  getInnerViewNode: () => ?number = () => {
+  getInnerViewNode: ScrollViewImperativeMethods['getInnerViewNode'] = () => {
     return findNodeHandle<$FlowFixMe>(this._innerView.nativeInstance);
   };
 
-  getInnerViewRef: () => InnerViewInstance | null = () => {
+  getInnerViewRef: ScrollViewImperativeMethods['getInnerViewRef'] = () => {
     return this._innerView.nativeInstance;
   };
 
-  getNativeScrollRef: () => HostInstance | null = () => {
-    return this._scrollView.nativeInstance;
-  };
+  getNativeScrollRef: ScrollViewImperativeMethods['getNativeScrollRef'] =
+    () => {
+      return this._scrollView.nativeInstance;
+    };
 
   /**
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
@@ -852,11 +878,11 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    * the function also accepts separate arguments as an alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
-  scrollTo: (
-    options?: ScrollViewScrollToOptions | number,
-    deprecatedX?: number,
-    deprecatedAnimated?: boolean,
-  ) => void = (options, deprecatedX, deprecatedAnimated) => {
+  scrollTo: ScrollViewImperativeMethods['scrollTo'] = (
+    options,
+    deprecatedX,
+    deprecatedAnimated,
+  ) => {
     let x, y, animated;
     if (typeof options === 'number') {
       console.warn(
@@ -886,7 +912,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    * `scrollToEnd({animated: false})` for immediate scrolling.
    * If no options are passed, `animated` defaults to true.
    */
-  scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void = options => {
+  scrollToEnd: ScrollViewImperativeMethods['scrollToEnd'] = options => {
     // Default to true
     const animated = (options && options.animated) !== false;
     const component = this.getNativeScrollRef();
@@ -901,13 +927,14 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    *
    * @platform ios
    */
-  flashScrollIndicators: () => void = () => {
-    const component = this.getNativeScrollRef();
-    if (component == null) {
-      return;
-    }
-    Commands.flashScrollIndicators(component);
-  };
+  flashScrollIndicators: ScrollViewImperativeMethods['flashScrollIndicators'] =
+    () => {
+      const component = this.getNativeScrollRef();
+      if (component == null) {
+        return;
+      }
+      Commands.flashScrollIndicators(component);
+    };
 
   /**
    * This method should be used as the callback to onFocus in a TextInputs'
@@ -919,39 +946,36 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    * @param {bool} preventNegativeScrolling Whether to allow pulling the content
    *        down to make it meet the keyboard's top. Default is false.
    */
-  scrollResponderScrollNativeHandleToKeyboard: (
-    nodeHandle: number | HostInstance,
-    additionalOffset?: number,
-    preventNegativeScrollOffset?: boolean,
-  ) => void = (
-    nodeHandle: number | HostInstance,
-    additionalOffset?: number,
-    preventNegativeScrollOffset?: boolean,
-  ) => {
-    this._additionalScrollOffset = additionalOffset || 0;
-    this._preventNegativeScrollOffset = !!preventNegativeScrollOffset;
+  scrollResponderScrollNativeHandleToKeyboard: ScrollViewImperativeMethods['scrollResponderScrollNativeHandleToKeyboard'] =
+    (
+      nodeHandle: number | HostInstance,
+      additionalOffset?: number,
+      preventNegativeScrollOffset?: boolean,
+    ) => {
+      this._additionalScrollOffset = additionalOffset || 0;
+      this._preventNegativeScrollOffset = !!preventNegativeScrollOffset;
 
-    if (this._innerView.nativeInstance == null) {
-      return;
-    }
+      if (this._innerView.nativeInstance == null) {
+        return;
+      }
 
-    if (typeof nodeHandle === 'number') {
-      UIManager.measureLayout(
-        nodeHandle,
-        nullthrows(findNodeHandle<$FlowFixMe>(this)),
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        this._textInputFocusError,
-        this._inputMeasureAndScrollToKeyboard,
-      );
-    } else {
-      nodeHandle.measureLayout(
-        this._innerView.nativeInstance,
-        this._inputMeasureAndScrollToKeyboard,
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        this._textInputFocusError,
-      );
-    }
-  };
+      if (typeof nodeHandle === 'number') {
+        UIManager.measureLayout(
+          nodeHandle,
+          nullthrows(findNodeHandle<$FlowFixMe>(this)),
+          // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+          this._textInputFocusError,
+          this._inputMeasureAndScrollToKeyboard,
+        );
+      } else {
+        nodeHandle.measureLayout(
+          this._innerView.nativeInstance,
+          this._inputMeasureAndScrollToKeyboard,
+          // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+          this._textInputFocusError,
+        );
+      }
+    };
 
   /**
    * A helper function to zoom to a specific rect in the scrollview. The argument has the shape
@@ -959,41 +983,33 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
    *
    * @platform ios
    */
-  scrollResponderZoomTo: (
-    rect: {
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      animated?: boolean,
-    },
-    animated?: boolean, // deprecated, put this inside the rect argument instead
-  ) => void = (
-    rect: {
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      animated?: boolean,
-    },
-    animated?: boolean, // deprecated, put this inside the rect argument instead
-  ) => {
-    invariant(Platform.OS === 'ios', 'zoomToRect is not implemented');
-    if ('animated' in rect) {
-      this._animated = rect.animated;
-      delete rect.animated;
-    } else if (typeof animated !== 'undefined') {
-      console.warn(
-        '`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead',
-      );
-    }
+  scrollResponderZoomTo: ScrollViewImperativeMethods['scrollResponderZoomTo'] =
+    (
+      rect: {
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        animated?: boolean,
+      },
+      animated?: boolean, // deprecated, put this inside the rect argument instead
+    ) => {
+      invariant(Platform.OS === 'ios', 'zoomToRect is not implemented');
+      if ('animated' in rect) {
+        this._animated = rect.animated;
+        delete rect.animated;
+      } else if (typeof animated !== 'undefined') {
+        console.warn(
+          '`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead',
+        );
+      }
 
-    const component = this.getNativeScrollRef();
-    if (component == null) {
-      return;
-    }
-    Commands.zoomToRect(component, rect, animated !== false);
-  };
+      const component = this.getNativeScrollRef();
+      if (component == null) {
+        return;
+      }
+      Commands.zoomToRect(component, rect, animated !== false);
+    };
 
   _textInputFocusError() {
     console.warn('Error measuring text field.');
@@ -1153,6 +1169,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       // they are callable from the ref.
 
       // $FlowFixMe[prop-missing] - Known issue with appending custom methods.
+      // $FlowFixMe[unsafe-object-assign]
       const publicInstance: PublicScrollViewInstance = Object.assign(
         nativeInstance,
         {
@@ -1629,7 +1646,9 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
     if (__DEV__ && this.props.style !== undefined) {
       // $FlowFixMe[underconstrained-implicit-instantiation]
       const style = flattenStyle(this.props.style);
-      const childLayoutProps = ['alignItems', 'justifyContent'].filter(
+      const childLayoutProps = (
+        ['alignItems', 'justifyContent'] as const
+      ).filter(
         // $FlowFixMe[incompatible-use]
         prop => style && style[prop] !== undefined,
       );
@@ -1814,7 +1833,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
         // however, the ScrollView still needs the baseStyle to be scrollable
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         // $FlowFixMe[incompatible-call]
-        return React.cloneElement(
+        return cloneElement(
           refreshControl,
           {style: StyleSheet.compose(baseStyle, outer)},
           <NativeScrollView
@@ -1894,26 +1913,28 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
   return state;
 }
 
-// TODO: After upgrading to React 19, remove `forwardRef` from this component.
 // NOTE: This wrapper component is necessary because `ScrollView` is a class
 // component and we need to map `ref` to a differently named prop. This can be
 // removed when `ScrollView` is a functional component.
-const Wrapper: component(
+const ScrollViewWrapper: component(
   ref?: React.RefSetter<PublicScrollViewInstance>,
   ...props: ScrollViewProps
-) = React.forwardRef(function Wrapper(
-  props: ScrollViewProps,
-  ref: ?React.RefSetter<PublicScrollViewInstance>,
-): React.Node {
+) = function Wrapper({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<PublicScrollViewInstance>,
+  ...ScrollViewProps,
+}): React.Node {
   return ref == null ? (
     <ScrollView {...props} />
   ) : (
     <ScrollView {...props} scrollViewRef={ref} />
   );
-});
-Wrapper.displayName = 'ScrollView';
+};
+ScrollViewWrapper.displayName = 'ScrollView';
 // $FlowExpectedError[prop-missing]
-Wrapper.Context = ScrollViewContext;
+ScrollViewWrapper.Context = ScrollViewContext;
 
-export default ((Wrapper: $FlowFixMe): typeof Wrapper &
+export default ((ScrollViewWrapper: $FlowFixMe): typeof ScrollViewWrapper &
   ScrollViewComponentStatics);

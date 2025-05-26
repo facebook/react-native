@@ -57,7 +57,7 @@ const eventListenerAnimationFinishedCallbacks: {
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
-const shouldSignalBatch =
+const shouldSignalBatch: boolean =
   ReactNativeFeatureFlags.animatedShouldSignalBatch() ||
   ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
@@ -97,12 +97,18 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
         // is possible because # arguments is fixed for each operation. For more
         // details, see `NativeAnimatedModule.queueAndExecuteBatchedOperations`.
         singleOpQueue.push(operationID, ...args);
+        if (shouldSignalBatch) {
+          clearImmediate(flushQueueImmediate);
+          flushQueueImmediate = setImmediate(API.flushQueue);
+        }
       };
     }
   } else {
     for (let ii = 0, length = methodNames.length; ii < length; ii++) {
       const methodName = methodNames[ii];
       nativeOperations[methodName] = (...args) => {
+        /* $FlowFixMe[prop-missing] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         const method = nullthrows(NativeAnimatedModule)[methodName];
         // If queueing is explicitly on, *or* the queue has not yet
         // been flushed, use the queue. This is to prevent operations
@@ -436,6 +442,7 @@ export default {
   generateNewAnimationId,
   assertNativeAnimatedModule,
   shouldUseNativeDriver,
+  shouldSignalBatch,
   transformDataType,
   // $FlowExpectedError[unsafe-getters-setters] - unsafe getter lint suppression
   // $FlowExpectedError[missing-type-arg] - unsafe getter lint suppression

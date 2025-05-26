@@ -13,8 +13,6 @@ import type {
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
 } from '../../../src/private/types/HostInstance';
-import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
-import typeof DrawerLayoutAndroidCommon from './DrawerLayoutAndroid.js';
 import type {
   DrawerLayoutAndroidMethods,
   DrawerLayoutAndroidProps,
@@ -30,8 +28,9 @@ import AndroidDrawerLayoutNativeComponent, {
 } from './AndroidDrawerLayoutNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {createRef} from 'react';
 
-const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
+const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'] as const;
 
 /**
  * React component that wraps the platform `DrawerLayout` (Android only). The
@@ -78,9 +77,7 @@ class DrawerLayoutAndroid
 
   // $FlowFixMe[missing-local-annot]
   _nativeRef =
-    React.createRef<
-      React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
-    >();
+    createRef<React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>>();
 
   state: DrawerLayoutAndroidState = {
     drawerOpened: false,
@@ -305,4 +302,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DrawerLayoutAndroid as $FlowFixMe as DrawerLayoutAndroidCommon;
+export default DrawerLayoutAndroid as $FlowFixMe;

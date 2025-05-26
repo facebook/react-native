@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 // flowlint unsafe-getters-setters:off
@@ -17,6 +17,8 @@ import type {
 } from './PerformanceEntry';
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
+import DOMException from '../errors/DOMException';
+import {setPlatformObject} from '../webidl/PlatformObjects';
 import {EventCounts} from './EventTiming';
 import {
   performanceEntryTypeToRaw,
@@ -191,15 +193,22 @@ export default class Performance {
     let computedDuration = duration;
 
     if (NativePerformance?.measureWithResult) {
-      [computedStartTime, computedDuration] =
-        NativePerformance.measureWithResult(
-          measureName,
-          startTime,
-          endTime,
-          duration,
-          startMarkName,
-          endMarkName,
+      try {
+        [computedStartTime, computedDuration] =
+          NativePerformance.measureWithResult(
+            measureName,
+            startTime,
+            endTime,
+            duration,
+            startMarkName,
+            endMarkName,
+          );
+      } catch (error) {
+        throw new DOMException(
+          "Failed to execute 'measure' on 'Performance': " + error.message,
+          'SyntaxError',
         );
+      }
     } else {
       warnNoNativePerformance();
     }
@@ -226,9 +235,7 @@ export default class Performance {
    * Returns a double, measured in milliseconds.
    * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
    */
-  now(): DOMHighResTimeStamp {
-    return getCurrentTimeStamp();
-  }
+  now: () => DOMHighResTimeStamp = getCurrentTimeStamp;
 
   /**
    * An extension that allows to get back to JS all currently logged marks/measures
@@ -285,3 +292,5 @@ export default class Performance {
     ).map(rawToPerformanceEntry);
   }
 }
+
+setPlatformObject(Performance);

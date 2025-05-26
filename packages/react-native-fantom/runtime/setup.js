@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
@@ -257,11 +256,11 @@ function getContextTitle(context: Context): string[] {
     return [];
   }
 
-  const titles = context.title != null ? [context.title] : [];
-  if (context.parentContext) {
-    titles.push(...getContextTitle(context.parentContext));
+  const titles = getContextTitle(context.parentContext);
+  if (context.title != null) {
+    titles.push(context.title);
   }
-  return titles.reverse();
+  return titles;
 }
 
 function invokeHooks(
@@ -321,7 +320,7 @@ function runSpec(spec: Spec): TestCaseResult {
     return result;
   }
 
-  let status;
+  let status: 'passed' | 'failed' | 'pending';
   let error;
 
   const start = Date.now();

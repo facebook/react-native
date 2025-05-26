@@ -10,7 +10,7 @@ package com.facebook.react.bridge;
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_START;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
@@ -18,6 +18,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.model.ReactModuleInfo;
@@ -35,6 +36,7 @@ import javax.inject.Provider;
  * <p>Lifecycle events via a {@link LifecycleEventListener} will still always happen on the UI
  * thread.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class ModuleHolder {
 
@@ -96,6 +98,7 @@ public class ModuleHolder {
       }
     }
     if (shouldInitializeNow) {
+      Assertions.assertNotNull(module);
       doInitialize(module);
     }
   }
@@ -176,7 +179,7 @@ public class ModuleHolder {
   private NativeModule create() {
     SoftAssertions.assertCondition(mModule == null, "Creating an already created module.");
     ReactMarker.logMarker(CREATE_MODULE_START, mName, mInstanceKey);
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.createModule")
+    SystraceMessage.beginSection(TRACE_TAG_REACT, "ModuleHolder.createModule")
         .arg("name", mName)
         .flush();
     PrinterHolder.getPrinter()
@@ -208,13 +211,13 @@ public class ModuleHolder {
       throw ex;
     } finally {
       ReactMarker.logMarker(CREATE_MODULE_END, mName, mInstanceKey);
-      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      SystraceMessage.endSection(TRACE_TAG_REACT).flush();
     }
     return module;
   }
 
   private void doInitialize(NativeModule module) {
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.initialize")
+    SystraceMessage.beginSection(TRACE_TAG_REACT, "ModuleHolder.initialize")
         .arg("name", mName)
         .flush();
     ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_START, mName, mInstanceKey);
@@ -238,7 +241,7 @@ public class ModuleHolder {
       }
     } finally {
       ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END, mName, mInstanceKey);
-      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      SystraceMessage.endSection(TRACE_TAG_REACT).flush();
     }
   }
 }

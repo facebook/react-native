@@ -6,11 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
- * @fantom_flags enableLongTaskAPI:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {
   PerformanceObserverCallbackOptions,

@@ -8,7 +8,7 @@
 package com.facebook.react.bridge;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import androidx.annotation.Nullable;
 import com.facebook.debug.holder.PrinterHolder;
@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 @LegacyArchitecture
 class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "JavaMethodWrapper", LegacyArchitectureLogLevel.WARNING);
   }
 
@@ -234,7 +234,7 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
     if (mArgumentsProcessed) {
       return;
     }
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processArguments")
+    SystraceMessage.beginSection(TRACE_TAG_REACT, "processArguments")
         .arg("method", mModuleWrapper.getName() + "." + mMethod.getName())
         .flush();
     try {
@@ -247,7 +247,7 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
       mArguments = new Object[mParameterTypes.length];
       mJSArgumentsNeeded = calculateJSArgumentsNeeded();
     } finally {
-      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      SystraceMessage.endSection(TRACE_TAG_REACT).flush();
     }
   }
 
@@ -334,7 +334,7 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
   @Override
   public void invoke(JSInstance jsInstance, ReadableArray parameters) {
     String traceName = mModuleWrapper.getName() + "." + mMethod.getName();
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
+    SystraceMessage.beginSection(TRACE_TAG_REACT, "callJavaModuleMethod")
         .arg("method", traceName)
         .flush();
     if (DEBUG) {
@@ -389,7 +389,7 @@ class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
         throw new RuntimeException(createInvokeExceptionMessage(traceName), ite);
       }
     } finally {
-      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+      SystraceMessage.endSection(TRACE_TAG_REACT).flush();
     }
   }
 

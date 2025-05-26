@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
-
-import * as React from 'react';
 
 export type RNTesterModuleExample = $ReadOnly<{
   name?: string,
@@ -18,7 +16,7 @@ export type RNTesterModuleExample = $ReadOnly<{
   expect?: string,
   hidden?: boolean,
   scrollable?: boolean,
-  render: ({testID?: ?string}) => React.Node,
+  render: component(),
 }>;
 
 export type RNTesterModule = $ReadOnly<{

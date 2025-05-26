@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -60,18 +60,22 @@ export type ActivityIndicatorProps = $ReadOnly<{
   size?: ?IndicatorSize,
 }>;
 
-const ActivityIndicator = (
-  {
-    animating = true,
-    color = Platform.OS === 'ios' ? GRAY : null,
-    hidesWhenStopped = true,
-    onLayout,
-    size = 'small',
-    style,
-    ...restProps
-  }: ActivityIndicatorProps,
-  forwardedRef?: any,
-) => {
+const ActivityIndicator: component(
+  ref?: React.RefSetter<HostComponent<empty>>,
+  ...props: ActivityIndicatorProps
+) = ({
+  ref: forwardedRef,
+  animating = true,
+  color = Platform.OS === 'ios' ? GRAY : null,
+  hidesWhenStopped = true,
+  onLayout,
+  size = 'small',
+  style,
+  ...restProps
+}: {
+  ref?: any,
+  ...ActivityIndicatorProps,
+}) => {
   let sizeStyle;
   let sizeProp;
 
@@ -110,6 +114,7 @@ const ActivityIndicator = (
       style={StyleSheet.compose(styles.container, style)}>
       {Platform.OS === 'android' ? (
         // $FlowFixMe[prop-missing] Flow doesn't know when this is the android component
+        // $FlowFixMe[incompatible-type]
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
         /* $FlowFixMe[incompatible-type] (>=0.106.0 site=react_native_android_fb) This comment
@@ -153,11 +158,7 @@ const ActivityIndicator = (
 ```
 */
 
-const ActivityIndicatorWithRef: component(
-  ref?: React.RefSetter<HostComponent<empty>>,
-  ...props: ActivityIndicatorProps
-) = React.forwardRef(ActivityIndicator);
-ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
+ActivityIndicator.displayName = 'ActivityIndicator';
 
 const styles = StyleSheet.create({
   container: {
@@ -174,4 +175,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ActivityIndicatorWithRef;
+export default ActivityIndicator;

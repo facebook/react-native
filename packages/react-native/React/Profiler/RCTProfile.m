@@ -42,7 +42,7 @@ static NSString *const kProfilePrefix = @"rct_profile_";
 
 #pragma mark - Variables
 
-static atomic_bool RCTProfileProfiling = ATOMIC_VAR_INIT(NO);
+static atomic_bool RCTProfileProfiling = NO;
 
 static NSDictionary *RCTProfileInfo;
 static NSMutableDictionary *RCTProfileOngoingEvents;

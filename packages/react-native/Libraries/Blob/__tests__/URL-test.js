@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -53,9 +52,14 @@ describe('URL', function () {
     expect(url.pathname).toBe('/docs/path');
     expect(url.port).toBe('8080');
     expect(url.search).toBe('?query=testQuery&key=value');
+    expect(url.protocol).toBe('https:');
+    expect(url.toString()).toBe(
+      'https://username:password@reactnative.dev:8080/docs/path?query=testQuery&key=value#fragment',
+    );
 
     // Test searchParams
     const searchParams = url.searchParams;
+    expect(searchParams.size).toBe(2);
     expect(searchParams.get('query')).toBe('testQuery');
     expect(searchParams.get('key')).toBe('value');
 
@@ -66,6 +70,7 @@ describe('URL', function () {
         '&param3=value3+with+spaces+legacy',
       ].join(''),
     );
+    expect(paramsFromString.size).toBe(3);
     expect(paramsFromString.get('param1')).toBe('value1');
     expect(paramsFromString.get('param2')).toBe('value2 with spaces');
     expect(paramsFromString.get('param3')).toBe('value3 with spaces legacy');
@@ -79,6 +84,7 @@ describe('URL', function () {
       active: 'true',
     });
 
+    expect(paramsFromObject.size).toBe(3);
     expect(paramsFromObject.get('user')).toBe('john');
     expect(paramsFromObject.get('age')).toBe('30');
     expect(paramsFromObject.get('active')).toBe('true');
@@ -94,6 +100,7 @@ describe('URL', function () {
 
     // URLSearchParams: Empty
     const emptyParams = new URLSearchParams('');
+    expect(emptyParams.size).toBe(0);
     expect([...emptyParams.entries()]).toEqual([]);
 
     // URLSearchParams: Array (for multiple values of the same key)
@@ -102,6 +109,7 @@ describe('URL', function () {
       ['key1', 'value2'],
       ['key2', 'value3'],
     ]);
+    expect(paramsFromArray.size).toBe(2);
     expect(paramsFromArray.getAll('key1')).toEqual(['value1', 'value2']);
     expect(paramsFromArray.get('key2')).toBe('value3');
 
@@ -112,10 +120,12 @@ describe('URL', function () {
 
     // Adding a new param
     urlParams.append('newKey', 'newValue');
+    expect(urlParams.size).toBe(3);
     expect(urlParams.get('newKey')).toBe('newValue');
 
     // Deleting a param
     urlParams.delete('key');
+    expect(urlParams.size).toBe(2);
     expect(urlParams.get('key')).toBeNull();
 
     // Checking if a param exists

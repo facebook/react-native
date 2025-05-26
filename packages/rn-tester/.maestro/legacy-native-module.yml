@@ -1,0 +1,46 @@
+appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
+---
+- launchApp
+- assertVisible:
+    text: "APIs"
+- tapOn:
+    id: "apis-tab"
+- scrollUntilVisible:
+    element:
+        id: "Legacy Native Module"
+    direction: DOWN
+    speed: 40
+- tapOn:
+    id: "Legacy Native Module"
+- tapOn: 
+    text: "voidFunc"
+- assertVisible:
+    id: "voidFunc-result"
+- tapOn:
+    text: "getBool"
+- assertVisible:
+    id: "getBool-result"
+- tapOn:
+    text: "getEnum"
+- assertVisible:
+    id: "getEnum-result"
+- tapOn:
+    text: "getInt"
+- assertVisible:
+    id: "getInt-result"
+- tapOn:
+    text: "getString"
+- assertVisible:
+    id: "getString-result"
+- tapOn:
+    text: "getObject"
+- assertVisible:
+    id: "getObject-result"
+- tapOn:
+    text: "getUnsafeObject"
+- assertVisible:
+    id: "getUnsafeObject-result"
+- tapOn:
+    text: "getValue"
+- assertVisible:
+    id: "getValue-result"

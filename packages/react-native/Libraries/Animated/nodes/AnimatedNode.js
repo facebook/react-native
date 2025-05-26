@@ -112,8 +112,8 @@ export default class AnimatedNode {
     return this.#listeners.size > 0;
   }
 
-  __onAnimatedValueUpdateReceived(value: number): void {
-    this.__callListeners(value);
+  __onAnimatedValueUpdateReceived(value: number, offset: number): void {
+    this.__callListeners(value + offset);
   }
 
   __callListeners(value: number): void {

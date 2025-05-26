@@ -68,8 +68,7 @@
 /// <reference path="modules/BatchedBridge.d.ts" />
 /// <reference path="modules/Codegen.d.ts" />
 /// <reference path="modules/Devtools.d.ts" />
-/// <reference types="../src/types/globals.d.ts" />
-/// <reference path="modules/LaunchScreen.d.ts" />
+/// <reference path="../src/types/globals.d.ts" />
 
 export * from '../Libraries/ActionSheetIOS/ActionSheetIOS';
 export * from '../Libraries/Alert/Alert';
@@ -143,7 +142,7 @@ export * as CodegenTypes from '../Libraries/Types/CodegenTypesNamespace';
 export * from '../Libraries/Types/CoreEventTypes';
 export * from '../Libraries/Utilities/Appearance';
 export * from '../Libraries/Utilities/BackHandler';
-export * from '../src/private/devmenu/DevMenu';
+export * from '../src/private/devsupport/devmenu/DevMenu';
 export * from '../Libraries/Utilities/DevSettings';
 export * from '../Libraries/Utilities/Dimensions';
 export * from '../Libraries/Utilities/PixelRatio';

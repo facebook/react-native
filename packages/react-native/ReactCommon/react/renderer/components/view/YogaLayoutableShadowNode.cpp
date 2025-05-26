@@ -15,9 +15,11 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
+#include <react/utils/FloatComparison.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -837,6 +839,21 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
   auto size = shadowNode.measureContent(
       threadLocalLayoutContext, {minimumSize, maximumSize});
 
+#ifdef REACT_NATIVE_DEBUG
+  bool widthInBounds = size.width + kDefaultEpsilon >= minimumSize.width &&
+      size.width - kDefaultEpsilon <= maximumSize.width;
+  bool heightInBounds = size.height + kDefaultEpsilon >= minimumSize.height &&
+      size.height - kDefaultEpsilon <= maximumSize.height;
+
+  if (!widthInBounds || !heightInBounds) {
+    LOG(ERROR) << shadowNode.getComponentDescriptor().getComponentName()
+               << " returned an invalid measurement. Min: ["
+               << minimumSize.width << "," << minimumSize.height << "] Max: ["
+               << maximumSize.width << "," << maximumSize.height
+               << "] Actual: [" << size.width << "," << size.height << "]";
+  }
+#endif
+
   return YGSize{
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
 }
@@ -993,7 +1010,7 @@ void YogaLayoutableShadowNode::ensureConsistency() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
-#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
+#if defined(REACT_NATIVE_DEBUG)
   // Checking that the shapes of Yoga node children object look fine.
   // This is the only heuristic that might produce false-positive results
   // (really broken dangled nodes might look fine). This is useful as an early
@@ -1011,7 +1028,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
 }
 
 void YogaLayoutableShadowNode::ensureYogaChildrenAlignment() const {
-#if defined(REACT_NATIVE_DEBUG) && defined(WITH_FBSYSTRACE)
+#if defined(REACT_NATIVE_DEBUG)
   // If the node is not a leaf node, checking that:
   // - All children are `YogaLayoutableShadowNode` subclasses.
   // - All Yoga children are owned/connected to corresponding children of

@@ -9,15 +9,12 @@
 
 #include "RuntimeSamplingProfile.h"
 
-#include <memory>
-
 namespace facebook::react::jsinspector_modern::tracing {
 
 struct InstanceTracingProfile {
  public:
-  explicit InstanceTracingProfile(
-      const RuntimeSamplingProfile runtimeSamplingProfile)
-      : runtimeSamplingProfile_(runtimeSamplingProfile) {}
+  explicit InstanceTracingProfile(RuntimeSamplingProfile runtimeSamplingProfile)
+      : runtimeSamplingProfile_(std::move(runtimeSamplingProfile)) {}
 
   const RuntimeSamplingProfile& getRuntimeSamplingProfile() const {
     return runtimeSamplingProfile_;

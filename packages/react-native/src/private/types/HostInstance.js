@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 export type MeasureOnSuccessCallback = (
@@ -38,10 +38,10 @@ export type MeasureLayoutOnSuccessCallback = (
  * The methods described here are available on most of the default components provided by React Native.
  * Note, however, that they are not available on composite components that aren't directly backed by a
  * native view. This will generally include most components that you define in your own app.
- * For more information, see [Direct Manipulation](https://reactnative.dev/docs/direct-manipulation).
+ * For more information, see [Direct Manipulation](https://reactnative.dev/docs/the-new-architecture/direct-manipulation-new-architecture).
  * @see https://github.com/facebook/react-native/blob/master/Libraries/Renderer/shims/ReactNativeTypes.js#L87
  */
-export interface NativeMethods {
+export interface LegacyHostInstanceMethods {
   /**
    * Removes focus from an input or view. This is the opposite of `focus()`.
    */
@@ -100,9 +100,17 @@ export interface NativeMethods {
    * This function sends props straight to native. They will not participate in
    * future diff process - this means that if you do not include them in the
    * next render, they will remain active (see [Direct
-   * Manipulation](https://reactnative.dev/docs/direct-manipulation)).
+   * Manipulation](https://reactnative.dev/docs/the-new-architecture/direct-manipulation-new-architecture)).
    */
   setNativeProps(nativeProps: {...}): void;
 }
 
-export type HostInstance = NativeMethods;
+export type HostInstance = LegacyHostInstanceMethods;
+
+/** @deprecated Use HostInstance instead */
+export type NativeMethods = LegacyHostInstanceMethods;
+
+/**
+ * @deprecated Use HostInstance instead.
+ */
+export type NativeMethodsMixin = LegacyHostInstanceMethods;

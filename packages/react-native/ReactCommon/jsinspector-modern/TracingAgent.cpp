@@ -44,7 +44,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     bool correctlyStartedPerformanceTracer =
-        PerformanceTracer::getInstance().startTracing();
+        tracing::PerformanceTracer::getInstance().startTracing();
 
     if (!correctlyStartedPerformanceTracer) {
       frontendChannel_(cdp::jsonError(
@@ -56,7 +56,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     instanceAgent_->startTracing();
-    instanceTracingStartTimestamp_ = std::chrono::steady_clock::now();
+    instanceTracingStartTimestamp_ = HighResTimeStamp::now();
     frontendChannel_(cdp::jsonResult(req.id));
 
     return true;
@@ -72,7 +72,10 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     instanceAgent_->stopTracing();
-    bool correctlyStopped = PerformanceTracer::getInstance().stopTracing();
+
+    tracing::PerformanceTracer& performanceTracer =
+        tracing::PerformanceTracer::getInstance();
+    bool correctlyStopped = performanceTracer.stopTracing();
     if (!correctlyStopped) {
       frontendChannel_(cdp::jsonError(
           req.id,
@@ -90,15 +93,16 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
           "Tracing.dataCollected",
           folly::dynamic::object("value", eventsChunk)));
     };
-    PerformanceTracer::getInstance().collectEvents(
+    performanceTracer.collectEvents(
         dataCollectedCallback, TRACE_EVENT_CHUNK_SIZE);
 
-    tracing::RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
-        PerformanceTracer::getInstance(),
-        instanceAgent_->collectTracingProfile().getRuntimeSamplingProfile(),
-        instanceTracingStartTimestamp_,
+    tracing::RuntimeSamplingProfileTraceEventSerializer serializer(
+        performanceTracer,
         dataCollectedCallback,
         PROFILE_TRACE_EVENT_CHUNK_SIZE);
+    serializer.serializeAndNotify(
+        instanceAgent_->collectTracingProfile().getRuntimeSamplingProfile(),
+        instanceTracingStartTimestamp_);
 
     frontendChannel_(cdp::jsonNotification(
         "Tracing.tracingComplete",

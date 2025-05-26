@@ -8,6 +8,13 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 project(ReactAndroid)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_SUPPORT)
+if (IPO_SUPPORT)
+  message(STATUS "LTO support is enabled")
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 # Convert input paths to CMake format (with forward slashes)
@@ -214,6 +221,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_utils>
           $<TARGET_OBJECTS:reactnativeblob>
           $<TARGET_OBJECTS:reactnativejni>
+          $<TARGET_OBJECTS:reactnativejni_common>
           $<TARGET_OBJECTS:reactperflogger>
           $<TARGET_OBJECTS:rninstance>
           $<TARGET_OBJECTS:rrc_image>
@@ -303,6 +311,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_utils,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactnativeblob,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactnativejni,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:reactnativejni_common,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactperflogger,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rninstance,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:rrc_image,INTERFACE_INCLUDE_DIRECTORIES>
@@ -321,6 +330,81 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:turbomodulejsijni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:uimanagerjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:yoga,INTERFACE_INCLUDE_DIRECTORIES>
+)
+
+target_compile_definitions(reactnative
+        PUBLIC
+        $<TARGET_PROPERTY:bridgeless,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:bridgelessnativeviewconfig,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:callinvokerholder,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:fabricjni,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:glog_init,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:jserrorhandler,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:jsinspector,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:jsinspector_cdp,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:jsinspector_network,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:jsinspector_tracing,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:jsireact,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:mapbufferjni,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_bridging,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_codegen_rncore,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_cxxreact,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_debug,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_devsupportjni,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_featureflags,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_featureflagsjni,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_nativemodule_core,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_nativemodule_defaults,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_nativemodule_dom,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_nativemodule_featureflags,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_performance_timeline,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_animations,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_attributedstring,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_componentregistry,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_componentregistry,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_consistency,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_core,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_css,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_debug,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_dom,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_element,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_graphics,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_imagemanager,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_leakchecker,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_mapbuffer,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_mounting,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_observers_events,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_runtimescheduler,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_scheduler,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_telemetry,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_textlayoutmanager,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_uimanager,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_renderer_uimanager_consistency,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:react_utils,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:reactnativeblob,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:reactnativejni,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:reactnativejni_common,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:reactperflogger,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rninstance,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_image,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_legacyviewmanagerinterop,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_modal,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_native,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_progressbar,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_root,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_safeareaview,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_scrollview,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_switch,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_text,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_textinput,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:rrc_view,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:runtimeexecutor,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:turbomodulejsijni,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:uimanagerjni,INTERFACE_COMPILE_DEFINITIONS>
+        $<TARGET_PROPERTY:yoga,INTERFACE_COMPILE_DEFINITIONS>
 )
 
 # GTest dependencies

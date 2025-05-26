@@ -4,24 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
-import typeof ChildListCollection from './Lists/ChildListCollection';
 import typeof FillRateHelper from './Lists/FillRateHelper';
 import typeof ViewabilityHelper from './Lists/ViewabilityHelper';
 import typeof VirtualizedList from './Lists/VirtualizedList';
-import typeof VirtualizedSectionList from './Lists/VirtualizedSectionList';
+import type {AnyVirtualizedSectionList} from './Lists/VirtualizedSectionList';
 
-import {
-  typeof VirtualizedListCellContextProvider,
-  typeof VirtualizedListContext,
-  typeof VirtualizedListContextProvider,
-  typeof VirtualizedListContextResetter,
-} from './Lists/VirtualizedListContext';
+import {typeof VirtualizedListContextResetter} from './Lists/VirtualizedListContext';
 import {keyExtractor} from './Lists/VirtualizeUtils';
 
 export type {
@@ -51,31 +45,17 @@ export default {
   get VirtualizedList(): VirtualizedList {
     return require('./Lists/VirtualizedList').default;
   },
-  get VirtualizedSectionList(): VirtualizedSectionList<any, any> {
+  get VirtualizedSectionList(): AnyVirtualizedSectionList {
     return require('./Lists/VirtualizedSectionList').default;
   },
   get VirtualizedListContextResetter(): VirtualizedListContextResetter {
-    return require('./Lists/VirtualizedListContext')
-      .VirtualizedListContextResetter;
-  },
-  get VirtualizedListContext(): VirtualizedListContext {
-    return require('./Lists/VirtualizedListContext').VirtualizedListContext;
-  },
-  get VirtualizedListContextProvider(): VirtualizedListContextProvider {
-    return require('./Lists/VirtualizedListContext')
-      .VirtualizedListContextProvider;
-  },
-  get VirtualizedListCellContextProvider(): VirtualizedListCellContextProvider {
-    return require('./Lists/VirtualizedListContext')
-      .VirtualizedListCellContextProvider;
+    const VirtualizedListContext = require('./Lists/VirtualizedListContext');
+    return VirtualizedListContext.VirtualizedListContextResetter;
   },
   get ViewabilityHelper(): ViewabilityHelper {
     return require('./Lists/ViewabilityHelper').default;
   },
   get FillRateHelper(): FillRateHelper {
     return require('./Lists/FillRateHelper').default;
-  },
-  get ChildListCollection(): ChildListCollection {
-    return require('./Lists/ChildListCollection').default;
   },
 };

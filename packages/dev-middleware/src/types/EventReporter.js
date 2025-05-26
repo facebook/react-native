@@ -106,14 +106,14 @@ export type ReportableEvent =
   | {
       type: 'debugger_high_ping' | 'device_high_ping',
       duration: number,
-      isIdle: boolean,
+      timeSinceLastCommunication: number | null,
       ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'debugger_timeout' | 'device_timeout',
       duration: number,
-      isIdle: boolean,
+      timeSinceLastCommunication: number | null,
       ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
@@ -121,7 +121,7 @@ export type ReportableEvent =
       type: 'debugger_connection_closed' | 'device_connection_closed',
       code: number,
       reason: string,
-      isIdle: boolean,
+      timeSinceLastCommunication: number | null,
       ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }

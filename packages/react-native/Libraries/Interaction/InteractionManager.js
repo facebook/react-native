@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
@@ -194,9 +194,17 @@ function _processUpdate() {
 
   if (interactionCount !== 0 && nextInteractionCount === 0) {
     // transition from 1+ --> 0 interactions
+    /* $FlowFixMe[prop-missing] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
+    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     _emitter.emit(InteractionManager.Events.interactionComplete);
   } else if (interactionCount === 0 && nextInteractionCount !== 0) {
     // transition from 0 --> 1+ interactions
+    /* $FlowFixMe[prop-missing] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
+    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     _emitter.emit(InteractionManager.Events.interactionStart);
   }
 

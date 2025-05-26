@@ -1,10 +1,11 @@
 # Feature Flags
 
-* [Main doc](../../../../../../__docs__/README.md)
+[🏠 Home](../../../../../../__docs__/README.md)
 
-This directory contains the shared C++ implementation of the internal React Native feature flags system.
+This directory contains the shared C++ implementation of the internal React
+Native feature flags system.
 
-## Relationship with other systems
+## 🔗 Relationship with other systems
 
 ### Part of
 

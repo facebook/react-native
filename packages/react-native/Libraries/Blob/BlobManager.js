@@ -86,8 +86,12 @@ class BlobManager {
     });
     const size = items.reduce((acc, curr) => {
       if (curr.type === 'string') {
+        /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         return acc + global.unescape(encodeURI(curr.data)).length;
       } else {
+        /* $FlowFixMe[prop-missing] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         return acc + curr.data.size;
       }
     }, 0);
@@ -110,6 +114,7 @@ class BlobManager {
   static createFromOptions(options: BlobData): Blob {
     BlobRegistry.register(options.blobId);
     // $FlowFixMe[prop-missing]
+    // $FlowFixMe[unsafe-object-assign]
     return Object.assign(Object.create(Blob.prototype), {
       data:
         // Reuse the collector instance when creating from an existing blob.

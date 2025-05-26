@@ -24,7 +24,7 @@ internal class ReactTextInputBlurEvent(surfaceId: Int, viewId: Int) :
 
   override fun canCoalesce(): Boolean = false
 
-  override fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     return Arguments.createMap().apply { putInt("target", viewTag) }
   }
 

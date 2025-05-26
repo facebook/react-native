@@ -36,16 +36,16 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
-import org.mockito.Mockito.doAnswer
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.spy
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.Mockito.`when` as whenever
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 import org.mockito.stubbing.Answer
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
@@ -104,11 +104,11 @@ class TimingModuleTest {
           return@thenAnswer currentTimeNs
         }
 
-    reactChoreographerMock = mock(ReactChoreographer::class.java)
+    reactChoreographerMock = mock<ReactChoreographer>()
     reactChoreographerOriginal = ReactChoreographer.overrideInstanceForTest(reactChoreographerMock)
 
-    val reactInstance = mock(CatalystInstance::class.java)
-    reactContext = spy(BridgeReactContext(mock(Context::class.java)))
+    val reactInstance = mock<CatalystInstance>()
+    reactContext = spy(BridgeReactContext(mock<Context>()))
     doReturn(reactInstance).`when`(reactContext).catalystInstance
     doReturn(true).`when`(reactContext).hasActiveReactInstance()
 
@@ -130,12 +130,10 @@ class TimingModuleTest {
           return@thenAnswer idlePostFrameCallbackHandler.answer(it)
         }
 
-    timingModule = TimingModule(reactContext, mock(DevSupportManager::class.java))
-    jsTimersMock = mock(JSTimers::class.java)
+    timingModule = TimingModule(reactContext, mock<DevSupportManager>())
+    jsTimersMock = mock<JSTimers>()
     doReturn(jsTimersMock).`when`(reactContext).getJSModule(JSTimers::class.java)
-    doReturn(mock(AppRegistry::class.java))
-        .`when`(reactContext)
-        .getJSModule(AppRegistry::class.java)
+    doReturn(mock<AppRegistry>()).`when`(reactContext).getJSModule(AppRegistry::class.java)
     doAnswer({ invocation ->
           (invocation.arguments[0] as Runnable).run()
           return@doAnswer true

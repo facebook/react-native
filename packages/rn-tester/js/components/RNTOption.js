@@ -4,17 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
+import type {GestureResponderEvent} from 'react-native';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
+import {useContext, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{
@@ -31,8 +32,8 @@ type Props = $ReadOnly<{
  * A reusable toggle button component for RNTester. Highlights when selected.
  */
 export default function RNTOption(props: Props): React.Node {
-  const [pressed, setPressed] = React.useState(false);
-  const theme = React.useContext(RNTesterThemeContext);
+  const [pressed, setPressed] = useState(false);
+  const theme = useContext(RNTesterThemeContext);
 
   return (
     <Pressable

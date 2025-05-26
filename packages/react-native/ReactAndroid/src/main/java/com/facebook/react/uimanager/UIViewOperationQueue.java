@@ -52,7 +52,7 @@ import java.util.Map;
 public class UIViewOperationQueue {
 
   static {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+    LegacyArchitectureLogger.assertLegacyArchitecture(
         "UIViewOperationQueue", LegacyArchitectureLogLevel.WARNING);
   }
 
@@ -144,12 +144,12 @@ public class UIViewOperationQueue {
       mWidth = width;
       mHeight = height;
       mLayoutDirection = layoutDirection;
-      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT, "updateLayout", mTag);
     }
 
     @Override
     public void execute() {
-      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT, "updateLayout", mTag);
       mNativeViewHierarchyManager.updateLayout(
           mParentTag, mTag, mX, mY, mWidth, mHeight, mLayoutDirection);
     }
@@ -170,12 +170,12 @@ public class UIViewOperationQueue {
       mThemedContext = themedContext;
       mClassName = className;
       mInitialProps = initialProps;
-      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT, "createView", mTag);
     }
 
     @Override
     public void execute() {
-      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT, "createView", mTag);
       mNativeViewHierarchyManager.createView(mThemedContext, mTag, mClassName, mInitialProps);
     }
   }
@@ -796,7 +796,7 @@ public class UIViewOperationQueue {
   public void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIViewOperationQueue.dispatchViewUpdates")
+            Systrace.TRACE_TAG_REACT, "UIViewOperationQueue.dispatchViewUpdates")
         .arg("batchId", batchId)
         .flush();
     try {
@@ -839,7 +839,7 @@ public class UIViewOperationQueue {
           new Runnable() {
             @Override
             public void run() {
-              SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
+              SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "DispatchUI")
                   .arg("BatchId", batchId)
                   .flush();
               try {
@@ -900,22 +900,22 @@ public class UIViewOperationQueue {
                   mThreadCpuTime = nativeModulesThreadCpuTime;
 
                   Systrace.beginAsyncSection(
-                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      Systrace.TRACE_TAG_REACT,
                       "delayBeforeDispatchViewUpdates",
                       0,
                       mProfiledBatchCommitStartTime * 1000000);
                   Systrace.endAsyncSection(
-                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      Systrace.TRACE_TAG_REACT,
                       "delayBeforeDispatchViewUpdates",
                       0,
                       mProfiledBatchDispatchViewUpdatesTime * 1000000);
                   Systrace.beginAsyncSection(
-                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      Systrace.TRACE_TAG_REACT,
                       "delayBeforeBatchRunStart",
                       0,
                       mProfiledBatchDispatchViewUpdatesTime * 1000000);
                   Systrace.endAsyncSection(
-                      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                      Systrace.TRACE_TAG_REACT,
                       "delayBeforeBatchRunStart",
                       0,
                       mProfiledBatchRunStartTime * 1000000);
@@ -931,17 +931,16 @@ public class UIViewOperationQueue {
                 mIsInIllegalUIState = true;
                 throw e;
               } finally {
-                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+                Systrace.endSection(Systrace.TRACE_TAG_REACT);
               }
             }
           };
 
-      SystraceMessage.beginSection(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "acquiring mDispatchRunnablesLock")
+      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "acquiring mDispatchRunnablesLock")
           .arg("batchId", batchId)
           .flush();
       synchronized (mDispatchRunnablesLock) {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(Systrace.TRACE_TAG_REACT);
         mDispatchUIRunnables.add(runOperations);
       }
 
@@ -960,7 +959,7 @@ public class UIViewOperationQueue {
             });
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -1006,11 +1005,8 @@ public class UIViewOperationQueue {
       mIsProfilingNextBatch = false;
 
       Systrace.beginAsyncSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "batchedExecutionTime",
-          0,
-          batchedExecutionStartTime * 1000000);
-      Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "batchedExecutionTime", 0);
+          Systrace.TRACE_TAG_REACT, "batchedExecutionTime", 0, batchedExecutionStartTime * 1000000);
+      Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT, "batchedExecutionTime", 0);
     }
     mNonBatchedExecutionTotalTime = 0;
   }
@@ -1050,11 +1046,11 @@ public class UIViewOperationQueue {
         return;
       }
 
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "dispatchNonBatchedUIOperations");
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "dispatchNonBatchedUIOperations");
       try {
         dispatchPendingNonBatchedOperations(frameTimeNanos);
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        Systrace.endSection(Systrace.TRACE_TAG_REACT);
       }
 
       flushPendingBatches();

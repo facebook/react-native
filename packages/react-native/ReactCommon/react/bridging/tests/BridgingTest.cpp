@@ -46,8 +46,8 @@ TEST_F(BridgingTest, boolTest) {
   EXPECT_FALSE(bridging::fromJs<bool>(rt, jsi::Value(false), invoker));
   EXPECT_JSI_THROW(bridging::fromJs<bool>(rt, jsi::Value(1), invoker));
 
-  EXPECT_TRUE(bridging::toJs(rt, true).asBool());
-  EXPECT_FALSE(bridging::toJs(rt, false).asBool());
+  EXPECT_TRUE(bridging::toJs(rt, true));
+  EXPECT_FALSE(bridging::toJs(rt, false));
 }
 
 TEST_F(BridgingTest, numberTest) {
@@ -56,10 +56,9 @@ TEST_F(BridgingTest, numberTest) {
   EXPECT_DOUBLE_EQ(1.2, bridging::fromJs<double>(rt, jsi::Value(1.2), invoker));
   EXPECT_JSI_THROW(bridging::fromJs<double>(rt, jsi::Value(true), invoker));
 
-  EXPECT_EQ(1, static_cast<int>(bridging::toJs(rt, 1).asNumber()));
-  EXPECT_FLOAT_EQ(
-      1.2f, static_cast<float>(bridging::toJs(rt, 1.2f).asNumber()));
-  EXPECT_DOUBLE_EQ(1.2, bridging::toJs(rt, 1.2).asNumber());
+  EXPECT_EQ(1, static_cast<int>(bridging::toJs(rt, 1)));
+  EXPECT_FLOAT_EQ(1.2f, static_cast<float>(bridging::toJs(rt, 1.2f)));
+  EXPECT_DOUBLE_EQ(1.2, bridging::toJs(rt, 1.2));
 
   EXPECT_EQ(
       42,
@@ -655,6 +654,13 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array>));
   EXPECT_FALSE((bridging::supportsFromJs<jsi::Function, jsi::Array&>));
 
+  // Ensure we can create HighResTimeStamp and HighResDuration from JSI
+  // values.
+  EXPECT_TRUE((bridging::supportsFromJs<HighResTimeStamp, jsi::Value>));
+  EXPECT_TRUE((bridging::supportsFromJs<HighResTimeStamp, jsi::Value&>));
+  EXPECT_TRUE((bridging::supportsFromJs<HighResDuration, jsi::Value>));
+  EXPECT_TRUE((bridging::supportsFromJs<HighResDuration, jsi::Value&>));
+
   // Ensure we can convert some basic types to JSI values.
   EXPECT_TRUE((bridging::supportsToJs<bool>));
   EXPECT_TRUE((bridging::supportsToJs<int>));
@@ -678,6 +684,11 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_FALSE((bridging::supportsToJs<double, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<std::string, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<std::vector<int>, jsi::Function>));
+
+  // Ensure we can convert HighResTimeStamp and HighResDuration to
+  // DOMHighResTimeStamp (double).
+  EXPECT_TRUE((bridging::supportsToJs<HighResTimeStamp, double>));
+  EXPECT_TRUE((bridging::supportsToJs<HighResDuration, double>));
 }
 
 TEST_F(BridgingTest, dynamicTest) {
@@ -764,6 +775,24 @@ TEST_F(BridgingTest, dynamicTest) {
   auto undefinedFromJsResult =
       bridging::fromJs<folly::dynamic>(rt, jsi::Value::undefined(), invoker);
   EXPECT_TRUE(undefinedFromJsResult.isNull());
+}
+
+TEST_F(BridgingTest, highResTimeStampTest) {
+  HighResTimeStamp timestamp = HighResTimeStamp::now();
+  EXPECT_EQ(
+      timestamp,
+      bridging::fromJs<HighResTimeStamp>(
+          rt, bridging::toJs(rt, timestamp), invoker));
+
+  auto duration = HighResDuration::fromNanoseconds(1);
+  EXPECT_EQ(
+      duration,
+      bridging::fromJs<HighResDuration>(
+          rt, bridging::toJs(rt, duration), invoker));
+
+  EXPECT_EQ(1.0, bridging::toJs(rt, HighResDuration::fromNanoseconds(1e6)));
+  EXPECT_EQ(
+      1.000001, bridging::toJs(rt, HighResDuration::fromNanoseconds(1e6 + 1)));
 }
 
 } // namespace facebook::react

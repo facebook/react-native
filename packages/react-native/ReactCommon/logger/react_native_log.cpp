@@ -8,7 +8,7 @@
 #include "react_native_log.h"
 #include <glog/logging.h>
 
-static reactnativelogfunctype _reactnativelogfunc = NULL;
+static reactnativelogfunctype _reactnativelogfunc = nullptr;
 
 void set_react_native_logfunc(reactnativelogfunctype newlogfunc) {
   _reactnativelogfunc = newlogfunc;
@@ -27,7 +27,7 @@ void react_native_log_fatal(const char* message) {
 }
 
 void _react_native_log(ReactNativeLogLevel level, const char* message) {
-  if (_reactnativelogfunc == NULL) {
+  if (_reactnativelogfunc == nullptr) {
     _react_native_log_default(level, message);
   } else {
     _reactnativelogfunc(level, message);

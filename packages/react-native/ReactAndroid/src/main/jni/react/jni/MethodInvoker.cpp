@@ -7,13 +7,11 @@
 
 #include "MethodInvoker.h"
 
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-#endif
-
 #include <glog/logging.h>
 
 #include <cxxreact/CxxNativeModule.h>
+#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 
 #include "JCallback.h"
@@ -213,14 +211,10 @@ MethodCallResult MethodInvoker::invoke(
     std::weak_ptr<Instance>& instance,
     alias_ref<JBaseJavaModule::javaobject> module,
     const folly::dynamic& params) {
-#ifdef WITH_FBSYSTRACE
-  fbsystrace::FbSystraceSection s(
-      TRACE_TAG_REACT_CXX_BRIDGE,
+  TraceSection s(
       isSync_ ? "callJavaSyncHook" : "callJavaModuleMethod",
       "method",
       traceName_);
-#endif
-
   if (params.size() != jsArgCount_) {
     throw std::invalid_argument(
         "expected " + std::to_string(jsArgCount_) + " arguments, got " +

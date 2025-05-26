@@ -74,10 +74,17 @@ class ScrollViewProps final : public ViewProps {
   bool scrollToOverflowEnabled{false};
   bool isInvertedVirtualizedList{false};
 
+  bool sendMomentumEvents{};
+  bool nestedScrollEnabled{};
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
 #endif
 };
 

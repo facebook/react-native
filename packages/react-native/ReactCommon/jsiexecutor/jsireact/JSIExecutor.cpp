@@ -556,7 +556,9 @@ void bindNativePerformanceNow(Runtime& runtime) {
           [](jsi::Runtime& runtime,
              const jsi::Value&,
              const jsi::Value* args,
-             size_t count) { return Value(JSExecutor::performanceNow()); }));
+             size_t /*count*/) {
+            return HighResTimeStamp::now().toDOMHighResTimeStamp();
+          }));
 }
 
 } // namespace facebook::react

@@ -15,13 +15,15 @@ import com.facebook.react.uimanager.events.EventCategoryDef
 import com.facebook.react.uimanager.events.RCTModernEventEmitter
 import com.facebook.systrace.Systrace
 
-public class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTModernEventEmitter {
-  @Deprecated("Deprecated in Java")
-  public override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?): Unit {
+internal class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTModernEventEmitter {
+  @Deprecated(
+      "Use receiveEvent with surfaceId instead.",
+      ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"))
+  override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?): Unit {
     receiveEvent(ViewUtil.NO_SURFACE_ID, targetTag, eventName, params)
   }
 
-  public override fun receiveEvent(
+  override fun receiveEvent(
       surfaceId: Int,
       targetTag: Int,
       eventName: String,
@@ -30,7 +32,7 @@ public class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTMod
     receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
   }
 
-  public override fun receiveEvent(
+  override fun receiveEvent(
       surfaceId: Int,
       targetTag: Int,
       eventName: String,
@@ -39,18 +41,17 @@ public class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTMod
       params: WritableMap?,
       @EventCategoryDef category: Int
   ) {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricEventEmitter.receiveEvent('$eventName')")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "FabricEventEmitter.receiveEvent('$eventName')")
     try {
       uiManager.receiveEvent(surfaceId, targetTag, eventName, canCoalesceEvent, params, category)
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 
   /** Touches are dispatched by [.receiveTouches] */
   @Deprecated("Deprecated in Java")
-  public override fun receiveTouches(
+  override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
       changedIndices: WritableArray

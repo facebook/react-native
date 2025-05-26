@@ -23,7 +23,8 @@ internal class EventAnimationDriver(
     private val eventPath: List<String>,
     @JvmField internal var valueNode: ValueAnimatedNode
 ) : RCTModernEventEmitter {
-  @Deprecated("Deprecated in Java")
+  @Deprecated(
+      "Deprecated in Java", ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"))
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) =
       receiveEvent(-1, targetTag, eventName, params)
 
@@ -76,10 +77,10 @@ internal class EventAnimationDriver(
         val index = eventPath[i].toInt()
         val keyType = currArray?.getType(index)
         if (keyType == ReadableType.Map) {
-          currMap = currArray?.getMap(index)
+          currMap = currArray.getMap(index)
           currArray = null
         } else if (keyType == ReadableType.Array) {
-          currArray = currArray?.getArray(index)
+          currArray = currArray.getArray(index)
           currMap = null
         } else {
           throw UnexpectedNativeTypeException("Unexpected type $keyType for index '$index'")

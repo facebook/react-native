@@ -26,7 +26,10 @@ class ReactNativeFeatureFlagsOverridesOSSStable
   bool useNativeViewConfigsInBridgelessMode() override {
     return true;
   }
-  bool useFabricInterop() override {
+  bool updateRuntimeShadowNodeReferencesOnCommit() override {
+    return true;
+  }
+  bool useShadowNodeStateOnClone() override {
     return true;
   }
 };

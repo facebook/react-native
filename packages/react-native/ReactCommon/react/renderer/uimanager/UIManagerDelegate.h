@@ -10,6 +10,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
+#include <react/renderer/mounting/ShadowTree.h>
 
 namespace facebook::react {
 
@@ -64,6 +65,28 @@ class UIManagerDelegate {
   virtual void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) = 0;
+
+  /*
+   * Add event listener.
+   */
+  virtual void uiManagerShouldAddEventListener(
+      std::shared_ptr<const EventListener> listener) = 0;
+
+  /*
+   * Remove event listener.
+   */
+  virtual void uiManagerShouldRemoveEventListener(
+      const std::shared_ptr<const EventListener>& listener) = 0;
+
+  /*
+   * Start surface.
+   */
+  virtual void uiManagerDidStartSurface(const ShadowTree& shadowTree) = 0;
+
+  using OnSurfaceStartCallback =
+      std::function<void(const ShadowTree& shadowTree)>;
+  virtual void uiManagerShouldSetOnSurfaceStartCallback(
+      OnSurfaceStartCallback&& callback) = 0;
 
   virtual ~UIManagerDelegate() noexcept = default;
 };

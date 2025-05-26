@@ -9,4 +9,5 @@
 
 exports.rules = {
   'platform-colors': require('./platform-colors'),
+  'no-deep-imports': require('./no-deep-imports'),
 };

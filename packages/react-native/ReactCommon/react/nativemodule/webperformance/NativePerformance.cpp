@@ -8,8 +8,8 @@
 #include "NativePerformance.h"
 
 #include <memory>
-#include <mutex>
 #include <unordered_map>
+#include <variant>
 
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
@@ -47,6 +47,50 @@ void sortEntries(std::vector<PerformanceEntry>& entries) {
       entries.begin(), entries.end(), PerformanceEntrySorter{});
 }
 
+NativePerformanceEntry toNativePerformanceEntry(const PerformanceEntry& entry) {
+  auto nativeEntry = std::visit(
+      [](const auto& entryData) -> NativePerformanceEntry {
+        return {
+            .name = entryData.name,
+            .entryType = entryData.entryType,
+            .startTime = entryData.startTime,
+            .duration = entryData.duration,
+        };
+      },
+      entry);
+
+  if (std::holds_alternative<PerformanceEventTiming>(entry)) {
+    auto eventEntry = std::get<PerformanceEventTiming>(entry);
+    nativeEntry.processingStart = eventEntry.processingStart;
+    nativeEntry.processingEnd = eventEntry.processingEnd;
+    nativeEntry.interactionId = eventEntry.interactionId;
+  }
+  if (std::holds_alternative<PerformanceResourceTiming>(entry)) {
+    auto resourceEntry = std::get<PerformanceResourceTiming>(entry);
+    nativeEntry.fetchStart = resourceEntry.fetchStart;
+    nativeEntry.requestStart = resourceEntry.requestStart;
+    nativeEntry.connectStart = resourceEntry.connectStart;
+    nativeEntry.connectEnd = resourceEntry.connectEnd;
+    nativeEntry.responseStart = resourceEntry.responseStart;
+    nativeEntry.responseEnd = resourceEntry.responseEnd;
+    nativeEntry.responseStatus = resourceEntry.responseStatus;
+  }
+
+  return nativeEntry;
+}
+
+std::vector<NativePerformanceEntry> toNativePerformanceEntries(
+    std::vector<PerformanceEntry>& entries) {
+  std::vector<NativePerformanceEntry> result;
+  result.reserve(entries.size());
+
+  for (auto& entry : entries) {
+    result.emplace_back(toNativePerformanceEntry(entry));
+  }
+
+  return result;
+}
+
 const std::array<PerformanceEntryType, 2> ENTRY_TYPES_AVAILABLE_FROM_TIMELINE{
     {PerformanceEntryType::MARK, PerformanceEntryType::MEASURE}};
 
@@ -72,29 +116,61 @@ std::shared_ptr<PerformanceObserver> tryGetObserver(
 NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
-double NativePerformance::now(jsi::Runtime& /*rt*/) {
-  return JSExecutor::performanceNow();
+HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
+  return HighResTimeStamp::now();
 }
 
-double NativePerformance::markWithResult(
+HighResTimeStamp NativePerformance::markWithResult(
     jsi::Runtime& rt,
     std::string name,
-    std::optional<double> startTime) {
+    std::optional<HighResTimeStamp> startTime) {
   auto entry =
       PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
   return entry.startTime;
 }
 
-std::tuple<double, double> NativePerformance::measureWithResult(
-    jsi::Runtime& rt,
+std::tuple<HighResTimeStamp, HighResDuration>
+NativePerformance::measureWithResult(
+    jsi::Runtime& runtime,
     std::string name,
-    double startTime,
-    double endTime,
-    std::optional<double> duration,
+    HighResTimeStamp startTime,
+    HighResTimeStamp endTime,
+    std::optional<HighResDuration> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
-  auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
-      name, startTime, endTime, duration, startMark, endMark);
+  auto reporter = PerformanceEntryReporter::getInstance();
+
+  HighResTimeStamp startTimeValue = startTime;
+  // If the start time mark name is specified, it takes precedence over the
+  // startTime parameter, which can be set to 0 by default from JavaScript.
+  if (startMark) {
+    if (auto startMarkBufferedTime = reporter->getMarkTime(*startMark)) {
+      startTimeValue = *startMarkBufferedTime;
+    } else {
+      throw jsi::JSError(
+          runtime, "The mark '" + *startMark + "' does not exist.");
+    }
+  }
+
+  HighResTimeStamp endTimeValue = endTime;
+  // If the end time mark name is specified, it takes precedence over the
+  // startTime parameter, which can be set to 0 by default from JavaScript.
+  if (endMark) {
+    if (auto endMarkBufferedTime = reporter->getMarkTime(*endMark)) {
+      endTimeValue = *endMarkBufferedTime;
+    } else {
+      throw jsi::JSError(
+          runtime, "The mark '" + *endMark + "' does not exist.");
+    }
+  } else if (duration) {
+    endTimeValue = startTimeValue + *duration;
+  } else if (endTimeValue < startTimeValue) {
+    // The end time is not specified, take the current time, according to the
+    // standard
+    endTimeValue = reporter->getCurrentTimeStamp();
+  }
+
+  auto entry = reporter->reportMeasure(name, startTime, endTime);
   return std::tuple{entry.startTime, entry.duration};
 }
 
@@ -122,7 +198,7 @@ void NativePerformance::clearMeasures(
   }
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntries(
+std::vector<NativePerformanceEntry> NativePerformance::getEntries(
     jsi::Runtime& /*rt*/) {
   std::vector<PerformanceEntry> entries;
 
@@ -132,10 +208,10 @@ std::vector<PerformanceEntry> NativePerformance::getEntries(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntriesByName(
+std::vector<NativePerformanceEntry> NativePerformance::getEntriesByName(
     jsi::Runtime& /*rt*/,
     std::string entryName,
     std::optional<PerformanceEntryType> entryType) {
@@ -155,10 +231,10 @@ std::vector<PerformanceEntry> NativePerformance::getEntriesByName(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
-std::vector<PerformanceEntry> NativePerformance::getEntriesByType(
+std::vector<NativePerformanceEntry> NativePerformance::getEntriesByType(
     jsi::Runtime& /*rt*/,
     PerformanceEntryType entryType) {
   std::vector<PerformanceEntry> entries;
@@ -169,7 +245,7 @@ std::vector<PerformanceEntry> NativePerformance::getEntriesByType(
 
   sortEntries(entries);
 
-  return entries;
+  return toNativePerformanceEntries(entries);
 }
 
 std::vector<std::pair<std::string, uint32_t>> NativePerformance::getEventCounts(
@@ -270,7 +346,8 @@ void NativePerformance::observe(
     return;
   }
 
-  auto durationThreshold = options.durationThreshold.value_or(0.0);
+  auto durationThreshold =
+      options.durationThreshold.value_or(HighResDuration::zero());
 
   // observer of type multiple
   if (options.entryTypes.has_value()) {
@@ -304,7 +381,7 @@ void NativePerformance::disconnect(jsi::Runtime& rt, jsi::Object observerObj) {
   observer->disconnect();
 }
 
-std::vector<PerformanceEntry> NativePerformance::takeRecords(
+std::vector<NativePerformanceEntry> NativePerformance::takeRecords(
     jsi::Runtime& rt,
     jsi::Object observerObj,
     bool sort) {
@@ -320,7 +397,7 @@ std::vector<PerformanceEntry> NativePerformance::takeRecords(
   if (sort) {
     sortEntries(records);
   }
-  return records;
+  return toNativePerformanceEntries(records);
 }
 
 std::vector<PerformanceEntryType>

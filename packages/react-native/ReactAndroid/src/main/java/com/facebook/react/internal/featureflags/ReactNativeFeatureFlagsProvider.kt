@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56605e18396622084f170b5a897fa0e0>>
+ * @generated SignedSource<<1e5562ce20c0735c926c1cb029b93e18>>
  */
 
 /**
@@ -27,9 +27,15 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
 
+  @DoNotStrip public fun avoidCeilingAvailableAndroidTextWidth(): Boolean
+
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
+  @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
+
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
+
+  @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
@@ -37,35 +43,49 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
+  @DoNotStrip public fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean
+
+  @DoNotStrip public fun enableDestroyShadowTreeRevisionAsync(): Boolean
+
+  @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
+
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
+  @DoNotStrip public fun enableFixForParentTagDuringReparenting(): Boolean
+
+  @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
+
+  @DoNotStrip public fun enableIOSTextBaselineOffsetPerLine(): Boolean
+
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
-  @DoNotStrip public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
+  @DoNotStrip public fun enableIntersectionObserverEventLoopIntegration(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
 
-  @DoNotStrip public fun enableLongTaskAPI(): Boolean
-
   @DoNotStrip public fun enableMainQueueModulesOnIOS(): Boolean
+
+  @DoNotStrip public fun enableModuleArgumentNSNullConversionIOS(): Boolean
 
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
+  @DoNotStrip public fun enableNetworkEventReporting(): Boolean
+
   @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
+
+  @DoNotStrip public fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
 
-  @DoNotStrip public fun enableReportEventPaintTime(): Boolean
+  @DoNotStrip public fun enableResourceTimingAPI(): Boolean
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
-
-  @DoNotStrip public fun enableUIConsistency(): Boolean
 
   @DoNotStrip public fun enableViewCulling(): Boolean
 
@@ -77,21 +97,19 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
-  @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
-
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
-  @DoNotStrip public fun removeTurboModuleManagerDelegateMutex(): Boolean
-
-  @DoNotStrip public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
+  @DoNotStrip public fun incorporateMaxLinesDuringAndroidLayout(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
+  @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
+
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
-  @DoNotStrip public fun useEditTextStockAndroidFocusBehavior(): Boolean
+  @DoNotStrip public fun useAndroidTextLayoutWidthDirectly(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 
@@ -100,6 +118,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
+
+  @DoNotStrip public fun useShadowNodeStateOnClone(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

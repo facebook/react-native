@@ -6,9 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import * as Fantom from '@react-native/fantom';
 
 let runs = 0;

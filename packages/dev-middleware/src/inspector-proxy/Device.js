@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {EventReporter} from '../types/EventReporter';
@@ -27,7 +26,7 @@ import type {
   TargetCapabilityFlags,
 } from './types';
 
-import CDPMessagesLogging from './CDPMessagesLogging';
+import CdpDebugLogging from './CdpDebugLogging';
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
 import invariant from 'invariant';
@@ -37,18 +36,20 @@ import WS from 'ws';
 const debug = require('debug')('Metro:InspectorProxy');
 
 const PAGES_POLLING_INTERVAL = 1000;
-const MIN_MESSAGE_QUEUE_BYTES_TO_REPORT = 2 * 1024 * 1024; // 2 MiB
 
 const WS_CLOSURE_CODE = {
   NORMAL: 1000,
   INTERNAL_ERROR: 1011,
 };
 
+// should be aligned with
+// https://github.com/facebook/react-native-devtools-frontend/blob/3d17e0fd462dc698db34586697cce2371b25e0d3/front_end/ui/legacy/components/utils/TargetDetachedDialog.ts#L50-L64
 export const WS_CLOSE_REASON = {
-  PAGE_NOT_FOUND: 'Debugger Page Not Found',
-  DEVICE_DISCONNECTED: 'Corresponding Device Disconnected',
-  RECREATING_DEVICE: 'Recreating Device Connection',
-  RECREATING_DEBUGGER: 'Recreating Debugger Connection',
+  PAGE_NOT_FOUND: '[PAGE_NOT_FOUND] Debugger page not found',
+  CONNECTION_LOST: '[CONNECTION_LOST] Connection lost to corresponding device',
+  RECREATING_DEVICE: '[RECREATING_DEVICE] Recreating device connection',
+  NEW_DEBUGGER_OPENED:
+    '[NEW_DEBUGGER_OPENED] New debugger opened for the same app instance',
 };
 
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
@@ -139,7 +140,7 @@ export default class Device {
   #serverRelativeBaseUrl: URL;
 
   // Logging reporting batches of cdp messages
-  #cdpMessagesLogging: CDPMessagesLogging;
+  #cdpDebugLogging: CdpDebugLogging;
 
   constructor(deviceOptions: DeviceOptions) {
     this.#dangerouslyConstruct(deviceOptions);
@@ -157,7 +158,7 @@ export default class Device {
     deviceRelativeBaseUrl,
     isProfilingBuild,
   }: DeviceOptions) {
-    this.#cdpMessagesLogging = new CDPMessagesLogging();
+    this.#cdpDebugLogging = new CdpDebugLogging();
     this.#id = id;
     this.#name = name;
     this.#app = app;
@@ -189,7 +190,7 @@ export default class Device {
             this.#lastGetPagesMessage = message;
           }
         } else {
-          this.#cdpMessagesLogging.log('DeviceToProxy', message);
+          this.#cdpDebugLogging.log('DeviceToProxy', message);
         }
         this.#handleMessageFromDevice(parsedMessage);
       } catch (error) {
@@ -220,7 +221,7 @@ export default class Device {
         // Device disconnected - close debugger connection.
         this.#terminateDebuggerConnection(
           WS_CLOSURE_CODE.NORMAL,
-          WS_CLOSE_REASON.DEVICE_DISCONNECTED,
+          WS_CLOSE_REASON.CONNECTION_LOST,
         );
         clearInterval(this.#pagesPollingIntervalId);
       }
@@ -337,7 +338,7 @@ export default class Device {
     // Disconnect current debugger if we already have debugger connected.
     this.#terminateDebuggerConnection(
       WS_CLOSURE_CODE.NORMAL,
-      WS_CLOSE_REASON.RECREATING_DEBUGGER,
+      WS_CLOSE_REASON.NEW_DEBUGGER_OPENED,
     );
 
     this.#deviceEventReporter?.logConnection('debugger', {
@@ -370,7 +371,7 @@ export default class Device {
             sendMessage: message => {
               try {
                 const payload = JSON.stringify(message);
-                this.#cdpMessagesLogging.log('ProxyToDebugger', payload);
+                this.#cdpDebugLogging.log('ProxyToDebugger', payload);
                 socket.send(payload);
               } catch {}
             },
@@ -388,7 +389,7 @@ export default class Device {
                     wrappedEvent: JSON.stringify(message),
                   },
                 });
-                this.#cdpMessagesLogging.log('DebuggerToProxy', payload);
+                this.#cdpDebugLogging.log('DebuggerToProxy', payload);
                 this.#deviceSocket.send(payload);
               } catch {}
             },
@@ -409,7 +410,7 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call]
     socket.on('message', (message: string) => {
-      this.#cdpMessagesLogging.log('DebuggerToProxy', message);
+      this.#cdpDebugLogging.log('DebuggerToProxy', message);
       const debuggerRequest = JSON.parse(message);
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: this.#debuggerConnection?.pageId ?? null,
@@ -454,12 +455,12 @@ export default class Device {
       }
     });
 
-    const cdpMessagesLogging = this.#cdpMessagesLogging;
+    const cdpDebugLogging = this.#cdpDebugLogging;
     // $FlowFixMe[method-unbinding]
     const sendFunc = socket.send;
     // $FlowFixMe[cannot-write]
     socket.send = function (message: string) {
-      cdpMessagesLogging.log('ProxyToDebugger', message);
+      cdpDebugLogging.log('ProxyToDebugger', message);
       return sendFunc.call(socket, message);
     };
   }
@@ -637,7 +638,7 @@ export default class Device {
     try {
       const messageToSend = JSON.stringify(message);
       if (message.event !== 'getPages') {
-        this.#cdpMessagesLogging.log('ProxyToDevice', messageToSend);
+        this.#cdpDebugLogging.log('ProxyToDevice', messageToSend);
       }
       this.#deviceSocket.send(messageToSend);
     } catch (error) {}

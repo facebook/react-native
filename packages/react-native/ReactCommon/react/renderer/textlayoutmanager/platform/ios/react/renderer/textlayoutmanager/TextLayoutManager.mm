@@ -8,6 +8,7 @@
 #import "TextLayoutManager.h"
 #import "RCTTextLayoutManager.h"
 
+#import <react/renderer/attributedstring/PlaceholderAttributedString.h>
 #import <react/renderer/telemetry/TransactionTelemetry.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -36,7 +37,7 @@ TextMeasurement TextLayoutManager::measure(
 
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value: {
-      auto &attributedString = attributedStringBox.getValue();
+      auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(attributedStringBox.getValue());
 
       measurement = textMeasureCache_.get(
           {attributedString, paragraphAttributes, layoutConstraints}, [&](const TextMeasureCacheKey &key) {
@@ -92,7 +93,7 @@ LinesMeasurements TextLayoutManager::measureLines(
     const Size &size) const
 {
   react_native_assert(attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
-  const auto &attributedString = attributedStringBox.getValue();
+  auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(attributedStringBox.getValue());
 
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 

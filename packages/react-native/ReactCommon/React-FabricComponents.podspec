@@ -30,6 +30,7 @@ Pod::Spec.new do |s|
     header_search_path = header_search_path + [
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
+      "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/text/platform/cxx\"",
       "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
     ]
   end
@@ -111,8 +112,8 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "text" do |sss|
-      sss.source_files         = "react/renderer/components/text/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/text/tests"
+      sss.source_files         = "react/renderer/components/text/*.{m,mm,cpp,h}",
+                                 "react/renderer/components/text/platform/cxx/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/text"
 
     end

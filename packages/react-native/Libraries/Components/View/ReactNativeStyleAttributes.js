@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format strict-local
  * @flow strict-local
+ * @format strict-local
  */
 
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';

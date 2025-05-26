@@ -10,9 +10,8 @@ package com.facebook.react.fabric
 import com.facebook.jni.HybridClassBase
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.fabric.mounting.LayoutMetricsConversions
-import com.facebook.react.interfaces.fabric.SurfaceHandler
 
-internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(), SurfaceHandler {
+internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase() {
 
   init {
     initHybrid(NO_SURFACE_ID, moduleName)
@@ -20,13 +19,13 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
 
   private external fun initHybrid(surfaceId: Int, moduleName: String)
 
-  override val surfaceId: Int
+  val surfaceId: Int
     get() = _getSurfaceId()
 
-  override val isRunning: Boolean
+  val isRunning: Boolean
     get() = _isRunning()
 
-  override val moduleName: String
+  val moduleName: String
     get() = _getModuleName()
 
   private external fun _getSurfaceId(): Int
@@ -35,14 +34,15 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
 
   private external fun _isRunning(): Boolean
 
-  override fun setLayoutConstraints(
+  fun setLayoutConstraints(
       widthMeasureSpec: Int,
       heightMeasureSpec: Int,
       offsetX: Int,
       offsetY: Int,
       doLeftAndRightSwapInRTL: Boolean,
       isRTL: Boolean,
-      pixelDensity: Float
+      pixelDensity: Float,
+      fontScale: Float
   ) {
     setLayoutConstraintsNative(
         LayoutMetricsConversions.getMinSize(widthMeasureSpec) / pixelDensity,
@@ -53,7 +53,8 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
         offsetY / pixelDensity,
         doLeftAndRightSwapInRTL,
         isRTL,
-        pixelDensity)
+        pixelDensity,
+        fontScale)
   }
 
   private external fun setLayoutConstraintsNative(
@@ -65,12 +66,13 @@ internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(
       offsetY: Float,
       doLeftAndRightSwapInRTL: Boolean,
       isRTL: Boolean,
-      pixelDensity: Float
+      pixelDensity: Float,
+      fontScale: Float
   )
 
-  external override fun setProps(props: NativeMap)
+  external fun setProps(props: NativeMap?)
 
-  override fun setMountable(mountable: Boolean) {
+  fun setMountable(mountable: Boolean) {
     setDisplayMode(if (mountable) DISPLAY_MODE_VISIBLE else DISPLAY_MODE_SUSPENDED)
   }
 

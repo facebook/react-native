@@ -6,14 +6,13 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 import type {TransformVisitor} from 'hermes-transform';
 
 const {
   visitors: stripPrivateProperties,
-} = require('../../../../scripts/build/build-types/transforms/stripPrivateProperties');
+} = require('../../../../scripts/build-types/transforms/stripPrivateProperties');
 const translate = require('flow-api-translator');
 const {existsSync, promises: fs} = require('fs');
 const glob = require('glob');
@@ -34,7 +33,6 @@ const JS_LIBRARIES_FILES_PATTERN = 'Libraries/**/*.{js,flow}';
 const JS_LIBRARIES_FILES_IGNORE_PATTERNS = [
   ...SHARED_PATTERNS,
   'Libraries/Core/setUp*',
-  'Libraries/NewAppScreen/components/**',
   // Non source files
   'Libraries/Renderer/implementations/**',
   'Libraries/Renderer/shims/**',

@@ -24,6 +24,6 @@ jobs:
         with:
           script: |
             const {createDraftRelease} = require('./.github/workflow-scripts/createDraftRelease.js');
-            const version = ${{ github.ref_name }}';
+            const version = '${{ github.ref_name }}';
             const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
             await createDraftRelease(version, isLatest(), '${{secrets.REACT_NATIVE_BOT_GITHUB_TOKEN}}');

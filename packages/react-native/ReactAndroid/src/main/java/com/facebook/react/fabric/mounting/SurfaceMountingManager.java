@@ -462,7 +462,7 @@ public class SurfaceMountingManager {
     // TODO: throw exception here?
     if (parentViewState == null) {
       ReactSoftExceptionLogger.logSoftException(
-          MountingManager.TAG,
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
           new IllegalStateException(
               "Unable to find viewState for tag: [" + parentTag + "] for removeViewAt"));
       return;
@@ -656,7 +656,7 @@ public class SurfaceMountingManager {
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        Systrace.TRACE_TAG_REACT,
         "SurfaceMountingManager::createViewUnsafe(" + componentName + ")");
     try {
       ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
@@ -676,7 +676,7 @@ public class SurfaceMountingManager {
         viewState.mViewManager = viewManager;
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 

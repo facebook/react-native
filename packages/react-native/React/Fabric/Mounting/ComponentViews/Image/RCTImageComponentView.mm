@@ -69,6 +69,11 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
+- (NSObject *)accessibilityElement
+{
+  return _imageView;
+}
+
 - (void)updateState:(const State::Shared &)state oldState:(const State::Shared &)oldState
 {
   RCTAssert(state, @"`state` must not be null.");
