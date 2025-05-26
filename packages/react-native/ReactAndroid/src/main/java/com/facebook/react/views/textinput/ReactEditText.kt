@@ -133,6 +133,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   private var onKeyPress = false
   private val textAttributes: TextAttributes
   private var typefaceDirty = false
+  private var forceUpdateTypefaceAndFlagsOnLayout = false
   private var fontFamily: String? = null
   private var fontWeight = ReactConstants.UNSET
   private var fontStyle = ReactConstants.UNSET
@@ -289,6 +290,12 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
       selectAll()
       // Prevent text on being selected for next layout pass
       selectTextOnFocus = false
+
+      // Resolves issue with custom fonts not being applied, especially on hint text
+      if (forceUpdateTypefaceAndFlagsOnLayout) {
+        forceUpdateTypefaceAndFlagsOnLayout = false
+        updateTypefaceAndFlags()
+      }
     }
   }
 
@@ -587,13 +594,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
   }
 
-  public fun maybeUpdateTypeface() {
-    if (!typefaceDirty) {
-      return
-    }
-
-    typefaceDirty = false
-
+  public fun updateTypefaceAndFlags() {
     val newTypeface = applyStyles(typeface, fontStyle, fontWeight, fontFamily, context.assets)
     typeface = newTypeface
 
@@ -608,6 +609,16 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
         } else {
           paintFlags and (Paint.SUBPIXEL_TEXT_FLAG.inv())
         }
+  }
+
+  public fun maybeUpdateTypeface() {
+    if (!typefaceDirty) {
+      return
+    }
+
+    typefaceDirty = false
+    updateTypefaceAndFlags()
+    forceUpdateTypefaceAndFlagsOnLayout = true
   }
 
   public fun requestFocusFromJS() {
