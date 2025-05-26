@@ -35,9 +35,7 @@ class NativeAnimatedNodesManagerProvider {
       NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback =
           nullptr);
 
-  virtual ~NativeAnimatedNodesManagerProvider() = default;
-
-  virtual std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
+  std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
       jsi::Runtime& runtime);
 
   std::shared_ptr<NativeAnimatedNodesManager> get() {
@@ -50,7 +48,7 @@ class NativeAnimatedNodesManagerProvider {
 
   std::shared_ptr<EventEmitterListener> getEventEmitterListener();
 
- protected:
+ private:
   std::shared_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
   std::weak_ptr<UIManagerBinding> uiManagerBinding_;
 
