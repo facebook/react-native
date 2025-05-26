@@ -144,7 +144,7 @@ SharedDebugStringConvertibleList HostPlatformViewProps::getDebugProps() const {
 }
 #endif
 
-#ifdef RN_SERIALIZABLE_STATE
+#ifdef ANDROID
 
 inline static void updateEventProp(
     folly::dynamic& result,

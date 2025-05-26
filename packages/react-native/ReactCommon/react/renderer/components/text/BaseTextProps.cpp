@@ -357,7 +357,7 @@ SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
 }
 #endif
 
-#ifdef RN_SERIALIZABLE_STATE
+#ifdef ANDROID
 
 static folly::dynamic toDynamic(const Size& size) {
   folly::dynamic sizeResult = folly::dynamic::object();
