@@ -594,7 +594,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
   }
 
-  public fun updateTypefaceAndFlags() {
+  private fun updateTypefaceAndFlags() {
     val newTypeface = applyStyles(typeface, fontStyle, fontWeight, fontFamily, context.assets)
     typeface = newTypeface
 
