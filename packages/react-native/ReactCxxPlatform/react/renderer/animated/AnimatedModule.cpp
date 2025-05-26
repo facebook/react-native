@@ -54,11 +54,7 @@ void AnimatedModule::updateAnimatedNodeConfig(
     jsi::Runtime& rt,
     Tag tag,
     jsi::Object config) {
-  auto configDynamic = dynamicFromValue(rt, jsi::Value(rt, config));
-  addOperation([tag, configDynamic = std::move(configDynamic)](
-                   NativeAnimatedNodesManager& nodesManager) {
-    nodesManager.updateAnimatedNodeConfig(tag, configDynamic);
-  });
+  // TODO: missing implementation
 }
 
 void AnimatedModule::getValue(
@@ -164,25 +160,19 @@ void AnimatedModule::setAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
     Tag nodeTag,
     double offset) {
-  addOperation([nodeTag, offset](NativeAnimatedNodesManager& nodesManager) {
-    nodesManager.setAnimatedNodeOffset(nodeTag, offset);
-  });
+  // TODO: missing implementation
 }
 
 void AnimatedModule::flattenAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
     Tag nodeTag) {
-  addOperation([nodeTag](NativeAnimatedNodesManager& nodesManager) {
-    nodesManager.flattenAnimatedNodeOffset(nodeTag);
-  });
+  // TODO: missing implementation
 }
 
 void AnimatedModule::extractAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
     Tag nodeTag) {
-  addOperation([nodeTag](NativeAnimatedNodesManager& nodesManager) {
-    nodesManager.extractAnimatedNodeOffset(nodeTag);
-  });
+  // TODO: missing implementation
 }
 
 void AnimatedModule::connectAnimatedNodeToView(
