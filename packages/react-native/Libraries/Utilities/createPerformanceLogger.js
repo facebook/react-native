@@ -15,8 +15,6 @@ import type {
   Timespan,
 } from './IPerformanceLogger';
 
-import infoLog from './infoLog';
-
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
 export const getCurrentTimestamp: () => number =
@@ -38,13 +36,16 @@ class PerformanceLogger implements IPerformanceLogger {
   ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog('PerformanceLogger: addTimespan - has closed ignoring: ', key);
+        console.log(
+          'PerformanceLogger: addTimespan - has closed ignoring: ',
+          key,
+        );
       }
       return;
     }
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog(
+        console.log(
           'PerformanceLogger: Attempting to add a timespan that already exists ',
           key,
         );
@@ -79,7 +80,7 @@ class PerformanceLogger implements IPerformanceLogger {
     this._extras = {};
     this._points = {};
     if (PRINT_TO_CONSOLE) {
-      infoLog('PerformanceLogger.js', 'clear');
+      console.log('PerformanceLogger.js', 'clear');
     }
   }
 
@@ -92,7 +93,7 @@ class PerformanceLogger implements IPerformanceLogger {
     this._extras = {};
     this._points = {};
     if (PRINT_TO_CONSOLE) {
-      infoLog('PerformanceLogger.js', 'clearCompleted');
+      console.log('PerformanceLogger.js', 'clearCompleted');
     }
   }
 
@@ -133,17 +134,17 @@ class PerformanceLogger implements IPerformanceLogger {
       // log timespans
       for (const key in this._timespans) {
         if (this._timespans[key]?.totalTime != null) {
-          infoLog(key + ': ' + this._timespans[key].totalTime + 'ms');
+          console.log(key + ': ' + this._timespans[key].totalTime + 'ms');
         }
       }
 
       // log extras
-      infoLog(this._extras);
+      console.log(this._extras);
 
       // log points
       for (const key in this._points) {
         if (this._points[key] != null) {
-          infoLog(key + ': ' + this._points[key] + 'ms');
+          console.log(key + ': ' + this._points[key] + 'ms');
         }
       }
     }
@@ -156,13 +157,16 @@ class PerformanceLogger implements IPerformanceLogger {
   ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog('PerformanceLogger: markPoint - has closed ignoring: ', key);
+        console.log(
+          'PerformanceLogger: markPoint - has closed ignoring: ',
+          key,
+        );
       }
       return;
     }
     if (this._points[key] != null) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog(
+        console.log(
           'PerformanceLogger: Attempting to mark a point that has been already logged ',
           key,
         );
@@ -184,14 +188,14 @@ class PerformanceLogger implements IPerformanceLogger {
   setExtra(key: string, value: ExtraValue) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog('PerformanceLogger: setExtra - has closed ignoring: ', key);
+        console.log('PerformanceLogger: setExtra - has closed ignoring: ', key);
       }
       return;
     }
 
     if (this._extras.hasOwnProperty(key)) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog(
+        console.log(
           'PerformanceLogger: Attempting to set an extra that already exists ',
           {key, currentValue: this._extras[key], attemptedValue: value},
         );
@@ -208,7 +212,7 @@ class PerformanceLogger implements IPerformanceLogger {
   ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog(
+        console.log(
           'PerformanceLogger: startTimespan - has closed ignoring: ',
           key,
         );
@@ -218,7 +222,7 @@ class PerformanceLogger implements IPerformanceLogger {
 
     if (this._timespans[key]) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog(
+        console.log(
           'PerformanceLogger: Attempting to start a timespan that already exists ',
           key,
         );
@@ -231,7 +235,7 @@ class PerformanceLogger implements IPerformanceLogger {
       startExtras: extras,
     };
     if (PRINT_TO_CONSOLE) {
-      infoLog('PerformanceLogger.js', 'start: ' + key);
+      console.log('PerformanceLogger.js', 'start: ' + key);
     }
   }
 
@@ -242,7 +246,10 @@ class PerformanceLogger implements IPerformanceLogger {
   ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog('PerformanceLogger: stopTimespan - has closed ignoring: ', key);
+        console.log(
+          'PerformanceLogger: stopTimespan - has closed ignoring: ',
+          key,
+        );
       }
       return;
     }
@@ -250,7 +257,7 @@ class PerformanceLogger implements IPerformanceLogger {
     const timespan = this._timespans[key];
     if (!timespan || timespan.startTime == null) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog(
+        console.log(
           'PerformanceLogger: Attempting to end a timespan that has not started ',
           key,
         );
@@ -259,7 +266,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
     if (timespan.endTime != null) {
       if (PRINT_TO_CONSOLE && __DEV__) {
-        infoLog(
+        console.log(
           'PerformanceLogger: Attempting to end a timespan that has already ended ',
           key,
         );
@@ -271,7 +278,7 @@ class PerformanceLogger implements IPerformanceLogger {
     timespan.endTime = timestamp;
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
     if (PRINT_TO_CONSOLE) {
-      infoLog('PerformanceLogger.js', 'end: ' + key);
+      console.log('PerformanceLogger.js', 'end: ' + key);
     }
   }
 }

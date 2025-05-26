@@ -30,7 +30,6 @@ import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {useState} from 'react';
 import {Alert, FlatList, StyleSheet, View} from 'react-native';
-import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
 function MultiColumnExample(): React.Node {
   const [data, setData] = useState(genNewerItems(1000));
@@ -96,7 +95,7 @@ function MultiColumnExample(): React.Node {
   }) => {
     // Impressions can be logged here
     if (logViewable) {
-      infoLog(
+      console.log(
         'onViewableItemsChanged: ',
         info.changed.map(v => ({...v, item: '...'})),
       );
