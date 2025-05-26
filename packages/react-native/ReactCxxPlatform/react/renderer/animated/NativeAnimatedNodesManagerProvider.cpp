@@ -34,29 +34,17 @@ NativeAnimatedNodesManagerProvider::NativeAnimatedNodesManagerProvider(
 
 std::shared_ptr<NativeAnimatedNodesManager>
 NativeAnimatedNodesManagerProvider::getOrCreate(jsi::Runtime& runtime) {
-  if (!uiManagerBinding_.lock()) {
-    uiManagerBinding_ = UIManagerBinding::getBinding(runtime);
-  }
-
   if (nativeAnimatedNodesManager_ == nullptr) {
+    auto* uiManager = &UIManagerBinding::getBinding(runtime)->getUIManager();
+
     auto fabricCommitCallback =
-        [uiManagerBindingWeak = uiManagerBinding_](
-            std::unordered_map<Tag, folly::dynamic>& tagToProps) {
-          if (auto uiManagerBinding = uiManagerBindingWeak.lock()) {
-            uiManagerBinding->getUIManager().updateShadowTree(tagToProps);
-          } else {
-            LOG(WARNING)
-                << "UIManager is not initialized for Fabric commit callback";
-          }
+        [uiManager](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+          uiManager->updateShadowTree(tagToProps);
         };
 
     auto directManipulationCallback =
-        [uiManagerBindingWeak = uiManagerBinding_](
-            Tag viewTag, const folly::dynamic& props) {
-          if (auto uiManagerBinding = uiManagerBindingWeak.lock()) {
-            uiManagerBinding->getUIManager().synchronouslyUpdateViewOnUIThread(
-                viewTag, props);
-          }
+        [uiManager](Tag viewTag, const folly::dynamic& props) {
+          uiManager->synchronouslyUpdateViewOnUIThread(viewTag, props);
         };
 
     nativeAnimatedNodesManager_ = std::make_shared<NativeAnimatedNodesManager>(
@@ -68,68 +56,63 @@ NativeAnimatedNodesManagerProvider::getOrCreate(jsi::Runtime& runtime) {
     addEventEmitterListener(
         nativeAnimatedNodesManager_->getEventEmitterListener());
 
-    if (auto uiManagerBinding = uiManagerBinding_.lock()) {
-      uiManagerBinding->getUIManager().addEventListener(
-          std::make_shared<EventListener>(
-              [eventEmitterListenerContainerWeak =
-                   std::weak_ptr<EventEmitterListenerContainer>(
-                       eventEmitterListenerContainer_)](
-                  const RawEvent& rawEvent) {
-                const auto& eventTarget = rawEvent.eventTarget;
-                const auto& eventPayload = rawEvent.eventPayload;
-                if (eventTarget && eventPayload) {
-                  if (auto eventEmitterListenerContainer =
-                          eventEmitterListenerContainerWeak.lock();
-                      eventEmitterListenerContainer != nullptr) {
-                    return eventEmitterListenerContainer->willDispatchEvent(
-                        eventTarget->getTag(), rawEvent.type, *eventPayload);
-                  }
-                }
-                return false;
-              }));
+    uiManager->addEventListener(std::make_shared<EventListener>(
+        [eventEmitterListenerContainerWeak =
+             std::weak_ptr<EventEmitterListenerContainer>(
+                 eventEmitterListenerContainer_)](const RawEvent& rawEvent) {
+          const auto& eventTarget = rawEvent.eventTarget;
+          const auto& eventPayload = rawEvent.eventPayload;
+          if (eventTarget && eventPayload) {
+            if (auto eventEmitterListenerContainer =
+                    eventEmitterListenerContainerWeak.lock();
+                eventEmitterListenerContainer != nullptr) {
+              return eventEmitterListenerContainer->willDispatchEvent(
+                  eventTarget->getTag(), rawEvent.type, *eventPayload);
+            }
+          }
+          return false;
+        }));
 
-      nativeAnimatedDelegate_ =
-          std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
-              nativeAnimatedNodesManager_);
+    nativeAnimatedDelegate_ =
+        std::make_shared<UIManagerNativeAnimatedDelegateImpl>(
+            nativeAnimatedNodesManager_);
 
-      uiManagerBinding->getUIManager().setNativeAnimatedDelegate(
-          nativeAnimatedDelegate_);
+    uiManager->setNativeAnimatedDelegate(nativeAnimatedDelegate_);
 
-      animatedMountingOverrideDelegate_ =
-          std::make_shared<AnimatedMountingOverrideDelegate>(
-              [nativeAnimatedNodesManager =
-                   std::weak_ptr<NativeAnimatedNodesManager>(
-                       nativeAnimatedNodesManager_)](
-                  Tag tag) -> folly::dynamic {
-                if (auto nativeAnimatedNodesManagerStrong =
-                        nativeAnimatedNodesManager.lock()) {
-                  return nativeAnimatedNodesManagerStrong->managedProps(tag);
-                }
-                return nullptr;
-              },
-              uiManagerBinding_);
+    // TODO: remove force casting.
+    auto* scheduler = (Scheduler*)uiManager->getDelegate();
+    animatedMountingOverrideDelegate_ =
+        std::make_shared<AnimatedMountingOverrideDelegate>(
+            [nativeAnimatedNodesManager =
+                 std::weak_ptr<NativeAnimatedNodesManager>(
+                     nativeAnimatedNodesManager_)](Tag tag) -> folly::dynamic {
+              if (auto nativeAnimatedNodesManagerStrong =
+                      nativeAnimatedNodesManager.lock()) {
+                return nativeAnimatedNodesManagerStrong->managedProps(tag);
+              }
+              return nullptr;
+            },
+            *scheduler);
 
-      // Register on existing surfaces
-      uiManagerBinding->getUIManager().getShadowTreeRegistry().enumerate(
-          [animatedMountingOverrideDelegate =
-               std::weak_ptr<const AnimatedMountingOverrideDelegate>(
-                   animatedMountingOverrideDelegate_)](
-              const ShadowTree& shadowTree, bool& /*stop*/) {
-            shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
-                animatedMountingOverrideDelegate);
-          });
-      // Register on surfaces started in the future
-      uiManagerBinding->getUIManager().setOnSurfaceStartCallback(
-          [animatedMountingOverrideDelegate =
-               std::weak_ptr<const AnimatedMountingOverrideDelegate>(
-                   animatedMountingOverrideDelegate_)](
-              const ShadowTree& shadowTree) {
-            shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
-                animatedMountingOverrideDelegate);
-          });
-    }
+    // Register on existing surfaces
+    uiManager->getShadowTreeRegistry().enumerate(
+        [animatedMountingOverrideDelegate =
+             std::weak_ptr<const AnimatedMountingOverrideDelegate>(
+                 animatedMountingOverrideDelegate_)](
+            const ShadowTree& shadowTree, bool& /*stop*/) {
+          shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
+              animatedMountingOverrideDelegate);
+        });
+    // Register on surfaces started in the future
+    uiManager->setOnSurfaceStartCallback(
+        [animatedMountingOverrideDelegate =
+             std::weak_ptr<const AnimatedMountingOverrideDelegate>(
+                 animatedMountingOverrideDelegate_)](
+            const ShadowTree& shadowTree) {
+          shadowTree.getMountingCoordinator()->setMountingOverrideDelegate(
+              animatedMountingOverrideDelegate);
+        });
   }
-
   return nativeAnimatedNodesManager_;
 }
 
