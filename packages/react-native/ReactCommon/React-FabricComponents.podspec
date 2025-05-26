@@ -76,7 +76,6 @@ Pod::Spec.new do |s|
     "react/renderer/imagemanager/platform/ios"
   ])
 
-  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 
   s.subspec "components" do |ss|

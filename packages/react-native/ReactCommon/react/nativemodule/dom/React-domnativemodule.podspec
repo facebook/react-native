@@ -48,7 +48,6 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
 
-  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 
   s.dependency "Yoga"

@@ -50,7 +50,6 @@ Pod::Spec.new do |s|
 
   add_dependency(s, "React-Fabric")
 
-  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 
   s.dependency "React-jsinspector"

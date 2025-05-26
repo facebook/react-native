@@ -49,6 +49,5 @@ Pod::Spec.new do |s|
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
 
-  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 end
