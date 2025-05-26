@@ -18,7 +18,6 @@
 namespace facebook::react {
 
 class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>,
-                       public std::enable_shared_from_this<AnimatedModule>,
                        public TurboModuleWithJSIBindings {
   using Operation =
       std::function<void(NativeAnimatedNodesManager& nodesManager)>;
