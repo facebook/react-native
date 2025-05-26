@@ -35,7 +35,7 @@ FrameAnimationDriver::FrameAnimationDriver(
   onConfigChanged();
 }
 
-double FrameAnimationDriver::toValue() {
+double FrameAnimationDriver::toValue() const noexcept {
   return toValue_;
 }
 
