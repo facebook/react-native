@@ -33,7 +33,7 @@ SharedDebugStringConvertibleList TextProps::getDebugProps() const {
 }
 #endif
 
-#ifdef RN_SERIALIZABLE_STATE
+#ifdef ANDROID
 
 folly::dynamic TextProps::getDiffProps(const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();

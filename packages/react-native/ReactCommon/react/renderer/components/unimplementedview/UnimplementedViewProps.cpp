@@ -17,8 +17,7 @@ ComponentName UnimplementedViewProps::getComponentName() const {
   return componentName_;
 }
 
-#ifdef RN_SERIALIZABLE_STATE
-
+#ifdef ANDROID
 folly::dynamic UnimplementedViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = UnimplementedViewProps();
@@ -35,7 +34,6 @@ folly::dynamic UnimplementedViewProps::getDiffProps(
 
   return result;
 }
-
 #endif
 
 } // namespace facebook::react
