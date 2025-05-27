@@ -1146,32 +1146,36 @@ public final class com/facebook/react/bridge/ReactCxxErrorHandler {
 	public static final fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
 }
 
-public class com/facebook/react/bridge/ReactMarker {
-	public fun <init> ()V
-	public static fun addFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
-	public static fun addListener (Lcom/facebook/react/bridge/ReactMarker$MarkerListener;)V
-	public static fun clearFabricMarkerListeners ()V
-	public static fun clearMarkerListeners ()V
-	public static fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;I)V
-	public static fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
-	public static fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;I)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;J)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;I)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;ILjava/lang/Long;)V
-	public static fun logMarker (Ljava/lang/String;)V
-	public static fun logMarker (Ljava/lang/String;I)V
-	public static fun logMarker (Ljava/lang/String;Ljava/lang/String;)V
-	public static fun logMarker (Ljava/lang/String;Ljava/lang/String;I)V
-	public static fun removeFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
-	public static fun removeListener (Lcom/facebook/react/bridge/ReactMarker$MarkerListener;)V
+public final class com/facebook/react/bridge/ReactMarker {
+	public static final field INSTANCE Lcom/facebook/react/bridge/ReactMarker;
+	public static final fun addFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
+	public static final fun addListener (Lcom/facebook/react/bridge/ReactMarker$MarkerListener;)V
+	public static final fun clearFabricMarkerListeners ()V
+	public static final fun clearMarkerListeners ()V
+	public static final fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;I)V
+	public static final fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
+	public static final fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;I)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;J)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;I)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;ILjava/lang/Long;)V
+	public static final fun logMarker (Ljava/lang/String;)V
+	public static final fun logMarker (Ljava/lang/String;I)V
+	public static final fun logMarker (Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun logMarker (Ljava/lang/String;Ljava/lang/String;I)V
+	public static final fun removeFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
+	public static final fun removeListener (Lcom/facebook/react/bridge/ReactMarker$MarkerListener;)V
 }
 
 public abstract interface class com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
 	public abstract fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
-	public fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
+	public abstract fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
+}
+
+public final class com/facebook/react/bridge/ReactMarker$FabricMarkerListener$DefaultImpls {
+	public static fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
 }
 
 public abstract interface class com/facebook/react/bridge/ReactMarker$MarkerListener {
