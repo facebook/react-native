@@ -48,7 +48,7 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsStackingContext = !viewProps.collapsable ||
       viewProps.pointerEvents == PointerEventsMode::None ||
-      !viewProps.nativeId.empty() || viewProps.accessible ||
+      !viewProps.nativeId.empty() || viewProps.accessible.value_or(false) ||
       viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
       (viewProps.zIndex.has_value() &&
        viewProps.yogaStyle.positionType() != yoga::PositionType::Static) ||

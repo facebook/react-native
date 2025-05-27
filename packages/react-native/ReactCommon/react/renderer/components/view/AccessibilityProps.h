@@ -31,7 +31,7 @@ class AccessibilityProps {
 
 #pragma mark - Props
 
-  bool accessible{false};
+  std::optional<bool> accessible{std::nullopt};
   std::optional<AccessibilityState> accessibilityState{std::nullopt};
   std::string accessibilityLabel;
   std::vector<std::string> accessibilityOrder{};
