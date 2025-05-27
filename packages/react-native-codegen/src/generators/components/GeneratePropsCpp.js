@@ -78,6 +78,36 @@ function generatePropsDiffString(
   componentName: string,
   component: ComponentShape,
 ) {
+  const diffProps = component.props
+    .map(prop => {
+      const typeAnnotation = prop.typeAnnotation;
+      switch (typeAnnotation.type) {
+        case 'StringTypeAnnotation':
+        case 'Int32TypeAnnotation':
+        case 'BooleanTypeAnnotation':
+          return `
+          if (${prop.name} != oldProps->${prop.name}) {
+            result["${prop.name}"] = ${prop.name};
+          }`;
+        case 'DoubleTypeAnnotation':
+        case 'FloatTypeAnnotation':
+          return `
+          if ((${prop.name} != oldProps->${prop.name}) && !(std::isnan(${prop.name}) && std::isnan(oldProps->${prop.name}))) {
+            result["${prop.name}"] = ${prop.name};
+          }`;
+        case 'ReservedPropTypeAnnotation':
+        case 'ArrayTypeAnnotation':
+        case 'ObjectTypeAnnotation':
+        case 'StringEnumTypeAnnotation':
+        case 'Int32EnumTypeAnnotation':
+        case 'MixedTypeAnnotation':
+        default:
+          // TODO: Implement diffProps for complex types
+          return '';
+      }
+    })
+    .join('\n' + '    ');
+
   return `
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ${className}::getDiffProps(
@@ -90,8 +120,7 @@ folly::dynamic ${className}::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  ${diffProps}
   return result;
 }
 #endif`;
