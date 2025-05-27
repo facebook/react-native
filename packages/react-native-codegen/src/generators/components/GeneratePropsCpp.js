@@ -102,13 +102,21 @@ function generatePropsDiffString(
               if (${prop.name} != oldProps->${prop.name}) {
                 result["${prop.name}"] = *${prop.name};
               }`;
+            case 'ImageSourcePrimitive':
+              return '';
             case 'ImageRequestPrimitive':
               // Shouldn't be used in props
               throw new Error(
                 'ImageRequestPrimitive should not be used in Props',
               );
-            case 'ImageSourcePrimitive':
             case 'PointPrimitive':
+              return `
+              if (${prop.name} != oldProps->${prop.name}) {
+                folly::dynamic pointResult = folly::dynamic::object();
+                pointResult["x"] = ${prop.name}.x;
+                pointResult["y"] = ${prop.name}.y;
+                result["${prop.name}"] = pointResult;
+              }`;
             case 'EdgeInsetsPrimitive':
             case 'DimensionPrimitive':
               // TODO: Implement diffProps for complex types
