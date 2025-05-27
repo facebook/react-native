@@ -28,21 +28,6 @@ const {
   TextInput,
   View,
 } = require('react-native');
-const TextAncestor =
-  require('react-native/Libraries/Text/TextAncestor').default;
-
-// TODO: Is there a cleaner way to flip the TextAncestor value to false? I
-//   suspect apps won't even be able to leverage this workaround because
-//   TextAncestor is not public.
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function InlineView(props) {
-  return (
-    <TextAncestor.Provider value={false}>
-      <View {...props} />
-    </TextAncestor.Provider>
-  );
-}
 
 type TextAlignExampleRTLState = {
   isRTL: boolean,
@@ -1352,20 +1337,20 @@ const examples = [
       return (
         <Text>
           This text has a view
-          <InlineView style={{borderColor: 'red', borderWidth: 1}}>
+          <View style={{borderColor: 'red', borderWidth: 1}}>
             <Text style={{borderColor: 'blue', borderWidth: 1}}>which has</Text>
             <Text style={{borderColor: 'green', borderWidth: 1}}>
               another text inside.
             </Text>
             <Text style={{borderColor: 'yellow', borderWidth: 1}}>
               And moreover, it has another view
-              <InlineView style={{borderColor: 'red', borderWidth: 1}}>
+              <View style={{borderColor: 'red', borderWidth: 1}}>
                 <Text style={{borderColor: 'blue', borderWidth: 1}}>
                   with another text inside!
                 </Text>
-              </InlineView>
+              </View>
             </Text>
-          </InlineView>
+          </View>
           Because we need to go deeper.
         </Text>
       );
