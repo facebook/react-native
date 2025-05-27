@@ -96,6 +96,23 @@ function generatePropsDiffString(
             result["${prop.name}"] = ${prop.name};
           }`;
         case 'ReservedPropTypeAnnotation':
+          switch (typeAnnotation.name) {
+            case 'ColorPrimitive':
+              return `
+              if (${prop.name} != oldProps->${prop.name}) {
+                result["${prop.name}"] = *${prop.name};
+              }`;
+            case 'ImageSourcePrimitive':
+            case 'ImageRequestPrimitive':
+            case 'PointPrimitive':
+            case 'EdgeInsetsPrimitive':
+            case 'DimensionPrimitive':
+              // TODO: Implement diffProps for complex types
+              return '';
+            default:
+              (typeAnnotation.name: empty);
+              throw new Error('Received unknown ReservedPropTypeAnnotation');
+          }
         case 'ArrayTypeAnnotation':
         case 'ObjectTypeAnnotation':
         case 'StringEnumTypeAnnotation':
