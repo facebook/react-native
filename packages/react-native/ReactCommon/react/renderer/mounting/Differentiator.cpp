@@ -280,15 +280,15 @@ static void updateMatchedPairSubtrees(
     return;
   }
 
+  auto oldCullingContextCopy =
+      oldCullingContext.adjustCullingContextIfNeeded(oldPair);
+  auto newCullingContextCopy =
+      newCullingContext.adjustCullingContextIfNeeded(newPair);
+
   // Update subtrees if View is not flattened, and if node addresses
   // are not equal
   if (oldPair.shadowNode != newPair.shadowNode ||
-      oldCullingContext != newCullingContext) {
-    auto oldCullingContextCopy =
-        oldCullingContext.adjustCullingContextIfNeeded(oldPair);
-    auto newCullingContextCopy =
-        newCullingContext.adjustCullingContextIfNeeded(newPair);
-
+      oldCullingContextCopy != newCullingContextCopy) {
     ViewNodePairScope innerScope{};
     auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
         oldPair, innerScope, false, oldCullingContextCopy);

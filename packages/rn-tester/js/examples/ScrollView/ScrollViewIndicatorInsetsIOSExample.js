@@ -3,11 +3,14 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 'use strict';
 
 import * as React from 'react';
+import {useState} from 'react';
 import {
   Button,
   Modal,
@@ -20,54 +23,78 @@ import {
 } from 'react-native';
 
 export function ScrollViewIndicatorInsetsExample() {
-  const [automaticallyAdjustsScrollIndicatorInsets, setAutomaticallyAdjustsScrollIndicatorInsets] = React.useState(true);
-  const [modalVisible, setModalVisible] = React.useState(false);
-  const { height, width } = useWindowDimensions();
+  const [
+    automaticallyAdjustsScrollIndicatorInsets,
+    setAutomaticallyAdjustsScrollIndicatorInsets,
+  ] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const {height, width} = useWindowDimensions();
 
-    return (
-      <View>
-        <Modal
-          animationType="slide"
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-          presentationStyle="fullScreen"
-          statusBarTranslucent={false}
-          supportedOrientations={['portrait', 'landscape']}>
-          <View style={styles.modal}>
-            <ScrollView
-              contentContainerStyle={[
-                styles.scrollViewContent,
-                {
-                  height: (height * 1.2),
-                  width: (width * 1.2),
-                },
-              ]}
-              automaticallyAdjustsScrollIndicatorInsets={automaticallyAdjustsScrollIndicatorInsets}
-              style={styles.scrollView}>
-              <View style={styles.description}>
-                <Text>When <Text style={styles.code}>automaticallyAdjustsScrollIndicatorInsets</Text> is true, the scrollbar is inset to the status bar. When false, it reaches the edge of the modal.</Text>
-                <Text>Check out the UIScrollView docs to learn more about <Text style={styles.code}>automaticallyAdjustsScrollIndicatorInsets</Text></Text>
-              </View>
-              <View style={styles.toggle}>
-              <Text><Text style={styles.code}>automaticallyAdjustsScrollIndicatorInsets</Text> is {automaticallyAdjustsScrollIndicatorInsets + ''}</Text>
+  return (
+    <View>
+      <Modal
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+        presentationStyle="fullScreen"
+        statusBarTranslucent={false}
+        supportedOrientations={['portrait', 'landscape']}>
+        <View style={styles.modal}>
+          <ScrollView
+            contentContainerStyle={[
+              styles.scrollViewContent,
+              {
+                height: height * 1.2,
+                width: width * 1.2,
+              },
+            ]}
+            automaticallyAdjustsScrollIndicatorInsets={
+              automaticallyAdjustsScrollIndicatorInsets
+            }
+            style={styles.scrollView}>
+            <View style={styles.description}>
+              <Text>
+                When{' '}
+                <Text style={styles.code}>
+                  automaticallyAdjustsScrollIndicatorInsets
+                </Text>{' '}
+                is true, the scrollbar is inset to the status bar. When false,
+                it reaches the edge of the modal.
+              </Text>
+              <Text>
+                Check out the UIScrollView docs to learn more about{' '}
+                <Text style={styles.code}>
+                  automaticallyAdjustsScrollIndicatorInsets
+                </Text>
+              </Text>
+            </View>
+            <View style={styles.toggle}>
+              <Text>
+                <Text style={styles.code}>
+                  automaticallyAdjustsScrollIndicatorInsets
+                </Text>{' '}
+                is {automaticallyAdjustsScrollIndicatorInsets + ''}
+              </Text>
               <Switch
-                onValueChange={v => setAutomaticallyAdjustsScrollIndicatorInsets(v)}
+                onValueChange={v =>
+                  setAutomaticallyAdjustsScrollIndicatorInsets(v)
+                }
                 value={automaticallyAdjustsScrollIndicatorInsets}
-                style={styles.switch}/>
-                </View>
-              <Button
-                onPress={() => setModalVisible(false)}
-                title="Close"/>
-            </ScrollView>
-          </View>
-        </Modal>
-        <Text />
-        <Button
-          onPress={() => setModalVisible(true)}
-          title="Present Fullscreen Modal with ScrollView"/>
-      </View>
-    );
-  }
+                style={styles.switch}
+              />
+            </View>
+            <Button onPress={() => setModalVisible(false)} title="Close" />
+          </ScrollView>
+        </View>
+      </Modal>
+      <Text />
+      <Button
+        onPress={() => setModalVisible(true)}
+        title="Present Fullscreen Modal with ScrollView"
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   modal: {
@@ -86,7 +113,7 @@ const styles = StyleSheet.create({
   switch: {
     marginBottom: 40,
   },
-  toggle:{
+  toggle: {
     margin: 20,
     alignItems: 'center',
   },
@@ -106,6 +133,6 @@ exports.description =
 exports.examples = [
   {
     title: '<ScrollView> automaticallyAdjustsScrollIndicatorInsets Example',
-    render: (): React.Node => <ScrollViewIndicatorInsetsExample/>,
+    render: (): React.Node => <ScrollViewIndicatorInsetsExample />,
   },
 ];

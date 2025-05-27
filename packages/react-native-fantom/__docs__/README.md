@@ -134,6 +134,55 @@ Available pragmas:
     - `opt`: optimized and using Hermes bytecode, default for benchmarks.
     - `dev-bytecode`: development but using Hermes bytecode instead of plain
       text JavaScript code.
+- `@fantom_react_fb_flags`: used to set overrides for internal React flags set
+  in ReactNativeInternalFeatureFlags (Meta use only)
+
+For all pragmas, except non-boolean feature flags, you can use a wildcard (`*`)
+as value to run the test with all possible values for that pragma. For example,
+this test:
+
+```javascript
+/**
+ * @fantom_flags jsOnlyTestFlag:*
+ * @fantom_mode *
+ */
+```
+
+Would be executed with these combinations of options:
+
+| `jsOnlyTestFlag` | `mode`         |
+| ---------------- | -------------- |
+| `false`          | `dev`          |
+| `true`           | `dev`          |
+| `false`          | `dev-bytecode` |
+| `true`           | `dev-bytecode` |
+| `false`          | `opt`          |
+| `true`           | `opt`          |
+
+With an output such as:
+
+```text
+  Test (jsOnlyTestFlag 🛑)
+    [...]
+  Test (jsOnlyTestFlag ✅)
+    [...]
+  Test (mode 🐛🔢, jsOnlyTestFlag 🛑)
+    [...]
+  Test (mode 🐛🔢, jsOnlyTestFlag ✅)
+    [...]
+  Test (mode 🚀, jsOnlyTestFlag 🛑)
+    [...]
+  Test (mode 🚀, jsOnlyTestFlag ✅)
+    [...]
+```
+
+### Debugging
+
+To debug, run your fantom test with the flag `FANTOM_ENABLE_CPP_DEBUGGING`
+
+```shell
+FANTOM_ENABLE_CPP_DEBUGGING=1 yarn fantom [optional test pattern]
+```
 
 ### FAQ
 
@@ -199,6 +248,51 @@ has simple examples you can learn from.
 Fantom tests are currently tied to Meta's infrastructure and do not run outside
 of Meta's CI. We are working on migrating Fantom to Github CI. If you submit a
 PR, the tests will run as part of the PR import process.
+
+#### Can I gate individual tests within a suite to only run, or not run, with a specific feature flag?
+
+Yes, you can use the `@fantom_flags` pragma to customize the flags that are
+going to be used for the entire test suite, and conditionally define or exclude
+the test in the suite depending on the flag value for that run. E.g.:
+
+```javascript
+/**
+ * @fantom_flags commonTestFlag:*
+ */
+
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
+
+// The entire suite will be run with commonTestFlag set to true and false.
+describe('MyTest', () => {
+  it('should run with all values of the flag', () => {
+    // ...
+  });
+
+  if (ReactNativeFeatureFlags.commonTestFlag()) {
+    it('should only run when the flag is true', () => {
+      // ...
+    });
+  }
+
+  if (!ReactNativeFeatureFlags.commonTestFlag()) {
+    it('should only run when the flag is false', () => {
+      // ...
+    });
+  }
+});
+```
+
+And the result would look like this:
+
+```text
+ PASS  MyTest-itest.js
+  MyTest (commonTestFlag ❌)
+    ✓ should run with all values of the flag
+    ✓ should only run when the flag is false
+  MyTest (commonTestFlag ✅)
+    ✓ should run with all values of the flag
+    ✓ should only run when the flag is true
+```
 
 ---
 

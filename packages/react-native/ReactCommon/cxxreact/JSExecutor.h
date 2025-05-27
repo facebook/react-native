@@ -14,6 +14,7 @@
 #include <folly/dynamic.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/ReactCdp.h>
+#include <react/timing/primitives.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -137,8 +138,6 @@ class RN_EXPORT JSExecutor {
   static std::string getSyntheticBundlePath(
       uint32_t bundleId,
       const std::string& bundlePath);
-
-  static double performanceNow();
 
   /**
    * Get a reference to the \c RuntimeTargetDelegate owned (or implemented) by

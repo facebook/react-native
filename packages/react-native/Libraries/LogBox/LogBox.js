@@ -261,6 +261,8 @@ if (__DEV__) {
 
       if (!LogBoxData.isMessageIgnored(message.content)) {
         LogBoxData.addLog({
+          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           level,
           category,
           message,

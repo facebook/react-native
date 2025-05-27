@@ -70,6 +70,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    avoidCeilingAvailableAndroidTextWidth: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'Do not incorrectly ceil the available width of an Android text layout',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'stable',
+    },
     cxxNativeAnimatedEnabled: {
       defaultValue: false,
       metadata: {
@@ -227,6 +237,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableIOSTextBaselineOffsetPerLine: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-21',
+        description:
+          'Applies base offset for each line of text separately on iOS.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
       metadata: {
@@ -237,12 +258,14 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableJSRuntimeGCOnMemoryPressureOnIOS: {
-      defaultValue: false,
+    enableIntersectionObserverEventLoopIntegration: {
+      defaultValue: true,
       metadata: {
-        description: 'Trigger JS runtime GC on memory pressure event on iOS',
+        dateAdded: '2025-04-16',
+        description:
+          'Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.',
         expectedReleaseValue: true,
-        purpose: 'release',
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -281,6 +304,16 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'Makes modules requiring main queue setup initialize on the main thread, during React Native init.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableModuleArgumentNSNullConversionIOS: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enable NSNull conversion when handling module arguments on iOS',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -630,17 +663,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableVirtualViewDoubleStateHidden: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-05-10',
-        description:
-          'Enables a VirtualView workaround that triggers a second state update when changing to hidden mode.',
-        expectedReleaseValue: false,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
       metadata: {
@@ -659,6 +681,17 @@ const definitions: FeatureFlagDefinitions = {
           'Function used to enable / disabled Layout Animations in React Native.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    reduceDefaultPropsInView: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-5-12',
+        description:
+          'Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

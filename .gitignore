@@ -30,6 +30,7 @@ project.xcworkspace
 /packages/rn-tester/android/app/gradle/
 /packages/rn-tester/android/app/gradlew
 /packages/rn-tester/android/app/gradlew.bat
+/packages/react-native/build/
 /packages/react-native/ReactAndroid/build/
 /packages/react-native/ReactAndroid/.cxx/
 /packages/react-native/ReactAndroid/gradle/
@@ -116,8 +117,14 @@ vendor/
 /packages/helloworld/ios/build/
 /packages/helloworld/ios/Pods/
 /packages/helloworld/ios/Podfile.lock
+/packages/rn-tester/bin/
+/packages/rn-tester/cache/
+/packages/rn-tester/extensions/
+/packages/rn-tester/gems/
+/packages/rn-tester/specifications/
 /packages/rn-tester/Gemfile.lock
 /packages/**/RCTLegacyInteropComponents.mm
+/packages/sourcemap.ios.map
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
@@ -126,6 +133,7 @@ vendor/
 
 # Swift Package build folder
 /packages/react-native/.build
+/packages/react-native/.swiftpm
 
 # @react-native/codegen
 /packages/react-native/React/FBReactNativeSpec/

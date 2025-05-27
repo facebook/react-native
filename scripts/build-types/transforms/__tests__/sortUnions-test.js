@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 const sortUnionsVisitor = require('../sortUnions.js');

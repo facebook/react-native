@@ -6,29 +6,25 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {SnapshotConfig} from '../runtime/snapshotContext';
-import type {
-  FantomTestConfigJsOnlyFeatureFlags,
-  FantomTestConfigReactInternalFeatureFlags,
-} from './getFantomTestConfig';
+import type {FantomTestConfig} from './getFantomTestConfigs';
+
+import formatFantomConfig from './formatFantomConfig';
 
 module.exports = function entrypointTemplate({
   testPath,
   setupModulePath,
   featureFlagsModulePath,
-  featureFlags,
-  reactInternalFeatureFlags,
+  testConfig,
   snapshotConfig,
   isRunningFromCI,
 }: {
   testPath: string,
   setupModulePath: string,
   featureFlagsModulePath: string,
-  featureFlags: FantomTestConfigJsOnlyFeatureFlags,
-  reactInternalFeatureFlags: FantomTestConfigReactInternalFeatureFlags,
+  testConfig: FantomTestConfig,
   snapshotConfig: SnapshotConfig,
   isRunningFromCI: boolean,
 }): string {
@@ -41,26 +37,25 @@ module.exports = function entrypointTemplate({
  * ${'@'}generated
  * @noformat
  * @noflow
- * @oncall react_native
  */
 
 import {registerTest} from '${setupModulePath}';
 import {setConstants} from '@react-native/fantom';
 ${
-  Object.keys(featureFlags).length > 0
+  Object.keys(testConfig.flags.jsOnly).length > 0
     ? `import * as ReactNativeFeatureFlags from '${featureFlagsModulePath}';
 
 ReactNativeFeatureFlags.override({
-${Object.entries(featureFlags)
+${Object.entries(testConfig.flags.jsOnly)
   .map(([name, value]) => `  ${name}: () => ${JSON.stringify(value)},`)
   .join('\n')}
 });`
     : ''
 }
 ${
-  Object.keys(reactInternalFeatureFlags).length > 0
+  Object.keys(testConfig.flags.reactInternal).length > 0
     ? `import ReactNativeInternalFeatureFlags from 'ReactNativeInternalFeatureFlags';
-  ${Object.entries(reactInternalFeatureFlags)
+  ${Object.entries(testConfig.flags.reactInternal)
     .map(
       ([name, value]) =>
         `ReactNativeInternalFeatureFlags.${name} = ${JSON.stringify(value)};`,
@@ -71,6 +66,7 @@ ${
 
 setConstants({
   isRunningFromCI: ${String(isRunningFromCI)},
+  fantomConfigSummary: '${formatFantomConfig(testConfig)}',
 });
 
 registerTest(() => require('${testPath}'), ${JSON.stringify(snapshotConfig)});

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7693ca44858ed3fd05764e59e6b25ecd>>
+ * @generated SignedSource<<e0bb63612055cb460eabaa23ca6280ba>>
  */
 
 /**
@@ -33,6 +33,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool animatedShouldSignalBatch() override {
     return false;
+  }
+
+  bool avoidCeilingAvailableAndroidTextWidth() override {
+    return true;
   }
 
   bool cxxNativeAnimatedEnabled() override {
@@ -95,12 +99,16 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableIOSTextBaselineOffsetPerLine() override {
+    return false;
+  }
+
   bool enableIOSViewClipToPaddingBox() override {
     return false;
   }
 
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    return false;
+  bool enableIntersectionObserverEventLoopIntegration() override {
+    return true;
   }
 
   bool enableLayoutAnimationsOnAndroid() override {
@@ -116,6 +124,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableMainQueueModulesOnIOS() override {
+    return false;
+  }
+
+  bool enableModuleArgumentNSNullConversionIOS() override {
     return false;
   }
 

@@ -49,7 +49,7 @@ using NativeIntersectionObserverEntry =
         // isIntersectingAboveThresholds
         bool,
         // time
-        double>;
+        HighResTimeStamp>;
 
 template <>
 struct Bridging<NativeIntersectionObserverEntry>
@@ -97,7 +97,7 @@ class NativeIntersectionObserver
 
   static UIManager& getUIManagerFromRuntime(jsi::Runtime& runtime);
   static NativeIntersectionObserverEntry convertToNativeModuleEntry(
-      IntersectionObserverEntry entry,
+      const IntersectionObserverEntry& entry,
       jsi::Runtime& runtime);
 };
 

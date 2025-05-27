@@ -13,11 +13,13 @@ RawEvent::RawEvent(
     std::string type,
     SharedEventPayload eventPayload,
     SharedEventTarget eventTarget,
+    std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily,
     Category category,
     bool isUnique)
     : type(std::move(type)),
       eventPayload(std::move(eventPayload)),
       eventTarget(std::move(eventTarget)),
+      shadowNodeFamily(std::move(shadowNodeFamily)),
       category(category),
       isUnique(isUnique) {}
 

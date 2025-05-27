@@ -14,6 +14,7 @@ import type {MutationObserverId} from './internals/MutationObserverManager';
 import type MutationRecord from './MutationRecord';
 
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
+import {setPlatformObject} from '../webidl/PlatformObjects';
 import * as MutationObserverManager from './internals/MutationObserverManager';
 import nullthrows from 'nullthrows';
 
@@ -171,3 +172,5 @@ export default class MutationObserver {
     return this._mutationObserverId;
   }
 }
+
+setPlatformObject(MutationObserver);

@@ -407,6 +407,20 @@ val prepareGlog by
       outputDir.set(File(thirdPartyNdkDir, "glog"))
     }
 
+// Tasks used by Fantom to download the Native 3p dependencies used.
+val prepareNative3pDependencies by
+    tasks.registering {
+      dependsOn(
+          prepareBoost,
+          prepareDoubleConversion,
+          prepareFastFloat,
+          prepareFmt,
+          prepareFolly,
+          prepareGlog,
+          prepareGtest,
+      )
+    }
+
 val prepareKotlinBuildScriptModel by
     tasks.registering {
       // This task is run when Gradle Sync is running.
@@ -572,13 +586,7 @@ android {
       .dependsOn(
           buildCodegenCLI,
           "generateCodegenArtifactsFromSchema",
-          prepareBoost,
-          prepareDoubleConversion,
-          prepareFastFloat,
-          prepareFmt,
-          prepareFolly,
-          prepareGlog,
-          prepareGtest,
+          prepareNative3pDependencies,
           preparePrefab)
   tasks.getByName("generateCodegenSchemaFromJavaScript").dependsOn(buildCodegenCLI)
   prepareKotlinBuildScriptModel.dependsOn("preBuild")

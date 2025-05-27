@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -17,6 +17,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import React from 'react';
+import {useEffect, useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 
 const IMAGE1 =
@@ -38,9 +39,9 @@ type BlobImageProps = $ReadOnly<{
 }>;
 
 const BlobImage = ({url}: BlobImageProps): React.Node => {
-  const [objectURL, setObjectURL] = React.useState<?string>(null);
+  const [objectURL, setObjectURL] = useState<?string>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // $FlowFixMe[unused-promise]
     (async () => {
       const result = await fetch(url);
@@ -86,11 +87,11 @@ const NetworkImageCallbackExample = ({
   source,
   prefetchedSource,
 }: NetworkImageCallbackExampleProps): React.Node => {
-  const [events, setEvents] = React.useState<$ReadOnlyArray<string>>([]);
-  const [startLoadPrefetched, setStartLoadPrefetched] = React.useState(false);
-  const [mountTime, setMountTime] = React.useState(Date.now());
+  const [events, setEvents] = useState<$ReadOnlyArray<string>>([]);
+  const [startLoadPrefetched, setStartLoadPrefetched] = useState(false);
+  const [mountTime, setMountTime] = useState(Date.now());
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMountTime(Date.now());
   }, []);
 
@@ -595,7 +596,7 @@ const VectorDrawableExample = () => {
 };
 
 function CacheControlAndroidExample(): React.Node {
-  const [reload, setReload] = React.useState(0);
+  const [reload, setReload] = useState(0);
 
   const onReload = () => {
     setReload(prevReload => prevReload + 1);

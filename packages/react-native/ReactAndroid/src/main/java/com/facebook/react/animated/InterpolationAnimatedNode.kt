@@ -96,7 +96,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
   override fun getAnimatedObject(): Any? = objectValue
 
   override fun prettyPrint(): String =
-      "InterpolationAnimatedNode[$tag] super: {super.prettyPrint()}"
+      "InterpolationAnimatedNode[$tag] super: ${super.prettyPrint()}"
 
   companion object {
     const val EXTRAPOLATE_TYPE_IDENTITY: String = "identity"

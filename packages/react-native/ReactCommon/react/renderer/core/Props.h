@@ -63,13 +63,12 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 
   std::string nativeId;
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   folly::dynamic rawProps = folly::dynamic::object();
 
   virtual folly::dynamic getDiffProps(const Props* prevProps) const {
     return folly::dynamic::object();
   }
-
 #endif
 
 #if RN_DEBUG_STRING_CONVERTIBLE

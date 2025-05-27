@@ -15,6 +15,7 @@ const {
 } = require('../../../Utilities/ReactNativeTestTools');
 const TextInput = require('../TextInput').default;
 const React = require('react');
+const {createRef, useState} = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
 jest.unmock('../TextInput');
@@ -29,12 +30,12 @@ jest.unmock('../TextInput');
     beforeEach(async () => {
       jest.resetModules();
 
-      inputRef = React.createRef(null);
+      inputRef = createRef(null);
       onChangeListener = jest.fn();
       onChangeTextListener = jest.fn();
 
       function TextInputWrapper() {
-        const [state, setState] = React.useState({text: initialValue});
+        const [state, setState] = useState({text: initialValue});
 
         return (
           <TextInput
@@ -93,7 +94,7 @@ jest.unmock('../TextInput');
     });
 
     async function createTextInput(extraProps) {
-      const textInputRef = React.createRef(null);
+      const textInputRef = createRef(null);
       await create(
         <TextInput
           ref={textInputRef}
@@ -178,8 +179,8 @@ jest.unmock('../TextInput');
     });
 
     it('should unfocus when other TextInput is focused', async () => {
-      const textInputRe1 = React.createRef(null);
-      const textInputRe2 = React.createRef(null);
+      const textInputRe1 = createRef(null);
+      const textInputRe2 = createRef(null);
 
       await create(
         <>
@@ -243,7 +244,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -287,7 +287,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -330,7 +329,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         nativeID="id"
         onBlur={[Function]}
@@ -461,7 +459,6 @@ jest.unmock('../TextInput');
         aria-valuenow={3}
         aria-valuetext="3"
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -502,7 +499,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}

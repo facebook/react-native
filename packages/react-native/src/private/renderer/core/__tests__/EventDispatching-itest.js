@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags fixMappingOfEventPrioritiesBetweenFabricAndReact:true
  * @flow strict-local
  * @format
- * @oncall react_native
- * @fantom_flags fixMappingOfEventPrioritiesBetweenFabricAndReact:true
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';

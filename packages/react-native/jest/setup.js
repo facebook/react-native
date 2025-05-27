@@ -201,9 +201,7 @@ jest
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () => ({
     __esModule: true,
-    default: jest.requireActual(
-      '../Libraries/Components/RefreshControl/__mocks__/RefreshControlMock',
-    ),
+    default: jest.requireActual('./RefreshControlMock').default,
   }))
   .mock('../Libraries/Components/ScrollView/ScrollView', () => {
     const baseComponent = mockComponent(

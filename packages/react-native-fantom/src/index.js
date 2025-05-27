@@ -522,10 +522,12 @@ export const unstable_benchmark = Benchmark;
 
 type FantomConstants = $ReadOnly<{
   isRunningFromCI: boolean,
+  fantomConfigSummary: string,
 }>;
 
 let constants: FantomConstants = {
   isRunningFromCI: false,
+  fantomConfigSummary: '',
 };
 
 export function getConstants(): FantomConstants {
@@ -612,6 +614,19 @@ export function createShadowNodeReferenceCounter(
 ): () => number {
   let shadowNode = getNativeNodeReference(node);
   return NativeFantom.createShadowNodeReferenceCounter(shadowNode);
+}
+
+/**
+ * Returns a function that returns the current revision number for the supplied
+ * element's shadow node.
+ *
+ * @param node The node for which to create a revision getter.
+ */
+export function createShadowNodeRevisionGetter(
+  node: ReactNativeElement,
+): () => ?number {
+  let shadowNode = getNativeNodeReference(node);
+  return NativeFantom.createShadowNodeRevisionGetter(shadowNode);
 }
 
 /**

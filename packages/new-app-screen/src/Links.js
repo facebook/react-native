@@ -51,7 +51,7 @@ const Links: Array<{
   {
     title: 'Networking',
     description: 'Use the Fetch API',
-    url: 'https://reactnative.dev/docs/navigation',
+    url: 'https://reactnative.dev/docs/network',
   },
   {
     title: 'Showcase',

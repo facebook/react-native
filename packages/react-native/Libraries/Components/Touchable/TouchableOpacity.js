@@ -379,9 +379,13 @@ class TouchableOpacity extends React.Component<
 const Touchable: component(
   ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
   ...props: TouchableOpacityProps
-) = React.forwardRef((props, ref) => (
-  <TouchableOpacity {...props} hostRef={ref} />
-));
+) = ({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...TouchableOpacityProps,
+}) => <TouchableOpacity {...props} hostRef={ref} />;
 
 Touchable.displayName = 'TouchableOpacity';
 

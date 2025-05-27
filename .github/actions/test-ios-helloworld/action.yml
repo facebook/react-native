@@ -1,9 +1,6 @@
 name: test-ios-helloworld
 description: Test iOS Hello World
 inputs:
-  jsengine:
-    description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
-    default: Hermes
   use-frameworks:
     description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
     default: StaticLibraries
@@ -54,7 +51,7 @@ runs:
     - name: Print third-party folder
       shell: bash
       run: ls -lR /tmp/third-party
-    - name: Install iOS dependencies - Configuration ${{ inputs.flavor }}; New Architecture ${{ inputs.architecture }}; JS Engine ${{ inputs.jsengine }}
+    - name: Install iOS dependencies - Configuration ${{ inputs.flavor }}; New Architecture ${{ inputs.architecture }}
       shell: bash
       run: |
         cd packages/helloworld
@@ -68,29 +65,31 @@ runs:
           args+=(--frameworks dynamic)
         fi
 
-        if [[ ${{ inputs.jsengine }} == "JSC" ]]; then
-          args+=(--jsvm jsc)
-          yarn bootstrap ios "${args[@]}" | cat
-        else
-          # Tarball is restored with capital flavors suffix, but somehow the tarball name from JS at line 96 returns as lowercased.
-          # Let's ensure that the tarballs have the right names
+        # Tarball is restored with capital flavors suffix, but somehow the tarball name from JS at line 96 returns as lowercased.
+        # Let's ensure that the tarballs have the right names
 
-          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" ]]; then
-            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz"
-          fi
-
-          if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" ]]; then
-            mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz"
-          fi
-
-          BUILD_TYPE="${{ inputs.flavor }}"
-          TARBALL_FILENAME=$(node ../react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
-          export HERMES_ENGINE_TARBALL_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
-          export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
-
-          yarn bootstrap ios "${args[@]}" | cat
+        if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" ]]; then
+          mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Debug.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz"
         fi
-    - name: Build HelloWorld  project
+
+        if [[ -f "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" ]]; then
+          mv "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-Release.tar.gz" "$HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz"
+        fi
+
+        BUILD_TYPE="${{ inputs.flavor }}"
+        TARBALL_FILENAME=$(node ../react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+        export HERMES_ENGINE_TARBALL_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
+        export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
+
+        yarn bootstrap ios "${args[@]}" | cat
+
+    - name: Run Helloworld tests
+      shell: bash
+      run: |
+        cd packages/helloworld
+        yarn test
+
+    - name: Build HelloWorld project
       shell: bash
       run: |
         cd packages/helloworld

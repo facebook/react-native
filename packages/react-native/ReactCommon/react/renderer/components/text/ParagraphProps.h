@@ -57,6 +57,10 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+#endif
 };
 
 } // namespace facebook::react

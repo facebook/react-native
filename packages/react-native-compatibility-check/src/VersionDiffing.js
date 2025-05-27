@@ -976,14 +976,14 @@ function buildNativeModulesDiff(
     objectTypeChanges,
   );
 
-  const newType = {
+  const newType: CompleteTypeAnnotation = {
     type: 'ObjectTypeAnnotation',
     properties: [
       ...newerNativeModule.spec.methods,
       ...newerNativeModule.spec.eventEmitters,
     ],
   };
-  const oldType = {
+  const oldType: CompleteTypeAnnotation = {
     type: 'ObjectTypeAnnotation',
     properties: [
       ...olderNativeModule.spec.methods,
@@ -1073,11 +1073,11 @@ function buildNativeComponentsDiff(
           olderCommand => olderCommand.name === command.name,
         );
 
-        const newCommands = {
+        const newCommands: CompleteTypeAnnotation = {
           type: 'ObjectTypeAnnotation',
           properties: [command],
         };
-        const oldCommands =
+        const oldCommands: ?CompleteTypeAnnotation =
           oldCommand != null
             ? {
                 type: 'ObjectTypeAnnotation',
@@ -1123,7 +1123,7 @@ function buildNativeComponentsDiff(
 
       // We have to do this to remove the .defaults from the props and get it into
       // standard JavaScript shapes.
-      const newConvertedProps = {
+      const newConvertedProps: CompleteTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         properties: newerComponent.props.map(prop => ({
           name: prop.name,
@@ -1131,7 +1131,7 @@ function buildNativeComponentsDiff(
           typeAnnotation: convertPropToBasicTypes(prop.typeAnnotation),
         })),
       };
-      const oldConvertedProps = {
+      const oldConvertedProps: CompleteTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
         properties: olderComponent.props.map(prop => ({
           name: prop.name,

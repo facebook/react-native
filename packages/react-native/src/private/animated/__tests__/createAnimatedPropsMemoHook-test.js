@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import {AnimatedEvent} from '../../../../Libraries/Animated/AnimatedEvent';
@@ -21,11 +20,11 @@ describe('createCompositeKeyForProps', () => {
     it('excludes non-array and non-object allowlisted props', () => {
       const props = {string: 'abc', number: 123, boolean: true, function() {}};
       const allowlist = {
-        string: true,
-        number: true,
-        boolean: true,
-        function: true,
-      };
+          string: true,
+          number: true,
+          boolean: true,
+          function: true,
+        } /*:: as const */;
       const compositeKey = createCompositeKeyForProps(props, allowlist);
 
       expect(compositeKey).toEqual(null);
@@ -54,8 +53,8 @@ describe('createCompositeKeyForProps', () => {
         bar: new AnimatedEvent([], {useNativeDriver: true}),
       };
       const allowlist = {
-        bar: true,
-      };
+          bar: true,
+        } /*:: as const */;
       const compositeKey = createCompositeKeyForProps(props, allowlist);
 
       expect(compositeKey).toEqual({bar: props.bar});
@@ -70,10 +69,10 @@ describe('createCompositeKeyForProps', () => {
         },
       };
       const allowlist = {
-        style: {
-          baz: true,
-        },
-      };
+          style: {
+            baz: true,
+          },
+        } /*:: as const */;
       const compositeKey = createCompositeKeyForProps(props, allowlist);
 
       expect(compositeKey).toEqual(null);
@@ -85,8 +84,8 @@ describe('createCompositeKeyForProps', () => {
         bar: new AnimatedValue(1),
       };
       const allowlist = {
-        bar: true,
-      };
+          bar: true,
+        } /*:: as const */;
       const compositeKey = createCompositeKeyForProps(props, allowlist);
 
       expect(compositeKey).toEqual({bar: props.bar});
@@ -109,7 +108,7 @@ describe('createCompositeKeyForProps', () => {
       const props = {
         style: {opacity, transform: [{rotateX: 1}, {rotateY}, {rotateZ: 1}]},
       };
-      const allowlist = {style: {transform: true}};
+      const allowlist = {style: {transform: true}} /*:: as const */;
       const compositeKey = createCompositeKeyForProps(props, allowlist);
 
       expect(compositeKey).toEqual({
@@ -127,7 +126,7 @@ describe('createCompositeKeyForProps', () => {
       const props = {
         style: [{opacity: opacityA}, {opacity: opacityB}],
       };
-      const allowlist = {style: {opacity: true}};
+      const allowlist = {style: {opacity: true}} /*:: as const */;
       const compositeKey = createCompositeKeyForProps(props, allowlist);
 
       expect(compositeKey).toEqual({style: {opacity: opacityB}});

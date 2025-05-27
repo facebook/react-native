@@ -26,4 +26,5 @@ target_link_libraries(react_renderer_core
         react_utils
         runtimeexecutor)
 target_compile_reactnative_options(react_renderer_core PRIVATE "Fabric")
+target_compile_definitions(react_renderer_core PUBLIC RN_SERIALIZABLE_STATE)
 target_compile_options(react_renderer_core PRIVATE -Wpedantic)

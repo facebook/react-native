@@ -4,13 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
-const infoLog = require('../Utilities/infoLog').default;
 const invariant = require('invariant');
 
 export type SimpleTask = {
@@ -100,10 +99,10 @@ class TaskQueue {
       const task = queue.shift();
       try {
         if (typeof task === 'object' && task.gen) {
-          DEBUG && infoLog('TaskQueue: genPromise for task ' + task.name);
+          DEBUG && console.log('TaskQueue: genPromise for task ' + task.name);
           this._genPromise(task);
         } else if (typeof task === 'object' && task.run) {
-          DEBUG && infoLog('TaskQueue: run task ' + task.name);
+          DEBUG && console.log('TaskQueue: run task ' + task.name);
           task.run();
         } else {
           invariant(
@@ -111,7 +110,7 @@ class TaskQueue {
             'Expected Function, SimpleTask, or PromiseTask, but got:\n' +
               JSON.stringify(task, null, 2),
           );
-          DEBUG && infoLog('TaskQueue: run anonymous task');
+          DEBUG && console.log('TaskQueue: run anonymous task');
           task();
         }
       } catch (e) {
@@ -141,7 +140,7 @@ class TaskQueue {
     ) {
       this._queueStack.pop();
       DEBUG &&
-        infoLog('TaskQueue: popped queue: ', {
+        console.log('TaskQueue: popped queue: ', {
           stackIdx,
           queueStackSize: this._queueStack.length,
         });
@@ -159,13 +158,13 @@ class TaskQueue {
     this._queueStack.push({tasks: [], popable: false});
     const stackIdx = this._queueStack.length - 1;
     const stackItem = this._queueStack[stackIdx];
-    DEBUG && infoLog('TaskQueue: push new queue: ', {stackIdx});
-    DEBUG && infoLog('TaskQueue: exec gen task ' + task.name);
+    DEBUG && console.log('TaskQueue: push new queue: ', {stackIdx});
+    DEBUG && console.log('TaskQueue: exec gen task ' + task.name);
     task
       .gen()
       .then(() => {
         DEBUG &&
-          infoLog('TaskQueue: onThen for gen task ' + task.name, {
+          console.log('TaskQueue: onThen for gen task ' + task.name, {
             stackIdx,
             queueStackSize: this._queueStack.length,
           });

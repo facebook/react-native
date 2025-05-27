@@ -13,6 +13,7 @@ import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
@@ -74,23 +75,33 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
   override fun canCoalesce(): Boolean = scrollEventType == ScrollEventType.SCROLL
 
   override fun getEventData(): WritableMap {
-    val contentInset = Arguments.createMap()
-    contentInset.putDouble("top", 0.0)
-    contentInset.putDouble("bottom", 0.0)
-    contentInset.putDouble("left", 0.0)
-    contentInset.putDouble("right", 0.0)
-    val contentOffset = Arguments.createMap()
-    contentOffset.putDouble("x", toDIPFromPixel(scrollX).toDouble())
-    contentOffset.putDouble("y", toDIPFromPixel(scrollY).toDouble())
-    val contentSize = Arguments.createMap()
-    contentSize.putDouble("width", toDIPFromPixel(contentWidth.toFloat()).toDouble())
-    contentSize.putDouble("height", toDIPFromPixel(contentHeight.toFloat()).toDouble())
-    val layoutMeasurement = Arguments.createMap()
-    layoutMeasurement.putDouble("width", toDIPFromPixel(scrollViewWidth.toFloat()).toDouble())
-    layoutMeasurement.putDouble("height", toDIPFromPixel(scrollViewHeight.toFloat()).toDouble())
-    val velocity = Arguments.createMap()
-    velocity.putDouble("x", xVelocity.toDouble())
-    velocity.putDouble("y", yVelocity.toDouble())
+    val contentInset = buildReadableMap {
+      put("top", 0.0)
+      put("bottom", 0.0)
+      put("left", 0.0)
+      put("right", 0.0)
+    }
+
+    val contentOffset = buildReadableMap {
+      put("x", toDIPFromPixel(scrollX).toDouble())
+      put("y", toDIPFromPixel(scrollY).toDouble())
+    }
+
+    val contentSize = buildReadableMap {
+      put("width", toDIPFromPixel(contentWidth.toFloat()).toDouble())
+      put("height", toDIPFromPixel(contentHeight.toFloat()).toDouble())
+    }
+
+    val layoutMeasurement = buildReadableMap {
+      put("width", toDIPFromPixel(scrollViewWidth.toFloat()).toDouble())
+      put("height", toDIPFromPixel(scrollViewHeight.toFloat()).toDouble())
+    }
+
+    val velocity = buildReadableMap {
+      put("x", toDIPFromPixel(xVelocity).toDouble())
+      put("y", toDIPFromPixel(yVelocity).toDouble())
+    }
+
     val event = Arguments.createMap()
     event.putMap("contentInset", contentInset)
     event.putMap("contentOffset", contentOffset)

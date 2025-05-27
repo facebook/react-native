@@ -44,7 +44,6 @@
 flow-typed/
 packages/react-native/interface.js
 packages/react-native/flow/
-packages/react-native/src/types/
 
 [options]
 enums=true
@@ -101,4 +100,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.269.1
+^0.272.1

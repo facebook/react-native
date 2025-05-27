@@ -165,7 +165,13 @@ type SwitchRef = React.ElementRef<
 const Switch: component(
   ref?: React.RefSetter<SwitchRef>,
   ...props: SwitchProps
-) = React.forwardRef(function Switch(props, forwardedRef): React.Node {
+) = function Switch({
+  ref: forwardedRef,
+  ...props
+}: {
+  ref?: React.RefSetter<SwitchRef>,
+  ...SwitchProps,
+}): React.Node {
   const {
     disabled,
     ios_backgroundColor,
@@ -285,6 +291,6 @@ const Switch: component(
       />
     );
   }
-});
+};
 
 export default Switch;

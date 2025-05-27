@@ -12,6 +12,7 @@
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <chrono>
 #include <memory>
 #include <semaphore>
 #include <variant>
@@ -67,7 +68,7 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
 
     stubClock_ = std::make_unique<StubClock>(StubClock());
 
-    auto stubNow = [this]() -> RuntimeSchedulerTimePoint {
+    auto stubNow = [this]() -> HighResTimeStamp {
       return stubClock_->getNow();
     };
 
@@ -112,17 +113,20 @@ class RuntimeSchedulerTest : public testing::TestWithParam<bool> {
 };
 
 TEST_P(RuntimeSchedulerTest, now) {
-  stubClock_->setTimePoint(1ms);
+  HighResTimeStamp start = HighResTimeStamp::now();
+  HighResTimeStamp millisecondElapsed =
+      start + HighResDuration::fromChrono(1ms);
 
-  EXPECT_EQ(runtimeScheduler_->now(), RuntimeSchedulerTimePoint(1ms));
+  stubClock_->setTimePoint(millisecondElapsed);
+  EXPECT_EQ(runtimeScheduler_->now() - start, HighResDuration::fromChrono(1ms));
 
-  stubClock_->advanceTimeBy(10ms);
+  stubClock_->advanceTimeBy(HighResDuration::fromChrono(10ms));
+  EXPECT_EQ(
+      runtimeScheduler_->now() - start, HighResDuration::fromChrono(11ms));
 
-  EXPECT_EQ(runtimeScheduler_->now(), RuntimeSchedulerTimePoint(11ms));
-
-  stubClock_->advanceTimeBy(6s);
-
-  EXPECT_EQ(runtimeScheduler_->now(), RuntimeSchedulerTimePoint(6011ms));
+  stubClock_->advanceTimeBy(HighResDuration::fromChrono(6s));
+  EXPECT_EQ(
+      runtimeScheduler_->now() - start, HighResDuration::fromChrono(6011ms));
 }
 
 TEST_P(RuntimeSchedulerTest, getShouldYield) {
@@ -244,7 +248,7 @@ TEST_P(RuntimeSchedulerTest, taskExpiration) {
       SchedulerPriority::NormalPriority, std::move(callback));
 
   // Task with normal priority has 5s timeout.
-  stubClock_->advanceTimeBy(6s);
+  stubClock_->advanceTimeBy(HighResDuration::fromChrono(6s));
 
   EXPECT_FALSE(didRunTask);
   EXPECT_EQ(stubQueue_->size(), 1);
@@ -555,7 +559,7 @@ TEST_P(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
   EXPECT_TRUE(runtimeScheduler_->getShouldYield());
   EXPECT_EQ(stubQueue_->size(), 2);
 
-  stubClock_->advanceTimeBy(6s);
+  stubClock_->advanceTimeBy(HighResDuration::fromChrono(6s));
 
   stubQueue_->flush();
 
@@ -1207,13 +1211,14 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
     return;
   }
 
+  HighResTimeStamp startTime = HighResTimeStamp::now();
   bool didRunTask1 = false;
-  stubClock_->setTimePoint(10ms);
+  stubClock_->setTimePoint(startTime + HighResDuration::fromChrono(10ms));
 
   auto callback1 = createHostFunctionFromLambda([&](bool /* unused */) {
     didRunTask1 = true;
 
-    stubClock_->advanceTimeBy(10ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(10ms));
 
     return jsi::Value::undefined();
   });
@@ -1229,12 +1234,12 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
   EXPECT_EQ(pendingEntries.size(), 0);
 
   bool didRunTask2 = false;
-  stubClock_->setTimePoint(100ms);
+  stubClock_->setTimePoint(startTime + HighResDuration::fromChrono(100ms));
 
   auto callback2 = createHostFunctionFromLambda([&](bool /* unused */) {
     didRunTask2 = true;
 
-    stubClock_->advanceTimeBy(50ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(50ms));
 
     return jsi::Value::undefined();
   });
@@ -1250,10 +1255,12 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasks) {
   EXPECT_EQ(pendingEntries.size(), 1);
   auto entry = pendingEntries[0];
   std::visit(
-      [](const auto& entryDetails) {
+      [startTime](const auto& entryDetails) {
         EXPECT_EQ(entryDetails.entryType, PerformanceEntryType::LONGTASK);
-        EXPECT_EQ(entryDetails.startTime, 100);
-        EXPECT_EQ(entryDetails.duration, 50);
+        EXPECT_EQ(
+            entryDetails.startTime.toDOMHighResTimeStamp(),
+            startTime.toDOMHighResTimeStamp() + 100);
+        EXPECT_EQ(entryDetails.duration, HighResDuration::fromMilliseconds(50));
       },
       entry);
 }
@@ -1264,27 +1271,28 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
     return;
   }
 
+  HighResTimeStamp startTime = HighResTimeStamp::now();
   bool didRunTask1 = false;
-  stubClock_->setTimePoint(10ms);
+  stubClock_->setTimePoint(startTime + HighResDuration::fromChrono(10ms));
 
   auto callback1 = createHostFunctionFromLambda([&](bool /* unused */) {
     // The task executes for 80ms, but all the interval between getShouldYield
     // are shorter than 50ms
     didRunTask1 = true;
 
-    stubClock_->advanceTimeBy(20ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(20ms));
 
     runtimeScheduler_->getShouldYield();
 
-    stubClock_->advanceTimeBy(20ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(20ms));
 
     runtimeScheduler_->getShouldYield();
 
-    stubClock_->advanceTimeBy(20ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(20ms));
 
     runtimeScheduler_->getShouldYield();
 
-    stubClock_->advanceTimeBy(20ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(20ms));
 
     return jsi::Value::undefined();
   });
@@ -1300,26 +1308,26 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
   EXPECT_EQ(pendingEntries.size(), 0);
 
   bool didRunTask2 = false;
-  stubClock_->setTimePoint(100ms);
+  stubClock_->setTimePoint(startTime + HighResDuration::fromChrono(100ms));
 
   auto callback2 = createHostFunctionFromLambda([&](bool /* unused */) {
     // The task executes for 100ms, and one of the intervals is longer than 50.
     didRunTask2 = true;
 
-    stubClock_->advanceTimeBy(20ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(20ms));
 
     runtimeScheduler_->getShouldYield();
 
     // Long period!
-    stubClock_->advanceTimeBy(60ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(60ms));
 
     runtimeScheduler_->getShouldYield();
 
-    stubClock_->advanceTimeBy(20ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(20ms));
 
     runtimeScheduler_->getShouldYield();
 
-    stubClock_->advanceTimeBy(20ms);
+    stubClock_->advanceTimeBy(HighResDuration::fromChrono(20ms));
 
     return jsi::Value::undefined();
   });
@@ -1335,10 +1343,13 @@ TEST_P(RuntimeSchedulerTest, reportsLongTasksWithYielding) {
   EXPECT_EQ(pendingEntries.size(), 1);
   auto entry = pendingEntries[0];
   std::visit(
-      [](const auto& entryDetails) {
+      [startTime](const auto& entryDetails) {
         EXPECT_EQ(entryDetails.entryType, PerformanceEntryType::LONGTASK);
-        EXPECT_EQ(entryDetails.startTime, 100);
-        EXPECT_EQ(entryDetails.duration, 120);
+        EXPECT_EQ(
+            entryDetails.startTime.toDOMHighResTimeStamp(),
+            startTime.toDOMHighResTimeStamp() + 100);
+        EXPECT_EQ(
+            entryDetails.duration, HighResDuration::fromMilliseconds(120));
       },
       entry);
 }

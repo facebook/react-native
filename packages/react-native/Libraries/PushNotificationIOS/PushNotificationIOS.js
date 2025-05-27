@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
@@ -167,10 +167,11 @@ export interface PushNotification {
 }
 
 /**
- *
  * Handle notifications for your app, including scheduling and permissions.
  *
  * See https://reactnative.dev/docs/pushnotificationios
+ *
+ * @deprecated Use [@react-native-community/push-notification-ios](https://www.npmjs.com/package/@react-native-community/push-notification-ios) instead
  */
 class PushNotificationIOS {
   _data: Object;

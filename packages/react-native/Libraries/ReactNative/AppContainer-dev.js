@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {
@@ -24,6 +23,7 @@ import LogBoxNotificationContainer from '../LogBox/LogBoxNotificationContainer';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {RootTagContext, createRootTag} from './RootTag';
 import * as React from 'react';
+import {useRef} from 'react';
 
 const {useEffect, useState, useCallback} = React;
 
@@ -95,9 +95,9 @@ const AppContainer = ({
   WrapperComponent,
   rootViewStyle,
 }: Props): React.Node => {
-  const appContainerRootViewRef: AppContainerRootViewRef = React.useRef(null);
-  const innerViewRef: InspectedViewRef = React.useRef(null);
-  const debuggingOverlayRef: DebuggingOverlayRef = React.useRef(null);
+  const appContainerRootViewRef: AppContainerRootViewRef = useRef(null);
+  const innerViewRef: InspectedViewRef = useRef(null);
+  const debuggingOverlayRef: DebuggingOverlayRef = useRef(null);
 
   useSubscribeToDebuggingOverlayRegistry(
     appContainerRootViewRef,

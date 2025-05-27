@@ -231,7 +231,7 @@ struct Bridging<NativeEnumTurboModuleStatusLowerCaseEnum> {
     } else if (value == \\"off\\") {
       return NativeEnumTurboModuleStatusLowerCaseEnum::Off;
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in NativeEnumTurboModuleStatusLowerCaseEnum\\");
     }
   }
 
@@ -243,7 +243,7 @@ struct Bridging<NativeEnumTurboModuleStatusLowerCaseEnum> {
     } else if (value == NativeEnumTurboModuleStatusLowerCaseEnum::Off) {
       return bridging::toJs(rt, \\"off\\");
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in NativeEnumTurboModuleStatusLowerCaseEnum\\");
     }
   }
 };
@@ -263,7 +263,7 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     } else if (value == 0) {
       return NativeEnumTurboModuleStatusNumEnum::Off;
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in NativeEnumTurboModuleStatusNumEnum\\");
     }
   }
 
@@ -275,7 +275,7 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
       return bridging::toJs(rt, 0);
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in NativeEnumTurboModuleStatusNumEnum\\");
     }
   }
 };
@@ -295,7 +295,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
     } else if (value == \\"Off\\") {
       return NativeEnumTurboModuleStatusRegularEnum::Off;
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in NativeEnumTurboModuleStatusRegularEnum\\");
     }
   }
 
@@ -307,7 +307,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
     } else if (value == NativeEnumTurboModuleStatusRegularEnum::Off) {
       return bridging::toJs(rt, \\"Off\\");
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in NativeEnumTurboModuleStatusRegularEnum\\");
     }
   }
 };
@@ -327,7 +327,7 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     } else if (value == \\"off\\") {
       return NativeEnumTurboModuleStatusStrEnum::Off;
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in NativeEnumTurboModuleStatusStrEnum\\");
     }
   }
 
@@ -339,7 +339,7 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     } else if (value == NativeEnumTurboModuleStatusStrEnum::Off) {
       return bridging::toJs(rt, \\"off\\");
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in NativeEnumTurboModuleStatusStrEnum\\");
     }
   }
 };
@@ -2361,7 +2361,7 @@ struct Bridging<NativeEnumTurboModuleStatusLowerCaseEnum> {
     } else if (value == \\"off\\") {
       return NativeEnumTurboModuleStatusLowerCaseEnum::Off;
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in NativeEnumTurboModuleStatusLowerCaseEnum\\");
     }
   }
 
@@ -2373,7 +2373,7 @@ struct Bridging<NativeEnumTurboModuleStatusLowerCaseEnum> {
     } else if (value == NativeEnumTurboModuleStatusLowerCaseEnum::Off) {
       return bridging::toJs(rt, \\"off\\");
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in NativeEnumTurboModuleStatusLowerCaseEnum\\");
     }
   }
 };
@@ -2393,7 +2393,7 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     } else if (value == 0) {
       return NativeEnumTurboModuleStatusNumEnum::Off;
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in NativeEnumTurboModuleStatusNumEnum\\");
     }
   }
 
@@ -2405,7 +2405,7 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     } else if (value == NativeEnumTurboModuleStatusNumEnum::Off) {
       return bridging::toJs(rt, 0);
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in NativeEnumTurboModuleStatusNumEnum\\");
     }
   }
 };
@@ -2425,7 +2425,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
     } else if (value == \\"Off\\") {
       return NativeEnumTurboModuleStatusRegularEnum::Off;
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in NativeEnumTurboModuleStatusRegularEnum\\");
     }
   }
 
@@ -2437,7 +2437,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
     } else if (value == NativeEnumTurboModuleStatusRegularEnum::Off) {
       return bridging::toJs(rt, \\"Off\\");
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in NativeEnumTurboModuleStatusRegularEnum\\");
     }
   }
 };
@@ -2457,7 +2457,7 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     } else if (value == \\"off\\") {
       return NativeEnumTurboModuleStatusStrEnum::Off;
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for value in NativeEnumTurboModuleStatusStrEnum\\");
     }
   }
 
@@ -2469,7 +2469,7 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     } else if (value == NativeEnumTurboModuleStatusStrEnum::Off) {
       return bridging::toJs(rt, \\"off\\");
     } else {
-      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
+      throw jsi::JSError(rt, \\"No appropriate enum member found for enum value in NativeEnumTurboModuleStatusStrEnum\\");
     }
   }
 };

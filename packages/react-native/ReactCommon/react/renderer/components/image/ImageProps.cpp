@@ -174,7 +174,7 @@ void ImageProps::setProp(
   }
 }
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 
 static folly::dynamic convertImageSource(const ImageSource& imageSource) {
   folly::dynamic imageSourceResult = folly::dynamic::object();
@@ -194,10 +194,8 @@ static folly::dynamic convertImageSource(const ImageSource& imageSource) {
   imageSourceResult["bundle"] = imageSource.bundle;
   imageSourceResult["scale"] = imageSource.scale;
 
-  folly::dynamic size = folly::dynamic::object();
-  size["width"] = imageSource.size.width;
-  size["height"] = imageSource.size.height;
-  imageSourceResult["size"] = size;
+  imageSourceResult["width"] = imageSource.size.width;
+  imageSourceResult["height"] = imageSource.size.height;
 
   imageSourceResult["body"] = imageSource.body;
   imageSourceResult["method"] = imageSource.method;

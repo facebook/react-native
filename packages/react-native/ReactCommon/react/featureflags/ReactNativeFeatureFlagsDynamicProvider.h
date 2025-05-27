@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42fe6f6c4bbb55e5fa1df98e8c970d21>>
+ * @generated SignedSource<<b9a41a71cab001510ceb290b820dbd97>>
  */
 
 /**
@@ -61,6 +61,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::animatedShouldSignalBatch();
+  }
+
+  bool avoidCeilingAvailableAndroidTextWidth() override {
+    auto value = values_["avoidCeilingAvailableAndroidTextWidth"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::avoidCeilingAvailableAndroidTextWidth();
   }
 
   bool cxxNativeAnimatedEnabled() override {
@@ -198,6 +207,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableFontScaleChangesUpdatingLayout();
   }
 
+  bool enableIOSTextBaselineOffsetPerLine() override {
+    auto value = values_["enableIOSTextBaselineOffsetPerLine"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableIOSTextBaselineOffsetPerLine();
+  }
+
   bool enableIOSViewClipToPaddingBox() override {
     auto value = values_["enableIOSViewClipToPaddingBox"];
     if (!value.isNull()) {
@@ -207,13 +225,13 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
   }
 
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    auto value = values_["enableJSRuntimeGCOnMemoryPressureOnIOS"];
+  bool enableIntersectionObserverEventLoopIntegration() override {
+    auto value = values_["enableIntersectionObserverEventLoopIntegration"];
     if (!value.isNull()) {
       return value.getBool();
     }
 
-    return ReactNativeFeatureFlagsDefaults::enableJSRuntimeGCOnMemoryPressureOnIOS();
+    return ReactNativeFeatureFlagsDefaults::enableIntersectionObserverEventLoopIntegration();
   }
 
   bool enableLayoutAnimationsOnAndroid() override {
@@ -250,6 +268,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableMainQueueModulesOnIOS();
+  }
+
+  bool enableModuleArgumentNSNullConversionIOS() override {
+    auto value = values_["enableModuleArgumentNSNullConversionIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableModuleArgumentNSNullConversionIOS();
   }
 
   bool enableNativeCSSParsing() override {

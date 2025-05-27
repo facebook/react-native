@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 const ALLOWED_SCALES: {[key: string]: number[]} = {

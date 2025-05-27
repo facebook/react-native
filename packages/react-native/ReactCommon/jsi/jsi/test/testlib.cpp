@@ -1173,7 +1173,7 @@ TEST_P(JSITest, DecoratorTest) {
 
   class CountRuntime final : public WithRuntimeDecorator<Count> {
    public:
-    explicit CountRuntime(std::unique_ptr<Runtime> rt)
+    explicit CountRuntime(std::shared_ptr<Runtime> rt)
         : WithRuntimeDecorator<Count>(*rt, count_),
           rt_(std::move(rt)),
           count_(kInit) {}
@@ -1183,7 +1183,7 @@ TEST_P(JSITest, DecoratorTest) {
     }
 
    private:
-    std::unique_ptr<Runtime> rt_;
+    std::shared_ptr<Runtime> rt_;
     Count count_;
   };
 
@@ -1222,7 +1222,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
   class MultiRuntime final
       : public WithRuntimeDecorator<std::tuple<Inc, Nest>> {
    public:
-    explicit MultiRuntime(std::unique_ptr<Runtime> rt)
+    explicit MultiRuntime(std::shared_ptr<Runtime> rt)
         : WithRuntimeDecorator<std::tuple<Inc, Nest>>(*rt, tuple_),
           rt_(std::move(rt)) {}
 
@@ -1234,7 +1234,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
     }
 
    private:
-    std::unique_ptr<Runtime> rt_;
+    std::shared_ptr<Runtime> rt_;
     std::tuple<Inc, Nest> tuple_;
   };
 
@@ -1859,6 +1859,25 @@ TEST_P(JSITest, SetRuntimeData) {
   delete rd3;
   rt3.reset();
   EXPECT_EQ(weakObj3.use_count(), 0);
+}
+
+TEST_P(JSITest, CastInterface) {
+  // This Runtime Decorator is used to test the default implementation of
+  // jsi::Runtime::castInterface
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    ICast* castInterface(const UUID& interfaceUuid) override {
+      return Runtime::castInterface(interfaceUuid);
+    }
+  };
+
+  RD rd = RD(rt);
+  auto randomUuid = UUID{0xf2cd96cf, 0x455e, 0x42d9, 0x850a, 0x13e2cde59b8b};
+  auto ptr = rd.castInterface(randomUuid);
+
+  EXPECT_EQ(ptr, nullptr);
 }
 
 INSTANTIATE_TEST_CASE_P(

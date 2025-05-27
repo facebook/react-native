@@ -228,26 +228,20 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     return AttributedStringBox{attributedString};
   }
 
-  // For measurement purposes, we want to make sure that there's at least a
-  // single character in the string so that the measured height is greater
-  // than zero. Otherwise, empty TextInputs with no placeholder don't
-  // display at all.
-  // TODO T67606511: We will redefine the measurement of empty strings as part
-  // of T67606511
   AttributedString getPlaceholderAttributedString(
       const LayoutContext& layoutContext) const {
     const auto& props = BaseShadowNode::getConcreteProps();
 
     AttributedString attributedString;
-    auto placeholderString = !props.placeholder.empty()
-        ? props.placeholder
-        : BaseTextShadowNode::getEmptyPlaceholder();
-    auto textAttributes =
-        props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
-    attributedString.appendFragment(
-        {.string = std::move(placeholderString),
-         .textAttributes = textAttributes,
-         .parentShadowView = {}});
+    attributedString.setBaseTextAttributes(
+        props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier));
+
+    if (!props.placeholder.empty()) {
+      attributedString.appendFragment(
+          {.string = props.placeholder,
+           .textAttributes = attributedString.getBaseTextAttributes(),
+           .parentShadowView = {}});
+    }
     return attributedString;
   }
 };

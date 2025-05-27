@@ -11,13 +11,19 @@ package com.facebook.react.bridge
  * Convenience class for building a [ReadableMap] in a Kotlin idiomatic way. You can use it as
  * follows:
  * ```
- * val array: ReadableArray = buildReadableArray {
- *       add("one")
- *       add(2)
- *       add(true)
- *       addNull()
- *       addMap { put("nestedKey", "nestedValue") }
- *     }
+ * val map: ReadableMap = buildReadableMap {
+ *    put("first", "one")
+ *    put("second", 2)
+ *    put("third", true)
+ *    putNull("fourth")
+ *    putMap("fifth") {
+ *      put("nestedKey", "nestedValue")
+ *    }
+ *    putArray("sixth") {
+ *      add(1)
+ *      add("2")
+ *    }
+ * }
  * ```
  */
 public inline fun buildReadableMap(builder: ReadableMapBuilder.() -> Unit): ReadableMap {
@@ -49,6 +55,14 @@ public class ReadableMapBuilder(private val map: WritableMap) {
 
   public fun putNull(key: String) {
     map.putNull(key)
+  }
+
+  public fun put(key: String, value: ReadableMap) {
+    map.putMap(key, value)
+  }
+
+  public fun put(key: String, value: ReadableArray) {
+    map.putArray(key, value)
   }
 
   public fun putMap(key: String, builder: ReadableMapBuilder.() -> Unit) {

@@ -1,5 +1,217 @@
 # Changelog
 
+## v0.80.0-rc.2
+
+### Breaking
+
+- Fixed codegen breaking when a subset of `modulesConformingToProtocol` fields was specified or when the value was string ([e4ef685dd7](https://github.com/facebook/react-native/commit/e4ef685dd75f09f22b0122e83fc94bc9d2df8a97) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+- Added a custom Jest resolver to opt out from handling "exports" in tests ([ee9bd851ac](https://github.com/facebook/react-native/commit/ee9bd851acfc38150f434d676602865ba8cec591) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+- Made DevServerHelper and its method open so that they can be overridden. ([2a0c1e6a9e](https://github.com/facebook/react-native/commit/2a0c1e6a9e98c19101dc89b9adba4a990cd6902c) by [@chrfalch](https://github.com/chrfalch))
+- Wrong borderBottomEndRadius on RTL ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
+- Made function `removeView` open in Kotlin class ([9d11dcd3b0](https://github.com/facebook/react-native/commit/9d11dcd3b06641dc8780043067d6d4fbfcac71d1) by [@chrfalch](https://github.com/chrfalch))
+
+#### iOS specific
+
+- Fixed adding child views to a native view using the interop layer ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.80.0-rc.2 ([b35291cbb8](https://github.com/facebook/react-native/commit/b35291cbb8b36c6bc32e2eb5d719fffdd3172f61) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([033e6b1f9c](https://github.com/facebook/react-native/commit/033e6b1f9c2184b5227e57756a164881ffa650ba) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
+## v0.80.0-rc.1
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Enable `DEFINES_MODULE` in `React-jsc.podspec` ([473e42bbc3](https://github.com/facebook/react-native/commit/473e42bbc383fb01981bdfc7085ab923f0c786c0) by [@krozniata](https://github.com/krozniata))
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Fix generated types in react-native/virtualized-lists being used without opt-in ([c9f2055097](https://github.com/facebook/react-native/commit/c9f20550972db2f94c5970948239312046a66a4e) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Skip codegen for selectively disabled libraries in react-native.config.js ([be8595b18a](https://github.com/facebook/react-native/commit/be8595b18a46635bf679d8e7473f2960c33530fa) by [@ismarbesic](https://github.com/ismarbesic))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.80.0-rc.1 ([d2168e9415](https://github.com/facebook/react-native/commit/d2168e94157deb728eccc061a55fe9e330677269) by [@react-native-bot](https://github.com/react-native-bot))
+- Fix set-rn-version to consider also the codegen snapshot tests ([79e2298230](https://github.com/facebook/react-native/commit/79e2298230ac202432cec1940ffda894d09a9231) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix draft creation ([cdf7d76101](https://github.com/facebook/react-native/commit/cdf7d761011daf67ce92854372f96900dbbc42c9) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock ([f70a146699](https://github.com/facebook/react-native/commit/f70a146699f870a230126bab1f3ef0e47d5cedc1) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.80.0-rc.0
 
 ### Breaking

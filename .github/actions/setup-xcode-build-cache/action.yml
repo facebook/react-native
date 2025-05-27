@@ -4,9 +4,6 @@ inputs:
   hermes-version:
     description: The version of hermes
     required: true
-  jsengine:
-    dscription: The js engine in use
-    default: Hermes
   flavor:
     description: The flavor that is going to be built
     default: Debug
@@ -30,9 +27,9 @@ runs:
       uses: actions/cache@v4
       with:
         path: packages/rn-tester/Podfile.lock
-        key: v13-podfilelock-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version }}
+        key: v13-podfilelock-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version }}
     - name: Cache cocoapods
       uses: actions/cache@v4
       with:
         path: packages/rn-tester/Pods
-        key: v15-cocoapods-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}
+        key: v15-cocoapods-${{ github.job }}-${{ inputs.architecture }}-${{ inputs.flavor }}-${{ inputs.use-frameworks }}-${{ inputs.ruby-version }}-${{ hashfiles('packages/rn-tester/Podfile.lock') }}-${{ hashfiles('packages/rn-tester/Podfile') }}-${{ inputs.hermes-version}}

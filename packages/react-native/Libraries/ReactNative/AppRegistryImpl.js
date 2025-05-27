@@ -24,7 +24,6 @@ import type {
 
 import BugReporting from '../BugReporting/BugReporting';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
-import infoLog from '../Utilities/infoLog';
 import SceneTracker from '../Utilities/SceneTracker';
 import {coerceDisplayMode} from './DisplayMode';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
@@ -167,7 +166,7 @@ export function runApplication(
   if (appKey !== 'LogBox') {
     const logParams = __DEV__ ? ` with ${JSON.stringify(appParameters)}` : '';
     const msg = `Running "${appKey}"${logParams}`;
-    infoLog(msg);
+    console.log(msg);
     BugReporting.addSource(
       'AppRegistry.runApplication' + runCount++,
       () => msg,
@@ -199,7 +198,7 @@ export function setSurfaceProps(
       appKey +
       '" with ' +
       JSON.stringify(appParameters);
-    infoLog(msg);
+    console.log(msg);
     BugReporting.addSource(
       'AppRegistry.setSurfaceProps' + runCount++,
       () => msg,

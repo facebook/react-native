@@ -4,13 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 // From @react-native/js-polyfills
 type ErrorHandler = (error: mixed, isFatal: boolean) => void;
-type Fn<Args, Return> = (...Args) => Return;
+type Fn<Args: $ReadOnlyArray<mixed>, Return> = (...Args) => Return;
 export type ErrorUtils = {
   applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(
     fun: Fn<TArgs, TOut>,

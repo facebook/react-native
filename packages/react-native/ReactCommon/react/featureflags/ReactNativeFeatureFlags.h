@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4f67ef97eecd58173de5476d11703a6>>
+ * @generated SignedSource<<db8ca9a060fde84000f122a0889ac058>>
  */
 
 /**
@@ -48,6 +48,11 @@ class ReactNativeFeatureFlags {
    * Enables start- and finishOperationBatch on any platform.
    */
   RN_EXPORT static bool animatedShouldSignalBatch();
+
+  /**
+   * Do not incorrectly ceil the available width of an Android text layout
+   */
+  RN_EXPORT static bool avoidCeilingAvailableAndroidTextWidth();
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
@@ -125,14 +130,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
 
   /**
+   * Applies base offset for each line of text separately on iOS.
+   */
+  RN_EXPORT static bool enableIOSTextBaselineOffsetPerLine();
+
+  /**
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
-   * Trigger JS runtime GC on memory pressure event on iOS
+   * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
    */
-  RN_EXPORT static bool enableJSRuntimeGCOnMemoryPressureOnIOS();
+  RN_EXPORT static bool enableIntersectionObserverEventLoopIntegration();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -153,6 +163,11 @@ class ReactNativeFeatureFlags {
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
    */
   RN_EXPORT static bool enableMainQueueModulesOnIOS();
+
+  /**
+   * Enable NSNull conversion when handling module arguments on iOS
+   */
+  RN_EXPORT static bool enableModuleArgumentNSNullConversionIOS();
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing

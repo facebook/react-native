@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
@@ -24,7 +24,7 @@ namespace facebook::react {
 struct StateData final {
   using Shared = std::shared_ptr<const void>;
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   StateData() = default;
   StateData(const StateData& previousState, folly::dynamic data) {}
   folly::dynamic getDynamic() const;

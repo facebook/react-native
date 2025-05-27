@@ -25,9 +25,7 @@ struct IntersectionObserverEntry {
   Rect rootRect;
   Rect intersectionRect;
   bool isIntersectingAboveThresholds;
-  // TODO(T156529385) Define `DOMHighResTimeStamp` as an alias for `double` and
-  // use it here.
-  double time;
+  HighResTimeStamp time;
 
   bool sameShadowNodeFamily(
       const ShadowNodeFamily& otherShadowNodeFamily) const {
@@ -48,19 +46,17 @@ class IntersectionObserver {
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
   std::optional<IntersectionObserverEntry> updateIntersectionObservation(
       const RootShadowNode& rootShadowNode,
-      double time);
+      HighResTimeStamp time);
 
   std::optional<IntersectionObserverEntry>
-  updateIntersectionObservationForSurfaceUnmount(double time);
+  updateIntersectionObservationForSurfaceUnmount(HighResTimeStamp time);
 
   IntersectionObserverObserverId getIntersectionObserverId() const {
     return intersectionObserverId_;
   }
 
-  bool isTargetShadowNodeFamily(
-      const ShadowNodeFamily& shadowNodeFamily) const {
-    return std::addressof(*targetShadowNodeFamily_) ==
-        std::addressof(shadowNodeFamily);
+  ShadowNodeFamily::Shared getTargetShadowNodeFamily() const {
+    return targetShadowNodeFamily_;
   }
 
   std::vector<Float> getThresholds() const {
@@ -74,13 +70,13 @@ class IntersectionObserver {
       const Rect& intersectionRect,
       Float threshold,
       Float rootThreshold,
-      double time);
+      HighResTimeStamp time);
 
   std::optional<IntersectionObserverEntry> setNotIntersectingState(
       const Rect& rootBoundingRect,
       const Rect& targetBoundingRect,
       const Rect& intersectionRect,
-      double time);
+      HighResTimeStamp time);
 
   IntersectionObserverObserverId intersectionObserverId_;
   ShadowNodeFamily::Shared targetShadowNodeFamily_;

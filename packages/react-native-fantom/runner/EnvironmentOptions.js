@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 export const printCLIOutput: boolean = Boolean(process.env.FANTOM_PRINT_OUTPUT);

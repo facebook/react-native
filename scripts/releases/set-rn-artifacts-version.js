@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 /*::
@@ -46,6 +45,8 @@ const config = {
 async function main() {
   const {
     values: {help, 'build-type': buildType, 'to-version': toVersion},
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help) {

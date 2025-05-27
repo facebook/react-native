@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useState} from 'react';
 import {Button, Share, StyleSheet, View} from 'react-native';
 
 const shareMessage = () => {
@@ -81,7 +82,7 @@ const ShareMessageWithTitle = () => {
 };
 
 const SharedAction = () => {
-  const [shared, setShared] = React.useState<?string>();
+  const [shared, setShared] = useState<?string>();
 
   const sharedAction = async () => {
     try {

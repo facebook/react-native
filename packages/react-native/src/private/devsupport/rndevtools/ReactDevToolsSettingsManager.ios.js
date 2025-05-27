@@ -12,19 +12,16 @@ import Settings from '../../../../Libraries/Settings/Settings';
 
 const GLOBAL_HOOK_SETTINGS = 'ReactDevTools::HookSettings';
 
-const ReactDevToolsSettingsManager = {
-  setGlobalHookSettings(settings: string): void {
-    Settings.set({
-      [GLOBAL_HOOK_SETTINGS]: settings,
-    });
-  },
-  getGlobalHookSettings(): ?string {
-    const value = Settings.get(GLOBAL_HOOK_SETTINGS);
-    if (typeof value === 'string') {
-      return value;
-    }
-    return null;
-  },
-};
+export function setGlobalHookSettings(settings: string) {
+  Settings.set({
+    [GLOBAL_HOOK_SETTINGS]: settings,
+  });
+}
 
-module.exports = ReactDevToolsSettingsManager;
+export function getGlobalHookSettings(): ?string {
+  const value = Settings.get(GLOBAL_HOOK_SETTINGS);
+  if (typeof value === 'string') {
+    return value;
+  }
+  return null;
+}

@@ -152,4 +152,79 @@ SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
 }
 #endif
 
+#ifdef RN_SERIALIZABLE_STATE
+
+folly::dynamic ParagraphProps::getDiffProps(const Props* prevProps) const {
+  static const auto defaultProps = ParagraphProps();
+
+  const ParagraphProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ParagraphProps*>(prevProps);
+
+  folly::dynamic result = ViewProps::getDiffProps(oldProps);
+
+  BaseTextProps::appendTextAttributesProps(result, oldProps);
+
+  if (paragraphAttributes.maximumNumberOfLines !=
+      oldProps->paragraphAttributes.maximumNumberOfLines) {
+    result["numberOfLines"] = paragraphAttributes.maximumNumberOfLines;
+  }
+
+  if (paragraphAttributes.ellipsizeMode !=
+      oldProps->paragraphAttributes.ellipsizeMode) {
+    result["ellipsizeMode"] = toString(paragraphAttributes.ellipsizeMode);
+  }
+
+  if (paragraphAttributes.textBreakStrategy !=
+      oldProps->paragraphAttributes.textBreakStrategy) {
+    result["textBreakStrategy"] =
+        toString(paragraphAttributes.textBreakStrategy);
+  }
+
+  if (paragraphAttributes.adjustsFontSizeToFit !=
+      oldProps->paragraphAttributes.adjustsFontSizeToFit) {
+    result["adjustsFontSizeToFit"] = paragraphAttributes.adjustsFontSizeToFit;
+  }
+
+  if (!floatEquality(
+          paragraphAttributes.minimumFontScale,
+          oldProps->paragraphAttributes.minimumFontScale)) {
+    result["minimumFontScale"] = paragraphAttributes.minimumFontScale;
+  }
+
+  if (!floatEquality(
+          paragraphAttributes.minimumFontSize,
+          oldProps->paragraphAttributes.minimumFontSize)) {
+    result["minimumFontSize"] = paragraphAttributes.minimumFontSize;
+  }
+
+  if (!floatEquality(
+          paragraphAttributes.maximumFontSize,
+          oldProps->paragraphAttributes.maximumFontSize)) {
+    result["maximumFontSize"] = paragraphAttributes.maximumFontSize;
+  }
+
+  if (paragraphAttributes.includeFontPadding !=
+      oldProps->paragraphAttributes.includeFontPadding) {
+    result["includeFontPadding"] = paragraphAttributes.includeFontPadding;
+  }
+
+  if (paragraphAttributes.android_hyphenationFrequency !=
+      oldProps->paragraphAttributes.android_hyphenationFrequency) {
+    result["android_hyphenationFrequency"] =
+        toString(paragraphAttributes.android_hyphenationFrequency);
+  }
+
+  if (isSelectable != oldProps->isSelectable) {
+    result["selectable"] = isSelectable;
+  }
+
+  if (onTextLayout != oldProps->onTextLayout) {
+    result["onTextLayout"] = onTextLayout;
+  }
+
+  return result;
+}
+
+#endif
 } // namespace facebook::react

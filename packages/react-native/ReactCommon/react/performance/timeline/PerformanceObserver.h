@@ -7,12 +7,15 @@
 
 #pragma once
 
+#include "PerformanceEntryBuffer.h"
+#include "PerformanceObserverRegistry.h"
+
+#include <react/timing/primitives.h>
+
 #include <functional>
 #include <memory>
 #include <unordered_set>
 #include <vector>
-#include "PerformanceEntryBuffer.h"
-#include "PerformanceObserverRegistry.h"
 
 namespace facebook::react {
 
@@ -27,7 +30,7 @@ using PerformanceObserverCallback = std::function<void()>;
  * https://w3c.github.io/performance-timeline/#performanceobserverinit-dictionary
  */
 struct PerformanceObserverObserveMultipleOptions {
-  double durationThreshold = 0.0;
+  HighResDuration durationThreshold = DEFAULT_DURATION_THRESHOLD;
 };
 
 /**
@@ -38,7 +41,7 @@ struct PerformanceObserverObserveMultipleOptions {
  */
 struct PerformanceObserverObserveSingleOptions {
   bool buffered = false;
-  double durationThreshold = 0.0;
+  HighResDuration durationThreshold = DEFAULT_DURATION_THRESHOLD;
 };
 
 /**
@@ -124,7 +127,7 @@ class PerformanceObserver
   PerformanceObserverEntryTypeFilter observedTypes_;
 
   /// https://www.w3.org/TR/event-timing/#sec-modifications-perf-timeline
-  double durationThreshold_{DEFAULT_DURATION_THRESHOLD};
+  HighResDuration durationThreshold_ = DEFAULT_DURATION_THRESHOLD;
   std::vector<PerformanceEntry> buffer_;
   bool didScheduleFlushBuffer_ = false;
   bool requiresDroppedEntries_ = false;

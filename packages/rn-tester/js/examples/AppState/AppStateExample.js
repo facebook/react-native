@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -15,7 +15,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {useEffect, useState} from 'react';
-import {AppState, Platform, View} from 'react-native';
+import {AppState, Platform} from 'react-native';
 
 type Props = {
   detectEvents?: boolean,

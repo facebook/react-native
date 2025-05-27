@@ -18,9 +18,9 @@ namespace fhsp = facebook::hermes::sampling_profiler;
 /// Fallback script ID for call frames, when Hermes didn't provide one or when
 /// this frame is part of the VM, like native functions, used for parity with
 /// Chromium + V8.
-const uint32_t FALLBACK_SCRIPT_ID = 0;
+constexpr uint32_t FALLBACK_SCRIPT_ID = 0;
 /// Garbage collector frame name, used for parity with Chromium + V8.
-const std::string GARBAGE_COLLECTOR_FRAME_NAME = "(garbage collector)";
+constexpr std::string_view GARBAGE_COLLECTOR_FRAME_NAME = "(garbage collector)";
 
 /// Filters out Hermes Suspend frames related to Debugger.
 /// Even though Debugger domain is expected to be disabled, Hermes might run
@@ -74,8 +74,9 @@ RuntimeSamplingProfile::SampleCallStackFrame convertJSFunctionHermesFrame(
       RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
       frame.getScriptId(),
       frame.getFunctionName(),
-      frame.hasUrl() ? std::optional<std::string>{frame.getUrl()}
-                     : std::nullopt,
+      frame.hasScriptUrl()
+          ? std::optional<std::string_view>{frame.getScriptUrl()}
+          : std::nullopt,
       frame.hasFunctionLineNumber()
           ? std::optional<uint32_t>{frame.getFunctionLineNumber() - 1}
           // Hermes VM keeps line numbers as 1-based. Convert
@@ -145,7 +146,7 @@ RuntimeSamplingProfile::Sample convertHermesSampleToTracingSample(
 
 /* static */ RuntimeSamplingProfile
 HermesRuntimeSamplingProfileSerializer::serializeToTracingSamplingProfile(
-    const hermes::sampling_profiler::Profile& hermesProfile) {
+    hermes::sampling_profiler::Profile hermesProfile) {
   const auto samplesRange = hermesProfile.getSamplesRange();
   std::vector<RuntimeSamplingProfile::Sample> reconciledSamples;
   reconciledSamples.reserve(hermesProfile.getSamplesCount());
@@ -156,7 +157,10 @@ HermesRuntimeSamplingProfileSerializer::serializeToTracingSamplingProfile(
     reconciledSamples.push_back(std::move(reconciledSample));
   }
 
-  return RuntimeSamplingProfile{"Hermes", std::move(reconciledSamples)};
+  return RuntimeSamplingProfile{
+      "Hermes",
+      std::move(reconciledSamples),
+      std::make_unique<RawHermesRuntimeProfile>(std::move(hermesProfile))};
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing

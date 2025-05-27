@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/timing/primitives.h>
 #include <reactperflogger/ReactPerfettoCategories.h>
 
 #include <optional>
@@ -24,13 +25,13 @@ class ReactPerfettoLogger {
 
   static void mark(
       const std::string_view& eventName,
-      double startTime,
+      HighResTimeStamp startTime,
       const std::optional<std::string_view>& trackName);
 
   static void measure(
       const std::string_view& eventName,
-      double startTime,
-      double endTime,
+      HighResTimeStamp startTime,
+      HighResTimeStamp endTime,
       const std::optional<std::string_view>& trackName);
 };
 

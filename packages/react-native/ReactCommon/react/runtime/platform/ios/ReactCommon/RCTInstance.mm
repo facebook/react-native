@@ -25,7 +25,6 @@
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
@@ -41,6 +40,7 @@
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/FollyConvert.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "ObjCTimerRegistry.h"
@@ -68,6 +68,35 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
   sRuntimeDiagnosticFlags = [flags copy];
 }
+
+@interface RCTBridgelessDisplayLinkModuleHolder : NSObject <RCTDisplayLinkModuleHolder>
+- (instancetype)initWithModule:(id<RCTBridgeModule>)module;
+@end
+
+@implementation RCTBridgelessDisplayLinkModuleHolder {
+  id<RCTBridgeModule> _module;
+}
+- (instancetype)initWithModule:(id<RCTBridgeModule>)module
+{
+  _module = module;
+  return self;
+}
+
+- (id<RCTBridgeModule>)instance
+{
+  return _module;
+}
+
+- (Class)moduleClass
+{
+  return [_module class];
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return _module.methodQueue;
+}
+@end
 
 @interface RCTInstance () <RCTTurboModuleManagerDelegate>
 @end
@@ -131,12 +160,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
     _launchOptions = launchOptions;
 
-    if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(_handleMemoryWarning)
-                                                   name:UIApplicationDidReceiveMemoryWarningNotification
-                                                 object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_handleMemoryWarning)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
 
     [self _start];
   }
@@ -145,11 +172,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)dealloc
 {
-  if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIApplicationDidReceiveMemoryWarningNotification
-                                                  object:nil];
-  }
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:UIApplicationDidReceiveMemoryWarningNotification
+                                                object:nil];
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
@@ -402,13 +427,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
 
     // Set up Display Link
-    RCTModuleData *timingModuleData = [[RCTModuleData alloc] initWithModuleInstance:timing
-                                                                             bridge:nil
-                                                                     moduleRegistry:nil
-                                                            viewRegistry_DEPRECATED:nil
-                                                                      bundleManager:nil
-                                                                  callableJSModules:nil];
-    [strongSelf->_displayLink registerModuleForFrameUpdates:timing withModuleData:timingModuleData];
+    id<RCTDisplayLinkModuleHolder> moduleHolder = [[RCTBridgelessDisplayLinkModuleHolder alloc] initWithModule:timing];
+    [strongSelf->_displayLink registerModuleForFrameUpdates:timing withModuleHolder:moduleHolder];
     [strongSelf->_displayLink addToRunLoop:[NSRunLoop currentRunLoop]];
 
     // Attempt to load bundle synchronously, fallback to asynchronously.

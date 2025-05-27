@@ -4,13 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
-
-const infoLog = require('../Utilities/infoLog').default;
 
 type Handler = {
   onIterate?: () => void,
@@ -35,7 +33,7 @@ const JSEventLoopWatchdog = {
     return {stallCount, totalStallTime, longestStall, acceptableBusyTime};
   },
   reset: function () {
-    infoLog('JSEventLoopWatchdog: reset');
+    console.log('JSEventLoopWatchdog: reset');
     totalStallTime = 0;
     stallCount = 0;
     longestStall = 0;
@@ -65,7 +63,7 @@ const JSEventLoopWatchdog = {
         handlers.forEach(handler => {
           msg += handler.onStall({lastInterval, busyTime}) || '';
         });
-        infoLog(msg);
+        console.log(msg);
       }
       handlers.forEach(handler => {
         handler.onIterate && handler.onIterate();

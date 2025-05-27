@@ -42,4 +42,4 @@ const BackHandler = {
   },
 };
 
-module.exports = BackHandler;
+export default BackHandler;

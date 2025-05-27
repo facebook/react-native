@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -14,6 +14,7 @@ import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useCallback, useState} from 'react';
 import {
   Image,
   Platform,
@@ -39,8 +40,8 @@ function blobToBase64(blob: Blob) {
 }
 
 const ContentSelector = (): React.Node => {
-  const [base64Image, setBase64Image] = React.useState('');
-  const imageSelector = React.useCallback(async () => {
+  const [base64Image, setBase64Image] = useState('');
+  const imageSelector = useCallback(async () => {
     try {
       const NativeSampleTurboModule =
         require('react-native/Libraries/TurboModule/samples/NativeSampleTurboModule').default;

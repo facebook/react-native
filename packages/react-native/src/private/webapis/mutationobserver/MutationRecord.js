@@ -15,6 +15,7 @@ import type ReadOnlyNode from '../dom/nodes/ReadOnlyNode';
 import type {NativeMutationRecord} from './specs/NativeMutationObserver';
 
 import NodeList, {createNodeList} from '../dom/oldstylecollections/NodeList';
+import {setPlatformObject} from '../webidl/PlatformObjects';
 
 export type MutationType = 'attributes' | 'characterData' | 'childList';
 
@@ -74,6 +75,8 @@ export default class MutationRecord {
     return 'childList';
   }
 }
+
+setPlatformObject(MutationRecord);
 
 export function createMutationRecord(
   entry: NativeMutationRecord,

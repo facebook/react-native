@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e085b4bb5ce0cc20d879c1096e8f301c>>
+ * @generated SignedSource<<30ad7e09985c8b1e717a4c1b5a2b2dbe>>
  * @flow strict
+ * @noformat
  */
 
 /**
@@ -34,9 +35,9 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
-  enableVirtualViewDoubleStateHidden: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
+  reduceDefaultPropsInView: Getter<boolean>,
   scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
@@ -51,6 +52,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
+  avoidCeilingAvailableAndroidTextWidth: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
@@ -66,12 +68,14 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFabricRenderer: Getter<boolean>,
   enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
+  enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
-  enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
+  enableIntersectionObserverEventLoopIntegration: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLineHeightCenteringOnIOS: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
+  enableModuleArgumentNSNullConversionIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNetworkEventReporting: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
@@ -136,11 +140,6 @@ export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptF
 export const enableVirtualViewDebugFeatures: Getter<boolean> = createJavaScriptFlagGetter('enableVirtualViewDebugFeatures', false);
 
 /**
- * Enables a VirtualView workaround that triggers a second state update when changing to hidden mode.
- */
-export const enableVirtualViewDoubleStateHidden: Getter<boolean> = createJavaScriptFlagGetter('enableVirtualViewDoubleStateHidden', false);
-
-/**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
  */
 export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaScriptFlagGetter('fixVirtualizeListCollapseWindowSize', false);
@@ -149,6 +148,11 @@ export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaSc
  * Function used to enable / disabled Layout Animations in React Native.
  */
 export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
+
+/**
+ * Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.
+ */
+export const reduceDefaultPropsInView: Getter<boolean> = createJavaScriptFlagGetter('reduceDefaultPropsInView', true);
 
 /**
  * Changes the cleanup of `AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).
@@ -187,6 +191,10 @@ export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = create
  * Enables start- and finishOperationBatch on any platform.
  */
 export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter('animatedShouldSignalBatch', false);
+/**
+ * Do not incorrectly ceil the available width of an Android text layout
+ */
+export const avoidCeilingAvailableAndroidTextWidth: Getter<boolean> = createNativeFlagGetter('avoidCeilingAvailableAndroidTextWidth', true);
 /**
  * Use a C++ implementation of Native Animated instead of the platform implementation.
  */
@@ -248,13 +256,17 @@ export const enableFixForParentTagDuringReparenting: Getter<boolean> = createNat
  */
 export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', false);
 /**
+ * Applies base offset for each line of text separately on iOS.
+ */
+export const enableIOSTextBaselineOffsetPerLine: Getter<boolean> = createNativeFlagGetter('enableIOSTextBaselineOffsetPerLine', false);
+/**
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
 /**
- * Trigger JS runtime GC on memory pressure event on iOS
+ * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
  */
-export const enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean> = createNativeFlagGetter('enableJSRuntimeGCOnMemoryPressureOnIOS', false);
+export const enableIntersectionObserverEventLoopIntegration: Getter<boolean> = createNativeFlagGetter('enableIntersectionObserverEventLoopIntegration', true);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
@@ -271,6 +283,10 @@ export const enableLineHeightCenteringOnIOS: Getter<boolean> = createNativeFlagG
  * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
  */
 export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
+/**
+ * Enable NSNull conversion when handling module arguments on iOS
+ */
+export const enableModuleArgumentNSNullConversionIOS: Getter<boolean> = createNativeFlagGetter('enableModuleArgumentNSNullConversionIOS', false);
 /**
  * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
  */

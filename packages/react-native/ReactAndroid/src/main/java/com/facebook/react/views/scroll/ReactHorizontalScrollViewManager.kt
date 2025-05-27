@@ -254,7 +254,7 @@ constructor(private val fpsListener: FpsListener? = null) :
   public fun setBorderRadius(view: ReactHorizontalScrollView?, index: Int, borderRadius: Float) {
     if (view != null) {
       val radius =
-          if (java.lang.Float.isNaN(borderRadius)) null
+          if (borderRadius.isNaN()) null
           else LengthPercentage(borderRadius, LengthPercentageType.POINT)
       setBorderRadius(view, BorderRadiusProp.entries[index], radius)
     }

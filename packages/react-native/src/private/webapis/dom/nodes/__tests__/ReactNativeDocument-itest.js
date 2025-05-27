@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
@@ -18,6 +17,7 @@ import isUnreachable from '../../../../__tests__/utilities/isUnreachable';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {createRef} from 'react';
 import {View} from 'react-native';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
@@ -25,7 +25,7 @@ import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNod
 
 describe('ReactNativeDocument', () => {
   it('is connected until the surface is destroyed', () => {
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
@@ -51,7 +51,7 @@ describe('ReactNativeDocument', () => {
   });
 
   it('allows traversal as a regular node', () => {
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
@@ -70,7 +70,7 @@ describe('ReactNativeDocument', () => {
   });
 
   it('allows traversal through document-specific methods', () => {
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
@@ -88,7 +88,7 @@ describe('ReactNativeDocument', () => {
   });
 
   it('implements the abstract methods from ReadOnlyNode', () => {
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
@@ -105,7 +105,7 @@ describe('ReactNativeDocument', () => {
   });
 
   it('provides a documentElement node that behaves like a regular element', () => {
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot({viewportWidth: 200, viewportHeight: 100});
     Fantom.runTask(() => {
@@ -125,7 +125,7 @@ describe('ReactNativeDocument', () => {
   });
 
   it('implements compareDocumentPosition correctly', () => {
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
@@ -172,7 +172,7 @@ describe('ReactNativeDocument', () => {
   });
 
   it('is released when the root is destroyed', () => {
-    const nodeRef = React.createRef<HostInstance>();
+    const nodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {

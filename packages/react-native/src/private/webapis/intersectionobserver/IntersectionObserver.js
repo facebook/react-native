@@ -14,6 +14,7 @@ import type {IntersectionObserverId} from './internals/IntersectionObserverManag
 import type IntersectionObserverEntry from './IntersectionObserverEntry';
 
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
+import {setPlatformObject} from '../webidl/PlatformObjects';
 import * as IntersectionObserverManager from './internals/IntersectionObserverManager';
 
 export type IntersectionObserverCallback = (
@@ -249,6 +250,8 @@ export default class IntersectionObserver {
     return this._intersectionObserverId;
   }
 }
+
+setPlatformObject(IntersectionObserver);
 
 /**
  * Converts the user defined `threshold` value into an array of sorted valid

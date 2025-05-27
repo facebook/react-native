@@ -53,7 +53,6 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
-  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 
   s.subspec "animations" do |ss|
@@ -78,6 +77,7 @@ Pod::Spec.new do |s|
     if ENV['USE_FRAMEWORKS']
       header_search_path = header_search_path + [
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
+        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/scrollview/platform/cxx\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/text/platform/cxx\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
@@ -119,9 +119,9 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "scrollview" do |sss|
-      sss.source_files         = "react/renderer/components/scrollview/*.{m,mm,cpp,h}"
+      sss.source_files         = "react/renderer/components/scrollview/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/scrollview"
-      ss.exclude_files         = "react/renderer/components/scrollview/tests"
+      sss.exclude_files        = "react/renderer/components/scrollview/tests", "react/renderer/components/scrollview/platform/android"
     end
 
     ss.subspec "legacyviewmanagerinterop" do |sss|

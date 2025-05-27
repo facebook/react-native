@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -14,8 +13,9 @@
 import {LIST_100_ITEMS} from '../components/itemData';
 import ItemList from '../components/ItemList';
 import * as React from 'react';
+import {memo} from 'react';
 
-const ItemListMemo = React.memo(ItemList);
+const ItemListMemo = memo(ItemList);
 
 function RenderOffscreenContentBadExample(): React.Node {
   return <ItemListMemo data={LIST_100_ITEMS} />;

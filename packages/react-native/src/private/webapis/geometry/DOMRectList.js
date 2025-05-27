@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 // flowlint unsafe-getters-setters:off
@@ -14,6 +14,7 @@ import type {ArrayLike} from '../utils/ArrayLikeUtils';
 import type DOMRectReadOnly from './DOMRectReadOnly';
 
 import {createValueIterator} from '../utils/ArrayLikeUtils';
+import {setPlatformObject} from '../webidl/PlatformObjects';
 
 // IMPORTANT: The Flow type definition for this module is defined in `DOMRectList.js.flow`
 // because Flow only supports indexers in classes in declaration files.
@@ -62,6 +63,8 @@ export default class DOMRectList implements Iterable<DOMRectReadOnly> {
     return createValueIterator(this);
   }
 }
+
+setPlatformObject(DOMRectList);
 
 /**
  * This is an internal method to create instances of `DOMRectList`,

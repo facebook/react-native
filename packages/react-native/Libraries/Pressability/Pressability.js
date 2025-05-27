@@ -236,7 +236,7 @@ const Transitions = Object.freeze({
     LEAVE_PRESS_RECT: 'NOT_RESPONDER',
     LONG_PRESS_DETECTED: 'NOT_RESPONDER',
   },
-});
+} as const);
 
 const isActiveSignal = (signal: TouchState) =>
   signal === 'RESPONDER_ACTIVE_PRESS_IN' ||

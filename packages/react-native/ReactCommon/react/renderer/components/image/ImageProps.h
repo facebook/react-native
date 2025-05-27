@@ -46,10 +46,8 @@ class ImageProps final : public ViewProps {
   Float fadeDuration{};
   bool progressiveRenderingEnabled{};
 
-#ifdef ANDROID
-
+#ifdef RN_SERIALIZABLE_STATE
   folly::dynamic getDiffProps(const Props* prevProps) const override;
-
 #endif
 };
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<deb2909bc5beb6b6fb8f832149a99346>>
+ * @generated SignedSource<<29efedb1ff2b61250a7b41c3cd1f2fd3>>
  */
 
 /**
@@ -26,6 +26,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
   @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
+
+  @DoNotStrip public fun avoidCeilingAvailableAndroidTextWidth(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
@@ -57,9 +59,11 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
+  @DoNotStrip public fun enableIOSTextBaselineOffsetPerLine(): Boolean
+
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
-  @DoNotStrip public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
+  @DoNotStrip public fun enableIntersectionObserverEventLoopIntegration(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -68,6 +72,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableLineHeightCenteringOnIOS(): Boolean
 
   @DoNotStrip public fun enableMainQueueModulesOnIOS(): Boolean
+
+  @DoNotStrip public fun enableModuleArgumentNSNullConversionIOS(): Boolean
 
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
