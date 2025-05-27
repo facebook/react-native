@@ -83,6 +83,7 @@ namespace facebook::react {
     ${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
   };
 } // namespace facebook::react`;
+};
 
 const HeaderFileTemplate = ({
   headerFileName,
