@@ -66,6 +66,6 @@ Pod::Spec.new do |s|
   else
     s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}"]
   end
-
+  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 end

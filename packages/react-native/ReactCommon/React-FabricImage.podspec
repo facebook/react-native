@@ -76,5 +76,6 @@ Pod::Spec.new do |s|
   ])
   add_dependency(s, "React-rendererdebug")
 
+  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 end

@@ -53,6 +53,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
+  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 
   s.subspec "animations" do |ss|

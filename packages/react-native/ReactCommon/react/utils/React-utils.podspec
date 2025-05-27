@@ -47,6 +47,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-jsi", version
 
+  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 
   add_dependency(s, "React-debug")
