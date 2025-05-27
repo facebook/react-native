@@ -3025,10 +3025,10 @@ public final class com/facebook/react/modules/network/OkHttpClientProvider {
 	public static final fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
 }
 
-public class com/facebook/react/modules/network/OkHttpCompat {
-	public fun <init> ()V
-	public static fun getCookieJarContainer (Lokhttp3/OkHttpClient;)Lcom/facebook/react/modules/network/CookieJarContainer;
-	public static fun getHeadersFromMap (Ljava/util/Map;)Lokhttp3/Headers;
+public final class com/facebook/react/modules/network/OkHttpCompat {
+	public static final field INSTANCE Lcom/facebook/react/modules/network/OkHttpCompat;
+	public final fun getCookieJarContainer (Lokhttp3/OkHttpClient;)Lcom/facebook/react/modules/network/CookieJarContainer;
+	public final fun getHeadersFromMap (Ljava/util/Map;)Lokhttp3/Headers;
 }
 
 public abstract interface class com/facebook/react/modules/network/ProgressListener {
