@@ -232,6 +232,10 @@ static folly::dynamic convertEdgeInsets(const EdgeInsets& edgeInsets) {
   return edgeInsetsResult;
 }
 
+ComponentName ImageProps::getDiffPropsImplementationTarget() const {
+  return "Image";
+}
+
 folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
   static const auto defaultProps = ImageProps();
 
