@@ -39,6 +39,8 @@ import com.facebook.systrace.Systrace
  * This is the basic module to support React Native. The debug modules are now in DebugCorePackage.
  */
 @ReactModuleList(
+    // WARNING: If you modify this list, ensure that the list below in method
+    // getReactModuleInfoByInitialization is also updated
     nativeModules =
         [
             AndroidInfoModule::class,
