@@ -135,8 +135,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   // This is the only legit place where we can dirty cloned Yoga node.
   // If we do it later, ancestor nodes will not be able to observe this and
   // dirty (and clone) themselves as a result.
-  if (getTraits().check(ShadowNodeTraits::Trait::DirtyYogaNode) ||
-      getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
+  if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
     yogaNode_.setDirty(true);
   }
 
