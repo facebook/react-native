@@ -490,7 +490,7 @@ void NativeAnimatedNodesManager::updateNodes(
     nodesQueue.pop_front();
     // in Animated, value nodes like RGBA are parents and Color node is child
     // (the opposite of tree structure)
-    for (const auto childTag : nextNode.node->children()) {
+    for (const auto childTag : nextNode.node->getChildren()) {
       auto child = getAnimatedNode<AnimatedNode>(childTag);
       child->activeIncomingNodes++;
       if (child->bfsColor != animatedGraphBFSColor_) {
@@ -554,7 +554,7 @@ void NativeAnimatedNodesManager::updateNodes(
       nextNode.node->update();
     }
 
-    for (auto childTag : nextNode.node->children()) {
+    for (auto childTag : nextNode.node->getChildren()) {
       auto child = getAnimatedNode<AnimatedNode>(childTag);
       child->activeIncomingNodes--;
       if (child->activeIncomingNodes == 0 && child->activeIncomingNodes == 0) {

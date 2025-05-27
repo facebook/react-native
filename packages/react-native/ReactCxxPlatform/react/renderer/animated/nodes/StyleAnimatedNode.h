@@ -24,7 +24,7 @@ class StyleAnimatedNode final : public AnimatedNode {
       NativeAnimatedNodesManager& manager);
   void update() override;
 
-  const folly::dynamic& getProps() const {
+  const folly::dynamic& getProps() const noexcept {
     return props_;
   }
 
