@@ -98,7 +98,8 @@
 // Check if the current application language is RTL
 - (BOOL)isApplicationPreferredLanguageRTL
 {
-  NSWritingDirection direction = [NSParagraphStyle defaultWritingDirectionForLanguage:nil];
+  NSString *language = [[NSLocale preferredLanguages] firstObject];
+  NSWritingDirection direction = [NSParagraphStyle defaultWritingDirectionForLanguage:language];
   return direction == NSWritingDirectionRightToLeft;
 }
 
