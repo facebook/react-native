@@ -50,8 +50,19 @@ folly::dynamic ArrayPropsNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   return result;
 }
 #endif
@@ -98,8 +109,14 @@ folly::dynamic BooleanPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+          if (disabled != oldProps->disabled) {
+            result[\\"disabled\\"] = disabled;
+          }
+    
+          if (disabledNullable != oldProps->disabledNullable) {
+            result[\\"disabledNullable\\"] = disabledNullable;
+          }
   return result;
 }
 #endif
@@ -145,8 +162,7 @@ folly::dynamic ColorPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
   return result;
 }
 #endif
@@ -193,8 +209,7 @@ folly::dynamic DimensionPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
   return result;
 }
 #endif
@@ -240,8 +255,7 @@ folly::dynamic EdgeInsetsPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
   return result;
 }
 #endif
@@ -288,8 +302,8 @@ folly::dynamic EnumPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+    
   return result;
 }
 #endif
@@ -335,8 +349,10 @@ folly::dynamic EventNestedObjectPropsNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+          if (disabled != oldProps->disabled) {
+            result[\\"disabled\\"] = disabled;
+          }
   return result;
 }
 #endif
@@ -382,8 +398,10 @@ folly::dynamic EventPropsNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+          if (disabled != oldProps->disabled) {
+            result[\\"disabled\\"] = disabled;
+          }
   return result;
 }
 #endif
@@ -435,8 +453,34 @@ folly::dynamic FloatPropsNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+          if ((blurRadius != oldProps->blurRadius) && !(std::isnan(blurRadius) && std::isnan(oldProps->blurRadius))) {
+            result[\\"blurRadius\\"] = blurRadius;
+          }
+    
+          if ((blurRadius2 != oldProps->blurRadius2) && !(std::isnan(blurRadius2) && std::isnan(oldProps->blurRadius2))) {
+            result[\\"blurRadius2\\"] = blurRadius2;
+          }
+    
+          if ((blurRadius3 != oldProps->blurRadius3) && !(std::isnan(blurRadius3) && std::isnan(oldProps->blurRadius3))) {
+            result[\\"blurRadius3\\"] = blurRadius3;
+          }
+    
+          if ((blurRadius4 != oldProps->blurRadius4) && !(std::isnan(blurRadius4) && std::isnan(oldProps->blurRadius4))) {
+            result[\\"blurRadius4\\"] = blurRadius4;
+          }
+    
+          if ((blurRadius5 != oldProps->blurRadius5) && !(std::isnan(blurRadius5) && std::isnan(oldProps->blurRadius5))) {
+            result[\\"blurRadius5\\"] = blurRadius5;
+          }
+    
+          if ((blurRadius6 != oldProps->blurRadius6) && !(std::isnan(blurRadius6) && std::isnan(oldProps->blurRadius6))) {
+            result[\\"blurRadius6\\"] = blurRadius6;
+          }
+    
+          if ((blurRadiusNullable != oldProps->blurRadiusNullable) && !(std::isnan(blurRadiusNullable) && std::isnan(oldProps->blurRadiusNullable))) {
+            result[\\"blurRadiusNullable\\"] = blurRadiusNullable;
+          }
   return result;
 }
 #endif
@@ -483,8 +527,7 @@ folly::dynamic ImagePropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
   return result;
 }
 #endif
@@ -532,8 +575,18 @@ folly::dynamic IntegerPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+          if (progress1 != oldProps->progress1) {
+            result[\\"progress1\\"] = progress1;
+          }
+    
+          if (progress2 != oldProps->progress2) {
+            result[\\"progress2\\"] = progress2;
+          }
+    
+          if (progress3 != oldProps->progress3) {
+            result[\\"progress3\\"] = progress3;
+          }
   return result;
 }
 #endif
@@ -579,8 +632,10 @@ folly::dynamic InterfaceOnlyNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+          if (title != oldProps->title) {
+            result[\\"title\\"] = title;
+          }
   return result;
 }
 #endif
@@ -627,8 +682,7 @@ folly::dynamic MixedPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
   return result;
 }
 #endif
@@ -678,8 +732,10 @@ folly::dynamic MultiNativePropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+    
+    
+    
   return result;
 }
 #endif
@@ -725,8 +781,7 @@ folly::dynamic NoPropsNoEventsNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
   return result;
 }
 #endif
@@ -775,8 +830,9 @@ folly::dynamic ObjectPropsNativeComponentProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+    
+    
   return result;
 }
 #endif
@@ -822,8 +878,7 @@ folly::dynamic PointPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
   return result;
 }
 #endif
@@ -870,8 +925,14 @@ folly::dynamic StringPropNativeComponentViewProps::getDiffProps(
     return folly::dynamic::object();
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
-
-  // TODO: Implement diffProps
+  
+          if (placeholder != oldProps->placeholder) {
+            result[\\"placeholder\\"] = placeholder;
+          }
+    
+          if (defaultValue != oldProps->defaultValue) {
+            result[\\"defaultValue\\"] = defaultValue;
+          }
   return result;
 }
 #endif
