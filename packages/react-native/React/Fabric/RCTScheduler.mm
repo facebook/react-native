@@ -65,6 +65,12 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
   }
+  
+  
+  void schedulerMeasure(const ShadowView& shadowView, std::function<void(folly::dynamic)> jsCallback) override {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerMeasure:shadowView jsCallback:jsCallback];
+  }
 
   void schedulerShouldSynchronouslyUpdateViewOnUIThread(facebook::react::Tag tag, const folly::dynamic &props) override
   {

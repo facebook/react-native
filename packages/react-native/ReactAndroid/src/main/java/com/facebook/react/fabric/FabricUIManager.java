@@ -34,6 +34,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -1273,6 +1274,27 @@ public class FabricUIManager
             return "CLEAR_JS_RESPONDER";
           }
         });
+  }
+
+  public void measure(int surfaceId, int reactTag, final Callback callback) {
+    mMountItemDispatcher.addMountItem(
+      new MountItem() {
+        @Override
+        public void execute(@NonNull MountingManager mountingManager) {
+          mMountingManager.measure(surfaceId, reactTag, callback);
+        }
+
+        @Override
+        public int getSurfaceId() {
+          return surfaceId;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+          return "MEASURE_VIEW";
+        }
+      });
   }
 
   @Override

@@ -43,6 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
                        forShadowView:(const facebook::react::ShadowView &)shadowView;
 
 - (void)schedulerDidSynchronouslyUpdateViewOnUIThread:(facebook::react::Tag)reactTag props:(folly::dynamic)props;
+
+- (void)schedulerMeasure:(const facebook::react::ShadowView &)shadowView
+               jsCallback:(std::function<void(folly::dynamic)>)jsCallback;
+
 @end
 
 /**

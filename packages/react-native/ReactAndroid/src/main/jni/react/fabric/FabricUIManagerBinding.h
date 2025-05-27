@@ -128,6 +128,8 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void schedulerDidUpdateShadowTree(
       const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
+      
+  void schedulerMeasure(const ShadowView& shadowView, std::function<void(folly::dynamic)> jsCallback) override;
 
   void setPixelDensity(float pointScaleFactor);
 

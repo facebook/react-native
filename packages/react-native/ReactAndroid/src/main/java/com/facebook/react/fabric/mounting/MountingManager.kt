@@ -7,11 +7,14 @@
 
 package com.facebook.react.fabric.mounting
 
+import android.graphics.Matrix
+import android.graphics.RectF
 import android.view.View
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.ThreadConfined
+import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.bridge.ReadableArray
@@ -25,6 +28,8 @@ import com.facebook.react.fabric.events.EventEmitterWrapper
 import com.facebook.react.fabric.mounting.mountitems.MountItem
 import com.facebook.react.touch.JSResponderHandler
 import com.facebook.react.uimanager.RootViewManager
+import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.RootViewUtil
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.common.ViewUtil
@@ -360,6 +365,76 @@ internal class MountingManager(
       return
     }
     smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory)
+  }
+
+  /**
+   * Measure a mounted view and return its bounds relative to the root in DIP units.
+   * The callback signature matches legacy UIManager: (x0, y0, width, height, pageX, pageY).
+   */
+  @UiThread
+  fun measure(surfaceId: Int, reactTag: Int, callback: Callback) {
+    assertOnUiThread()
+    val smm = getSurfaceMountingManager(surfaceId, reactTag)
+    if (smm == null) {
+      callback.invoke(0, 0, 0, 0, 0, 0)
+      return
+    }
+    val view = smm.getView(reactTag)
+    val measureBuffer = IntArray(4)
+    measure(view, measureBuffer)
+
+    val x = PixelUtil.toDIPFromPixel(measureBuffer[0].toFloat())
+    val y = PixelUtil.toDIPFromPixel(measureBuffer[1].toFloat())
+    val width = PixelUtil.toDIPFromPixel(measureBuffer[2].toFloat())
+    val height = PixelUtil.toDIPFromPixel(measureBuffer[3].toFloat())
+    callback.invoke(0, 0, width, height, x, y)
+  }
+
+  @Synchronized
+  fun measure(v: View, outputBuffer: IntArray) {
+    val rootView = RootViewUtil.getRootView(v) as View
+    computeBoundingBox(rootView, outputBuffer)
+    val rootX = outputBuffer[0]
+    val rootY = outputBuffer[1]
+    computeBoundingBox(v, outputBuffer)
+    outputBuffer[0] -= rootX
+    outputBuffer[1] -= rootY
+  }
+
+  private fun computeBoundingBox(view: View, outputBuffer: IntArray) {
+    val boundingBox = RectF()
+    boundingBox.set(0f, 0f, view.width.toFloat(), view.height.toFloat())
+    mapRectFromViewToWindowCoords(view, boundingBox)
+
+    outputBuffer[0] = Math.round(boundingBox.left)
+    outputBuffer[1] = Math.round(boundingBox.top)
+    outputBuffer[2] = Math.round(boundingBox.right - boundingBox.left)
+    outputBuffer[3] = Math.round(boundingBox.bottom - boundingBox.top)
+  }
+
+  private fun mapRectFromViewToWindowCoords(view: View, rect: RectF) {
+    var matrix: Matrix = view.matrix
+    if (!matrix.isIdentity) {
+      matrix.mapRect(rect)
+    }
+
+    rect.offset(view.left.toFloat(), view.top.toFloat())
+
+    var parent = view.parent
+    while (parent is View) {
+      val parentView = parent as View
+
+      rect.offset(-parentView.scrollX.toFloat(), -parentView.scrollY.toFloat())
+
+      matrix = parentView.matrix
+      if (!matrix.isIdentity) {
+        matrix.mapRect(rect)
+      }
+
+      rect.offset(parentView.left.toFloat(), parentView.top.toFloat())
+
+      parent = parentView.parent
+    }
   }
 
   private fun getSurfaceMountingManager(surfaceId: Int, reactTag: Int): SurfaceMountingManager? =

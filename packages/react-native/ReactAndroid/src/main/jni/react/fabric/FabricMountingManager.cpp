@@ -21,6 +21,8 @@
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
+#include <react/jni/JCallback.h>
+
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 
@@ -1080,6 +1082,16 @@ void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
   auto propsMap = reinterpret_cast<ReadableMap::javaobject>(
       ReadableNativeMap::newObjectCxxArgs(props).release());
   synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
+}
+
+void FabricMountingManager::measure(const facebook::react::ShadowView& shadowView, std::function<void(folly::dynamic)> jsCallback) {
+    static auto measureJNI =
+        JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint, jni::alias_ref<JCallback>)>(
+        "measure");
+
+    auto javaCallback = JCxxCallbackImpl::newObjectCxxArgs(jsCallback);
+
+    measureJNI(javaUIManager_, shadowView.surfaceId, shadowView.tag, javaCallback);
 }
 
 } // namespace facebook::react

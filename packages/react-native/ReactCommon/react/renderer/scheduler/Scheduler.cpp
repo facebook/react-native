@@ -299,6 +299,13 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
   }
 }
 
+void Scheduler::uiManagerMeasure(const ShadowNode::Shared& shadowNode, std::function<void(folly::dynamic)> jsCallback) {
+  if (delegate_ != nullptr) {
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerMeasure(shadowView, jsCallback);
+  }
+};
+
 /*
  * Set JS responder for a view.
  */

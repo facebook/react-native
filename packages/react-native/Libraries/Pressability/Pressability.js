@@ -805,7 +805,7 @@ export default class Pressability {
     if (typeof this._responderID === 'number') {
       UIManager.measure(this._responderID, this._measureCallback);
     } else {
-      this._responderID.measure(this._measureCallback);
+      this._responderID.measure(this._measureCallback, true /* measureOnUI - will measure native view hierarchy */);
     }
   }
 

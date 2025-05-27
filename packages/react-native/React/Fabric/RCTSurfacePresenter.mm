@@ -348,6 +348,15 @@ using namespace facebook::react;
   }
 }
 
+- (void)schedulerMeasure:(const facebook::react::ShadowView &)shadowView jsCallback:(std::function<void (folly::dynamic)>)jsCallback {
+  // TODO: do we need to implement this on iOS? It seems to _just work_
+//  dispatch_async(dispatch_get_main_queue(), ^{
+//    ReactTag tag = shadowView.tag;
+//    UIView<RCTComponentViewProtocol> *componentView =
+//    [self->_mountingManager.componentViewRegistry findComponentViewWithTag:tag];
+//  });
+}
+
 #pragma mark - RCTMountingManagerDelegate
 
 - (void)mountingManager:(RCTMountingManager *)mountingManager willMountComponentsWithRootTag:(ReactTag)rootTag

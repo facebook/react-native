@@ -65,12 +65,12 @@ export default class ReactFabricHostComponent implements NativeMethods {
     TextInputState.focusTextInput(this);
   }
 
-  measure(callback: MeasureOnSuccessCallback) {
+  measure(callback: MeasureOnSuccessCallback, measureOnUI = false) {
     const node = getNodeFromInternalInstanceHandle(
       this.__internalInstanceHandle,
     );
     if (node != null) {
-      fabricMeasure(node, callback);
+      fabricMeasure(node, callback, measureOnUI);
     }
   }
 

@@ -70,6 +70,7 @@ class SchedulerDelegate {
 
   virtual void schedulerDidUpdateShadowTree(
       const std::unordered_map<Tag, folly::dynamic>& tagToProps) = 0;
+  virtual void schedulerMeasure(const ShadowView& shadowView, std::function<void(folly::dynamic)> jsCallback) = 0;
 
   virtual ~SchedulerDelegate() noexcept = default;
 };

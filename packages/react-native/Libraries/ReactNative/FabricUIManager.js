@@ -43,10 +43,7 @@ export interface Spec {
   +appendChild: (parentNode: Node, child: Node) => Node;
   +appendChildToSet: (childSet: NodeSet, child: Node) => void;
   +completeRoot: (rootTag: RootTag, childSet: NodeSet) => void;
-  +measure: (
-    node: Node | NativeElementReference,
-    callback: MeasureOnSuccessCallback,
-  ) => void;
+  +measure: (node: Node | NativeElementReference, callback: MeasureOnSuccessCallback, measureOnUI: Boolean) => void;
   +measureInWindow: (
     node: Node | NativeElementReference,
     callback: MeasureInWindowOnSuccessCallback,

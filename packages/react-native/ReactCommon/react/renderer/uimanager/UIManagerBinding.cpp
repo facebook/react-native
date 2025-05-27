@@ -639,6 +639,7 @@ jsi::Value UIManagerBinding::get(
               runtime, arguments[0]);
           auto callbackFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
+          auto measureOnUI = count == 2 ? false : arguments[2].getBool();
 
           auto currentRevision =
               uiManager->getShadowTreeRevisionProvider()->getCurrentRevision(
@@ -647,17 +648,38 @@ jsi::Value UIManagerBinding::get(
             callbackFunction.call(runtime, {0, 0, 0, 0, 0, 0});
             return jsi::Value::undefined();
           }
+              
+          if (measureOnUI) {
+            auto sharedCallback = std::make_shared<jsi::Function>(std::move(callbackFunction));
+            auto runtimeExecutor = uiManager->runtimeExecutor_;
+            std::function<void(folly::dynamic)> jsCallback = [sharedCallback, runtimeExecutor](folly::dynamic args) {
+              // Schedule call on JS
+              runtimeExecutor([sharedCallback, args](jsi::Runtime& jsRuntime) {
+                // Invoke the actual callback we got from JS
+                sharedCallback->call(jsRuntime, {
+                                                  jsi::Value{jsRuntime, args.at(0).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(1).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(2).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(3).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(4).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(5).getDouble()},
+                                              });
+              });
+            };
+            // Ask the delegate to measure on the native platform hierarchy:
+            uiManager->getDelegate()->uiManagerMeasure(shadowNode, std::move(jsCallback));
+          } else {
+            auto measureRect = dom::measure(currentRevision, *shadowNode);
+            callbackFunction.call(
+                runtime,
+                {jsi::Value{runtime, measureRect.x},
+                 jsi::Value{runtime, measureRect.y},
+                 jsi::Value{runtime, measureRect.width},
+                 jsi::Value{runtime, measureRect.height},
+                 jsi::Value{runtime, measureRect.pageX},
+                 jsi::Value{runtime, measureRect.pageY}});
+          }
 
-          auto measureRect = dom::measure(currentRevision, *shadowNode);
-
-          callbackFunction.call(
-              runtime,
-              {jsi::Value{runtime, measureRect.x},
-               jsi::Value{runtime, measureRect.y},
-               jsi::Value{runtime, measureRect.width},
-               jsi::Value{runtime, measureRect.height},
-               jsi::Value{runtime, measureRect.pageX},
-               jsi::Value{runtime, measureRect.pageY}});
           return jsi::Value::undefined();
         });
   }
