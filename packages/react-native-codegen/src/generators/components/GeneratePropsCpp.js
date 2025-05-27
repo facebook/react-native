@@ -102,8 +102,12 @@ function generatePropsDiffString(
               if (${prop.name} != oldProps->${prop.name}) {
                 result["${prop.name}"] = *${prop.name};
               }`;
-            case 'ImageSourcePrimitive':
             case 'ImageRequestPrimitive':
+              // Shouldn't be used in props
+              throw new Error(
+                'ImageRequestPrimitive should not be used in Props',
+              );
+            case 'ImageSourcePrimitive':
             case 'PointPrimitive':
             case 'EdgeInsetsPrimitive':
             case 'DimensionPrimitive':
