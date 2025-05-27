@@ -38,7 +38,7 @@ const ProtocolMethodTemplate = ({
   returnObjCType: string,
   methodName: string,
   params: string,
-  isOptional?: boolean,
+  isOptional: boolean,
 }>) => `${isOptional ? '@optional\n' : '@required\n'}- (${returnObjCType})${methodName}${params};`;
 
 export type StructParameterRecord = $ReadOnly<{
