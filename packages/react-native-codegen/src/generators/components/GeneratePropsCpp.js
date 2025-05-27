@@ -86,27 +86,27 @@ function generatePropsDiffString(
         case 'Int32TypeAnnotation':
         case 'BooleanTypeAnnotation':
           return `
-          if (${prop.name} != oldProps->${prop.name}) {
-            result["${prop.name}"] = ${prop.name};
-          }`;
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = ${prop.name};
+  }`;
         case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
           return `
-          if ((${prop.name} != oldProps->${prop.name}) && !(std::isnan(${prop.name}) && std::isnan(oldProps->${prop.name}))) {
-            result["${prop.name}"] = ${prop.name};
-          }`;
+  if ((${prop.name} != oldProps->${prop.name}) && !(std::isnan(${prop.name}) && std::isnan(oldProps->${prop.name}))) {
+    result["${prop.name}"] = ${prop.name};
+  }`;
         case 'ReservedPropTypeAnnotation':
           switch (typeAnnotation.name) {
             case 'ColorPrimitive':
               return `
-              if (${prop.name} != oldProps->${prop.name}) {
-                result["${prop.name}"] = *${prop.name};
-              }`;
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = *${prop.name};
+  }`;
             case 'ImageSourcePrimitive':
               return `
-              if (${prop.name} != oldProps->${prop.name}) {
-                result["${prop.name}"] = ${prop.name}.toDynamic();
-              }`;
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = ${prop.name}.toDynamic();
+  }`;
             case 'ImageRequestPrimitive':
               // Shouldn't be used in props
               throw new Error(
@@ -114,12 +114,12 @@ function generatePropsDiffString(
               );
             case 'PointPrimitive':
               return `
-              if (${prop.name} != oldProps->${prop.name}) {
-                folly::dynamic pointResult = folly::dynamic::object();
-                pointResult["x"] = ${prop.name}.x;
-                pointResult["y"] = ${prop.name}.y;
-                result["${prop.name}"] = pointResult;
-              }`;
+  if (${prop.name} != oldProps->${prop.name}) {
+    folly::dynamic pointResult = folly::dynamic::object();
+    pointResult["x"] = ${prop.name}.x;
+    pointResult["y"] = ${prop.name}.y;
+    result["${prop.name}"] = pointResult;
+  }`;
             case 'EdgeInsetsPrimitive':
             case 'DimensionPrimitive':
               // TODO: Implement diffProps for complex types
