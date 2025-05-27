@@ -49,5 +49,6 @@ Pod::Spec.new do |s|
     add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
     add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
 
+    depend_on_js_engine(s)
     add_rn_third_party_dependencies(s)
 end
