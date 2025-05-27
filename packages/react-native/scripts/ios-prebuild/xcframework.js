@@ -8,8 +8,6 @@
  * @format
  */
 
-import {dir} from 'console';
-
 const {createFolderIfNotExists, createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
