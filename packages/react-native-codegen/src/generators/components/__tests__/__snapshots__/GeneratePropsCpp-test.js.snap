@@ -42,6 +42,13 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ArrayPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ArrayPropsNativeComponentProps();
+  const ArrayPropsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ArrayPropsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -82,6 +89,13 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ArrayPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ArrayPropsNativeComponentProps();
+  const ArrayPropsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ArrayPropsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -122,6 +136,13 @@ BooleanPropNativeComponentProps::BooleanPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic BooleanPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = BooleanPropNativeComponentProps();
+  const BooleanPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const BooleanPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -162,6 +183,13 @@ ColorPropNativeComponentProps::ColorPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ColorPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ColorPropNativeComponentProps();
+  const ColorPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ColorPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -202,6 +230,13 @@ CommandNativeComponentProps::CommandNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic CommandNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = CommandNativeComponentProps();
+  const CommandNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const CommandNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -242,6 +277,13 @@ CommandNativeComponentProps::CommandNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic CommandNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = CommandNativeComponentProps();
+  const CommandNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const CommandNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -283,6 +325,13 @@ DimensionPropNativeComponentProps::DimensionPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic DimensionPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = DimensionPropNativeComponentProps();
+  const DimensionPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const DimensionPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -328,6 +377,13 @@ DoublePropNativeComponentProps::DoublePropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic DoublePropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = DoublePropNativeComponentProps();
+  const DoublePropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const DoublePropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -368,6 +424,13 @@ EventsNestedObjectNativeComponentProps::EventsNestedObjectNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic EventsNestedObjectNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = EventsNestedObjectNativeComponentProps();
+  const EventsNestedObjectNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const EventsNestedObjectNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -408,6 +471,13 @@ EventsNativeComponentProps::EventsNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic EventsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = EventsNativeComponentProps();
+  const EventsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const EventsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -448,6 +518,13 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic InterfaceOnlyComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = InterfaceOnlyComponentProps();
+  const InterfaceOnlyComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const InterfaceOnlyComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -488,6 +565,13 @@ ExcludedAndroidComponentProps::ExcludedAndroidComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ExcludedAndroidComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ExcludedAndroidComponentProps();
+  const ExcludedAndroidComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ExcludedAndroidComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -528,6 +612,13 @@ ExcludedAndroidIosComponentProps::ExcludedAndroidIosComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ExcludedAndroidIosComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ExcludedAndroidIosComponentProps();
+  const ExcludedAndroidIosComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ExcludedAndroidIosComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -568,6 +659,13 @@ ExcludedIosComponentProps::ExcludedIosComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ExcludedIosComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ExcludedIosComponentProps();
+  const ExcludedIosComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ExcludedIosComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -584,6 +682,13 @@ MultiFileIncludedNativeComponentProps::MultiFileIncludedNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic MultiFileIncludedNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = MultiFileIncludedNativeComponentProps();
+  const MultiFileIncludedNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiFileIncludedNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -629,6 +734,13 @@ FloatPropNativeComponentProps::FloatPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic FloatPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = FloatPropNativeComponentProps();
+  const FloatPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const FloatPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -670,6 +782,13 @@ ImagePropNativeComponentProps::ImagePropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ImagePropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ImagePropNativeComponentProps();
+  const ImagePropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ImagePropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -710,6 +829,13 @@ InsetsPropNativeComponentProps::InsetsPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic InsetsPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = InsetsPropNativeComponentProps();
+  const InsetsPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const InsetsPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -750,6 +876,13 @@ Int32EnumPropsNativeComponentProps::Int32EnumPropsNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic Int32EnumPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = Int32EnumPropsNativeComponentProps();
+  const Int32EnumPropsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const Int32EnumPropsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -792,6 +925,13 @@ IntegerPropNativeComponentProps::IntegerPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic IntegerPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = IntegerPropNativeComponentProps();
+  const IntegerPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const IntegerPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -832,6 +972,13 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic InterfaceOnlyComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = InterfaceOnlyComponentProps();
+  const InterfaceOnlyComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const InterfaceOnlyComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -873,6 +1020,13 @@ MixedPropNativeComponentProps::MixedPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic MixedPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = MixedPropNativeComponentProps();
+  const MixedPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MixedPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -917,6 +1071,13 @@ ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ImageColorPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ImageColorPropNativeComponentProps();
+  const ImageColorPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ImageColorPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -957,6 +1118,13 @@ NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic NoPropsNoEventsComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = NoPropsNoEventsComponentProps();
+  const NoPropsNoEventsComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const NoPropsNoEventsComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -998,6 +1166,13 @@ ObjectPropsProps::ObjectPropsProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ObjectPropsProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ObjectPropsProps();
+  const ObjectPropsProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ObjectPropsProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -1038,6 +1213,13 @@ PointPropNativeComponentProps::PointPropNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic PointPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = PointPropNativeComponentProps();
+  const PointPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const PointPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -1078,6 +1260,13 @@ StringEnumPropsNativeComponentProps::StringEnumPropsNativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic StringEnumPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = StringEnumPropsNativeComponentProps();
+  const StringEnumPropsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const StringEnumPropsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -1119,6 +1308,13 @@ StringPropComponentProps::StringPropComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic StringPropComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = StringPropComponentProps();
+  const StringPropComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const StringPropComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -1159,6 +1355,13 @@ MultiFile1NativeComponentProps::MultiFile1NativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic MultiFile1NativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = MultiFile1NativeComponentProps();
+  const MultiFile1NativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiFile1NativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -1175,6 +1378,13 @@ MultiFile2NativeComponentProps::MultiFile2NativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic MultiFile2NativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = MultiFile2NativeComponentProps();
+  const MultiFile2NativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiFile2NativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -1215,6 +1425,13 @@ MultiComponent1NativeComponentProps::MultiComponent1NativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic MultiComponent1NativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = MultiComponent1NativeComponentProps();
+  const MultiComponent1NativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiComponent1NativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
@@ -1231,6 +1448,13 @@ MultiComponent2NativeComponentProps::MultiComponent2NativeComponentProps(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic MultiComponent2NativeComponentProps::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = MultiComponent2NativeComponentProps();
+  const MultiComponent2NativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiComponent2NativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
