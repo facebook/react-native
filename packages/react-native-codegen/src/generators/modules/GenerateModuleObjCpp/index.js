@@ -32,11 +32,36 @@ const ModuleDeclarationTemplate = ({
   structDeclarations: string,
   eventEmitters: string,
   protocolMethods: string,
-}>) => `${structDeclarations}
+}>) => {
+  // Split methods into required and optional groups
+  const methodLines = protocolMethods.split('\n');
+const requiredMethods = [];
+const optionalMethods = [];
+
+let isOptional = false;
+for (const line of methodLines) {
+  switch (line.trim()) {
+    case '@optional':
+      isOptional = true;
+      continue;
+    case '@required':
+      isOptional = false;
+      continue;
+    case '':
+      continue;
+    default:
+      if (isOptional) {
+        optionalMethods.push(line);
+      } else {
+        requiredMethods.push(line);
+      }
+  }
+}
+  return `${structDeclarations}
 @protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
 
-${protocolMethods}
-
+${requiredMethods.join('\n')}
+${optionalMethods.length > 0 ? '\n@optional\n' + optionalMethods.join('\n') + '\n' : ''}
 @end
 
 @interface ${hasteModuleName}SpecBase : NSObject {
@@ -57,6 +82,7 @@ namespace facebook::react {
     ${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
   };
 } // namespace facebook::react`;
+};
 
 const HeaderFileTemplate = ({
   headerFileName,
