@@ -18,5 +18,5 @@ target_link_libraries(react_renderer_uimanager_consistency
         rrc_root
         react_renderer_consistency
         react_renderer_mounting)
-target_compile_reactnative_options(react_renderer_uimanager_consistency PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_uimanager_consistency PRIVATE)
 target_compile_options(react_renderer_uimanager_consistency PRIVATE -Wpedantic)

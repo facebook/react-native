@@ -21,5 +21,5 @@ target_link_libraries(react_renderer_observers_events
         react_featureflags
         react_renderer_uimanager
         react_utils)
-target_compile_reactnative_options(react_renderer_observers_events PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_observers_events PRIVATE)
 target_compile_options(react_renderer_observers_events PRIVATE -Wpedantic)

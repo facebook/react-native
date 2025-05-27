@@ -34,6 +34,6 @@ target_link_libraries(react_renderer_uimanager
         rrc_view
         runtimeexecutor
 )
-target_compile_reactnative_options(react_renderer_uimanager PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_uimanager PRIVATE)
 target_compile_options(react_renderer_uimanager PRIVATE -Wno-unused-local-typedef)
 target_compile_options(react_renderer_uimanager PRIVATE -Wpedantic)

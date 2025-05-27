@@ -22,5 +22,5 @@ target_link_libraries(jsitooling
         glog
         jsi)
 
-target_compile_reactnative_options(jsitooling PRIVATE "ReactNative")
+target_compile_reactnative_options(jsitooling PRIVATE)
 target_compile_options(jsitooling PRIVATE -Wpedantic)

@@ -22,5 +22,5 @@ target_link_libraries(rrc_legacyviewmanagerinterop
         rrc_view
         yoga
 )
-target_compile_reactnative_options(rrc_legacyviewmanagerinterop PRIVATE "Fabric")
+target_compile_reactnative_options(rrc_legacyviewmanagerinterop PRIVATE)
 target_compile_options(rrc_legacyviewmanagerinterop PRIVATE -Wpedantic)

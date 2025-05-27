@@ -41,5 +41,5 @@ target_link_libraries(react_renderer_textlayoutmanager
         reactnativejni
         yoga
 )
-target_compile_reactnative_options(react_renderer_textlayoutmanager PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_textlayoutmanager PRIVATE)
 target_compile_options(react_renderer_textlayoutmanager PRIVATE -Wpedantic)
