@@ -55,10 +55,12 @@ const ComponentTemplate = ({
   className,
   extendClasses,
   props,
+  diffProps,
 }: {
   className: string,
   extendClasses: string,
   props: string,
+  diffProps: string,
 }) =>
   `
 ${className}::${className}(
@@ -66,10 +68,27 @@ ${className}::${className}(
     const ${className} &sourceProps,
     const RawProps &rawProps):${extendClasses}
 
-    ${props}
-      {}
+    ${props} {}
+    ${diffProps}
+
 `.trim();
 
+function generatePropsDiffString(
+  className: string,
+  componentName: string,
+  component: ComponentShape,
+) {
+  return `
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ${className}::getDiffProps(
+    const Props* prevProps) const {
+  folly::dynamic result = folly::dynamic::object();
+
+  // TODO: Implement diffProps
+  return result;
+}
+#endif`;
+}
 function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
@@ -144,6 +163,11 @@ module.exports = {
 
             const propsString = generatePropsString(componentName, component);
             const extendString = getClassExtendString(component);
+            const diffPropsString = generatePropsDiffString(
+              newName,
+              componentName,
+              component,
+            );
 
             const imports = getImports(component.props);
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -153,6 +177,7 @@ module.exports = {
               className: newName,
               extendClasses: extendString,
               props: propsString,
+              diffProps: diffPropsString,
             });
 
             return replacedTemplate;
