@@ -32,11 +32,37 @@ const ModuleDeclarationTemplate = ({
   structDeclarations: string,
   eventEmitters: string,
   protocolMethods: string,
-}>) => `${structDeclarations}
+}>) => {
+  // Split methods into required and optional groups
+  const methodLines = protocolMethods.split('\n');
+  const requiredMethods = [];
+  const optionalMethods = [];
+  
+  let isOptional = false;
+  for (const line of methodLines) {
+    const trimmedLine = line.trim();
+    if (trimmedLine === '@optional') {
+      isOptional = true;
+      continue;
+    }
+    if (trimmedLine === '@required') {
+      isOptional = false;
+      continue;
+    }
+    if (trimmedLine === '') continue;
+
+    if (isOptional) {
+      optionalMethods.push(line);
+    } else {
+      requiredMethods.push(line);
+    }
+  }
+
+  return `${structDeclarations}
 @protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
 
-${protocolMethods}
-
+${requiredMethods.join('\n')}
+${optionalMethods.length > 0 ? '\n@optional\n' + optionalMethods.join('\n') + '\n' : ''}
 @end
 
 @interface ${hasteModuleName}SpecBase : NSObject {
