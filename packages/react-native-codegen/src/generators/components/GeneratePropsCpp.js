@@ -82,7 +82,7 @@ function generatePropsDiffString(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ${className}::getDiffProps(
     const Props* prevProps) const {
-  folly::dynamic result = folly::dynamic::object();
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
   return result;
