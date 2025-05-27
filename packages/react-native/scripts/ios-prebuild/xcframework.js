@@ -8,6 +8,8 @@
  * @format
  */
 
+import {dir} from 'console';
+
 const {createFolderIfNotExists, createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -230,22 +232,25 @@ function createUmbrellaHeaderFile(
 //const cppHeaderRegex = /(#include|#import)\s*<[^>]+>|namespace\s+[\w:]+::/;
 const cppHeaderRegex = /(#include|#import)\s*<[^.>]+>|\bnamespace\s+[\w:]+::/;
 
-function isCppHeaderFile(filePath /*: string */) /*: boolean */ {
+function isCppHeaderFile(headerFilePath /*: string */) /*: boolean */ {
   // Check if there is a cpp or mm file with the same name
-  const fileName = path.basename(filePath, path.extname(filePath));
-  const cppFilePath = path.join(
-    path.dirname(filePath),
-    fileName + (fileName.endsWith('mm') ? '.cpp' : '.mm'),
-  );
-  if (fs.existsSync(cppFilePath)) {
-    // Check if the file is a C++ file
-    const fileStat = fs.statSync(cppFilePath);
-    if (fileStat.isFile()) {
-      return true;
+  const fileName = path.basename(headerFilePath, path.extname(headerFilePath));
+  const dirName = path.dirname(headerFilePath);
+
+  const checkFileExists = (extension /*: string */) /*: boolean */ => {
+    const cppFilePath = path.join(dirName, fileName + extension);
+    if (fs.existsSync(cppFilePath)) {
+      const fileStat = fs.statSync(cppFilePath);
+      return fileStat.isFile();
     }
+    return false;
+  };
+  if (checkFileExists('.cpp') || checkFileExists('.mm')) {
+    // If there is a cpp or mm file with the same name, we assume it is a C++ header file
+    return true;
   }
   // Check if the file contains c++ code
-  const fileContent = fs.readFileSync(filePath, 'utf8');
+  const fileContent = fs.readFileSync(headerFilePath, 'utf8');
   return cppHeaderRegex.test(fileContent);
 }
 
