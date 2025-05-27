@@ -37,10 +37,6 @@ class NativeAnimatedNodesManagerProvider {
   std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
       jsi::Runtime& runtime);
 
-  std::shared_ptr<NativeAnimatedNodesManager> get() {
-    return nativeAnimatedNodesManager_;
-  }
-
   // Native Event Listeners
   void addEventEmitterListener(
       const std::shared_ptr<EventEmitterListener>& listener);
