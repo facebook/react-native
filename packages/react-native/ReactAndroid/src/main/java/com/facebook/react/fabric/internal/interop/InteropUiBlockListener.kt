@@ -43,12 +43,11 @@ internal class InteropUIBlockListener : UIManagerListener {
     try {
       if (uiManager is UIBlockViewResolver) {
         val snapshot = ArrayList(beforeUIBlocks)
+        beforeUIBlocks.clear()
         snapshot.forEach { block ->
           block.execute(uiManager)
         }
       }
-   } finally {
-      beforeUIBlocks.clear()
     }
   }
 
@@ -57,12 +56,11 @@ internal class InteropUIBlockListener : UIManagerListener {
     try {
       if (uiManager is UIBlockViewResolver) {
         val snapshot = ArrayList(afterUIBlocks)
+        afterUIBlocks.clear()
         snapshot.forEach { block ->
           block.execute(uiManager)
         }
       }
-   } finally {
-      afterUIBlocks.clear()
     }
   }
 
