@@ -1042,7 +1042,7 @@ public abstract interface class com/facebook/react/bridge/Promise {
 	public abstract fun resolve (Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/bridge/PromiseImpl : com/facebook/react/bridge/Promise {
+public final class com/facebook/react/bridge/PromiseImpl : com/facebook/react/bridge/Promise {
 	public fun <init> (Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 	public fun reject (Ljava/lang/String;)V
 	public fun reject (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
