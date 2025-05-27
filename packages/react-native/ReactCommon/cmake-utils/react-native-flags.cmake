@@ -28,6 +28,7 @@ SET(reactnative_FLAGS
 
 function(target_compile_reactnative_options target_name scope)
   target_compile_options(${target_name} ${scope} ${reactnative_FLAGS})
+  target_compile_definitions(${target_name} ${scope} RN_SERIALIZABLE_STATE)
   set (extra_args ${ARGN})
   list(LENGTH extra_args extra_count)
   set (tag "ReactNative")
