@@ -58,7 +58,7 @@ bool FrameAnimationDriver::update(double timeDeltaMs, bool /*restarting*/) {
   if (auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_)) {
     if (!startValue_) {
-      startValue_ = node->rawValue();
+      startValue_ = node->getRawValue();
     }
 
     const auto startIndex =

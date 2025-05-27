@@ -32,7 +32,7 @@ void RoundAnimatedNode::update() {
   auto node = manager_->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_);
   react_native_assert(
       node && "Illegal node ID set as an input for Animated.round node");
-  setRawValue(round(node->value() / nearest_) * nearest_);
+  setRawValue(round(node->getValue() / nearest_) * nearest_);
 }
 
 } // namespace facebook::react

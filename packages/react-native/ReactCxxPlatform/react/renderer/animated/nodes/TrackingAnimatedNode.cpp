@@ -33,7 +33,7 @@ void TrackingAnimatedNode::update() {
     // manager.
     manager_->stopAnimation(animationId_, true);
     auto animationConfig = getConfig()["animationConfig"];
-    animationConfig["toValue"] = toValueNode->value();
+    animationConfig["toValue"] = toValueNode->getValue();
 
     manager_->startAnimatingNode(
         animationId_, valueNodeId_, animationConfig, std::nullopt);

@@ -111,11 +111,12 @@ void PropsAnimatedNode::update(bool forceFabricCommit) {
         case AnimatedNodeType::Division: {
           if (const auto& valueNode =
                   manager_->getAnimatedNode<ValueAnimatedNode>(nodeTag)) {
-            if (valueNode->isColorValue()) {
+            if (valueNode->getIsColorValue()) {
               props_.insert(
-                  propName.c_str(), static_cast<int32_t>(valueNode->value()));
+                  propName.c_str(),
+                  static_cast<int32_t>(valueNode->getValue()));
             } else {
-              props_.insert(propName.c_str(), valueNode->value());
+              props_.insert(propName.c_str(), valueNode->getValue());
             }
           }
         } break;

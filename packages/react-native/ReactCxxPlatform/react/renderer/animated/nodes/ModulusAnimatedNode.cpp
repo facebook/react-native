@@ -26,7 +26,7 @@ ModulusAnimatedNode::ModulusAnimatedNode(
 void ModulusAnimatedNode::update() {
   if (const auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_)) {
-    setRawValue(std::fmod(node->value(), modulus_));
+    setRawValue(std::fmod(node->getValue(), modulus_));
   }
 }
 

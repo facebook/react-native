@@ -22,7 +22,7 @@ void AdditionAnimatedNode::update() {
     const auto node = manager_->getAnimatedNode<ValueAnimatedNode>(tag);
     react_native_assert(
         node && "Invalid node tag set as input for AdditionAnimatedNode");
-    rawValue += node->value();
+    rawValue += node->getValue();
   }
   setRawValue(rawValue);
 }
