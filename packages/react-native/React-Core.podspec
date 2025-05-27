@@ -122,6 +122,7 @@ Pod::Spec.new do |s|
   s.dependency "React-featureflags"
   s.dependency "React-runtimescheduler"
   s.dependency "Yoga"
+  s.dependency 'React-hermes'
 
   s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
 
@@ -130,6 +131,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
   add_dependency(s, "RCTDeprecation")
+
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
