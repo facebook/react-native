@@ -53,7 +53,7 @@ void AnimationDriver::stopAnimation(bool /*ignoreCompletedHandlers*/) {
   std::optional<double> value = std::nullopt;
   if (auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_)) {
-    value = node->value();
+    value = node->getValue();
   } else {
     LOG(ERROR)
         << "animatedValueTag should be associated with a ValueAnimatedNode";

@@ -54,9 +54,9 @@ void InterpolationAnimatedNode::update() {
   if (const auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(parentTag_)) {
     if (isColorValue_) {
-      setRawValue(interpolateColor(node->value()));
+      setRawValue(interpolateColor(node->getValue()));
     } else {
-      setRawValue(interpolateValue(node->value()));
+      setRawValue(interpolateValue(node->getValue()));
     }
   }
 }

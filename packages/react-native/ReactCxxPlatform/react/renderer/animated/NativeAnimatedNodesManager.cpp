@@ -72,7 +72,7 @@ NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
 std::optional<double> NativeAnimatedNodesManager::getValue(Tag tag) noexcept {
   auto node = getAnimatedNode<ValueAnimatedNode>(tag);
   if (node) {
-    return node->value();
+    return node->getValue();
   } else {
     LOG(WARNING)
         << "Cannot get value from AnimatedNode, it's not a ValueAnimatedNode";

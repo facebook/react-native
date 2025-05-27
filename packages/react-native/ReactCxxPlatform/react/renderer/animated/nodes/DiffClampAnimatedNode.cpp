@@ -27,10 +27,10 @@ DiffClampAnimatedNode::DiffClampAnimatedNode(
 void DiffClampAnimatedNode::update() {
   if (const auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_)) {
-    const auto value = node->value();
+    const auto value = node->getValue();
     const auto diff = value - lastValue_;
     lastValue_ = value;
-    setRawValue(std::clamp(this->value() + diff, min_, max_));
+    setRawValue(std::clamp(this->getValue() + diff, min_, max_));
   }
 }
 
