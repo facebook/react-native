@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c099ce4bba5f6d14a83ad69a0fb3cbbf>>
+ * @generated SignedSource<<05405c3bb41e2511ac66792eb641db5e>>
  */
 
 /**
@@ -116,6 +116,10 @@ bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
   return getAccessor().enableLayoutAnimationsOnIOS();
+}
+
+bool ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS() {
+  return getAccessor().enableMainQueueCoordinatorOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableMainQueueModulesOnIOS() {
