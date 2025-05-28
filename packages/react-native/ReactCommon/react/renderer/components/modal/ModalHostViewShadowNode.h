@@ -30,6 +30,9 @@ class ModalHostViewShadowNode final : public ConcreteViewShadowNode<
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::RootNodeKind);
+    // <Modal> has a side effect of showing the modal overlay and
+    // must not be culled. Otherwise, the modal overlay will not be shown.
+    traits.set(ShadowNodeTraits::Trait::Unstable_uncullableView);
     return traits;
   }
 };
