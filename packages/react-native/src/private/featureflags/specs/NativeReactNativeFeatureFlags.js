@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<273456c231b69ff9c24a532aaaa796eb>>
+ * @generated SignedSource<<5ca20c96f04d07175bd27904405cbd62>>
  * @flow strict
  * @noformat
  */
@@ -44,6 +44,7 @@ export interface Spec extends TurboModule {
   +enableFixForParentTagDuringReparenting?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
+  +enableGracefulUnregisteredComponentFailureAndroid?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableIntersectionObserverEventLoopIntegration?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;

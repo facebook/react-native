@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<05405c3bb41e2511ac66792eb641db5e>>
+ * @generated SignedSource<<5415b718e13b2b4e1daee3bb6faba776>>
  */
 
 /**
@@ -100,6 +100,10 @@ bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
 
 bool ReactNativeFeatureFlags::enableIOSTextBaselineOffsetPerLine() {
   return getAccessor().enableIOSTextBaselineOffsetPerLine();
+}
+
+bool ReactNativeFeatureFlags::enableGracefulUnregisteredComponentFailureAndroid() {
+  return getAccessor().enableGracefulUnregisteredComponentFailureAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {

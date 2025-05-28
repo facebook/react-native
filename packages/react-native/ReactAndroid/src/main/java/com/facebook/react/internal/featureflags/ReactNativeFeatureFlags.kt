@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f67a9635d8fadd31a82d32f8dac00ba0>>
+ * @generated SignedSource<<a2fdcb662fc0178c4a16cc5bf23fce17>>
  */
 
 /**
@@ -143,6 +143,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSTextBaselineOffsetPerLine(): Boolean = accessor.enableIOSTextBaselineOffsetPerLine()
+
+  /**
+   * Enables gracefuly failure when an unregistered component is rendered in Android.
+   */
+  @JvmStatic
+  public fun enableGracefulUnregisteredComponentFailureAndroid(): Boolean = accessor.enableGracefulUnregisteredComponentFailureAndroid()
 
   /**
    * iOS Views will clip to their padding box vs border box

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f28e23028234cda83f67e0386fdd9f32>>
+ * @generated SignedSource<<cf48df16a494b69db66bdfc5eff84dd9>>
  */
 
 /**
@@ -133,6 +133,11 @@ class ReactNativeFeatureFlags {
    * Applies base offset for each line of text separately on iOS.
    */
   RN_EXPORT static bool enableIOSTextBaselineOffsetPerLine();
+
+  /**
+   * Enables gracefuly failure when an unregistered component is rendered in Android.
+   */
+  RN_EXPORT static bool enableGracefulUnregisteredComponentFailureAndroid();
 
   /**
    * iOS Views will clip to their padding box vs border box
