@@ -278,6 +278,11 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     return delegateHandled || super.dispatchKeyEvent(event)
   }
 
+  // This potentially a lie, to avoid clipping outside of layout bounds when we are translucent, at
+  // the cost of incorrect alpha blending.
+  // TODO T225199534: Add support for "needsOffscreenAlphaCompositing" to Text
+  override fun hasOverlappingRendering(): Boolean = false
+
   @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
   private object Api34Utils {
     private var highlightPaths: List<Path>? = null
