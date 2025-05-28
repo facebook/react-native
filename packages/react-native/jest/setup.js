@@ -77,7 +77,6 @@ Object.defineProperties(global, {
     configurable: true,
     enumerable: true,
     value(callback: number => void): TimeoutID {
-      // $FlowFixMe[prop-missing] - JestObjectType is incomplete.
       return setTimeout(() => callback(jest.now()), 0);
     },
     writable: true,
