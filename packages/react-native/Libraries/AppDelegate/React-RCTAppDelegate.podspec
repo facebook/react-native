@@ -68,6 +68,7 @@ Pod::Spec.new do |s|
   s.dependency "React-defaultsnativemodule"
   s.dependency 'React-hermes'
 
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
   add_dependency(s, "React-runtimescheduler")
