@@ -5984,7 +5984,7 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final fun emitScrollEvent (Landroid/view/ViewGroup;FF)V
 	public static final fun emitScrollMomentumBeginEvent (Landroid/view/ViewGroup;II)V
 	public static final fun emitScrollMomentumEndEvent (Landroid/view/ViewGroup;)V
-	public static final fun findNextFocusableView (Landroid/view/ViewGroup;Landroid/view/View;IZ)Landroid/view/View;
+	public static final fun findNextFocusableView (Landroid/view/ViewGroup;Landroid/view/View;I)Landroid/view/View;
 	public static final fun forceUpdateState (Landroid/view/ViewGroup;)V
 	public static final fun getDefaultScrollAnimationDuration (Landroid/content/Context;)I
 	public static final fun getNextFlingStartValue (Landroid/view/ViewGroup;III)I

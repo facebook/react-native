@@ -15,6 +15,8 @@ enum class FocusDirection {
   FocusUp = 1,
   FocusRight = 2,
   FocusLeft = 3,
+  FocusForward = 4,
+  FocusBackward = 5,
 };
 
 class FocusOrderingHelper {
