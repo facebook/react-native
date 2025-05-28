@@ -4,31 +4,38 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import type {HostInstance} from '../src/private/types/HostInstance';
 
-const React = require('react');
-const {createElement} = require('react');
+import * as React from 'react';
+import {createElement} from 'react';
 
 let nativeTag = 1;
 
-export default viewName => {
-  const Component = class extends React.Component {
-    _nativeTag = nativeTag++;
+type MockNativeComponent<TProps: $ReadOnly<{children?: React.Node}>> =
+  component(ref?: ?React.RefSetter<HostInstance>, ...props: TProps);
 
-    render() {
+export default function mockNativeComponent<
+  TProps: $ReadOnly<{children?: React.Node}>,
+>(viewName: string): MockNativeComponent<TProps> {
+  const Component = class extends React.Component<TProps> {
+    _nativeTag: number = nativeTag++;
+
+    render(): React.Node {
+      // $FlowIgnore[not-a-function]
       return createElement(viewName, this.props, this.props.children);
     }
 
     // The methods that exist on host components
-    blur = jest.fn();
-    focus = jest.fn();
-    measure = jest.fn();
-    measureInWindow = jest.fn();
-    measureLayout = jest.fn();
-    setNativeProps = jest.fn();
+    blur: () => void = jest.fn();
+    focus: () => void = jest.fn();
+    measure: () => void = jest.fn();
+    measureInWindow: () => void = jest.fn();
+    measureLayout: () => void = jest.fn();
+    setNativeProps: () => void = jest.fn();
   };
 
   if (viewName === 'RCTView') {
@@ -38,4 +45,4 @@ export default viewName => {
   }
 
   return Component;
-};
+}

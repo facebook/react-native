@@ -8,19 +8,24 @@
  * @format
  */
 
-/* eslint-env jest */
+import type {ScrollViewNativeProps} from '../Libraries/Components/ScrollView/ScrollViewNativeComponentType';
 
-'use strict';
+import View from '../Libraries/Components/View/View';
+import requireNativeComponent from '../Libraries/ReactNative/requireNativeComponent';
+import * as React from 'react';
 
-const View = require('../Libraries/Components/View/View').default;
-const requireNativeComponent =
-  require('../Libraries/ReactNative/requireNativeComponent').default;
-const React = require('react');
-const RCTScrollView: $FlowFixMe = requireNativeComponent('RCTScrollView');
+const RCTScrollView =
+  requireNativeComponent<ScrollViewNativeProps>('RCTScrollView');
 
-function mockScrollView(BaseComponent: $FlowFixMe) {
-  class ScrollViewMock extends BaseComponent {
-    render(): React.MixedElement {
+export default function mockScrollView(
+  BaseComponent: React.ComponentType<{children?: React.Node}>,
+): React.ComponentType<{
+  ...React.ElementConfig<typeof BaseComponent>,
+  refreshControl?: ?React.MixedElement,
+}> {
+  // $FlowIgnore[incompatible-use]
+  return class ScrollViewMock extends BaseComponent {
+    render(): React.Node {
       return (
         <RCTScrollView {...this.props}>
           {this.props.refreshControl}
@@ -28,8 +33,5 @@ function mockScrollView(BaseComponent: $FlowFixMe) {
         </RCTScrollView>
       );
     }
-  }
-  return ScrollViewMock;
+  };
 }
-
-module.exports = (mockScrollView: $FlowFixMe);

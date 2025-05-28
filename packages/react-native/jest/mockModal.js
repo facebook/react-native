@@ -4,19 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
-/* eslint-env jest */
+import * as React from 'react';
 
-'use strict';
-
-const React = require('react');
-
-function mockModal(BaseComponent: $FlowFixMe) {
-  class ModalMock extends BaseComponent {
-    render(): React.MixedElement | null {
+export default function mockModal(
+  BaseComponent: React.ComponentType<{children?: React.Node}>,
+): React.ComponentType<{
+  ...React.ElementConfig<typeof BaseComponent>,
+  visible?: ?boolean,
+}> {
+  // $FlowIgnore[incompatible-use]
+  return class ModalMock extends BaseComponent {
+    render(): React.Node {
       if (this.props.visible === false) {
         return null;
       }
@@ -25,8 +27,5 @@ function mockModal(BaseComponent: $FlowFixMe) {
         <BaseComponent {...this.props}>{this.props.children}</BaseComponent>
       );
     }
-  }
-  return ModalMock;
+  };
 }
-
-module.exports = (mockModal: $FlowFixMe);

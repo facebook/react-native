@@ -4,37 +4,58 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
-'use strict';
+import * as React from 'react';
+import {createElement} from 'react';
 
-module.exports = (moduleName, instanceMethods, isESModule) => {
-  const RealComponent = isESModule
-    ? jest.requireActual(moduleName).default
-    : jest.requireActual(moduleName);
-  const React = require('react');
+type Modulish<T> = T | $ReadOnly<{default: T}>;
+type ModuleDefault<T> = T['default'];
 
-  const SuperClass =
+type TComponentType = React.ComponentType<$ReadOnly<{children?: React.Node}>>;
+
+export default function mockComponent<
+  TComponentModule: Modulish<TComponentType>,
+>(
+  moduleName: string,
+  instanceMethods: ?interface {},
+  isESModule: boolean,
+): typeof isESModule extends true
+  ? ModuleDefault<TComponentModule>
+  : TComponentModule & typeof instanceMethods {
+  const RealComponent: TComponentType = isESModule
+    ? // $FlowIgnore[prop-missing]
+      jest.requireActual<TComponentModule>(moduleName).default
+    : // $FlowIgnore[incompatible-type]
+      jest.requireActual<TComponentModule>(moduleName);
+
+  const SuperClass: typeof React.Component<
+    React.ElementProps<typeof RealComponent>,
+  > =
     typeof RealComponent === 'function' &&
     RealComponent.prototype.constructor instanceof React.Component
       ? RealComponent
       : React.Component;
 
   const name =
-    RealComponent.displayName ||
-    RealComponent.name ||
-    (RealComponent.render // handle React.forwardRef
-      ? RealComponent.render.displayName || RealComponent.render.name
-      : 'Unknown');
+    RealComponent.displayName ??
+    RealComponent.name ??
+    // $FlowFixMe[prop-missing] - Checking for `forwardRef` values.
+    (RealComponent.render == null
+      ? 'Unknown'
+      : // $FlowFixMe[incompatible-use]
+        RealComponent.render.displayName ?? RealComponent.render.name);
 
   const nameWithoutPrefix = name.replace(/^(RCT|RK)/, '');
 
   const Component = class extends SuperClass {
-    static displayName = 'Component';
+    static displayName: ?string = 'Component';
 
-    render() {
-      const props = Object.assign({}, RealComponent.defaultProps);
+    render(): React.Node {
+      // $FlowIgnore[prop-missing]
+      const props = {...RealComponent.defaultProps};
 
       if (this.props) {
         Object.keys(this.props).forEach(prop => {
@@ -49,7 +70,8 @@ module.exports = (moduleName, instanceMethods, isESModule) => {
         });
       }
 
-      return React.createElement(nameWithoutPrefix, props, this.props.children);
+      // $FlowIgnore[not-a-function]
+      return createElement(nameWithoutPrefix, props, this.props.children);
     }
   };
 
@@ -62,13 +84,16 @@ module.exports = (moduleName, instanceMethods, isESModule) => {
 
   Component.displayName = nameWithoutPrefix;
 
+  // $FlowIgnore[not-an-object]
   Object.keys(RealComponent).forEach(classStatic => {
     Component[classStatic] = RealComponent[classStatic];
   });
 
   if (instanceMethods != null) {
+    // $FlowIgnore[unsafe-object-assign]
     Object.assign(Component.prototype, instanceMethods);
   }
 
+  // $FlowIgnore[incompatible-return]
   return Component;
-};
+}
