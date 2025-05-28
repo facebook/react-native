@@ -74,6 +74,14 @@ class ShadowNodeTraits {
 
     // Indicates if the node is keyboard focusable.
     KeyboardFocusable = 1 << 11,
+
+    // Indicates if the node is uncullable. Apply this to your component
+    // if it has side effects beyond just rendering (e.g. it opens a modal).
+    Unstable_uncullableView = 1 << 12,
+
+    // Must not be set directly. It is used by the view culling algorithm to
+    // efficiently determine if a node is uncullable.
+    Unstable_uncullableTrace = 1 << 13,
   };
 
   /*

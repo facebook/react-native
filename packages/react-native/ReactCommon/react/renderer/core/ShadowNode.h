@@ -245,6 +245,15 @@ class ShadowNode : public Sealable,
   void cloneChildrenIfShared();
 
   /*
+   * Updates the node's traits based on its children's traits.
+   * Specifically, if view culling is enabled and any child has the
+   * Unstable_uncullableView or Unstable_uncullableTrace trait, this node will
+   * also be marked as uncullable. This ensures that if a child needs to be
+   * rendered, its parent will be too.
+   */
+  void updateTraitsIfNeccessary();
+
+  /*
    * Pointer to a family object that this shadow node belongs to.
    */
   ShadowNodeFamily::Shared family_;

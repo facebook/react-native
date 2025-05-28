@@ -96,6 +96,8 @@ ShadowNode::ShadowNode(
     child->family_->setParent(family_);
   }
 
+  updateTraitsIfNeccessary();
+
   // The first node of the family gets its state committed automatically.
   family_->setMostRecentState(state_);
 }
@@ -130,6 +132,7 @@ ShadowNode::ShadowNode(
     for (const auto& child : *children_) {
       child->family_->setParent(family_);
     }
+    updateTraitsIfNeccessary();
   }
 }
 
@@ -242,6 +245,7 @@ void ShadowNode::appendChild(const ShadowNode::Shared& child) {
   children.push_back(child);
 
   child->family_->setParent(family_);
+  updateTraitsIfNeccessary();
 }
 
 void ShadowNode::replaceChild(
@@ -274,6 +278,7 @@ void ShadowNode::replaceChild(
   }
 
   react_native_assert(false && "Child to replace was not found.");
+  updateTraitsIfNeccessary();
 }
 
 void ShadowNode::cloneChildrenIfShared() {
@@ -283,6 +288,25 @@ void ShadowNode::cloneChildrenIfShared() {
 
   traits_.unset(ShadowNodeTraits::Trait::ChildrenAreShared);
   children_ = std::make_shared<ShadowNode::ListOfShared>(*children_);
+}
+
+void ShadowNode::updateTraitsIfNeccessary() {
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    if (traits_.check(ShadowNodeTraits::Trait::Unstable_uncullableView)) {
+      return;
+    }
+
+    for (const auto& child : *children_) {
+      if (child->getTraits().check(
+              ShadowNodeTraits::Trait::Unstable_uncullableView) ||
+          child->getTraits().check(
+              ShadowNodeTraits::Trait::Unstable_uncullableTrace)) {
+        traits_.set(ShadowNodeTraits::Trait::Unstable_uncullableTrace);
+        return;
+      }
+    }
+    traits_.unset(ShadowNodeTraits::Trait::Unstable_uncullableTrace);
+  }
 }
 
 void ShadowNode::setMounted(bool mounted) const {

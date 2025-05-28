@@ -784,18 +784,22 @@ test('culling inside of Modal', () => {
       height: 100,
     });
   });
+
   Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "RootView", nativeID: (root)}',
     'Create {type: "ScrollView", nativeID: (N/A)}',
-    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     'Create {type: "View", nativeID: (N/A)}',
     'Create {type: "ModalHostView", nativeID: (root)}',
     'Create {type: "View", nativeID: (N/A)}',
     'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     'Insert {type: "ModalHostView", parentNativeID: (N/A), index: 0, nativeID: (root)}',
     'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Update {type: "View", nativeID: (N/A)}',
+    'Update {type: "ModalHostView", nativeID: (root)}',
+    'Update {type: "View", nativeID: (N/A)}',
   ]);
 
   Fantom.runTask(() => {
@@ -2206,5 +2210,91 @@ describe('reparenting', () => {
       'Create {type: "View", nativeID: "grandgrandchild"}',
       'Insert {type: "View", parentNativeID: "grandchild", index: 0, nativeID: "grandgrandchild"}',
     ]);
+  });
+});
+
+describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace', () => {
+  test('modal is still rendered even though it is in culling region', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+    const nodeRef = createRef<HostInstance>();
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View nativeID="modal parent" style={{marginTop: 101}}>
+            <Modal ref={nodeRef}>
+              <View nativeID="child" style={{height: 10, width: 10}} />
+            </Modal>
+          </View>
+        </ScrollView>,
+      );
+    });
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+
+    Fantom.runOnUIThread(() => {
+      Fantom.enqueueModalSizeUpdate(element, {
+        width: 100,
+        height: 100,
+      });
+    });
+    Fantom.runWorkLoop();
+
+    const logs = root.takeMountingManagerLogs();
+    expect(logs).toContain('Create {type: "View", nativeID: "child"}');
+    expect(logs).toContain('Create {type: "View", nativeID: "modal parent"}');
+
+    // Modal is unmounted. Views that were only mounted because of its existence must be unmounted.
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View nativeID="modal parent" style={{marginTop: 101}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Delete {type: "View", nativeID: "modal parent"}',
+    );
+  });
+
+  test('modal is mounted in second update', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View style={{marginTop: 101}} />
+        </ScrollView>,
+      );
+    });
+
+    const nodeRef = createRef<HostInstance>();
+
+    // Adding modal to view hierarchy.
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View style={{marginTop: 101}}>
+            <Modal ref={nodeRef}>
+              <View nativeID="child" style={{height: 10, width: 10}} />
+            </Modal>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+
+    Fantom.runOnUIThread(() => {
+      Fantom.enqueueModalSizeUpdate(element, {
+        width: 100,
+        height: 100,
+      });
+    });
+    Fantom.runWorkLoop();
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
   });
 });
