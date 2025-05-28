@@ -854,6 +854,10 @@ type JestObjectType = {
    */
   getTimerCount(): number,
   /**
+   * Returns the time in ms of the current clock.
+   */
+  now(): number,
+  /**
    * Set the current system time used by fake timers.
    * Simulates a user changing the system clock while your program is running.
    * It affects the current time but it does not in itself cause

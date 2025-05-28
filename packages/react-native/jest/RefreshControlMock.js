@@ -21,10 +21,12 @@ const RCTRefreshControl: HostComponent<{}> = requireNativeComponent<{}>(
 
 export default class RefreshControlMock extends React.Component<{...}> {
   static latestRef: ?RefreshControlMock;
+
+  render(): React.Node {
+    return <RCTRefreshControl />;
+  }
+
   componentDidMount() {
     RefreshControlMock.latestRef = this;
-  }
-  render(): React.MixedElement {
-    return <RCTRefreshControl />;
   }
 }
