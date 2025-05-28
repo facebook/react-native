@@ -66,6 +66,10 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 #ifdef RN_SERIALIZABLE_STATE
   folly::dynamic rawProps = folly::dynamic::object();
 
+  virtual ComponentName getDiffPropsImplementationTarget() const {
+    return "";
+  }
+
   virtual folly::dynamic getDiffProps(const Props* prevProps) const {
     return folly::dynamic::object();
   }
