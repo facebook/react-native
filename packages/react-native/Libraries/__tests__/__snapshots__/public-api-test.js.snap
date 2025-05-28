@@ -6009,7 +6009,7 @@ declare class XMLHttpRequest extends EventTarget {
   getAllResponseHeaders(): ?string;
   getResponseHeader(header: string): ?string;
   setRequestHeader(header: string, value: any): void;
-  setTrackingName(trackingName: ?string): XMLHttpRequest;
+  setTrackingName(trackingName: string | void): XMLHttpRequest;
   setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
   open(method: string, url: string, async: ?boolean): void;
   send(data: any): void;

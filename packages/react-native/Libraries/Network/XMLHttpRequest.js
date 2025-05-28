@@ -170,7 +170,7 @@ class XMLHttpRequest extends EventTarget {
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
-  _trackingName: ?string = null;
+  _trackingName: string | void = undefined;
   _incrementalEvents: boolean = false;
   _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
@@ -534,7 +534,7 @@ class XMLHttpRequest extends EventTarget {
   /**
    * Custom extension for tracking origins of request.
    */
-  setTrackingName(trackingName: ?string): XMLHttpRequest {
+  setTrackingName(trackingName: string | void): XMLHttpRequest {
     this._trackingName = trackingName;
     return this;
   }
