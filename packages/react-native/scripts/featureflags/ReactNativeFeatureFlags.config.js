@@ -112,6 +112,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableTextLayoutManagerCacheAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-28',
+        description:
+          'Turns off the global measurement cache used by TextLayoutManager on Android.',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {

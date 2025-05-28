@@ -7,14 +7,18 @@
 
 #pragma once
 
-#include <functional>
-#include <memory>
+#include <concepts>
 #include <mutex>
 #include <optional>
+#include <type_traits>
 
 #include <folly/container/EvictingCacheMap.h>
 
 namespace facebook::react {
+
+template <typename GeneratorT, typename ValueT>
+concept CacheGeneratorFunction = std::invocable<GeneratorT> &&
+    std::same_as<std::invoke_result_t<GeneratorT>, ValueT>;
 
 /*
  * Simple thread-safe LRU cache.
@@ -31,12 +35,12 @@ class SimpleThreadSafeCache {
    * generator function, stores it inside a cache and returns it.
    * Can be called from any thread.
    */
-  ValueT get(const KeyT& key, std::function<ValueT(const KeyT& key)> generator)
+  ValueT get(const KeyT& key, CacheGeneratorFunction<ValueT> auto generator)
       const {
     std::lock_guard<std::mutex> lock(mutex_);
     auto iterator = map_.find(key);
     if (iterator == map_.end()) {
-      auto value = generator(key);
+      auto value = generator();
       map_.set(key, value);
       return value;
     }

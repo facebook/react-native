@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ddb0b0066cae098c56aa827e5ac3072c>>
+ * @generated SignedSource<<bd5d5a0b21816ebd35c06250ba622bb0>>
  */
 
 /**
@@ -72,6 +72,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool disableMountItemReorderingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMountItemReorderingAndroid");
+    return method(javaProvider_);
+  }
+
+  bool disableTextLayoutManagerCacheAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableTextLayoutManagerCacheAndroid");
     return method(javaProvider_);
   }
 
@@ -385,6 +391,11 @@ bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::disableTextLayoutManagerCacheAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAccessibilityOrder();
@@ -664,6 +675,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
+      makeNativeMethod(
+        "disableTextLayoutManagerCacheAndroid",
+        JReactNativeFeatureFlagsCxxInterop::disableTextLayoutManagerCacheAndroid),
       makeNativeMethod(
         "enableAccessibilityOrder",
         JReactNativeFeatureFlagsCxxInterop::enableAccessibilityOrder),

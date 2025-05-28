@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<440403abd700123f4edee6f49b1d9886>>
+ * @generated SignedSource<<5314028389c33ef7e2781e7e43ac6e49>>
  */
 
 /**
@@ -97,6 +97,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::disableMountItemReorderingAndroid();
+  }
+
+  bool disableTextLayoutManagerCacheAndroid() override {
+    auto value = values_["disableTextLayoutManagerCacheAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableTextLayoutManagerCacheAndroid();
   }
 
   bool enableAccessibilityOrder() override {

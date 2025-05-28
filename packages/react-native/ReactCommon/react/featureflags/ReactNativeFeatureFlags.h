@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f28e23028234cda83f67e0386fdd9f32>>
+ * @generated SignedSource<<cf01214e2de7a6eb948c311b10d272ae>>
  */
 
 /**
@@ -68,6 +68,11 @@ class ReactNativeFeatureFlags {
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
+   * Turns off the global measurement cache used by TextLayoutManager on Android.
+   */
+  RN_EXPORT static bool disableTextLayoutManagerCacheAndroid();
 
   /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.

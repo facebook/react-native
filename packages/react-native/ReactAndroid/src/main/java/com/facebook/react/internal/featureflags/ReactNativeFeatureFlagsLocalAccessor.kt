@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b755121b5c8048c7733825ceff2a4773>>
+ * @generated SignedSource<<2a7cd724a2ce1c9ea796f0b92120072b>>
  */
 
 /**
@@ -30,6 +30,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
+  private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -133,6 +134,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.disableMountItemReorderingAndroid()
       accessedFeatureFlags.add("disableMountItemReorderingAndroid")
       disableMountItemReorderingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun disableTextLayoutManagerCacheAndroid(): Boolean {
+    var cached = disableTextLayoutManagerCacheAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableTextLayoutManagerCacheAndroid()
+      accessedFeatureFlags.add("disableTextLayoutManagerCacheAndroid")
+      disableTextLayoutManagerCacheAndroidCache = cached
     }
     return cached
   }
