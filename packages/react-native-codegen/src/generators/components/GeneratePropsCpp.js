@@ -82,6 +82,13 @@ function generatePropsDiffString(
 #ifdef RN_SERIALIZABLE_STATE
 folly::dynamic ${className}::getDiffProps(
     const Props* prevProps) const {
+  static const auto defaultProps = ${className}();
+  const ${className}* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ${className}*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
 
   // TODO: Implement diffProps
