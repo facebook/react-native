@@ -1157,6 +1157,12 @@ folly::dynamic ImageColorPropNativeComponentProps::getDiffProps(
                 result[\\"thumbTintColor\\"] = *thumbTintColor;
               }
     
+              if (point != oldProps->point) {
+                folly::dynamic pointResult = folly::dynamic::object();
+                pointResult[\\"x\\"] = point.x;
+                pointResult[\\"y\\"] = point.y;
+                result[\\"point\\"] = pointResult;
+              }
   return result;
 }
 #endif
@@ -1296,6 +1302,12 @@ folly::dynamic PointPropNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+              if (startPoint != oldProps->startPoint) {
+                folly::dynamic pointResult = folly::dynamic::object();
+                pointResult[\\"x\\"] = startPoint.x;
+                pointResult[\\"y\\"] = startPoint.y;
+                result[\\"startPoint\\"] = pointResult;
+              }
   return result;
 }
 #endif
