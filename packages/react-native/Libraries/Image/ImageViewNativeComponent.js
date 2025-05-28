@@ -26,7 +26,7 @@ import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIg
 import codegenNativeCommands from '../Utilities/codegenNativeCommands';
 import Platform from '../Utilities/Platform';
 
-type Props = $ReadOnly<{
+type ImageHostComponentProps = $ReadOnly<{
   ...ImageProps,
   ...ViewProps,
 
@@ -162,8 +162,8 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
       };
 
-const ImageViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>(
+const ImageViewNativeComponent: HostComponent<ImageHostComponentProps> =
+  NativeComponentRegistry.get<ImageHostComponentProps>(
     'RCTImageView',
     () => __INTERNAL_VIEW_CONFIG,
   );
