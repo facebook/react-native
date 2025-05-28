@@ -33,5 +33,5 @@ target_link_libraries(react_renderer_scheduler
         rrc_view
         yoga
 )
-target_compile_reactnative_options(react_renderer_scheduler PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_scheduler PRIVATE)
 target_compile_options(react_renderer_scheduler PRIVATE -Wpedantic)

@@ -36,4 +36,4 @@ target_link_libraries(uimanagerjni
         yoga
 )
 
-target_compile_reactnative_options(uimanagerjni PRIVATE "ReactNative")
+target_compile_reactnative_options(uimanagerjni PRIVATE)
