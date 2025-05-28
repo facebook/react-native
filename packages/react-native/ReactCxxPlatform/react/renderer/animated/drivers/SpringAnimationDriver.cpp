@@ -82,7 +82,7 @@ bool SpringAnimationDriver::update(double timeDeltaMs, bool restarting) {
           manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_)) {
     if (restarting) {
       if (!fromValue_.has_value()) {
-        fromValue_ = node->rawValue();
+        fromValue_ = node->getRawValue();
       } else {
         if (node->setRawValue(fromValue_.value())) {
           markNodeUpdated(node->tag());

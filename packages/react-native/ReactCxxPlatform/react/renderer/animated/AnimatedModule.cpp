@@ -54,11 +54,7 @@ void AnimatedModule::updateAnimatedNodeConfig(
     jsi::Runtime& rt,
     Tag tag,
     jsi::Object config) {
-  auto configDynamic = dynamicFromValue(rt, jsi::Value(rt, config));
-  addOperation([tag, configDynamic = std::move(configDynamic)](
-                   NativeAnimatedNodesManager& nodesManager) {
-    nodesManager.updateAnimatedNodeConfig(tag, configDynamic);
-  });
+  // TODO: missing implementation
 }
 
 void AnimatedModule::getValue(
@@ -83,20 +79,17 @@ void AnimatedModule::getValue(
 void AnimatedModule::startListeningToAnimatedNodeValue(
     jsi::Runtime& /*rt*/,
     Tag tag) {
-  addOperation([tag, weakThis = weak_from_this()](
-                   NativeAnimatedNodesManager& nodesManager) {
+  addOperation([tag, this](NativeAnimatedNodesManager& nodesManager) {
     nodesManager.startListeningToAnimatedNodeValue(
-        tag, [weakThis, tag](double value) {
-          if (auto strongThis = weakThis.lock()) {
-            strongThis->emitDeviceEvent(
-                "onAnimatedValueUpdate",
-                [tag, value](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
-                  auto arg = jsi::Object(rt);
-                  arg.setProperty(rt, "tag", jsi::Value(tag));
-                  arg.setProperty(rt, "value", jsi::Value(value));
-                  args.emplace_back(rt, arg);
-                });
-          }
+        tag, [this, tag](double value) {
+          emitDeviceEvent(
+              "onAnimatedValueUpdate",
+              [tag, value](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+                auto arg = jsi::Object(rt);
+                arg.setProperty(rt, "tag", jsi::Value(tag));
+                arg.setProperty(rt, "value", jsi::Value(value));
+                args.emplace_back(rt, arg);
+              });
         });
   });
 }
@@ -164,25 +157,19 @@ void AnimatedModule::setAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
     Tag nodeTag,
     double offset) {
-  addOperation([nodeTag, offset](NativeAnimatedNodesManager& nodesManager) {
-    nodesManager.setAnimatedNodeOffset(nodeTag, offset);
-  });
+  // TODO: missing implementation
 }
 
 void AnimatedModule::flattenAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
     Tag nodeTag) {
-  addOperation([nodeTag](NativeAnimatedNodesManager& nodesManager) {
-    nodesManager.flattenAnimatedNodeOffset(nodeTag);
-  });
+  // TODO: missing implementation
 }
 
 void AnimatedModule::extractAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
     Tag nodeTag) {
-  addOperation([nodeTag](NativeAnimatedNodesManager& nodesManager) {
-    nodesManager.extractAnimatedNodeOffset(nodeTag);
-  });
+  // TODO: missing implementation
 }
 
 void AnimatedModule::connectAnimatedNodeToView(

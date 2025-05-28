@@ -156,10 +156,10 @@ declare export class AnimatedEvent {
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedExports.js 1`] = `
 "declare const Animated: typeof AnimatedImplementation;
 declare export default {
-  get FlatList(): AnimatedFlatList,
+  get FlatList(): AnimatedFlatList<any>,
   get Image(): AnimatedImage,
   get ScrollView(): AnimatedScrollView,
-  get SectionList(): AnimatedSectionList,
+  get SectionList(): AnimatedSectionList<any, any>,
   get Text(): AnimatedText,
   get View(): AnimatedView,
   ...typeof Animated,
@@ -614,10 +614,10 @@ exports[`public API should not change unintentionally Libraries/Animated/bezier.
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedFlatList.js 1`] = `
-"declare export default AnimatedComponentType<
-  React.ElementConfig<typeof FlatList>,
-  FlatList<mixed>,
->;
+"declare export default component<ItemT = any>(
+  ref?: React.RefSetter<FlatList<ItemT>>,
+  ...props: AnimatedProps<FlatListProps<ItemT>>
+);
 "
 `;
 
@@ -641,10 +641,10 @@ declare export default typeof AnimatedScrollView;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedSectionList.js 1`] = `
-"declare export default AnimatedComponentType<
-  React.ElementConfig<typeof SectionList>,
-  SectionList<any, SectionBase<any>>,
->;
+"declare export default component<ItemT = any, SectionT = any>(
+  ref?: React.RefSetter<SectionList<ItemT, SectionT>>,
+  ...props: AnimatedProps<SectionListProps<ItemT, SectionT>>
+);
 "
 `;
 
@@ -4722,22 +4722,6 @@ declare export default typeof InteractionManagerStub;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Interaction/JSEventLoopWatchdog.js 1`] = `
-"type Handler = {
-  onIterate?: () => void,
-  onStall: (params: { lastInterval: number, busyTime: number, ... }) => ?string,
-  ...
-};
-declare const JSEventLoopWatchdog: {
-  getStats: () => Object,
-  reset: () => void,
-  addHandler: (handler: Handler) => void,
-  install: ($$PARAM_0$$: { thresholdMS: number, ... }) => void,
-};
-declare export default typeof JSEventLoopWatchdog;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Interaction/NativeFrameRateLogger.js 1`] = `
 "export * from \\"../../src/private/specs_DEPRECATED/modules/NativeFrameRateLogger\\";
 declare export default typeof NativeFrameRateLogger;
@@ -8763,12 +8747,6 @@ declare export default typeof sizesDiffer;
 exports[`public API should not change unintentionally Libraries/Utilities/dismissKeyboard.js 1`] = `
 "declare function dismissKeyboard(): void;
 declare export default typeof dismissKeyboard;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/infoLog.js 1`] = `
-"declare function infoLog(...args: Array<mixed>): void;
-declare export default typeof infoLog;
 "
 `;
 

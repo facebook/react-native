@@ -72,7 +72,7 @@ NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
 std::optional<double> NativeAnimatedNodesManager::getValue(Tag tag) noexcept {
   auto node = getAnimatedNode<ValueAnimatedNode>(tag);
   if (node) {
-    return node->value();
+    return node->getValue();
   } else {
     LOG(WARNING)
         << "Cannot get value from AnimatedNode, it's not a ValueAnimatedNode";
@@ -251,28 +251,6 @@ void NativeAnimatedNodesManager::stopAnimationsForNode(Tag nodeTag) {
     activeAnimations_.at(id)->stopAnimation();
     activeAnimations_.erase(id);
   }
-}
-
-void NativeAnimatedNodesManager::setAnimatedNodeOffset(
-    Tag /*tag*/,
-    double /*offset*/) noexcept {
-  LOG(WARNING) << "SetAnimatedNodeOffset is unimplemented";
-}
-
-void NativeAnimatedNodesManager::flattenAnimatedNodeOffset(
-    Tag /*tag*/) noexcept {
-  LOG(WARNING) << "FlattenAnimatedNodeOffset is unimplemented";
-}
-
-void NativeAnimatedNodesManager::extractAnimatedNodeOffset(
-    Tag /*tag*/) noexcept {
-  LOG(WARNING) << "ExtractAnimatedNodeOffset is unimplemented";
-}
-
-void NativeAnimatedNodesManager::updateAnimatedNodeConfig(
-    Tag /*tag*/,
-    const folly::dynamic& /*config*/) noexcept {
-  LOG(WARNING) << "UpdateAnimatedNodeConfig is unimplemented";
 }
 
 // drivers
@@ -512,7 +490,7 @@ void NativeAnimatedNodesManager::updateNodes(
     nodesQueue.pop_front();
     // in Animated, value nodes like RGBA are parents and Color node is child
     // (the opposite of tree structure)
-    for (const auto childTag : nextNode.node->children()) {
+    for (const auto childTag : nextNode.node->getChildren()) {
       auto child = getAnimatedNode<AnimatedNode>(childTag);
       child->activeIncomingNodes++;
       if (child->bfsColor != animatedGraphBFSColor_) {
@@ -576,7 +554,7 @@ void NativeAnimatedNodesManager::updateNodes(
       nextNode.node->update();
     }
 
-    for (auto childTag : nextNode.node->children()) {
+    for (auto childTag : nextNode.node->getChildren()) {
       auto child = getAnimatedNode<AnimatedNode>(childTag);
       child->activeIncomingNodes--;
       if (child->activeIncomingNodes == 0 && child->activeIncomingNodes == 0) {
@@ -662,8 +640,7 @@ bool NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
   return commitProps();
 }
 
-std::optional<folly::dynamic> NativeAnimatedNodesManager::managedProps(
-    Tag tag) noexcept {
+folly::dynamic NativeAnimatedNodesManager::managedProps(Tag tag) noexcept {
   std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
   const auto iter = connectedAnimatedNodes_.find(tag);
   if (iter != connectedAnimatedNodes_.end()) {
@@ -672,7 +649,7 @@ std::optional<folly::dynamic> NativeAnimatedNodesManager::managedProps(
     }
   }
 
-  return {};
+  return nullptr;
 }
 
 bool NativeAnimatedNodesManager::isOnRenderThread() const noexcept {

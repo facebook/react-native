@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d96a5f9132ea827faeb183fe8bbf095>>
+ * @generated SignedSource<<116217572bb442c615e346324966d670>>
  * @flow strict
  * @noformat
  */
@@ -121,7 +121,7 @@ export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGe
 /**
  * Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.
  */
-export const avoidStateUpdateInAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('avoidStateUpdateInAnimatedPropsMemo', false);
+export const avoidStateUpdateInAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('avoidStateUpdateInAnimatedPropsMemo', true);
 
 /**
  * Disables InteractionManager and replaces its scheduler with `setImmediate`.

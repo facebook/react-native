@@ -167,10 +167,11 @@ export interface PushNotification {
 }
 
 /**
- *
  * Handle notifications for your app, including scheduling and permissions.
  *
  * See https://reactnative.dev/docs/pushnotificationios
+ *
+ * @deprecated Use [@react-native-community/push-notification-ios](https://www.npmjs.com/package/@react-native-community/push-notification-ios) instead
  */
 class PushNotificationIOS {
   _data: Object;

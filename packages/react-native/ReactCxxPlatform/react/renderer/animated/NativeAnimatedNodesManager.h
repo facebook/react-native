@@ -88,17 +88,7 @@ class NativeAnimatedNodesManager {
 
   void dropAnimatedNode(Tag tag) noexcept;
 
-  // mutations
-
   void setAnimatedNodeValue(Tag tag, double value);
-
-  void setAnimatedNodeOffset(Tag tag, double offset) noexcept;
-
-  void flattenAnimatedNodeOffset(Tag tag) noexcept;
-
-  void extractAnimatedNodeOffset(Tag tag) noexcept;
-
-  void updateAnimatedNodeConfig(Tag tag, const folly::dynamic& config) noexcept;
 
   // drivers
 
@@ -170,7 +160,7 @@ class NativeAnimatedNodesManager {
   void updateNodes(
       const std::set<int>& finishedAnimationValueNodes = {}) noexcept;
 
-  std::optional<folly::dynamic> managedProps(Tag tag) noexcept;
+  folly::dynamic managedProps(Tag tag) noexcept;
 
   bool isOnRenderThread() const noexcept;
 

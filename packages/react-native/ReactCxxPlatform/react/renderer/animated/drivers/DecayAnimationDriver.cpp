@@ -45,7 +45,7 @@ bool DecayAnimationDriver::update(double timeDeltaMs, bool restarting) {
   if (const auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_)) {
     if (restarting) {
-      const auto value = node->rawValue();
+      const auto value = node->getRawValue();
       if (!fromValue_.has_value()) {
         // First iteration, assign fromValue based on AnimatedValue
         fromValue_ = value;

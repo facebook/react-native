@@ -23,9 +23,10 @@ uint8_t getColorValue(
     bool isDecimal = false) {
   if (const auto node = manager.getAnimatedNode<ValueAnimatedNode>(nodeTag)) {
     if (isDecimal) {
-      return std::clamp(static_cast<uint32_t>(node->value() * 255), 0u, 255u);
+      return std::clamp(
+          static_cast<uint32_t>(node->getValue() * 255), 0u, 255u);
     } else {
-      return std::clamp(static_cast<uint32_t>(node->value()), 0u, 255u);
+      return std::clamp(static_cast<uint32_t>(node->getValue()), 0u, 255u);
     }
   }
   return 0;

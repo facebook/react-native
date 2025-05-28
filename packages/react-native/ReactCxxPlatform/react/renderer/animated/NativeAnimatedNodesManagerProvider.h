@@ -12,8 +12,6 @@
 
 namespace facebook::react {
 
-class UIManagerBinding;
-
 class UIManagerNativeAnimatedDelegateImpl
     : public UIManagerNativeAnimatedDelegate {
  public:
@@ -25,6 +23,7 @@ class UIManagerNativeAnimatedDelegateImpl
  private:
   std::weak_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
 };
+
 class AnimatedMountingOverrideDelegate;
 
 class NativeAnimatedNodesManagerProvider {
@@ -35,14 +34,8 @@ class NativeAnimatedNodesManagerProvider {
       NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback =
           nullptr);
 
-  virtual ~NativeAnimatedNodesManagerProvider() = default;
-
-  virtual std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
+  std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
       jsi::Runtime& runtime);
-
-  std::shared_ptr<NativeAnimatedNodesManager> get() {
-    return nativeAnimatedNodesManager_;
-  }
 
   // Native Event Listeners
   void addEventEmitterListener(
@@ -50,9 +43,8 @@ class NativeAnimatedNodesManagerProvider {
 
   std::shared_ptr<EventEmitterListener> getEventEmitterListener();
 
- protected:
+ private:
   std::shared_ptr<NativeAnimatedNodesManager> nativeAnimatedNodesManager_;
-  std::weak_ptr<UIManagerBinding> uiManagerBinding_;
 
   std::shared_ptr<EventEmitterListenerContainer> eventEmitterListenerContainer_;
   std::shared_ptr<EventEmitterListener> eventEmitterListener_;

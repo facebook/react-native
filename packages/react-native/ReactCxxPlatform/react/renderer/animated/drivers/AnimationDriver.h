@@ -22,8 +22,7 @@ enum class AnimationDriverType {
   Decay,
 };
 
-class ValueAnimatedNode;
-class AnimationDriver : public std::enable_shared_from_this<AnimationDriver> {
+class AnimationDriver {
  public:
   AnimationDriver(
       int id,
@@ -47,11 +46,11 @@ class AnimationDriver : public std::enable_shared_from_this<AnimationDriver> {
     return endCallback_;
   }
 
-  virtual double toValue() {
+  virtual double toValue() const noexcept {
     return 0;
   }
 
-  bool isComplete() {
+  bool isComplete() const noexcept {
     return isComplete_;
   }
 

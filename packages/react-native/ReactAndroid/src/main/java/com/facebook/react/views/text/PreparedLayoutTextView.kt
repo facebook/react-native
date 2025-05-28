@@ -24,8 +24,11 @@ import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.facebook.react.uimanager.BackgroundStyleApplicator
+import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
+import com.facebook.react.views.text.internal.span.ReactTagSpan
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 /**
  * A custom version of Android's TextView, providing React Native with lower-level hooks for text
@@ -33,7 +36,7 @@ import kotlin.collections.ArrayList
  * existing layout, previously generated for measurement by Fabric, to ensure consistency of
  * measurements, and avoid duplicate work.
  */
-internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
+internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), ReactCompoundView {
 
   private var clickableSpans: List<ClickableSpan> = emptyList()
   private var selection: TextSelection? = null
@@ -143,7 +146,6 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
     invalidate()
   }
 
-  // T222163602: We should reconcile this hit testing with ReactCompoundView hit testing
   override fun onTouchEvent(event: MotionEvent): Boolean {
     if (!isEnabled || clickableSpans.isEmpty()) {
       return super.onTouchEvent(event)
@@ -320,6 +322,23 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context) {
       }
 
       return spans
+    }
+  }
+
+  override fun reactTagForTouch(touchX: Float, touchY: Float): Int {
+    val offset = getTextOffsetAt(touchX.roundToInt(), touchY.roundToInt())
+    if (offset < 0) {
+      return id
+    }
+
+    val spanned = text as? Spanned ?: return id
+    val reactSpans = spanned.getSpans(offset, offset, ReactTagSpan::class.java)
+    check(reactSpans.size <= 1)
+
+    return if (reactSpans.isNotEmpty()) {
+      reactSpans[0].reactTag
+    } else {
+      id
     }
   }
 }

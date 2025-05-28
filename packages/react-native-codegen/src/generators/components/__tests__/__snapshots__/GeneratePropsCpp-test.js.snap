@@ -37,8 +37,35 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     object(convertRawProp(context, rawProps, \\"object\\", sourceProps.object, {})),
     array(convertRawProp(context, rawProps, \\"array\\", sourceProps.array, {})),
     arrayOfArrayOfObject(convertRawProp(context, rawProps, \\"arrayOfArrayOfObject\\", sourceProps.arrayOfArrayOfObject, {})),
-    arrayOfMixed(convertRawProp(context, rawProps, \\"arrayOfMixed\\", sourceProps.arrayOfMixed, {}))
-      {}
+    arrayOfMixed(convertRawProp(context, rawProps, \\"arrayOfMixed\\", sourceProps.arrayOfMixed, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ArrayPropsNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ArrayPropsNativeComponentProps();
+  const ArrayPropsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ArrayPropsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -68,8 +95,23 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     const ArrayPropsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    nativePrimitives(convertRawProp(context, rawProps, \\"nativePrimitives\\", sourceProps.nativePrimitives, {}))
-      {}
+    nativePrimitives(convertRawProp(context, rawProps, \\"nativePrimitives\\", sourceProps.nativePrimitives, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ArrayPropsNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ArrayPropsNativeComponentProps();
+  const ArrayPropsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ArrayPropsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -99,8 +141,26 @@ BooleanPropNativeComponentProps::BooleanPropNativeComponentProps(
     const BooleanPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false}))
-      {}
+    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic BooleanPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = BooleanPropNativeComponentProps();
+  const BooleanPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const BooleanPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (disabled != oldProps->disabled) {
+    result[\\"disabled\\"] = disabled;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -130,8 +190,26 @@ ColorPropNativeComponentProps::ColorPropNativeComponentProps(
     const ColorPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    tintColor(convertRawProp(context, rawProps, \\"tintColor\\", sourceProps.tintColor, {}))
-      {}
+    tintColor(convertRawProp(context, rawProps, \\"tintColor\\", sourceProps.tintColor, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ColorPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ColorPropNativeComponentProps();
+  const ColorPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ColorPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (tintColor != oldProps->tintColor) {
+    result[\\"tintColor\\"] = *tintColor;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -161,8 +239,23 @@ CommandNativeComponentProps::CommandNativeComponentProps(
     const CommandNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps)
 
+     {}
     
-      {}
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic CommandNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = CommandNativeComponentProps();
+  const CommandNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const CommandNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -192,8 +285,26 @@ CommandNativeComponentProps::CommandNativeComponentProps(
     const CommandNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"}))
-      {}
+    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic CommandNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = CommandNativeComponentProps();
+  const CommandNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const CommandNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (accessibilityHint != oldProps->accessibilityHint) {
+    result[\\"accessibilityHint\\"] = accessibilityHint;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -224,8 +335,23 @@ DimensionPropNativeComponentProps::DimensionPropNativeComponentProps(
     const DimensionPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    marginBack(convertRawProp(context, rawProps, \\"marginBack\\", sourceProps.marginBack, {}))
-      {}
+    marginBack(convertRawProp(context, rawProps, \\"marginBack\\", sourceProps.marginBack, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic DimensionPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = DimensionPropNativeComponentProps();
+  const DimensionPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const DimensionPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -260,8 +386,46 @@ DoublePropNativeComponentProps::DoublePropNativeComponentProps(
     blurRadius3(convertRawProp(context, rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, {2.1})),
     blurRadius4(convertRawProp(context, rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, {0.0})),
     blurRadius5(convertRawProp(context, rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, {1.0})),
-    blurRadius6(convertRawProp(context, rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0}))
-      {}
+    blurRadius6(convertRawProp(context, rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic DoublePropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = DoublePropNativeComponentProps();
+  const DoublePropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const DoublePropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if ((blurRadius != oldProps->blurRadius) && !(std::isnan(blurRadius) && std::isnan(oldProps->blurRadius))) {
+    result[\\"blurRadius\\"] = blurRadius;
+  }
+    
+  if ((blurRadius2 != oldProps->blurRadius2) && !(std::isnan(blurRadius2) && std::isnan(oldProps->blurRadius2))) {
+    result[\\"blurRadius2\\"] = blurRadius2;
+  }
+    
+  if ((blurRadius3 != oldProps->blurRadius3) && !(std::isnan(blurRadius3) && std::isnan(oldProps->blurRadius3))) {
+    result[\\"blurRadius3\\"] = blurRadius3;
+  }
+    
+  if ((blurRadius4 != oldProps->blurRadius4) && !(std::isnan(blurRadius4) && std::isnan(oldProps->blurRadius4))) {
+    result[\\"blurRadius4\\"] = blurRadius4;
+  }
+    
+  if ((blurRadius5 != oldProps->blurRadius5) && !(std::isnan(blurRadius5) && std::isnan(oldProps->blurRadius5))) {
+    result[\\"blurRadius5\\"] = blurRadius5;
+  }
+    
+  if ((blurRadius6 != oldProps->blurRadius6) && !(std::isnan(blurRadius6) && std::isnan(oldProps->blurRadius6))) {
+    result[\\"blurRadius6\\"] = blurRadius6;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -291,8 +455,26 @@ EventsNestedObjectNativeComponentProps::EventsNestedObjectNativeComponentProps(
     const EventsNestedObjectNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false}))
-      {}
+    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic EventsNestedObjectNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = EventsNestedObjectNativeComponentProps();
+  const EventsNestedObjectNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const EventsNestedObjectNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (disabled != oldProps->disabled) {
+    result[\\"disabled\\"] = disabled;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -322,8 +504,26 @@ EventsNativeComponentProps::EventsNativeComponentProps(
     const EventsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false}))
-      {}
+    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic EventsNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = EventsNativeComponentProps();
+  const EventsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const EventsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (disabled != oldProps->disabled) {
+    result[\\"disabled\\"] = disabled;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -353,8 +553,23 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     const InterfaceOnlyComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps)
 
+     {}
     
-      {}
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic InterfaceOnlyComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = InterfaceOnlyComponentProps();
+  const InterfaceOnlyComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const InterfaceOnlyComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -384,8 +599,23 @@ ExcludedAndroidComponentProps::ExcludedAndroidComponentProps(
     const ExcludedAndroidComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps)
 
+     {}
     
-      {}
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ExcludedAndroidComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ExcludedAndroidComponentProps();
+  const ExcludedAndroidComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ExcludedAndroidComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -415,8 +645,23 @@ ExcludedAndroidIosComponentProps::ExcludedAndroidIosComponentProps(
     const ExcludedAndroidIosComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps)
 
+     {}
     
-      {}
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ExcludedAndroidIosComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ExcludedAndroidIosComponentProps();
+  const ExcludedAndroidIosComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ExcludedAndroidIosComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -446,15 +691,48 @@ ExcludedIosComponentProps::ExcludedIosComponentProps(
     const ExcludedIosComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps)
 
+     {}
     
-      {}
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ExcludedIosComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ExcludedIosComponentProps();
+  const ExcludedIosComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ExcludedIosComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 MultiFileIncludedNativeComponentProps::MultiFileIncludedNativeComponentProps(
     const PropsParserContext &context,
     const MultiFileIncludedNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true}))
-      {}
+    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic MultiFileIncludedNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = MultiFileIncludedNativeComponentProps();
+  const MultiFileIncludedNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiFileIncludedNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (disabled != oldProps->disabled) {
+    result[\\"disabled\\"] = disabled;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -489,8 +767,46 @@ FloatPropNativeComponentProps::FloatPropNativeComponentProps(
     blurRadius3(convertRawProp(context, rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, {2.1})),
     blurRadius4(convertRawProp(context, rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, {0.0})),
     blurRadius5(convertRawProp(context, rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, {1.0})),
-    blurRadius6(convertRawProp(context, rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0}))
-      {}
+    blurRadius6(convertRawProp(context, rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic FloatPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = FloatPropNativeComponentProps();
+  const FloatPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const FloatPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if ((blurRadius != oldProps->blurRadius) && !(std::isnan(blurRadius) && std::isnan(oldProps->blurRadius))) {
+    result[\\"blurRadius\\"] = blurRadius;
+  }
+    
+  if ((blurRadius2 != oldProps->blurRadius2) && !(std::isnan(blurRadius2) && std::isnan(oldProps->blurRadius2))) {
+    result[\\"blurRadius2\\"] = blurRadius2;
+  }
+    
+  if ((blurRadius3 != oldProps->blurRadius3) && !(std::isnan(blurRadius3) && std::isnan(oldProps->blurRadius3))) {
+    result[\\"blurRadius3\\"] = blurRadius3;
+  }
+    
+  if ((blurRadius4 != oldProps->blurRadius4) && !(std::isnan(blurRadius4) && std::isnan(oldProps->blurRadius4))) {
+    result[\\"blurRadius4\\"] = blurRadius4;
+  }
+    
+  if ((blurRadius5 != oldProps->blurRadius5) && !(std::isnan(blurRadius5) && std::isnan(oldProps->blurRadius5))) {
+    result[\\"blurRadius5\\"] = blurRadius5;
+  }
+    
+  if ((blurRadius6 != oldProps->blurRadius6) && !(std::isnan(blurRadius6) && std::isnan(oldProps->blurRadius6))) {
+    result[\\"blurRadius6\\"] = blurRadius6;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -521,8 +837,26 @@ ImagePropNativeComponentProps::ImagePropNativeComponentProps(
     const ImagePropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    thumbImage(convertRawProp(context, rawProps, \\"thumbImage\\", sourceProps.thumbImage, {}))
-      {}
+    thumbImage(convertRawProp(context, rawProps, \\"thumbImage\\", sourceProps.thumbImage, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ImagePropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ImagePropNativeComponentProps();
+  const ImagePropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ImagePropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (thumbImage != oldProps->thumbImage) {
+    result[\\"thumbImage\\"] = thumbImage.toDynamic();
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -552,8 +886,23 @@ InsetsPropNativeComponentProps::InsetsPropNativeComponentProps(
     const InsetsPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    contentInset(convertRawProp(context, rawProps, \\"contentInset\\", sourceProps.contentInset, {}))
-      {}
+    contentInset(convertRawProp(context, rawProps, \\"contentInset\\", sourceProps.contentInset, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic InsetsPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = InsetsPropNativeComponentProps();
+  const InsetsPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const InsetsPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -583,8 +932,23 @@ Int32EnumPropsNativeComponentProps::Int32EnumPropsNativeComponentProps(
     const Int32EnumPropsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    maxInterval(convertRawProp(context, rawProps, \\"maxInterval\\", sourceProps.maxInterval, {Int32EnumPropsNativeComponentMaxInterval::MaxInterval0}))
-      {}
+    maxInterval(convertRawProp(context, rawProps, \\"maxInterval\\", sourceProps.maxInterval, {Int32EnumPropsNativeComponentMaxInterval::MaxInterval0})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic Int32EnumPropsNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = Int32EnumPropsNativeComponentProps();
+  const Int32EnumPropsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const Int32EnumPropsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -616,8 +980,34 @@ IntegerPropNativeComponentProps::IntegerPropNativeComponentProps(
 
     progress1(convertRawProp(context, rawProps, \\"progress1\\", sourceProps.progress1, {0})),
     progress2(convertRawProp(context, rawProps, \\"progress2\\", sourceProps.progress2, {-1})),
-    progress3(convertRawProp(context, rawProps, \\"progress3\\", sourceProps.progress3, {10}))
-      {}
+    progress3(convertRawProp(context, rawProps, \\"progress3\\", sourceProps.progress3, {10})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic IntegerPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = IntegerPropNativeComponentProps();
+  const IntegerPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const IntegerPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (progress1 != oldProps->progress1) {
+    result[\\"progress1\\"] = progress1;
+  }
+    
+  if (progress2 != oldProps->progress2) {
+    result[\\"progress2\\"] = progress2;
+  }
+    
+  if (progress3 != oldProps->progress3) {
+    result[\\"progress3\\"] = progress3;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -647,8 +1037,26 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     const InterfaceOnlyComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"}))
-      {}
+    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic InterfaceOnlyComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = InterfaceOnlyComponentProps();
+  const InterfaceOnlyComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const InterfaceOnlyComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (accessibilityHint != oldProps->accessibilityHint) {
+    result[\\"accessibilityHint\\"] = accessibilityHint;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -679,8 +1087,23 @@ MixedPropNativeComponentProps::MixedPropNativeComponentProps(
     const MixedPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    mixedProp(convertRawProp(context, rawProps, \\"mixedProp\\", sourceProps.mixedProp, {}))
-      {}
+    mixedProp(convertRawProp(context, rawProps, \\"mixedProp\\", sourceProps.mixedProp, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic MixedPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = MixedPropNativeComponentProps();
+  const MixedPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MixedPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -714,8 +1137,41 @@ ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
     thumbImage(convertRawProp(context, rawProps, \\"thumbImage\\", sourceProps.thumbImage, {})),
     color(convertRawProp(context, rawProps, \\"color\\", sourceProps.color, {})),
     thumbTintColor(convertRawProp(context, rawProps, \\"thumbTintColor\\", sourceProps.thumbTintColor, {})),
-    point(convertRawProp(context, rawProps, \\"point\\", sourceProps.point, {}))
-      {}
+    point(convertRawProp(context, rawProps, \\"point\\", sourceProps.point, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ImageColorPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ImageColorPropNativeComponentProps();
+  const ImageColorPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ImageColorPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (thumbImage != oldProps->thumbImage) {
+    result[\\"thumbImage\\"] = thumbImage.toDynamic();
+  }
+    
+  if (color != oldProps->color) {
+    result[\\"color\\"] = *color;
+  }
+    
+  if (thumbTintColor != oldProps->thumbTintColor) {
+    result[\\"thumbTintColor\\"] = *thumbTintColor;
+  }
+    
+  if (point != oldProps->point) {
+    folly::dynamic pointResult = folly::dynamic::object();
+    pointResult[\\"x\\"] = point.x;
+    pointResult[\\"y\\"] = point.y;
+    result[\\"point\\"] = pointResult;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -745,8 +1201,23 @@ NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
     const NoPropsNoEventsComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps)
 
+     {}
     
-      {}
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic NoPropsNoEventsComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = NoPropsNoEventsComponentProps();
+  const NoPropsNoEventsComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const NoPropsNoEventsComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -777,8 +1248,23 @@ ObjectPropsProps::ObjectPropsProps(
     const ObjectPropsProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    objectProp(convertRawProp(context, rawProps, \\"objectProp\\", sourceProps.objectProp, {}))
-      {}
+    objectProp(convertRawProp(context, rawProps, \\"objectProp\\", sourceProps.objectProp, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ObjectPropsProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ObjectPropsProps();
+  const ObjectPropsProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ObjectPropsProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -808,8 +1294,29 @@ PointPropNativeComponentProps::PointPropNativeComponentProps(
     const PointPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    startPoint(convertRawProp(context, rawProps, \\"startPoint\\", sourceProps.startPoint, {}))
-      {}
+    startPoint(convertRawProp(context, rawProps, \\"startPoint\\", sourceProps.startPoint, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic PointPropNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = PointPropNativeComponentProps();
+  const PointPropNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const PointPropNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (startPoint != oldProps->startPoint) {
+    folly::dynamic pointResult = folly::dynamic::object();
+    pointResult[\\"x\\"] = startPoint.x;
+    pointResult[\\"y\\"] = startPoint.y;
+    result[\\"startPoint\\"] = pointResult;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -839,8 +1346,23 @@ StringEnumPropsNativeComponentProps::StringEnumPropsNativeComponentProps(
     const StringEnumPropsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    alignment(convertRawProp(context, rawProps, \\"alignment\\", sourceProps.alignment, {StringEnumPropsNativeComponentAlignment::Center}))
-      {}
+    alignment(convertRawProp(context, rawProps, \\"alignment\\", sourceProps.alignment, {StringEnumPropsNativeComponentAlignment::Center})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic StringEnumPropsNativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = StringEnumPropsNativeComponentProps();
+  const StringEnumPropsNativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const StringEnumPropsNativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -871,8 +1393,30 @@ StringPropComponentProps::StringPropComponentProps(
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
     accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})),
-    accessibilityRole(convertRawProp(context, rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, {}))
-      {}
+    accessibilityRole(convertRawProp(context, rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, {})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic StringPropComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = StringPropComponentProps();
+  const StringPropComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const StringPropComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (accessibilityHint != oldProps->accessibilityHint) {
+    result[\\"accessibilityHint\\"] = accessibilityHint;
+  }
+    
+  if (accessibilityRole != oldProps->accessibilityRole) {
+    result[\\"accessibilityRole\\"] = accessibilityRole;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -902,15 +1446,51 @@ MultiFile1NativeComponentProps::MultiFile1NativeComponentProps(
     const MultiFile1NativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false}))
-      {}
+    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic MultiFile1NativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = MultiFile1NativeComponentProps();
+  const MultiFile1NativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiFile1NativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (disabled != oldProps->disabled) {
+    result[\\"disabled\\"] = disabled;
+  }
+  return result;
+}
+#endif
 MultiFile2NativeComponentProps::MultiFile2NativeComponentProps(
     const PropsParserContext &context,
     const MultiFile2NativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true}))
-      {}
+    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic MultiFile2NativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = MultiFile2NativeComponentProps();
+  const MultiFile2NativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiFile2NativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (disabled != oldProps->disabled) {
+    result[\\"disabled\\"] = disabled;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",
@@ -940,15 +1520,51 @@ MultiComponent1NativeComponentProps::MultiComponent1NativeComponentProps(
     const MultiComponent1NativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false}))
-      {}
+    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic MultiComponent1NativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = MultiComponent1NativeComponentProps();
+  const MultiComponent1NativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiComponent1NativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (disabled != oldProps->disabled) {
+    result[\\"disabled\\"] = disabled;
+  }
+  return result;
+}
+#endif
 MultiComponent2NativeComponentProps::MultiComponent2NativeComponentProps(
     const PropsParserContext &context,
     const MultiComponent2NativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true}))
-      {}
+    disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true})) {}
+    
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic MultiComponent2NativeComponentProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = MultiComponent2NativeComponentProps();
+  const MultiComponent2NativeComponentProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const MultiComponent2NativeComponentProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  
+  if (disabled != oldProps->disabled) {
+    result[\\"disabled\\"] = disabled;
+  }
+  return result;
+}
+#endif
 
 } // namespace facebook::react
 ",

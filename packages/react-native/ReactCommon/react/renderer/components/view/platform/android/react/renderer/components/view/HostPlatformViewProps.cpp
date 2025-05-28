@@ -539,6 +539,10 @@ static folly::dynamic toDynamic(const EdgeInsets& edgeInsets) {
   return edgeInsetsResult;
 }
 
+ComponentName HostPlatformViewProps::getDiffPropsImplementationTarget() const {
+  return "View";
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
