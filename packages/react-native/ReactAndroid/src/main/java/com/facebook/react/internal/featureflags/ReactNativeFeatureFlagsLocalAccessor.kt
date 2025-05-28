@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b755121b5c8048c7733825ceff2a4773>>
+ * @generated SignedSource<<646cf101688413ddb4677526742d6677>>
  */
 
 /**
@@ -43,6 +43,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
+  private var enableGracefulUnregisteredComponentFailureAndroidCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableIntersectionObserverEventLoopIntegrationCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
@@ -263,6 +264,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableIOSTextBaselineOffsetPerLine()
       accessedFeatureFlags.add("enableIOSTextBaselineOffsetPerLine")
       enableIOSTextBaselineOffsetPerLineCache = cached
+    }
+    return cached
+  }
+
+  override fun enableGracefulUnregisteredComponentFailureAndroid(): Boolean {
+    var cached = enableGracefulUnregisteredComponentFailureAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableGracefulUnregisteredComponentFailureAndroid()
+      accessedFeatureFlags.add("enableGracefulUnregisteredComponentFailureAndroid")
+      enableGracefulUnregisteredComponentFailureAndroidCache = cached
     }
     return cached
   }

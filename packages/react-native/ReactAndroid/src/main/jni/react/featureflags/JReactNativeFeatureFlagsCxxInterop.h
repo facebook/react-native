@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3a00be0b706f3513e1aca741c55a0747>>
+ * @generated SignedSource<<edcb0dafbb7740bfdb417f3fd78250fb>>
  */
 
 /**
@@ -85,6 +85,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableIOSTextBaselineOffsetPerLine(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableGracefulUnregisteredComponentFailureAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableIOSViewClipToPaddingBox(

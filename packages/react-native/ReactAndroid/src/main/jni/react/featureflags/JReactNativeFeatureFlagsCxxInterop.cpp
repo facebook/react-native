@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ddb0b0066cae098c56aa827e5ac3072c>>
+ * @generated SignedSource<<c1a0bd5e9088fd084a9a7f253b76de14>>
  */
 
 /**
@@ -150,6 +150,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableIOSTextBaselineOffsetPerLine() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSTextBaselineOffsetPerLine");
+    return method(javaProvider_);
+  }
+
+  bool enableGracefulUnregisteredComponentFailureAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableGracefulUnregisteredComponentFailureAndroid");
     return method(javaProvider_);
   }
 
@@ -450,6 +456,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSTextBaselineOffsetPerLine(
   return ReactNativeFeatureFlags::enableIOSTextBaselineOffsetPerLine();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableGracefulUnregisteredComponentFailureAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableGracefulUnregisteredComponentFailureAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
@@ -703,6 +714,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableIOSTextBaselineOffsetPerLine",
         JReactNativeFeatureFlagsCxxInterop::enableIOSTextBaselineOffsetPerLine),
+      makeNativeMethod(
+        "enableGracefulUnregisteredComponentFailureAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableGracefulUnregisteredComponentFailureAndroid),
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),

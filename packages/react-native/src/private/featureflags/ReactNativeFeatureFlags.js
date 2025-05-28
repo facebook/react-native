@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<288c2d4e34ec2cf4597fd4e77f5198ca>>
+ * @generated SignedSource<<7ce4a155645f3ce28a0a90a83b59a074>>
  * @flow strict
  * @noformat
  */
@@ -69,6 +69,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFixForParentTagDuringReparenting: Getter<boolean>,
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
+  enableGracefulUnregisteredComponentFailureAndroid: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableIntersectionObserverEventLoopIntegration: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
@@ -259,6 +260,10 @@ export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativ
  * Applies base offset for each line of text separately on iOS.
  */
 export const enableIOSTextBaselineOffsetPerLine: Getter<boolean> = createNativeFlagGetter('enableIOSTextBaselineOffsetPerLine', false);
+/**
+ * Enables gracefuly failure when an unregistered component is rendered in Android.
+ */
+export const enableGracefulUnregisteredComponentFailureAndroid: Getter<boolean> = createNativeFlagGetter('enableGracefulUnregisteredComponentFailureAndroid', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3a3e4a601f680f792ebe624215e7f97f>>
+ * @generated SignedSource<<6ffc5cd7ee5a6fbfabf7f68e877c38e7>>
  */
 
 /**
@@ -100,6 +100,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableIOSTextBaselineOffsetPerLine() override {
+    return false;
+  }
+
+  bool enableGracefulUnregisteredComponentFailureAndroid() override {
     return false;
   }
 
