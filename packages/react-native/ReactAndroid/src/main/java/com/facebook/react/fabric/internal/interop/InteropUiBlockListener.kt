@@ -38,31 +38,33 @@ internal class InteropUIBlockListener : UIManagerListener {
     afterUIBlocks.add(block)
   }
 
-  @Synchronized
   override fun willMountItems(uiManager: UIManager) {
-    if (beforeUIBlocks.isEmpty()) {
-       return
-     }
-    // avoid ConcurrentModificationException by iterating over a copy
-    val snapshot = ArrayList(beforeUIBlocks)
-    beforeUIBlocks.clear()
+    val blocksToExecute: List<UIBlock> = synchronized(this) {
+      if (beforeUIBlocks.isEmpty()) {
+        return
+      }
+      // avoid ConcurrentModificationException by iterating over a copy
+      ArrayList(beforeUIBlocks).also { beforeUIBlocks.clear() }
+    }
+
     if (uiManager is UIBlockViewResolver) {
-      snapshot.forEach { block ->
+      blocksToExecute.forEach { block ->
         block.execute(uiManager)
       }
     }
   }
 
-  @Synchronized
   override fun didMountItems(uiManager: UIManager) {
-    if (afterUIBlocks.isEmpty()) {
-       return
-     }
-    // avoid ConcurrentModificationException by iterating over a copy
-    val snapshot = ArrayList(afterUIBlocks)
-    afterUIBlocks.clear()
+    val blocksToExecute: List<UIBlock> = synchronized(this) {
+      if (afterUIBlocks.isEmpty()) {
+        return
+      }
+      // avoid ConcurrentModificationException by iterating over a copy
+      ArrayList(afterUIBlocks).also { afterUIBlocks.clear() }
+    }
+
     if (uiManager is UIBlockViewResolver) {
-      snapshot.forEach { block ->
+      blocksToExecute.forEach { block ->
         block.execute(uiManager)
       }
     }
