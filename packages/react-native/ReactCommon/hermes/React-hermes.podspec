@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger", version
   s.dependency "hermes-engine"
   s.dependency "React-jsi"
-  s.dependency "React-runtimeexecutor"
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
 
   add_rn_third_party_dependencies(s)
 end
