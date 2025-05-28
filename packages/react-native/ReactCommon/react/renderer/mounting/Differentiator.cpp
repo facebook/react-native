@@ -165,6 +165,7 @@ static void calculateShadowViewMutationsFlattener(
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    const CullingContext& cullingContextForUnvisitedOtherNodes,
     const CullingContext& cullingContext);
 
 /**
@@ -221,6 +222,7 @@ static void updateMatchedPairSubtrees(
           oldPair.shadowView.tag,
           nullptr,
           nullptr,
+          oldCullingContext,
           oldCullingContextCopy);
     }
     // Unflattening
@@ -255,6 +257,7 @@ static void updateMatchedPairSubtrees(
           parentTag,
           nullptr,
           nullptr,
+          newCullingContext,
           newCullingContextCopy);
 
       // If old nodes were not visited, we know that we can delete
@@ -420,6 +423,7 @@ static void calculateShadowViewMutationsFlattener(
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    const CullingContext& cullingContextForUnvisitedOtherNodes,
     const CullingContext& cullingContext) {
   // Step 1: iterate through entire tree
   std::vector<ShadowViewNodePair*> treeChildren =
@@ -615,10 +619,14 @@ static void calculateShadowViewMutationsFlattener(
                 parentTagForUpdate));
       }
 
-      auto adjustedOldCullingContext =
-          cullingContext.adjustCullingContextIfNeeded(oldTreeNodePair);
-      auto adjustedNewCullingContext =
-          cullingContext.adjustCullingContextIfNeeded(newTreeNodePair);
+      auto adjustedOldCullingContext = reparentMode == ReparentMode::Flatten
+          ? cullingContext.adjustCullingContextIfNeeded(oldTreeNodePair)
+          : cullingContextForUnvisitedOtherNodes.adjustCullingContextIfNeeded(
+                oldTreeNodePair);
+      auto adjustedNewCullingContext = reparentMode == ReparentMode::Flatten
+          ? cullingContextForUnvisitedOtherNodes.adjustCullingContextIfNeeded(
+                newTreeNodePair)
+          : cullingContext.adjustCullingContextIfNeeded(newTreeNodePair);
 
       // Update children if appropriate.
       if (!oldTreeNodePair.flattened && !newTreeNodePair.flattened) {
@@ -670,6 +678,7 @@ static void calculateShadowViewMutationsFlattener(
                    : parentTag),
               subVisitedNewMap,
               subVisitedOldMap,
+              cullingContext,
               cullingContext.adjustCullingContextIfNeeded(treeChildPair));
         } else {
           // Get flattened nodes from either new or old tree
@@ -720,6 +729,7 @@ static void calculateShadowViewMutationsFlattener(
                 fixedParentTagForUpdate,
                 subVisitedNewMap,
                 subVisitedOldMap,
+                adjustedNewCullingContext,
                 adjustedNewCullingContext);
           } else {
             // Flatten parent, unflatten child
@@ -740,6 +750,8 @@ static void calculateShadowViewMutationsFlattener(
                 /* parentTagForUpdate */ fixedParentTagForUpdate,
                 /* parentSubVisitedOtherNewNodes */ subVisitedNewMap,
                 /* parentSubVisitedOtherOldNodes */ subVisitedOldMap,
+                /* cullingContextForUnvisitedOtherNodes */
+                adjustedOldCullingContext,
                 /* cullingContext */ adjustedOldCullingContext);
 
             // If old nodes were not visited, we know that we can delete them

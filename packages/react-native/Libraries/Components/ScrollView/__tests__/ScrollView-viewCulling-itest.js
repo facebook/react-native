@@ -1244,6 +1244,122 @@ describe('reparenting', () => {
     ]);
   });
 
+  test('flattening grandparent ', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View // grandparent
+            style={{
+              marginTop: 70,
+              opacity: 0, // opacity 0 - can't be flattened
+            }}>
+            <View // parent
+              nativeID="parent"
+              style={{height: 10, width: 10, marginTop: 10}}>
+              <View // child
+                nativeID="child"
+                style={{height: 5, width: 5, marginTop: 5}}
+              />
+            </View>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Insert {type: "View", parentNativeID: "parent", index: 0, nativeID: "child"}',
+    );
+
+    // Flatten grandparent by changing opacity to default value.
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View // grandparent
+            style={{
+              marginTop: 70,
+            }}>
+            <View // parent
+              nativeID="parent"
+              style={{height: 10, width: 11, marginTop: 10}}>
+              <View // child
+                nativeID="child"
+                style={{height: 5, width: 5, marginTop: 5}}
+              />
+            </View>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "View", nativeID: "parent"}',
+      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "parent"}',
+      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Delete {type: "View", nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "parent"}',
+    ]);
+  });
+
+  test('unflattening grandparent', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View // grandparent
+            style={{
+              marginTop: 70,
+            }}>
+            <View // parent
+              nativeID={'parent'}
+              style={{height: 10, width: 10, marginTop: 10}}>
+              <View // child
+                nativeID="child"
+                style={{height: 5, width: 5, marginTop: 5}}
+              />
+            </View>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Insert {type: "View", parentNativeID: "parent", index: 0, nativeID: "child"}',
+    );
+
+    // Unflatten grandparent by setting opacity to 0.
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View // grandparent
+            style={{
+              marginTop: 70,
+              opacity: 0, // opacity 0 - can't be flattened
+            }}>
+            <View // parent
+              nativeID={'parent'}
+              style={{height: 10, width: 11, marginTop: 10}}>
+              <View // child
+                nativeID="child"
+                style={{height: 5, width: 5, marginTop: 5}}
+              />
+            </View>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "View", nativeID: "parent"}',
+      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "parent"}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "parent"}',
+    ]);
+  });
+
   test('parent-child flattening with child culled', () => {
     const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
     const nodeRef = createRef<HostInstance>();
