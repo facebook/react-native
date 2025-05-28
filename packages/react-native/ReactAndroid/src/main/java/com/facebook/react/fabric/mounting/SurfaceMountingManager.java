@@ -123,6 +123,17 @@ public class SurfaceMountingManager {
     return mSurfaceId;
   }
 
+  public @Nullable View getRootViewIfAttached() {
+    ViewState viewState = getNullableViewState(mSurfaceId);
+    if (viewState == null || viewState.mView == null) {
+      return null;
+    }
+    if (!viewState.mIsRoot) {
+      return null;
+    }
+    return viewState.mView;
+  }
+
   public boolean isRootViewAttached() {
     return mRootViewAttached;
   }

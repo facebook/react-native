@@ -29,7 +29,7 @@ import com.facebook.react.fabric.mounting.mountitems.MountItem
 import com.facebook.react.touch.JSResponderHandler
 import com.facebook.react.uimanager.RootViewManager
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.RootViewUtil
+
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.common.ViewUtil
@@ -372,6 +372,7 @@ internal class MountingManager(
    * The callback signature matches legacy UIManager: (x0, y0, width, height, pageX, pageY).
    */
   @UiThread
+  @Synchronized
   fun measure(surfaceId: Int, reactTag: Int, callback: Callback) {
     assertOnUiThread()
     val smm = getSurfaceMountingManager(surfaceId, reactTag)
@@ -381,7 +382,13 @@ internal class MountingManager(
     }
     val view = smm.getView(reactTag)
     val measureBuffer = IntArray(4)
-    measure(view, measureBuffer)
+    val rootView = smm.getRootViewIfAttached()
+    if (rootView == null) {
+      FLog.e(TAG, "Failed to get root view for surfaceId: %d", surfaceId)
+      return
+    }
+
+    measure(rootView, view, measureBuffer)
 
     val x = PixelUtil.toDIPFromPixel(measureBuffer[0].toFloat())
     val y = PixelUtil.toDIPFromPixel(measureBuffer[1].toFloat())
@@ -391,8 +398,7 @@ internal class MountingManager(
   }
 
   @Synchronized
-  fun measure(v: View, outputBuffer: IntArray) {
-    val rootView = RootViewUtil.getRootView(v) as View
+  fun measure(rootView: View, v: View, outputBuffer: IntArray) {
     computeBoundingBox(rootView, outputBuffer)
     val rootX = outputBuffer[0]
     val rootY = outputBuffer[1]
