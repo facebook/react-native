@@ -1794,7 +1794,7 @@ U* castInterface(T* ptr) {
     return static_cast<U*>(ptr->castInterface(U::uuid));
   }
   return nullptr;
-}
+};
 
 /// Helper function to cast the object managed by the shared_ptr \p ptr into an
 /// interface specified by \c U. If the cast is successful, return a shared_ptr
