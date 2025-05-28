@@ -163,6 +163,9 @@ folly::dynamic ColorPropNativeComponentViewProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+              if (tintColor != oldProps->tintColor) {
+                result[\\"tintColor\\"] = *tintColor;
+              }
   return result;
 }
 #endif
@@ -734,7 +737,13 @@ folly::dynamic MultiNativePropNativeComponentViewProps::getDiffProps(
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
     
+              if (color != oldProps->color) {
+                result[\\"color\\"] = *color;
+              }
     
+              if (thumbTintColor != oldProps->thumbTintColor) {
+                result[\\"thumbTintColor\\"] = *thumbTintColor;
+              }
     
   return result;
 }
