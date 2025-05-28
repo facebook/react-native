@@ -37,7 +37,7 @@ class ShadowNode : public Sealable,
   using Weak [[deprecated("Use std::weak_ptr<const ShadowNode> instead")]] =
       std::weak_ptr<const ShadowNode>;
   // TODO(T223558094): delete this in the next version.
-  using Unshared [[deprecated("Use std::weak_ptr<const ShadowNode> instead")]] =
+  using Unshared [[deprecated("Use std::shared_ptr<ShadowNode> instead")]] =
       std::shared_ptr<ShadowNode>;
   using ListOfShared = std::vector<Shared>;
   using ListOfWeak = std::vector<std::weak_ptr<const ShadowNode>>;
@@ -110,6 +110,19 @@ class ShadowNode : public Sealable,
       const ShadowNodeFamily& shadowNodeFamily,
       const std::function<std::shared_ptr<ShadowNode>(
           const ShadowNode& oldShadowNode)>& callback) const;
+
+  /*
+   * Clones the nodes (and the subtree containing all the nodes) by
+   * replacing the `oldShadowNode` for every `shadowNodeFamily` from
+   * `familiesToUpdate` with a node that `callback` returns.
+   *
+   * Returns `nullptr` if the operation cannot be performed successfully.
+   */
+  std::shared_ptr<ShadowNode> cloneMultiple(
+      const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
+      const std::function<std::shared_ptr<ShadowNode>(
+          const ShadowNode& oldShadowNode,
+          const ShadowNodeFragment& fragment)>& callback) const;
 
 #pragma mark - Getters
 
