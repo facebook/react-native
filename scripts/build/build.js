@@ -98,46 +98,53 @@ async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
 }
 
 async function buildPackage(packageName /*: string */) {
-  const {emitTypeScriptDefs} = getBuildOptions(packageName);
-  const entryPoints = await getEntryPoints(packageName);
+  try {
+    const {emitTypeScriptDefs} = getBuildOptions(packageName);
+    const entryPoints = await getEntryPoints(packageName);
 
-  const files = glob
-    .sync(path.resolve(PACKAGES_DIR, packageName, SRC_DIR, '**/*'), {
-      nodir: true,
-    })
-    .filter(
-      file =>
-        !entryPoints.has(file) &&
-        !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
+    const files = glob
+      .sync(path.resolve(PACKAGES_DIR, packageName, SRC_DIR, '**/*'), {
+        nodir: true,
+      })
+      .filter(
+        file =>
+          !entryPoints.has(file) &&
+          !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
+      );
+
+    process.stdout.write(
+      `${packageName} ${chalk.dim('.').repeat(72 - packageName.length)} `,
     );
 
-  process.stdout.write(
-    `${packageName} ${chalk.dim('.').repeat(72 - packageName.length)} `,
-  );
+    // Build regular files
+    for (const file of files) {
+      await buildFile(path.normalize(file), {
+        silent: true,
+      });
+    }
 
-  // Build regular files
-  for (const file of files) {
-    await buildFile(path.normalize(file), {
-      silent: true,
-    });
+    // Build entry point files
+    for (const entryPoint of entryPoints) {
+      await buildFile(path.normalize(entryPoint), {
+        silent: true,
+      });
+    }
+
+    // Validate program for emitted .d.ts files
+    if (emitTypeScriptDefs) {
+      validateTypeScriptDefs(packageName);
+    }
+
+    // Rewrite package.json "exports" field (src -> dist)
+    await rewritePackageExports(packageName);
+
+    process.stdout.write(chalk.reset.inverse.bold.green(' DONE '));
+  } catch (e) {
+    process.stdout.write(chalk.reset.inverse.bold.red(' FAIL ') + '\n');
+    throw e;
+  } finally {
+    process.stdout.write('\n');
   }
-
-  // Build entry point files
-  for (const entryPoint of entryPoints) {
-    await buildFile(path.normalize(entryPoint), {
-      silent: true,
-    });
-  }
-
-  // Validate program for emitted .d.ts files
-  if (emitTypeScriptDefs) {
-    validateTypeScriptDefs(packageName);
-  }
-
-  // Rewrite package.json "exports" field (src -> dist)
-  await rewritePackageExports(packageName);
-
-  process.stdout.write(chalk.reset.inverse.bold.green(' DONE ') + '\n');
 }
 
 async function buildFile(
@@ -185,20 +192,25 @@ async function buildFile(
 
   // Translate source Flow types for each type definition target
   if (/@flow/.test(source)) {
-    await Promise.all([
-      emitFlowDefs
-        ? fs.writeFile(
-            buildPath + '.flow',
-            await translate.translateFlowToFlowDef(source, prettierConfig),
-          )
-        : null,
-      emitTypeScriptDefs
-        ? fs.writeFile(
-            buildPath.replace(/\.js$/, '') + '.d.ts',
-            await translate.translateFlowToTSDef(source, prettierConfig),
-          )
-        : null,
-    ]);
+    try {
+      await Promise.all([
+        emitFlowDefs
+          ? fs.writeFile(
+              buildPath + '.flow',
+              await translate.translateFlowToFlowDef(source, prettierConfig),
+            )
+          : null,
+        emitTypeScriptDefs
+          ? fs.writeFile(
+              buildPath.replace(/\.js$/, '') + '.d.ts',
+              await translate.translateFlowToTSDef(source, prettierConfig),
+            )
+          : null,
+      ]);
+    } catch (e) {
+      e.message = `Error translating ${path.relative(PACKAGES_DIR, file)}:\n${e.message}`;
+      throw e;
+    }
   }
 
   logResult({copied: true});
@@ -442,6 +454,12 @@ module.exports = {
 };
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
-  void build();
+  build().catch(error => {
+    if (error.name === 'ExpectedTranslationError') {
+      console.error(error.message);
+    } else {
+      console.error(error.stack);
+    }
+    process.exitCode = 1;
+  });
 }
