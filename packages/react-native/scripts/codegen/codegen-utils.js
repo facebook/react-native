@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -19,11 +20,13 @@
  *
  * @return an object that can generate the code for the New Architecture.
  */
-function getCodegen() {
+function getCodegen() /*: $FlowFixMe */ {
   let RNCodegen;
   try {
+    // $FlowIgnore[cannot-resolve-module]
     RNCodegen = require('../../packages/react-native-codegen/lib/generators/RNCodegen.js');
   } catch (e) {
+    // $FlowIgnore[cannot-resolve-module]
     RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen.js');
   }
   if (!RNCodegen) {
@@ -32,11 +35,13 @@ function getCodegen() {
   return RNCodegen;
 }
 
-function getCombineJSToSchema() {
+function getCombineJSToSchema() /*: $FlowFixMe */ {
   let combineJSToSchema;
   try {
+    // $FlowIgnore[cannot-resolve-module]
     combineJSToSchema = require('../../packages/react-native-codegen/lib/cli/combine/combine-js-to-schema.js');
   } catch (e) {
+    // $FlowIgnore[cannot-resolve-module]
     combineJSToSchema = require('@react-native/codegen/lib/cli/combine/combine-js-to-schema.js');
   }
   if (!combineJSToSchema) {
@@ -46,6 +51,6 @@ function getCombineJSToSchema() {
 }
 
 module.exports = {
-  getCodegen: getCodegen,
-  getCombineJSToSchema: getCombineJSToSchema,
+  getCodegen,
+  getCombineJSToSchema,
 };

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -16,6 +17,7 @@ const {readFileSync} = require('fs');
 const path = require('path');
 
 // Commander 12.0.0 changes from the global to named export
+// $FlowFixMe[signature-verification-failure]
 const program = commander.program ?? commander;
 
 program.version(
@@ -37,7 +39,14 @@ program
   .allowUnknownOption()
   .action(async function handleAction() {
     let config = null;
-    let options = program.opts();
+    let options = program
+      .opts /*::<{
+      configCmd?: string,
+      loadConfig?: string,
+      verbose: boolean,
+      ...
+    }>*/
+      ();
     if (options.loadConfig != null) {
       config = JSON.parse(
         options.loadConfig.replace(/^\W*'/, '').replace(/'\W*$/, ''),
