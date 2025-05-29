@@ -14,8 +14,12 @@ import {createElement} from 'react';
 type Modulish<T> = T | $ReadOnly<{default: T}>;
 type ModuleDefault<T> = T['default'];
 
-type TComponentType = React.ComponentType<$ReadOnly<{children?: React.Node}>>;
+type TComponentType = React.ComponentType<{...}>;
 
+/**
+ * WARNING: The `moduleName` must be relative to this file's directory, which is
+ * a major footgun. Be careful when using this function!
+ */
 export default function mockComponent<
   TComponentModule: Modulish<TComponentType>,
 >(
@@ -23,7 +27,7 @@ export default function mockComponent<
   instanceMethods: ?interface {},
   isESModule: boolean,
 ): typeof isESModule extends true
-  ? ModuleDefault<TComponentModule>
+  ? ModuleDefault<TComponentModule & typeof instanceMethods>
   : TComponentModule & typeof instanceMethods {
   const RealComponent: TComponentType = isESModule
     ? // $FlowIgnore[prop-missing]
@@ -71,6 +75,7 @@ export default function mockComponent<
       }
 
       // $FlowIgnore[not-a-function]
+      // $FlowIgnore[prop-missing]
       return createElement(nameWithoutPrefix, props, this.props.children);
     }
   };
