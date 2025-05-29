@@ -178,6 +178,12 @@ internal class PreparedLayoutTextViewManager :
     view.setEnabled(!disabled)
   }
 
+  @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
+  public fun setTextAlignVertical(view: PreparedLayoutTextView, textAlignVertical: String?) {
+    val gravity = TextLayoutManager.verticalGravityFromTextAlignmentVertical(textAlignVertical)
+    view.setGravityVertical(gravity)
+  }
+
   override fun setPadding(
       view: PreparedLayoutTextView,
       left: Int,
