@@ -11,6 +11,7 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/bridging/bridging.h>
 #include <react/renderer/core/ShadowNode.h>
 
 namespace facebook::react {
@@ -29,18 +30,6 @@ struct ShadowNodeListWrapper : public jsi::NativeState {
 
   ShadowNode::UnsharedListOfShared shadowNodeList;
 };
-
-inline static ShadowNode::Shared shadowNodeFromValue(
-    jsi::Runtime& runtime,
-    const jsi::Value& value) {
-  if (value.isNull()) {
-    return nullptr;
-  }
-
-  return value.getObject(runtime)
-      .getNativeState<ShadowNodeWrapper>(runtime)
-      ->shadowNode;
-}
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
@@ -75,8 +64,8 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
       shadowNodeArray->reserve(jsArrayLen);
 
       for (size_t i = 0; i < jsArrayLen; i++) {
-        shadowNodeArray->push_back(
-            shadowNodeFromValue(runtime, jsArray.getValueAtIndex(runtime, i)));
+        shadowNodeArray->push_back(Bridging<ShadowNode::Shared>::fromJs(
+            runtime, jsArray.getValueAtIndex(runtime, i)));
       }
       return shadowNodeArray;
     } else {

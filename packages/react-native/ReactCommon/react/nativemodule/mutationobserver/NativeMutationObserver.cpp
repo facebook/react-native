@@ -36,8 +36,7 @@ void NativeMutationObserver::observe(
     NativeMutationObserverObserveOptions options) {
   auto mutationObserverId = options.mutationObserverId;
   auto subtree = options.subtree;
-  auto shadowNode =
-      shadowNodeFromValue(runtime, std::move(options).targetShadowNode);
+  auto shadowNode = options.targetShadowNode;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   mutationObserverManager_.observe(
