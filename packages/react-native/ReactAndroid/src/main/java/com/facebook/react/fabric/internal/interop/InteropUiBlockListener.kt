@@ -43,11 +43,11 @@ internal class InteropUIBlockListener : UIManagerListener {
       if (beforeUIBlocks.isEmpty()) {
         return
       }
-      // avoid ConcurrentModificationException by iterating over a copy
-      ArrayList(beforeUIBlocks).also { beforeUIBlocks.clear() }
+      beforeUIBlocks.toList().also { beforeUIBlocks.clear() }
     }
 
     if (uiManager is UIBlockViewResolver) {
+      // avoid ConcurrentModificationException by iterating over a copy
       blocksToExecute.forEach { block ->
         block.execute(uiManager)
       }
@@ -59,11 +59,11 @@ internal class InteropUIBlockListener : UIManagerListener {
       if (afterUIBlocks.isEmpty()) {
         return
       }
-      // avoid ConcurrentModificationException by iterating over a copy
-      ArrayList(afterUIBlocks).also { afterUIBlocks.clear() }
+      afterUIBlocks.toList().also { afterUIBlocks.clear() }
     }
 
     if (uiManager is UIBlockViewResolver) {
+      // avoid ConcurrentModificationException by iterating over a copy
       blocksToExecute.forEach { block ->
         block.execute(uiManager)
       }
