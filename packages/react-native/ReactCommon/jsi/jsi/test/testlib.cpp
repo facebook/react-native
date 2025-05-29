@@ -966,14 +966,14 @@ TEST_P(JSITest, PreparedJavaScriptURLInBacktrace) {
 
 namespace {
 
-unsigned countOccurences(const std::string& of, const std::string& in) {
-  unsigned occurences = 0;
-  std::string::size_type lastOccurence = -1;
-  while ((lastOccurence = in.find(of, lastOccurence + 1)) !=
+unsigned countOccurrences(const std::string& of, const std::string& in) {
+  unsigned occurrences = 0;
+  std::string::size_type lastOccurrence = -1;
+  while ((lastOccurrence = in.find(of, lastOccurrence + 1)) !=
          std::string::npos) {
-    occurences++;
+    occurrences++;
   }
-  return occurences;
+  return occurrences;
 }
 
 } // namespace
@@ -1002,10 +1002,10 @@ TEST_P(JSITest, JSErrorsArePropagatedNicely) {
     sometimesThrows.call(rt, false, callback);
   } catch (JSError& error) {
     EXPECT_EQ(error.getMessage(), "Omg, what a nasty exception");
-    EXPECT_EQ(countOccurences("sometimesThrows", error.getStack()), 6);
+    EXPECT_EQ(countOccurrences("sometimesThrows", error.getStack()), 6);
 
     // system JSC JSI does not implement host function names
-    // EXPECT_EQ(countOccurences("callback", error.getStack(rt)), 5);
+    // EXPECT_EQ(countOccurrences("callback", error.getStack(rt)), 5);
   }
 }
 
