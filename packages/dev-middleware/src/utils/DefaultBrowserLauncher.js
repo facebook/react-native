@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  */
 
@@ -19,12 +19,12 @@ const open = require('open');
  * Default `BrowserLauncher` implementation which opens URLs on the host
  * machine.
  */
-const DefaultBrowserLauncher: BrowserLauncher = {
+const DefaultBrowserLauncher = {
   /**
    * Attempt to open the debugger frontend in a Google Chrome or Microsoft Edge
    * app window.
    */
-  launchDebuggerAppWindow: async url => {
+  launchDebuggerAppWindow: async (url: string): Promise<void> => {
     let chromePath;
 
     try {
