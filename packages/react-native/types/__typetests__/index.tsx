@@ -30,6 +30,7 @@ import {
   AppStateStatus,
   Appearance,
   BackHandler,
+  BlurEvent,
   Button,
   ColorValue,
   DevSettings,
@@ -42,6 +43,7 @@ import {
   EventSubscription,
   FlatList,
   FlatListProps,
+  FocusEvent,
   GestureResponderEvent,
   HostComponent,
   I18nManager,
@@ -1193,11 +1195,11 @@ class TextInputTest extends React.Component<{}, {username: string}> {
     console.log(`y: ${e.nativeEvent.contentOffset.y}`);
   };
 
-  handleOnBlur = (e: TextInputFocusEvent) => {
+  handleOnBlur = (e: BlurEvent) => {
     testNativeSyntheticEvent(e);
   };
 
-  handleOnFocus = (e: TextInputFocusEvent) => {
+  handleOnFocus = (e: FocusEvent) => {
     testNativeSyntheticEvent(e);
   };
 
