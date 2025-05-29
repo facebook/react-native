@@ -7,7 +7,6 @@
 
 #include "AnimationTestsBase.h"
 
-#include <react/renderer/animated/drivers/AnimationDriverUtils.h>
 #include <react/renderer/components/scrollview/ScrollEvent.h>
 #include <react/renderer/core/ReactRootViewTagGenerator.h>
 
