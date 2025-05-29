@@ -111,6 +111,18 @@ const bubblingEventTypes = {
       bubbled: 'onClick',
     },
   },
+  topBlur: {
+    phasedRegistrationNames: {
+      captured: 'onBlurCapture',
+      bubbled: 'onBlur',
+    },
+  },
+  topFocus: {
+    phasedRegistrationNames: {
+      captured: 'onFocusCapture',
+      bubbled: 'onFocus',
+    },
+  },
 };
 
 const directEventTypes = {

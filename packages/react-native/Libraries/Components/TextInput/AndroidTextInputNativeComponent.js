@@ -617,22 +617,10 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   uiViewClassName: 'AndroidTextInput',
   bubblingEventTypes: {
-    topBlur: {
-      phasedRegistrationNames: {
-        bubbled: 'onBlur',
-        captured: 'onBlurCapture',
-      },
-    },
     topEndEditing: {
       phasedRegistrationNames: {
         bubbled: 'onEndEditing',
         captured: 'onEndEditingCapture',
-      },
-    },
-    topFocus: {
-      phasedRegistrationNames: {
-        bubbled: 'onFocus',
-        captured: 'onFocusCapture',
       },
     },
     topKeyPress: {
