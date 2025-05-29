@@ -297,7 +297,7 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
       .tid = threadId,
       .args = folly::dynamic::object(
           "data",
-          folly ::dynamic::object(
+          folly::dynamic::object(
               "startTime",
               highResTimeStampToTracingClockTimeStamp(profileTimestamp))),
   });
