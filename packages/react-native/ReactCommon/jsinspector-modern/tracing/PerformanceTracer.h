@@ -13,8 +13,6 @@
 
 #include <react/timing/primitives.h>
 
-#include <react/timing/primitives.h>
-
 #include <folly/dynamic.h>
 #include <functional>
 #include <mutex>
