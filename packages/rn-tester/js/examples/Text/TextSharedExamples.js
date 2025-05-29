@@ -9,9 +9,11 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {TextLayoutLine} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import {useTheme} from '../../components/RNTesterTheme';
+import {useState} from 'react';
 import {View} from 'react-native';
 
 function InlineView(props: {
@@ -71,6 +73,43 @@ function EmptyTextExample(): React.Node {
   );
 }
 
+function TextAndLayoutLinesJSON({
+  testID,
+  ellipsizeMode,
+}: $ReadOnly<{
+  testID: string,
+  ellipsizeMode: 'head' | 'tail' | 'middle' | 'clip',
+}>): React.Node {
+  const [lines, setLines] = useState<?(TextLayoutLine[])>();
+
+  return (
+    <View testID={testID}>
+      <RNTesterText variant="label">{ellipsizeMode}</RNTesterText>
+      <RNTesterText
+        numberOfLines={1}
+        ellipsizeMode={ellipsizeMode}
+        onTextLayout={ev => setLines(ev.nativeEvent.lines)}>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin volutpat
+        molestie nunc non tristique.
+      </RNTesterText>
+      <RNTesterText style={{fontSize: 8, fontFamily: 'monospace'}}>
+        {JSON.stringify(lines, null, 2)}
+      </RNTesterText>
+    </View>
+  );
+}
+
+function NumberOfLinesTextLayoutExample(): React.Node {
+  return (
+    <View style={{rowGap: 20}}>
+      <TextAndLayoutLinesJSON ellipsizeMode="tail" testID="tail-layout" />
+      <TextAndLayoutLinesJSON ellipsizeMode="head" testID="head-layout" />
+      <TextAndLayoutLinesJSON ellipsizeMode="middle" testID="middle-layout" />
+      <TextAndLayoutLinesJSON ellipsizeMode="clip" testID="clip-layout" />
+    </View>
+  );
+}
+
 export default [
   {
     title: 'Empty Text',
@@ -84,5 +123,13 @@ export default [
       'Shows how inline views are rendered when text is subject to alignment.',
     expect: 'The red box should align correctly with the rest of the text.',
     render: TextInlineViewsExample,
+  },
+  {
+    title: 'numberOfLines with onTextLayout',
+    name: 'numberOfLinesLayout',
+    description:
+      'Shows the behavior of numberOfLines and ellipsizeMode in conjunction with the onTextLayout event',
+    scrollable: true,
+    render: NumberOfLinesTextLayoutExample,
   },
 ] as $ReadOnlyArray<RNTesterModuleExample>;
