@@ -49,7 +49,7 @@ export interface ModalBaseProps {
    * The `backdropColor` props sets the background color of the modal's container.
    * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
    */
-  backdropColor?: ColorValue | undefined;
+  backdropColor?: ColorValue | false | undefined;
 }
 
 export interface ModalPropsIOS {
