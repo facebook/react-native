@@ -69,6 +69,12 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/attributedstring"
   end
 
+  s.subspec "bridging" do |ss|
+    ss.source_files         = "react/renderer/bridging/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/bridging/tests"
+    ss.header_dir           = "react/renderer/bridging"
+  end
+
   s.subspec "core" do |ss|
     header_search_path = [
       "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
