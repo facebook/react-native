@@ -85,20 +85,20 @@ public abstract class LazyReactPackage : ReactPackage {
      * @return A [List]<[NativeModule]> to register
      */
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        val modules: MutableList<NativeModule> = ArrayList()
-        for (holder in getNativeModules(reactContext)) {
-            var nativeModule: NativeModule
-            SystraceMessage.beginSection(TRACE_TAG_REACT, "createNativeModule").flush()
-            ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_START, holder.name)
-            try {
-                nativeModule = holder.provider.get()
-            } finally {
-                ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END)
-                SystraceMessage.endSection(TRACE_TAG_REACT).flush()
+        return buildList {
+            for (holder in getNativeModules(reactContext)) {
+                var nativeModule: NativeModule
+                SystraceMessage.beginSection(TRACE_TAG_REACT, "createNativeModule").flush()
+                ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_START, holder.name)
+                try {
+                    nativeModule = holder.provider.get()
+                } finally {
+                    ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END)
+                    SystraceMessage.endSection(TRACE_TAG_REACT).flush()
+                }
+                add(nativeModule)
             }
-            modules.add(nativeModule)
         }
-        return modules
     }
 
     /**
