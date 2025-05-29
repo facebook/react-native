@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -34,11 +35,15 @@ const argv = yargs
   ).argv;
 
 const GENERATORS = {
-  android: [],
-  ios: ['providerIOS'],
-};
+    android: [],
+    ios: ['providerIOS'],
+  } /*:: as {[string]: $ReadOnlyArray<string>} */;
 
-function generateProvider(platform, schemaListPath, outputDirectory) {
+function generateProvider(
+  platform /*: string */,
+  schemaListPath /*: string */,
+  outputDirectory /*: string */,
+) {
   const schemaListText = fs.readFileSync(schemaListPath, 'utf-8');
 
   if (schemaListText == null) {
@@ -57,7 +62,7 @@ function generateProvider(platform, schemaListPath, outputDirectory) {
     throw new Error(`Can't parse schema to JSON. ${schemaListPath}`);
   }
 
-  const schemas = {};
+  const schemas = {} /*:: as {[string]: $FlowFixMe} */;
   try {
     for (const libraryName of Object.keys(schemaPaths)) {
       const tmpSchemaText = fs.readFileSync(schemaPaths[libraryName], 'utf-8');
@@ -83,6 +88,7 @@ function generateProvider(platform, schemaListPath, outputDirectory) {
 }
 
 function main() {
+  // $FlowFixMe[prop-missing]
   generateProvider(argv.platform, argv.schemaListPath, argv.outputDir);
 }
 

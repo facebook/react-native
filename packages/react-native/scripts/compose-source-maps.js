@@ -5,6 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -14,7 +15,7 @@ const fs = require('fs');
 const {composeSourceMaps} = require('metro-source-map');
 
 const argv = process.argv.slice(2);
-let outputPath;
+let outputPath /*: ?string */;
 for (let i = 0; i < argv.length; ) {
   if (argv[i] === '-o') {
     outputPath = argv[i + 1];
@@ -58,7 +59,7 @@ if (!argv.length) {
   const composedMapJSON = JSON.stringify(
     composeSourceMaps([packagerSourcemap, compilerSourcemap]),
   );
-  if (outputPath) {
+  if (outputPath != null) {
     fs.writeFileSync(outputPath, composedMapJSON, 'utf8');
   } else {
     process.stdout.write(composedMapJSON);

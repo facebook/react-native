@@ -224,9 +224,9 @@ set_target_properties(native-hermesc PROPERTIES
 }
 
 function getHermesPrebuiltArtifactsTarballName(
-  buildType /*: string */,
+  buildType /*:: ?: string */,
 ) /*: string */ {
-  if (!buildType) {
+  if (buildType == null) {
     throw Error('Did not specify build type.');
   }
   return `hermes-ios-${buildType.toLowerCase()}.tar.gz`;
