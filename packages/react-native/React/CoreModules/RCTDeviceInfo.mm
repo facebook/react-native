@@ -60,7 +60,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
-+ (BOOL)requiresMainQueueSetup
++ (BOOL)requiresMainQueueSetup // test
 {
   return YES;
 }
