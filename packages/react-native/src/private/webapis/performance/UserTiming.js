@@ -37,7 +37,7 @@ export type PerformanceMeasureInit = {
 };
 
 export class PerformanceMark extends PerformanceEntry {
-  #detail: DetailType;
+  #detail: DetailType = null;
 
   constructor(markName: string, markOptions?: PerformanceMarkOptions) {
     super({
@@ -47,7 +47,7 @@ export class PerformanceMark extends PerformanceEntry {
       duration: 0,
     });
 
-    if (markOptions) {
+    if (markOptions != null && markOptions.detail != null) {
       this.#detail = markOptions.detail;
     }
   }
@@ -58,7 +58,7 @@ export class PerformanceMark extends PerformanceEntry {
 }
 
 export class PerformanceMeasure extends PerformanceEntry {
-  #detail: DetailType;
+  #detail: DetailType = null;
 
   constructor(measureName: string, measureOptions: PerformanceMeasureInit) {
     super({
@@ -68,7 +68,7 @@ export class PerformanceMeasure extends PerformanceEntry {
       duration: measureOptions.duration,
     });
 
-    if (measureOptions) {
+    if (measureOptions != null && measureOptions.detail != null) {
       this.#detail = measureOptions.detail;
     }
   }
