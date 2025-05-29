@@ -20,7 +20,7 @@ SET(reactnative_FLAGS
 )
 
 # This function can be used to configure the reactnative flags for a specific target in
-# a conveniente way. The usage is:
+# a convenient way. The usage is:
 #
 # target_compile_reactnative_options(target_name scope)
 #
