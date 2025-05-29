@@ -21,6 +21,13 @@ export type PerformanceMarkOptions = {
   startTime?: DOMHighResTimeStamp,
 };
 
+export type PerformanceMeasureOptions = {
+  detail?: DetailType,
+  start?: DOMHighResTimeStamp,
+  duration?: DOMHighResTimeStamp,
+  end?: DOMHighResTimeStamp,
+};
+
 export type TimeStampOrName = DOMHighResTimeStamp | string;
 
 export type PerformanceMeasureInit = {

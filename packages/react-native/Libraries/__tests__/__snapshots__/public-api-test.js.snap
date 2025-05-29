@@ -9738,13 +9738,7 @@ declare export default class MemoryInfo {
 `;
 
 exports[`public API should not change unintentionally src/private/webapis/performance/Performance.js 1`] = `
-"export type PerformanceMeasureOptions = {
-  detail?: DetailType,
-  start?: DOMHighResTimeStamp,
-  duration?: DOMHighResTimeStamp,
-  end?: DOMHighResTimeStamp,
-};
-declare export default class Performance {
+"declare export default class Performance {
   eventCounts: EventCounts;
   get memory(): MemoryInfo;
   get rnStartupTiming(): ReactNativeStartupTiming;
@@ -9860,6 +9854,12 @@ exports[`public API should not change unintentionally src/private/webapis/perfor
 export type PerformanceMarkOptions = {
   detail?: DetailType,
   startTime?: DOMHighResTimeStamp,
+};
+export type PerformanceMeasureOptions = {
+  detail?: DetailType,
+  start?: DOMHighResTimeStamp,
+  duration?: DOMHighResTimeStamp,
+  end?: DOMHighResTimeStamp,
 };
 export type TimeStampOrName = DOMHighResTimeStamp | string;
 export type PerformanceMeasureInit = {
