@@ -23,6 +23,7 @@ target_link_libraries(react_renderer_uimanager
         react_renderer_componentregistry
         react_renderer_consistency
         react_renderer_uimanager_consistency
+        react_renderer_bridging
         react_renderer_core
         react_renderer_debug
         react_renderer_dom
