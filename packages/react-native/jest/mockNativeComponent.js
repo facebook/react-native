@@ -15,17 +15,20 @@ import {createElement} from 'react';
 
 let nativeTag = 1;
 
-type MockNativeComponent<TProps: $ReadOnly<{children?: React.Node}>> =
-  component(ref?: ?React.RefSetter<HostInstance>, ...props: TProps);
+type MockNativeComponent<TProps: {...}> = component(
+  ref?: ?React.RefSetter<HostInstance>,
+  ...props: TProps
+);
 
-export default function mockNativeComponent<
-  TProps: $ReadOnly<{children?: React.Node}>,
->(viewName: string): MockNativeComponent<TProps> {
+export default function mockNativeComponent<TProps: {...}>(
+  viewName: string,
+): MockNativeComponent<TProps> {
   const Component = class extends React.Component<TProps> {
     _nativeTag: number = nativeTag++;
 
     render(): React.Node {
       // $FlowIgnore[not-a-function]
+      // $FlowIgnore[prop-missing]
       return createElement(viewName, this.props, this.props.children);
     }
 
