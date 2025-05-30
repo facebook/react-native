@@ -62,13 +62,13 @@ internal class PreparedLayoutTextViewManager :
 
   override fun updateExtraData(view: PreparedLayoutTextView, extraData: Any) {
     SystraceSection("PreparedLayoutTextViewManager.updateExtraData").use { _ ->
-      val layout = (extraData as PreparedLayout).layout
-      view.layout = layout
+      val preparedLayout = extraData as PreparedLayout
+      view.preparedLayout = preparedLayout
 
       // If this text view contains any clickable spans, set a view tag and reset the accessibility
       // delegate so that these can be picked up by the accessibility system.
-      if (layout.text is Spanned) {
-        val spannedText = layout.text as Spanned
+      if (preparedLayout.layout.text is Spanned) {
+        val spannedText = preparedLayout.layout.text as Spanned
         val accessibilityLinks = AccessibilityLinks(spannedText)
         view.setTag(
             R.id.accessibility_links,
