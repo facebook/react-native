@@ -167,6 +167,7 @@ bool isTurboModuleInstance(id module)
 {
   return isTurboModuleClass([module class]);
 }
+
 } // namespace
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
