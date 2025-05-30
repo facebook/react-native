@@ -8,7 +8,10 @@
  * @format
  */
 
-import type {EventCallback} from '../../src/private/webapis/dom/events/EventTarget';
+import type {
+  EventCallback,
+  GenericEventMap,
+} from '../../src/private/webapis/dom/events/EventTarget';
 import type {BlobData} from '../Blob/BlobTypes';
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
@@ -67,13 +70,20 @@ type WebSocketEventDefinitions = {
   websocketFailed: [{id: number, message: string}],
 };
 
+type WebSocketEventMap = $ReadOnly<{
+  close: CloseEvent,
+  error: Event,
+  message: MessageEvent,
+  open: Event,
+}>;
+
 /**
  * Browser-compatible WebSockets implementation.
  *
  * See https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
  * See https://github.com/websockets/ws
  */
-class WebSocket extends EventTarget {
+class WebSocket extends EventTarget<WebSocketEventMap> {
   static CONNECTING: number = CONNECTING;
   static OPEN: number = OPEN;
   static CLOSING: number = CLOSING;
@@ -289,35 +299,35 @@ class WebSocket extends EventTarget {
     ];
   }
 
-  get onclose(): EventCallback<> | null {
+  get onclose(): EventCallback<CloseEvent> | null {
     return getEventHandlerAttribute(this, 'close');
   }
 
-  set onclose(listener: ?EventCallback<>) {
+  set onclose(listener: ?EventCallback<CloseEvent>) {
     setEventHandlerAttribute(this, 'close', listener);
   }
 
-  get onerror(): EventCallback<> | null {
+  get onerror(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'error');
   }
 
-  set onerror(listener: ?EventCallback<>) {
+  set onerror(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'error', listener);
   }
 
-  get onmessage(): EventCallback<> | null {
+  get onmessage(): EventCallback<MessageEvent> | null {
     return getEventHandlerAttribute(this, 'message');
   }
 
-  set onmessage(listener: ?EventCallback<>) {
+  set onmessage(listener: ?EventCallback<MessageEvent>) {
     setEventHandlerAttribute(this, 'message', listener);
   }
 
-  get onopen(): EventCallback<> | null {
+  get onopen(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'open');
   }
 
-  set onopen(listener: ?EventCallback<>) {
+  set onopen(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'open', listener);
   }
 }

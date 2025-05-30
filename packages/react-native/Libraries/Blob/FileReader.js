@@ -31,7 +31,15 @@ const EMPTY = 0;
 const LOADING = 1;
 const DONE = 2;
 
-class FileReader extends EventTarget {
+type FileReaderEventMap = $ReadOnly<{
+  readystatechange: Event,
+  abort: Event,
+  error: Event,
+  load: Event,
+  loadend: Event,
+}>;
+
+class FileReader extends EventTarget<FileReaderEventMap> {
   static EMPTY: number = EMPTY;
   static LOADING: number = LOADING;
   static DONE: number = DONE;
@@ -179,51 +187,51 @@ class FileReader extends EventTarget {
     return this._result;
   }
 
-  get onabort(): EventCallback<> | null {
+  get onabort(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'abort');
   }
 
-  set onabort(listener: ?EventCallback<>) {
+  set onabort(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'abort', listener);
   }
 
-  get onerror(): EventCallback<> | null {
+  get onerror(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'error');
   }
 
-  set onerror(listener: ?EventCallback<>) {
+  set onerror(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'error', listener);
   }
 
-  get onload(): EventCallback<> | null {
+  get onload(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'load');
   }
 
-  set onload(listener: ?EventCallback<>) {
+  set onload(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'load', listener);
   }
 
-  get onloadstart(): EventCallback<> | null {
+  get onloadstart(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'loadstart');
   }
 
-  set onloadstart(listener: ?EventCallback<>) {
+  set onloadstart(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'loadstart', listener);
   }
 
-  get onloadend(): EventCallback<> | null {
+  get onloadend(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'loadend');
   }
 
-  set onloadend(listener: ?EventCallback<>) {
+  set onloadend(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'loadend', listener);
   }
 
-  get onprogress(): EventCallback<> | null {
+  get onprogress(): EventCallback<Event> | null {
     return getEventHandlerAttribute(this, 'progress');
   }
 
-  set onprogress(listener: ?EventCallback<>) {
+  set onprogress(listener: ?EventCallback<Event>) {
     setEventHandlerAttribute(this, 'progress', listener);
   }
 }
