@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<147254e7f4209e91f9ec00180f5b9c6d>>
+ * @generated SignedSource<<9eaa018054616593369563add66571d1>>
  */
 
 /**
@@ -307,6 +307,11 @@ bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
 bool NativeReactNativeFeatureFlags::useTurboModules(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModules();
+}
+
+double NativeReactNativeFeatureFlags::virtualViewPrerenderRatio(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::virtualViewPrerenderRatio();
 }
 
 } // namespace facebook::react
