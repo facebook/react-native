@@ -144,8 +144,10 @@ class NativeAnimatedNodesManager {
   bool commitProps();
 
   void scheduleOnUI(UiTask&& task) {
-    std::lock_guard<std::mutex> lock(uiTasksMutex_);
-    operations_.push_back(std::move(task));
+    {
+      std::lock_guard<std::mutex> lock(uiTasksMutex_);
+      operations_.push_back(std::move(task));
+    }
 
     // Whenever a batch is flushed to the UI thread, start the onRender
     // callbacks to guarantee they run at least once. E.g., to execute
