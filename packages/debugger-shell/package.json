@@ -10,8 +10,11 @@
   "bugs": "https://github.com/facebook/react-native/issues",
   "main": "./src/node/index.js",
   "exports": {
-    "node": "./src/node/index.js",
-    "electron": "./src/electron/index.js"
+    ".": {
+      "node": "./src/node/index.js",
+      "electron": "./src/electron/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "dev": "electron src/electron"
