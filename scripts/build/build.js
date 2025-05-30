@@ -283,60 +283,81 @@ async function getEntryPoints(
 
   const exportsEntries = Object.entries(pkg.exports);
 
-  for (const [subpath, target] of exportsEntries) {
-    if (typeof target !== 'string') {
-      throw new Error(
-        `Invalid exports field in package.json for ${packageName}. ` +
-          `exports["${subpath}"] must be a string target.`,
-      );
+  for (const [subpath, targetOrConditionsObject] of exportsEntries) {
+    const targets /*: string[] */ = [];
+    if (
+      typeof targetOrConditionsObject === 'object' &&
+      targetOrConditionsObject != null
+    ) {
+      for (const [condition, target] of Object.entries(
+        targetOrConditionsObject,
+      )) {
+        if (typeof target !== 'string') {
+          throw new Error(
+            `Invalid exports field in package.json for ${packageName}. ` +
+              `exports["${subpath}"]["${condition}"] must be a string target.`,
+          );
+        }
+        targets.push(target);
+      }
+    } else {
+      if (typeof targetOrConditionsObject !== 'string') {
+        throw new Error(
+          `Invalid exports field in package.json for ${packageName}. ` +
+            `exports["${subpath}"] must be a string target.`,
+        );
+      }
+      targets.push(targetOrConditionsObject);
     }
 
-    // Skip non-JS files
-    if (!target.endsWith('.js')) {
-      continue;
-    }
+    for (const target of targets) {
+      // Skip non-JS files
+      if (!target.endsWith('.js')) {
+        continue;
+      }
 
-    if (target.includes('*')) {
-      console.warn(
-        `${chalk.yellow('Warning')}: Encountered subpath pattern ${subpath}` +
-          ` in package.json exports for ${packageName}. Matched entry points ` +
-          'will not be validated.',
-      );
-      continue;
-    }
+      if (target.includes('*')) {
+        console.warn(
+          `${chalk.yellow('Warning')}: Encountered subpath pattern ${subpath}` +
+            ` in package.json exports for ${packageName}. Matched entry points ` +
+            'will not be validated.',
+        );
+        continue;
+      }
 
-    // Normalize to original path if previously rewritten
-    const original = normalizeExportsTarget(target);
+      // Normalize to original path if previously rewritten
+      const original = normalizeExportsTarget(target);
 
-    if (original.endsWith('.flow.js')) {
-      throw new Error(
-        `Package ${packageName} defines exports["${subpath}"] = "${original}". ` +
-          'Expecting a .js wrapper file. See other monorepo packages for examples.',
-      );
-    }
+      if (original.endsWith('.flow.js')) {
+        throw new Error(
+          `Package ${packageName} defines exports["${subpath}"] = "${original}". ` +
+            'Expecting a .js wrapper file. See other monorepo packages for examples.',
+        );
+      }
 
-    // Our special case for wrapper files that need to be stripped
-    const resolvedTarget = path.resolve(PACKAGES_DIR, packageName, original);
-    const resolvedFlowTarget = resolvedTarget.replace(/\.js$/, '.flow.js');
+      // Our special case for wrapper files that need to be stripped
+      const resolvedTarget = path.resolve(PACKAGES_DIR, packageName, original);
+      const resolvedFlowTarget = resolvedTarget.replace(/\.js$/, '.flow.js');
 
-    try {
-      await Promise.all([
-        fs.access(resolvedTarget),
-        fs.access(resolvedFlowTarget),
-      ]);
-    } catch {
-      throw new Error(
-        `${resolvedFlowTarget} does not exist when building ${packageName}.
+      try {
+        await Promise.all([
+          fs.access(resolvedTarget),
+          fs.access(resolvedFlowTarget),
+        ]);
+      } catch {
+        throw new Error(
+          `${resolvedFlowTarget} does not exist when building ${packageName}.
 
 From package.json exports["${subpath}"]:
   - found:   ${path.relative(REPO_ROOT, resolvedTarget)}
   - missing: ${path.relative(REPO_ROOT, resolvedFlowTarget)}
 
 This is needed so users can directly import this entry point from the monorepo.`,
-      );
-    }
+        );
+      }
 
-    entryPoints.add(resolvedFlowTarget);
+      entryPoints.add(resolvedFlowTarget);
+    }
   }
 
   return entryPoints;
