@@ -190,18 +190,13 @@ global.jest = {
 
 global.expect = expect;
 
+let testSetupError: ?Error;
+
 function runWithGuard(fn: () => void) {
   try {
     fn();
   } catch (error) {
-    let reportedError =
-      error instanceof Error ? error : new Error(String(error));
-    reportTestSuiteResult({
-      error: {
-        message: reportedError.message,
-        stack: reportedError.stack,
-      },
-    });
+    testSetupError = error instanceof Error ? error : new Error(String(error));
   }
 }
 
@@ -400,9 +395,18 @@ function validateEmptyMessageQueue(): void {
 }
 
 global.$$RunTests$$ = () => {
-  reportTestSuiteResult({
-    testResults: runSuite(currentContext),
-  });
+  if (testSetupError != null) {
+    reportTestSuiteResult({
+      error: {
+        message: testSetupError.message,
+        stack: testSetupError.stack,
+      },
+    });
+  } else {
+    reportTestSuiteResult({
+      testResults: runSuite(currentContext),
+    });
+  }
 };
 
 export function registerTest(
