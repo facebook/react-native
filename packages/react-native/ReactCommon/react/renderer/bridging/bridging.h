@@ -40,9 +40,20 @@ struct Bridging<ShadowNode::Shared> {
     return shadowNodeWrapper->shadowNode;
   }
 
-  static jsi::Value toJs(jsi::Runtime& rt, const ShadowNode::Shared& value) {
+  static jsi::Value toJs(
+      jsi::Runtime& rt,
+      const ShadowNode::Shared& value,
+      bool assignRuntimeShadowNodeReference = false) {
+    // Wrap the shadow node so that we can update JS references from native
+    auto wrappedShadowNode = std::make_shared<ShadowNodeWrapper>(value);
+
+    if (assignRuntimeShadowNodeReference) {
+      wrappedShadowNode->shadowNode->setRuntimeShadowNodeReference(
+          wrappedShadowNode);
+    }
+
     jsi::Object obj(rt);
-    obj.setNativeState(rt, std::make_shared<ShadowNodeWrapper>(value));
+    obj.setNativeState(rt, std::move(wrappedShadowNode));
     return obj;
   }
 };

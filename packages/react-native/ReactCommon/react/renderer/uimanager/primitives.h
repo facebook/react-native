@@ -31,24 +31,6 @@ struct ShadowNodeListWrapper : public jsi::NativeState {
   ShadowNode::UnsharedListOfShared shadowNodeList;
 };
 
-inline static jsi::Value valueFromShadowNode(
-    jsi::Runtime& runtime,
-    ShadowNode::Shared shadowNode,
-    bool assignRuntimeShadowNodeReference = false) {
-  // Wrap the shadow node so that we can update JS references from native
-  auto wrappedShadowNode =
-      std::make_shared<ShadowNodeWrapper>(std::move(shadowNode));
-
-  if (assignRuntimeShadowNodeReference) {
-    wrappedShadowNode->shadowNode->setRuntimeShadowNodeReference(
-        wrappedShadowNode);
-  }
-
-  jsi::Object obj(runtime);
-  obj.setNativeState(runtime, std::move(wrappedShadowNode));
-  return obj;
-}
-
 // TODO: once we no longer need to mutate the return value (appendChildToSet)
 // make this a SharedListOfShared
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
