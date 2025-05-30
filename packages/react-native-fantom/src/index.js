@@ -18,6 +18,7 @@ import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes
 
 import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
+import {getConstants} from './Constants';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import {LogBox} from 'react-native';
 import {createRootTag} from 'react-native/Libraries/ReactNative/RootTag';
@@ -37,6 +38,8 @@ export type RootConfig = {
   viewportHeight?: number,
   devicePixelRatio?: number,
 };
+
+export {getConstants} from './Constants';
 
 // Defaults use iPhone 14 values (very common device).
 const DEFAULT_VIEWPORT_WIDTH = 390;
@@ -520,24 +523,6 @@ export function enqueueModalSizeUpdate(
 
 export const unstable_benchmark = Benchmark;
 
-type FantomConstants = $ReadOnly<{
-  isRunningFromCI: boolean,
-  fantomConfigSummary: string,
-}>;
-
-let constants: FantomConstants = {
-  isRunningFromCI: false,
-  fantomConfigSummary: '',
-};
-
-export function getConstants(): FantomConstants {
-  return constants;
-}
-
-export function setConstants(newConstants: FantomConstants): void {
-  constants = newConstants;
-}
-
 /**
  * Quick and dirty polyfills required by tinybench.
  */
@@ -662,3 +647,5 @@ function runLogBoxCheck() {
     throw new Error(message);
   }
 }
+
+global.__FANTOM_PACKAGE_LOADED__ = true;
