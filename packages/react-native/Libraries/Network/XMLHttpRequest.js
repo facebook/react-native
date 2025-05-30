@@ -170,7 +170,7 @@ class XMLHttpRequest extends EventTarget {
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
-  _trackingName: string | void = undefined;
+  _trackingName: ?string;
   _incrementalEvents: boolean = false;
   _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
@@ -534,7 +534,7 @@ class XMLHttpRequest extends EventTarget {
   /**
    * Custom extension for tracking origins of request.
    */
-  setTrackingName(trackingName: string | void): XMLHttpRequest {
+  setTrackingName(trackingName: ?string): XMLHttpRequest {
     this._trackingName = trackingName;
     return this;
   }
@@ -632,7 +632,7 @@ class XMLHttpRequest extends EventTarget {
       );
       RCTNetworking.sendRequest(
         this._method,
-        this._trackingName,
+        this._trackingName ?? undefined,
         this._url,
         this._headers,
         data,
