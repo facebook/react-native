@@ -20,14 +20,15 @@ namespace facebook::react {
 
 std::optional<AnimationDriverType> AnimationDriver::getDriverTypeByName(
     const std::string& driverTypeName) {
-  static std::unordered_map<std::string, AnimationDriverType> typeNames = {
-      {"frames", AnimationDriverType::Frames},
-      {"spring", AnimationDriverType::Spring},
-      {"decay", AnimationDriverType::Decay}};
-  if (auto iter = typeNames.find(driverTypeName); iter != typeNames.end()) {
-    return iter->second;
+  if (driverTypeName == "frames") {
+    return AnimationDriverType::Frames;
+  } else if (driverTypeName == "spring") {
+    return AnimationDriverType::Spring;
+  } else if (driverTypeName == "decay") {
+    return AnimationDriverType::Decay;
+  } else {
+    return std::nullopt;
   }
-  return std::nullopt;
 }
 
 AnimationDriver::AnimationDriver(
