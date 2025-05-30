@@ -90,6 +90,7 @@ import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.SynchronousEventReceiver;
 import com.facebook.react.views.text.PreparedLayout;
+import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -687,7 +688,14 @@ public class FabricUIManager
             ? paragraphAttributes.getInt(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
-    return new PreparedLayout(layout, maximumNumberOfLines);
+    @Nullable
+    String textVerticalAlignmentAttr =
+        TextLayoutManager.getFirstFragmentStringAttr(
+            attributedString, TextAttributeProps.TA_KEY_TEXT_ALIGNMENT_VERTICAL);
+    int verticalGravity =
+        TextLayoutManager.verticalGravityFromTextAlignmentVertical(textVerticalAlignmentAttr);
+
+    return new PreparedLayout(layout, maximumNumberOfLines, verticalGravity);
   }
 
   @AnyThread

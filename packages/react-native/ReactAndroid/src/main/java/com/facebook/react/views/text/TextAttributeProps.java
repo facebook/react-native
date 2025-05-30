@@ -63,6 +63,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
   public static final short TA_KEY_ROLE = 26;
   public static final short TA_KEY_TEXT_TRANSFORM = 27;
+  public static final short TA_KEY_TEXT_ALIGNMENT_VERTICAL = 28;
   public static final short TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
 
   public static final int UNSET = -1;
@@ -233,6 +234,8 @@ public class TextAttributeProps {
           break;
         case TA_KEY_MAX_FONT_SIZE_MULTIPLIER:
           result.setMaxFontSizeMultiplier((float) entry.getDoubleValue());
+          break;
+        case TA_KEY_TEXT_ALIGNMENT_VERTICAL:
           break;
       }
     }

@@ -16,6 +16,7 @@ import android.os.Build
 import android.text.Layout
 import android.text.Spanned
 import android.text.style.ClickableSpan
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -40,6 +41,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
   private var clickableSpans: List<ClickableSpan> = emptyList()
   private var selection: TextSelection? = null
+  private var gravity: Int = Gravity.TOP
 
   public var layout: Layout? = null
     set(value) {
@@ -99,7 +101,12 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     }
 
     super.onDraw(canvas)
-    canvas.translate(paddingLeft.toFloat(), paddingTop.toFloat())
+    val verticalGravityOffset =
+        TextLayoutManager.verticalOffsetForGravity(
+            gravity,
+            (height - paddingTop - paddingBottom).toFloat(),
+            (layout?.height ?: 0).toFloat())
+    canvas.translate(paddingLeft.toFloat(), paddingTop.toFloat() + verticalGravityOffset)
 
     val textLayout = layout
     if (textLayout != null) {
@@ -144,6 +151,10 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   public fun clearSelection() {
     selection = null
     invalidate()
+  }
+
+  fun setGravityVertical(gravityVertical: Int) {
+    gravity = gravityVertical
   }
 
   override fun onTouchEvent(event: MotionEvent): Boolean {

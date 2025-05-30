@@ -184,7 +184,8 @@ public class ReactTextViewManager extends ReactTextAnchorViewManager<ReactTextSh
         spanned,
         -1, // UNUSED FOR TEXT
         false, // TODO add this into local Data
-        TextLayoutManager.getTextGravity(attributedString, spanned, view.getGravityHorizontal()),
+        TextLayoutManager.getHorizontalTextGravity(
+            attributedString, spanned, view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }

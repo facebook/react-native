@@ -10,7 +10,6 @@ package com.facebook.react.views.text
 import android.text.Layout
 import android.text.TextUtils
 import android.text.util.Linkify
-import android.view.Gravity
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -81,17 +80,8 @@ internal abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?>
 
   @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
   public fun setTextAlignVertical(view: ReactTextView, textAlignVertical: String?) {
-    when (textAlignVertical) {
-      null,
-      "auto" -> view.setGravityVertical(Gravity.NO_GRAVITY)
-      "top" -> view.setGravityVertical(Gravity.TOP)
-      "bottom" -> view.setGravityVertical(Gravity.BOTTOM)
-      "center" -> view.setGravityVertical(Gravity.CENTER_VERTICAL)
-      else -> {
-        FLog.w(ReactConstants.TAG, "Invalid textAlignVertical: $textAlignVertical")
-        view.setGravityVertical(Gravity.NO_GRAVITY)
-      }
-    }
+    val gravity = TextLayoutManager.verticalGravityFromTextAlignmentVertical(textAlignVertical)
+    view.setGravityVertical(gravity)
   }
 
   @ReactProp(name = "selectable")

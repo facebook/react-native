@@ -26,6 +26,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -140,7 +141,8 @@ public class TextLayoutManager {
   }
 
   @Nullable
-  private static String getTextAlignmentAttr(MapBuffer attributedString) {
+  public static String getFirstFragmentStringAttr(
+      MapBuffer attributedString, short textAttributeProp) {
     // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
     // cached Spannable
     if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
@@ -152,8 +154,8 @@ public class TextLayoutManager {
       MapBuffer fragment = fragments.getMapBuffer(0);
       MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
 
-      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
-        return textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
+      if (textAttributes.contains(textAttributeProp)) {
+        return textAttributes.getString(textAttributeProp);
       }
     }
 
@@ -200,10 +202,12 @@ public class TextLayoutManager {
     return alignment;
   }
 
-  public static int getTextGravity(
+  public static int getHorizontalTextGravity(
       MapBuffer attributedString, Spannable spanned, int defaultValue) {
     int gravity = defaultValue;
-    @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
+    @Nullable
+    String alignmentAttr =
+        getFirstFragmentStringAttr(attributedString, TextAttributeProps.TA_KEY_ALIGNMENT);
     Layout.Alignment alignment = getTextAlignment(attributedString, spanned, alignmentAttr);
 
     // depending on whether the script is LTR or RTL, ALIGN_NORMAL and ALIGN_OPPOSITE may mean
@@ -220,6 +224,42 @@ public class TextLayoutManager {
     }
 
     return gravity;
+  }
+
+  public static int verticalGravityFromTextAlignmentVertical(
+      @Nullable String textAlignmentVertical) {
+    if (textAlignmentVertical == null) {
+      return Gravity.TOP;
+    }
+
+    switch (textAlignmentVertical) {
+      case "auto":
+      case "top":
+        return Gravity.TOP;
+      case "bottom":
+        return Gravity.BOTTOM;
+      case "center":
+        return Gravity.CENTER_VERTICAL;
+      default:
+        FLog.w(ReactConstants.TAG, "Invalid textAlignVertical: " + textAlignmentVertical);
+        return Gravity.TOP;
+    }
+  }
+
+  public static float verticalOffsetForGravity(int gravity, float boxHeight, float textHeight) {
+    float verticalOffset = 0f;
+    if ((gravity & Gravity.VERTICAL_GRAVITY_MASK) != Gravity.TOP) {
+      int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
+
+      if (verticalGravity != Gravity.TOP && textHeight < boxHeight) {
+        if (verticalGravity == Gravity.BOTTOM) {
+          verticalOffset = boxHeight - textHeight;
+        } else {
+          verticalOffset = (boxHeight - textHeight) / 2f;
+        }
+      }
+    }
+    return verticalOffset;
   }
 
   private static void buildSpannableFromFragments(
@@ -654,7 +694,9 @@ public class TextLayoutManager {
                 paragraphAttributes.getString(PA_KEY_ELLIPSIZE_MODE))
             : null;
 
-    @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
+    @Nullable
+    String alignmentAttr =
+        getFirstFragmentStringAttr(attributedString, TextAttributeProps.TA_KEY_ALIGNMENT);
     Layout.Alignment alignment = getTextAlignment(attributedString, text, alignmentAttr);
     int justificationMode = getTextJustificationMode(alignmentAttr);
 
@@ -823,7 +865,8 @@ public class TextLayoutManager {
       AttachmentMetrics metrics = new AttachmentMetrics();
       for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
         lastAttachmentFoundInSpan =
-            nextAttachmentMetrics(layout, text, calculatedWidth, calculatedLineCount, i, metrics);
+            nextAttachmentMetrics(
+                layout, text, calculatedWidth, calculatedLineCount, i, metrics, 0);
         if (metrics.wasFound) {
           attachmentsPositions[attachmentIndex] = PixelUtil.toDIPFromPixel(metrics.top);
           attachmentsPositions[attachmentIndex + 1] = PixelUtil.toDIPFromPixel(metrics.left);
@@ -859,11 +902,16 @@ public class TextLayoutManager {
     retList.add(PixelUtil.toDIPFromPixel(calculatedWidth));
     retList.add(PixelUtil.toDIPFromPixel(calculatedHeight));
 
+    float verticalOffset =
+        verticalOffsetForGravity(
+            preparedLayout.getVerticalGravity(), calculatedHeight, layout.getHeight());
+
     AttachmentMetrics metrics = new AttachmentMetrics();
     int lastAttachmentFoundInSpan;
     for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
       lastAttachmentFoundInSpan =
-          nextAttachmentMetrics(layout, text, calculatedWidth, calculatedLineCount, i, metrics);
+          nextAttachmentMetrics(
+              layout, text, calculatedWidth, calculatedLineCount, i, metrics, verticalOffset);
       if (metrics.wasFound) {
         retList.add(PixelUtil.toDIPFromPixel(metrics.top));
         retList.add(PixelUtil.toDIPFromPixel(metrics.left));
@@ -976,7 +1024,8 @@ public class TextLayoutManager {
       float calculatedWidth,
       int calculatedLineCount,
       int i,
-      AttachmentMetrics metrics) {
+      AttachmentMetrics metrics,
+      float verticalOffset) {
     // Calculate the positions of the attachments (views) that will be rendered inside the
     // Spanned Text. The following logic is only executed when a text contains views inside.
     // This follows a similar logic than used in pre-fabric (see ReactTextView.onLayout method).
@@ -1061,6 +1110,10 @@ public class TextLayoutManager {
       metrics.top = placeholderTopPosition;
       metrics.left = placeholderLeftPosition;
     }
+
+    // The text may be vertically aligned to the top, center, or bottom of the container. This is
+    // not captured in the Layout, but rather applied separately. We need to account for this here.
+    metrics.top += verticalOffset;
 
     metrics.wasFound = true;
     metrics.width = placeholder.getWidth();
