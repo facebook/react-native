@@ -28,9 +28,11 @@ export type OSSReleaseStageValue =
   | 'canary'
   | 'stable';
 
-export type CommonFeatureFlagConfig = $ReadOnly<{
-  defaultValue: FeatureFlagValue,
-  metadata: FeatureFlagMetadata,
+export type CommonFeatureFlagConfig<
+  TValue: FeatureFlagValue = FeatureFlagValue,
+> = $ReadOnly<{
+  defaultValue: TValue,
+  metadata: FeatureFlagMetadata<TValue>,
   ossReleaseStage: OSSReleaseStageValue,
   // Indicates if this API should only be defined in JavaScript, only to
   // preserve backwards compatibility with existing native code temporarily.
@@ -38,20 +40,22 @@ export type CommonFeatureFlagConfig = $ReadOnly<{
 }>;
 
 export type CommonFeatureFlagList = $ReadOnly<{
-  [flagName: string]: CommonFeatureFlagConfig,
+  [flagName: string]: CommonFeatureFlagConfig<>,
 }>;
 
-export type JsOnlyFeatureFlagConfig = $ReadOnly<{
-  defaultValue: FeatureFlagValue,
-  metadata: FeatureFlagMetadata,
+export type JsOnlyFeatureFlagConfig<
+  TValue: FeatureFlagValue = FeatureFlagValue,
+> = $ReadOnly<{
+  defaultValue: TValue,
+  metadata: FeatureFlagMetadata<TValue>,
   ossReleaseStage: OSSReleaseStageValue,
 }>;
 
 export type JsOnlyFeatureFlagList = $ReadOnly<{
-  [flagName: string]: JsOnlyFeatureFlagConfig,
+  [flagName: string]: JsOnlyFeatureFlagConfig<>,
 }>;
 
-export type FeatureFlagMetadata =
+export type FeatureFlagMetadata<TValue: FeatureFlagValue = FeatureFlagValue> =
   | $ReadOnly<{
       purpose: 'experimentation',
       /**
@@ -60,12 +64,12 @@ export type FeatureFlagMetadata =
        */
       dateAdded: string,
       description: string,
-      expectedReleaseValue: boolean,
+      expectedReleaseValue: TValue,
     }>
   | $ReadOnly<{
       purpose: 'operational' | 'release',
       description: string,
-      expectedReleaseValue: boolean,
+      expectedReleaseValue: TValue,
     }>;
 
 export type GeneratorConfig = $ReadOnly<{
