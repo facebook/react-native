@@ -348,8 +348,6 @@ void NativeAnimatedNodesManager::removeAnimatedEventFromView(
   }
 }
 
-static thread_local bool isOnRenderThread_{false};
-
 void NativeAnimatedNodesManager::handleAnimatedEvent(
     Tag viewTag,
     const std::string& eventName,
