@@ -164,8 +164,6 @@ class NativeAnimatedNodesManager {
 
   folly::dynamic managedProps(Tag tag) noexcept;
 
-  bool isOnRenderThread() const noexcept;
-
  private:
   void stopRenderCallbackIfNeeded() noexcept;
 
