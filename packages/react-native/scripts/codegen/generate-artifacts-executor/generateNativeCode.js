@@ -34,14 +34,6 @@ function generateCode(
   includesGeneratedCode /*: boolean */,
   platform /*: string */,
 ) {
-  if (shouldSkipGenerationForRncore(schemaInfo, platform)) {
-    codegenLog(
-      '[Codegen - rncore] Skipping iOS code generation for rncore as it has been generated already.',
-      true,
-    );
-    return;
-  }
-
   if (shouldSkipGenerationForFBReactNativeSpec(schemaInfo, platform)) {
     codegenLog(
       '[Codegen - FBReactNativeSpec] Skipping iOS code generation for FBReactNativeSpec as it has been generated already.',
@@ -74,22 +66,6 @@ function generateCode(
   // $FlowIssue[prop-missing] - `fs.cpSync` is missing in Flow libdefs.
   fs.cpSync(tmpOutputDir, outputDir, {recursive: true});
   codegenLog(`Generated artifacts: ${outputDir}`);
-}
-
-function shouldSkipGenerationForRncore(
-  schemaInfo /*: $FlowFixMe */,
-  platform /*: string */,
-) {
-  if (platform !== 'ios' || schemaInfo.library.config.name !== 'rncore') {
-    return false;
-  }
-  const rncoreOutputPath = CORE_LIBRARIES_WITH_OUTPUT_FOLDER.rncore.ios;
-  const rncoreAbsolutePath = path.resolve(rncoreOutputPath);
-  return (
-    rncoreAbsolutePath.includes('node_modules') &&
-    fs.existsSync(rncoreAbsolutePath) &&
-    fs.readdirSync(rncoreAbsolutePath).length > 0
-  );
 }
 
 function reactNativeCoreLibraryOutputPath(
