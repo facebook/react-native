@@ -96,6 +96,9 @@ interface Spec extends TurboModule {
   createShadowNodeReferenceCounter(
     shadowNode: mixed /* ShadowNode */,
   ): () => number;
+  createShadowNodeRevisionGetter(
+    shadowNode: mixed /* ShadowNode */,
+  ): () => ?number;
   saveJSMemoryHeapSnapshot: (filePath: string) => void;
 }
 

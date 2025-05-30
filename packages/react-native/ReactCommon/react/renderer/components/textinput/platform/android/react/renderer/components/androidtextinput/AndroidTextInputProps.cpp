@@ -366,6 +366,10 @@ static folly::dynamic toDynamic(
   return acceptDragAndDropTypesArray;
 }
 
+ComponentName AndroidTextInputProps::getDiffPropsImplementationTarget() const {
+  return "TextInput";
+}
+
 folly::dynamic AndroidTextInputProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = AndroidTextInputProps();

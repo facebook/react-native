@@ -1,0 +1,62 @@
+# The following checks should be kept disabled:
+# clang-analyzer-*: Broken/unreliable
+# readability-simplify-boolean-expr: Broken
+# cppcoreguidelines-*: Only recommented for new code-bases
+# cert-err58-cpp: Deemed low-value. See ERR58-CPP for more info.
+# performance-unnecessary-value-param: Is not up to date
+#
+# T225851676: Do a sweep over the remaining checks. Turn them on,
+# if they make sense. And fix the code.
+---
+InheritParentConfig: true
+Checks: '
+-bugprone-exception-escape,
+-bugprone-macro-parentheses,
+-cert-err58-cpp,
+-clang-analyzer-*,
+-clang-diagnostic-deprecated-declarations,
+-clang-diagnostic-error,
+-clang-diagnostic-missing-designated-field-initializers,
+-clang-diagnostic-objc-designated-initializers,
+-clang-diagnostic-unguarded-availability-new,
+-clang-diagnostic-vla-cxx-extension,
+-cppcoreguidelines-*,
+-google-build-using-namespace,
+-lint-command-empty-cdb,
+-lint-command-empty-cdb,
+-misc-header-include-cycle,
+-misc-misplaced-const,
+-misc-unused-parameters,
+-modernize-avoid-c-arrays,
+-modernize-deprecated-headers,
+-modernize-loop-convert,
+-modernize-make-shared,
+-modernize-pass-by-value,
+-modernize-raw-string-literal,
+-modernize-redundant-void-arg,
+-modernize-return-braced-init-list,
+-modernize-use-auto,
+-modernize-use-designated-initializers,
+-modernize-use-emplace,
+-modernize-use-equals-default,
+-modernize-use-nullptr,
+-modernize-use-override,
+-modernize-use-using,
+-performance-for-range-copy,
+-performance-move-const-arg,
+-performance-no-int-to-ptr,
+-performance-unnecessary-copy-initialization,
+-performance-unnecessary-value-param,
+-readability-avoid-const-params-in-decls,
+-readability-braces-around-statements,
+-readability-const-return-type,
+-readability-container-size-empty,
+-readability-implicit-bool-conversion,
+-readability-inconsistent-declaration-parameter-name,
+-readability-isolate-declaration,
+-readability-named-parameter,
+-readability-operators-representation,
+-readability-redundant-declaration,
+-readability-simplify-boolean-expr,
+-readability-static-definition-in-anonymous-namespace,
+'

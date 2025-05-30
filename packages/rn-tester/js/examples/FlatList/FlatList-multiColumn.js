@@ -28,9 +28,8 @@ import {
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {Alert, FlatList, StyleSheet, View} from 'react-native';
-import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
 function MultiColumnExample(): React.Node {
   const [data, setData] = useState(genNewerItems(1000));
@@ -67,20 +66,33 @@ function MultiColumnExample(): React.Node {
     return {length, offset: length * index, index};
   };
 
-  // eslint-disable-next-line react/no-unstable-nested-components
-  const _renderItemComponent = ({
-    item,
-  }: ListRenderItemInfo<any | Item>): $FlowFixMe => {
-    return (
-      <View style={styles.card}>
-        <ItemComponent
-          item={item}
-          fixedHeight={fixedHeight}
-          onPress={_pressItem}
-        />
-      </View>
-    );
-  };
+  const _pressItem = useCallback(
+    (key: string) => {
+      const index = Number(key);
+      const itemState = pressItem(data[index]);
+      setData(state => [
+        ...state.slice(0, index),
+        itemState,
+        ...state.slice(index + 1),
+      ]);
+    },
+    [data],
+  );
+
+  const _renderItemComponent = useCallback(
+    ({item}: ListRenderItemInfo<any | Item>): $FlowFixMe => {
+      return (
+        <View style={styles.card}>
+          <ItemComponent
+            item={item}
+            fixedHeight={fixedHeight}
+            onPress={_pressItem}
+          />
+        </View>
+      );
+    },
+    [_pressItem, fixedHeight],
+  );
 
   // This is called when items change viewability by scrolling into or out of the viewable area.
   const _onViewableItemsChanged = (info: {
@@ -96,21 +108,11 @@ function MultiColumnExample(): React.Node {
   }) => {
     // Impressions can be logged here
     if (logViewable) {
-      infoLog(
+      console.log(
         'onViewableItemsChanged: ',
         info.changed.map(v => ({...v, item: '...'})),
       );
     }
-  };
-
-  const _pressItem = (key: string) => {
-    const index = Number(key);
-    const itemState = pressItem(data[index]);
-    setData(state => [
-      ...state.slice(0, index),
-      itemState,
-      ...state.slice(index + 1),
-    ]);
   };
 
   const filterRegex = new RegExp(String(filterText), 'i');

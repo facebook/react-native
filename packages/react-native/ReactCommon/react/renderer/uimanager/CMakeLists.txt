@@ -23,6 +23,7 @@ target_link_libraries(react_renderer_uimanager
         react_renderer_componentregistry
         react_renderer_consistency
         react_renderer_uimanager_consistency
+        react_renderer_bridging
         react_renderer_core
         react_renderer_debug
         react_renderer_dom
@@ -34,6 +35,6 @@ target_link_libraries(react_renderer_uimanager
         rrc_view
         runtimeexecutor
 )
-target_compile_reactnative_options(react_renderer_uimanager PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_uimanager PRIVATE)
 target_compile_options(react_renderer_uimanager PRIVATE -Wno-unused-local-typedef)
 target_compile_options(react_renderer_uimanager PRIVATE -Wpedantic)

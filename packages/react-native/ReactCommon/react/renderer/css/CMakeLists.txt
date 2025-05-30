@@ -20,7 +20,7 @@ if("${react_renderer_css_SRC}" STREQUAL "")
         glog
         react_debug
         react_utils)
-  target_compile_reactnative_options(react_renderer_css INTERFACE "Fabric")
+  target_compile_reactnative_options(react_renderer_css INTERFACE)
   target_compile_options(react_renderer_css INTERFACE -Wpedantic)
 else()
   add_library(react_renderer_css OBJECT ${react_renderer_css_SRC})
@@ -31,6 +31,6 @@ else()
         glog
         react_debug
         react_utils)
-  target_compile_reactnative_options(react_renderer_css PRIVATE "Fabric")
+  target_compile_reactnative_options(react_renderer_css PRIVATE)
   target_compile_options(react_renderer_css PRIVATE -Wpedantic)
 endif()

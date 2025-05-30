@@ -323,7 +323,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 - (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
 {
-  auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {
+  auto sharedNSAttributedString = _cache.get(attributedString, [&]() {
     return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));
   });
 

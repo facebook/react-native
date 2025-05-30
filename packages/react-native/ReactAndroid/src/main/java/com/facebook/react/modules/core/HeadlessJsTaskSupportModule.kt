@@ -48,4 +48,8 @@ internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCo
           taskId)
     }
   }
+
+  companion object {
+    const val NAME: String = NativeHeadlessJsTaskSupportSpec.NAME
+  }
 }

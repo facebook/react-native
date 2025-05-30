@@ -59,6 +59,7 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
 #endif
 
 #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
   folly::dynamic getDiffProps(const Props* prevProps) const override;
 #endif
 };

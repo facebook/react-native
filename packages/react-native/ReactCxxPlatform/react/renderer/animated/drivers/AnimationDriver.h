@@ -22,8 +22,7 @@ enum class AnimationDriverType {
   Decay,
 };
 
-class ValueAnimatedNode;
-class AnimationDriver : public std::enable_shared_from_this<AnimationDriver> {
+class AnimationDriver {
  public:
   AnimationDriver(
       int id,
@@ -35,11 +34,11 @@ class AnimationDriver : public std::enable_shared_from_this<AnimationDriver> {
   void startAnimation();
   void stopAnimation(bool ignoreCompletedHandlers = false);
 
-  inline constexpr int Id() {
+  inline int getId() const noexcept {
     return id_;
   }
 
-  inline constexpr Tag animatedValueTag() {
+  inline Tag getAnimatedValueTag() const noexcept {
     return animatedValueTag_;
   }
 
@@ -47,11 +46,7 @@ class AnimationDriver : public std::enable_shared_from_this<AnimationDriver> {
     return endCallback_;
   }
 
-  virtual double toValue() {
-    return 0;
-  }
-
-  bool isComplete() {
+  bool getIsComplete() const noexcept {
     return isComplete_;
   }
 

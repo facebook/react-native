@@ -68,7 +68,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni)
 
-target_compile_reactnative_options(${CMAKE_PROJECT_NAME} PRIVATE "ReactNative")
+target_compile_reactnative_options(${CMAKE_PROJECT_NAME} PRIVATE)
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)

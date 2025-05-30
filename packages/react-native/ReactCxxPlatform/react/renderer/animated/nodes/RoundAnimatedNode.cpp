@@ -19,7 +19,7 @@ namespace facebook::react {
 RoundAnimatedNode::RoundAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : ValueAnimatedNode(tag, config, manager),
       inputNodeTag_(static_cast<Tag>(getConfig()["input"].asInt())),
       nearest_(getConfig()["input"].asDouble()) {
@@ -29,12 +29,10 @@ RoundAnimatedNode::RoundAnimatedNode(
 }
 
 void RoundAnimatedNode::update() {
-  if (auto manager = manager_.lock()) {
-    auto node = manager->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_);
-    react_native_assert(
-        node && "Illegal node ID set as an input for Animated.round node");
-    setRawValue(round(node->value() / nearest_) * nearest_);
-  }
+  auto node = manager_->getAnimatedNode<ValueAnimatedNode>(inputNodeTag_);
+  react_native_assert(
+      node && "Illegal node ID set as an input for Animated.round node");
+  setRawValue(round(node->getValue() / nearest_) * nearest_);
 }
 
 } // namespace facebook::react

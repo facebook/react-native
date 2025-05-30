@@ -18,5 +18,5 @@ target_link_libraries(react_nativemodule_featureflags
         react_cxxreact
         react_featureflags
 )
-target_compile_reactnative_options(react_nativemodule_featureflags PRIVATE "ReactNative")
+target_compile_reactnative_options(react_nativemodule_featureflags PRIVATE)
 target_compile_options(react_nativemodule_featureflags PRIVATE -Wpedantic)

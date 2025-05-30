@@ -632,3 +632,24 @@ jobs:
         uses: ./.github/actions/lint
         with:
           github-token: ${{ env.GH_TOKEN }}
+
+  # This job should help with the E2E flakyness.
+  # In case E2E tests fails, it launches a new retry-workflow workflow, passing the current run_id as input.
+  # The retry-workflow reruns only the failed jobs of the current test-all workflow using
+  # ```
+  # gh run rerun ${{ inputs.run_id }} --failed
+  # ```
+  # From https://stackoverflow.com/a/78314483 it seems like that adding the extra workflow
+  # rather then calling directly this command should improve stability of this solution.
+  # This is exactly the same as rerunning failed tests from the GH UI, but automated.
+  rerun-failed-jobs:
+    runs-on: ubuntu-latest
+    needs: [test_e2e_ios_rntester, test_e2e_android_rntester,test_e2e_ios_templateapp, test_e2e_android_templateapp]
+    if: failure() && fromJSON(github.run_attempt) < 3 && ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Rerun failed jobs in the current workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run retry-workflow.yml -F run_id=${{ github.run_id }}

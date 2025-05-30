@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -35,8 +36,9 @@ const hermesTagSha = '5244f819b2f3949ca94a3a1bf75d54a8ed59d94a';
 const ROOT_DIR = path.normalize(path.join(__dirname, '../../..'));
 const SDKS_DIR = path.join(ROOT_DIR, 'sdks');
 
-let execCalls, spawnCalls;
-let fs;
+let execCalls: $FlowFixMe;
+let spawnCalls: $FlowFixMe;
+let fs: $FlowFixMe;
 
 jest.mock('child_process', () => ({
   execSync: jest.fn((command, options) => {
@@ -153,6 +155,7 @@ describe('hermes-utils', () => {
         }),
     );
     fs = require('fs');
+    // $FlowFixMe[prop-missing]
     fs.reset();
 
     populateMockFilesystemWithHermesBuildScripts();

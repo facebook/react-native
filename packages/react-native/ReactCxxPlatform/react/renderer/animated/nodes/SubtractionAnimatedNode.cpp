@@ -18,20 +18,18 @@ namespace facebook::react {
 
 void SubtractionAnimatedNode::update() {
   auto rawValue = 0.0;
-  if (const auto manager = manager_.lock()) {
-    int count = 0;
-    for (const auto& tag : inputNodes_) {
-      const auto node = manager->getAnimatedNode<ValueAnimatedNode>(tag);
-      react_native_assert(
-          node && "Invalid node tag set as input for SubtractionAnimatedNode");
-      if (count == 0) {
-        rawValue = node->value();
-      } else {
-        rawValue -= node->value();
-      }
-
-      count++;
+  int count = 0;
+  for (const auto& tag : inputNodes_) {
+    const auto node = manager_->getAnimatedNode<ValueAnimatedNode>(tag);
+    react_native_assert(
+        node && "Invalid node tag set as input for SubtractionAnimatedNode");
+    if (count == 0) {
+      rawValue = node->getValue();
+    } else {
+      rawValue -= node->getValue();
     }
+
+    count++;
   }
   setRawValue(rawValue);
 }

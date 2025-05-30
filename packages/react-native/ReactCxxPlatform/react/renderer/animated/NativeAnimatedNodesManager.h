@@ -41,8 +41,7 @@ template <>
 struct Bridging<EndResult>
     : NativeAnimatedTurboModuleEndResultBridging<EndResult> {};
 
-class NativeAnimatedNodesManager
-    : public std::enable_shared_from_this<NativeAnimatedNodesManager> {
+class NativeAnimatedNodesManager {
  public:
   using DirectManipulationCallback =
       std::function<void(Tag, const folly::dynamic&)>;
@@ -62,11 +61,11 @@ class NativeAnimatedNodesManager
   template <
       typename T,
       typename = std::enable_if_t<std::is_base_of_v<AnimatedNode, T>>>
-  std::shared_ptr<T> getAnimatedNode(Tag tag) const
+  T* getAnimatedNode(Tag tag) const
     requires(std::is_base_of_v<AnimatedNode, T>)
   {
     if (auto it = animatedNodes_.find(tag); it != animatedNodes_.end()) {
-      return std::static_pointer_cast<T>(it->second);
+      return static_cast<T*>(it->second.get());
     }
     return nullptr;
   }
@@ -89,17 +88,7 @@ class NativeAnimatedNodesManager
 
   void dropAnimatedNode(Tag tag) noexcept;
 
-  // mutations
-
   void setAnimatedNodeValue(Tag tag, double value);
-
-  void setAnimatedNodeOffset(Tag tag, double offset) noexcept;
-
-  void flattenAnimatedNodeOffset(Tag tag) noexcept;
-
-  void extractAnimatedNodeOffset(Tag tag) noexcept;
-
-  void updateAnimatedNodeConfig(Tag tag, const folly::dynamic& config) noexcept;
 
   // drivers
 
@@ -155,8 +144,10 @@ class NativeAnimatedNodesManager
   bool commitProps();
 
   void scheduleOnUI(UiTask&& task) {
-    std::lock_guard<std::mutex> lock(uiTasksMutex_);
-    operations_.push_back(std::move(task));
+    {
+      std::lock_guard<std::mutex> lock(uiTasksMutex_);
+      operations_.push_back(std::move(task));
+    }
 
     // Whenever a batch is flushed to the UI thread, start the onRender
     // callbacks to guarantee they run at least once. E.g., to execute
@@ -171,7 +162,7 @@ class NativeAnimatedNodesManager
   void updateNodes(
       const std::set<int>& finishedAnimationValueNodes = {}) noexcept;
 
-  std::optional<folly::dynamic> managedProps(Tag tag) noexcept;
+  folly::dynamic managedProps(Tag tag) noexcept;
 
   bool isOnRenderThread() const noexcept;
 
@@ -195,9 +186,9 @@ class NativeAnimatedNodesManager
       Tag tag,
       const folly::dynamic& config) noexcept;
 
-  std::unordered_map<Tag, std::shared_ptr<AnimatedNode>> animatedNodes_;
+  std::unordered_map<Tag, std::unique_ptr<AnimatedNode>> animatedNodes_;
   std::unordered_map<Tag, Tag> connectedAnimatedNodes_;
-  std::unordered_map<int, std::shared_ptr<AnimationDriver>> activeAnimations_;
+  std::unordered_map<int, std::unique_ptr<AnimationDriver>> activeAnimations_;
   std::unordered_map<
       EventAnimationDriverKey,
       std::vector<std::unique_ptr<EventAnimationDriver>>,

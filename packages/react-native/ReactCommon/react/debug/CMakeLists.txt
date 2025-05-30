@@ -15,7 +15,7 @@ target_include_directories(react_debug PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_debug log folly_runtime)
 
-target_compile_reactnative_options(react_debug PRIVATE "Fabric")
+target_compile_reactnative_options(react_debug PRIVATE)
 target_compile_options(react_debug PRIVATE -Wpedantic)
 if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
         target_compile_options(react_debug PUBLIC -DNDEBUG)

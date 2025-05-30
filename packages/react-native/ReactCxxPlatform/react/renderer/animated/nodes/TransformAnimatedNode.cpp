@@ -29,33 +29,31 @@ static constexpr std::string_view sTransformPropName{"transform"};
 TransformAnimatedNode::TransformAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : AnimatedNode(tag, config, manager, AnimatedNodeType::Transform),
       props_(folly::dynamic::object()) {}
 
 void TransformAnimatedNode::update() {
   folly::dynamic transforms = folly::dynamic::array();
-  if (const auto manager = manager_.lock()) {
-    auto transformsArray = getConfig()[sTransformsName];
-    react_native_assert(transformsArray.type() == folly::dynamic::ARRAY);
-    for (const auto& transform : transformsArray) {
-      std::optional<double> value;
-      if (transform[sTypeName].asString() == sAnimatedName) {
-        const auto inputTag = static_cast<Tag>(transform[sNodeTagName].asInt());
-        if (const auto node =
-                manager->getAnimatedNode<ValueAnimatedNode>(inputTag)) {
-          value = node->value();
-        }
-      } else {
-        value = transform[sValueName].asDouble();
+  auto transformsArray = getConfig()[sTransformsName];
+  react_native_assert(transformsArray.type() == folly::dynamic::ARRAY);
+  for (const auto& transform : transformsArray) {
+    std::optional<double> value;
+    if (transform[sTypeName].asString() == sAnimatedName) {
+      const auto inputTag = static_cast<Tag>(transform[sNodeTagName].asInt());
+      if (const auto node =
+              manager_->getAnimatedNode<ValueAnimatedNode>(inputTag)) {
+        value = node->getValue();
       }
-      if (value) {
-        const auto property = transform[sPropertyName].asString();
-        transforms.push_back(folly::dynamic::object(property, value.value()));
-      }
+    } else {
+      value = transform[sValueName].asDouble();
     }
-    props_[sTransformPropName] = std::move(transforms);
+    if (value) {
+      const auto property = transform[sPropertyName].asString();
+      transforms.push_back(folly::dynamic::object(property, value.value()));
+    }
   }
+  props_[sTransformPropName] = std::move(transforms);
 }
 
 const folly::dynamic& TransformAnimatedNode::getProps() {

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -28,7 +29,7 @@ const APP_DEPENDENCY_PROVIDER_PODSPEC_TEMPLATE_PATH = path.join(
   'ReactAppDependencyProvider.podspec.template',
 );
 
-function generateAppDependencyProvider(outputDir) {
+function generateAppDependencyProvider(outputDir /*: string */) {
   fs.mkdirSync(outputDir, {recursive: true});
   codegenLog('Generating RCTAppDependencyProvider');
 

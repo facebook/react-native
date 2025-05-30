@@ -32,5 +32,5 @@ target_link_libraries(rrc_view
         react_renderer_debug
         react_renderer_graphics
         yoga)
-target_compile_reactnative_options(rrc_view PRIVATE "Fabric")
+target_compile_reactnative_options(rrc_view PRIVATE)
 target_compile_options(rrc_view PRIVATE -Wpedantic)

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<196bc6e1f0196c39029c3d2a45d3254b>>
+ * @generated SignedSource<<52b646e5d77918f4de5585a83535bb46>>
  */
 
 /**
@@ -49,6 +49,8 @@ class NativeReactNativeFeatureFlags
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
+  bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
+
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
@@ -82,6 +84,8 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
+
+  bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
 
   bool enableMainQueueModulesOnIOS(jsi::Runtime& runtime);
 

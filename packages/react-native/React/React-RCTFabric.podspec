@@ -66,11 +66,13 @@ Pod::Spec.new do |s|
 
   add_dependency(s, "React-FabricImage")
   add_dependency(s, "React-Fabric", :additional_framework_paths => [
+    "react/renderer/components/scrollview/platform/cxx",
     "react/renderer/components/view/platform/cxx",
     "react/renderer/imagemanager/platform/ios",
   ])
   add_dependency(s, "React-FabricComponents", :additional_framework_paths => [
     "react/renderer/textlayoutmanager/platform/ios",
+    "react/renderer/components/scrollview/platform/cxx",
     "react/renderer/components/text/platform/cxx",
     "react/renderer/components/textinput/platform/ios",
   ]);
@@ -83,6 +85,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-performancetimeline")
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-rendererconsistency")
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-runtimescheduler")
   add_dependency(s, "React-RCTAnimation", :framework_name => 'RCTAnimation')
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')

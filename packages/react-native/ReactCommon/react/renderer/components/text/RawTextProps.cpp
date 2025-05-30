@@ -30,6 +30,10 @@ SharedDebugStringConvertibleList RawTextProps::getDebugProps() const {
 
 #ifdef RN_SERIALIZABLE_STATE
 
+ComponentName RawTextProps::getDiffPropsImplementationTarget() const {
+  return "RawText";
+}
+
 folly::dynamic RawTextProps::getDiffProps(const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
 

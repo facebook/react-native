@@ -14,7 +14,6 @@
 #include <folly/dynamic.h>
 #include <react/debug/flags.h>
 #include <react/renderer/core/ReactPrimitives.h>
-#include <memory>
 
 namespace facebook::react {
 
@@ -44,7 +43,7 @@ class AnimatedNode {
       folly::dynamic config,
       // TODO: T190028913 maybe pass in strongly typed data when constructing
       // AnimatedNode
-      const std::shared_ptr<NativeAnimatedNodesManager>& manager,
+      NativeAnimatedNodesManager& manager,
       AnimatedNodeType type);
 
   // Detach Node
@@ -55,7 +54,7 @@ class AnimatedNode {
   AnimatedNode(const AnimatedNode&) = default;
   AnimatedNode& operator=(const AnimatedNode&) = default;
 
-  Tag tag() const {
+  Tag tag() const noexcept {
     return tag_;
   }
 
@@ -63,15 +62,15 @@ class AnimatedNode {
 
   void removeChild(Tag tag);
 
-  const std::unordered_set<Tag>& children() const {
+  const std::unordered_set<Tag>& getChildren() const noexcept {
     return children_;
   }
 
-  AnimatedNodeType type() const {
+  AnimatedNodeType type() const noexcept {
     return type_;
   }
 
-  const folly::dynamic& getConfig() const {
+  const folly::dynamic& getConfig() const noexcept {
     return config_;
   }
 
@@ -97,9 +96,9 @@ class AnimatedNode {
   static constexpr int INITIAL_BFS_COLOR = 0;
 
  protected:
-  std::shared_ptr<AnimatedNode> getChildNode(Tag tag);
+  AnimatedNode* getChildNode(Tag tag);
   Tag tag_{0};
-  std::weak_ptr<NativeAnimatedNodesManager> manager_;
+  NativeAnimatedNodesManager* manager_;
   AnimatedNodeType type_;
   std::unordered_set<Tag> children_{};
 

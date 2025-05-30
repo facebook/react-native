@@ -8,6 +8,10 @@
  * @format
  */
 
+// Pretend to not run in a testing environment so we log the warning for the
+// missing native module to the console.
+process.env.NODE_ENV = 'development';
+
 describe('ReactNativeFeatureFlags', () => {
   beforeEach(() => {
     jest.unmock('../specs/NativeReactNativeFeatureFlags');

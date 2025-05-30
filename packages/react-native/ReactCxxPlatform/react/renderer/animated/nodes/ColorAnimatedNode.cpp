@@ -18,22 +18,21 @@ namespace facebook::react {
 namespace {
 
 uint8_t getColorValue(
-    std::shared_ptr<NativeAnimatedNodesManager> manager,
+    const NativeAnimatedNodesManager& manager,
     Tag nodeTag,
     bool isDecimal = false) {
-  if (const auto node = manager->getAnimatedNode<ValueAnimatedNode>(nodeTag)) {
+  if (const auto node = manager.getAnimatedNode<ValueAnimatedNode>(nodeTag)) {
     if (isDecimal) {
-      return std::clamp(static_cast<uint32_t>(node->value() * 255), 0u, 255u);
+      return std::clamp(
+          static_cast<uint32_t>(node->getValue() * 255), 0u, 255u);
     } else {
-      return std::clamp(static_cast<uint32_t>(node->value()), 0u, 255u);
+      return std::clamp(static_cast<uint32_t>(node->getValue()), 0u, 255u);
     }
   }
   return 0;
 }
 
-uint8_t getAlphaValue(
-    std::shared_ptr<NativeAnimatedNodesManager> manager,
-    Tag nodeTag) {
+uint8_t getAlphaValue(const NativeAnimatedNodesManager& manager, Tag nodeTag) {
   return getColorValue(manager, nodeTag, true);
 }
 
@@ -42,7 +41,7 @@ uint8_t getAlphaValue(
 ColorAnimatedNode::ColorAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager)
+    NativeAnimatedNodesManager& manager)
     : AnimatedNode(tag, config, manager, AnimatedNodeType::Color),
       rNodeTag_(static_cast<Tag>(getConfig()["r"].asInt())),
       gNodeTag_(static_cast<Tag>(getConfig()["g"].asInt())),
@@ -50,23 +49,19 @@ ColorAnimatedNode::ColorAnimatedNode(
       aNodeTag_(static_cast<Tag>(getConfig()["a"].asInt())) {}
 
 void ColorAnimatedNode::update() {
-  if (const auto manager = manager_.lock()) {
-    color_ = *colorFromRGBA(
-        getColorValue(manager, rNodeTag_),
-        getColorValue(manager, gNodeTag_),
-        getColorValue(manager, bNodeTag_),
-        getAlphaValue(manager, aNodeTag_));
-  }
+  color_ = *colorFromRGBA(
+      getColorValue(*manager_, rNodeTag_),
+      getColorValue(*manager_, gNodeTag_),
+      getColorValue(*manager_, bNodeTag_),
+      getAlphaValue(*manager_, aNodeTag_));
 }
 
 Color ColorAnimatedNode::getColor() {
-  if (const auto manager = manager_.lock()) {
-    if (manager->updatedNodeTags_.contains(tag_)) {
-      update();
-      manager->updatedNodeTags_.erase(tag_);
-    }
-    return color_;
+  if (manager_->updatedNodeTags_.contains(tag_)) {
+    update();
+    manager_->updatedNodeTags_.erase(tag_);
   }
+  return color_;
   return 0;
 }
 

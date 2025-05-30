@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -27,12 +28,12 @@ const UNSTABLE_MODULES_REQUIRING_MAIN_QUEUE_SETUP_PROVIDER_MM_TEMPLATE_PATH =
   );
 
 function generateUnstableModulesRequiringMainQueueSetupProvider(
-  libraries,
-  outputDir,
+  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+  outputDir /*: string */,
 ) {
   const iosAnnotations = parseiOSAnnotations(libraries);
 
-  const modulesRequiringMainQueueSetup = new Set();
+  const modulesRequiringMainQueueSetup = new Set /*::<string>*/();
 
   // Old API
   libraries.forEach(library => {

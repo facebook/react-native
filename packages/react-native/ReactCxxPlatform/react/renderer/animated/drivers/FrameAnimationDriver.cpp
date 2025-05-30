@@ -35,10 +35,6 @@ FrameAnimationDriver::FrameAnimationDriver(
   onConfigChanged();
 }
 
-double FrameAnimationDriver::toValue() {
-  return toValue_;
-}
-
 void FrameAnimationDriver::updateConfig(folly::dynamic config) {
   AnimationDriver::updateConfig(config);
   onConfigChanged();
@@ -58,7 +54,7 @@ bool FrameAnimationDriver::update(double timeDeltaMs, bool /*restarting*/) {
   if (auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_)) {
     if (!startValue_) {
-      startValue_ = node->rawValue();
+      startValue_ = node->getRawValue();
     }
 
     const auto startIndex =

@@ -69,6 +69,8 @@ module.name_mapper='^react-native/\(.*\)$' -> '<PROJECT_ROOT>/packages/react-nat
 module.name_mapper='^@react-native/dev-middleware$' -> '<PROJECT_ROOT>/packages/dev-middleware'
 module.name_mapper='^@?[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\|xml\)$' -> '<PROJECT_ROOT>/packages/react-native/Libraries/Image/RelativeImageStub'
 
+module.system.haste.module_ref_prefix=m#
+
 react.runtime=automatic
 
 suppress_type=$FlowIssue
@@ -100,4 +102,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.272.0
+^0.272.1

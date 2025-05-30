@@ -16,7 +16,6 @@ import type MutationRecord from './MutationRecord';
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
 import {setPlatformObject} from '../webidl/PlatformObjects';
 import * as MutationObserverManager from './internals/MutationObserverManager';
-import nullthrows from 'nullthrows';
 
 export type MutationObserverCallback = (
   mutationRecords: $ReadOnlyArray<MutationRecord>,
@@ -118,15 +117,11 @@ export default class MutationObserver {
 
     const mutationObserverId = this._getOrCreateMutationObserverId();
 
-    const didStartObserving = MutationObserverManager.observe({
+    MutationObserverManager.observe({
       mutationObserverId,
       target,
       subtree: Boolean(options?.subtree),
     });
-
-    if (didStartObserving && !MutationObserverManager.unobserveAll) {
-      this._observationTargets.add(target);
-    }
   }
 
   /**
@@ -139,17 +134,7 @@ export default class MutationObserver {
       return;
     }
 
-    if (MutationObserverManager.unobserveAll) {
-      MutationObserverManager.unobserveAll(mutationObserverId);
-    } else if (MutationObserverManager.unobserve) {
-      for (const target of this._observationTargets.keys()) {
-        nullthrows(MutationObserverManager.unobserve)(
-          mutationObserverId,
-          target,
-        );
-      }
-      this._observationTargets.clear();
-    }
+    MutationObserverManager.unobserveAll(mutationObserverId);
 
     MutationObserverManager.unregisterObserver(mutationObserverId);
     this._mutationObserverId = null;

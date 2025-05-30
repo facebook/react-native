@@ -18,6 +18,7 @@ describe('getDevToolsFrontendUrl', () => {
   const experiments = {
     enableNetworkInspector: false,
     enableOpenDebuggerRedirect: false,
+    enableStandaloneFuseboxShell: false,
   };
 
   describe('relative: false, launchId: undefined, telemetryInfo: undefined, (default)', () => {

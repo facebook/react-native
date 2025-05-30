@@ -19,9 +19,9 @@ namespace facebook::react {
 AnimatedNode::AnimatedNode(
     Tag tag,
     folly::dynamic config,
-    const std::shared_ptr<NativeAnimatedNodesManager>& manager,
+    NativeAnimatedNodesManager& manager,
     AnimatedNodeType type)
-    : tag_(tag), manager_(manager), type_(type), config_(std::move(config)) {}
+    : tag_(tag), manager_(&manager), type_(type), config_(std::move(config)) {}
 
 void AnimatedNode::addChild(const Tag animatedNodeTag) {
   children_.insert(animatedNodeTag);
@@ -35,11 +35,9 @@ void AnimatedNode::removeChild(const Tag tag) {
   }
 }
 
-std::shared_ptr<AnimatedNode> AnimatedNode::getChildNode(Tag tag) {
-  if (const auto manager = manager_.lock()) {
-    if (children_.find(tag) != children_.end()) {
-      return manager->getAnimatedNode<AnimatedNode>(tag);
-    }
+AnimatedNode* AnimatedNode::getChildNode(Tag tag) {
+  if (children_.find(tag) != children_.end()) {
+    return manager_->getAnimatedNode<AnimatedNode>(tag);
   }
 
   return nullptr;

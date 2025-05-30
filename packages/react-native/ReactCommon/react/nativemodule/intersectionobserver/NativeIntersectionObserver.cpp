@@ -56,10 +56,9 @@ void NativeIntersectionObserver::observe(
 void NativeIntersectionObserver::unobserve(
     jsi::Runtime& runtime,
     IntersectionObserverObserverId intersectionObserverId,
-    jsi::Object targetShadowNode) {
-  auto shadowNode = shadowNodeFromValue(runtime, std::move(targetShadowNode));
+    ShadowNode::Shared targetShadowNode) {
   auto token =
-      tokenFromShadowNodeFamily(runtime, shadowNode->getFamilyShared());
+      tokenFromShadowNodeFamily(runtime, targetShadowNode->getFamilyShared());
   unobserveV2(runtime, intersectionObserverId, std::move(token));
 }
 
@@ -67,8 +66,7 @@ jsi::Object NativeIntersectionObserver::observeV2(
     jsi::Runtime& runtime,
     NativeIntersectionObserverObserveOptions options) {
   auto intersectionObserverId = options.intersectionObserverId;
-  auto shadowNode =
-      shadowNodeFromValue(runtime, std::move(options.targetShadowNode));
+  auto shadowNode = options.targetShadowNode;
   auto shadowNodeFamily = shadowNode->getFamilyShared();
   auto thresholds = options.thresholds;
   auto rootThresholds = options.rootThresholds;

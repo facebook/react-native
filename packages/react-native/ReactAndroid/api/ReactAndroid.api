@@ -1042,7 +1042,7 @@ public abstract interface class com/facebook/react/bridge/Promise {
 	public abstract fun resolve (Ljava/lang/Object;)V
 }
 
-public class com/facebook/react/bridge/PromiseImpl : com/facebook/react/bridge/Promise {
+public final class com/facebook/react/bridge/PromiseImpl : com/facebook/react/bridge/Promise {
 	public fun <init> (Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V
 	public fun reject (Ljava/lang/String;)V
 	public fun reject (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
@@ -1146,32 +1146,36 @@ public final class com/facebook/react/bridge/ReactCxxErrorHandler {
 	public static final fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
 }
 
-public class com/facebook/react/bridge/ReactMarker {
-	public fun <init> ()V
-	public static fun addFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
-	public static fun addListener (Lcom/facebook/react/bridge/ReactMarker$MarkerListener;)V
-	public static fun clearFabricMarkerListeners ()V
-	public static fun clearMarkerListeners ()V
-	public static fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;I)V
-	public static fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
-	public static fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;I)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;J)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;I)V
-	public static fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;ILjava/lang/Long;)V
-	public static fun logMarker (Ljava/lang/String;)V
-	public static fun logMarker (Ljava/lang/String;I)V
-	public static fun logMarker (Ljava/lang/String;Ljava/lang/String;)V
-	public static fun logMarker (Ljava/lang/String;Ljava/lang/String;I)V
-	public static fun removeFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
-	public static fun removeListener (Lcom/facebook/react/bridge/ReactMarker$MarkerListener;)V
+public final class com/facebook/react/bridge/ReactMarker {
+	public static final field INSTANCE Lcom/facebook/react/bridge/ReactMarker;
+	public static final fun addFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
+	public static final fun addListener (Lcom/facebook/react/bridge/ReactMarker$MarkerListener;)V
+	public static final fun clearFabricMarkerListeners ()V
+	public static final fun clearMarkerListeners ()V
+	public static final fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;I)V
+	public static final fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
+	public static final fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;I)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;J)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;I)V
+	public static final fun logMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;ILjava/lang/Long;)V
+	public static final fun logMarker (Ljava/lang/String;)V
+	public static final fun logMarker (Ljava/lang/String;I)V
+	public static final fun logMarker (Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun logMarker (Ljava/lang/String;Ljava/lang/String;I)V
+	public static final fun removeFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
+	public static final fun removeListener (Lcom/facebook/react/bridge/ReactMarker$MarkerListener;)V
 }
 
 public abstract interface class com/facebook/react/bridge/ReactMarker$FabricMarkerListener {
 	public abstract fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJ)V
-	public fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
+	public abstract fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
+}
+
+public final class com/facebook/react/bridge/ReactMarker$FabricMarkerListener$DefaultImpls {
+	public static fun logFabricMarker (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;Lcom/facebook/react/bridge/ReactMarkerConstants;Ljava/lang/String;IJI)V
 }
 
 public abstract interface class com/facebook/react/bridge/ReactMarker$MarkerListener {
@@ -1660,23 +1664,23 @@ public final class com/facebook/react/common/LifecycleState : java/lang/Enum {
 	public static fun values ()[Lcom/facebook/react/common/LifecycleState;
 }
 
-public class com/facebook/react/common/MapBuilder {
-	public fun <init> ()V
-	public static fun builder ()Lcom/facebook/react/common/MapBuilder$Builder;
-	public static fun newHashMap ()Ljava/util/HashMap;
-	public static fun of ()Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+public final class com/facebook/react/common/MapBuilder {
+	public static final field INSTANCE Lcom/facebook/react/common/MapBuilder;
+	public static final fun builder ()Lcom/facebook/react/common/MapBuilder$Builder;
+	public static final fun newHashMap ()Ljava/util/HashMap;
+	public static final fun of ()Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
 }
 
 public final class com/facebook/react/common/MapBuilder$Builder {
-	public fun build ()Ljava/util/Map;
-	public fun put (Ljava/lang/Object;Ljava/lang/Object;)Lcom/facebook/react/common/MapBuilder$Builder;
+	public final fun build ()Ljava/util/Map;
+	public final fun put (Ljava/lang/Object;Ljava/lang/Object;)Lcom/facebook/react/common/MapBuilder$Builder;
 }
 
 public final class com/facebook/react/common/ReactConstants {
@@ -3019,12 +3023,6 @@ public final class com/facebook/react/modules/network/OkHttpClientProvider {
 	public static final fun createClientBuilder (Landroid/content/Context;I)Lokhttp3/OkHttpClient$Builder;
 	public static final fun getOkHttpClient ()Lokhttp3/OkHttpClient;
 	public static final fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
-}
-
-public class com/facebook/react/modules/network/OkHttpCompat {
-	public fun <init> ()V
-	public static fun getCookieJarContainer (Lokhttp3/OkHttpClient;)Lcom/facebook/react/modules/network/CookieJarContainer;
-	public static fun getHeadersFromMap (Ljava/util/Map;)Lokhttp3/Headers;
 }
 
 public abstract interface class com/facebook/react/modules/network/ProgressListener {
@@ -5986,7 +5984,7 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final fun emitScrollEvent (Landroid/view/ViewGroup;FF)V
 	public static final fun emitScrollMomentumBeginEvent (Landroid/view/ViewGroup;II)V
 	public static final fun emitScrollMomentumEndEvent (Landroid/view/ViewGroup;)V
-	public static final fun findNextFocusableView (Landroid/view/ViewGroup;Landroid/view/View;IZ)Landroid/view/View;
+	public static final fun findNextFocusableView (Landroid/view/ViewGroup;Landroid/view/View;I)Landroid/view/View;
 	public static final fun forceUpdateState (Landroid/view/ViewGroup;)V
 	public static final fun getDefaultScrollAnimationDuration (Landroid/content/Context;)I
 	public static final fun getNextFlingStartValue (Landroid/view/ViewGroup;III)I
@@ -6779,9 +6777,12 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public static final field Companion Lcom/facebook/react/views/view/ReactViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
+	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
+	protected fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/view/ReactViewGroup;)V
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/view/ReactViewGroup;
 	public fun getCommandsMap ()Ljava/util/Map;
+	public fun getExportedCustomBubblingEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
 	public fun nextFocusDown (Lcom/facebook/react/views/view/ReactViewGroup;I)V
 	public fun nextFocusForward (Lcom/facebook/react/views/view/ReactViewGroup;I)V

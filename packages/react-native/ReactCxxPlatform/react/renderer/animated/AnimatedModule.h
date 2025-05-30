@@ -9,19 +9,111 @@
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #include <ReactCommon/TurboModuleWithJSIBindings.h>
+#include <folly/dynamic.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/NativeAnimatedNodesManagerProvider.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <memory>
 #include <string>
+#include <variant>
 
 namespace facebook::react {
 
 class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>,
-                       public std::enable_shared_from_this<AnimatedModule>,
                        public TurboModuleWithJSIBindings {
-  using Operation =
-      std::function<void(NativeAnimatedNodesManager& nodesManager)>;
+#pragma mark - Operation structures for each type of animated operation
+  struct CreateAnimatedNodeOp {
+    Tag tag{};
+    folly::dynamic config;
+  };
+
+  struct GetValueOp {
+    Tag tag{};
+    AsyncCallback<double> callback;
+  };
+
+  struct StartListeningToAnimatedNodeValueOp {
+    Tag tag{};
+  };
+
+  struct StopListeningToAnimatedNodeValueOp {
+    Tag tag{};
+  };
+
+  struct ConnectAnimatedNodesOp {
+    Tag parentTag{};
+    Tag childTag{};
+  };
+
+  struct DisconnectAnimatedNodesOp {
+    Tag parentTag{};
+    Tag childTag{};
+  };
+
+  struct StartAnimatingNodeOp {
+    int animationId{};
+    Tag nodeTag{};
+    folly::dynamic config;
+    AnimationEndCallback endCallback;
+  };
+
+  struct StopAnimationOp {
+    int animationId{};
+  };
+
+  struct SetAnimatedNodeValueOp {
+    Tag nodeTag{};
+    double value{};
+  };
+
+  struct ConnectAnimatedNodeToViewOp {
+    Tag nodeTag{};
+    Tag viewTag{};
+  };
+
+  struct DisconnectAnimatedNodeFromViewOp {
+    Tag nodeTag{};
+    Tag viewTag{};
+  };
+
+  struct RestoreDefaultValuesOp {
+    Tag nodeTag{};
+  };
+
+  struct DropAnimatedNodeOp {
+    Tag tag{};
+  };
+
+  struct AddAnimatedEventToViewOp {
+    Tag viewTag{};
+    std::string eventName;
+    folly::dynamic eventMapping;
+  };
+
+  struct RemoveAnimatedEventFromViewOp {
+    Tag viewTag{};
+    std::string eventName;
+    Tag animatedNodeTag{};
+  };
+
+  using Operation = std::variant<
+      CreateAnimatedNodeOp,
+      GetValueOp,
+      StartListeningToAnimatedNodeValueOp,
+      StopListeningToAnimatedNodeValueOp,
+      ConnectAnimatedNodesOp,
+      DisconnectAnimatedNodesOp,
+      StartAnimatingNodeOp,
+      StopAnimationOp,
+      SetAnimatedNodeValueOp,
+      ConnectAnimatedNodeToViewOp,
+      DisconnectAnimatedNodeFromViewOp,
+      RestoreDefaultValuesOp,
+      DropAnimatedNodeOp,
+      AddAnimatedEventToViewOp,
+      RemoveAnimatedEventFromViewOp>;
+
+#pragma mark -
 
  public:
   AnimatedModule(
@@ -36,10 +128,8 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>,
 
   void updateAnimatedNodeConfig(jsi::Runtime& rt, Tag tag, jsi::Object config);
 
-  void getValue(
-      jsi::Runtime& rt,
-      Tag tag,
-      const AsyncCallback<double>& saveValueCallback);
+  void
+  getValue(jsi::Runtime& rt, Tag tag, AsyncCallback<double> saveValueCallback);
 
   void startListeningToAnimatedNodeValue(jsi::Runtime& rt, Tag tag);
 
@@ -78,13 +168,13 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>,
   void addAnimatedEventToView(
       jsi::Runtime& rt,
       Tag viewTag,
-      const std::string& eventName,
+      std::string eventName,
       jsi::Object eventMapping);
 
   void removeAnimatedEventFromView(
       jsi::Runtime& rt,
       Tag viewTag,
-      const std::string& eventName,
+      std::string eventName,
       Tag animatedNodeTag);
 
   void addListener(jsi::Runtime& rt, const std::string& eventName);
@@ -95,29 +185,13 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>,
       jsi::Runtime& rt,
       jsi::Array operationsAndArgs);
 
-  void scheduleOperationOnUI(Operation&& fn) {
-    if (nodesManager_) {
-      nodesManager_->scheduleOnUI(
-          [fn = std::move(fn),
-           weakNodesManager =
-               std::weak_ptr<NativeAnimatedNodesManager>(nodesManager_)]() {
-            if (auto nodesManager = weakNodesManager.lock()) {
-              fn(*nodesManager);
-            }
-          });
-    }
-  }
-
- protected:
-  std::shared_ptr<NativeAnimatedNodesManagerProvider> nodesManagerProvider_;
-
  private:
+  std::shared_ptr<NativeAnimatedNodesManagerProvider> nodesManagerProvider_;
   std::shared_ptr<NativeAnimatedNodesManager> nodesManager_;
   std::vector<Operation> preOperations_;
   std::vector<Operation> operations_;
 
-  void addOperation(Operation&& operation, bool preOperation = false);
-
+  void executeOperation(const Operation& operation);
   void installJSIBindingsWithRuntime(jsi::Runtime& runtime) override;
 };
 

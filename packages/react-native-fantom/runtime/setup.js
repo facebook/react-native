@@ -14,7 +14,6 @@ import expect from './expect';
 import {createMockFunction} from './mocks';
 import patchWeakRef from './patchWeakRef';
 import {setupSnapshotConfig, snapshotContext} from './snapshotContext';
-import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
 export type TestCaseResult = {
   ancestorTitles: Array<string>,
@@ -380,6 +379,10 @@ function runSuite(suite: Suite): TestCaseResult[] {
 }
 
 function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+
   NativeFantom.reportTestSuiteResultsJSON(
     JSON.stringify({
       type: 'test-result',
@@ -389,6 +392,10 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
 }
 
 function validateEmptyMessageQueue(): void {
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+
   NativeFantom.validateEmptyMessageQueue();
 }
 

@@ -8,13 +8,14 @@
  * @format
  */
 
-import type {AnimatedComponentType} from '../createAnimatedComponent';
+import type {AnimatedProps} from '../createAnimatedComponent';
 
-import FlatList from '../../Lists/FlatList';
+import FlatList, {type FlatListProps} from '../../Lists/FlatList';
 import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 
-export default (createAnimatedComponent(FlatList): AnimatedComponentType<
-  React.ElementConfig<typeof FlatList>,
-  FlatList<mixed>,
->);
+// $FlowExpectedError[unclear-type]
+export default (createAnimatedComponent(FlatList): component<ItemT = any>(
+  ref?: React.RefSetter<FlatList<ItemT>>,
+  ...props: AnimatedProps<FlatListProps<ItemT>>
+));
