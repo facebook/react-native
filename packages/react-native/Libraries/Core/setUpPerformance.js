@@ -10,12 +10,14 @@
 
 import Performance from '../../src/private/webapis/performance/Performance';
 import NativePerformance from '../../src/private/webapis/performance/specs/NativePerformance';
+import {PerformanceMark} from '../../src/private/webapis/performance/UserTiming';
 
 // In case if the native implementation of the Performance API is available, use it,
 // otherwise fall back to the legacy/default one, which only defines 'Performance.now()'
 if (NativePerformance) {
   // $FlowExpectedError[cannot-write]
   global.performance = new Performance();
+  global.PerformanceMark = PerformanceMark;
 } else {
   if (!global.performance) {
     // $FlowExpectedError[cannot-write]
