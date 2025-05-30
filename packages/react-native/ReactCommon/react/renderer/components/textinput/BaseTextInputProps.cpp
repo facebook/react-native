@@ -201,6 +201,12 @@ void BaseTextInputProps::setProp(
         paragraphAttributes,
         android_hyphenationFrequency,
         "android_hyphenationFrequency");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        textAlignVertical,
+        "textAlignVertical");
   }
 
   switch (hash) {

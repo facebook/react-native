@@ -98,12 +98,6 @@ static TextAttributes convertRawProp(
       "textTransform",
       sourceTextAttributes.textTransform,
       defaultTextAttributes.textTransform);
-  textAttributes.textAlignVertical = convertRawProp(
-      context,
-      rawProps,
-      "textAlignVertical",
-      sourceTextAttributes.textAlignVertical,
-      defaultTextAttributes.textAlignVertical);
 
   // Paragraph
   textAttributes.lineHeight = convertRawProp(
@@ -291,12 +285,6 @@ void BaseTextProps::setProp(
         defaults,
         value,
         textAttributes,
-        textAlignVertical,
-        "textAlignVertical");
-    REBUILD_FIELD_SWITCH_CASE(
-        defaults,
-        value,
-        textAttributes,
         baseWritingDirection,
         "baseWritingDirection");
     REBUILD_FIELD_SWITCH_CASE(
@@ -436,13 +424,6 @@ void BaseTextProps::appendTextAttributesProps(
   if (textAttributes.textTransform != oldProps->textAttributes.textTransform) {
     result["textTransform"] = textAttributes.textTransform.has_value()
         ? toString(textAttributes.textTransform.value())
-        : nullptr;
-  }
-
-  if (textAttributes.textAlignVertical !=
-      oldProps->textAttributes.textAlignVertical) {
-    result["textAlignVertical"] = textAttributes.textAlignVertical.has_value()
-        ? toString(textAttributes.textAlignVertical.value())
         : nullptr;
   }
 
