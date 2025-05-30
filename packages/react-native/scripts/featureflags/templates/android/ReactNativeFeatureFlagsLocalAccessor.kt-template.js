@@ -46,7 +46,12 @@ ${Object.entries(definitions.common)
 
 ${Object.entries(definitions.common)
   .map(
-    ([flagName, flagConfig]) => `  override fun ${flagName}(): Boolean {
+    ([
+      flagName,
+      flagConfig,
+    ]) => `  override fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
+      flagConfig.defaultValue,
+    )} {
     var cached = ${flagName}Cache
     if (cached == null) {
       cached = currentProvider.${flagName}()
