@@ -43,7 +43,7 @@ namespace facebook::react {
 
 NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
     std::shared_ptr<CallInvoker> jsInvoker)
-    : NativeReactNativeFeatureFlagsCxxSpec(std::move(jsInvoker)) {}
+    : NativeReactNativeFeatureFlagsCxxSpecJSI(std::move(jsInvoker)) {}
 
 ${Object.entries(definitions.common)
   .map(([flagName, flagConfig]) =>
