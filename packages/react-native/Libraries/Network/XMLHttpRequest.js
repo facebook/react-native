@@ -83,46 +83,46 @@ const SUPPORTED_RESPONSE_TYPES = {
 };
 
 class XMLHttpRequestEventTarget extends EventTarget {
-  get onload(): EventCallback | null {
+  get onload(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'load');
   }
-  set onload(listener: ?EventCallback) {
+  set onload(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'load', listener);
   }
-  get onloadstart(): EventCallback | null {
+  get onloadstart(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'loadstart');
   }
-  set onloadstart(listener: ?EventCallback) {
+  set onloadstart(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'loadstart', listener);
   }
-  get onprogress(): EventCallback | null {
+  get onprogress(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'progress');
   }
-  set onprogress(listener: ?EventCallback) {
+  set onprogress(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'progress', listener);
   }
-  get ontimeout(): EventCallback | null {
+  get ontimeout(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'timeout');
   }
-  set ontimeout(listener: ?EventCallback) {
+  set ontimeout(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'timeout', listener);
   }
-  get onerror(): EventCallback | null {
+  get onerror(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'error');
   }
-  set onerror(listener: ?EventCallback) {
+  set onerror(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'error', listener);
   }
-  get onabort(): EventCallback | null {
+  get onabort(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'abort');
   }
-  set onabort(listener: ?EventCallback) {
+  set onabort(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'abort', listener);
   }
-  get onloadend(): EventCallback | null {
+  get onloadend(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'loadend');
   }
-  set onloadend(listener: ?EventCallback) {
+  set onloadend(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'loadend', listener);
   }
 }
@@ -705,7 +705,7 @@ class XMLHttpRequest extends EventTarget {
     }
   }
 
-  addEventListener(type: string, listener: EventListener | null): void {
+  addEventListener(type: string, listener: EventListener<> | null): void {
     // If we dont' have a 'readystatechange' event handler, we don't
     // have to send repeated LOADING events with incremental updates
     // to responseText, which will avoid a bunch of native -> JS
@@ -726,67 +726,67 @@ class XMLHttpRequest extends EventTarget {
    * `on<event>` event handling (without JS prototype magic).
    */
 
-  get onabort(): EventCallback | null {
+  get onabort(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'abort');
   }
 
-  set onabort(listener: ?EventCallback) {
+  set onabort(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'abort', listener);
   }
 
-  get onerror(): EventCallback | null {
+  get onerror(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'error');
   }
 
-  set onerror(listener: ?EventCallback) {
+  set onerror(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'error', listener);
   }
 
-  get onload(): EventCallback | null {
+  get onload(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'load');
   }
 
-  set onload(listener: ?EventCallback) {
+  set onload(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'load', listener);
   }
 
-  get onloadstart(): EventCallback | null {
+  get onloadstart(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'loadstart');
   }
 
-  set onloadstart(listener: ?EventCallback) {
+  set onloadstart(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'loadstart', listener);
   }
 
-  get onprogress(): EventCallback | null {
+  get onprogress(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'progress');
   }
 
-  set onprogress(listener: ?EventCallback) {
+  set onprogress(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'progress', listener);
   }
 
-  get ontimeout(): EventCallback | null {
+  get ontimeout(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'timeout');
   }
 
-  set ontimeout(listener: ?EventCallback) {
+  set ontimeout(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'timeout', listener);
   }
 
-  get onloadend(): EventCallback | null {
+  get onloadend(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'loadend');
   }
 
-  set onloadend(listener: ?EventCallback) {
+  set onloadend(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'loadend', listener);
   }
 
-  get onreadystatechange(): EventCallback | null {
+  get onreadystatechange(): EventCallback<> | null {
     return getEventHandlerAttribute(this, 'readystatechange');
   }
 
-  set onreadystatechange(listener: ?EventCallback) {
+  set onreadystatechange(listener: ?EventCallback<>) {
     setEventHandlerAttribute(this, 'readystatechange', listener);
   }
 }
