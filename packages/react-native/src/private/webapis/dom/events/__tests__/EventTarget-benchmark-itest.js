@@ -16,8 +16,8 @@ import Event from 'react-native/src/private/webapis/dom/events/Event';
 import EventTarget from 'react-native/src/private/webapis/dom/events/EventTarget';
 
 let event: Event;
-let eventTarget: EventTarget;
-let eventTargets: $ReadOnlyArray<EventTarget>;
+let eventTarget: EventTarget<>;
+let eventTargets: $ReadOnlyArray<EventTarget<>>;
 
 unstable_benchmark
   .suite('EventTarget', {
