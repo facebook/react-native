@@ -24,7 +24,7 @@ function resetListenerCallOrder() {
 type EventRecordingListener = JestMockFn<[Event], void> & {
   eventData?: {
     callOrder: number,
-    composedPath: $ReadOnlyArray<EventTarget>,
+    composedPath: $ReadOnlyArray<EventTarget<>>,
     currentTarget: Event['currentTarget'],
     eventPhase: Event['eventPhase'],
     target: Event['target'],
