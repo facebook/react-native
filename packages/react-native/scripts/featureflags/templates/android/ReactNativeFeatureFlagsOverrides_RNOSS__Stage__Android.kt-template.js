@@ -13,6 +13,7 @@ import type {FeatureFlagDefinitions, OSSReleaseStageValue} from '../../types';
 import {
   DO_NOT_MODIFY_COMMENT,
   getKotlinTypeFromDefaultValue,
+  getKotlinValueFromDefaultValue,
 } from '../../utils';
 import signedsource from 'signedsource';
 
@@ -52,7 +53,7 @@ ${Object.entries(definitions.common)
     if (flagConfig.ossReleaseStage === ossReleaseStage) {
       return `  override fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
         flagConfig.metadata.expectedReleaseValue,
-      )} = ${JSON.stringify(flagConfig.metadata.expectedReleaseValue)}`;
+      )} = ${getKotlinValueFromDefaultValue(flagConfig.metadata.expectedReleaseValue)}`;
     }
   })
   .filter(Boolean)

@@ -10,7 +10,11 @@
 
 import type {FeatureFlagDefinitions} from '../../types';
 
-import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
+import {
+  DO_NOT_MODIFY_COMMENT,
+  getCxxTypeFromDefaultValue,
+  getCxxValueFromDefaultValue,
+} from '../../utils';
 import signedsource from 'signedsource';
 
 export default function (definitions: FeatureFlagDefinitions): string {
@@ -54,7 +58,7 @@ ${Object.entries(definitions.common)
     jsi::Runtime& /*runtime*/) {
   // This flag is configured with \`skipNativeAPI: true\`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
-  return ${JSON.stringify(flagConfig.defaultValue)};
+  return ${getCxxValueFromDefaultValue(flagConfig.defaultValue)};
 }`
       : `${getCxxTypeFromDefaultValue(
           flagConfig.defaultValue,
