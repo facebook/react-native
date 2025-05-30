@@ -179,7 +179,7 @@ using namespace facebook::react;
   // If the component is not `accessible`, we return an empty array.
   // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
   // in other words, all nested <Text> components individually have no sense without the <Paragraph>.
-  if (!_textView.state || !paragraphProps.accessible) {
+  if (!_textView.state || !paragraphProps.accessible.value_or(false)) {
     return [NSArray new];
   }
 

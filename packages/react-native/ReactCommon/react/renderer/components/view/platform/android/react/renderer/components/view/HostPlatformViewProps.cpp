@@ -696,7 +696,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (accessible != oldProps->accessible) {
-    result["accessible"] = accessible;
+    result["accessible"] = accessible.value_or(false);
   }
 
   if (getClipsContentToBounds() != oldProps->getClipsContentToBounds()) {
