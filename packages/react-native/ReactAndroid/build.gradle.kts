@@ -655,6 +655,7 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
+  implementation("com.tencent:mmkv-static:1.2.14")
   api(libs.androidx.appcompat)
   api(libs.androidx.appcompat.resources)
   api(libs.androidx.autofill)
