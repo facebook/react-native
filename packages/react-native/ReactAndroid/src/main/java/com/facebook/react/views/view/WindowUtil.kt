@@ -94,16 +94,18 @@ internal fun Window.enableEdgeToEdge() {
     isNavigationBarContrastEnforced = true
   }
 
+  val isDarkMode = ContextUtils.isDarkMode(context)
+
   statusBarColor = Color.TRANSPARENT
   navigationBarColor =
     when {
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> LightNavigationBarColor
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isDarkMode -> LightNavigationBarColor
       else -> DarkNavigationBarColor
     }
 
   WindowInsetsControllerCompat(this, decorView).run {
-    isAppearanceLightNavigationBars = !ContextUtils.isDarkMode(context)
+    isAppearanceLightNavigationBars = !isDarkMode
   }
 
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
