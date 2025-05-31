@@ -13,7 +13,6 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import {validateStyles} from '../../../src/private/animated/NativeAnimatedValidation';
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
-import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
@@ -23,7 +22,7 @@ import AnimatedWithChildren from './AnimatedWithChildren';
 export type AnimatedStyleAllowlist = $ReadOnly<{[string]: true}>;
 
 function createAnimatedStyle(
-  inputStyle: {[string]: mixed},
+  inputStyle: $ReadOnly<{[string]: mixed}>,
   allowlist: ?AnimatedStyleAllowlist,
   keepUnanimatedValues: boolean,
 ): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
@@ -93,12 +92,11 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     inputStyle: any,
     allowlist: ?AnimatedStyleAllowlist,
   ): ?AnimatedStyle {
-    const flatStyle = flattenStyle(inputStyle);
-    if (flatStyle == null) {
+    if (inputStyle == null) {
       return null;
     }
     const [nodeKeys, nodes, style] = createAnimatedStyle(
-      flatStyle,
+      inputStyle,
       allowlist,
       Platform.OS !== 'web',
     );
@@ -148,15 +146,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
    * style properties that were created by this `AnimatedStyle` instance.
    */
   __getValueWithStaticStyle(staticStyle: Object): Object | Array<Object> {
-    const flatStaticStyle = flattenStyle(staticStyle);
-    const style: {[string]: mixed} =
-      flatStaticStyle == null
-        ? {}
-        : flatStaticStyle === staticStyle
-          ? // Copy the input style, since we'll mutate it below.
-            {...flatStaticStyle}
-          : // Reuse `flatStaticStyle` if it is a newly created object.
-            flatStaticStyle;
+    // Copy the input style, since we'll be mutating it.
+    const style: {[string]: mixed} = {...staticStyle};
 
     const keys = Object.keys(style);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
