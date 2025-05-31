@@ -11,6 +11,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger.assertLegacyArchitecture
+import com.facebook.react.uimanager.UIManagerConstantsCache
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
 import com.facebook.systrace.Systrace
 import com.facebook.systrace.Systrace.TRACE_TAG_REACT
@@ -106,7 +107,9 @@ internal class JavaModuleWrapper(
           .flush()
       ReactMarker.logMarker(ReactMarkerConstants.GET_CONSTANTS_START, moduleName)
 
+      Systrace.beginSection(TRACE_TAG_REACT, "module.getModule")
       val baseJavaModule = module
+      Systrace.endSection(TRACE_TAG_REACT)
 
       Systrace.beginSection(TRACE_TAG_REACT, "module.getConstants")
       val map = baseJavaModule.constants
@@ -115,6 +118,12 @@ internal class JavaModuleWrapper(
       Systrace.beginSection(TRACE_TAG_REACT, "create WritableNativeMap")
       ReactMarker.logMarker(ReactMarkerConstants.CONVERT_CONSTANTS_START, moduleName)
       try {
+        if (moduleName == "UIManager") {
+          val res = UIManagerConstantsCache.getInstance().getUIManagerConstantsAsWritableMap()
+          if (res != null) {
+            return res
+          }
+        }
         return Arguments.makeNativeMap(map)
       } finally {
         ReactMarker.logMarker(ReactMarkerConstants.CONVERT_CONSTANTS_END, moduleName)
