@@ -18,6 +18,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {type RectOrSize} from '../../StyleSheet/Rect';
+import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import View from '../View/View';
 import useAndroidRippleForView, {
@@ -192,6 +193,8 @@ function Pressable({
     disabled,
     focusable,
     hitSlop,
+    onBlur,
+    onFocus,
     onHoverIn,
     onHoverOut,
     onLongPress,
@@ -263,6 +266,8 @@ function Pressable({
       delayHoverOut,
       delayLongPress,
       delayPressIn: unstable_pressDelay,
+      onBlur,
+      onFocus,
       onHoverIn,
       onHoverOut,
       onLongPress,
@@ -301,6 +306,8 @@ function Pressable({
       delayLongPress,
       disabled,
       hitSlop,
+      onBlur,
+      onFocus,
       onHoverIn,
       onHoverOut,
       onLongPress,
@@ -314,6 +321,7 @@ function Pressable({
       unstable_pressDelay,
     ],
   );
+
   const eventHandlers = usePressability(config);
 
   return (
