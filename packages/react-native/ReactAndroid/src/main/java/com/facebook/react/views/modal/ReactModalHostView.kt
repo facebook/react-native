@@ -52,7 +52,9 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
-import com.facebook.react.views.view.applyEdgeToEdge
+import com.facebook.react.views.view.disableEdgeToEdge
+import com.facebook.react.views.view.enableEdgeToEdge
+import com.facebook.react.views.view.setStatusBarTranslucency
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -77,6 +79,25 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var transparent: Boolean = false
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
+  public var statusBarTranslucent: Boolean = false
+    set(value) {
+      if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+        field = true
+      } else {
+        field = value
+        createNewDialog = true
+      }
+    }
+
+  public var navigationBarTranslucent: Boolean = false
+    set(value) {
+      if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+        field = true
+      } else {
+        field = value
+        createNewDialog = true
+      }
+    }
 
   public var animationType: String? = null
     set(value) {
@@ -329,6 +350,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
     get() =
         FrameLayout(context).apply {
           addView(dialogRootViewGroup)
+          if (!statusBarTranslucent) {
+            // this is needed to prevent content hiding behind systems bars < API 30
+            this.fitsSystemWindows = true
+          }
         }
 
   /**
@@ -357,7 +382,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
       }
 
-      dialogWindow.applyEdgeToEdge()
+      // Navigation bar cannot be translucent without status bar being translucent too
+      if (navigationBarTranslucent) {
+        dialogWindow.enableEdgeToEdge()
+      } else {
+        dialogWindow.disableEdgeToEdge()
+        dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
+      }
 
       if (transparent) {
         dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)

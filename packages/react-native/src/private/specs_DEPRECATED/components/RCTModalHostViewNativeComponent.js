@@ -51,6 +51,22 @@ type NativeProps = $ReadOnly<{
   transparent?: WithDefault<boolean, false>,
 
   /**
+   * The `statusBarTranslucent` prop determines whether your modal should go under
+   * the system statusbar.
+   *
+   * See https://reactnative.dev/docs/modal#statusBarTranslucent
+   */
+  statusBarTranslucent?: WithDefault<boolean, false>,
+
+  /**
+   * The `navigationBarTranslucent` prop determines whether your modal should go under
+   * the system navigationbar.
+   *
+   * See https://reactnative.dev/docs/modal#navigationBarTranslucent
+   */
+  navigationBarTranslucent?: WithDefault<boolean, false>,
+
+  /**
    * The `hardwareAccelerated` prop controls whether to force hardware
    * acceleration for the underlying window.
    *

@@ -2316,10 +2316,15 @@ export type StatusBarProps = $ReadOnly<{
   ...StatusBarBaseProps,
 }>;
 type StackProps = {
+  backgroundColor: ?{
+    value: StatusBarProps[\\"backgroundColor\\"],
+    animated: boolean,
+  },
   barStyle: ?{
     value: StatusBarProps[\\"barStyle\\"],
     animated: boolean,
   },
+  translucent: StatusBarProps[\\"translucent\\"],
   hidden: ?{
     value: boolean,
     animated: boolean,

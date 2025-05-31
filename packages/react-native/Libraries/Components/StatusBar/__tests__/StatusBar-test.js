@@ -26,6 +26,13 @@ describe('StatusBar', () => {
     const component = await create(<StatusBar hidden={true} />);
     expect(component.toTree().props.hidden).toBe(true);
   });
+  it('renders the statusbar with a background color', async () => {
+    const component = await create(<StatusBar backgroundColor={'#fff'} />);
+    expect(component.toTree().props.backgroundColor).toBe('#fff');
+    expect(component.toTree().type._defaultProps.backgroundColor.animated).toBe(
+      false,
+    );
+  });
   it('renders the statusbar with default barStyle', async () => {
     const component = await create(<StatusBar />);
     StatusBar.setBarStyle('default');
