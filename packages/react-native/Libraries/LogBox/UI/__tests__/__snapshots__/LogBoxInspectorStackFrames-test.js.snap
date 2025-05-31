@@ -151,7 +151,9 @@ exports[`LogBoxInspectorStackFrames should render stack frames with 1 frame coll
         }
         accessible={true}
         focusable={true}
+        onBlur={[Function]}
         onClick={[Function]}
+        onFocus={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
         onResponderRelease={[Function]}
