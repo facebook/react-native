@@ -42,6 +42,11 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'ListView',
   },
   {
+    key: 'FocusEventsExample',
+    module: require('../examples/FocusEventsExample/FocusEventsExample')
+      .default,
+  },
+  {
     key: 'ImageExample',
     category: 'Basic',
     module: require('../examples/Image/ImageExample'),
