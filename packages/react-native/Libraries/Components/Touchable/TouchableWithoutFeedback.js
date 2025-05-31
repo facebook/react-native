@@ -22,6 +22,7 @@ import {type AccessibilityProps} from '../../Components/View/ViewAccessibility';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import {cloneElement, useMemo} from 'react';
 
@@ -148,8 +149,6 @@ const PASSTHROUGH_PROPS = [
   'importantForAccessibility',
   'nativeID',
   'onAccessibilityAction',
-  'onBlur',
-  'onFocus',
   'onLayout',
   'testID',
 ] as const;
@@ -246,12 +245,8 @@ export default function TouchableWithoutFeedback(
     selected: props['aria-selected'] ?? props.accessibilityState?.selected,
   };
 
-  // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
-  // adopting `Pressability`, so preserve that behavior.
-  const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} = eventHandlers;
-
   const elementProps: {[string]: mixed, ...} = {
-    ...eventHandlersWithoutBlurAndFocus,
+    ...eventHandlers,
     accessible: props.accessible !== false,
     accessibilityState:
       props.disabled != null
