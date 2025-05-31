@@ -260,14 +260,25 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       @Nullable Map<String, Object> customBubblingEvents,
       @Nullable Map<String, Object> customDirectEvents) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
         .arg("Lazy", false)
         .flush();
     try {
-      return UIManagerModuleConstantsHelper.createConstants(
-          viewManagers, customBubblingEvents, customDirectEvents);
+      // If the background load is still happening, this will wait. If it completed, returns immediately.
+      Map<String,Object> cached = UIManagerConstantsCache.getInstance().getCachedConstants();
+      if (cached != null) {
+        return cached;
+      }
+
+      // Otherwise, build fresh on this thread…
+      Map<String,Object> fresh = UIManagerModuleConstantsHelper.createConstants(
+              viewManagers, customBubblingEvents, customDirectEvents);
+
+      // …and save to MMKV in the background for next time:
+      UIManagerConstantsCache.getInstance().saveConstants(fresh);
+      return fresh;
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
