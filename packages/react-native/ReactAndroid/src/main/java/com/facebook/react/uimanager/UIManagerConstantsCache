@@ -1,0 +1,242 @@
+package com.facebook.react.uimanager;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.tencent.mmkv.MMKV;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+
+/**
+ * A singleton that:
+ *   • On init(...), immediately kicks off a background thread to read+parse JSON from MMKV.
+ *   • getCachedConstants() will block until that parse is done, and then return the in-memory Map.
+ *   • saveConstants(...) still writes in a background thread, and updates the in-memory Map.
+ */
+public class UIManagerConstantsCache {
+    private static final String TAG = "UIManagerConstantsCache";
+    private static final String MMKV_KEY = "UIManagerModuleConstants_v1";
+
+    private static final UIManagerConstantsCache INSTANCE = new UIManagerConstantsCache();
+
+    /** In‐memory store of the parsed Map<String,Object>. */
+    private Map<String,Object> cachedConstants = null;
+
+    /** Latch that background‐loads JSON exactly once. CountDownLatch(1) → countDown() when done. */
+    private final CountDownLatch loadLatch = new CountDownLatch(1);
+
+    /** Ensures init(...) is only done once. */
+    private boolean initCalled = false;
+
+    private UIManagerConstantsCache() {
+        // private constructor
+    }
+
+    public static UIManagerConstantsCache getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Must be called (once) from Application or MainActivity before calling getCachedConstants().
+     * This will:
+     *   1) Initialize MMKV, and
+     *   2) Immediately spawn a background thread that reads JSON from MMKV, parses it, and sets cachedConstants.
+     */
+    public synchronized void init(Context appContext) {
+        if (initCalled) {
+            return;
+        }
+        initCalled = true;
+
+        // 1) Initialize MMKV
+        MMKV.initialize(appContext.getApplicationContext());
+
+        // 2) Kick off background thread to load + parse JSON from MMKV
+        new Thread(() -> {
+            try {
+                MMKV mmkv = MMKV.defaultMMKV();
+                String jsonString = mmkv.decodeString(MMKV_KEY, null);
+                if (jsonString != null) {
+                    try {
+                        JSONObject root = new JSONObject(jsonString);
+                        Map<String,Object> map = jsonToMap(root);
+                        synchronized (this) {
+                            cachedConstants = map;
+                        }
+                        Log.v(TAG, "Background‐loaded UIManager constants from MMKV (size=" +
+                                (map == null ? 0 : map.size()) + ")");
+                    } catch (JSONException je) {
+                        Log.w(TAG, "Invalid JSON in MMKV cache (will regenerate). JSON was:\n"
+                                + jsonString, je);
+                        synchronized (this) {
+                            cachedConstants = null;
+                        }
+                    }
+                } else {
+                    // Nothing stored yet
+                    synchronized (this) {
+                        cachedConstants = null;
+                    }
+                    Log.v(TAG, "No UIManager constants found in MMKV on background load.");
+                }
+            } finally {
+                // Whether success or failure, count down so getCachedConstants() can proceed
+                loadLatch.countDown();
+            }
+        }, "UIManagerConstantsCache‐Loader").start();
+    }
+
+    /**
+     * Blocks until the background‐load (triggered by init()) finishes.
+     * @return the parsed Map<String,Object> if available, else null.
+     */
+    public Map<String,Object> getCachedConstants() {
+        try {
+            // Wait (once) for init()'s background thread to finish JSON→Map
+            loadLatch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            Log.w(TAG, "getCachedConstants() interrupted while waiting for background load.");
+            return null;
+        }
+        synchronized (this) {
+            return cachedConstants;
+        }
+    }
+
+    /**
+     * Takes a freshly‐built constants Map and:
+     *   1) Spawns a background thread to JSON-serialize + write it into MMKV, and then
+     *   2) Updates the in‐memory cachedConstants so that future getCachedConstants() returns immediately.
+     */
+    public void saveConstants(final Map<String,Object> constants) {
+        if (constants == null) {
+            return;
+        }
+        new Thread(() -> {
+            try {
+                JSONObject json = mapToJson(constants);
+                long t0 = System.currentTimeMillis();
+                MMKV.defaultMMKV().encode(MMKV_KEY, json.toString());
+                long t1 = System.currentTimeMillis();
+                Log.v(TAG, "Saved UIManager constants to MMKV in " + (t1 - t0) + "ms");
+                synchronized (this) {
+                    cachedConstants = constants;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to JSON-serialize UIManager constants; not caching.", e);
+            }
+        }, "UIManagerConstantsCache-Saver").start();
+    }
+
+    // ────────────────────────────────────────────────────────────────────────────────
+    //   JSON ↔ Map<String,Object> Helpers (unchanged from before)
+    // ────────────────────────────────────────────────────────────────────────────────
+
+    private static JSONObject mapToJson(Map<String,Object> map) throws JSONException {
+        JSONObject json = new JSONObject();
+        for (Map.Entry<String,Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object val = entry.getValue();
+            if (val == null) {
+                json.put(key, JSONObject.NULL);
+            } else if (val instanceof String) {
+                json.put(key, (String) val);
+            } else if (val instanceof Boolean) {
+                json.put(key, (Boolean) val);
+            } else if (val instanceof Number) {
+                json.put(key, (Number) val);
+            } else if (val instanceof Map) {
+                //noinspection unchecked
+                json.put(key, mapToJson((Map<String,Object>) val));
+            } else if (val instanceof List) {
+                //noinspection unchecked
+                json.put(key, listToJsonArray((List<Object>) val));
+            } else {
+                throw new JSONException(
+                        "Unsupported value type for key \"" + key + "\": " + val.getClass()
+                );
+            }
+        }
+        return json;
+    }
+
+    private static JSONArray listToJsonArray(List<Object> list) throws JSONException {
+        JSONArray arr = new JSONArray();
+        for (Object elem : list) {
+            if (elem == null) {
+                arr.put(JSONObject.NULL);
+            } else if (elem instanceof String) {
+                arr.put((String) elem);
+            } else if (elem instanceof Boolean) {
+                arr.put((Boolean) elem);
+            } else if (elem instanceof Number) {
+                arr.put((Number) elem);
+            } else if (elem instanceof Map) {
+                //noinspection unchecked
+                arr.put(mapToJson((Map<String,Object>) elem));
+            } else if (elem instanceof List) {
+                //noinspection unchecked
+                arr.put(listToJsonArray((List<Object>) elem));
+            } else {
+                throw new JSONException("Unsupported list element type: " + elem.getClass());
+            }
+        }
+        return arr;
+    }
+
+    private static Map<String,Object> jsonToMap(JSONObject json) throws JSONException {
+        Map<String,Object> result = new HashMap<>();
+        Iterator<String> keys = json.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            Object raw = json.get(key);
+            if (raw == JSONObject.NULL) {
+                result.put(key, null);
+            } else if (raw instanceof Boolean || raw instanceof Number || raw instanceof String) {
+                result.put(key, raw);
+            } else if (raw instanceof JSONObject) {
+                result.put(key, jsonToMap((JSONObject) raw));
+            } else if (raw instanceof JSONArray) {
+                result.put(key, jsonArrayToList((JSONArray) raw));
+            } else {
+                throw new JSONException(
+                        "Unsupported JSON type in UIManager constants for key \"" + key + "\": "
+                                + raw.getClass()
+                );
+            }
+        }
+        return result;
+    }
+
+    private static List<Object> jsonArrayToList(JSONArray arr) throws JSONException {
+        List<Object> result = new ArrayList<>();
+        for (int i = 0; i < arr.length(); i++) {
+            Object raw = arr.get(i);
+            if (raw == JSONObject.NULL) {
+                result.add(null);
+            } else if (raw instanceof Boolean || raw instanceof Number || raw instanceof String) {
+                result.add(raw);
+            } else if (raw instanceof JSONObject) {
+                result.add(jsonToMap((JSONObject) raw));
+            } else if (raw instanceof JSONArray) {
+                result.add(jsonArrayToList((JSONArray) raw));
+            } else {
+                throw new JSONException(
+                        "Unsupported JSON array element at index " + i + ": " + raw.getClass()
+                );
+            }
+        }
+        return result;
+    }
+}
