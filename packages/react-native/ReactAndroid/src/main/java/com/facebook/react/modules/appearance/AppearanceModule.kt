@@ -14,6 +14,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.buildReadableMap
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.views.common.ContextUtils
 
@@ -46,6 +47,10 @@ constructor(
       true -> "dark"
       false -> "light"
     }
+  }
+
+  public override fun getTypedExportedConstants(): Map<String, Any> {
+    return mapOf("IS_EDGE_TO_EDGE_ENABLED" to ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED)
   }
 
   public override fun getColorScheme(): String {

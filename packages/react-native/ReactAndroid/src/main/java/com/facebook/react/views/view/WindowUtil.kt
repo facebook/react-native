@@ -51,10 +51,10 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 @Suppress("DEPRECATION")
 private fun Window.statusBarHide() {
   if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
-    WindowInsetsControllerCompat(this, decorView).apply {
-      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-      hide(WindowInsetsCompat.Type.statusBars())
-    }
+    val insetsController = WindowInsetsControllerCompat(this, decorView)
+    insetsController.systemBarsBehavior =
+      WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    insetsController.hide(WindowInsetsCompat.Type.statusBars())
   } else {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       // Ensure the content extends into the cutout area
@@ -70,10 +70,10 @@ private fun Window.statusBarHide() {
 @Suppress("DEPRECATION")
 private fun Window.statusBarShow() {
   if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
-    WindowInsetsControllerCompat(this, decorView).apply {
-      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-      show(WindowInsetsCompat.Type.statusBars())
-    }
+    val insetsController = WindowInsetsControllerCompat(this, decorView)
+    insetsController.systemBarsBehavior =
+      WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    insetsController.show(WindowInsetsCompat.Type.statusBars())
   } else {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       attributes.layoutInDisplayCutoutMode =

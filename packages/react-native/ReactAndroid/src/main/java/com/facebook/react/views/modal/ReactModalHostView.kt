@@ -419,13 +419,16 @@ public class ReactModalHostView(context: ThemedReactContext) :
     // Modeled after the version check in StatusBarModule.setStyle
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
       val activityWindowInsetsController =
-          WindowInsetsControllerCompat(activityWindow, activityWindow.decorView).apply {
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-          }
+          WindowInsetsControllerCompat(activityWindow, activityWindow.decorView)
       val dialogWindowInsetsController =
-          WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView).apply {
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-          }
+          WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
+
+      if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+        activityWindowInsetsController.systemBarsBehavior =
+          WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        dialogWindowInsetsController.systemBarsBehavior =
+          WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      }
 
       dialogWindowInsetsController.isAppearanceLightStatusBars =
           activityWindowInsetsController.isAppearanceLightStatusBars
