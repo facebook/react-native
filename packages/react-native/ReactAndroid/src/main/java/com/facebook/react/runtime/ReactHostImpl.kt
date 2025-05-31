@@ -66,6 +66,7 @@ import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
+import com.facebook.react.views.view.enableEdgeToEdge
 import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executor
@@ -616,6 +617,10 @@ public class ReactHostImpl(
 
   @ThreadConfined(ThreadConfined.UI)
   override fun onConfigurationChanged(context: Context) {
+    if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+      UiThreadUtil.runOnUiThread { currentActivity?.window?.enableEdgeToEdge() }
+    }
+
     val currentReactContext = this.currentReactContext
     if (currentReactContext != null) {
       if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {

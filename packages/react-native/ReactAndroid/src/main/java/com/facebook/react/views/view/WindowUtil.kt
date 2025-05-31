@@ -7,14 +7,19 @@
 
 package com.facebook.react.views.view
 
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.view.Window
 import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.views.common.ContextUtils
+
+internal val LightNavigationBarColor = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 
 @Suppress("DEPRECATION")
 internal fun Window.setStatusBarTranslucency(isTranslucent: Boolean) {
@@ -45,61 +50,74 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarHide() {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    // Ensure the content extends into the cutout area
-    attributes.layoutInDisplayCutoutMode =
-        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-    setDecorFitsSystemWindows(false)
+  if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+    val insetsController = WindowInsetsControllerCompat(this, decorView)
+    insetsController.systemBarsBehavior =
+      WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    insetsController.hide(WindowInsetsCompat.Type.statusBars())
+  } else {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      // Ensure the content extends into the cutout area
+      attributes.layoutInDisplayCutoutMode =
+          WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+      setDecorFitsSystemWindows(false)
+    }
+    addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
   }
-  addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-  clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
 }
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarShow() {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    attributes.layoutInDisplayCutoutMode =
-        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
-    setDecorFitsSystemWindows(true)
+  if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+    val insetsController = WindowInsetsControllerCompat(this, decorView)
+    insetsController.systemBarsBehavior =
+      WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    insetsController.show(WindowInsetsCompat.Type.statusBars())
+  } else {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      attributes.layoutInDisplayCutoutMode =
+          WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+      setDecorFitsSystemWindows(true)
+    }
+    addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
+    clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
   }
-  addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
-  clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 }
 
 @Suppress("DEPRECATION")
-internal fun Window.setSystemBarsTranslucency(isTranslucent: Boolean) {
-  WindowCompat.setDecorFitsSystemWindows(this, !isTranslucent)
+internal fun Window.enableEdgeToEdge() {
+  WindowCompat.setDecorFitsSystemWindows(this, false)
 
-  if (isTranslucent) {
-    val isDarkMode =
-        context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
-            Configuration.UI_MODE_NIGHT_YES
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      isStatusBarContrastEnforced = false
-      isNavigationBarContrastEnforced = true
-    }
-
-    statusBarColor = Color.TRANSPARENT
-    navigationBarColor =
-        when {
-          Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
-          Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !isDarkMode ->
-              Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
-          else -> Color.argb(0x80, 0x1b, 0x1b, 0x1b)
-        }
-
-    WindowInsetsControllerCompat(this, this.decorView).run {
-      isAppearanceLightNavigationBars = !isDarkMode
-    }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      attributes.layoutInDisplayCutoutMode =
-          when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
-            else -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-          }
-    }
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    isStatusBarContrastEnforced = false
+    isNavigationBarContrastEnforced = true
   }
+
+  val isDarkMode = ContextUtils.isDarkMode(context)
+
+  statusBarColor = Color.TRANSPARENT
+  navigationBarColor =
+    when {
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isDarkMode -> LightNavigationBarColor
+      else -> DarkNavigationBarColor
+    }
+
+  WindowInsetsControllerCompat(this, decorView).run {
+    isAppearanceLightNavigationBars = !isDarkMode
+  }
+
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    attributes.layoutInDisplayCutoutMode =
+      when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
+          WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+        else -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+      }
+  }
+}
+
+internal fun Window.disableEdgeToEdge() {
+  WindowCompat.setDecorFitsSystemWindows(this, true)
 }

@@ -19,6 +19,9 @@ export type AppearancePreferences = {
 };
 
 export interface Spec extends TurboModule {
+  +getConstants: () => {
+    +IS_EDGE_TO_EDGE_ENABLED: boolean,
+  };
   +getColorScheme: () => ?ColorSchemeName;
   +setColorScheme: (colorScheme: ColorSchemeName) => void;
 
