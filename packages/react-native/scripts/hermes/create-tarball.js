@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -41,9 +42,13 @@ let argv = yargs
   }).argv;
 
 async function main() {
+  // $FlowFixMe[prop-missing]
   const hermesDir = argv.inputDir;
+  // $FlowFixMe[prop-missing]
   const buildType = argv.buildType;
+  // $FlowFixMe[prop-missing]
   const excludeDebugSymbols = argv.excludeDebugSymbols;
+  // $FlowFixMe[prop-missing]
   let tarballOutputDir = argv.outputDir;
 
   if (!tarballOutputDir) {
@@ -68,6 +73,6 @@ async function main() {
   return tarballOutputPath;
 }
 
-main().then(() => {
+void main().then(() => {
   process.exit(0);
 });

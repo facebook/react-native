@@ -106,6 +106,11 @@ static folly::dynamic convertPoint(const Point& point) {
   return pointResult;
 }
 
+ComponentName HostPlatformScrollViewProps::getDiffPropsImplementationTarget()
+    const {
+  return "ScrollView";
+}
+
 folly::dynamic HostPlatformScrollViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = HostPlatformScrollViewProps();

@@ -59,6 +59,9 @@ const babelPluginPreventBabelRegister = [
 
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
+    if (file.endsWith('.json')) {
+      return {code: src};
+    }
     if (nodeFiles.test(file)) {
       // node specific transforms only
       return babelTransformSync(src, {

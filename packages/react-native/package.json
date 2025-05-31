@@ -50,6 +50,11 @@
       "default": "./Libraries/*.d.ts"
     },
     "./scripts/*": "./scripts/*",
+    "./src/*": {
+      "react-native-strict-api": null,
+      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/src/*.d.ts",
+      "default": "./src/*.js"
+    },
     "./types/*.d.ts": {
       "react-native-strict-api": null,
       "default": "./types/*.d.ts"
@@ -61,7 +66,6 @@
     "./ReactCommon/*": null,
     "./sdks/*": null,
     "./src/fb_internal/*": "./src/fb_internal/*",
-    "./src/*": null,
     "./third-party-podspecs/*": null,
     "./types/*": null,
     "./types_generated/*": null,

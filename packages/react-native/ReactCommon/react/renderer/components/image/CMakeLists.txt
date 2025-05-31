@@ -28,5 +28,5 @@ target_link_libraries(rrc_image
         rrc_view
         yoga
 )
-target_compile_reactnative_options(rrc_image PRIVATE "Fabric")
+target_compile_reactnative_options(rrc_image PRIVATE)
 target_compile_options(rrc_image PRIVATE -Wpedantic)

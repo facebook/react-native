@@ -49,6 +49,7 @@ Pod::Spec.new do |s|
   s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"
 
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
@@ -66,6 +67,12 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/attributedstring/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/attributedstring/tests"
     ss.header_dir           = "react/renderer/attributedstring"
+  end
+
+  s.subspec "bridging" do |ss|
+    ss.source_files         = "react/renderer/bridging/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/bridging/tests"
+    ss.header_dir           = "react/renderer/bridging"
   end
 
   s.subspec "core" do |ss|

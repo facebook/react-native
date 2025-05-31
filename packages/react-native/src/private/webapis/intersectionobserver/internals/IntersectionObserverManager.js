@@ -92,7 +92,10 @@ let modernNativeIntersectionObserver =
           unobserve: NativeIntersectionObserver.unobserveV2,
         };
 
-if (!ReactNativeFeatureFlags.utilizeTokensInIntersectionObserver()) {
+if (
+  modernNativeIntersectionObserver &&
+  !ReactNativeFeatureFlags.utilizeTokensInIntersectionObserver()
+) {
   modernNativeIntersectionObserver = null;
 }
 

@@ -64,4 +64,4 @@ target_link_libraries(
         yoga
 )
 
-target_compile_reactnative_options(fabricjni PRIVATE "Fabric")
+target_compile_reactnative_options(fabricjni PRIVATE)

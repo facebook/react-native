@@ -23,5 +23,5 @@ target_link_libraries(react_renderer_componentregistry
         react_utils
         rrc_legacyviewmanagerinterop
 )
-target_compile_reactnative_options(react_renderer_componentregistry PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_componentregistry PRIVATE)
 target_compile_options(react_renderer_componentregistry PRIVATE -Wpedantic)

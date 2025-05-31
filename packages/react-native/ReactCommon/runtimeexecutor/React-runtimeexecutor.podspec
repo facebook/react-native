@@ -17,7 +17,12 @@ else
 end
 
 Pod::Spec.new do |s|
+  header_search_paths = [
+    "\"$(PODS_TARGET_SRCROOT)\"",
+  ]
+
   s.name                   = "React-runtimeexecutor"
+  s.module_name            = "React_runtimeexecutor"
   s.version                = version
   s.summary                = "-"  # TODO
   s.homepage               = "https://reactnative.dev/"
@@ -25,8 +30,18 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = "ReactCommon/*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
   s.header_dir             = "ReactCommon"
+
+  if ENV['USE_FRAMEWORKS']
+    s.header_mappings_dir      = '.'
+    header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
+  end
+
+  s.pod_target_xcconfig    = { "USE_HEADERMAP" => "NO",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+                               "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                               "DEFINES_MODULE" => "YES" }
 
   s.dependency "React-jsi", version
 end

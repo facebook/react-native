@@ -22,6 +22,15 @@ export type Experiments = $ReadOnly<{
    */
   // NOTE: Used by Expo, exposing a tab labelled "Network (Expo, unstable)"
   enableNetworkInspector: boolean,
+
+  /**
+   * Launch the Fusebox frontend in a standalone shell instead of a browser.
+   * When this is enabled, we will use the optional unstable_showFuseboxShell
+   * method on the framework-provided BrowserLauncher, or throw an error if the
+   * method is missing. Note that the default BrowserLauncher does *not*
+   * implement unstable_showFuseboxShell.
+   */
+  enableStandaloneFuseboxShell: boolean,
 }>;
 
 export type ExperimentsConfig = Partial<Experiments>;

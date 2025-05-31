@@ -22,5 +22,5 @@ target_link_libraries(react_utils
         glog_init
         jsireact
         react_debug)
-target_compile_reactnative_options(react_utils PRIVATE "Fabric")
+target_compile_reactnative_options(react_utils PRIVATE)
 target_compile_options(react_utils PRIVATE -Wpedantic)

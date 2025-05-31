@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -17,17 +18,22 @@ const os = require('os');
 const path = require('path');
 
 function generateNativeCode(
-  outputPath,
-  schemaInfos,
-  includesGeneratedCode,
-  platform,
-) {
+  outputPath /*: string */,
+  schemaInfos /*: $ReadOnlyArray<$FlowFixMe> */,
+  includesGeneratedCode /*: boolean */,
+  platform /*: string */,
+) /*: Array<void> */ {
   return schemaInfos.map(schemaInfo => {
     generateCode(outputPath, schemaInfo, includesGeneratedCode, platform);
   });
 }
 
-function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
+function generateCode(
+  outputPath /*: string */,
+  schemaInfo /*: $FlowFixMe */,
+  includesGeneratedCode /*: boolean */,
+  platform /*: string */,
+) {
   if (shouldSkipGenerationForRncore(schemaInfo, platform)) {
     codegenLog(
       '[Codegen - rncore] Skipping iOS code generation for rncore as it has been generated already.',
@@ -65,11 +71,15 @@ function generateCode(outputPath, schemaInfo, includesGeneratedCode, platform) {
   const outputDir =
     reactNativeCoreLibraryOutputPath(libraryName, platform) ?? outputPath;
   fs.mkdirSync(outputDir, {recursive: true});
+  // $FlowIssue[prop-missing] - `fs.cpSync` is missing in Flow libdefs.
   fs.cpSync(tmpOutputDir, outputDir, {recursive: true});
   codegenLog(`Generated artifacts: ${outputDir}`);
 }
 
-function shouldSkipGenerationForRncore(schemaInfo, platform) {
+function shouldSkipGenerationForRncore(
+  schemaInfo /*: $FlowFixMe */,
+  platform /*: string */,
+) {
   if (platform !== 'ios' || schemaInfo.library.config.name !== 'rncore') {
     return false;
   }
@@ -82,13 +92,19 @@ function shouldSkipGenerationForRncore(schemaInfo, platform) {
   );
 }
 
-function reactNativeCoreLibraryOutputPath(libraryName, platform) {
+function reactNativeCoreLibraryOutputPath(
+  libraryName /*: string */,
+  platform /*: string */,
+) {
   return CORE_LIBRARIES_WITH_OUTPUT_FOLDER[libraryName]
     ? CORE_LIBRARIES_WITH_OUTPUT_FOLDER[libraryName][platform]
     : null;
 }
 
-function shouldSkipGenerationForFBReactNativeSpec(schemaInfo, platform) {
+function shouldSkipGenerationForFBReactNativeSpec(
+  schemaInfo /*: $FlowFixMe */,
+  platform /*: string */,
+) {
   if (
     platform !== 'ios' ||
     schemaInfo.library.config.name !== 'FBReactNativeSpec'

@@ -136,27 +136,47 @@ export default function openDebuggerMiddleware({
       }
 
       const useFuseboxEntryPoint =
-        target.reactNative.capabilities?.prefersFuseboxFrontend;
+        target.reactNative.capabilities?.prefersFuseboxFrontend ?? false;
 
       try {
         switch (launchType) {
-          case 'launch':
-            await browserLauncher.launchDebuggerAppWindow(
-              getDevToolsFrontendUrl(
-                experiments,
-                target.webSocketDebuggerUrl,
-                serverBaseUrl,
-                {
-                  launchId: query.launchId,
-                  telemetryInfo: query.telemetryInfo,
-                  appId: target.appId,
-                  useFuseboxEntryPoint,
-                },
-              ),
+          case 'launch': {
+            const frontendUrl = getDevToolsFrontendUrl(
+              experiments,
+              target.webSocketDebuggerUrl,
+              serverBaseUrl,
+              {
+                launchId: query.launchId,
+                telemetryInfo: query.telemetryInfo,
+                appId: target.appId,
+                useFuseboxEntryPoint,
+              },
             );
+            if (
+              useFuseboxEntryPoint &&
+              experiments.enableStandaloneFuseboxShell
+            ) {
+              const windowKey = [
+                serverBaseUrl,
+                target.webSocketDebuggerUrl,
+                target.appId,
+              ].join('-');
+              if (!browserLauncher.unstable_showFuseboxShell) {
+                throw new Error(
+                  'Fusebox shell is not supported by the current browser launcher',
+                );
+              }
+              await browserLauncher.unstable_showFuseboxShell(
+                frontendUrl,
+                windowKey,
+              );
+            } else {
+              await browserLauncher.launchDebuggerAppWindow(frontendUrl);
+            }
             res.writeHead(200);
             res.end();
             break;
+          }
           case 'redirect':
             res.writeHead(302, {
               Location: getDevToolsFrontendUrl(
@@ -186,7 +206,7 @@ export default function openDebuggerMiddleware({
           pageId: target.id,
           deviceName: target.deviceName,
           targetDescription: target.description,
-          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
+          prefersFuseboxFrontend: useFuseboxEntryPoint,
         });
         return;
       } catch (e) {
@@ -200,7 +220,7 @@ export default function openDebuggerMiddleware({
           launchType,
           status: 'error',
           error: e,
-          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
+          prefersFuseboxFrontend: useFuseboxEntryPoint,
         });
         return;
       }

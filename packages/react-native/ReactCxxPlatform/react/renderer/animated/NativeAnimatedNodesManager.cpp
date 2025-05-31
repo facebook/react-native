@@ -243,7 +243,7 @@ void NativeAnimatedNodesManager::stopAnimationsForNode(Tag nodeTag) {
   std::vector<int> discardedAnimIds{};
 
   for (const auto& [animationId, driver] : activeAnimations_) {
-    if (driver->animatedValueTag() == nodeTag) {
+    if (driver->getAnimatedValueTag() == nodeTag) {
       discardedAnimIds.emplace_back(animationId);
     }
   }
@@ -612,9 +612,9 @@ bool NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
   for (const auto& [_id, driver] : activeAnimations_) {
     driver->runAnimationStep(timestamp);
 
-    if (driver->isComplete()) {
+    if (driver->getIsComplete()) {
       hasFinishedAnimations = true;
-      finishedAnimationValueNodes.insert(driver->animatedValueTag());
+      finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
     }
   }
 
@@ -625,8 +625,8 @@ bool NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
   if (hasFinishedAnimations) {
     std::vector<int> finishedAnimations;
     for (const auto& [animationId, driver] : activeAnimations_) {
-      if (driver->isComplete()) {
-        if (getAnimatedNode<ValueAnimatedNode>(driver->animatedValueTag())) {
+      if (driver->getIsComplete()) {
+        if (getAnimatedNode<ValueAnimatedNode>(driver->getAnimatedValueTag())) {
           driver->stopAnimation();
         }
         finishedAnimations.emplace_back(animationId);

@@ -35,10 +35,6 @@ FrameAnimationDriver::FrameAnimationDriver(
   onConfigChanged();
 }
 
-double FrameAnimationDriver::toValue() const noexcept {
-  return toValue_;
-}
-
 void FrameAnimationDriver::updateConfig(folly::dynamic config) {
   AnimationDriver::updateConfig(config);
   onConfigChanged();

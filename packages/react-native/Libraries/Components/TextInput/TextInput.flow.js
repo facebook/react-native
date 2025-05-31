@@ -10,6 +10,8 @@
 
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {
+  BlurEvent,
+  FocusEvent,
   GestureResponderEvent,
   NativeSyntheticEvent,
   ScrollEvent,
@@ -58,22 +60,22 @@ type TextInputContentSizeChangeEventData = $ReadOnly<{
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 
+/**
+ * @see TextInputProps.onBlur
+ * @deprecated Use `BlurEvent` instead.
+ */
+export type TextInputBlurEvent = BlurEvent;
+
+/**
+ * @see TextInputProps.onFocus
+ * @deprecated Use `FocusEvent` instead.
+ */
+export type TextInputFocusEvent = FocusEvent;
+
 type TargetEvent = $ReadOnly<{
   target: number,
   ...
 }>;
-
-type TextInputFocusEventData = TargetEvent;
-
-/**
- * @see TextInputProps.onBlur
- */
-export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-
-/**
- * @see TextInputProps.onFocus
- */
-export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
 export type Selection = $ReadOnly<{
   start: number,

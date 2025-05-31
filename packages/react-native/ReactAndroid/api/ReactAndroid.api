@@ -1664,23 +1664,23 @@ public final class com/facebook/react/common/LifecycleState : java/lang/Enum {
 	public static fun values ()[Lcom/facebook/react/common/LifecycleState;
 }
 
-public class com/facebook/react/common/MapBuilder {
-	public fun <init> ()V
-	public static fun builder ()Lcom/facebook/react/common/MapBuilder$Builder;
-	public static fun newHashMap ()Ljava/util/HashMap;
-	public static fun of ()Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
-	public static fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+public final class com/facebook/react/common/MapBuilder {
+	public static final field INSTANCE Lcom/facebook/react/common/MapBuilder;
+	public static final fun builder ()Lcom/facebook/react/common/MapBuilder$Builder;
+	public static final fun newHashMap ()Ljava/util/HashMap;
+	public static final fun of ()Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
+	public static final fun of (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;
 }
 
 public final class com/facebook/react/common/MapBuilder$Builder {
-	public fun build ()Ljava/util/Map;
-	public fun put (Ljava/lang/Object;Ljava/lang/Object;)Lcom/facebook/react/common/MapBuilder$Builder;
+	public final fun build ()Ljava/util/Map;
+	public final fun put (Ljava/lang/Object;Ljava/lang/Object;)Lcom/facebook/react/common/MapBuilder$Builder;
 }
 
 public final class com/facebook/react/common/ReactConstants {
@@ -5984,7 +5984,7 @@ public final class com/facebook/react/views/scroll/ReactScrollViewHelper {
 	public static final fun emitScrollEvent (Landroid/view/ViewGroup;FF)V
 	public static final fun emitScrollMomentumBeginEvent (Landroid/view/ViewGroup;II)V
 	public static final fun emitScrollMomentumEndEvent (Landroid/view/ViewGroup;)V
-	public static final fun findNextFocusableView (Landroid/view/ViewGroup;Landroid/view/View;IZ)Landroid/view/View;
+	public static final fun findNextFocusableView (Landroid/view/ViewGroup;Landroid/view/View;I)Landroid/view/View;
 	public static final fun forceUpdateState (Landroid/view/ViewGroup;)V
 	public static final fun getDefaultScrollAnimationDuration (Landroid/content/Context;)I
 	public static final fun getNextFlingStartValue (Landroid/view/ViewGroup;III)I
@@ -6777,9 +6777,12 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 	public static final field Companion Lcom/facebook/react/views/view/ReactViewManager$Companion;
 	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
+	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
+	protected fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/view/ReactViewGroup;)V
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/view/ReactViewGroup;
 	public fun getCommandsMap ()Ljava/util/Map;
+	public fun getExportedCustomBubblingEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
 	public fun nextFocusDown (Lcom/facebook/react/views/view/ReactViewGroup;I)V
 	public fun nextFocusForward (Lcom/facebook/react/views/view/ReactViewGroup;I)V

@@ -49,7 +49,7 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "React-featureflags"
-  s.dependency "React-runtimeexecutor", version
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-jsi"
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')

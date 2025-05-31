@@ -25,7 +25,7 @@ target_link_libraries(bridgelesshermes
         reactnative
 )
 
-target_compile_reactnative_options(bridgelesshermes PRIVATE "Fabric")
+target_compile_reactnative_options(bridgelesshermes PRIVATE)
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
         target_compile_options(
                 bridgelesshermes

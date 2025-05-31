@@ -45,6 +45,10 @@ const buildConfig: BuildConfig = {
       emitTypeScriptDefs: true,
       target: 'node',
     },
+    'debugger-shell': {
+      emitTypeScriptDefs: true,
+      target: 'node',
+    },
     'dev-middleware': {
       emitTypeScriptDefs: true,
       target: 'node',

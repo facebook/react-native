@@ -24,8 +24,6 @@ class FrameAnimationDriver : public AnimationDriver {
       const folly::dynamic& config,
       NativeAnimatedNodesManager* manager);
 
-  double toValue() const noexcept override;
-
  protected:
   bool update(double timeDeltaMs, bool restarting) override;
 

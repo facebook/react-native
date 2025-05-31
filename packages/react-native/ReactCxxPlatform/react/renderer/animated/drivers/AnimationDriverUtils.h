@@ -13,6 +13,8 @@
 
 #include <string_view>
 
+namespace facebook::react {
+
 static constexpr std::string_view ExtrapolateTypeIdentity = "identity";
 static constexpr std::string_view ExtrapolateTypeClamp = "clamp";
 static constexpr std::string_view ExtrapolateTypeExtend = "extend";
@@ -21,16 +23,14 @@ static constexpr double SingleFrameIntervalMs = 1000.0 / 60.0;
 
 static constexpr double TicksPerMs = 10000.0; // ticks are 100 nanoseconds
 
-namespace {
-
 inline double interpolate(
     double inputValue,
     double inputMin,
     double inputMax,
     double outputMin,
     double outputMax,
-    const std::string_view& extrapolateLeft,
-    const std::string_view& extrapolateRight) {
+    std::string_view extrapolateLeft,
+    std::string_view extrapolateRight) {
   auto result = inputValue;
 
   // Extrapolate
@@ -61,4 +61,4 @@ inline double interpolate(
       (outputMax - outputMin) * (result - inputMin) / (inputMax - inputMin);
 }
 
-} // namespace
+} // namespace facebook::react

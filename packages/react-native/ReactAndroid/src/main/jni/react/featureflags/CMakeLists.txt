@@ -26,4 +26,4 @@ target_link_libraries(
 )
 
 target_merge_so(react_featureflagsjni)
-target_compile_reactnative_options(react_featureflagsjni PRIVATE "ReactNative")
+target_compile_reactnative_options(react_featureflagsjni PRIVATE)

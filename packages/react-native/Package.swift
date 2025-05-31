@@ -144,6 +144,13 @@ let reactRendererDebug = RNTarget(
   dependencies: [.reactDebug, .reactNativeDependencies]
 )
 
+let reactRuntimeExecutor = RNTarget(
+  name: .reactRuntimeExecutor,
+  path: "ReactCommon/runtimeexecutor/platform/ios",
+  searchPaths: [RuntimeExecutorPath],
+  dependencies: [.jsi]
+)
+
 /// React-jsinspectortracing.podspec
 let reactJsInspectorTracing = RNTarget(
   name: .reactJsInspectorTracing,
@@ -230,7 +237,7 @@ let reactRuntimeScheduler = RNTarget(
   path: "ReactCommon/react/renderer/runtimescheduler",
   searchPaths: ["ReactCommon", RuntimeExecutorPath, CallInvokerPath],
   excludedPaths: ["tests"],
-  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactCxxReact, .reactPerfLogger, .reactPerformanceTimeline, .reactRendererConsistency, .reactUtils]
+  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactCxxReact, .reactPerfLogger, .reactPerformanceTimeline, .reactRendererConsistency, .reactUtils, .reactRuntimeExecutor]
 )
 
 /// ReactCommon.podspec
@@ -607,6 +614,7 @@ let targets = [
   reactNativeModuleDom,
   reactAppDelegate,
   reactSettings,
+  reactRuntimeExecutor,
 ]
 
 // MARK: Package object

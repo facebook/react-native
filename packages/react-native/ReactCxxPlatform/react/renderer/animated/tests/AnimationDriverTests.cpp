@@ -7,7 +7,6 @@
 
 #include "AnimationTestsBase.h"
 
-#include <react/renderer/animated/drivers/AnimationDriverUtils.h>
 #include <react/renderer/core/ReactRootViewTagGenerator.h>
 
 namespace facebook::react {

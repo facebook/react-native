@@ -8,6 +8,7 @@
 #include "PointerEventsProcessor.h"
 
 #include <glog/logging.h>
+#include <react/renderer/bridging/bridging.h>
 
 namespace facebook::react {
 
@@ -26,7 +27,9 @@ ShadowNode::Shared PointerEventsProcessor::getShadowNodeFromEventTarget(
           auto stateNodeObj = stateNode.asObject(runtime);
           if (stateNodeObj.hasProperty(runtime, "node")) {
             auto node = stateNodeObj.getProperty(runtime, "node");
-            return shadowNodeFromValue(runtime, node);
+            if (node.isObject()) {
+              return Bridging<ShadowNode::Shared>::fromJs(runtime, node);
+            }
           }
         }
       }

@@ -117,7 +117,7 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
       fontSize: this.state.fontSize,
     };
     return (
-      <View>
+      <View testID="text-with-toggle-attributes">
         {/* $FlowFixMe[incompatible-type] */}
         <Text style={curStyle}>
           Tap the controls below to change attributes.
@@ -130,12 +130,14 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
         </Text>
         <Text
           style={{backgroundColor: '#ffaaaa', marginTop: 5}}
-          onPress={this.toggleWeight}>
+          onPress={this.toggleWeight}
+          testID="toggle-weight">
           Toggle Weight
         </Text>
         <Text
           style={{backgroundColor: '#aaaaff', marginTop: 5}}
-          onPress={this.increaseSize}>
+          onPress={this.increaseSize}
+          testID="increase-size">
           Increase Size
         </Text>
       </View>
@@ -1064,9 +1066,8 @@ const examples = [
   },
   {
     title: 'Toggling Attributes',
-    render: function (): React.MixedElement {
-      return <AttributeToggler />;
-    },
+    name: 'togglingAttributes',
+    render: AttributeToggler,
   },
   {
     title: 'backgroundColor attribute',

@@ -19,5 +19,5 @@ target_link_libraries(sampleturbomodule
         reactnative
 )
 
-target_compile_reactnative_options(sampleturbomodule PRIVATE "ReactNative")
+target_compile_reactnative_options(sampleturbomodule PRIVATE)
 target_compile_options(sampleturbomodule PRIVATE -Wpedantic)

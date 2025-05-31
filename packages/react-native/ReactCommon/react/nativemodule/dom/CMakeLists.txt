@@ -21,8 +21,9 @@ target_link_libraries(react_nativemodule_dom
         rrc_root
         react_codegen_rncore
         react_cxxreact
+        react_renderer_bridging
         react_renderer_dom
         react_renderer_uimanager
 )
-target_compile_reactnative_options(react_nativemodule_dom PRIVATE "ReactNative")
+target_compile_reactnative_options(react_nativemodule_dom PRIVATE)
 target_compile_options(react_nativemodule_dom PRIVATE -Wpedantic)

@@ -32,7 +32,7 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.ViewCompat.FocusRealDirection;
+import androidx.core.view.ViewCompat.FocusDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -396,16 +396,24 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
-  public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
+  public @Nullable View focusSearch(View focused, @FocusDirection int direction) {
+    View nextFocus = super.focusSearch(focused, direction);
+
     if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
-      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, false);
+      // If we can find the next focus and it is a child of this view, return it, else it means we
+      // are leaving the scroll view and we should try to find a clipped element
+      if (nextFocus != null && this.findViewById(nextFocus.getId()) != null) {
+        return nextFocus;
+      }
+
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction);
 
       if (nextfocusableView != null) {
         return nextfocusableView;
       }
     }
 
-    return super.focusSearch(focused, direction);
+    return nextFocus;
   }
 
   /**
