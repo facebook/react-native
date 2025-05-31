@@ -12,7 +12,9 @@ exports[`TouchableHighlight renders correctly 1`] = `
   }
   accessible={true}
   focusable={false}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -44,7 +46,9 @@ exports[`TouchableHighlight with disabled state should be disabled when disabled
   }
   accessible={true}
   focusable={false}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -73,7 +77,9 @@ exports[`TouchableHighlight with disabled state should be disabled when disabled
   }
   accessible={true}
   focusable={false}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -102,7 +108,9 @@ exports[`TouchableHighlight with disabled state should disable button when acces
   }
   accessible={true}
   focusable={false}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -132,7 +140,9 @@ exports[`TouchableHighlight with disabled state should keep accessibilityState w
   }
   accessible={true}
   focusable={false}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
@@ -161,7 +171,9 @@ exports[`TouchableHighlight with disabled state should overwrite accessibilitySt
   }
   accessible={true}
   focusable={false}
+  onBlur={[Function]}
   onClick={[Function]}
+  onFocus={[Function]}
   onResponderGrant={[Function]}
   onResponderMove={[Function]}
   onResponderRelease={[Function]}
