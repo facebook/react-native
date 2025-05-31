@@ -70,6 +70,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   }
 }
 
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
+  if (_onRequestClose != nil) {
+    _onRequestClose(nil);
+  }
+}
+
 - (void)notifyForOrientationChange
 {
   if (!_onOrientationChange) {
