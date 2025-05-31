@@ -13,7 +13,9 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.views.common.ContextUtils
 
 internal val LightNavigationBarColor = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
@@ -48,25 +50,39 @@ internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarHide() {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    // Ensure the content extends into the cutout area
-    attributes.layoutInDisplayCutoutMode =
-        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-    setDecorFitsSystemWindows(false)
+  if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+    WindowInsetsControllerCompat(this, decorView).apply {
+      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      hide(WindowInsetsCompat.Type.statusBars())
+    }
+  } else {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      // Ensure the content extends into the cutout area
+      attributes.layoutInDisplayCutoutMode =
+          WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+      setDecorFitsSystemWindows(false)
+    }
+    addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
   }
-  addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-  clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
 }
 
 @Suppress("DEPRECATION")
 private fun Window.statusBarShow() {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    attributes.layoutInDisplayCutoutMode =
-        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
-    setDecorFitsSystemWindows(true)
+  if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+    WindowInsetsControllerCompat(this, decorView).apply {
+      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      show(WindowInsetsCompat.Type.statusBars())
+    }
+  } else {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      attributes.layoutInDisplayCutoutMode =
+          WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT
+      setDecorFitsSystemWindows(true)
+    }
+    addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
+    clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
   }
-  addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
-  clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 }
 
 @Suppress("DEPRECATION")
