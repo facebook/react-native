@@ -5,11 +5,11 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     text: "APIs"
 - tapOn:
     id: "apis-tab"
-- scrollUntilVisible:
-    element:
-        id: "Legacy Native Module"
-    direction: DOWN
-    speed: 40
+- runFlow: ./helpers/search.yml
+- inputText:
+    text: "Legacy Native"
+- assertVisible:
+    id: "Legacy Native Module"
 - tapOn:
     id: "Legacy Native Module"
 - tapOn: 
