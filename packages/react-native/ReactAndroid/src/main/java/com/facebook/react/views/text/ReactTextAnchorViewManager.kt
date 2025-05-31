@@ -35,7 +35,7 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorH
  * ReactBaseTextShadowNode} hierarchy to calculate a [android.text.Spannable] text represented the
  * whole text subtree.
  */
-internal abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
+public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
     BaseViewManager<ReactTextView, C>() {
 
   @ReactProp(name = "accessible")
