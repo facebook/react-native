@@ -39,18 +39,18 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
     BaseViewManager<ReactTextView, C>() {
 
   @ReactProp(name = "accessible")
-  public fun setAccessible(view: ReactTextView, accessible: Boolean) {
+  internal fun setAccessible(view: ReactTextView, accessible: Boolean) {
     view.isFocusable = accessible
   }
 
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
-  public fun setNumberOfLines(view: ReactTextView, numberOfLines: Int) {
+  internal fun setNumberOfLines(view: ReactTextView, numberOfLines: Int) {
     view.setNumberOfLines(numberOfLines)
   }
 
   @ReactProp(name = ViewProps.ELLIPSIZE_MODE)
-  public fun setEllipsizeMode(view: ReactTextView, ellipsizeMode: String?) {
+  internal fun setEllipsizeMode(view: ReactTextView, ellipsizeMode: String?) {
     when (ellipsizeMode) {
       null,
       "tail" -> view.setEllipsizeLocation(TextUtils.TruncateAt.END)
@@ -65,22 +65,22 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
   }
 
   @ReactProp(name = ViewProps.ADJUSTS_FONT_SIZE_TO_FIT)
-  public fun setAdjustFontSizeToFit(view: ReactTextView, adjustsFontSizeToFit: Boolean) {
+  internal fun setAdjustFontSizeToFit(view: ReactTextView, adjustsFontSizeToFit: Boolean) {
     view.setAdjustFontSizeToFit(adjustsFontSizeToFit)
   }
 
   @ReactProp(name = ViewProps.FONT_SIZE)
-  public fun setFontSize(view: ReactTextView, fontSize: Float) {
+  internal fun setFontSize(view: ReactTextView, fontSize: Float) {
     view.setFontSize(fontSize)
   }
 
   @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0f)
-  public fun setLetterSpacing(view: ReactTextView, letterSpacing: Float) {
+  internal fun setLetterSpacing(view: ReactTextView, letterSpacing: Float) {
     view.letterSpacing = letterSpacing
   }
 
   @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
-  public fun setTextAlignVertical(view: ReactTextView, textAlignVertical: String?) {
+  internal fun setTextAlignVertical(view: ReactTextView, textAlignVertical: String?) {
     when (textAlignVertical) {
       null,
       "auto" -> view.setGravityVertical(Gravity.NO_GRAVITY)
@@ -95,17 +95,17 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
   }
 
   @ReactProp(name = "selectable")
-  public fun setSelectable(view: ReactTextView, isSelectable: Boolean) {
+  internal fun setSelectable(view: ReactTextView, isSelectable: Boolean) {
     view.setTextIsSelectable(isSelectable)
   }
 
   @ReactProp(name = "selectionColor", customType = "Color")
-  public fun setSelectionColor(view: ReactTextView, color: Int?) {
+  internal fun setSelectionColor(view: ReactTextView, color: Int?) {
     view.highlightColor = color ?: getDefaultTextColorHighlight(view.context)
   }
 
   @ReactProp(name = "android_hyphenationFrequency")
-  public fun setAndroidHyphenationFrequency(view: ReactTextView, frequency: String?) {
+  internal fun setAndroidHyphenationFrequency(view: ReactTextView, frequency: String?) {
     when (frequency) {
       null,
       "none" -> view.hyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE
@@ -127,7 +127,7 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
       defaultFloat = Float.NaN)
-  public fun setBorderRadius(view: ReactTextView, index: Int, borderRadius: Float) {
+  internal fun setBorderRadius(view: ReactTextView, index: Int, borderRadius: Float) {
     val radius =
         if (borderRadius.isNaN()) {
           null
@@ -138,7 +138,7 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
   }
 
   @ReactProp(name = "borderStyle")
-  public fun setBorderStyle(view: ReactTextView, borderStyle: String?) {
+  internal fun setBorderStyle(view: ReactTextView, borderStyle: String?) {
     val parsedBorderStyle = if (borderStyle == null) null else fromString(borderStyle)
     BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle)
   }
@@ -154,7 +154,7 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
               ViewProps.BORDER_START_WIDTH,
               ViewProps.BORDER_END_WIDTH],
       defaultFloat = Float.NaN)
-  public fun setBorderWidth(view: ReactTextView, index: Int, width: Float) {
+  internal fun setBorderWidth(view: ReactTextView, index: Int, width: Float) {
     BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
 
@@ -167,22 +167,22 @@ public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
               "borderTopColor",
               "borderBottomColor"],
       customType = "Color")
-  public fun setBorderColor(view: ReactTextView, index: Int, color: Int?) {
+  internal fun setBorderColor(view: ReactTextView, index: Int, color: Int?) {
     BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.values()[index], color)
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
-  public fun setIncludeFontPadding(view: ReactTextView, includepad: Boolean) {
+  internal fun setIncludeFontPadding(view: ReactTextView, includepad: Boolean) {
     view.includeFontPadding = includepad
   }
 
   @ReactProp(name = "disabled", defaultBoolean = false)
-  public fun setDisabled(view: ReactTextView, disabled: Boolean) {
+  internal fun setDisabled(view: ReactTextView, disabled: Boolean) {
     view.isEnabled = !disabled
   }
 
   @ReactProp(name = "dataDetectorType")
-  public fun setDataDetectorType(view: ReactTextView, type: String?) {
+  internal fun setDataDetectorType(view: ReactTextView, type: String?) {
     when (type) {
       "phoneNumber" -> {
         view.setLinkifyMask(Linkify.PHONE_NUMBERS)
