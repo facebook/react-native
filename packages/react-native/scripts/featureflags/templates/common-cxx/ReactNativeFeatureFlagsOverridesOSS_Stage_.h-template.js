@@ -10,7 +10,11 @@
 
 import type {FeatureFlagDefinitions, OSSReleaseStageValue} from '../../types';
 
-import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
+import {
+  DO_NOT_MODIFY_COMMENT,
+  getCxxTypeFromDefaultValue,
+  getCxxValueFromDefaultValue,
+} from '../../utils';
 import signedsource from 'signedsource';
 
 function getClassName(ossReleaseStage: OSSReleaseStageValue): string {
@@ -64,7 +68,7 @@ ${Object.entries(definitions.common)
       return `  ${getCxxTypeFromDefaultValue(
         flagConfig.metadata.expectedReleaseValue,
       )} ${flagName}() override {
-    return ${JSON.stringify(flagConfig.metadata.expectedReleaseValue)};
+    return ${getCxxValueFromDefaultValue(flagConfig.metadata.expectedReleaseValue)};
   }`;
     }
   })

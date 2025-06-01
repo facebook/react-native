@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5314028389c33ef7e2781e7e43ac6e49>>
+ * @generated SignedSource<<ac09fd0e72e9fa41a5a13578fcd98d03>>
  */
 
 /**
@@ -520,6 +520,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModules();
+  }
+
+  double virtualViewPrerenderRatio() override {
+    auto value = values_["virtualViewPrerenderRatio"];
+    if (!value.isNull()) {
+      return value.getDouble();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::virtualViewPrerenderRatio();
   }
 };
 

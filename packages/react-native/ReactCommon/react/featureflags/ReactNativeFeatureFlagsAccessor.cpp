@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6030c3b0bc053ef31fddc0cb9b41038e>>
+ * @generated SignedSource<<bea1415ac302c670c4e714ca127a30c1>>
  */
 
 /**
@@ -978,6 +978,24 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
 
     flagValue = currentProvider_->useTurboModules();
     useTurboModules_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
+double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
+  auto flagValue = virtualViewPrerenderRatio_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(53, "virtualViewPrerenderRatio");
+
+    flagValue = currentProvider_->virtualViewPrerenderRatio();
+    virtualViewPrerenderRatio_ = flagValue;
   }
 
   return flagValue.value();
