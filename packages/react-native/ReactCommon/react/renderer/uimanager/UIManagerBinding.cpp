@@ -11,6 +11,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/bridging/bridging.h>
 #include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/dom/DOM.h>
@@ -20,6 +21,16 @@
 #include <utility>
 
 namespace facebook::react {
+
+namespace {
+
+inline static jsi::Value createAndPromoteRuntimeShadowNodeReference(
+    jsi::Runtime& runtime,
+    ShadowNode::Shared shadowNode) {
+  return Bridging<ShadowNode::Shared>::toJs(runtime, shadowNode, true);
+}
+
+} // namespace
 
 void UIManagerBinding::createAndInstallIfNeeded(
     jsi::Runtime& runtime,
@@ -220,15 +231,14 @@ jsi::Value UIManagerBinding::get(
               return jsi::Value::undefined();
             }
 
-            return valueFromShadowNode(
+            return createAndPromoteRuntimeShadowNodeReference(
                 runtime,
                 uiManager->createNode(
                     tagFromValue(arguments[0]),
                     stringFromValue(runtime, arguments[1]),
                     surfaceIdFromValue(runtime, arguments[2]),
                     RawProps(runtime, arguments[3]),
-                    std::move(instanceHandle)),
-                true);
+                    std::move(instanceHandle)));
           } catch (const std::logic_error& ex) {
             LOG(FATAL) << "logic_error in createNode: " << ex.what();
           }
@@ -313,14 +323,13 @@ jsi::Value UIManagerBinding::get(
           // rolled out
           // validateArgumentCount(runtime, methodName, paramCount, count);
 
-          return valueFromShadowNode(
+          return createAndPromoteRuntimeShadowNodeReference(
               runtime,
               uiManager->cloneNode(
                   *Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
                   count > 1 ? shadowNodeListFromValue(runtime, arguments[1])
                             : ShadowNode::emptySharedShadowNodeSharedList(),
-                  RawProps()),
-              true);
+                  RawProps()));
         });
   }
 
@@ -338,13 +347,12 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          return valueFromShadowNode(
+          return createAndPromoteRuntimeShadowNodeReference(
               runtime,
               uiManager->cloneNode(
                   *Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
                   nullptr,
-                  RawProps(runtime, arguments[1])),
-              true);
+                  RawProps(runtime, arguments[1])));
         });
   }
 
@@ -365,15 +373,14 @@ jsi::Value UIManagerBinding::get(
           // validateArgumentCount(runtime, methodName, paramCount, count);
 
           bool hasChildrenArg = count == 3;
-          return valueFromShadowNode(
+          return createAndPromoteRuntimeShadowNodeReference(
               runtime,
               uiManager->cloneNode(
                   *Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
                   hasChildrenArg
                       ? shadowNodeListFromValue(runtime, arguments[1])
                       : ShadowNode::emptySharedShadowNodeSharedList(),
-                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])),
-              true);
+                  RawProps(runtime, arguments[hasChildrenArg ? 2 : 1])));
         });
   }
 
@@ -781,7 +788,7 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::null();
           }
 
-          return valueFromShadowNode(runtime, shadowNode);
+          return Bridging<ShadowNode::Shared>::toJs(runtime, shadowNode);
         });
   }
 
