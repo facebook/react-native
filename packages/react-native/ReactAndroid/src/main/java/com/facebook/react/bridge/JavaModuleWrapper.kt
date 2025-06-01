@@ -24,7 +24,7 @@ import java.lang.reflect.Method
  */
 @DoNotStrip
 @InteropLegacyArchitecture
-internal class JavaModuleWrapper(
+public class JavaModuleWrapper(
     private val jsInstance: JSInstance,
     private val moduleHolder: ModuleHolder
 ) {
@@ -35,25 +35,25 @@ internal class JavaModuleWrapper(
   }
 
   @DoNotStrip
-  class MethodDescriptor {
-    @DoNotStrip var method: Method? = null
+  public class MethodDescriptor {
+    @DoNotStrip public var method: Method? = null
 
-    @DoNotStrip var signature: String? = null
+    @DoNotStrip public var signature: String? = null
 
-    @DoNotStrip var name: String? = null
+    @DoNotStrip public var name: String? = null
 
-    @DoNotStrip var type: String? = null
+    @DoNotStrip public var type: String? = null
   }
 
   private val methods = ArrayList<NativeMethod>()
   private val descs = ArrayList<MethodDescriptor>()
 
   @get:DoNotStrip
-  val module: BaseJavaModule
+  public val module: BaseJavaModule
     get() = moduleHolder.module as BaseJavaModule
 
   @get:DoNotStrip
-  val name: String
+  public val name: String
     get() = moduleHolder.name
 
   @DoNotStrip
@@ -89,7 +89,7 @@ internal class JavaModuleWrapper(
   }
 
   @get:DoNotStrip
-  val methodDescriptors: List<MethodDescriptor>
+  public val methodDescriptors: List<MethodDescriptor>
     get() {
       if (descs.isEmpty()) {
         findMethods()
@@ -98,7 +98,7 @@ internal class JavaModuleWrapper(
     }
 
   @get:DoNotStrip
-  val constants: NativeMap
+  public val constants: NativeMap
     get() {
       val moduleName = name
       SystraceMessage.beginSection(TRACE_TAG_REACT, "JavaModuleWrapper.getConstants")
@@ -126,7 +126,7 @@ internal class JavaModuleWrapper(
     }
 
   @DoNotStrip
-  fun invoke(methodId: Int, parameters: ReadableNativeArray) {
+  public fun invoke(methodId: Int, parameters: ReadableNativeArray) {
     if (methodId >= methods.size) {
       return
     }
@@ -134,7 +134,7 @@ internal class JavaModuleWrapper(
     methods[methodId].invoke(jsInstance, parameters)
   }
 
-  companion object {
+  private companion object {
     init {
       assertLegacyArchitecture("JavaModuleWrapper", LegacyArchitectureLogLevel.WARNING)
     }
