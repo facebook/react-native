@@ -1,12 +1,10 @@
 appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
 ---
-- launchApp
-- assertVisible: "Components"
-- scrollUntilVisible:
-    element:
-      id: "Pressable"
-    direction: DOWN
-    speed: 40
+- runFlow: ./helpers/launch-app-and-search.yml
+- inputText:
+    text: "Pressable"
+- assertVisible:
+    id: "Pressable"
 - tapOn:
     id: "Pressable"
 - assertVisible:
