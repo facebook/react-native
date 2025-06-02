@@ -45,8 +45,10 @@ internal class MyNativeViewManager :
     view.setBackgroundColor(Color.parseColor(color))
   }
 
-  override fun callNativeMethodToAddOverlays(view: MyNativeView, overlayColors: ReadableArray) {
-    view.addOverlays(overlayColors)
+  override fun callNativeMethodToAddOverlays(view: MyNativeView, overlayColors: ReadableArray?) {
+    if (overlayColors != null) {
+      view.addOverlays(overlayColors)
+    }
   }
 
   override fun callNativeMethodToRemoveOverlays(view: MyNativeView) {
