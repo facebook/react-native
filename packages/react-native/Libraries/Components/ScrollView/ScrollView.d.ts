@@ -19,6 +19,7 @@ import {
 import {RefreshControlProps} from '../RefreshControl/RefreshControl';
 import {Touchable} from '../Touchable/Touchable';
 import {ViewProps} from '../View/ViewPropTypes';
+import {View} from '../View/View';
 
 // See https://reactnative.dev/docs/scrollview#contentoffset
 export interface PointProp {
@@ -607,6 +608,19 @@ export interface ScrollViewProps
    *   });
    */
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
+
+  /**
+   * A ref to the inner View element of the ScrollView. This should be used
+   * instead of calling `getInnerViewRef`.
+   */
+  innerViewRef?: React.RefObject<View> | undefined;
+
+  /**
+   * A ref to the Native ScrollView component. This ref can be used to call
+   * all of ScrollView's public methods, in addition to native methods like
+   * measure, measureLayout, etc.
+   */
+  scrollViewRef?: React.RefObject<ScrollView> | undefined;
 
   /**
    * A floating-point number that determines how quickly the scroll view
