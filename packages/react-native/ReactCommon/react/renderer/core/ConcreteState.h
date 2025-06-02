@@ -104,7 +104,7 @@ class ConcreteState : public State {
           react_native_assert(oldData);
           return callback(*static_cast<const Data*>(oldData.get()));
         }};
-              
+
     family->dispatchRawState(std::move(stateUpdate), flushSync);
   }
 

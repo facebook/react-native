@@ -12,34 +12,14 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View, Modal, Button, Dimensions} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 function Playground() {
-  const [modalVisible, setModalVisible] = React.useState(false);
-
   return (
     <View style={styles.container}>
-      <Button
-        title="Open Modal with Detents"
-        onPress={() => setModalVisible(true)}
-      />
-      <Modal
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-        presentationStyle="pageSheet"
-        animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <RNTesterText>
-              Try dragging the modal up and down to see the bottom red box flicker
-            </RNTesterText>
-            <Button title="Close Modal" onPress={() => setModalVisible(false)} />
-            <View style={styles.flexContainer}>
-              <View style={styles.bottomBox} />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <RNTesterText>
+        Edit "RNTesterPlayground.js" to change this file
+      </RNTesterText>
     </View>
   );
 }
@@ -47,26 +27,6 @@ function Playground() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  modalContent: {
-    flex: 1,
-    padding: 20,
-  },
-  flexContainer: {
-    flex: 1,
-    position: 'relative',
-  },
-  bottomBox: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 50,
-    backgroundColor: 'red',
   },
 });
 
