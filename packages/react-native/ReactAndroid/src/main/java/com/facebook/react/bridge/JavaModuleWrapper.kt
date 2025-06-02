@@ -35,25 +35,27 @@ public class JavaModuleWrapper(
   }
 
   @DoNotStrip
-  public class MethodDescriptor {
-    @DoNotStrip public var method: Method? = null
+  internal class MethodDescriptor {
+    @DoNotStrip var method: Method? = null
 
-    @DoNotStrip public var signature: String? = null
+    @DoNotStrip var signature: String? = null
 
-    @DoNotStrip public var name: String? = null
+    @DoNotStrip var name: String? = null
 
-    @DoNotStrip public var type: String? = null
+    @DoNotStrip var type: String? = null
   }
 
   private val methods = ArrayList<NativeMethod>()
   private val descs = ArrayList<MethodDescriptor>()
 
   @get:DoNotStrip
-  public val module: BaseJavaModule
+  @get:JvmName("getModule")
+  internal val module: BaseJavaModule
     get() = moduleHolder.module as BaseJavaModule
 
   @get:DoNotStrip
-  public val name: String
+  @get:JvmName("getName")
+  internal val name: String
     get() = moduleHolder.name
 
   @DoNotStrip
@@ -89,7 +91,8 @@ public class JavaModuleWrapper(
   }
 
   @get:DoNotStrip
-  public val methodDescriptors: List<MethodDescriptor>
+  @get:JvmName("getMethodDescriptors")
+  internal val methodDescriptors: List<MethodDescriptor>
     get() {
       if (descs.isEmpty()) {
         findMethods()
@@ -98,7 +101,8 @@ public class JavaModuleWrapper(
     }
 
   @get:DoNotStrip
-  public val constants: NativeMap
+  @get:JvmName("getConstants")
+  internal val constants: NativeMap
     get() {
       val moduleName = name
       SystraceMessage.beginSection(TRACE_TAG_REACT, "JavaModuleWrapper.getConstants")
@@ -126,7 +130,8 @@ public class JavaModuleWrapper(
     }
 
   @DoNotStrip
-  public fun invoke(methodId: Int, parameters: ReadableNativeArray) {
+  @JvmName("invoke")
+  internal fun invoke(methodId: Int, parameters: ReadableNativeArray) {
     if (methodId >= methods.size) {
       return
     }
