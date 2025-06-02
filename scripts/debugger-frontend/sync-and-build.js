@@ -36,6 +36,7 @@ const config = {
     nohooks: {type: 'boolean'},
     help: {type: 'boolean'},
     'create-diff': {type: 'boolean'},
+    'no-build': {type: 'boolean'},
   },
 };
 
@@ -60,6 +61,7 @@ async function main() {
       nohooks,
       'keep-scratch': keepScratch,
       'create-diff': createDiff,
+      'no-build': noBuild,
     },
     /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
@@ -80,7 +82,12 @@ async function main() {
     return;
   }
 
-  console.log('\n' + chalk.bold.inverse('Syncing debugger-frontend') + '\n');
+  console.log(
+    '\n' +
+      chalk.bold.inverse('Syncing debugger-frontend') +
+      (noBuild ? ' (--no-build)' : '') +
+      '\n',
+  );
 
   const scratchPath = await fs.mkdtemp(
     path.join(tmpdir(), 'debugger-frontend-build-'),
@@ -93,18 +100,26 @@ async function main() {
   if (createDiff) {
     diffBaseInfo = await checkCanCreateDiff(packagePath);
   }
-  await buildDebuggerFrontend(packagePath, scratchPath, localCheckoutPath, {
-    branch: branch ?? '',
-    gclientSyncOptions: {nohooks: nohooks === true},
-  });
+  const {checkoutPath} = await buildDebuggerFrontend(
+    packagePath,
+    scratchPath,
+    localCheckoutPath,
+    {
+      branch: branch ?? '',
+      gclientSyncOptions: {nohooks: nohooks === true},
+      noBuild,
+    },
+  );
   if (createDiff && diffBaseInfo) {
-    await createSyncDiff(diffBaseInfo, scratchPath);
+    await createSyncDiff(diffBaseInfo, scratchPath, {checkoutPath, noBuild});
   }
   await cleanup(scratchPath, keepScratch === true);
-  process.stdout.write(
-    chalk.green('Sync done.') +
-      ' Check in any updated files under packages/debugger-frontend.\n',
-  );
+  if (!noBuild) {
+    process.stdout.write(
+      chalk.green('Sync done.') +
+        ' Check in any updated files under packages/debugger-frontend.\n',
+    );
+  }
 }
 
 function showHelp() {
@@ -122,6 +137,8 @@ function showHelp() {
     --nohooks          Don't run gclient hooks in the devtools checkout (useful
                        for existing checkouts).
     --keep-scratch     Don't clean up temporary files.
+    --create-diff      Create a diff with the updated files.
+    --no-build         Skip actually building and updating the frontend.
 `);
 }
 
@@ -147,11 +164,12 @@ async function buildDebuggerFrontend(
   packagePath /*: string */,
   scratchPath /*: string */,
   localCheckoutPath /*: ?string */,
-  {branch, gclientSyncOptions} /*: $ReadOnly<{
+  {branch, gclientSyncOptions, noBuild} /*: $ReadOnly<{
     branch: string,
     gclientSyncOptions: $ReadOnly<{nohooks: boolean}>,
+    noBuild: boolean,
   }>*/,
-) {
+) /*: Promise<{checkoutPath: string}> */ {
   let checkoutPath;
   if (localCheckoutPath == null) {
     const scratchCheckoutPath = path.join(scratchPath, 'devtools-frontend');
@@ -164,15 +182,19 @@ async function buildDebuggerFrontend(
     checkoutPath = localCheckoutPath;
   }
 
-  await setupGclientWorkspace(scratchPath, checkoutPath, gclientSyncOptions);
+  let gnArgsSummary = '<not built>';
+  if (!noBuild) {
+    await setupGclientWorkspace(scratchPath, checkoutPath, gclientSyncOptions);
 
-  const {buildPath, gnArgsSummary} = await performReleaseBuild(checkoutPath);
+    let buildPath;
+    ({buildPath, gnArgsSummary} = await performReleaseBuild(checkoutPath));
 
-  const destPathInPackage = path.join(packagePath, 'dist', 'third-party');
-  await cleanPackageFiles(destPathInPackage);
+    const destPathInPackage = path.join(packagePath, 'dist', 'third-party');
+    await cleanPackageFiles(destPathInPackage);
 
-  await copyFrontendFilesToPackage(buildPath, destPathInPackage);
-  await copyLicenseToPackage(checkoutPath, destPathInPackage);
+    await copyFrontendFilesToPackage(buildPath, destPathInPackage);
+    await copyLicenseToPackage(checkoutPath, destPathInPackage);
+  }
   await generateBuildInfo({
     checkoutPath,
     packagePath,
@@ -180,7 +202,11 @@ async function buildDebuggerFrontend(
     isLocalCheckout: localCheckoutPath != null,
     gclientSyncOptions,
     gnArgsSummary,
+    noBuild,
   });
+  return {
+    checkoutPath,
+  };
 }
 
 async function checkoutDevToolsFrontend(
@@ -199,6 +225,20 @@ async function checkoutDevToolsFrontend(
     '1',
     checkoutPath,
   ]);
+  // Fetch the full history for changelog purposes
+  await spawnSafe(
+    'git',
+    [
+      'fetch',
+      '--all',
+      '--unshallow',
+      // Just the history, not file contents
+      '--filter=blob:none',
+    ],
+    {
+      cwd: checkoutPath,
+    },
+  );
   process.stdout.write('\n');
 }
 
@@ -313,6 +353,7 @@ async function generateBuildInfo(
   packagePath: string,
   gclientSyncOptions: $ReadOnly<{nohooks: boolean}>,
   gnArgsSummary: string,
+  noBuild: boolean,
 }> */,
 ) {
   process.stdout.write('Generating BUILD_INFO for debugger-frontend\n\n');
@@ -354,7 +395,10 @@ async function generateBuildInfo(
     'Git status in checkout:',
     ...gitStatusLines,
     '',
-  ].join('\n');
+    info.noBuild ? '--no-build @' + 'nocommit' : null,
+  ]
+    .filter(x => x != null)
+    .join('\n');
   await fs.writeFile(
     path.join(info.packagePath, 'BUILD_INFO'),
     SignedSource.signFile(contents),
@@ -476,9 +520,76 @@ async function readBuildInfo(
   };
 }
 
+function generateChangelogTable(
+  checkoutPath /*: string */,
+  baseRevision /*: string */,
+  newRevision /*: string */,
+) /*: string */ {
+  process.stdout.write('Generating changelog table\n');
+  let changelogTable = '';
+  // Get commits between base and new revision, excluding commits brought in by merges
+  // Use NUL character as field separator to avoid issues with pipe characters in commit messages
+  const gitLogCmd = `git log --first-parent --pretty=format:"%h%x00%an%x00%ae%x00%aI%x00%s" ${baseRevision}..${newRevision}`;
+
+  const gitLog = execSync(gitLogCmd, {
+    cwd: checkoutPath,
+    encoding: 'utf-8',
+    maxBuffer: 10 * 1024 * 1024, // 10MB buffer to handle large outputs
+  }).trim();
+
+  if (gitLog) {
+    const commits = gitLog.split('\n');
+    const maxCommits = 50;
+    const limitedCommits = commits.slice(0, maxCommits);
+
+    const tableRows = [
+      '',
+      '### Changelog',
+      '',
+      '| Commit | Author | Date/Time | Subject |',
+      '| ------ | ------ | --------- | ------- |',
+    ];
+
+    limitedCommits.forEach(commit => {
+      const [hash, author, email, timestamp, subject] = commit.split('\0');
+      // Escape pipe characters in the subject to avoid breaking the markdown table
+      const escapedSubject = subject.replace(/\|/g, '\\|');
+      // Create links for commit hash and description
+      const commitUrl = `${DEVTOOLS_FRONTEND_REPO_URL}/commit/${hash}`;
+      const hashLink = `[${hash}](${commitUrl})`;
+      const subjectLink = `[${escapedSubject}](${commitUrl})`;
+      const authorUnixname = email.endsWith('@meta.com')
+        ? email.slice(0, -'@meta.com'.length)
+        : undefined;
+      const authorText =
+        authorUnixname != null
+          ? `${author} (@${authorUnixname})`
+          : `${author} (${email})`;
+      tableRows.push(
+        `| ${hashLink} | ${authorText} | ${timestamp} | ${subjectLink} |`,
+      );
+    });
+
+    if (commits.length > maxCommits) {
+      tableRows.push(
+        `| ... | ... | ... | ... | ${commits.length - maxCommits} more commit${
+          commits.length - maxCommits > 1 ? 's' : ''
+        } not shown |`,
+      );
+    }
+
+    changelogTable = tableRows.join('\n');
+  }
+  return changelogTable;
+}
+
 async function createSyncDiff(
   diffBaseInfo /*: DiffBaseInfo */,
   scratchPath /*: string */,
+  {
+    checkoutPath,
+    noBuild,
+  } /*: $ReadOnly<{checkoutPath: string, noBuild: boolean}> */,
 ) {
   process.stdout.write('Creating a sync diff\n');
   const {packagePath, baseGitRevision} = diffBaseInfo;
@@ -487,14 +598,23 @@ async function createSyncDiff(
     await readBuildInfo(packagePath);
   const newGitRevisionShort = newGitRevision.slice(0, 7);
 
+  // Generate the changelog table
+  const changelogTable = await generateChangelogTable(
+    checkoutPath,
+    baseGitRevision,
+    newGitRevision,
+  );
+
   const commitMessage = [
-    (isLocalCheckout ? 'DO NOT LAND ' : '') +
+    (isLocalCheckout || noBuild ? 'DO NOT LAND ' : '') +
       `[RN] Update debugger-frontend from ${baseGitRevisionShort}...${newGitRevisionShort}`,
     '',
     'Summary:',
     `Changelog: [Internal] - Update \`@react-native/debugger-frontend\` from ${baseGitRevisionShort}...${newGitRevisionShort}`,
     '',
     `Resyncs \`@react-native/debugger-frontend\` from GitHub - see \`rn-chrome-devtools-frontend\` [changelog](${DEVTOOLS_FRONTEND_REPO_URL}/compare/${baseGitRevision}...${newGitRevision}).`,
+    '',
+    changelogTable,
     '',
     'Test Plan: CI',
     '',
@@ -503,8 +623,6 @@ async function createSyncDiff(
     'Tags: msdkland[metro]',
     '',
   ].join('\n');
-
-  // TODO: Generate a detailed inline changelog from Git commits?
 
   const commitMessageFile = path.join(scratchPath, 'commit-msg');
   await fs.writeFile(commitMessageFile, commitMessage);
@@ -516,6 +634,11 @@ async function createSyncDiff(
   await spawnSafe('jf', ['submit', '--draft'], {
     cwd: packagePath,
   });
+  if (noBuild) {
+    await spawnSafe('jf', ['action', '--abandon'], {
+      cwd: packagePath,
+    });
+  }
 }
 
 if (require.main === module) {
