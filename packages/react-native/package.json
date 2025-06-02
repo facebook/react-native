@@ -197,7 +197,7 @@
     "libraries": [
       {
         "name": "FBReactNativeSpec",
-        "type": "modules",
+        "type": "all",
         "ios": {
           "modules": {
             "AccessibilityManager": {
@@ -220,13 +220,6 @@
             }
           }
         },
-        "android": {},
-        "jsSrcsDir": "src"
-      },
-      {
-        "name": "rncore",
-        "type": "components",
-        "ios": {},
         "android": {},
         "jsSrcsDir": "src"
       }
