@@ -363,7 +363,7 @@ exports[`execute test-app "ReactAppDependencyProvider.podspec" should match snap
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-version = \\"0.80.0-rc.3\\"
+version = \\"0.80.0-rc.4\\"
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
@@ -401,7 +401,7 @@ exports[`execute test-app "ReactCodegen.podspec" should match snapshot 1`] = `
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-version = \\"0.80.0-rc.3\\"
+version = \\"0.80.0-rc.4\\"
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
@@ -838,7 +838,7 @@ exports[`execute test-app-legacy "ReactAppDependencyProvider.podspec" should mat
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-version = \\"0.80.0-rc.3\\"
+version = \\"0.80.0-rc.4\\"
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
@@ -876,7 +876,7 @@ exports[`execute test-app-legacy "ReactCodegen.podspec" should match snapshot 1`
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-version = \\"0.80.0-rc.3\\"
+version = \\"0.80.0-rc.4\\"
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
