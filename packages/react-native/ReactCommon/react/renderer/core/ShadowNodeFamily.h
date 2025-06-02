@@ -108,7 +108,7 @@ class ShadowNodeFamily final : public jsi::NativeState {
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchRawState(StateUpdate&& stateUpdate) const;
+  void dispatchRawState(StateUpdate&& stateUpdate, bool flushSync) const;
 
   /*
    * Holds currently applied native props. `nullptr` if setNativeProps API is

@@ -56,7 +56,7 @@ class EventDispatcher {
   /*
    * Dispatches a state update with given priority.
    */
-  void dispatchStateUpdate(StateUpdate&& stateUpdate) const;
+  void dispatchStateUpdate(StateUpdate&& stateUpdate, bool flushSync) const;
 
 #pragma mark - Event listeners
   /*

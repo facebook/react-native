@@ -41,8 +41,8 @@ void EventDispatcher::experimental_flushSync() const {
   eventQueue_.experimental_flushSync();
 }
 
-void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate) const {
-  eventQueue_.enqueueStateUpdate(std::move(stateUpdate));
+void EventDispatcher::dispatchStateUpdate(StateUpdate&& stateUpdate, bool flushSync) const {
+  eventQueue_.enqueueStateUpdate(std::move(stateUpdate), flushSync);
 }
 
 void EventDispatcher::dispatchUniqueEvent(RawEvent&& rawEvent) const {

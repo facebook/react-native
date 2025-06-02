@@ -106,6 +106,35 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _isPresented;
 }
 
+CADisplayLink *_displayLink;
+CGFloat _lastHeight = 0;
+
+- (void)startObservingHeightChanges {
+  if (!_displayLink) {
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(checkHeightChange)];
+    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    _lastHeight = self.viewController.sheetPresentationController.presentedViewController.view.frame.size.height;
+  }
+}
+
+- (void)stopObservingHeightChanges {
+  [_displayLink invalidate];
+  _displayLink = nil;
+}
+
+- (void)checkHeightChange {
+  UIView *presentedView = self.viewController.sheetPresentationController.presentedViewController.view;
+  CGFloat height = presentedView.frame.size.height;
+  if (height != _lastHeight) {
+    _lastHeight = height;
+    if (_state != nullptr) {
+      auto newState = ModalHostViewState{RCTSizeFromCGSize(presentedView.frame.size)};
+      _state->updateState(std::move(newState), true);
+    }
+
+  }
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -154,6 +183,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                        animated:_shouldAnimatePresentation
                      completion:^{
                        auto eventEmitter = [self modalEventEmitter];
+                       [self startObservingHeightChanges];
                        if (eventEmitter) {
                          eventEmitter->onShow(ModalHostViewEventEmitter::OnShow{});
                        }
@@ -175,6 +205,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                      completion:^{
                        [snapshot removeFromSuperview];
                        auto eventEmitter = [self modalEventEmitter];
+                       [self stopObservingHeightChanges];
                        if (eventEmitter) {
                          eventEmitter->onDismiss(ModalHostViewEventEmitter::OnDismiss{});
                        }
@@ -232,6 +263,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   [super prepareForRecycle];
   _state.reset();
+  [self stopObservingHeightChanges];
   _viewController = nil;
   _isPresented = NO;
   _shouldPresent = NO;
@@ -240,6 +272,14 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
   const auto &newProps = static_cast<const ModalHostViewProps &>(*props);
+  
+  UISheetPresentationController *sheetPresentationController =
+  self.viewController.sheetPresentationController;
+  sheetPresentationController.detents = @[
+  [UISheetPresentationControllerDetent customDetentWithIdentifier:@"" resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext>  _Nonnull context) {
+     return 150;
+   }],
+  [UISheetPresentationControllerDetent mediumDetent], [UISheetPresentationControllerDetent largeDetent]];
 
 #if !TARGET_OS_TV
   self.viewController.supportedInterfaceOrientations = supportedOrientationsMask(newProps.supportedOrientations);

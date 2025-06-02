@@ -74,10 +74,10 @@ class ConcreteState : public State {
    * function for cases where a new value of data does not depend on an old
    * value.
    */
-  void updateState(Data&& newData) const {
+  void updateState(Data&& newData, bool flushSync = false) const {
     updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
       return std::make_shared<const Data>(data);
-    });
+    }, flushSync);
   }
 
   /*
@@ -89,7 +89,8 @@ class ConcreteState : public State {
    * return `nullptr`.
    */
   void updateState(
-      std::function<StateData::Shared(const Data& oldData)> callback) const {
+      std::function<StateData::Shared(const Data& oldData)> callback,
+      bool flushSync = false) const {
     auto family = family_.lock();
 
     if (!family) {
@@ -103,8 +104,8 @@ class ConcreteState : public State {
           react_native_assert(oldData);
           return callback(*static_cast<const Data*>(oldData.get()));
         }};
-
-    family->dispatchRawState(std::move(stateUpdate));
+              
+    family->dispatchRawState(std::move(stateUpdate), flushSync);
   }
 
 #if defined(RN_SERIALIZABLE_STATE)
