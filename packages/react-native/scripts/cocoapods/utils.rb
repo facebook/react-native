@@ -643,7 +643,6 @@ class ReactNativePodsUtils
             "React-logger",
             "React-oscompat",
             "React-perflogger",
-            "React-rncore",
             "React-runtimeexecutor",
             "React-timing",
             "ReactCommon",
