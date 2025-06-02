@@ -25,6 +25,21 @@ export function getCxxTypeFromDefaultValue(
   }
 }
 
+export function getCxxJNITypeFromDefaultValue(
+  defaultValue: FeatureFlagValue,
+): string {
+  switch (typeof defaultValue) {
+    case 'boolean':
+      return 'jboolean';
+    case 'number':
+      return 'jint';
+    case 'string':
+      return 'jstring';
+    default:
+      throw new Error(`Unsupported default value type: ${typeof defaultValue}`);
+  }
+}
+
 export function getKotlinTypeFromDefaultValue(
   defaultValue: FeatureFlagValue,
 ): string {

@@ -16,7 +16,7 @@ import type {
 import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
 import signedsource from 'signedsource';
 
-function getFollyDynamicAccessor(config: CommonFeatureFlagConfig): string {
+function getFollyDynamicAccessor(config: CommonFeatureFlagConfig<>): string {
   switch (typeof config.defaultValue) {
     case 'boolean':
       return 'getBool';
