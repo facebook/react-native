@@ -292,7 +292,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (view.getTag(R.id.accessibility_order_parent) != null) {
       ViewGroup accessibilityParent = (ViewGroup) view.getTag(R.id.accessibility_order_parent);
 
-      ReactAxOrderHelper.unsetAccessibilityOrder(accessibilityParent);
       accessibilityParent.setTag(R.id.accessibility_order_dirty, true);
 
       accessibilityParent.notifySubtreeAccessibilityStateChanged(
@@ -334,12 +333,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                   view.setTag(R.id.accessibility_order_dirty, true);
                 }
               });
-    }
 
-    ReactAxOrderHelper.unsetAccessibilityOrder(view);
-    ((ViewGroup) view)
-        .notifySubtreeAccessibilityStateChanged(
-            view, view, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+      ((ViewGroup) view)
+          .notifySubtreeAccessibilityStateChanged(
+              view, view, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+    }
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
