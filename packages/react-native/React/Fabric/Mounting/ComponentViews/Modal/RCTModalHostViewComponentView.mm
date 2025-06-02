@@ -106,35 +106,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _isPresented;
 }
 
-CADisplayLink *_displayLink;
-CGFloat _lastHeight = 0;
-
-- (void)startObservingHeightChanges {
-  if (!_displayLink) {
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(checkHeightChange)];
-    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-    _lastHeight = self.viewController.sheetPresentationController.presentedViewController.view.frame.size.height;
-  }
-}
-
-- (void)stopObservingHeightChanges {
-  [_displayLink invalidate];
-  _displayLink = nil;
-}
-
-- (void)checkHeightChange {
-  UIView *presentedView = self.viewController.sheetPresentationController.presentedViewController.view;
-  CGFloat height = presentedView.frame.size.height;
-  if (height != _lastHeight) {
-    _lastHeight = height;
-    if (_state != nullptr) {
-      auto newState = ModalHostViewState{RCTSizeFromCGSize(presentedView.frame.size)};
-      _state->updateState(std::move(newState), true);
-    }
-
-  }
-}
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -183,7 +154,6 @@ CGFloat _lastHeight = 0;
                        animated:_shouldAnimatePresentation
                      completion:^{
                        auto eventEmitter = [self modalEventEmitter];
-                       [self startObservingHeightChanges];
                        if (eventEmitter) {
                          eventEmitter->onShow(ModalHostViewEventEmitter::OnShow{});
                        }
@@ -205,7 +175,6 @@ CGFloat _lastHeight = 0;
                      completion:^{
                        [snapshot removeFromSuperview];
                        auto eventEmitter = [self modalEventEmitter];
-                       [self stopObservingHeightChanges];
                        if (eventEmitter) {
                          eventEmitter->onDismiss(ModalHostViewEventEmitter::OnDismiss{});
                        }
@@ -248,7 +217,7 @@ CGFloat _lastHeight = 0;
 
   if (_state != nullptr) {
     auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};
-    _state->updateState(std::move(newState));
+    _state->updateState(std::move(newState), true);
   }
 }
 
@@ -263,7 +232,6 @@ CGFloat _lastHeight = 0;
 {
   [super prepareForRecycle];
   _state.reset();
-  [self stopObservingHeightChanges];
   _viewController = nil;
   _isPresented = NO;
   _shouldPresent = NO;
