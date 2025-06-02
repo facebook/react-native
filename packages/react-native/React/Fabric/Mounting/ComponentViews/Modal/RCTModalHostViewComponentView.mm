@@ -240,14 +240,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
   const auto &newProps = static_cast<const ModalHostViewProps &>(*props);
-  
-  UISheetPresentationController *sheetPresentationController =
-  self.viewController.sheetPresentationController;
-  sheetPresentationController.detents = @[
-  [UISheetPresentationControllerDetent customDetentWithIdentifier:@"" resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext>  _Nonnull context) {
-     return 150;
-   }],
-  [UISheetPresentationControllerDetent mediumDetent], [UISheetPresentationControllerDetent largeDetent]];
 
 #if !TARGET_OS_TV
   self.viewController.supportedInterfaceOrientations = supportedOrientationsMask(newProps.supportedOrientations);
