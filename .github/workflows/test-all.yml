@@ -194,7 +194,6 @@ jobs:
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -227,7 +226,6 @@ jobs:
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -315,7 +313,6 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: 4-core-ubuntu
     needs: build_npm_package
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
