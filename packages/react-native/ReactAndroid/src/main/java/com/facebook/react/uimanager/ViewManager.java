@@ -314,7 +314,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * <p>TODO T7247021: Replace updateExtraData with generic update props mechanism after D2086999
    */
-  public abstract void updateExtraData(@NonNull T root, Object extraData);
+  public abstract void updateExtraData(@NonNull T view, Object extraData);
 
   /**
    * Subclasses may use this method to receive events/commands directly from JS through the {@link
@@ -323,24 +323,24 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * <p>This method is deprecated use {@link #receiveCommand(View, String, ReadableArray)} instead.
    *
-   * @param root View instance that should receive the command
+   * @param view View instance that should receive the command
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
   @Deprecated
-  public void receiveCommand(@NonNull T root, int commandId, @Nullable ReadableArray args) {}
+  public void receiveCommand(@NonNull T view, int commandId, @Nullable ReadableArray args) {}
 
   /**
    * Subclasses may use this method to receive events/commands directly from JS through the {@link
    * UIManager}. Good example of such a command would be {@code scrollTo} request with coordinates
    * for a {@link ReactScrollView} instance.
    *
-   * @param root View instance that should receive the command
+   * @param view View instance that should receive the command
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
-  public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {
-    getOrCreateViewManagerDelegate().receiveCommand(root, commandId, args);
+  public void receiveCommand(@NonNull T view, String commandId, @Nullable ReadableArray args) {
+    getOrCreateViewManagerDelegate().receiveCommand(view, commandId, args);
   }
 
   /**
