@@ -12,6 +12,7 @@ import android.text.TextUtils
 import android.text.util.Linkify
 import android.view.Gravity
 import com.facebook.common.logging.FLog
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.BaseViewManager
@@ -31,10 +32,11 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorH
  *
  * This is a "shadowing" view manager, which means that the
  * [com.facebook.react.uimanager.NativeViewHierarchyManager] will NOT manage children of native
- * [android.widget.TextView] instances instantiated by this manager. Instead we use @{link
- * ReactBaseTextShadowNode} hierarchy to calculate a [android.text.Spannable] text represented the
+ * [android.widget.TextView] instances instantiated by this manager. Instead we use
+ * [ReactBaseTextShadowNode] hierarchy to calculate a [android.text.Spannable] text represented the
  * whole text subtree.
  */
+@UnstableReactNativeAPI
 public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
     BaseViewManager<ReactTextView, C>() {
 

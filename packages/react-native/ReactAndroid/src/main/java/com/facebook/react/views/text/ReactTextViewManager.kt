@@ -13,6 +13,7 @@ import android.text.Spannable
 import androidx.annotation.Nullable
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.internal.SystraceSection
@@ -32,6 +33,7 @@ import java.util.HashMap
  * `<Text>` nodes.
  */
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
+@OptIn(UnstableReactNativeAPI::class)
 public class ReactTextViewManager @JvmOverloads public constructor(protected var reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) :
   ReactTextAnchorViewManager<ReactTextShadowNode>(), IViewManagerWithChildren {
   init {
@@ -128,21 +130,10 @@ public class ReactTextViewManager @JvmOverloads public constructor(protected var
       )
     view.setSpanned(spanned)
 
-    try {
-      val minimumFontSize: Float =
-          paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE.toInt())
-              .toFloat()
-      view.setMinimumFontSize(minimumFontSize)
-    } catch (e: IllegalArgumentException) {
-      // T190482857: We see rare crash with MapBuffer without PA_KEY_MINIMUM_FONT_SIZE entry
-      FLog.e(
-        TAG,
-        "Paragraph Attributes: %s",
-        // if (paragraphAttributes != null) paragraphAttributes.toString() else "<empty>"
-        paragraphAttributes.toString()
-      )
-      throw e
-    }
+    val minimumFontSize: Float =
+        paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE.toInt())
+            .toFloat()
+    view.setMinimumFontSize(minimumFontSize)
 
     val textBreakStrategy =
       TextAttributeProps.getTextBreakStrategy(
