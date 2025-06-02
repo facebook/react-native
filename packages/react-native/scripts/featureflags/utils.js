@@ -17,9 +17,42 @@ export function getCxxTypeFromDefaultValue(
     case 'boolean':
       return 'bool';
     case 'number':
-      return 'int';
+      return 'double';
     case 'string':
       return 'std::string';
+    default:
+      throw new Error(`Unsupported default value type: ${typeof defaultValue}`);
+  }
+}
+
+export function getCxxValueFromDefaultValue(
+  defaultValue: FeatureFlagValue,
+): string {
+  switch (typeof defaultValue) {
+    case 'boolean':
+      return defaultValue.toString();
+    case 'number':
+      const numericString = defaultValue.toString();
+      // If the number is an integer, we need to append ".0" so that the result
+      // is interpeted as a double in C++.
+      return numericString.includes('.') ? numericString : `${numericString}.0`;
+    case 'string':
+      return JSON.stringify(defaultValue);
+    default:
+      throw new Error(`Unsupported default value type: ${typeof defaultValue}`);
+  }
+}
+
+export function getCxxFollyDynamicAccessorFromDefaultValue(
+  defaultValue: FeatureFlagValue,
+): string {
+  switch (typeof defaultValue) {
+    case 'boolean':
+      return 'getBool';
+    case 'number':
+      return 'getDouble';
+    case 'string':
+      return 'getString';
     default:
       throw new Error(`Unsupported default value type: ${typeof defaultValue}`);
   }
@@ -32,7 +65,7 @@ export function getCxxJNITypeFromDefaultValue(
     case 'boolean':
       return 'jboolean';
     case 'number':
-      return 'jint';
+      return 'jdouble';
     case 'string':
       return 'jstring';
     default:
@@ -47,9 +80,27 @@ export function getKotlinTypeFromDefaultValue(
     case 'boolean':
       return 'Boolean';
     case 'number':
-      return 'Int';
+      return 'Double';
     case 'string':
       return 'String';
+    default:
+      throw new Error(`Unsupported default value type: ${typeof defaultValue}`);
+  }
+}
+
+export function getKotlinValueFromDefaultValue(
+  defaultValue: FeatureFlagValue,
+): string {
+  switch (typeof defaultValue) {
+    case 'boolean':
+      return defaultValue.toString();
+    case 'number':
+      const numericString = defaultValue.toString();
+      // If the number is an integer, we need to append ".0" so that the result
+      // is interpeted as a double in Kotlin.
+      return numericString.includes('.') ? numericString : `${numericString}.0`;
+    case 'string':
+      return JSON.stringify(defaultValue);
     default:
       throw new Error(`Unsupported default value type: ${typeof defaultValue}`);
   }
