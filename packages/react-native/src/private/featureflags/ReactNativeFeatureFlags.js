@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<33870be221829e11a7e180b718c3738f>>
+ * @generated SignedSource<<7fe2abc6b638728b09b0194988f0264c>>
  * @flow strict
  * @noformat
  */
@@ -103,6 +103,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useShadowNodeStateOnClone: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
+  virtualViewPrerenderRatio: Getter<number>,
 }>;
 
 /**
@@ -396,6 +397,10 @@ export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('us
  * When enabled, NativeModules will be executed by using the TurboModule system
  */
 export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', false);
+/**
+ * Initial prerender ratio for VirtualView.
+ */
+export const virtualViewPrerenderRatio: Getter<number> = createNativeFlagGetter('virtualViewPrerenderRatio', 5);
 
 /**
  * Overrides the feature flags with the provided methods.
