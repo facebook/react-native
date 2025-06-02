@@ -35,6 +35,14 @@
 
 namespace facebook::react {
 
+// Global function pointer for getting current time
+static TimePointFunction g_now = &std::chrono::steady_clock::now;
+
+// Function to set the global now function
+void g_setNativeAnimatedNowTimestampFunction(TimePointFunction nowFunction) {
+  g_now = nowFunction;
+}
+
 namespace {
 
 struct NodesQueueItem {
@@ -719,7 +727,7 @@ void NativeAnimatedNodesManager::onRender() {
   // Step through the animation loop
   if (isAnimationUpdateNeeded()) {
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                  std::chrono::steady_clock::now().time_since_epoch())
+                  g_now().time_since_epoch())
                   .count();
 
     auto containsChange =
