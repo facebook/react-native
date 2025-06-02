@@ -58,7 +58,7 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
 
   protected val reactNativeHost: ReactNativeHost?
     /**
-     * Get the [ReactNativeHost] used by this app. By default, assumes [ ][Activity.getApplication] is an instance of [ReactApplication] and calls [ ][ReactApplication.getReactNativeHost]. Override this method if your application class does not
+     * Get the [ReactNativeHost] used by this app. By default, assumes [Activity.getApplication] is an instance of [ReactApplication] and calls [ReactApplication.getReactNativeHost]. Override this method if your application class does not
      * implement `ReactApplication` or you simply have a different mechanism for storing a
      * `ReactNativeHost`, e.g. as a static field somewhere.
      */
@@ -73,12 +73,12 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
 
   protected val reactHost: ReactHost?
     /**
-     * Get the [ReactHost] used by this app. By default, assumes [ ][Activity.getApplication] is an instance of [ReactApplication] and calls [ ][ReactApplication.getReactHost]. Override this method if your application class does not
+     * Get the [ReactHost] used by this app. By default, assumes [Activity.getApplication] is an instance of [ReactApplication] and calls [ReactApplication.getReactHost]. Override this method if your application class does not
      * implement `ReactApplication` or you simply have a different mechanism for storing a
      * `ReactHost`, e.g. as a static field somewhere.
      *
      *
-     * If you're using Old Architecture/Bridge Mode, this method should return null as [ ] is a Bridgeless-only concept.
+     * If you're using Old Architecture/Bridge Mode, this method should return null as [ReactHost] is a Bridgeless-only concept.
      */
     get() {
       val application = getActivity()?.getApplication() as ReactApplication?
@@ -137,7 +137,7 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
   }
 
   /**
-   * Helper to forward onKeyUp commands from our host Activity. This allows ReactFragment to handle
+   * Helper to forward onKeyUp commands from our host Activity. This allows [ReactFragment] to handle
    * double tap reloads and dev menus
    *
    *
@@ -147,9 +147,8 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
    * @param event event
    * @return true if we handled onKeyUp
    */
-  public fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-    return reactDelegate?.shouldShowDevMenuOrReload(keyCode, event) ?: false
-  }
+  public fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean =
+    reactDelegate?.shouldShowDevMenuOrReload(keyCode, event) ?: false
 
   @Deprecated("Deprecated in Java")
   public override fun onRequestPermissionsResult(
@@ -164,13 +163,11 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
     }
   }
 
-  override fun checkPermission(permission: String, pid: Int, uid: Int): Int {
-    return getActivity()?.checkPermission(permission, pid, uid) ?: 0
-  }
+  override fun checkPermission(permission: String, pid: Int, uid: Int): Int =
+    getActivity()?.checkPermission(permission, pid, uid) ?: 0
 
-  override fun checkSelfPermission(permission: String): Int {
-    return getActivity()?.checkSelfPermission(permission) ?: 0
-  }
+  override fun checkSelfPermission(permission: String): Int =
+    getActivity()?.checkSelfPermission(permission) ?: 0
 
   @Suppress("DEPRECATION")
   override fun requestPermissions(
@@ -192,7 +189,7 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
      * @param componentName The name of the component
      * @return Builder
      */
-    public fun setComponentName(componentName: String?): Builder {
+    public fun setComponentName(componentName: String): Builder {
       mComponentName = componentName
       return this
     }
@@ -203,7 +200,7 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
      * @param launchOptions launchOptions
      * @return Builder
      */
-    public fun setLaunchOptions(launchOptions: Bundle?): Builder {
+    public fun setLaunchOptions(launchOptions: Bundle): Builder {
       mLaunchOptions = launchOptions
       return this
     }
