@@ -20,13 +20,6 @@ Size AndroidProgressBarMeasurementsManager::measure(
     SurfaceId surfaceId,
     const AndroidProgressBarProps& props,
     LayoutConstraints layoutConstraints) const {
-  {
-    std::scoped_lock lock(mutex_);
-    if (hasBeenMeasured_) {
-      return cachedMeasurement_;
-    }
-  }
-
   const jni::global_ref<jobject>& fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
@@ -54,7 +47,7 @@ Size AndroidProgressBarMeasurementsManager::measure(
   local_ref<ReadableMap::javaobject> propsRM =
       make_local(reinterpret_cast<ReadableMap::javaobject>(propsRNM.get()));
 
-  auto measurement = yogaMeassureToSize(measure(
+  return yogaMeassureToSize(measure(
       fabricUIManager,
       surfaceId,
       componentName.get(),
@@ -65,10 +58,6 @@ Size AndroidProgressBarMeasurementsManager::measure(
       maximumSize.width,
       minimumSize.height,
       maximumSize.height));
-
-  std::scoped_lock lock(mutex_);
-  cachedMeasurement_ = measurement;
-  return measurement;
 }
 
 } // namespace facebook::react
