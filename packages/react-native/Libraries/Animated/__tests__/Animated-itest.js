@@ -61,8 +61,8 @@ test('moving box by 100 points', () => {
     }).start();
   });
 
-  // TODO: this fails with any value below 1038, even though anything above 1000 should be enough.
-  Fantom.unstable_advanceAnimationsByTime(1038);
+  // TODO: this fails with any value below 1022, even though anything above 1000 should be enough.
+  Fantom.unstable_advanceAnimationsByTime(1022);
   boundingClientRect = viewElement.getBoundingClientRect();
   expect(boundingClientRect.x).toBe(100);
 
