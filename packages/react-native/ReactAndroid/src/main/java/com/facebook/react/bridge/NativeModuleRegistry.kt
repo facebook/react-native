@@ -26,7 +26,8 @@ public class NativeModuleRegistry(
   private val moduleMap: Map<String, ModuleHolder>
     get() = modules
 
-  public fun getJavaModules(jsInstance: JSInstance): List<JavaModuleWrapper> =
+  @JvmName("getJavaModules") // This is needed because this method is accessed by JNI
+  internal fun getJavaModules(jsInstance: JSInstance): List<JavaModuleWrapper> =
     buildList {
       for ((_, value) in modules) {
         if (!value.isCxxModule) {

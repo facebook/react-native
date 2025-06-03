@@ -24,18 +24,18 @@ import java.lang.reflect.Method
  */
 @DoNotStrip
 @InteropLegacyArchitecture
-public class JavaModuleWrapper(
+internal class JavaModuleWrapper(
     private val jsInstance: JSInstance,
     private val moduleHolder: ModuleHolder
 ) {
-  internal interface NativeMethod {
+  interface NativeMethod {
     fun invoke(jsInstance: JSInstance, parameters: ReadableArray)
 
     val type: String
   }
 
   @DoNotStrip
-  internal class MethodDescriptor {
+  class MethodDescriptor {
     @DoNotStrip var method: Method? = null
 
     @DoNotStrip var signature: String? = null
@@ -49,13 +49,11 @@ public class JavaModuleWrapper(
   private val descs = ArrayList<MethodDescriptor>()
 
   @get:DoNotStrip
-  @get:JvmName("getModule") // This is needed because this field is accessed by JNI
-  internal val module: BaseJavaModule
+  val module: BaseJavaModule
     get() = moduleHolder.module as BaseJavaModule
 
   @get:DoNotStrip
-  @get:JvmName("getName") // This is needed because this field is accessed by JNI
-  internal val name: String
+  val name: String
     get() = moduleHolder.name
 
   @DoNotStrip
@@ -91,8 +89,7 @@ public class JavaModuleWrapper(
   }
 
   @get:DoNotStrip
-  @get:JvmName("getMethodDescriptors") // This is needed because this field is accessed by JNI
-  internal val methodDescriptors: List<MethodDescriptor>
+  val methodDescriptors: List<MethodDescriptor>
     get() {
       if (descs.isEmpty()) {
         findMethods()
@@ -101,8 +98,7 @@ public class JavaModuleWrapper(
     }
 
   @get:DoNotStrip
-  @get:JvmName("getConstants") // This is needed because this field is accessed by JNI
-  internal val constants: NativeMap
+  val constants: NativeMap
     get() {
       val moduleName = name
       SystraceMessage.beginSection(TRACE_TAG_REACT, "JavaModuleWrapper.getConstants")
@@ -130,8 +126,7 @@ public class JavaModuleWrapper(
     }
 
   @DoNotStrip
-  @JvmName("invoke") // This is needed because this method is accessed by JNI
-  internal fun invoke(methodId: Int, parameters: ReadableNativeArray) {
+  fun invoke(methodId: Int, parameters: ReadableNativeArray) {
     if (methodId >= methods.size) {
       return
     }
