@@ -263,7 +263,11 @@ let reactGraphics = RNTarget(
 let reactTurboModuleCore = RNTarget(
   name: .reactTurboModuleCore,
   path: "ReactCommon/react/nativemodule/core",
-  searchPaths: [ReactFBReactNativeSpecPath, "ReactCommon/react/nativemodule/core/platform/ios"],
+  searchPaths: [
+    ReactFBReactNativeSpecPath,
+    FBLazyVectorPath,
+    "ReactCommon/react/nativemodule/core/platform/ios",
+  ],
   excludedPaths: ["platform/android", "iostests"],
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleBridging, .yoga, .reactRuntimeExecutor]
 )
@@ -322,7 +326,6 @@ let reactCoreRCTWebsocket = RNTarget(
 let reactCoreModules = RNTarget(
   name: .reactCoreModules,
   path: "React/CoreModules",
-  searchPaths: [FBLazyVectorPath],
   excludedPaths: ["PlatformStubs/RCTStatusBarManager.mm"],
   dependencies: [.reactNativeDependencies, .jsi, .yoga, .reactTurboModuleCore]
 )
@@ -340,7 +343,6 @@ let reactRuntime = RNTarget(
 let reactRuntimeApple = RNTarget(
   name: .reactRuntimeApple,
   path: "ReactCommon/react/runtime/platform/ios",
-  searchPaths: [FBLazyVectorPath],
   excludedPaths: ["ReactCommon/RCTJscInstance.mm", "ReactCommon/metainternal"],
   dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactRCTFabric, .reactCoreModules, .reactTurboModuleCore, .hermesPrebuilt, .reactUtils]
 )
@@ -350,7 +352,6 @@ let reactCore = RNTarget(
   name: .reactCore,
   path: "React",
   searchPaths: [
-    FBLazyVectorPath,
     "React/I18n",
     "React/Profiler",
     "ReactCommon/react/runtime/platform/ios", // explicit header search path to break circular dependency. RCTHost imports `RCTDefines.h` in ReactCore, ReacCore needs to import RCTHost
@@ -455,7 +456,6 @@ let reactImageManager = RNTarget(
 let reactRCTAnimation = RNTarget(
   name: .reactRCTAnimation,
   path: "Libraries/NativeAnimation",
-  searchPaths: [FBLazyVectorPath],
   dependencies: [.reactNativeDependencies, .rctTypesafety, .jsi, .reactFeatureFlags, .yoga, .reactTurboModuleCore, .reactUtils]
 )
 
@@ -463,7 +463,6 @@ let reactRCTAnimation = RNTarget(
 let reactRCTImage = RNTarget(
   name: .reactRCTImage,
   path: "Libraries/Image",
-  searchPaths: [FBLazyVectorPath],
   linkedFrameworks: ["Accelerate"],
   dependencies: [.rctTypesafety, .jsi, .yoga, .reactTurboModuleBridging, .reactTurboModuleCore]
 )
@@ -472,7 +471,6 @@ let reactRCTImage = RNTarget(
 let reactRCTText = RNTarget(
   name: .reactRCTText,
   path: "Libraries/Text",
-  searchPaths: [FBLazyVectorPath],
   dependencies: [.yoga, .reactTurboModuleCore]
 )
 
@@ -480,7 +478,6 @@ let reactRCTText = RNTarget(
 let reactRCTBlob = RNTarget(
   name: .reactRCTBlob,
   path: "Libraries/Blob",
-  searchPaths: [FBLazyVectorPath],
   dependencies: [.yoga, .jsi, .reactTurboModuleCore]
 )
 
@@ -488,7 +485,6 @@ let reactRCTBlob = RNTarget(
 let reactRCTNetwork = RNTarget(
   name: .reactRCTNetwork,
   path: "Libraries/Network",
-  searchPaths: [FBLazyVectorPath],
   dependencies: [.yoga, .jsi, .reactTurboModuleCore]
 )
 
@@ -503,7 +499,6 @@ let reactAppDelegate = RNTarget(
 let reactRCTLinking = RNTarget(
   name: .reactRCTLinking,
   path: "Libraries/LinkingIOS",
-  searchPaths: [FBLazyVectorPath],
   dependencies: [.jsi, .reactTurboModuleCore]
 )
 
@@ -511,7 +506,6 @@ let reactRCTLinking = RNTarget(
 let reactSettings = RNTarget(
   name: .reactSettings,
   path: "Libraries/Settings",
-  searchPaths: [FBLazyVectorPath],
   dependencies: [.reactTurboModuleCore, .yoga]
 )
 
