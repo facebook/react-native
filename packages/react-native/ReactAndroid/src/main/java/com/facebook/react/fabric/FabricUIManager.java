@@ -81,6 +81,7 @@ import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
@@ -90,6 +91,8 @@ import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.SynchronousEventReceiver;
 import com.facebook.react.views.text.PreparedLayout;
+import com.facebook.react.views.text.ReactTextViewManager;
+import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -535,31 +538,6 @@ public class FabricUIManager
             PixelUtil.toPixelFromDIP(height));
   }
 
-  @SuppressWarnings("unused")
-  private long measure(
-      int rootTag,
-      String componentName,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
-      float minWidth,
-      float maxWidth,
-      float minHeight,
-      float maxHeight) {
-    return measure(
-        rootTag,
-        componentName,
-        localData,
-        props,
-        state,
-        minWidth,
-        maxWidth,
-        minHeight,
-        maxHeight,
-        null);
-  }
-
-  @SuppressWarnings("unused")
   public int getColor(int surfaceId, String[] resourcePaths) {
     ThemedReactContext context =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
@@ -577,8 +555,13 @@ public class FabricUIManager
     return 0;
   }
 
-  @SuppressWarnings("unused")
-  private long measure(
+  /**
+   * Calls the measure() function on a specific view manager. This may be used for implementing
+   * custom Fabric ShadowNodes
+   */
+  @AnyThread
+  @ThreadConfined(ANY)
+  public long measure(
       int surfaceId,
       String componentName,
       ReadableMap localData,
@@ -587,9 +570,7 @@ public class FabricUIManager
       float minWidth,
       float maxWidth,
       float minHeight,
-      float maxHeight,
-      @Nullable float[] attachmentsPositions) {
-
+      float maxHeight) {
     ReactContext context;
     if (surfaceId > 0) {
       SurfaceMountingManager surfaceMountingManager =
@@ -614,16 +595,16 @@ public class FabricUIManager
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
-        attachmentsPositions);
+        null);
   }
 
-  @SuppressWarnings("unused")
-  private long measureMapBuffer(
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
+  public long measureText(
       int surfaceId,
-      String componentName,
-      ReadableMapBuffer localData,
-      ReadableMapBuffer props,
-      @Nullable ReadableMapBuffer state,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
       float minWidth,
       float maxWidth,
       float minHeight,
@@ -633,7 +614,7 @@ public class FabricUIManager
     ReactContext context;
     if (surfaceId > 0) {
       SurfaceMountingManager surfaceMountingManager =
-          mMountingManager.getSurfaceManagerEnforced(surfaceId, "measure");
+          mMountingManager.getSurfaceManagerEnforced(surfaceId, "measureText");
       if (surfaceMountingManager.isStopped()) {
         return 0;
       }
@@ -644,17 +625,19 @@ public class FabricUIManager
       context = mReactApplicationContext;
     }
 
-    // TODO: replace ReadableNativeMap -> ReadableMapBuffer
-    return mMountingManager.measureMapBuffer(
+    ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
+
+    return TextLayoutManager.measureText(
         context,
-        componentName,
-        localData,
-        props,
-        state,
+        attributedString,
+        paragraphAttributes,
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
+        textViewManager instanceof ReactTextViewManagerCallback
+            ? (ReactTextViewManagerCallback) textViewManager
+            : null,
         attachmentsPositions);
   }
 
