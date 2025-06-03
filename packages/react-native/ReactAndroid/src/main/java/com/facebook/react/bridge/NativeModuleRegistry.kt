@@ -7,7 +7,6 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.ReactMarker.logMarker
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
@@ -23,12 +22,12 @@ public class NativeModuleRegistry(
     private val reactApplicationContext: ReactApplicationContext,
     private val modules: MutableMap<String, ModuleHolder>
 ) {
+  /** Private getters for combining NativeModuleRegistry's */
   private val moduleMap: Map<String, ModuleHolder>
-    /** Private getters for combining NativeModuleRegistry's */
     get() = modules
 
-  public fun getJavaModules(jsInstance: JSInstance): Collection<JavaModuleWrapper> =
-    ArrayList<JavaModuleWrapper>().apply {
+  public fun getJavaModules(jsInstance: JSInstance): List<JavaModuleWrapper> =
+    buildList {
       for ((_, value) in modules) {
         if (!value.isCxxModule) {
           add(JavaModuleWrapper(jsInstance, value))
@@ -36,8 +35,8 @@ public class NativeModuleRegistry(
       }
     }
 
-  public val cxxModules: Collection<ModuleHolder>
-    get() = ArrayList<ModuleHolder>().apply {
+  public val cxxModules: List<ModuleHolder>
+    get() = buildList {
       for ((_, value) in modules) {
         if (value.isCxxModule) {
           add(value)
@@ -49,10 +48,9 @@ public class NativeModuleRegistry(
    * Adds any new modules to the current module registry
    */
   public fun registerModules(newRegister: NativeModuleRegistry) {
-    Assertions.assertCondition(
-      reactApplicationContext == newRegister.reactApplicationContext,
+    check(reactApplicationContext == newRegister.reactApplicationContext) {
       "Extending native modules with non-matching application contexts."
-    )
+    }
 
     val newModules = newRegister.moduleMap
 
@@ -121,25 +119,19 @@ public class NativeModuleRegistry(
     val annotation = moduleInterface.getAnnotation(ReactModule::class.java)
     requireNotNull(annotation) { "Could not find @ReactModule annotation in class " + moduleInterface.name }
     @Suppress("UNCHECKED_CAST")
-    return Assertions.assertNotNull(
-      modules[annotation.name],
-      (annotation.name
-              + " could not be found. Is it defined in "
-              + moduleInterface.name)
-    )
+    return checkNotNull(modules[annotation.name]) {
+      "$annotation.name could not be found. Is it defined in ${moduleInterface.name}"
+    }
       .module as T
   }
 
   public fun hasModule(name: String): Boolean = modules.containsKey(name)
 
   public fun getModule(name: String): NativeModule =
-    Assertions.assertNotNull(
-        modules[name],
-        "Could not find module with name $name"
-    ).module
+    checkNotNull(modules[name]) { "Could not find module with name $name" }.module
 
   public val allModules: List<NativeModule>
-    get() = ArrayList<NativeModule>().apply {
+    get() = buildList {
       for (module in modules.values) {
         add(module.module)
       }

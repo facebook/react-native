@@ -49,12 +49,12 @@ public class JavaModuleWrapper(
   private val descs = ArrayList<MethodDescriptor>()
 
   @get:DoNotStrip
-  @get:JvmName("getModule")
+  @get:JvmName("getModule") // This is needed because this field is accessed by JNI
   internal val module: BaseJavaModule
     get() = moduleHolder.module as BaseJavaModule
 
   @get:DoNotStrip
-  @get:JvmName("getName")
+  @get:JvmName("getName") // This is needed because this field is accessed by JNI
   internal val name: String
     get() = moduleHolder.name
 
@@ -91,7 +91,7 @@ public class JavaModuleWrapper(
   }
 
   @get:DoNotStrip
-  @get:JvmName("getMethodDescriptors")
+  @get:JvmName("getMethodDescriptors") // This is needed because this field is accessed by JNI
   internal val methodDescriptors: List<MethodDescriptor>
     get() {
       if (descs.isEmpty()) {
@@ -101,7 +101,7 @@ public class JavaModuleWrapper(
     }
 
   @get:DoNotStrip
-  @get:JvmName("getConstants")
+  @get:JvmName("getConstants") // This is needed because this field is accessed by JNI
   internal val constants: NativeMap
     get() {
       val moduleName = name
@@ -130,7 +130,7 @@ public class JavaModuleWrapper(
     }
 
   @DoNotStrip
-  @JvmName("invoke")
+  @JvmName("invoke") // This is needed because this method is accessed by JNI
   internal fun invoke(methodId: Int, parameters: ReadableNativeArray) {
     if (methodId >= methods.size) {
       return
