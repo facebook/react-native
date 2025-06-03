@@ -646,6 +646,10 @@ class BaseTarget {
     self.searchPaths = searchPaths
   }
 
+  func headerSearchPaths(targets: [BaseTarget]) -> [String] {
+    return [path] + searchPaths
+  }
+
   func target(targets: [BaseTarget]) -> Target {
     fatalError("Must override in subclass")
   }
@@ -676,12 +680,32 @@ class RNTarget: BaseTarget {
     super.init(name: name, path: path, searchPaths: searchPaths)
   }
 
-  override func target(targets: [BaseTarget]) -> Target {
+  override func headerSearchPaths(targets: [BaseTarget]) -> [String] {
     let dependencies = self.dependencies.compactMap { depName in
       targets.first(where: { $0.name == depName })
     }
 
-    let searchPaths = self.searchPaths + dependencies.compactMap { $0.searchPaths }.flatMap { $0 }
+    let dependenciesSearchPath: [String] =
+      dependencies
+      .compactMap { $0.headerSearchPaths(targets: targets) }
+      .flatMap { $0 }
+    let multipleSourcesSearchPath: [String] =
+      self.sources?
+      .compactMap { self.path + "/" + $0 } ?? []
+    let pathSearchPath: [String] =
+      [self.path] // the source path should be part of the header search path
+      + [String(self.path.split(separator: "/").first ?? "")] // ReactCommon and ReactApple requires the first segment of the path to be in the search path
+
+    let searchPaths: [String] =
+      self.searchPaths + dependenciesSearchPath // transitively, add the dependencies search path
+      + pathSearchPath + multipleSourcesSearchPath // complex target such as reactFabric
+
+    return Array(Set(searchPaths))
+  }
+
+  override func target(targets: [BaseTarget]) -> Target {
+    let searchPaths: [String] = self.headerSearchPaths(targets: targets)
+
     let linkerSettings = self.linkedFrameworks.reduce([]) { $0 + [LinkerSetting.linkedFramework($1)] }
 
     return Target.reactNativeTarget(
