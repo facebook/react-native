@@ -122,6 +122,10 @@ describe('ReactNativeDocument', () => {
     expect(y).toBe(0);
     expect(width).toBe(200);
     expect(height).toBe(100);
+
+    expect(document.documentElement.offsetParent).toBe(null);
+    expect(document.documentElement.offsetTop).toBe(0);
+    expect(document.documentElement.offsetLeft).toBe(0);
   });
 
   it('implements compareDocumentPosition correctly', () => {

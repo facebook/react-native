@@ -72,7 +72,13 @@ ShadowNode::Shared getPositionedAncestorOfShadowNodeInRevision(
   auto ancestors = shadowNode.getFamily().getAncestors(*currentRevision);
 
   if (ancestors.empty()) {
+    // The node is no longer part of an active shadow tree, or is the root.
     return nullptr;
+  }
+
+  if (ancestors.size() == 1) {
+    // The parent is the root
+    return currentRevision;
   }
 
   for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
@@ -86,11 +92,9 @@ ShadowNode::Shared getPositionedAncestorOfShadowNodeInRevision(
       // We have found our nearest positioned ancestor, now to get a shared
       // pointer of it
       it++;
-      if (it != ancestors.rend()) {
-        return it->first.get().getChildren().at(it->second);
-      }
-      // else the positioned ancestor is the root which we return outside of the
-      // loop
+      return it == ancestors.rend()
+          ? currentRevision
+          : it->first.get().getChildren().at(it->second);
     }
   }
 
