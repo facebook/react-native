@@ -32,7 +32,7 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
     super.onCreate(savedInstanceState)
     var mainComponentName: String? = null
     var launchOptions: Bundle? = null
-    var fabricEnabled: Boolean? = null
+    var fabricEnabled: Boolean = false
     getArguments()?.let {
       mainComponentName = it.getString(ARG_COMPONENT_NAME)
       launchOptions = it.getBundle(ARG_LAUNCH_OPTIONS)
@@ -51,50 +51,32 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
           reactNativeHost,
           mainComponentName,
           launchOptions,
-          fabricEnabled ?: false
+          fabricEnabled
         )
     }
   }
 
+  /**
+   * Get the [ReactNativeHost] used by this app. By default, assumes [Activity.getApplication] is an instance of [ReactApplication] and calls [ReactApplication.getReactNativeHost]. Override this method if your application class does not
+   * implement `ReactApplication` or you simply have a different mechanism for storing a
+   * `ReactNativeHost`, e.g. as a static field somewhere.
+   */
   protected val reactNativeHost: ReactNativeHost?
-    /**
-     * Get the [ReactNativeHost] used by this app. By default, assumes [Activity.getApplication] is an instance of [ReactApplication] and calls [ReactApplication.getReactNativeHost]. Override this method if your application class does not
-     * implement `ReactApplication` or you simply have a different mechanism for storing a
-     * `ReactNativeHost`, e.g. as a static field somewhere.
-     */
-    get() {
-      val application = (getActivity()?.getApplication() as ReactApplication?)
-      return if (application != null) {
-        application.reactNativeHost
-      } else {
-        null
-      }
-    }
+    get() = (getActivity()?.getApplication() as ReactApplication?)?.reactNativeHost
 
+  /**
+   * Get the [ReactHost] used by this app. By default, assumes [Activity.getApplication] is an instance of [ReactApplication] and calls [ReactApplication.getReactHost]. Override this method if your application class does not
+   * implement `ReactApplication` or you simply have a different mechanism for storing a
+   * `ReactHost`, e.g. as a static field somewhere.
+   *
+   * If you're using Old Architecture/Bridge Mode, this method should return null as [ReactHost] is a Bridgeless-only concept.
+   */
   protected val reactHost: ReactHost?
-    /**
-     * Get the [ReactHost] used by this app. By default, assumes [Activity.getApplication] is an instance of [ReactApplication] and calls [ReactApplication.getReactHost]. Override this method if your application class does not
-     * implement `ReactApplication` or you simply have a different mechanism for storing a
-     * `ReactHost`, e.g. as a static field somewhere.
-     *
-     *
-     * If you're using Old Architecture/Bridge Mode, this method should return null as [ReactHost] is a Bridgeless-only concept.
-     */
-    get() {
-      val application = getActivity()?.getApplication() as ReactApplication?
-      return if (application != null) {
-        application.reactHost
-      } else {
-        null
-      }
-    }
+    get() = (getActivity()?.getApplication() as ReactApplication?)?.reactHost
 
   public override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-  ): View? {
-    reactDelegate?.loadApp()
-    return reactDelegate?.reactRootView
-  }
+  ): View? = reactDelegate?.let { it.loadApp(); it.reactRootView }
 
   public override fun onResume() {
     super.onResume()
@@ -127,21 +109,17 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
   }
 
   /**
-   * Helper to forward hardware back presses to our React Native Host
+   * Helper to forward hardware back presses to our React Native Host.
    *
-   *
-   * This must be called via a forward from your host Activity
+   * This must be called via a forward from your host Activity.
    */
-  public fun onBackPressed(): Boolean {
-    return reactDelegate?.onBackPressed() ?: false
-  }
+  public fun onBackPressed(): Boolean = reactDelegate?.onBackPressed() ?: false
 
   /**
    * Helper to forward onKeyUp commands from our host Activity. This allows [ReactFragment] to handle
-   * double tap reloads and dev menus
+   * double tap reloads and dev menus.
    *
-   *
-   * This must be called via a forward from your host Activity
+   * This must be called via a forward from your host Activity.
    *
    * @param keyCode keyCode
    * @param event event
@@ -181,7 +159,7 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
   public class Builder {
     public var mComponentName: String? = null
     public var mLaunchOptions: Bundle? = null
-    public var mFabricEnabled: Boolean? = false
+    public var mFabricEnabled: Boolean = false
 
     /**
      * Set the Component name for our React Native instance.
@@ -205,13 +183,12 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
       return this
     }
 
-    public fun build(): ReactFragment {
-      return newInstance(
+    public fun build(): ReactFragment =
+      newInstance(
         mComponentName,
         mLaunchOptions,
-        mFabricEnabled ?: false
+        mFabricEnabled
       )
-    }
 
     public fun setFabricEnabled(fabricEnabled: Boolean): Builder {
       mFabricEnabled = fabricEnabled
@@ -224,10 +201,7 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
     protected const val ARG_LAUNCH_OPTIONS: String = "arg_launch_options"
     protected const val ARG_FABRIC_ENABLED: String = "arg_fabric_enabled"
 
-    @Deprecated(
-        """We will remove this and use a different solution for handling Fragment lifecycle
-    events"""
-    )
+    @Deprecated("We will remove this and use a different solution for handling Fragment lifecycle events.")
     protected const val ARG_DISABLE_HOST_LIFECYCLE_EVENTS: String =
         "arg_disable_host_lifecycle_events"
 
