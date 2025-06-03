@@ -245,6 +245,27 @@ describe('Animated', () => {
       expect(callback).toBeCalled();
     });
 
+    it('renders animated and primitive style correctly', () => {
+      ReactNativeFeatureFlags.override({
+        alwaysFlattenAnimatedStyles: () => true,
+      });
+
+      const anim = new Animated.Value(0);
+      const staticProps = {
+        style: [
+          {transform: [{translateX: anim}]},
+          {transform: [{translateX: 100}]},
+        ],
+      };
+      const staticPropsWithoutAnim = {
+        style: {transform: [{translateX: 100}]},
+      };
+      const node = new AnimatedProps(staticProps, jest.fn());
+      expect(node.__getValueWithStaticProps(staticProps)).toStrictEqual(
+        staticPropsWithoutAnim,
+      );
+    });
+
     it('send toValue when a critically damped spring stops', () => {
       const anim = new Animated.Value(0);
       const listener = jest.fn();

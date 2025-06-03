@@ -925,16 +925,19 @@ declare export default class AnimatedProps extends AnimatedNode {
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedStyle.js 1`] = `
 "export type AnimatedStyleAllowlist = $ReadOnly<{ [string]: true }>;
+type FlatStyle = { [string]: mixed };
+type FlatStyleForWeb<TStyle: FlatStyle> = [mixed, TStyle];
 declare export default class AnimatedStyle extends AnimatedWithChildren {
   static from(
-    inputStyle: any,
-    allowlist: ?AnimatedStyleAllowlist
+    flatStyle: ?FlatStyle,
+    allowlist: ?AnimatedStyleAllowlist,
+    originalStyleForWeb: ?mixed
   ): ?AnimatedStyle;
   constructor(
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
     style: { [string]: mixed },
-    inputStyle: any,
+    originalStyleForWeb: ?mixed,
     config?: ?AnimatedNodeConfig
   ): void;
 }
