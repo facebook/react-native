@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.80.0-rc.4
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+- Re-expose `src/*` subpaths when not using the Strict TypeScript API ([1a46b203b8](https://github.com/facebook/react-native/commit/1a46b203b83d7cbe44185cd7e437e77b850e1af5) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Fixed the generated type definitions for `Animated.FlatList` and `Animated.SectionList` to correctly infer item types. ([9be5ac1010](https://github.com/facebook/react-native/commit/9be5ac101051dd8121a48af1a29a60b7ba0b753e) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.80.0-rc.4 ([dffb675e70](https://github.com/facebook/react-native/commit/dffb675e70e9702d63d7fe04af8c97eff3e2398d) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([baa421decc](https://github.com/facebook/react-native/commit/baa421decc61b136979f06475757579b0da76dab) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.80.0-rc.3 ([e7901a720b](https://github.com/facebook/react-native/commit/e7901a720bcf3877e8a011f7b211c7d59c694853) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.80.0-rc.3
 
 ### Changed
