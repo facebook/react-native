@@ -56,8 +56,9 @@ public final class com/facebook/react/JSEngineResolutionAlgorithm : java/lang/En
 
 public abstract class com/facebook/react/LazyReactPackage : com/facebook/react/ReactPackage {
 	public fun <init> ()V
-	public final fun createNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
+	public fun createNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
 	public fun createViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
+	public final fun getNativeModuleIterator (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/lang/Iterable;
 	protected abstract fun getNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
 	public abstract fun getReactModuleInfoProvider ()Lcom/facebook/react/module/model/ReactModuleInfoProvider;
 	public fun getViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
