@@ -404,6 +404,12 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
       // `startRenderCallbackIfNeeded` will call platform specific code to
       // register UI tick listener.
       startRenderCallbackIfNeeded();
+      // Calling startOnRenderCallback_ will register a UI tick listener.
+      // The UI ticker listener will not be called until the next frame.
+      // That's why, in case this is called from the UI thread, we need to
+      // proactivelly trigger the animation loop to avoid showing stale
+      // frames.
+      onRender();
     }
   }
 }
@@ -426,14 +432,6 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   if (startOnRenderCallback_) {
     startOnRenderCallback_([this]() { onRender(); });
-
-    if (isOnRenderThread_) {
-      // Calling startOnRenderCallback_ will register a UI tick listener.
-      // The UI ticker listener will not be called until the next frame.
-      // That's why, in case this is called from the UI thread, we need to
-      // proactivelly trigger the animation loop to avoid showing stale frames.
-      onRender();
-    }
   }
 }
 
