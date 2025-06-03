@@ -2,13 +2,7 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 ---
 - launchApp
 - assertVisible: "Components"
-- scrollUntilVisible:
-    element:
-      id: "Flatlist"
-    direction: DOWN
-    speed: 40
-- tapOn:
-    id: "Flatlist"
+- openLink: "rntester://example/FlatListExample"
 - tapOn:
     id: "Basic"
 - assertVisible:

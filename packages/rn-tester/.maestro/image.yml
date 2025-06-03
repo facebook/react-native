@@ -2,11 +2,5 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 ---
 - launchApp
 - assertVisible: "Components"
-- scrollUntilVisible:
-    element:
-      id: "Image"
-    direction: DOWN
-    speed: 40
-- tapOn:
-    id: "Image"
+- openLink: "rntester://example/ImageExample"
 - assertVisible: "Plain Network Image with `source` prop."
