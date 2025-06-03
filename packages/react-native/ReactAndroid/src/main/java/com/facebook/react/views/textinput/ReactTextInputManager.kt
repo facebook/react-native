@@ -152,10 +152,10 @@ public open class ReactTextInputManager public constructor() :
   @Deprecated("Deprecated in Java")
   override fun receiveCommand(reactEditText: ReactEditText, commandId: Int, args: ReadableArray?) {
     when (commandId) {
-      FOCUS_TEXT_INPUT -> this.receiveCommand(reactEditText, "focus", args)
-      BLUR_TEXT_INPUT -> this.receiveCommand(reactEditText, "blur", args)
+      FOCUS_TEXT_INPUT -> receiveCommand(reactEditText, "focus", args)
+      BLUR_TEXT_INPUT -> receiveCommand(reactEditText, "blur", args)
       SET_MOST_RECENT_EVENT_COUNT -> {}
-      SET_TEXT_AND_SELECTION -> this.receiveCommand(reactEditText, "setTextAndSelection", args)
+      SET_TEXT_AND_SELECTION -> receiveCommand(reactEditText, "setTextAndSelection", args)
     }
   }
 

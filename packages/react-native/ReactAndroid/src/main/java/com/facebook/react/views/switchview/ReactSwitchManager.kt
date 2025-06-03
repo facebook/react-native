@@ -95,11 +95,8 @@ internal class ReactSwitchManager :
     setValueInternal(view, value)
   }
 
-  override fun receiveCommand(view: ReactSwitch, commandId: String, args: ReadableArray?) {
-    when (commandId) {
-      "setNativeValue" -> setValueInternal(view, args?.getBoolean(0) ?: false)
-    }
-  }
+  override fun receiveCommand(view: ReactSwitch, commandId: String, args: ReadableArray?) =
+      delegate.receiveCommand(view, commandId, args)
 
   override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactSwitch) {
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER)
