@@ -95,7 +95,7 @@ class ShadowNode : public Sealable,
   virtual ~ShadowNode() override = default;
 
   /*
-   * Clones the shadow node using stored `cloneFunction`.
+   * Clones the shadow node using the ShadowNode's ComponentDescriptor.
    */
   std::shared_ptr<ShadowNode> clone(const ShadowNodeFragment& fragment) const;
 
@@ -123,6 +123,14 @@ class ShadowNode : public Sealable,
       const std::function<std::shared_ptr<ShadowNode>(
           const ShadowNode& oldShadowNode,
           const ShadowNodeFragment& fragment)>& callback) const;
+
+  /**
+   * Called, once a fully derived ShadowNode clone has been created via
+   * ComponentDescriptor::cloneShadowNode.
+   */
+  virtual void completeClone(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment) {}
 
 #pragma mark - Getters
 
