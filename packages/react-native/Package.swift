@@ -263,7 +263,7 @@ let reactGraphics = RNTarget(
 let reactTurboModuleCore = RNTarget(
   name: .reactTurboModuleCore,
   path: "ReactCommon/react/nativemodule/core",
-  searchPaths: ["ReactCommon/react/nativemodule/core/platform/ios"],
+  searchPaths: [ReactFBReactNativeSpecPath, "ReactCommon/react/nativemodule/core/platform/ios"],
   excludedPaths: ["platform/android", "iostests"],
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleBridging, .yoga, .reactRuntimeExecutor]
 )
@@ -272,7 +272,6 @@ let reactTurboModuleCore = RNTarget(
 let reactTurboModuleCoreDefaults = RNTarget(
   name: .reactTurboModuleCoreDefaults,
   path: "ReactCommon/react/nativemodule/defaults",
-  searchPaths: [ReactFBReactNativeSpecPath],
   dependencies: [.reactNativeDependencies, .jsi, .reactJsiExecutor, .reactTurboModuleCore]
 )
 
@@ -280,7 +279,6 @@ let reactTurboModuleCoreDefaults = RNTarget(
 let reactTurboModuleCoreMicrotasks = RNTarget(
   name: .reactTurboModuleCoreMicrotasks,
   path: "ReactCommon/react/nativemodule/microtasks",
-  searchPaths: [ReactFBReactNativeSpecPath],
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
 )
 
@@ -288,7 +286,6 @@ let reactTurboModuleCoreMicrotasks = RNTarget(
 let reactIdleCallbacksNativeModule = RNTarget(
   name: .reactIdleCallbacksNativeModule,
   path: "ReactCommon/react/nativemodule/idlecallbacks",
-  searchPaths: [ReactFBReactNativeSpecPath],
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
 )
 
@@ -296,7 +293,6 @@ let reactIdleCallbacksNativeModule = RNTarget(
 let reactFeatureflagsNativemodule = RNTarget(
   name: .reactFeatureflagsNativemodule,
   path: "ReactCommon/react/nativemodule/featureflags",
-  searchPaths: [ReactFBReactNativeSpecPath],
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
 )
 
@@ -304,7 +300,6 @@ let reactFeatureflagsNativemodule = RNTarget(
 let reactNativeModuleDom = RNTarget(
   name: .reactNativeModuleDom,
   path: "ReactCommon/react/nativemodule/dom",
-  searchPaths: [ReactFBReactNativeSpecPath],
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore, .yoga, .reactGraphicsApple, .reactFabric]
 )
 
@@ -327,7 +322,7 @@ let reactCoreRCTWebsocket = RNTarget(
 let reactCoreModules = RNTarget(
   name: .reactCoreModules,
   path: "React/CoreModules",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   excludedPaths: ["PlatformStubs/RCTStatusBarManager.mm"],
   dependencies: [.reactNativeDependencies, .jsi, .yoga, .reactTurboModuleCore]
 )
@@ -345,7 +340,7 @@ let reactRuntime = RNTarget(
 let reactRuntimeApple = RNTarget(
   name: .reactRuntimeApple,
   path: "ReactCommon/react/runtime/platform/ios",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   excludedPaths: ["ReactCommon/RCTJscInstance.mm", "ReactCommon/metainternal"],
   dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactRCTFabric, .reactCoreModules, .reactTurboModuleCore, .hermesPrebuilt, .reactUtils]
 )
@@ -355,7 +350,6 @@ let reactCore = RNTarget(
   name: .reactCore,
   path: "React",
   searchPaths: [
-    ReactFBReactNativeSpecPath,
     FBLazyVectorPath,
     "React/I18n",
     "React/Profiler",
@@ -461,7 +455,7 @@ let reactImageManager = RNTarget(
 let reactRCTAnimation = RNTarget(
   name: .reactRCTAnimation,
   path: "Libraries/NativeAnimation",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   dependencies: [.reactNativeDependencies, .rctTypesafety, .jsi, .reactFeatureFlags, .yoga, .reactTurboModuleCore, .reactUtils]
 )
 
@@ -469,7 +463,7 @@ let reactRCTAnimation = RNTarget(
 let reactRCTImage = RNTarget(
   name: .reactRCTImage,
   path: "Libraries/Image",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   linkedFrameworks: ["Accelerate"],
   dependencies: [.rctTypesafety, .jsi, .yoga, .reactTurboModuleBridging, .reactTurboModuleCore]
 )
@@ -478,7 +472,7 @@ let reactRCTImage = RNTarget(
 let reactRCTText = RNTarget(
   name: .reactRCTText,
   path: "Libraries/Text",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   dependencies: [.yoga, .reactTurboModuleCore]
 )
 
@@ -486,7 +480,7 @@ let reactRCTText = RNTarget(
 let reactRCTBlob = RNTarget(
   name: .reactRCTBlob,
   path: "Libraries/Blob",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   dependencies: [.yoga, .jsi, .reactTurboModuleCore]
 )
 
@@ -494,7 +488,7 @@ let reactRCTBlob = RNTarget(
 let reactRCTNetwork = RNTarget(
   name: .reactRCTNetwork,
   path: "Libraries/Network",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   dependencies: [.yoga, .jsi, .reactTurboModuleCore]
 )
 
@@ -509,7 +503,7 @@ let reactAppDelegate = RNTarget(
 let reactRCTLinking = RNTarget(
   name: .reactRCTLinking,
   path: "Libraries/LinkingIOS",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   dependencies: [.jsi, .reactTurboModuleCore]
 )
 
@@ -517,7 +511,7 @@ let reactRCTLinking = RNTarget(
 let reactSettings = RNTarget(
   name: .reactSettings,
   path: "Libraries/Settings",
-  searchPaths: [ReactFBReactNativeSpecPath, FBLazyVectorPath],
+  searchPaths: [FBLazyVectorPath],
   dependencies: [.reactTurboModuleCore, .yoga]
 )
 
