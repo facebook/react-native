@@ -8,8 +8,6 @@
 #include "MapBufferBuilder.h"
 #include <algorithm>
 
-using namespace facebook::react;
-
 namespace facebook::react {
 
 constexpr uint32_t INT_SIZE = sizeof(uint32_t);

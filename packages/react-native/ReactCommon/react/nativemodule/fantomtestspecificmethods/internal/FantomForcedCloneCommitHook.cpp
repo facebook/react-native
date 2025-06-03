@@ -9,9 +9,9 @@
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace {
+namespace facebook::react {
 
-using namespace facebook::react;
+namespace {
 
 ShadowNode::Shared findAndClone(const ShadowNode::Shared& node) {
   if (node->getProps()->nativeId == "to-be-cloned-in-the-commit-hook") {
@@ -34,8 +34,6 @@ ShadowNode::Shared findAndClone(const ShadowNode::Shared& node) {
 }
 
 } // namespace
-
-namespace facebook::react {
 
 void FantomForcedCloneCommitHook::commitHookWasRegistered(
     const UIManager& /*uiManager*/) noexcept {}

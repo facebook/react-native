@@ -13,14 +13,9 @@
 #include <react/renderer/graphics/Size.h>
 #include <cmath>
 
+namespace facebook::react::dom {
+
 namespace {
-
-using namespace facebook::react;
-
-// To prevent ambiguity with built-in MacOS types.
-using facebook::react::Point;
-using facebook::react::Rect;
-using facebook::react::Size;
 
 ShadowNode::Shared getShadowNodeInRevision(
     const RootShadowNode::Shared& currentRevision,
@@ -156,8 +151,6 @@ Rect getScrollableContentBounds(
 }
 
 } // namespace
-
-namespace facebook::react::dom {
 
 ShadowNode::Shared getParentNode(
     const RootShadowNode::Shared& currentRevision,
