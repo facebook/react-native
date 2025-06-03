@@ -3329,6 +3329,10 @@ public final class com/facebook/react/soloader/OpenSourceMergedSoMapping : com/f
 	public fun mapLibName (Ljava/lang/String;)Ljava/lang/String;
 }
 
+public abstract interface class com/facebook/react/touch/OnInterceptTouchEventListener {
+	public abstract fun onInterceptTouchEvent (Landroid/view/ViewGroup;Landroid/view/MotionEvent;)Z
+}
+
 public abstract interface class com/facebook/react/touch/ReactHitSlopView {
 	public abstract fun getHitSlopRect ()Landroid/graphics/Rect;
 }
@@ -6750,24 +6754,24 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun onViewAdded (Landroid/view/View;)V
 	public fun onViewRemoved (Landroid/view/View;)V
 	public fun requestLayout ()V
-	public fun setBackfaceVisibility (Ljava/lang/String;)V
-	public fun setBackfaceVisibilityDependantOpacity ()V
+	public final fun setBackfaceVisibility (Ljava/lang/String;)V
+	public final fun setBackfaceVisibilityDependantOpacity ()V
 	public fun setBackgroundColor (I)V
-	public fun setBorderColor (ILjava/lang/Integer;)V
-	public fun setBorderRadius (F)V
-	public fun setBorderRadius (FI)V
-	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public fun setBorderStyle (Ljava/lang/String;)V
-	public fun setBorderWidth (IF)V
+	public final fun setBorderColor (ILjava/lang/Integer;)V
+	public final fun setBorderRadius (F)V
+	public final fun setBorderRadius (FI)V
+	public final fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
+	public final fun setBorderStyle (Ljava/lang/String;)V
+	public final fun setBorderWidth (IF)V
 	public fun setHitSlopRect (Landroid/graphics/Rect;)V
-	public fun setNeedsOffscreenAlphaCompositing (Z)V
+	public final fun setNeedsOffscreenAlphaCompositing (Z)V
 	public fun setOnInterceptTouchEventListener (Lcom/facebook/react/touch/OnInterceptTouchEventListener;)V
-	public fun setOpacityIfPossible (F)V
+	public final fun setOpacityIfPossible (F)V
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setOverflowInset (IIII)V
 	public fun setPointerEvents (Lcom/facebook/react/uimanager/PointerEvents;)V
 	public fun setRemoveClippedSubviews (Z)V
-	public fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
+	public final fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun updateClippingRect ()V
 	public fun updateClippingRect (Ljava/util/Set;)V
 	public fun updateDrawingOrder ()V
