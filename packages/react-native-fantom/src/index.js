@@ -187,6 +187,17 @@ export function runTask(task: () => void | Promise<void>) {
 }
 
 /**
+ * Advances the animation clock by the specified number of milliseconds.
+ * This function allows tests to simulate the passage of time for animations
+ * without actually waiting, making animation testing more efficient.
+ *
+ * @param miliseconds - The number of milliseconds to advance animations by
+ */
+export function unstable_advanceAnimationsByTime(milliseconds: number) {
+  NativeFantom.advanceAnimationsByTime(milliseconds);
+}
+
+/**
  * Simulates running a task on the UI thread and forces side effect to drain
  * the event queue, scheduling events to be dispatched to JavaScript.
  * To be used when enqueuing native events.
