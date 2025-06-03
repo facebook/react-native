@@ -7,6 +7,8 @@
 
 #include "LayoutableShadowNode.h"
 
+#include <ranges>
+
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutMetrics.h>
@@ -83,8 +85,8 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   // root because we measure it from an outside tree perspective.
   shadowNodeList.push_back(descendantNode);
 
-  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
-    auto& shadowNode = it->first.get();
+  for (auto& ancestor : std::ranges::reverse_view(ancestors)) {
+    auto& shadowNode = ancestor.first.get();
 
     shadowNodeList.push_back(&shadowNode);
 
