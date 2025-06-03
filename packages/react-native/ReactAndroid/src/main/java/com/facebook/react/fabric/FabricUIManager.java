@@ -644,7 +644,7 @@ public class FabricUIManager
   @AnyThread
   @ThreadConfined(ANY)
   @UnstableReactNativeAPI
-  public PreparedLayout prepareLayout(
+  public PreparedLayout prepareTextLayout(
       int surfaceId,
       ReadableMapBuffer attributedString,
       ReadableMapBuffer paragraphAttributes,
@@ -653,7 +653,7 @@ public class FabricUIManager
       float minHeight,
       float maxHeight) {
     SurfaceMountingManager surfaceMountingManager =
-        mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareLayout");
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareTextLayout");
 
     ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
     Layout layout =
