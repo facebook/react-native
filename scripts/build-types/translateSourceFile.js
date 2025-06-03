@@ -13,7 +13,7 @@ import type {ParseResult} from 'hermes-transform/dist/transform/parse';
 import type {TransformASTResult} from 'hermes-transform/dist/transform/transformAST';
 
 const getDependencies = require('./resolution/getDependencies');
-const createDefaultExportNameReplacer = require('./transforms/replaceDefaultExportName');
+const createReplaceDefaultExportName = require('./transforms/replaceDefaultExportName');
 const babel = require('@babel/core');
 const translate = require('flow-api-translator');
 const {parse, print} = require('hermes-transform');
@@ -106,14 +106,11 @@ async function applyPostTransforms(
   source: string,
   filePath: string,
 ): Promise<string> {
-  const fileName = filePath.split('/').pop() ?? '';
-  const fileNameWithoutExt = fileName.split('.')[0];
-
   const result = await babel.transformAsync(source, {
     plugins: [
       '@babel/plugin-syntax-typescript',
       ...postTransforms,
-      createDefaultExportNameReplacer(fileNameWithoutExt),
+      createReplaceDefaultExportName(filePath),
     ],
   });
 
