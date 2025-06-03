@@ -4136,8 +4136,8 @@ declare export default typeof registerCallableModule;
 
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlay.js 1`] = `
 "type DebuggingOverlayHandle = {
-  highlightTraceUpdates(updates: TraceUpdate[]): void,
-  highlightElements(elements: ElementRectangle[]): void,
+  highlightTraceUpdates(updates: $ReadOnlyArray<TraceUpdate>): void,
+  highlightElements(elements: $ReadOnlyArray<ElementRectangle>): void,
   clearElementsHighlight(): void,
 };
 declare export default component(ref: React.RefSetter<DebuggingOverlayHandle>);
