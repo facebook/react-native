@@ -14,6 +14,7 @@
 #include <react/renderer/animated/EventEmitterListener.h>
 #include <react/renderer/animated/event_drivers/EventAnimationDriver.h>
 #include <react/renderer/core/ReactPrimitives.h>
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -22,6 +23,11 @@
 #include <vector>
 
 namespace facebook::react {
+
+using TimePointFunction = std::chrono::steady_clock::time_point (*)();
+// A way to inject a custom time function for testing purposes.
+// Default is `std::chrono::steady_clock::now`.
+void g_setNativeAnimatedNowTimestampFunction(TimePointFunction nowFunction);
 
 class AnimatedNode;
 class AnimationDriver;
@@ -52,7 +58,7 @@ class NativeAnimatedNodesManager {
 
   explicit NativeAnimatedNodesManager(
       DirectManipulationCallback&& directManipulationCallback,
-      FabricCommitCallback&& fabricCommitCallback = nullptr,
+      FabricCommitCallback&& fabricCommitCallback,
       StartOnRenderCallback&& startOnRenderCallback = nullptr,
       StopOnRenderCallback&& stopOnRenderCallback = nullptr) noexcept;
 
