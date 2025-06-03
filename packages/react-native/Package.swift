@@ -393,6 +393,8 @@ let reactFabric = RNTarget(
     "ReactCommon/react/renderer/components/view",
     "ReactCommon/react/renderer/components/view/platform/cxx",
     "ReactCommon/react/renderer/imagemanager/platform/ios",
+    "ReactCommon/react/renderer/components/scrollview/",
+    "ReactCommon/react/renderer/components/scrollview/platform/cxx",
   ],
   excludedPaths: [
     "animations/tests",
@@ -402,6 +404,8 @@ let reactFabric = RNTarget(
     "components/view/platform/android",
     "components/view/platform/windows",
     "components/view/platform/macos",
+    "components/scrollview/tests",
+    "components/scrollview/platform/android",
     "mounting/tests",
     "uimanager/tests",
     "telemetry/tests",
@@ -416,7 +420,6 @@ let reactFabric = RNTarget(
     "components/modal",
     "components/rncore",
     "components/safeareaview",
-    "components/scrollview",
     "components/text",
     "components/textinput",
     "components/textinput/platform/ios/",
@@ -452,8 +455,6 @@ let reactFabricComponents = RNTarget(
     "components/view/platform/android",
     "components/view/platform/windows",
     "components/view/platform/macos",
-    "components/scrollview/tests",
-    "components/scrollview/platform/android",
     "components/textinput/platform/android",
     "components/text/platform/android",
     "components/textinput/platform/macos",
@@ -465,7 +466,7 @@ let reactFabricComponents = RNTarget(
     "textlayoutmanager/platform/macos",
   ],
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
-  sources: ["components/inputaccessory", "components/modal", "components/rncore", "components/safeareaview", "components/scrollview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "textlayoutmanager", "textlayoutmanager/platform/ios"]
+  sources: ["components/inputaccessory", "components/modal", "components/rncore", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "textlayoutmanager", "textlayoutmanager/platform/ios"]
 )
 
 /// React-FabricImage.podspec
