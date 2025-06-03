@@ -424,9 +424,10 @@ let reactFabricComponents = RNTarget(
     "textlayoutmanager/platform/cxx",
     "textlayoutmanager/platform/windows",
     "textlayoutmanager/platform/macos",
+    "conponents/rncore", // this was the old folder where RN Core Components were generated. If you ran codegen in the past, you might have some files in it that might make the build fail.
   ],
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
-  sources: ["components/inputaccessory", "components/modal", "components/rncore", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "textlayoutmanager", "textlayoutmanager/platform/ios"]
+  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "textlayoutmanager", "textlayoutmanager/platform/ios"]
 )
 
 /// React-FabricImage.podspec
