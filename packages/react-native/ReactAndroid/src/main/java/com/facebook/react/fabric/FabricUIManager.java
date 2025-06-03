@@ -654,6 +654,8 @@ public class FabricUIManager
       float maxHeight) {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareLayout");
+
+    ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
     Layout layout =
         TextLayoutManager.createLayout(
             Preconditions.checkNotNull(surfaceMountingManager.getContext()),
@@ -663,7 +665,9 @@ public class FabricUIManager
             getYogaMeasureMode(minWidth, maxWidth),
             getYogaSize(minHeight, maxHeight),
             getYogaMeasureMode(minHeight, maxHeight),
-            null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
+            textViewManager instanceof ReactTextViewManagerCallback
+                ? (ReactTextViewManagerCallback) textViewManager
+                : null);
 
     int maximumNumberOfLines =
         paragraphAttributes.contains(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
