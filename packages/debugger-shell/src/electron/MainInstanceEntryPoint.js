@@ -9,7 +9,7 @@
  */
 
 // $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
-const {BrowserWindow, app, shell} = require('electron') as any;
+const {BrowserWindow, app, shell, ipcMain} = require('electron') as any;
 const util = require('util');
 
 const windowMetadata = new WeakMap<
@@ -66,6 +66,7 @@ function handleLaunchArgs(argv: string[]) {
     height: 600,
     webPreferences: {
       partition: 'persist:react-native-devtools',
+      preload: require.resolve('./preload.js'),
     },
   });
 
@@ -101,4 +102,17 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', function () {
   app.quit();
+});
+
+ipcMain.on('bringToFront', (event, title) => {
+  const webContents = event.sender;
+  const win = BrowserWindow.fromWebContents(webContents);
+  if (win) {
+    win.focus();
+  }
+  if (process.platform === 'darwin') {
+    app.focus({
+      steal: true,
+    });
+  }
 });
