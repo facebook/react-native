@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6ec32c21e134bd51702d7fcab094c725>>
+ * @generated SignedSource<<2b69f3f912d561ec4127215b61073443>>
  * @flow strict
  * @noformat
  */
@@ -52,6 +52,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   cxxNativeAnimatedEnabled: Getter<boolean>,
   cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableFabricCommitInCXXAnimated: Getter<boolean>,
+  disableHighRefreshRateAnimations: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
@@ -201,6 +202,10 @@ export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGe
  * Prevents use of Fabric commit in C++ Animated implementation
  */
 export const disableFabricCommitInCXXAnimated: Getter<boolean> = createNativeFlagGetter('disableFabricCommitInCXXAnimated', false);
+/**
+ * Disables high refresh rate animations on devices that support it (e.g. 120Hz).
+ */
+export const disableHighRefreshRateAnimations: Getter<boolean> = createNativeFlagGetter('disableHighRefreshRateAnimations', false);
 /**
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */

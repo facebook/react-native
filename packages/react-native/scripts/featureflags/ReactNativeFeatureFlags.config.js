@@ -103,6 +103,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableHighRefreshRateAnimations: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-24',
+        description:
+          'Disables high refresh rate animations on devices that support it (e.g. 120Hz).',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {

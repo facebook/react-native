@@ -11,8 +11,11 @@
 #import <React/RCTNativeAnimatedNodesManager.h>
 #import <React/RCTNativeAnimatedTurboModule.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
+#import <React/RCTAnimationDriver.h>
 
 #import "RCTAnimationPlugins.h"
+
+using namespace facebook::react;
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
@@ -28,13 +31,14 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSMutableArray<AnimatedOperation> *_preOperations;
 
   NSSet<NSString *> *_userDrivenAnimationEndedEvents;
+  ModuleConstants<JS::NativeAnimatedModule::Constants> _constants;
 }
 
 RCT_EXPORT_MODULE();
 
 + (BOOL)requiresMainQueueSetup
 {
-  return NO;
+  return YES;
 }
 
 - (instancetype)init
@@ -43,6 +47,10 @@ RCT_EXPORT_MODULE();
     _operations = [NSMutableArray new];
     _preOperations = [NSMutableArray new];
     _userDrivenAnimationEndedEvents = [NSSet setWithArray:@[ @"onScrollEnded" ]];
+    
+    _constants = typedConstants<JS::NativeAnimatedModule::Constants>({
+      .singleFrameInterval = RCTSingleFrameInterval()
+    });
   }
   return self;
 }
@@ -369,6 +377,18 @@ RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArg
       }
     }
   });
+}
+
+#pragma mark -- Constants
+
+- (ModuleConstants<JS::NativeAnimatedModule::Constants>)constantsToExport
+{
+  return _constants;
+}
+
+- (ModuleConstants<JS::NativeAnimatedModule::Constants>)getConstants
+{
+  return _constants;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

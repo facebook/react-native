@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<30170e483b919c7bd235bfcfe4174c39>>
+ * @generated SignedSource<<46fdd190f4c6461e7bb29305685d4c52>>
  */
 
 /**
@@ -44,6 +44,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableFabricCommitInCXXAnimated() override {
+    return false;
+  }
+
+  bool disableHighRefreshRateAnimations() override {
     return false;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1eff5bade524e3ad8e827ad4adb37f1a>>
+ * @generated SignedSource<<a0229980f56ee9b2f09c58dc816b3c85>>
  */
 
 /**
@@ -66,6 +66,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool disableFabricCommitInCXXAnimated() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableFabricCommitInCXXAnimated");
+    return method(javaProvider_);
+  }
+
+  bool disableHighRefreshRateAnimations() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableHighRefreshRateAnimations");
     return method(javaProvider_);
   }
 
@@ -476,6 +482,11 @@ bool JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated(
   return ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::disableHighRefreshRateAnimations(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::disableHighRefreshRateAnimations();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
@@ -837,6 +848,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "disableFabricCommitInCXXAnimated",
         JReactNativeFeatureFlagsCxxInterop::disableFabricCommitInCXXAnimated),
+      makeNativeMethod(
+        "disableHighRefreshRateAnimations",
+        JReactNativeFeatureFlagsCxxInterop::disableHighRefreshRateAnimations),
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),

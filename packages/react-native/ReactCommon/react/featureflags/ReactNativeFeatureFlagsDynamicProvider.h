@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6030ed59832efdf42e23c13b689da64f>>
+ * @generated SignedSource<<fc12afcbddd43ef0d81dc97c9df0385a>>
  */
 
 /**
@@ -88,6 +88,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::disableFabricCommitInCXXAnimated();
+  }
+
+  bool disableHighRefreshRateAnimations() override {
+    auto value = values_["disableHighRefreshRateAnimations"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableHighRefreshRateAnimations();
   }
 
   bool disableMountItemReorderingAndroid() override {
