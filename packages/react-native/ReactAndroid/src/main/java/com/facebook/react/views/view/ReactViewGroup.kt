@@ -253,15 +253,15 @@ public open class ReactViewGroup public constructor(context: Context?) :
     onInterceptTouchEventListener = listener
   }
 
-  override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-    if (onInterceptTouchEventListener?.onInterceptTouchEvent(this, ev) == true) {
+  override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+    if (onInterceptTouchEventListener?.onInterceptTouchEvent(this, event) == true) {
       return true
     }
     // We intercept the touch event if the children are not supposed to receive it.
     if (!canChildrenBeTouchTarget(pointerEvents)) {
       return true
     }
-    return super.onInterceptTouchEvent(ev)
+    return super.onInterceptTouchEvent(event)
   }
 
   override fun onTouchEvent(event: MotionEvent): Boolean {
