@@ -54,23 +54,39 @@ function getOverrideConfig(
     );
   }
 
+  // We can include multiple copies of InitializeCore here because metro will
+  // only add ones that are already part of the bundle
+  const initializeCorePaths = [
+    require.resolve(
+      path.join(ctx.reactNativePath, 'Libraries/Core/InitializeCore'),
+      {paths: [ctx.root]},
+    ),
+    ...outOfTreePlatforms.map(platform =>
+      require.resolve(
+        `${ctx.platforms[platform].npmPackageName}/Libraries/Core/InitializeCore`,
+        {paths: [ctx.root]},
+      ),
+    ),
+  ];
+
   return {
     resolver,
     serializer: {
-      // We can include multiple copies of InitializeCore here because metro will
-      // only add ones that are already part of the bundle
-      getModulesRunBeforeMainModule: () => [
-        require.resolve(
-          path.join(ctx.reactNativePath, 'Libraries/Core/InitializeCore'),
-          {paths: [ctx.root]},
-        ),
-        ...outOfTreePlatforms.map(platform =>
-          require.resolve(
-            `${ctx.platforms[platform].npmPackageName}/Libraries/Core/InitializeCore`,
-            {paths: [ctx.root]},
-          ),
-        ),
-      ],
+      getModulesRunBeforeMainModule: entrypoint => {
+        const originalBeforeMainModules =
+          config.serializer.getModulesRunBeforeMainModule(entrypoint);
+
+        // If the InitializeCore path is not specified in the original config,
+        // add it to the front of the list
+        const beforeMainModules = [];
+        for (const modulePath of initializeCorePaths) {
+          if (!originalBeforeMainModules.includes(modulePath)) {
+            beforeMainModules.push(modulePath);
+          }
+        }
+
+        return [...beforeMainModules, ...originalBeforeMainModules];
+      },
     },
   };
 }
