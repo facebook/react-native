@@ -3517,8 +3517,7 @@ declare export default typeof ReactNativeViewAttributes;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
-"export type Props = ViewProps;
-declare export default component(
+"declare export default component(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
@@ -4555,7 +4554,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageUtils
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageViewNativeComponent.js 1`] = `
-"type Props = $ReadOnly<{
+"type ImageHostComponentProps = $ReadOnly<{
   ...ImageProps,
   ...ViewProps,
   style?: ImageStyleProp | DangerouslyImpreciseStyle,
@@ -4577,7 +4576,7 @@ interface NativeCommands {
 }
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ImageViewNativeComponent: HostComponent<Props>;
+declare const ImageViewNativeComponent: HostComponent<ImageHostComponentProps>;
 declare export default typeof ImageViewNativeComponent;
 "
 `;
