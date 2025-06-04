@@ -4,22 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
+import type {ReactTestRenderer} from 'react-test-renderer';
 
+import {create} from '../../../jest/renderer';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import * as React from 'react';
 
-const render = require('../../../jest/renderer');
 const Text = require('../Text').default;
 
 jest.unmock('../Text');
 jest.unmock('../TextNativeComponent');
 
-function omitRefAndFlattenStyle(instance) {
+function omitRefAndFlattenStyle(instance: ReactTestRenderer) {
   const json = instance.toJSON();
+  if (json == null) {
+    throw new Error('Expected `instance.toJSON()` to be non-null');
+  }
   // Omit `ref` for forward-compatibility with `enableRefAsProp`.
   delete json.props.ref;
   json.props.style = flattenStyle(json.props.style);
@@ -28,7 +32,7 @@ function omitRefAndFlattenStyle(instance) {
 
 describe('Text', () => {
   it('default render', async () => {
-    const instance = await render.create(<Text />);
+    const instance = await create(<Text />);
 
     expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
@@ -52,7 +56,8 @@ describe('Text compat with web', () => {
       testID: 'testID',
     };
 
-    const instance = await render.create(<Text {...props} />);
+    // $FlowFixMe[prop-missing]
+    const instance = await create(<Text {...props} />);
 
     expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
@@ -116,7 +121,9 @@ describe('Text compat with web', () => {
       'aria-valuetext': '3',
     };
 
-    const instance = await render.create(<Text {...props} />);
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-type]
+    const instance = await create(<Text {...props} />);
 
     expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
@@ -188,7 +195,9 @@ describe('Text compat with web', () => {
       verticalAlign: 'middle',
     };
 
-    const instance = await render.create(<Text style={style} />);
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-type]
+    const instance = await create(<Text style={style} />);
 
     expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText

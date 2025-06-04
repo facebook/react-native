@@ -4,12 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
-
-const processAspectRatio = require('../processAspectRatio').default;
+import processAspectRatio from '../processAspectRatio';
 
 describe('processAspectRatio', () => {
   it('should accept numbers', () => {
@@ -49,15 +48,17 @@ describe('processAspectRatio', () => {
 
   it('should ignore non string falsy types', () => {
     const invalidThings = [undefined, null, false];
-    invalidThings.forEach(thing => {
+    for (const thing of invalidThings) {
+      // $FlowExpectedError[incompatible-call]
       expect(processAspectRatio(thing)).toBe(undefined);
-    });
+    }
   });
 
   it('should not accept non string truthy types', () => {
     const invalidThings = [() => {}, [1, 2, 3], {}];
-    invalidThings.forEach(thing => {
+    for (const thing of invalidThings) {
+      // $FlowExpectedError[incompatible-call]
       expect(() => processAspectRatio(thing)).toThrowErrorMatchingSnapshot();
-    });
+    }
   });
 });

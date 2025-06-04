@@ -4,21 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
+import Dimensions from '../Dimensions';
+import PixelRatio from '../PixelRatio';
 
 describe('PixelRatio', () => {
-  const Dimensions = require('../Dimensions').default;
-  const PixelRatio = require('../PixelRatio').default;
-
   beforeEach(() => {
     Dimensions.set({
       windowPhysicalPixels: {
         width: 400,
         height: 800,
         scale: 2,
+        densityDpi: 2,
         fontScale: 3,
       },
     });
@@ -34,6 +34,7 @@ describe('PixelRatio', () => {
 
   it('should give the pixel density instead of the font scale when the front scale is not present', () => {
     Dimensions.set({
+      // $FlowFixMe[prop-missing]
       windowPhysicalPixels: {
         scale: 2,
       },
