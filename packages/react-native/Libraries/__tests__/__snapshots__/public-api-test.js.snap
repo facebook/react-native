@@ -102,17 +102,15 @@ declare export default typeof NativeAlertManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js 1`] = `
-"declare export default typeof RCTAlertManager;
+"export * from \\"./RCTAlertManager\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js.flow 1`] = `
-"declare export default {
-  alertWithArgs(
-    args: Args,
-    callback: (id: number, value: string) => void
-  ): void,
-};
+"declare export function alertWithArgs(
+  args: Args,
+  callback: (id: number, value: string) => void
+): void;
 "
 `;
 

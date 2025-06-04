@@ -10,9 +10,7 @@
 
 import type {Args} from './NativeAlertManager';
 
-declare export default {
-  alertWithArgs(
-    args: Args,
-    callback: (id: number, value: string) => void,
-  ): void,
-};
+declare export function alertWithArgs(
+  args: Args,
+  callback: (id: number, value: string) => void,
+): void;
