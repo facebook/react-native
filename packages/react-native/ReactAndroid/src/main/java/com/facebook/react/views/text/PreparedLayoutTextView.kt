@@ -100,7 +100,8 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     }
 
     super.onDraw(canvas)
-    canvas.translate(paddingLeft.toFloat(), paddingTop.toFloat())
+    canvas.translate(
+        paddingLeft.toFloat(), paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f))
 
     val layout = preparedLayout?.layout
     if (layout != null) {
