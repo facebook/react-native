@@ -1,12 +1,8 @@
 appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
 ---
-- runFlow: ./helpers/launch-app-and-search.yml
-- inputText:
-    text: "New Architecture"
-- assertVisible:
-    id: "New Architecture Examples"
-- tapOn:
-    id: "New Architecture Examples"
+- launchApp
+- assertVisible: "Components"
+- openLink: "rntester://example/NewArchitectureExample"
 - assertVisible: "HSBA: h: 0, s: 0, b: 0, a: 0"
 - assertVisible: "Constants From Interop Layer: 3.14"
 - tapOn: "Change Background"

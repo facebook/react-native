@@ -2,13 +2,7 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 ---
 - launchApp
 - assertVisible: "Components"
-- scrollUntilVisible:
-    element:
-      id: "Modal"
-    direction: DOWN
-    speed: 60
-- tapOn:
-    id: "Modal"
+- openLink: "rntester://example/ModalExample"
 - assertVisible:
     text: "Show Modal"
 - tapOn:

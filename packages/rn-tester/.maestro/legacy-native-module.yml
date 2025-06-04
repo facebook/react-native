@@ -1,17 +1,8 @@
 appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
 ---
 - launchApp
-- assertVisible:
-    text: "APIs"
-- tapOn:
-    id: "apis-tab"
-- runFlow: ./helpers/search.yml
-- inputText:
-    text: "Legacy Native"
-- assertVisible:
-    id: "Legacy Native Module"
-- tapOn:
-    id: "Legacy Native Module"
+- assertVisible: "Components"
+- openLink: "rntester://example/LegacyModuleExample"
 - tapOn: 
     text: "voidFunc"
 - assertVisible:
