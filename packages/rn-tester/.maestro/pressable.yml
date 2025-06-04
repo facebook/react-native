@@ -1,8 +1,12 @@
 appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
 ---
-- launchApp
-- assertVisible: "Components"
-- openLink: "rntester://example/PressableExample"
+- runFlow: ./helpers/launch-app-and-search.yml
+- inputText:
+    text: "Pressable"
+- assertVisible:
+    id: "Pressable"
+- tapOn:
+    id: "Pressable"
 - assertVisible:
     text: "Change content based on Press"
 - assertVisible:

@@ -2,7 +2,13 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
 ---
 - launchApp
 - assertVisible: "Components"
-- openLink: "rntester://example/ButtonExample"
+- scrollUntilVisible:
+    element:
+      id: "Button"
+    direction: DOWN
+    speed: 40
+- tapOn:
+    id: "Button"
 - tapOn:
     id: "button_default_styling"
 - assertVisible: "Your application has been submitted!"
