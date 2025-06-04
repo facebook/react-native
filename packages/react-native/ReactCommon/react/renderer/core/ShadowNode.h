@@ -221,13 +221,6 @@ class ShadowNode : public Sealable,
       const Shared& destinationShadowNode) const;
 
   /*
-   * Transfer the runtime reference to this `ShadowNode` to a new instance,
-   * updating the reference to point to the new `ShadowNode` referencing it.
-   */
-  void transferRuntimeShadowNodeReference(
-      const Shared& destinationShadowNode) const;
-
-  /*
    * Transfer the runtime reference based on the fragment instructions.
    */
   void transferRuntimeShadowNodeReference(
@@ -273,6 +266,13 @@ class ShadowNode : public Sealable,
    * rendered, its parent will be too.
    */
   void updateTraitsIfNeccessary();
+
+  /*
+   * Transfer the runtime reference to this `ShadowNode` to a new instance,
+   * updating the reference to point to the new `ShadowNode` referencing it.
+   */
+  void transferRuntimeShadowNodeReference(
+      const Shared& destinationShadowNode) const;
 
   /*
    * Pointer to a family object that this shadow node belongs to.
