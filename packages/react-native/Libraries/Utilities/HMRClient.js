@@ -101,7 +101,10 @@ const HMRClient: HMRClientNativeInterface = {
   },
 
   registerBundle(requestUrl: string) {
-    invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
+    invariant(
+      hmrOrigin != null && hmrClient != null,
+      'Expected HMRClient.setup() call at startup.',
+    );
     // only process registerBundle calls from the same origin
     if (!requestUrl.startsWith(hmrOrigin)) {
       return;
