@@ -28,7 +28,6 @@ const prettier = require('prettier');
 const osTempDir = require('temp-dir');
 
 const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
-  require('./transforms/fixReactImportName'),
   require('./transforms/sortTypeDefinitions'),
   require('./transforms/sortProperties'),
   require('./transforms/sortUnions'),
