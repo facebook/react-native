@@ -187,14 +187,24 @@ export function runTask(task: () => void | Promise<void>) {
 }
 
 /**
- * Advances the animation clock by the specified number of milliseconds.
- * This function allows tests to simulate the passage of time for animations
- * without actually waiting, making animation testing more efficient.
+ * Simulates the production of animation frames for a specified duration.
+ * This function is useful for testing animations or time-dependent behaviors
+ * by advancing the animation frame timeline without waiting for real time to pass.
  *
- * @param miliseconds - The number of milliseconds to advance animations by
+ * @param milliseconds - The duration in milliseconds for which to produce animation frames
+ *
+ * @example
+ * ```
+ * // Simulate 500ms of animation frames
+ * Fantom.unstable_produceFramesForDuration(500);
+ *
+ * // Now you can test the state of your UI after those frames have been produced
+ * ```
+ *
+ * Note: This API is marked as unstable and may change in future versions.
  */
-export function unstable_advanceAnimationsByTime(milliseconds: number) {
-  NativeFantom.advanceAnimationsByTime(milliseconds);
+export function unstable_produceFramesForDuration(milliseconds: number) {
+  NativeFantom.produceFramesForDuration(milliseconds);
 }
 
 /**
