@@ -4,10 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
+
+/*::
+import type {ConfigT, InputConfigT} from 'metro-config';
+*/
 
 const {getDefaultConfig} = require('@react-native/metro-config');
 const {mergeConfig} = require('metro-config');
@@ -17,12 +22,12 @@ const rnTesterConfig = getDefaultConfig(
   path.resolve('../../../packages/rn-tester'),
 );
 
-const JS_DIR = process.env.JS_DIR
-  ? path.resolve(process.cwd(), process.env.JS_DIR)
-  : null;
+const cwd = process.cwd();
+const JS_DIR =
+  process.env.JS_DIR != null ? path.resolve(cwd, process.env.JS_DIR) : null;
 const NODE_MODULES = path.sep + 'node_modules' + path.sep;
 
-const config = {
+const config /*: InputConfigT */ = {
   projectRoot: path.resolve(__dirname, '../../..'),
   reporter: {
     update: () => {},
@@ -30,21 +35,21 @@ const config = {
   resolver: {
     blockList: /\/RendererProxy\.fb\.js$/, // Disable dependency injection for the renderer
     sourceExts: ['fb.js', ...rnTesterConfig.resolver.sourceExts],
-    nodeModulesPaths: JS_DIR
-      ? [path.join(JS_DIR, 'public', 'node_modules')]
-      : [],
+    nodeModulesPaths:
+      JS_DIR != null ? [path.join(JS_DIR, 'public', 'node_modules')] : [],
     hasteImplModulePath: path.resolve(__dirname, 'hasteImpl.js'),
-    resolveRequest: JS_DIR
-      ? (ctx, dep, platform) =>
-          ctx.originModulePath.includes(NODE_MODULES)
-            ? ctx.resolveRequest(ctx, dep, platform)
-            : // Disable hierarchical node_modules lookup from 1P code.
-              ctx.resolveRequest(
-                {...ctx, disableHierarchicalLookup: true},
-                dep,
-                platform,
-              )
-      : null,
+    resolveRequest:
+      JS_DIR != null
+        ? (ctx, dep, platform) =>
+            ctx.originModulePath.includes(NODE_MODULES)
+              ? ctx.resolveRequest(ctx, dep, platform)
+              : // Disable hierarchical node_modules lookup from 1P code.
+                ctx.resolveRequest(
+                  {...ctx, disableHierarchicalLookup: true},
+                  dep,
+                  platform,
+                )
+        : null,
   },
   transformer: {
     // We need to wrap the default transformer so we can run it from source
@@ -55,13 +60,14 @@ const config = {
     // Force an empty list so Metro doesn't inject InitializeCore in tests.
     getModulesRunBeforeMainModule: () => [],
   },
-  watchFolders: JS_DIR
-    ? [
-        path.join(JS_DIR, 'RKJSModules', 'vendor', 'react'),
-        path.join(JS_DIR, 'tools', 'metro', 'packages', 'metro-runtime'),
-        path.join(JS_DIR, 'public', 'node_modules'),
-      ]
-    : [],
+  watchFolders:
+    JS_DIR != null
+      ? [
+          path.join(JS_DIR, 'RKJSModules', 'vendor', 'react'),
+          path.join(JS_DIR, 'tools', 'metro', 'packages', 'metro-runtime'),
+          path.join(JS_DIR, 'public', 'node_modules'),
+        ]
+      : [],
 };
 
-module.exports = mergeConfig(rnTesterConfig, config);
+module.exports = mergeConfig(rnTesterConfig, config) /*:: as ConfigT */;
