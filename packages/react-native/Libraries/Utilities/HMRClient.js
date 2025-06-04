@@ -23,6 +23,7 @@ const prettyFormat = require('pretty-format');
 const pendingEntryPoints = [];
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
+let hmrOrigin: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
 let pendingLogs: Array<[LogLevel, $ReadOnlyArray<mixed>]> = [];
@@ -101,6 +102,10 @@ const HMRClient: HMRClientNativeInterface = {
 
   registerBundle(requestUrl: string) {
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
+    // only process registerBundle calls from the same origin
+    if (!requestUrl.startsWith(hmrOrigin)) {
+      return;
+    }
     pendingEntryPoints.push(requestUrl);
     registerBundleEntryPoints(hmrClient);
   },
@@ -162,8 +167,10 @@ const HMRClient: HMRClientNativeInterface = {
 
     const serverScheme = scheme;
 
-    const client = new MetroHMRClient(`${serverScheme}://${serverHost}/hot`);
+    const origin = `${serverScheme}://${serverHost}`;
+    const client = new MetroHMRClient(`${origin}/hot`);
 
+    hmrOrigin = origin;
     hmrClient = client;
 
     const {fullBundleUrl} = getDevServer();
