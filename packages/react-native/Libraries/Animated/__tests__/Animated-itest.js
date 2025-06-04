@@ -61,7 +61,7 @@ test('moving box by 100 points', () => {
     }).start();
   });
 
-  Fantom.unstable_advanceAnimationsByTime(1000);
+  Fantom.unstable_produceFramesForDuration(1000);
   boundingClientRect = viewElement.getBoundingClientRect();
   expect(boundingClientRect.x).toBe(100);
 
