@@ -405,6 +405,5 @@ Force Quit via Activity Monitor.
 }
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

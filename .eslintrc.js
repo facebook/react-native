@@ -27,6 +27,7 @@ module.exports = {
       files: ['*.js', '*.js.flow', '*.jsx'],
       parser: 'hermes-eslint',
       rules: {
+        'no-void': 0,
         // These rules are not required with hermes-eslint
         'ft-flow/define-flow-type': 0,
         'ft-flow/use-flow-type': 0,
