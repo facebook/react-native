@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {TestSuiteResult} from '../runtime/setup';
+import type {FailureDetail, TestSuiteResult} from '../runtime/setup';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
@@ -50,6 +50,18 @@ fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
 const BUILD_OUTPUT_PATH = fs.mkdtempSync(
   path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
 );
+
+function buildError(
+  failureDetail: FailureDetail,
+  sourceMapPath: string,
+): Error {
+  const error = new Error(failureDetail.message);
+  error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  if (failureDetail.cause != null) {
+    error.cause = buildError(failureDetail.cause, sourceMapPath);
+  }
+  return error;
+}
 
 async function processRNTesterCommandResult(
   result: AsyncCommandResult,
@@ -278,19 +290,20 @@ module.exports = async function runTest(
 
     const testResultError = processedResult.error;
     if (testResultError) {
-      const error = new Error(testResultError.message);
-      error.stack = symbolicateStackTrace(sourceMapPath, testResultError.stack);
+      const error = buildError(testResultError, sourceMapPath);
       throw error;
     }
 
     const testResults =
       nullthrows(processedResult.testResults).map(testResult => ({
         ancestorTitles: [] as Array<string>,
-        failureDetails: [] as Array<string>,
         testFilePath: testPath,
         ...testResult,
         failureMessages: testResult.failureMessages.map(maybeStackTrace =>
           symbolicateStackTrace(sourceMapPath, maybeStackTrace),
+        ),
+        failureDetails: testResult.failureDetails.map(failureDetails =>
+          buildError(failureDetails, sourceMapPath),
         ),
         snapshotResults: testResult.snapshotResults,
       })) ?? [];
