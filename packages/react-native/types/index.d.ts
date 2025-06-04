@@ -71,7 +71,6 @@
 /// <reference path="../src/types/globals.d.ts" />
 /// <reference path="modules/LaunchScreen.d.ts" />
 
-
 export * from '../Libraries/ActionSheetIOS/ActionSheetIOS';
 export * from '../Libraries/Alert/Alert';
 export * from '../Libraries/Animated/Animated';

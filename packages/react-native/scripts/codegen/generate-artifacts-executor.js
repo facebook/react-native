@@ -360,7 +360,7 @@ function findLibrariesFromReactNativeConfig(projectRoot, rnConfig) {
  *
  * This is needed when selectively disabling libraries in react-native.config.js since codegen should exclude those libraries as well.
  */
- function findDisabledLibrariesByPlatform(reactNativeConfig, platform) {
+function findDisabledLibrariesByPlatform(reactNativeConfig, platform) {
   const dependencies = reactNativeConfig.dependencies ?? {};
 
   return Object.keys(dependencies).filter(
@@ -610,7 +610,7 @@ function findCodegenEnabledLibraries(pkgJson, projectRoot, reactNativeConfig) {
 }
 
 function readReactNativeConfig(projectRoot) {
-  const rnConfigFilePath = path.resolve(projectRoot, 'react-native.config.js');Add commentMore actions
+  const rnConfigFilePath = path.resolve(projectRoot, 'react-native.config.js');
 
   if (!fs.existsSync(rnConfigFilePath)) {
     return {};
@@ -1071,7 +1071,11 @@ function execute(projectRoot, targetPlatform, baseOutputPath, source) {
     buildCodegenIfNeeded();
 
     const reactNativeConfig = readReactNativeConfig(projectRoot);
-    const codegenEnabledLibraries = findCodegenEnabledLibraries(pkgJson, projectRoot, reactNativeConfig);
+    const codegenEnabledLibraries = findCodegenEnabledLibraries(
+      pkgJson,
+      projectRoot,
+      reactNativeConfig,
+    );
 
     if (codegenEnabledLibraries.length === 0) {
       codegenLog('No codegen-enabled libraries found.', true);
@@ -1082,7 +1086,7 @@ function execute(projectRoot, targetPlatform, baseOutputPath, source) {
       targetPlatform === 'all' ? supportedPlatforms : [targetPlatform];
 
     for (const platform of platforms) {
-      const disabledLibraries = findDisabledLibrariesByPlatform(Add commentMore actions
+      const disabledLibraries = findDisabledLibrariesByPlatform(
         reactNativeConfig,
         platform,
       );
