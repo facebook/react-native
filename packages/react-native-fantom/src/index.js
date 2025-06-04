@@ -208,6 +208,24 @@ export function unstable_produceFramesForDuration(milliseconds: number) {
 }
 
 /**
+ * Returns props appplied via direct manipulation to a view represented by shadow node.
+ * Direct manipulation is used by C++ Animated to change view properties on UI tick
+ * while the animation is in progress. Once animation finishes, the final state is committed
+ * to the shadow tree and result is observable through other JavaScript APIs, like `measure`.
+ *
+ * @param node - The node for which to retrieve direct manipulation props.
+ * @returns Mixed type data containing the direct manipulation properties
+ *
+ * Note: This API is marked as unstable and may change in future versions.
+ */
+export function unstable_getDirectManipulationProps(
+  node: ReactNativeElement,
+): mixed {
+  const shadowNode = getNativeNodeReference(node);
+  return NativeFantom.getDirectManipulationProps(shadowNode);
+}
+
+/**
  * Simulates running a task on the UI thread and forces side effect to drain
  * the event queue, scheduling events to be dispatched to JavaScript.
  * To be used when enqueuing native events.
