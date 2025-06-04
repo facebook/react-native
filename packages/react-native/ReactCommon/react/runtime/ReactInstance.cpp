@@ -109,7 +109,7 @@ ReactInstance::ReactInstance(
         runtimeExecutorThatExecutesAfterInspectorSetup,
         [jsErrorHandler = jsErrorHandler_](
             jsi::Runtime& runtime, jsi::JSError& error) {
-          jsErrorHandler->handleError(runtime, error, true);
+          jsErrorHandler->handleError(runtime, error, false);
         });
 
     auto runtimeExecutorThatGoesThroughRuntimeScheduler =
@@ -143,7 +143,7 @@ ReactInstance::ReactInstance(
         runtimeExecutor,
         [jsErrorHandler = jsErrorHandler_](
             jsi::Runtime& runtime, jsi::JSError& error) {
-          jsErrorHandler->handleError(runtime, error, true);
+          jsErrorHandler->handleError(runtime, error, false);
         });
   }
 
