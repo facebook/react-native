@@ -4,8 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
+
+/*::
+import type {InputConfigT} from 'metro-config';
+*/
 
 const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 const path = require('path');
@@ -34,4 +39,7 @@ const config = {
   },
 };
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+module.exports = mergeConfig(
+  getDefaultConfig(__dirname),
+  config,
+) /*:: as $ReadOnly<InputConfigT> */;
