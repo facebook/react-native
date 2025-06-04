@@ -685,6 +685,26 @@
 - Add changelog entry for v0.79.0-rc.2 ([2259db6d4b](https://github.com/facebook/react-native/commit/2259db6d4bd30eda91aa952e40e98bd27f758fb6) by [@fabriziocucci](https://github.com/fabriziocucci))
 - Remove (more) unused variables from AtWork ([486d38c024](https://github.com/facebook/react-native/commit/486d38c0242989e0d22b0d9b13dd597a29014c0f) by [@ellishg](https://github.com/ellishg))
 
+## v0.79.3
+
+### Fixed
+
+- **Runtime:** Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
+- **Typescript:** Reference `global.d.ts` using path not types so they can be resolved by TSC ([af21f260a1](https://github.com/facebook/react-native/commit/af21f260a1cee460d11fc9c292aaa9f602cbd5a4) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+#### Android specific
+
+- **Runtime:** Fixes issue with z-indexed sibling removal ([34ae9facd5](https://github.com/facebook/react-native/commit/34ae9facd52b5da28b5ced22110532bbcdad2cec) by [@rozele](https://github.com/rozele))
+- **Style:** Wrong borderBottomEndRadius on RTL ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+#### iOS specific
+
+- **Cocoapods:** enable DEFINES_MODULE in React-jsc ([c8fcac2765](https://github.com/facebook/react-native/commit/c8fcac2765e0f79f0e7bb3a422a65698aec62536) by [@cipolleschi](https://github.com/cipolleschi))
+- **Codegen:** Allow the .pnpm folder to be discovered during code generation ([ed7b4d86ab2b77b4cba6c2105e35047ac68c93e1](https://github.com/facebook/react-native/commit/ed7b4d86ab2b77b4cba6c2105e35047ac68c93e1) by [@kirill3333](https://github.com/kirill3333))
+- **Codegen:** Exclude selectively disabled libraries from codegen generation ([e5c089669a](https://github.com/facebook/react-native/commit/e5c089669a82bd2075c1657d0291aa32a6b61966) by [@cipolleschi](https://github.com/cipolleschi))
+- **Interop Layer:** Fixed adding child views to a native view using the interop layer ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
+- **RedBox:** Fix disappearing redbox on initial load of an invalid bundle. ([4cc9db1cd5](https://github.com/facebook/react-native/commit/4cc9db1cd501b019e90bb540ce836e2a2c2bf2ff) by [@aleqsio](https://github.com/aleqsio))
+- **Switch:** Fixes Switch component incorrectly renders as toggled on even though value prop is hardcoded to false ([8d42fc40bc](https://github.com/facebook/react-native/commit/8d42fc40bc1b31efa7913198e23f39ac46532dc7) by [@zhongwuzw](https://github.com/zhongwuzw))
 
 ## v0.79.2
 
