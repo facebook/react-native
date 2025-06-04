@@ -610,7 +610,7 @@ void NativeAnimatedNodesManager::updateNodes(
   updatedNodeTags_.clear();
 }
 
-bool NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
+bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
   // Run all active animations
   auto hasFinishedAnimations = false;
   std::set<int> finishedAnimationValueNodes;
@@ -723,12 +723,12 @@ void NativeAnimatedNodesManager::onRender() {
 
   // Step through the animation loop
   if (isAnimationUpdateNeeded()) {
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                  g_now().time_since_epoch())
-                  .count();
+    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+                            g_now().time_since_epoch())
+                            .count();
 
     auto containsChange =
-        onAnimationFrame(static_cast<uint64_t>(ms * TicksPerMs));
+        onAnimationFrame(static_cast<double>(microseconds) / 1000.0);
 
     if (!containsChange) {
       // The last animation tick didn't result in any changes to the UI.

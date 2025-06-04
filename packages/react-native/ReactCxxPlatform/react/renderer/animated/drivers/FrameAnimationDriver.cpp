@@ -58,7 +58,7 @@ bool FrameAnimationDriver::update(double timeDeltaMs, bool /*restarting*/) {
     }
 
     const auto startIndex =
-        static_cast<size_t>(timeDeltaMs / SingleFrameIntervalMs);
+        static_cast<size_t>(std::ceil(timeDeltaMs / SingleFrameIntervalMs));
     assert(startIndex >= 0);
     const auto nextIndex = startIndex + 1;
 
