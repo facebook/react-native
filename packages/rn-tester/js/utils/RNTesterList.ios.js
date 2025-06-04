@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
 import * as RNTesterListFbInternal from './RNTesterListFbInternal';

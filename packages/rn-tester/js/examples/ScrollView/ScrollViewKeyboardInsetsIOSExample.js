@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import * as React from 'react';
 import {useState} from 'react';
@@ -21,7 +20,7 @@ import {
   View,
 } from 'react-native';
 
-export function ScrollViewKeyboardInsetsExample() {
+function ScrollViewKeyboardInsetsExample(): React.Node {
   const [
     automaticallyAdjustKeyboardInsets,
     setAutomaticallyAdjustKeyboardInsets,
@@ -34,11 +33,14 @@ export function ScrollViewKeyboardInsetsExample() {
     style: heightRestricted && styles.scrollViewHeightRestricted,
     contentContainerStyle: styles.scrollViewContent,
     automaticallyAdjustKeyboardInsets: automaticallyAdjustKeyboardInsets,
-    keyboardDismissMode: 'interactive',
+    keyboardDismissMode: 'interactive' as const,
   };
 
   const data = [...Array(20).keys()];
-  const renderItem = ({item, index}) => {
+  const renderItem = ({
+    item,
+    index,
+  }: $ReadOnly<{item: number, index: number, ...}>) => {
     const largeInput = index % 5 === 4;
     return (
       <View key={item} style={styles.textInputRow}>
@@ -56,7 +58,7 @@ export function ScrollViewKeyboardInsetsExample() {
       <View style={styles.controlRow}>
         <Text>
           <Text style={styles.code}>automaticallyAdjustKeyboardInsets</Text> is{' '}
-          {automaticallyAdjustKeyboardInsets + ''}
+          {String(automaticallyAdjustKeyboardInsets)}
         </Text>
         <Switch
           onValueChange={v => setAutomaticallyAdjustKeyboardInsets(v)}
@@ -66,7 +68,7 @@ export function ScrollViewKeyboardInsetsExample() {
       </View>
       <View style={styles.controlRow}>
         <Text>
-          <Text style={styles.code}>FlatList</Text> is {flatList + ''}
+          <Text style={styles.code}>FlatList</Text> is {String(flatList)}
         </Text>
         <Switch
           onValueChange={v => setFlatList(v)}
@@ -77,7 +79,7 @@ export function ScrollViewKeyboardInsetsExample() {
       {flatList && (
         <View style={styles.controlRow}>
           <Text>
-            <Text style={styles.code}>inverted</Text> is {inverted + ''}
+            <Text style={styles.code}>inverted</Text> is {String(inverted)}
           </Text>
           <Switch
             onValueChange={v => setInverted(v)}
@@ -89,7 +91,7 @@ export function ScrollViewKeyboardInsetsExample() {
       <View style={styles.controlRow}>
         <Text>
           <Text style={styles.code}>HeightRestricted</Text> is{' '}
-          {heightRestricted + ''}
+          {String(heightRestricted)}
         </Text>
         <Switch
           onValueChange={v => setHeightRestricted(v)}
