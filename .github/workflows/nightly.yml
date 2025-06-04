@@ -119,7 +119,7 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermesc_windows:
-    runs-on: windows-2019
+    runs-on: windows-2025
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: 'D:\tmp\hermes'
