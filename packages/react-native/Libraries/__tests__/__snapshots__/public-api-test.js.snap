@@ -3241,8 +3241,8 @@ declare const TouchableMixinImpl: {
   touchableHandleResponderRelease: (e: GestureResponderEvent) => void,
   touchableHandleResponderTerminate: (e: GestureResponderEvent) => void,
   touchableHandleResponderMove: (e: GestureResponderEvent) => void,
-  touchableHandleFocus: (e: Event) => void,
-  touchableHandleBlur: (e: Event) => void,
+  touchableHandleFocus: (e: FocusEvent) => void,
+  touchableHandleBlur: (e: BlurEvent) => void,
   withoutDefaultFocusAndBlur: { ... },
 };
 declare const TouchableImpl: {
