@@ -175,7 +175,7 @@ class NativeAnimatedNodesManager {
  private:
   void stopRenderCallbackIfNeeded() noexcept;
 
-  bool onAnimationFrame(uint64_t timestamp);
+  bool onAnimationFrame(double timestamp);
 
   bool isAnimationUpdateNeeded() const noexcept;
 
