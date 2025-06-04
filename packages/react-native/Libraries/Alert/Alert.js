@@ -11,7 +11,7 @@
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 
 import Platform from '../Utilities/Platform';
-import RCTAlertManager from './RCTAlertManager';
+import {alertWithArgs} from './RCTAlertManager';
 
 /**
  * @platform ios
@@ -178,7 +178,7 @@ class Alert {
         });
       }
 
-      RCTAlertManager.alertWithArgs(
+      alertWithArgs(
         {
           title: title || '',
           message: message || undefined,

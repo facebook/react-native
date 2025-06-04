@@ -12,6 +12,4 @@
 // from 'react-native' with platform-specific extensions. It can be deleted
 // once we remove the "./*" mapping from package.json "exports".
 
-import RCTAlertManager from './RCTAlertManager';
-
-export default RCTAlertManager;
+export * from './RCTAlertManager';
