@@ -1003,15 +1003,11 @@ public abstract interface class com/facebook/react/bridge/NativeModule {
 public final class com/facebook/react/bridge/NativeModuleRegistry {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/Map;)V
 	public final fun getAllModules ()Ljava/util/List;
-	public final fun getCxxModules ()Ljava/util/List;
 	public final fun getModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
 	public final fun getModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
 	public final fun hasModule (Ljava/lang/Class;)Z
 	public final fun hasModule (Ljava/lang/String;)Z
-	public final fun notifyJSInstanceDestroy ()V
-	public final fun notifyJSInstanceInitialized ()V
 	public final fun onBatchComplete ()V
-	public final fun registerModules (Lcom/facebook/react/bridge/NativeModuleRegistry;)V
 }
 
 public final class com/facebook/react/bridge/NoSuchKeyException : java/lang/RuntimeException {

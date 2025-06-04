@@ -35,7 +35,10 @@ public class NativeModuleRegistry(
     }
   }
 
-  public val cxxModules: List<ModuleHolder>
+  @get:JvmName(
+      "getCxxModules") // This is needed till there are Java Consumer of this API inside React
+  // Native
+  internal val cxxModules: List<ModuleHolder>
     get() = buildList {
       for ((_, value) in modules) {
         if (value.isCxxModule) {
@@ -45,7 +48,10 @@ public class NativeModuleRegistry(
     }
 
   /** Adds any new modules to the current module registry */
-  public fun registerModules(newRegister: NativeModuleRegistry) {
+  @JvmName(
+      "registerModules") // This is needed till there are Java Consumer of this API inside React
+  // Native
+  internal fun registerModules(newRegister: NativeModuleRegistry) {
     check(reactApplicationContext == newRegister.reactApplicationContext) {
       "Extending native modules with non-matching application contexts."
     }
@@ -59,7 +65,10 @@ public class NativeModuleRegistry(
     }
   }
 
-  public fun notifyJSInstanceDestroy() {
+  @JvmName(
+      "notifyJSInstanceDestroy") // This is needed till there are Java Consumer of this API inside
+  // React Native
+  internal fun notifyJSInstanceDestroy() {
     reactApplicationContext.assertOnNativeModulesQueueThread()
     beginSection(Systrace.TRACE_TAG_REACT, "NativeModuleRegistry_notifyJSInstanceDestroy")
     try {
@@ -71,7 +80,9 @@ public class NativeModuleRegistry(
     }
   }
 
-  public fun notifyJSInstanceInitialized() {
+  @JvmName("notifyJSInstanceInitialized") // This is needed till there are Java Consumer of this API
+  // inside React Native
+  internal fun notifyJSInstanceInitialized() {
     reactApplicationContext.assertOnNativeModulesQueueThread(
         "From version React Native v0.44, " +
             "native modules are explicitly not initialized on the UI thread.")
