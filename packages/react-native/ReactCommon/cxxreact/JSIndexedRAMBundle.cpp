@@ -7,10 +7,11 @@
 
 #include "JSIndexedRAMBundle.h"
 
-#include <glog/logging.h>
 #include <fstream>
-#include <memory>
 #include <sstream>
+
+#include <folly/lang/Bits.h>
+#include <glog/logging.h>
 
 namespace facebook::react {
 

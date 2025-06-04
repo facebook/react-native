@@ -9,12 +9,12 @@
 
 #include <glog/logging.h>
 
-#include <folly/Memory.h>
 #include <folly/portability/Fcntl.h>
 #include <folly/portability/SysMman.h>
 #include <folly/portability/SysStat.h>
 #include <folly/portability/Unistd.h>
 
+#include <cstring>
 #include <memory>
 
 namespace facebook::react {
