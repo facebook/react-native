@@ -22,7 +22,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.SystemClock;
-import android.text.Layout;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
@@ -51,7 +50,6 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -671,23 +669,15 @@ public class FabricUIManager
       float maxHeight) {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareLayout");
-    Layout layout =
-        TextLayoutManager.createLayout(
-            Preconditions.checkNotNull(surfaceMountingManager.getContext()),
-            attributedString,
-            paragraphAttributes,
-            getYogaSize(minWidth, maxWidth),
-            getYogaMeasureMode(minWidth, maxWidth),
-            getYogaSize(minHeight, maxHeight),
-            getYogaMeasureMode(minHeight, maxHeight),
-            null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
 
-    int maximumNumberOfLines =
-        paragraphAttributes.contains(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
-            ? paragraphAttributes.getInt(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
-            : ReactConstants.UNSET;
-
-    return new PreparedLayout(layout, maximumNumberOfLines);
+    return TextLayoutManager.createPreparedLayout(
+        Preconditions.checkNotNull(surfaceMountingManager.getContext()),
+        attributedString,
+        paragraphAttributes,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight));
   }
 
   @AnyThread

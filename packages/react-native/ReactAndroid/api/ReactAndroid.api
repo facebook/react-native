@@ -6496,6 +6496,7 @@ public class com/facebook/react/views/text/TextLayoutManager {
 	public static final field PA_KEY_MAXIMUM_FONT_SIZE S
 	public static final field PA_KEY_MAX_NUMBER_OF_LINES S
 	public static final field PA_KEY_MINIMUM_FONT_SIZE S
+	public static final field PA_KEY_TEXT_ALIGN_VERTICAL S
 	public static final field PA_KEY_TEXT_BREAK_STRATEGY S
 	public fun <init> ()V
 	public static fun deleteCachedSpannableForTag (I)V

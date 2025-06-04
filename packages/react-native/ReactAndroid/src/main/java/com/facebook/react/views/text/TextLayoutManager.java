@@ -26,6 +26,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
@@ -33,6 +34,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
@@ -85,6 +87,7 @@ public class TextLayoutManager {
   public static final short PA_KEY_HYPHENATION_FREQUENCY = 5;
   public static final short PA_KEY_MINIMUM_FONT_SIZE = 6;
   public static final short PA_KEY_MAXIMUM_FONT_SIZE = 7;
+  public static final short PA_KEY_TEXT_ALIGN_VERTICAL = 8;
 
   private static final String TAG = TextLayoutManager.class.getSimpleName();
 
@@ -604,8 +607,7 @@ public class TextLayoutManager {
     }
   }
 
-  @UnstableReactNativeAPI
-  public static Layout createLayout(
+  private static Layout createLayout(
       @NonNull Context context,
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
@@ -693,6 +695,38 @@ public class TextLayoutManager {
         ellipsizeMode,
         maximumNumberOfLines,
         paint);
+  }
+
+  @UnstableReactNativeAPI
+  public static PreparedLayout createPreparedLayout(
+      @NonNull Context context,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      float height,
+      YogaMeasureMode heightYogaMeasureMode) {
+    Layout layout =
+        TextLayoutManager.createLayout(
+            Preconditions.checkNotNull(context),
+            attributedString,
+            paragraphAttributes,
+            width,
+            widthYogaMeasureMode,
+            height,
+            heightYogaMeasureMode,
+            null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
+
+    int maximumNumberOfLines =
+        paragraphAttributes.contains(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
+            ? paragraphAttributes.getInt(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
+            : ReactConstants.UNSET;
+
+    float verticalOffset =
+        getVerticalOffset(
+            layout, paragraphAttributes, height, heightYogaMeasureMode, maximumNumberOfLines);
+
+    return new PreparedLayout(layout, maximumNumberOfLines, verticalOffset);
   }
 
   /*package*/ static void adjustSpannableFontToFit(
@@ -814,7 +848,7 @@ public class TextLayoutManager {
     float calculatedWidth =
         calculateWidth(layout, text, width, widthYogaMeasureMode, calculatedLineCount);
     float calculatedHeight =
-        calculateHeight(layout, text, height, heightYogaMeasureMode, calculatedLineCount);
+        calculateHeight(layout, height, heightYogaMeasureMode, calculatedLineCount);
 
     if (attachmentsPositions != null) {
       int attachmentIndex = 0;
@@ -823,7 +857,8 @@ public class TextLayoutManager {
       AttachmentMetrics metrics = new AttachmentMetrics();
       for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
         lastAttachmentFoundInSpan =
-            nextAttachmentMetrics(layout, text, calculatedWidth, calculatedLineCount, i, metrics);
+            nextAttachmentMetrics(
+                layout, text, calculatedWidth, calculatedLineCount, i, 0, metrics);
         if (metrics.wasFound) {
           attachmentsPositions[attachmentIndex] = PixelUtil.toDIPFromPixel(metrics.top);
           attachmentsPositions[attachmentIndex + 1] = PixelUtil.toDIPFromPixel(metrics.left);
@@ -853,7 +888,7 @@ public class TextLayoutManager {
     float calculatedWidth =
         calculateWidth(layout, text, width, widthYogaMeasureMode, calculatedLineCount);
     float calculatedHeight =
-        calculateHeight(layout, text, height, heightYogaMeasureMode, calculatedLineCount);
+        calculateHeight(layout, height, heightYogaMeasureMode, calculatedLineCount);
 
     ArrayList<Float> retList = new ArrayList<>();
     retList.add(PixelUtil.toDIPFromPixel(calculatedWidth));
@@ -863,7 +898,14 @@ public class TextLayoutManager {
     int lastAttachmentFoundInSpan;
     for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
       lastAttachmentFoundInSpan =
-          nextAttachmentMetrics(layout, text, calculatedWidth, calculatedLineCount, i, metrics);
+          nextAttachmentMetrics(
+              layout,
+              text,
+              calculatedWidth,
+              calculatedLineCount,
+              i,
+              preparedLayout.getVerticalOffset(),
+              metrics);
       if (metrics.wasFound) {
         retList.add(PixelUtil.toDIPFromPixel(metrics.top));
         retList.add(PixelUtil.toDIPFromPixel(metrics.left));
@@ -877,6 +919,44 @@ public class TextLayoutManager {
       ret[i] = retList.get(i);
     }
     return ret;
+  }
+
+  private static float getVerticalOffset(
+      Layout layout,
+      ReadableMapBuffer paragraphAttributes,
+      float height,
+      YogaMeasureMode heightMeasureMode,
+      int maximumNumberOfLines) {
+    @Nullable
+    String textAlignVertical =
+        paragraphAttributes.contains(TextLayoutManager.PA_KEY_TEXT_ALIGN_VERTICAL)
+            ? paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_ALIGN_VERTICAL)
+            : null;
+
+    if (textAlignVertical == null) {
+      return 0;
+    }
+
+    int textHeight = layout.getHeight();
+    int calculatedLineCount = calculateLineCount(layout, maximumNumberOfLines);
+    float boxHeight = calculateHeight(layout, height, heightMeasureMode, calculatedLineCount);
+
+    if (textHeight > boxHeight) {
+      return 0;
+    }
+
+    switch (textAlignVertical) {
+      case "auto":
+      case "top":
+        return 0;
+      case "center":
+        return (boxHeight - textHeight) / 2f;
+      case "bottom":
+        return boxHeight - textHeight;
+      default:
+        FLog.w(ReactConstants.TAG, "Invalid textAlignVertical: " + textAlignVertical);
+        return 0;
+    }
   }
 
   private static int calculateLineCount(Layout layout, int maximumNumberOfLines) {
@@ -945,11 +1025,7 @@ public class TextLayoutManager {
   }
 
   private static float calculateHeight(
-      Layout layout,
-      Spanned text,
-      float height,
-      YogaMeasureMode heightYogaMeasureMode,
-      int calculatedLineCount) {
+      Layout layout, float height, YogaMeasureMode heightYogaMeasureMode, int calculatedLineCount) {
     float calculatedHeight = height;
     if (heightYogaMeasureMode != YogaMeasureMode.EXACTLY) {
       // StaticLayout only seems to change its height in response to maxLines when ellipsizing, so
@@ -976,6 +1052,7 @@ public class TextLayoutManager {
       float calculatedWidth,
       int calculatedLineCount,
       int i,
+      float verticalOffset,
       AttachmentMetrics metrics) {
     // Calculate the positions of the attachments (views) that will be rendered inside the
     // Spanned Text. The following logic is only executed when a text contains views inside.
@@ -1061,6 +1138,10 @@ public class TextLayoutManager {
       metrics.top = placeholderTopPosition;
       metrics.left = placeholderLeftPosition;
     }
+
+    // The text may be vertically aligned to the top, center, or bottom of the container. This is
+    // not captured in the Layout, but rather applied separately. We need to account for this here.
+    metrics.top += verticalOffset;
 
     metrics.wasFound = true;
     metrics.width = placeholder.getWidth();
