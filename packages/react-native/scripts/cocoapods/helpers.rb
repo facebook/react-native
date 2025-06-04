@@ -85,7 +85,7 @@ module Helpers
         end
 
         def self.min_xcode_version_supported
-            return '15.1'
+            return '16.1'
         end
 
         def self.folly_config
