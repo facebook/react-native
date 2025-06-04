@@ -16,8 +16,6 @@ import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 import {use} from 'react';
 
-export type Props = ViewProps;
-
 type PropsWithRef = $ReadOnly<{
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...ViewProps,
