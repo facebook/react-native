@@ -193,7 +193,7 @@ function findRCTComponentViewProtocolClass(filepath /*: string */) {
     const lines = fileContent.split('\n');
     const signatureIndex = lines.findIndex(line => regex.test(line));
     const returnRegex = /return (.*)\.class/;
-    const classNameMatch = String(lines.slice(signatureIndex)).match(
+    const classNameMatch = String(lines.slice(signatureIndex).join('\n')).match(
       returnRegex,
     );
     if (classNameMatch) {
