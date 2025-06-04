@@ -172,7 +172,7 @@ export function runCommandSync(
     signal: result.signal,
     error: result.error,
     stdout: result.stdout.toString(),
-    stderr: result.stderr.toString(),
+    stderr: result.stderr?.toString() ?? '',
   };
 }
 
