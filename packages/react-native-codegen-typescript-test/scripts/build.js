@@ -6,6 +6,7 @@
  *
  * @format
  * @lint-ignore-every LICENSELINT
+ * @noflow
  */
 
 const fs = require('fs');
