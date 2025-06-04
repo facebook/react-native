@@ -321,7 +321,10 @@ module.exports = {
     }
     return checkOrWriteFiles(generatedFiles, test);
   },
-  generateViewConfig({libraryName, schema}: LibraryOptions): string {
+  generateViewConfig({
+    libraryName,
+    schema,
+  }: Pick<LibraryOptions, 'libraryName' | 'schema'>): string {
     schemaValidator.validate(schema);
 
     const result = generateViewConfigJs
