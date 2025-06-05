@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.CompoundButton
 import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.PixelUtil
@@ -94,9 +93,6 @@ internal class ReactSwitchManager :
   override fun setNativeValue(view: ReactSwitch, value: Boolean) {
     setValueInternal(view, value)
   }
-
-  override fun receiveCommand(view: ReactSwitch, commandId: String, args: ReadableArray) =
-      delegate.receiveCommand(view, commandId, args)
 
   override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactSwitch) {
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER)
