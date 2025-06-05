@@ -170,6 +170,68 @@ describe('<View>', () => {
   });
 
   describe('props', () => {
+    describe('pointerEvents', () => {
+      it('auto does not propagate to the mounting layer, it is the default', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<View collapsable={false} pointerEvents="auto" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
+        ).toEqual(<rn-view />);
+      });
+      it('box-none propagates to the mounting layer, does not unflatten', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<View collapsable={false} pointerEvents="box-none" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
+        ).toEqual(<rn-view pointerEvents="box-none" />);
+
+        Fantom.runTask(() => {
+          root.render(<View pointerEvents="box-none" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
+        ).toEqual(null);
+      });
+      it('box-only propagates to the mounting layer, does not unflatten', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<View collapsable={false} pointerEvents="box-only" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
+        ).toEqual(<rn-view pointerEvents="box-only" />);
+
+        Fantom.runTask(() => {
+          root.render(<View pointerEvents="box-only" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
+        ).toEqual(null);
+      });
+      it('none propagates to the mounting layer, unflattens', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<View pointerEvents="none" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['pointerEvents']}).toJSX(),
+        ).toEqual(<rn-view pointerEvents="none" />);
+      });
+    });
     describe('accessibility', () => {
       describe('accessibilityActions', () => {
         it('is propagated to the mounting layer', () => {
