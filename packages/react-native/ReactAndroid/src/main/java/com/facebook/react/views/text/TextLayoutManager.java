@@ -373,7 +373,7 @@ public class TextLayoutManager {
 
   private static Layout createLayout(
       Spannable text,
-      BoringLayout.Metrics boring,
+      @Nullable BoringLayout.Metrics boring,
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
@@ -417,7 +417,7 @@ public class TextLayoutManager {
 
   private static Layout createLayoutWithCorrectRounding(
       Spannable text,
-      BoringLayout.Metrics boring,
+      @Nullable BoringLayout.Metrics boring,
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
@@ -475,7 +475,7 @@ public class TextLayoutManager {
 
   private static Layout createLayoutWithBuggedRounding(
       Spannable text,
-      BoringLayout.Metrics boring,
+      @Nullable BoringLayout.Metrics boring,
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
@@ -571,14 +571,12 @@ public class TextLayoutManager {
     return layout;
   }
 
+  /**
+   * Sets attributes on the TextPaint, used for content outside the Spannable text, like for empty
+   * strings, or newlines after the last trailing character
+   */
   private static void updateTextPaint(
       TextPaint paint, TextAttributeProps baseTextAttributes, Context context) {
-    // TextPaint attributes will be used for content outside the Spannable, like for the
-    // hypothetical height of a new line after a trailing newline character (considered part of the
-    // previous line).
-    paint.reset();
-    paint.setAntiAlias(true);
-
     if (baseTextAttributes.getEffectiveFontSize() != ReactConstants.UNSET) {
       paint.setTextSize(baseTextAttributes.getEffectiveFontSize());
     }
@@ -602,13 +600,33 @@ public class TextLayoutManager {
         paint.setFakeBoldText((missingStyle & Typeface.BOLD) != 0);
         paint.setTextSkewX((missingStyle & Typeface.ITALIC) != 0 ? -0.25f : 0);
       }
-    } else {
-      paint.setTypeface(null);
     }
   }
 
-  private static Layout createLayout(
-      @NonNull Context context,
+  /**
+   * WARNING: This paint should not be used for any layouts which may escape TextLayoutManager, as
+   * they may need to be drawn later, and may not safely be reused
+   */
+  private static TextPaint scratchPaintWithAttributes(
+      TextAttributeProps baseTextAttributes, Context context) {
+    TextPaint paint = Preconditions.checkNotNull(sTextPaintInstance.get());
+    paint.setTypeface(null);
+    paint.setTextSize(12);
+    paint.setFakeBoldText(false);
+    paint.setTextSkewX(0);
+    updateTextPaint(paint, baseTextAttributes, context);
+    return paint;
+  }
+
+  private static TextPaint newPaintWithAttributes(
+      TextAttributeProps baseTextAttributes, Context context) {
+    TextPaint paint = new TextPaint();
+    updateTextPaint(paint, baseTextAttributes, context);
+    return paint;
+  }
+
+  private static Layout createLayoutForMeasurement(
+      Context context,
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
       float width,
@@ -625,10 +643,29 @@ public class TextLayoutManager {
     } else {
       TextAttributeProps baseTextAttributes =
           TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES));
-      paint = Preconditions.checkNotNull(sTextPaintInstance.get());
-      updateTextPaint(paint, baseTextAttributes, context);
+      paint = scratchPaintWithAttributes(baseTextAttributes, context);
     }
 
+    return createLayout(
+        text,
+        paint,
+        attributedString,
+        paragraphAttributes,
+        width,
+        widthYogaMeasureMode,
+        height,
+        heightYogaMeasureMode);
+  }
+
+  private static Layout createLayout(
+      Spannable text,
+      TextPaint paint,
+      MapBuffer attributedString,
+      MapBuffer paragraphAttributes,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      float height,
+      YogaMeasureMode heightYogaMeasureMode) {
     BoringLayout.Metrics boring = isBoring(text, paint);
 
     int textBreakStrategy =
@@ -656,6 +693,7 @@ public class TextLayoutManager {
                 paragraphAttributes.getString(PA_KEY_ELLIPSIZE_MODE))
             : null;
 
+    // T226571629: textAlign should be moved to ParagraphAttributes
     @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
     Layout.Alignment alignment = getTextAlignment(attributedString, text, alignmentAttr);
     int justificationMode = getTextJustificationMode(alignmentAttr);
@@ -699,7 +737,7 @@ public class TextLayoutManager {
 
   @UnstableReactNativeAPI
   public static PreparedLayout createPreparedLayout(
-      @NonNull Context context,
+      Context context,
       ReadableMapBuffer attributedString,
       ReadableMapBuffer paragraphAttributes,
       float width,
@@ -707,16 +745,20 @@ public class TextLayoutManager {
       float height,
       YogaMeasureMode heightYogaMeasureMode,
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    Spannable text =
+        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    TextAttributeProps baseTextAttributes =
+        TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES));
     Layout layout =
         TextLayoutManager.createLayout(
-            Preconditions.checkNotNull(context),
+            text,
+            newPaintWithAttributes(baseTextAttributes, context),
             attributedString,
             paragraphAttributes,
             width,
             widthYogaMeasureMode,
             height,
-            heightYogaMeasureMode,
-            reactTextViewManagerCallback);
+            heightYogaMeasureMode);
 
     int maximumNumberOfLines =
         paragraphAttributes.contains(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
@@ -828,7 +870,7 @@ public class TextLayoutManager {
       @Nullable float[] attachmentsPositions) {
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     Layout layout =
-        createLayout(
+        createLayoutForMeasurement(
             context,
             attributedString,
             paragraphAttributes,
@@ -1151,13 +1193,13 @@ public class TextLayoutManager {
   }
 
   public static WritableArray measureLines(
-      @NonNull Context context,
+      Context context,
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
       float width,
       float height) {
     Layout layout =
-        createLayout(
+        createLayoutForMeasurement(
             context,
             attributedString,
             paragraphAttributes,
@@ -1165,9 +1207,9 @@ public class TextLayoutManager {
             YogaMeasureMode.EXACTLY,
             height,
             YogaMeasureMode.EXACTLY,
+            // TODO T226571550: Fix measureLines with ReactTextViewManagerCallback
             null);
-    return FontMetricsUtil.getFontMetrics(
-        layout.getText(), layout, Preconditions.checkNotNull(sTextPaintInstance.get()), context);
+    return FontMetricsUtil.getFontMetrics(layout.getText(), layout, context);
   }
 
   private static @Nullable BoringLayout.Metrics isBoring(Spannable text, TextPaint paint) {
