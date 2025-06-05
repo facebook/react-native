@@ -39,12 +39,28 @@ fun getSDKManagerPath(): String {
   val ossSdkManagerPath = File("${getSDKPath()}/tools/bin/sdkmanager")
   val windowsMetaSdkManagerPath = File("${getSDKPath()}/cmdline-tools/latest/bin/sdkmanager.bat")
   val windowsOssSdkManagerPath = File("${getSDKPath()}/tools/bin/sdkmanager.bat")
+  val easSdkManagerPath = File("${getSDKPath()}/cmdline-tools/tools/bin/sdkmanager")
   return when {
     metaSdkManagerPath.exists() -> metaSdkManagerPath.absolutePath
     windowsMetaSdkManagerPath.exists() -> windowsMetaSdkManagerPath.absolutePath
     ossSdkManagerPath.exists() -> ossSdkManagerPath.absolutePath
     windowsOssSdkManagerPath.exists() -> windowsOssSdkManagerPath.absolutePath
-    else -> throw GradleException("Could not find sdkmanager executable.")
+    easSdkManagerPath.exists() -> easSdkManagerPath.absolutePath
+    else -> getCustomSDKManagerPath()
+  }
+}
+
+fun getCustomSDKManagerPath(): String {
+  val customSdkManagerEnv = System.getenv("ANDROID_CUSTOM_SDKMANAGER_PATH")
+  return when {
+    customSdkManagerEnv.isNullOrBlank() -> throw GradleException("Could not find sdkmanager executable.")
+    else -> {
+      val customSdkManagerPath = File(customSdkManagerEnv)
+      when {
+        customSdkManagerPath.exists() -> customSdkManagerPath.absolutePath
+        else -> throw GradleException("Could not find sdkmanager executable.")
+      }
+    }
   }
 }
 
