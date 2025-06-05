@@ -30,6 +30,7 @@ type PropsWithRef = $ReadOnly<{
  */
 function View(props: PropsWithRef): React.Node {
   const hasTextAncestor = use(TextAncestor);
+  let unusedVariable;
 
   let actualView;
   if (ReactNativeFeatureFlags.reduceDefaultPropsInView()) {
