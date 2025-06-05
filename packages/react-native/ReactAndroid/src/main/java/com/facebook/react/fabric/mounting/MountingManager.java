@@ -382,49 +382,6 @@ public class MountingManager {
   }
 
   /**
-   * Measure a component, given localData, props, state, and measurement information. This needs to
-   * remain here for now - and not in SurfaceMountingManager - because sometimes measures are made
-   * outside of the context of a Surface; especially from C++ before StartSurface is called.
-   *
-   * @param context
-   * @param componentName
-   * @param localData
-   * @param props
-   * @param width
-   * @param widthMode
-   * @param height
-   * @param heightMode
-   * @param attachmentsPositions
-   * @return
-   */
-  @AnyThread
-  public long measureMapBuffer(
-      ReactContext context,
-      String componentName,
-      MapBuffer localData,
-      MapBuffer props,
-      @Nullable MapBuffer state,
-      float width,
-      YogaMeasureMode widthMode,
-      float height,
-      YogaMeasureMode heightMode,
-      @Nullable float[] attachmentsPositions) {
-
-    return mViewManagerRegistry
-        .get(componentName)
-        .measure(
-            context,
-            localData,
-            props,
-            state,
-            width,
-            widthMode,
-            height,
-            heightMode,
-            attachmentsPositions);
-  }
-
-  /**
    * THIS PREFETCH METHOD IS EXPERIMENTAL, DO NOT USE IT FOR PRODUCTION CODE. IT WILL MOST LIKELY
    * CHANGE OR BE REMOVED IN THE FUTURE.
    *

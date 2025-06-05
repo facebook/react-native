@@ -2338,6 +2338,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun initialize ()V
 	public fun invalidate ()V
 	public fun markActiveTouchForTag (II)V
+	public fun measure (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FFFF)J
 	public fun onAllAnimationsComplete ()V
 	public fun onAnimationStarted ()V
 	public fun onHostDestroy ()V
@@ -2402,7 +2403,6 @@ public class com/facebook/react/fabric/mounting/MountingManager {
 	public fun getViewExists (I)Z
 	public fun isWaitingForViewAttach (I)Z
 	public fun measure (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
-	public fun measureMapBuffer (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
 	public fun receiveCommand (IIILcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun sendAccessibilityEvent (III)V
@@ -4629,7 +4629,6 @@ public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/re
 	public fun getNativeProps ()Ljava/util/Map;
 	public abstract fun getShadowNodeClass ()Ljava/lang/Class;
 	public fun measure (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
-	public fun measure (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
 	protected fun onAfterUpdateTransaction (Landroid/view/View;)V
 	public fun onDropViewInstance (Landroid/view/View;)V
 	public fun onSurfaceStopped (I)V
@@ -6320,7 +6319,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
 }
 
-public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/uimanager/IViewManagerWithChildren {
+public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
 	protected field mReactTextViewManagerCallback Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
@@ -6332,10 +6331,10 @@ public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/r
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
 	public fun getShadowNodeClass ()Ljava/lang/Class;
-	public fun measure (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
 	public fun needsCustomLayoutForChildren ()Z
 	protected synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/text/ReactTextView;)V
+	public fun onPostProcessSpannable (Landroid/text/Spannable;)V
 	protected synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
 	protected fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/text/ReactTextView;)Lcom/facebook/react/views/text/ReactTextView;
 	public fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V

@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.content.Context;
 import android.os.Build;
 import android.text.Spannable;
 import androidx.annotation.NonNull;
@@ -27,7 +26,6 @@ import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import com.facebook.yoga.YogaMeasureMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +36,7 @@ import java.util.Map;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
 public class ReactTextViewManager extends ReactTextAnchorViewManager<ReactTextShadowNode>
-    implements IViewManagerWithChildren {
+    implements IViewManagerWithChildren, ReactTextViewManagerCallback {
 
   private static final String TAG = "ReactTextViewManager";
 
@@ -201,26 +199,10 @@ public class ReactTextViewManager extends ReactTextAnchorViewManager<ReactTextSh
   }
 
   @Override
-  public long measure(
-      Context context,
-      MapBuffer localData,
-      MapBuffer props,
-      @Nullable MapBuffer state,
-      float width,
-      YogaMeasureMode widthMode,
-      float height,
-      YogaMeasureMode heightMode,
-      @Nullable float[] attachmentsPositions) {
-    return TextLayoutManager.measureText(
-        context,
-        localData,
-        props,
-        width,
-        widthMode,
-        height,
-        heightMode,
-        mReactTextViewManagerCallback,
-        attachmentsPositions);
+  public void onPostProcessSpannable(Spannable text) {
+    if (mReactTextViewManagerCallback != null) {
+      mReactTextViewManagerCallback.onPostProcessSpannable(text);
+    }
   }
 
   @Override
