@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/mounting/ShadowTree.h>
 
 namespace facebook::react {
 /*
@@ -15,5 +16,6 @@ namespace facebook::react {
  */
 void updateMountedFlag(
     const ShadowNode::ListOfShared& oldChildren,
-    const ShadowNode::ListOfShared& newChildren);
+    const ShadowNode::ListOfShared& newChildren,
+    ShadowTreeCommitSource commitSource);
 } // namespace facebook::react
