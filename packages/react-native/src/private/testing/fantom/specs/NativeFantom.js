@@ -69,6 +69,8 @@ interface Spec extends TurboModule {
     viewportWidth: number,
     viewportHeight: number,
     devicePixelRatio: number,
+    viewportOffsetX?: number,
+    viewportOffsetY?: number,
   ) => void;
   stopSurface: (surfaceId: number) => void;
   enqueueNativeEvent: (
