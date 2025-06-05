@@ -6588,6 +6588,10 @@ export interface Spec {
     node: Node | NativeElementReference,
     callback: MeasureOnSuccessCallback
   ) => void;
+  +measureAsyncOnUI: (
+    node: Node | NativeElementReference,
+    callback: MeasureOnSuccessCallback
+  ) => void;
   +measureInWindow: (
     node: Node | NativeElementReference,
     callback: MeasureInWindowOnSuccessCallback
@@ -6689,6 +6693,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
+  measureAsyncOnUI(callback: MeasureOnSuccessCallback): void;
   measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
   measureLayout(
     relativeToNativeNode: number | HostInstance,
@@ -9410,6 +9415,7 @@ export interface LegacyHostInstanceMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
+  measureAsyncOnUI(callback: MeasureOnSuccessCallback): void;
   measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
   measureLayout(
     relativeToNativeNode: number | HostInstance,
@@ -9465,6 +9471,7 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
+  measureAsyncOnUI(callback: MeasureOnSuccessCallback): void;
   measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
   measureLayout(
     relativeToNativeNode: number | HostInstance,
