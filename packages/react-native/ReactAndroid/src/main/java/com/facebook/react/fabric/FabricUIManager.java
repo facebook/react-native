@@ -652,6 +652,7 @@ public class FabricUIManager
       float maxHeight) {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareLayout");
+    ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
 
     return TextLayoutManager.createPreparedLayout(
         Preconditions.checkNotNull(surfaceMountingManager.getContext()),
@@ -660,7 +661,10 @@ public class FabricUIManager
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
-        getYogaMeasureMode(minHeight, maxHeight));
+        getYogaMeasureMode(minHeight, maxHeight),
+        textViewManager instanceof ReactTextViewManagerCallback
+            ? (ReactTextViewManagerCallback) textViewManager
+            : null);
   }
 
   @AnyThread
