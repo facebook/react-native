@@ -524,7 +524,7 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
     CGRect pathRect = CGRectInset(rect, lineWidth / 2.0, lineWidth / 2.0);
     CGPathRef path =
         RCTPathCreateWithRoundedRect(pathRect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL, NO);
- 
+
     if (!RCTBorderInsetsAreEqual(borderInsets)) {
       CGContextSaveGState(context);
       {
