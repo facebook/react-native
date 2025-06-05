@@ -77,6 +77,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 
 @implementation RCTAppearance {
   NSString *_currentColorScheme;
+  facebook::react::ModuleConstants<JS::NativeAppearance::Constants> _constants;
 }
 
 - (instancetype)init
@@ -90,6 +91,13 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
                                                object:nil];
   }
   return self;
+}
+
+- (void)initialize
+{
+  _constants = facebook::react::typedConstants<JS::NativeAppearance::Constants>({
+      .IS_EDGE_TO_EDGE_ENABLED = true
+  });
 }
 
 RCT_EXPORT_MODULE(Appearance)
@@ -107,6 +115,16 @@ RCT_EXPORT_MODULE(Appearance)
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<NativeAppearanceSpecJSI>(params);
+}
+
+- (nonnull facebook::react::ModuleConstants<JS::NativeAppearance::Constants>)getConstants
+{
+  return _constants;
+}
+
+- (nonnull facebook::react::ModuleConstants<JS::NativeAppearance::Constants>)constantsToExport
+{
+  return (facebook::react::ModuleConstants<JS::NativeAppearance::Constants>)[self getConstants];
 }
 
 RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)

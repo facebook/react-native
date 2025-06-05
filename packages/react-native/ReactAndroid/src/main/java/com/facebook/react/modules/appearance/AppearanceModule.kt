@@ -8,13 +8,15 @@
 package com.facebook.react.modules.appearance
 
 import android.content.Context
-import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.facebook.fbreact.specs.NativeAppearanceSpec
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.buildReadableMap
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.views.common.ContextUtils
 
 /** Module that exposes the user's preferred color scheme. */
 @ReactModule(name = NativeAppearanceSpec.NAME)
@@ -41,13 +43,14 @@ constructor(
       return overrideColorScheme.getScheme()
     }
 
-    val currentNightMode =
-        context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-    return when (currentNightMode) {
-      Configuration.UI_MODE_NIGHT_NO -> "light"
-      Configuration.UI_MODE_NIGHT_YES -> "dark"
-      else -> "light"
+    return when (ContextUtils.isDarkMode(context)) {
+      true -> "dark"
+      false -> "light"
     }
+  }
+
+  public override fun getTypedExportedConstants(): Map<String, Any> {
+    return mapOf("IS_EDGE_TO_EDGE_ENABLED" to ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED)
   }
 
   public override fun getColorScheme(): String {
