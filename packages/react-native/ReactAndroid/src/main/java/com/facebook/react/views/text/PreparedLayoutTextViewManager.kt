@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text
 
+import android.text.Spannable
 import android.text.Spanned
 import android.view.View
 import com.facebook.react.R
@@ -34,10 +35,14 @@ import java.util.HashMap
 
 @ReactModule(name = PreparedLayoutTextViewManager.REACT_CLASS)
 internal class PreparedLayoutTextViewManager :
-    BaseViewManager<PreparedLayoutTextView, LayoutShadowNode>(),
-    IViewGroupManager<PreparedLayoutTextView> {
+    BaseViewManager<PreparedLayoutTextView, LayoutShadowNode>,
+    IViewGroupManager<PreparedLayoutTextView>,
+    ReactTextViewManagerCallback {
+  private val reactTextViewManagerCallback: ReactTextViewManagerCallback?
 
-  init {
+  @JvmOverloads
+  constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) : super() {
+    this.reactTextViewManagerCallback = reactTextViewManagerCallback
     setupViewRecycling()
   }
 
@@ -204,6 +209,10 @@ internal class PreparedLayoutTextViewManager :
   override fun getChildCount(parent: PreparedLayoutTextView): Int = parent.childCount
 
   override fun needsCustomLayoutForChildren(): Boolean = false
+
+  override fun onPostProcessSpannable(text: Spannable) {
+    reactTextViewManagerCallback?.onPostProcessSpannable(text)
+  }
 
   public companion object {
     public const val REACT_CLASS: String = "RCTText"

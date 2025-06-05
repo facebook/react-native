@@ -705,7 +705,8 @@ public class TextLayoutManager {
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       float height,
-      YogaMeasureMode heightYogaMeasureMode) {
+      YogaMeasureMode heightYogaMeasureMode,
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     Layout layout =
         TextLayoutManager.createLayout(
             Preconditions.checkNotNull(context),
@@ -715,7 +716,7 @@ public class TextLayoutManager {
             widthYogaMeasureMode,
             height,
             heightYogaMeasureMode,
-            null /* T219881133: Migrate away from ReactTextViewManagerCallback */);
+            reactTextViewManagerCallback);
 
     int maximumNumberOfLines =
         paragraphAttributes.contains(TextLayoutManager.PA_KEY_MAX_NUMBER_OF_LINES)
