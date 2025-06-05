@@ -144,12 +144,6 @@ export interface Spec extends TurboModule {
     callback: MeasureOnSuccessCallback,
   ) => void;
 
-  // Doesn't use the shadow tree for measuring, but the native view hierarchy.
-  +measureAsyncOnUI: (
-    nativeElementReference: mixed,
-    callback: MeasureOnSuccessCallback,
-  ) => void;
-
   +measureInWindow: (
     nativeElementReference: mixed,
     callback: MeasureInWindowOnSuccessCallback,
@@ -588,7 +582,10 @@ const NativeDOM: RefinedSpec = {
   },
 
   meaureAsyncOnUI(nativeNodeReference, callback) {
-    return nullthrows(RawNativeDOM).meaureAsyncOnUI(nativeNodeReference, callback);
+    return nullthrows(RawNativeDOM).meaureAsyncOnUI(
+      nativeNodeReference,
+      callback,
+    );
   },
 
   measureInWindow(nativeNodeReference, callback) {

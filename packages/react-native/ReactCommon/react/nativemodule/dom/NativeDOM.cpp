@@ -402,10 +402,6 @@ void NativeDOM::measure(
        jsi::Value{rt, measureRect.pageY}});
 }
 
-void NativeDOM::measureAsyncOnUI(jsi::Runtime& rt, ShadowNode::Shared shadowNode, jsi::Function callback) {
-  measure(rt, std::move(shadowNode), std::move(callback));
-}
-
 void NativeDOM::measureInWindow(
     jsi::Runtime& rt,
     ShadowNode::Shared shadowNode,

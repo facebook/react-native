@@ -111,11 +111,6 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       ShadowNode::Shared shadowNode,
       jsi::Function callback);
 
-  void measureAsyncOnUI(
-      jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
-      jsi::Function callback);
-
   void measureInWindow(
       jsi::Runtime& rt,
       ShadowNode::Shared shadowNode,
