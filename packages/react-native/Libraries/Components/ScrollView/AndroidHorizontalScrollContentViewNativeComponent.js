@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent';
-import AndroidHorizontalScrollContentViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent';
-export default AndroidHorizontalScrollContentViewNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent';

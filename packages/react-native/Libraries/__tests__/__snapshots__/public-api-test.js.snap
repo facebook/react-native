@@ -1459,13 +1459,13 @@ declare export default typeof AccessibilityInfo;
 
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/NativeAccessibilityInfo.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityInfo\\";
-declare export default typeof NativeAccessibilityInfo;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityInfo\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/NativeAccessibilityManager.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager\\";
-declare export default typeof NativeAccessibilityManager;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager\\";
 "
 `;
 
@@ -1505,7 +1505,7 @@ declare export default typeof ActivityIndicator;
 
 exports[`public API should not change unintentionally Libraries/Components/ActivityIndicator/ActivityIndicatorViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent\\";
-declare export default typeof ActivityIndicatorViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent\\";
 "
 `;
 
@@ -1560,13 +1560,13 @@ exports[`public API should not change unintentionally Libraries/Components/Clipb
 
 exports[`public API should not change unintentionally Libraries/Components/Clipboard/NativeClipboard.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeClipboard\\";
-declare export default typeof NativeClipboard;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeClipboard\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/AndroidDrawerLayoutNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent\\";
-declare export default typeof AndroidDrawerLayoutNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent\\";
 "
 `;
 
@@ -1733,7 +1733,7 @@ declare export default typeof KeyboardAvoidingView;
 
 exports[`public API should not change unintentionally Libraries/Components/Keyboard/NativeKeyboardObserver.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeKeyboardObserver\\";
-declare export default typeof NativeKeyboardObserver;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeKeyboardObserver\\";
 "
 `;
 
@@ -1751,8 +1751,8 @@ exports[`public API should not change unintentionally Libraries/Components/Layou
   mode: \\"strict\\" | \\"compatibility\\",
   ...ViewProps,
 }>;
-declare const LayoutConformanceNativeComponent: HostComponent<Props>;
-declare export default typeof LayoutConformanceNativeComponent;
+declare const LayoutConformanceNativeComponent_default: HostComponent<Props>;
+declare export default typeof LayoutConformanceNativeComponent_default;
 "
 `;
 
@@ -1841,7 +1841,7 @@ declare export default typeof ProgressBarAndroid;
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroidNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent\\";
-declare export default typeof ProgressBarAndroidNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent\\";
 "
 `;
 
@@ -1883,7 +1883,7 @@ export type ProgressBarAndroidProps =
 
 exports[`public API should not change unintentionally Libraries/Components/RefreshControl/AndroidSwipeRefreshLayoutNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent\\";
-declare export default typeof AndroidSwipeRefreshLayoutNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent\\";
 "
 `;
 
@@ -1927,7 +1927,7 @@ declare export default typeof RefreshControl;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/RCTSafeAreaViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent\\";
-declare export default typeof RCTSafeAreaViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent\\";
 "
 `;
 
@@ -1942,21 +1942,21 @@ declare export default typeof exported;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/AndroidHorizontalScrollContentViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent\\";
-declare export default typeof AndroidHorizontalScrollContentViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/AndroidHorizontalScrollViewNativeComponent.js 1`] = `
 "declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props>;
-declare export default typeof AndroidHorizontalScrollViewNativeComponent;
+declare const AndroidHorizontalScrollViewNativeComponent_default: HostComponent<Props>;
+declare export default typeof AndroidHorizontalScrollViewNativeComponent_default;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollContentViewNativeComponent.js 1`] = `
 "declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ScrollContentViewNativeComponent: HostComponent<Props>;
-declare export default typeof ScrollContentViewNativeComponent;
+declare const ScrollContentViewNativeComponent_default: HostComponent<Props>;
+declare export default typeof ScrollContentViewNativeComponent_default;
 "
 `;
 
@@ -2147,8 +2147,8 @@ declare export const VERTICAL: Value;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollViewNativeComponent.js 1`] = `
 "declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ScrollViewNativeComponent: HostComponent<Props>;
-declare export default typeof ScrollViewNativeComponent;
+declare const ScrollViewNativeComponent_default: HostComponent<Props>;
+declare export default typeof ScrollViewNativeComponent_default;
 "
 `;
 
@@ -2250,7 +2250,7 @@ declare export default typeof processDecelerationRate;
 
 exports[`public API should not change unintentionally Libraries/Components/Sound/NativeSoundManager.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeSoundManager\\";
-declare export default typeof NativeSoundManager;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeSoundManager\\";
 "
 `;
 
@@ -2275,13 +2275,13 @@ declare export default typeof StaticRenderer;
 
 exports[`public API should not change unintentionally Libraries/Components/StatusBar/NativeStatusBarManagerAndroid.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerAndroid\\";
-declare export default typeof NativeStatusBarManagerAndroid;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerAndroid\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/StatusBar/NativeStatusBarManagerIOS.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerIOS\\";
-declare export default typeof NativeStatusBarManagerIOS;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerIOS\\";
 "
 `;
 
@@ -2357,7 +2357,7 @@ declare export default typeof StatusBar;
 
 exports[`public API should not change unintentionally Libraries/Components/Switch/AndroidSwitchNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent\\";
-declare export default typeof AndroidSwitchNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent\\";
 "
 `;
 
@@ -2402,7 +2402,7 @@ declare export default typeof Switch;
 
 exports[`public API should not change unintentionally Libraries/Components/Switch/SwitchNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent\\";
-declare export default typeof SwitchNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent\\";
 "
 `;
 
@@ -2616,7 +2616,7 @@ declare export default typeof InputAccessoryView;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTInputAccessoryViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent\\";
-declare export default typeof RCTInputAccessoryViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent\\";
 "
 `;
 
@@ -3102,7 +3102,7 @@ declare export default typeof TextInputState;
 
 exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/NativeToastAndroid.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeToastAndroid\\";
-declare export default typeof NativeToastAndroid;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeToastAndroid\\";
 "
 `;
 
@@ -3449,7 +3449,7 @@ declare export default function TouchableWithoutFeedback(
 
 exports[`public API should not change unintentionally Libraries/Components/UnimplementedViews/UnimplementedNativeViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent\\";
-declare export default typeof UnimplementedNativeViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent\\";
 "
 `;
 
@@ -4574,8 +4574,8 @@ interface NativeCommands {
 }
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ImageViewNativeComponent: HostComponent<ImageHostComponentProps>;
-declare export default typeof ImageViewNativeComponent;
+declare const ImageViewNativeComponent_default: HostComponent<ImageHostComponentProps>;
+declare export default typeof ImageViewNativeComponent_default;
 "
 `;
 

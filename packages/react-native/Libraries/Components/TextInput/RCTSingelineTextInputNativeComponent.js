@@ -29,13 +29,13 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   ...RCTTextInputViewConfig,
 };
 
-const SinglelineTextInputNativeComponent: HostComponent<{...}> =
+const SinglelineTextInputNativeComponent_default: HostComponent<{...}> =
   NativeComponentRegistry.get<{...}>(
     'RCTSinglelineTextInputView',
     () => __INTERNAL_VIEW_CONFIG,
   );
 
 // flowlint-next-line unclear-type:off
-export default ((SinglelineTextInputNativeComponent: any): HostComponent<{
+export default ((SinglelineTextInputNativeComponent_default: any): HostComponent<{
   ...
 }>);

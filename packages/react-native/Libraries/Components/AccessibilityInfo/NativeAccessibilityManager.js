@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager';
-import NativeAccessibilityManager from '../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager';
-export default NativeAccessibilityManager;
+export {default} from '../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager';

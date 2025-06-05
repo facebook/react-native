@@ -33,11 +33,13 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   },
 };
 
-const MultilineTextInputNativeComponent: HostComponent<{...}> =
+const MultilineTextInputNativeComponent_default: HostComponent<{...}> =
   NativeComponentRegistry.get<{...}>(
     'RCTMultilineTextInputView',
     () => __INTERNAL_VIEW_CONFIG,
   );
 
 // flowlint-next-line unclear-type:off
-export default ((MultilineTextInputNativeComponent: any): HostComponent<{...}>);
+export default ((MultilineTextInputNativeComponent_default: any): HostComponent<{
+  ...
+}>);

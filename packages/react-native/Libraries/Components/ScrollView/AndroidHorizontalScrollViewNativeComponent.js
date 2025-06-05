@@ -62,10 +62,10 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   },
 };
 
-const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> =
+const AndroidHorizontalScrollViewNativeComponent_default: HostComponent<Props> =
   NativeComponentRegistry.get<Props>(
     'AndroidHorizontalScrollView',
     () => __INTERNAL_VIEW_CONFIG,
   );
 
-export default AndroidHorizontalScrollViewNativeComponent;
+export default AndroidHorizontalScrollViewNativeComponent_default;

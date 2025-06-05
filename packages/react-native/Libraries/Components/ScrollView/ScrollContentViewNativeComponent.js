@@ -21,10 +21,10 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   validAttributes: {},
 };
 
-const ScrollContentViewNativeComponent: HostComponent<Props> =
+const ScrollContentViewNativeComponent_default: HostComponent<Props> =
   NativeComponentRegistry.get<Props>(
     'RCTScrollContentView',
     () => __INTERNAL_VIEW_CONFIG,
   );
 
-export default ScrollContentViewNativeComponent;
+export default ScrollContentViewNativeComponent_default;
