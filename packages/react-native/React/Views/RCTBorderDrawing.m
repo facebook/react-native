@@ -16,6 +16,13 @@ CGFloat RCTMaxBorderInset(UIEdgeInsets borderInsets)
              MAX(borderInsets.bottom, borderInsets.right));
 }
 
+BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets)
+{
+  return ABS(borderInsets.left - borderInsets.right) < RCTViewBorderThreshold &&
+      ABS(borderInsets.left - borderInsets.bottom) < RCTViewBorderThreshold &&
+      ABS(borderInsets.left - borderInsets.top) < RCTViewBorderThreshold;
+}
+
 BOOL RCTCornerRadiiAreEqualAndSymmetrical(RCTCornerRadii cornerRadii)
 {
   return cornerRadii.topLeftHorizontal == cornerRadii.topLeftVertical &&
@@ -517,30 +524,33 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
     CGRect pathRect = CGRectInset(rect, lineWidth / 2.0, lineWidth / 2.0);
     CGPathRef path =
         RCTPathCreateWithRoundedRect(pathRect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL, NO);
+ 
+    if (!RCTBorderInsetsAreEqual(borderInsets)) {
+      CGContextSaveGState(context);
+      {
+        // Create a path representing the full rect
+        CGMutablePathRef outerPath = CGPathCreateMutable();
+        CGPathAddRect(outerPath, NULL, rect);
 
-    CGContextSaveGState(context);
-    {
-      // Create a path representing the full rect
-      CGMutablePathRef outerPath = CGPathCreateMutable();
-      CGPathAddRect(outerPath, NULL, rect);
+        CGRect insetRect = CGRectMake(
+          rect.origin.x + borderInsets.left,
+          rect.origin.y + borderInsets.top,
+          rect.size.width - borderInsets.left - borderInsets.right,
+          rect.size.height - borderInsets.top - borderInsets.bottom
+        );
 
-      CGRect insetRect = CGRectMake(
-        rect.origin.x + borderInsets.left,
-        rect.origin.y + borderInsets.top,
-        rect.size.width - borderInsets.left - borderInsets.right,
-        rect.size.height - borderInsets.top - borderInsets.bottom
-      );
+        // The padding edge (inner border) radius is the outer border radius minus the corresponding border thickness
+        CGPathRef innerRoundedRect = RCTPathCreateWithRoundedRect(
+            insetRect, RCTGetCornerInsets(cornerRadii, borderInsets), NULL, NO);
 
-      CGPathRef innerRoundedRect = RCTPathCreateWithRoundedRect(
-          insetRect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
+        // Add both paths to outerPath
+        CGPathAddPath(outerPath, NULL, innerRoundedRect);
 
-      // Add both paths to outerPath
-      CGPathAddRect(outerPath, NULL, insetRect);
-
-      // Clip using even-odd
-      CGContextAddPath(context, outerPath);
-      CGContextEOClip(context);
-      CGPathRelease(outerPath);
+        // Clip using even-odd
+        CGContextAddPath(context, outerPath);
+        CGContextEOClip(context);
+        CGPathRelease(outerPath);
+      }
     }
 
     CGFloat dashLengths[2];
