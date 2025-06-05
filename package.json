@@ -19,7 +19,7 @@
     "lint-ci": "./.github/workflow-scripts/analyze_code.sh && yarn shellcheck",
     "lint-java": "node ./scripts/lint-java.js",
     "lint-markdown": "markdownlint-cli2 2>&1",
-    "lint": "eslint .",
+    "lint": "eslint --max-warnings 0 .",
     "prettier": "prettier --write \"./**/*.{js,md,yml,ts,tsx}\"",
     "print-packages": "node ./scripts/monorepo/print",
     "shellcheck": "./.github/workflow-scripts/analyze_scripts.sh",
