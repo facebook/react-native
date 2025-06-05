@@ -56,8 +56,9 @@ public final class com/facebook/react/JSEngineResolutionAlgorithm : java/lang/En
 
 public abstract class com/facebook/react/LazyReactPackage : com/facebook/react/ReactPackage {
 	public fun <init> ()V
-	public final fun createNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
+	public fun createNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
 	public fun createViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
+	public final fun getNativeModuleIterator (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/lang/Iterable;
 	protected abstract fun getNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
 	public abstract fun getReactModuleInfoProvider ()Lcom/facebook/react/module/model/ReactModuleInfoProvider;
 	public fun getViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
@@ -999,14 +1000,14 @@ public abstract interface class com/facebook/react/bridge/NativeModule {
 	public fun onCatalystInstanceDestroy ()V
 }
 
-public class com/facebook/react/bridge/NativeModuleRegistry {
+public final class com/facebook/react/bridge/NativeModuleRegistry {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/Map;)V
-	public fun getAllModules ()Ljava/util/List;
-	public fun getModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
-	public fun getModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
-	public fun hasModule (Ljava/lang/Class;)Z
-	public fun hasModule (Ljava/lang/String;)Z
-	public fun onBatchComplete ()V
+	public final fun getAllModules ()Ljava/util/List;
+	public final fun getModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
+	public final fun getModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
+	public final fun hasModule (Ljava/lang/Class;)Z
+	public final fun hasModule (Ljava/lang/String;)Z
+	public final fun onBatchComplete ()V
 }
 
 public final class com/facebook/react/bridge/NoSuchKeyException : java/lang/RuntimeException {
@@ -2337,6 +2338,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun initialize ()V
 	public fun invalidate ()V
 	public fun markActiveTouchForTag (II)V
+	public fun measure (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FFFF)J
 	public fun onAllAnimationsComplete ()V
 	public fun onAnimationStarted ()V
 	public fun onHostDestroy ()V
@@ -2401,7 +2403,6 @@ public class com/facebook/react/fabric/mounting/MountingManager {
 	public fun getViewExists (I)Z
 	public fun isWaitingForViewAttach (I)Z
 	public fun measure (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
-	public fun measureMapBuffer (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
 	public fun receiveCommand (IIILcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun sendAccessibilityEvent (III)V
@@ -3327,6 +3328,10 @@ public final class com/facebook/react/soloader/OpenSourceMergedSoMapping : com/f
 	public final fun libuimanagerjni_so ()I
 	public final fun libyoga_so ()I
 	public fun mapLibName (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public abstract interface class com/facebook/react/touch/OnInterceptTouchEventListener {
+	public abstract fun onInterceptTouchEvent (Landroid/view/ViewGroup;Landroid/view/MotionEvent;)Z
 }
 
 public abstract interface class com/facebook/react/touch/ReactHitSlopView {
@@ -4624,7 +4629,6 @@ public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/re
 	public fun getNativeProps ()Ljava/util/Map;
 	public abstract fun getShadowNodeClass ()Ljava/lang/Class;
 	public fun measure (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
-	public fun measure (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
 	protected fun onAfterUpdateTransaction (Landroid/view/View;)V
 	public fun onDropViewInstance (Landroid/view/View;)V
 	public fun onSurfaceStopped (I)V
@@ -6315,33 +6319,35 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
 }
 
-public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/uimanager/IViewManagerWithChildren {
-	protected field mReactTextViewManagerCallback Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
+public final class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/views/text/ReactTextAnchorViewManager, com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
+	public static final field Companion Lcom/facebook/react/views/text/ReactTextViewManager$Companion;
+	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
+	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactTextShadowNode;
-	public fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactTextShadowNode;
+	public final fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactTextShadowNode;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/text/ReactTextView;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
 	public fun getShadowNodeClass ()Ljava/lang/Class;
-	public fun measure (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
 	public fun needsCustomLayoutForChildren ()Z
-	protected synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
-	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/text/ReactTextView;)V
-	protected synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
-	protected fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/text/ReactTextView;)Lcom/facebook/react/views/text/ReactTextView;
-	public fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
+	public fun onPostProcessSpannable (Landroid/text/Spannable;)V
+	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
+	public final fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
 	public fun setPadding (Lcom/facebook/react/views/text/ReactTextView;IIII)V
 	public synthetic fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateExtraData (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Object;)V
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/text/ReactTextView;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
-	protected synthetic fun updateViewAccessibility (Landroid/view/View;)V
-	protected fun updateViewAccessibility (Lcom/facebook/react/views/text/ReactTextView;)V
+	public synthetic fun updateViewAccessibility (Landroid/view/View;)V
+}
+
+public final class com/facebook/react/views/text/ReactTextViewManager$Companion {
 }
 
 public abstract interface class com/facebook/react/views/text/ReactTextViewManagerCallback {
@@ -6491,6 +6497,7 @@ public class com/facebook/react/views/text/TextLayoutManager {
 	public static final field PA_KEY_MAXIMUM_FONT_SIZE S
 	public static final field PA_KEY_MAX_NUMBER_OF_LINES S
 	public static final field PA_KEY_MINIMUM_FONT_SIZE S
+	public static final field PA_KEY_TEXT_ALIGN_VERTICAL S
 	public static final field PA_KEY_TEXT_BREAK_STRATEGY S
 	public fun <init> ()V
 	public static fun deleteCachedSpannableForTag (I)V
@@ -6750,24 +6757,24 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	public fun onViewAdded (Landroid/view/View;)V
 	public fun onViewRemoved (Landroid/view/View;)V
 	public fun requestLayout ()V
-	public fun setBackfaceVisibility (Ljava/lang/String;)V
-	public fun setBackfaceVisibilityDependantOpacity ()V
+	public final fun setBackfaceVisibility (Ljava/lang/String;)V
+	public final fun setBackfaceVisibilityDependantOpacity ()V
 	public fun setBackgroundColor (I)V
-	public fun setBorderColor (ILjava/lang/Integer;)V
-	public fun setBorderRadius (F)V
-	public fun setBorderRadius (FI)V
-	public fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public fun setBorderStyle (Ljava/lang/String;)V
-	public fun setBorderWidth (IF)V
+	public final fun setBorderColor (ILjava/lang/Integer;)V
+	public final fun setBorderRadius (F)V
+	public final fun setBorderRadius (FI)V
+	public final fun setBorderRadius (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
+	public final fun setBorderStyle (Ljava/lang/String;)V
+	public final fun setBorderWidth (IF)V
 	public fun setHitSlopRect (Landroid/graphics/Rect;)V
-	public fun setNeedsOffscreenAlphaCompositing (Z)V
+	public final fun setNeedsOffscreenAlphaCompositing (Z)V
 	public fun setOnInterceptTouchEventListener (Lcom/facebook/react/touch/OnInterceptTouchEventListener;)V
-	public fun setOpacityIfPossible (F)V
+	public final fun setOpacityIfPossible (F)V
 	public fun setOverflow (Ljava/lang/String;)V
 	public fun setOverflowInset (IIII)V
 	public fun setPointerEvents (Lcom/facebook/react/uimanager/PointerEvents;)V
 	public fun setRemoveClippedSubviews (Z)V
-	public fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
+	public final fun setTranslucentBackgroundDrawable (Landroid/graphics/drawable/Drawable;)V
 	public fun updateClippingRect ()V
 	public fun updateClippingRect (Ljava/util/Set;)V
 	public fun updateDrawingOrder ()V

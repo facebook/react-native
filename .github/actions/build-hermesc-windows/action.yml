@@ -25,7 +25,7 @@ runs:
     - name: Windows cache
       uses: actions/cache@v4
       with:
-        key: v2-hermes-${{ github.job }}-windows-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
+        key: v3-hermes-${{ github.job }}-windows-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
         path: |
           D:\tmp\hermes\win64-bin\
           D:\tmp\hermes\hermes\icu\
@@ -63,7 +63,7 @@ runs:
           $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
           $Env:ICU_ROOT = "$Env:HERMES_WS_DIR\icu"
 
-          cmake -S hermes -B build_release -G 'Visual Studio 16 2019' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
+          cmake -S hermes -B build_release -G 'Visual Studio 17 2022' -Ax64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True -DHERMES_ENABLE_WIN10_ICU_FALLBACK=OFF
           if (-not $?) { throw "Failed to configure Hermes" }
           echo "Running windows build..."
           cd build_release

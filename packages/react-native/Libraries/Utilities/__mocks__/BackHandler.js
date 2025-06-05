@@ -4,20 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
+import type {BackPressEventName} from '../BackHandler';
 
-const _backPressSubscriptions = new Set();
+const _backPressSubscriptions = new Set<() => ?boolean>();
 
 const BackHandler = {
-  exitApp: jest.fn(),
+  exitApp: jest.fn() as () => void,
 
   addEventListener: function (
     eventName: BackPressEventName,
     handler: () => ?boolean,
-  ): {remove: () => void} {
+  ): {remove: () => void, ...} {
     _backPressSubscriptions.add(handler);
     return {
       remove: () => {

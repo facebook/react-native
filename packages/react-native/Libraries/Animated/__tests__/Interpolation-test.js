@@ -4,17 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
+import type {InterpolationConfigType} from '../nodes/AnimatedInterpolation';
 
 import Easing from '../Easing';
 import AnimatedInterpolation from '../nodes/AnimatedInterpolation';
 
-function createInterpolation(config) {
+function createInterpolation<T: number | string>(
+  config: InterpolationConfigType<T>,
+): number => T {
   let parentValue = null;
   const interpolation = new AnimatedInterpolation(
+    // $FlowFixMe[incompatible-call]
     {__getValue: () => parentValue},
     config,
   );
@@ -64,6 +68,7 @@ describe('Interpolation', () => {
   it('should throw for non monotonic input ranges', () => {
     expect(
       () =>
+        // $FlowFixMe[incompatible-call]
         new AnimatedInterpolation(null, {
           inputRange: [0, 2, 1],
           outputRange: [0, 1, 2],
@@ -72,6 +77,7 @@ describe('Interpolation', () => {
 
     expect(
       () =>
+        // $FlowFixMe[incompatible-call]
         new AnimatedInterpolation(null, {
           inputRange: [0, 1, 2],
           outputRange: [0, 3, 1],
@@ -153,11 +159,10 @@ describe('Interpolation', () => {
     expect(interpolation(2)).toBe(2);
   });
 
-  it('should work with keyframes with extrapolate', () => {
+  it('should work with keyframes without extrapolate', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 10, 100, 1000],
       outputRange: [0, 5, 50, 500],
-      extrapolate: true,
     });
 
     expect(interpolation(-5)).toBe(-2.5);
@@ -171,7 +176,7 @@ describe('Interpolation', () => {
     expect(interpolation(2000)).toBe(1000);
   });
 
-  it('should work with keyframes without extrapolate', () => {
+  it('should work with keyframes with extrapolate', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1, 2],
       outputRange: [0.2, 1, 0.2],
@@ -184,6 +189,7 @@ describe('Interpolation', () => {
   it('should throw for an infinite input range', () => {
     expect(
       () =>
+        // $FlowFixMe[incompatible-call]
         new AnimatedInterpolation(null, {
           inputRange: [-Infinity, Infinity],
           outputRange: [0, 1],
@@ -192,6 +198,7 @@ describe('Interpolation', () => {
 
     expect(
       () =>
+        // $FlowFixMe[incompatible-call]
         new AnimatedInterpolation(null, {
           inputRange: [-Infinity, 0, Infinity],
           outputRange: [1, 2, 3],
@@ -239,8 +246,11 @@ describe('Interpolation', () => {
       outputRange: ['rgba(0, 100, 200, 0)', 'rgba(50, 150, 250, 0.4)'],
     });
 
+    // $FlowFixMe[incompatible-call]
     expect(interpolation(0)).toBe('rgba(0, 100, 200, 0)');
+    // $FlowFixMe[incompatible-call]
     expect(interpolation(0.5)).toBe('rgba(25, 125, 225, 0.2)');
+    // $FlowFixMe[incompatible-call]
     expect(interpolation(1)).toBe('rgba(50, 150, 250, 0.4)');
   });
 
@@ -294,6 +304,7 @@ describe('Interpolation', () => {
       outputRange: [0, 1],
     });
     expect(() => {
+      // $FlowExpectedError[incompatible-call]
       interpolation('45rad');
     }).toThrow();
   });
@@ -358,6 +369,7 @@ describe('Interpolation', () => {
     'should convert %s to numbers in the native config',
     (_, outputRange, expected) => {
       const config = new AnimatedInterpolation(
+        // $FlowFixMe[incompatible-call]
         {},
         {inputRange: [0, 1], outputRange},
       ).__getNativeConfig();

@@ -92,7 +92,6 @@ export default class OpenDebuggerKeyboardHandler {
         this.#clearTerminalMenu();
       } else if (targets.length === 1) {
         const target = targets[0];
-        // eslint-disable-next-line no-void
         void this.#tryOpenDebuggerForTarget(target);
       } else {
         this.#targetsShownForSelection = targets;
@@ -135,7 +134,6 @@ export default class OpenDebuggerKeyboardHandler {
         targetIndex < this.#targetsShownForSelection.length
       ) {
         const target = this.#targetsShownForSelection[targetIndex];
-        // eslint-disable-next-line no-void
         void this.#tryOpenDebuggerForTarget(target);
         return true;
       }

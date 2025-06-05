@@ -35,6 +35,13 @@
 
 namespace facebook::react {
 
+// Global function pointer for getting current time. Current time
+// can be injected for testing purposes.
+static TimePointFunction g_now = &std::chrono::steady_clock::now;
+void g_setNativeAnimatedNowTimestampFunction(TimePointFunction nowFunction) {
+  g_now = nowFunction;
+}
+
 namespace {
 
 struct NodesQueueItem {
@@ -397,6 +404,12 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
       // `startRenderCallbackIfNeeded` will call platform specific code to
       // register UI tick listener.
       startRenderCallbackIfNeeded();
+      // Calling startOnRenderCallback_ will register a UI tick listener.
+      // The UI ticker listener will not be called until the next frame.
+      // That's why, in case this is called from the UI thread, we need to
+      // proactivelly trigger the animation loop to avoid showing stale
+      // frames.
+      onRender();
     }
   }
 }
@@ -419,14 +432,6 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
   if (startOnRenderCallback_) {
     startOnRenderCallback_([this]() { onRender(); });
-
-    if (isOnRenderThread_) {
-      // Calling startOnRenderCallback_ will register a UI tick listener.
-      // The UI ticker listener will not be called until the next frame.
-      // That's why, in case this is called from the UI thread, we need to
-      // proactivelly trigger the animation loop to avoid showing stale frames.
-      onRender();
-    }
   }
 }
 
@@ -605,7 +610,7 @@ void NativeAnimatedNodesManager::updateNodes(
   updatedNodeTags_.clear();
 }
 
-bool NativeAnimatedNodesManager::onAnimationFrame(uint64_t timestamp) {
+bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
   // Run all active animations
   auto hasFinishedAnimations = false;
   std::set<int> finishedAnimationValueNodes;
@@ -718,12 +723,12 @@ void NativeAnimatedNodesManager::onRender() {
 
   // Step through the animation loop
   if (isAnimationUpdateNeeded()) {
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                  std::chrono::steady_clock::now().time_since_epoch())
-                  .count();
+    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+                            g_now().time_since_epoch())
+                            .count();
 
     auto containsChange =
-        onAnimationFrame(static_cast<uint64_t>(ms * TicksPerMs));
+        onAnimationFrame(static_cast<double>(microseconds) / 1000.0);
 
     if (!containsChange) {
       // The last animation tick didn't result in any changes to the UI.

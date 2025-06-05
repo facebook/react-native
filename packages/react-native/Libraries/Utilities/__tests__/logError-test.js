@@ -4,14 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
+import logError from '../logError';
 
 describe('logError', () => {
-  const logError = require('../logError').default;
-
   it('logs error messages to the console', () => {
     console.error.apply = jest.fn();
 
@@ -36,10 +35,12 @@ describe('logError', () => {
   });
 
   it('logs errors to the console', () => {
+    // $FlowFixMe[cannot-write]
     console.error = jest.fn();
 
     logError(new Error('The error message'));
 
+    // $FlowFixMe[prop-missing]
     expect(console.error.mock.calls[0][0]).toContain(
       'Error: "The error message".  Stack:',
     );

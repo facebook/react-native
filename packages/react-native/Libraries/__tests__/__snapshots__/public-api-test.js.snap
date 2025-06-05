@@ -102,17 +102,15 @@ declare export default typeof NativeAlertManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js 1`] = `
-"declare export default typeof RCTAlertManager;
+"export * from \\"./RCTAlertManager\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js.flow 1`] = `
-"declare export default {
-  alertWithArgs(
-    args: Args,
-    callback: (id: number, value: string) => void
-  ): void,
-};
+"declare export function alertWithArgs(
+  args: Args,
+  callback: (id: number, value: string) => void
+): void;
 "
 `;
 
@@ -3241,8 +3239,8 @@ declare const TouchableMixinImpl: {
   touchableHandleResponderRelease: (e: GestureResponderEvent) => void,
   touchableHandleResponderTerminate: (e: GestureResponderEvent) => void,
   touchableHandleResponderMove: (e: GestureResponderEvent) => void,
-  touchableHandleFocus: (e: Event) => void,
-  touchableHandleBlur: (e: Event) => void,
+  touchableHandleFocus: (e: FocusEvent) => void,
+  touchableHandleBlur: (e: BlurEvent) => void,
   withoutDefaultFocusAndBlur: { ... },
 };
 declare const TouchableImpl: {
@@ -3517,8 +3515,7 @@ declare export default typeof ReactNativeViewAttributes;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
-"export type Props = ViewProps;
-declare export default component(
+"declare export default component(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
@@ -4136,8 +4133,8 @@ declare export default typeof registerCallableModule;
 
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlay.js 1`] = `
 "type DebuggingOverlayHandle = {
-  highlightTraceUpdates(updates: TraceUpdate[]): void,
-  highlightElements(elements: ElementRectangle[]): void,
+  highlightTraceUpdates(updates: $ReadOnlyArray<TraceUpdate>): void,
+  highlightElements(elements: $ReadOnlyArray<ElementRectangle>): void,
   clearElementsHighlight(): void,
 };
 declare export default component(ref: React.RefSetter<DebuggingOverlayHandle>);
@@ -4555,7 +4552,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageUtils
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageViewNativeComponent.js 1`] = `
-"type Props = $ReadOnly<{
+"type ImageHostComponentProps = $ReadOnly<{
   ...ImageProps,
   ...ViewProps,
   style?: ImageStyleProp | DangerouslyImpreciseStyle,
@@ -4577,7 +4574,7 @@ interface NativeCommands {
 }
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ImageViewNativeComponent: HostComponent<Props>;
+declare const ImageViewNativeComponent: HostComponent<ImageHostComponentProps>;
 declare export default typeof ImageViewNativeComponent;
 "
 `;

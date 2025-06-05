@@ -160,26 +160,21 @@ public class ReactDrawerLayoutManager :
           "This method is deprecated. Use receiveCommand(ReactDrawerLayout, String, ReadableArray) instead",
       replaceWith = ReplaceWith("receiveCommand(ReactDrawerLayout, String, ReadableArray)"))
   public override fun receiveCommand(
-      root: ReactDrawerLayout,
+      view: ReactDrawerLayout,
       commandId: Int,
       args: ReadableArray?
-  ) {
+  ): Unit {
     when (commandId) {
-      OPEN_DRAWER -> root.openDrawer()
-      CLOSE_DRAWER -> root.closeDrawer()
+      OPEN_DRAWER -> view.openDrawer()
+      CLOSE_DRAWER -> view.closeDrawer()
     }
   }
 
   public override fun receiveCommand(
-      root: ReactDrawerLayout,
+      view: ReactDrawerLayout,
       commandId: String,
       args: ReadableArray?
-  ) {
-    when (commandId) {
-      COMMAND_OPEN_DRAWER -> root.openDrawer()
-      COMMAND_CLOSE_DRAWER -> root.closeDrawer()
-    }
-  }
+  ): Unit = delegate.receiveCommand(view, commandId, args)
 
   public override fun getExportedViewConstants(): Map<String, Any> =
       mapOf(

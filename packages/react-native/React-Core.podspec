@@ -122,7 +122,10 @@ Pod::Spec.new do |s|
   s.dependency "React-featureflags"
   s.dependency "React-runtimescheduler"
   s.dependency "Yoga"
-  s.dependency 'React-hermes'
+
+  if use_hermes
+    s.dependency "React-hermes"
+  end
 
   s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
 

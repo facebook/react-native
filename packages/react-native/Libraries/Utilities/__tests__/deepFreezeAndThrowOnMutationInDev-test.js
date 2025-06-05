@@ -4,32 +4,45 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 const deepFreezeAndThrowOnMutationInDev =
   require('../deepFreezeAndThrowOnMutationInDev').default;
 
-describe('deepFreezeAndThrowOnMutationInDev', function () {
-  it('should be a noop on non object values', () => {
+describe('deepFreezeAndThrowOnMutationInDev', () => {
+  it('should be a noop on non-object values', () => {
     __DEV__ = true;
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev('')).not.toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev(null)).not.toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev(false)).not.toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev(5)).not.toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev()).not.toThrow();
     __DEV__ = false;
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev('')).not.toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev(null)).not.toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev(false)).not.toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev(5)).not.toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev()).not.toThrow();
   });
 
   it('should not throw on object without prototype', () => {
     __DEV__ = true;
     const o = Object.create(null);
+    // $FlowExpectedError[prop-missing]
     o.key = 'Value';
+    // $FlowExpectedError[incompatible-call]
     expect(() => deepFreezeAndThrowOnMutationInDev(o)).not.toThrow();
   });
 
@@ -93,10 +106,12 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     const o = {oldKey: 'value'};
     deepFreezeAndThrowOnMutationInDev(o);
     expect(() => {
+      // $FlowExpectedError[prop-missing]
       o.newKey = 'value';
     }).toThrowError(
       /(Cannot|Can't) add property newKey, object is not extensible/,
     );
+    // $FlowExpectedError[prop-missing]
     expect(o.newKey).toBe(undefined);
   });
 
@@ -105,8 +120,10 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     const o = {oldKey: 'value'};
     deepFreezeAndThrowOnMutationInDev(o);
     expect(() => {
+      // $FlowExpectedError[prop-missing]
       o.newKey = 'value';
     }).not.toThrow();
+    // $FlowExpectedError[prop-missing]
     expect(o.newKey).toBe(undefined);
   });
 
@@ -137,6 +154,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
   it("shouldn't recurse infinitely", () => {
     __DEV__ = true;
     const o = {};
+    // $FlowExpectedError[prop-missing]
     o.circular = o;
     deepFreezeAndThrowOnMutationInDev(o);
   });

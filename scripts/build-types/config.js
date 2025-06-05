@@ -29,7 +29,13 @@ const IGNORE_PATTERNS = [
  */
 const TYPES_OUTPUT_DIR = 'types_generated';
 
+/**
+ * The filename used for the configuration of @microsoft/api-extractor.
+ */
+const API_EXTRACTOR_CONFIG_FILE = 'api-extractor.json';
+
 module.exports = {
+  API_EXTRACTOR_CONFIG_FILE,
   ENTRY_POINT,
   IGNORE_PATTERNS,
   TYPES_OUTPUT_DIR,

@@ -50,7 +50,7 @@ class AnimationDriver {
     return isComplete_;
   }
 
-  virtual void runAnimationStep(double renderingTime);
+  void runAnimationStep(double renderingTime);
 
   virtual void updateConfig(folly::dynamic config);
 

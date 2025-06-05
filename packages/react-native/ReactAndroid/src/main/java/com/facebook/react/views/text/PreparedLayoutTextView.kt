@@ -41,19 +41,20 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   private var clickableSpans: List<ClickableSpan> = emptyList()
   private var selection: TextSelection? = null
 
-  public var layout: Layout? = null
+  public var preparedLayout: PreparedLayout? = null
     set(value) {
       if (field != value) {
         val lastSelection = selection
         if (lastSelection != null) {
-          if (value != null && field?.text.toString() == value.text.toString()) {
-            value.getSelectionPath(lastSelection.start, lastSelection.end, lastSelection.path)
+          if (value != null && field?.layout?.text.toString() == value.layout.text.toString()) {
+            value.layout.getSelectionPath(
+                lastSelection.start, lastSelection.end, lastSelection.path)
           } else {
             clearSelection()
           }
         }
 
-        clickableSpans = value?.text?.let { filterClickableSpans(it) } ?: emptyList()
+        clickableSpans = value?.layout?.text?.let { filterClickableSpans(it) } ?: emptyList()
 
         field = value
         invalidate()
@@ -73,7 +74,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   public @ColorInt var selectionColor: Int? = null
 
   public val text: CharSequence?
-    get() = layout?.text
+    get() = preparedLayout?.layout?.text
 
   init {
     initView()
@@ -84,7 +85,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   private fun initView() {
     clickableSpans = emptyList()
     selection = null
-    layout = null
+    preparedLayout = null
   }
 
   public fun recycleView(): Unit {
@@ -99,19 +100,20 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     }
 
     super.onDraw(canvas)
-    canvas.translate(paddingLeft.toFloat(), paddingTop.toFloat())
+    canvas.translate(
+        paddingLeft.toFloat(), paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f))
 
-    val textLayout = layout
-    if (textLayout != null) {
+    val layout = preparedLayout?.layout
+    if (layout != null) {
       if (selection != null) {
         selectionPaint.setColor(
             selectionColor ?: DefaultStyleValuesUtil.getDefaultTextColorHighlight(context))
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        Api34Utils.draw(textLayout, canvas, selection?.path, selectionPaint)
+        Api34Utils.draw(layout, canvas, selection?.path, selectionPaint)
       } else {
-        textLayout.draw(canvas, selection?.path, selectionPaint, 0)
+        layout.draw(canvas, selection?.path, selectionPaint, 0)
       }
     }
   }
@@ -121,21 +123,21 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   }
 
   public fun setSelection(start: Int, end: Int) {
-    val textLayout = checkNotNull(layout)
-    if (start < 0 || end > textLayout.text.length || start >= end) {
+    val layout = checkNotNull(preparedLayout).layout
+    if (start < 0 || end > layout.text.length || start >= end) {
       throw IllegalArgumentException(
-          "setSelection start and end are not in valid range. start: $start, end: $end, text length: ${textLayout.text.length}")
+          "setSelection start and end are not in valid range. start: $start, end: $end, text length: ${layout.text.length}")
     }
 
     val textSelection = selection
     if (textSelection == null) {
       val selectionPath = Path()
-      textLayout.getSelectionPath(start, end, selectionPath)
+      layout.getSelectionPath(start, end, selectionPath)
       selection = TextSelection(start, end, selectionPath)
     } else {
       textSelection.start = start
       textSelection.end = end
-      textLayout.getSelectionPath(start, end, textSelection.path)
+      layout.getSelectionPath(start, end, textSelection.path)
     }
 
     invalidate()
@@ -171,9 +173,9 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       clearSelection()
       clickableSpan.onClick(this)
     } else if (action == MotionEvent.ACTION_DOWN) {
-      val textLayout = checkNotNull(layout)
-      val start = (textLayout.text as Spanned).getSpanStart(clickableSpan)
-      val end = (textLayout.text as Spanned).getSpanEnd(clickableSpan)
+      val layout = checkNotNull(preparedLayout).layout
+      val start = (layout.text as Spanned).getSpanStart(clickableSpan)
+      val end = (layout.text as Spanned).getSpanEnd(clickableSpan)
       setSelection(start, end)
     }
 
@@ -205,19 +207,19 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   }
 
   private fun getTextOffsetAt(x: Int, y: Int): Int {
-    val textLayout = layout ?: return -1
-    val line = textLayout.getLineForVertical(y)
+    val layout = preparedLayout?.layout ?: return -1
+    val line = layout.getLineForVertical(y)
 
     val left: Float
     val right: Float
 
-    if (textLayout.alignment == Layout.Alignment.ALIGN_CENTER) {
+    if (layout.alignment == Layout.Alignment.ALIGN_CENTER) {
       /**
        * [Layout#getLineLeft] and [Layout#getLineRight] properly account for paragraph margins on
        * centered text.
        */
-      left = textLayout.getLineLeft(line)
-      right = textLayout.getLineRight(line)
+      left = layout.getLineLeft(line)
+      right = layout.getLineRight(line)
     } else {
       /**
        * [Layout#getLineLeft] and [Layout#getLineRight] do NOT properly account for paragraph
@@ -229,11 +231,11 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
        * [Layout#getLineMax] gives the extent *plus* the leading margin, so we can figure out the
        * rest from there.
        */
-      val rtl = textLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT
+      val rtl = layout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT
       left =
-          if (rtl) (textLayout.width - textLayout.getLineMax(line))
-          else textLayout.getParagraphLeft(line).toFloat()
-      right = if (rtl) textLayout.getParagraphRight(line).toFloat() else textLayout.getLineMax(line)
+          if (rtl) (layout.width - layout.getLineMax(line))
+          else layout.getParagraphLeft(line).toFloat()
+      right = if (rtl) layout.getParagraphRight(line).toFloat() else layout.getLineMax(line)
     }
 
     if (x < left || x > right) {
@@ -241,7 +243,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     }
 
     return try {
-      textLayout.getOffsetForHorizontal(line, x.toFloat())
+      layout.getOffsetForHorizontal(line, x.toFloat())
     } catch (e: ArrayIndexOutOfBoundsException) {
       // This happens for bidi text on Android 7-8.
       // See

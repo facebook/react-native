@@ -22,9 +22,16 @@ export type TestCaseResult = {
   status: 'passed' | 'failed' | 'pending',
   duration: number,
   failureMessages: Array<string>,
+  failureDetails: Array<FailureDetail>,
   numPassingAsserts: number,
   snapshotResults: TestSnapshotResults,
   // location: string,
+};
+
+export type FailureDetail = {
+  message: string,
+  stack: string,
+  cause?: FailureDetail,
 };
 
 export type TestSuiteResult =
@@ -32,10 +39,7 @@ export type TestSuiteResult =
       testResults: Array<TestCaseResult>,
     }
   | {
-      error: {
-        message: string,
-        stack: string,
-      },
+      error: FailureDetail,
     };
 
 type FocusState = {
@@ -306,6 +310,7 @@ function runSpec(spec: Spec): TestCaseResult {
     status: 'pending',
     duration: 0,
     failureMessages: [],
+    failureDetails: [],
     numPassingAsserts: 0,
     snapshotResults: {},
   };
@@ -333,10 +338,13 @@ function runSpec(spec: Spec): TestCaseResult {
 
   result.status = status;
   result.duration = Date.now() - start;
-  result.failureMessages =
-    status === 'failed' && error
-      ? [error.stack ?? error.message ?? String(error)]
-      : [];
+  if (status === 'failed' && error) {
+    result.failureMessages = [error.stack ?? error.message ?? String(error)];
+    result.failureDetails = [serializeError(error)];
+  } else {
+    result.failureMessages = [];
+    result.failureDetails = [];
+  }
 
   result.snapshotResults = snapshotContext.getSnapshotResults();
   return result;
@@ -392,6 +400,17 @@ function validateEmptyMessageQueue(): void {
     require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
 
   NativeFantom.validateEmptyMessageQueue();
+}
+
+function serializeError(error: Error): FailureDetail {
+  const result: FailureDetail = {
+    message: error.message,
+    stack: error.stack,
+  };
+  if (error.cause instanceof Error) {
+    result.cause = serializeError(error.cause);
+  }
+  return result;
 }
 
 global.$$RunTests$$ = () => {
