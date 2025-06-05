@@ -161,7 +161,7 @@ class NewArchitectureHelper
             .uniq{ |p| p.path }
             .map{ |p| p.path }
 
-        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle"]
+        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/"]
         projectPaths.each do |projectPath|
             projectFolderPath = File.dirname(projectPath)
             infoPlistFiles = `find #{projectFolderPath} -name "Info.plist"`
