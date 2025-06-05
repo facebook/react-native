@@ -6319,33 +6319,35 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	protected fun verifyDrawable (Landroid/graphics/drawable/Drawable;)Z
 }
 
-public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
-	protected field mReactTextViewManagerCallback Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
+public final class com/facebook/react/views/text/ReactTextViewManager : com/facebook/react/views/text/ReactTextAnchorViewManager, com/facebook/react/uimanager/IViewManagerWithChildren, com/facebook/react/views/text/ReactTextViewManagerCallback {
+	public static final field Companion Lcom/facebook/react/views/text/ReactTextViewManager$Companion;
+	public static final field REACT_CLASS Ljava/lang/String;
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
+	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun createShadowNodeInstance ()Lcom/facebook/react/uimanager/ReactShadowNode;
 	public fun createShadowNodeInstance ()Lcom/facebook/react/views/text/ReactTextShadowNode;
-	public fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactTextShadowNode;
+	public final fun createShadowNodeInstance (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Lcom/facebook/react/views/text/ReactTextShadowNode;
 	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
 	public fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Lcom/facebook/react/views/text/ReactTextView;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	public fun getName ()Ljava/lang/String;
 	public fun getShadowNodeClass ()Ljava/lang/Class;
 	public fun needsCustomLayoutForChildren ()Z
-	protected synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
-	protected fun onAfterUpdateTransaction (Lcom/facebook/react/views/text/ReactTextView;)V
+	public synthetic fun onAfterUpdateTransaction (Landroid/view/View;)V
 	public fun onPostProcessSpannable (Landroid/text/Spannable;)V
-	protected synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
-	protected fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/views/text/ReactTextView;)Lcom/facebook/react/views/text/ReactTextView;
-	public fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
+	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
+	public final fun setOverflow (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/String;)V
 	public synthetic fun setPadding (Landroid/view/View;IIII)V
 	public fun setPadding (Lcom/facebook/react/views/text/ReactTextView;IIII)V
 	public synthetic fun updateExtraData (Landroid/view/View;Ljava/lang/Object;)V
 	public fun updateExtraData (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Object;)V
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/text/ReactTextView;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
-	protected synthetic fun updateViewAccessibility (Landroid/view/View;)V
-	protected fun updateViewAccessibility (Lcom/facebook/react/views/text/ReactTextView;)V
+	public synthetic fun updateViewAccessibility (Landroid/view/View;)V
+}
+
+public final class com/facebook/react/views/text/ReactTextViewManager$Companion {
 }
 
 public abstract interface class com/facebook/react/views/text/ReactTextViewManagerCallback {
