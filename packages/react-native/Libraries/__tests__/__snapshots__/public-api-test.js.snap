@@ -102,17 +102,15 @@ declare export default typeof NativeAlertManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js 1`] = `
-"declare export default typeof RCTAlertManager;
+"export * from \\"./RCTAlertManager\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js.flow 1`] = `
-"declare export default {
-  alertWithArgs(
-    args: Args,
-    callback: (id: number, value: string) => void
-  ): void,
-};
+"declare export function alertWithArgs(
+  args: Args,
+  callback: (id: number, value: string) => void
+): void;
 "
 `;
 
@@ -925,16 +923,19 @@ declare export default class AnimatedProps extends AnimatedNode {
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedStyle.js 1`] = `
 "export type AnimatedStyleAllowlist = $ReadOnly<{ [string]: true }>;
+type FlatStyle = { [string]: mixed };
+type FlatStyleForWeb<TStyle: FlatStyle> = [mixed, TStyle];
 declare export default class AnimatedStyle extends AnimatedWithChildren {
   static from(
-    inputStyle: any,
-    allowlist: ?AnimatedStyleAllowlist
+    flatStyle: ?FlatStyle,
+    allowlist: ?AnimatedStyleAllowlist,
+    originalStyleForWeb: ?mixed
   ): ?AnimatedStyle;
   constructor(
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
     style: { [string]: mixed },
-    inputStyle: any,
+    originalStyleForWeb: ?mixed,
     config?: ?AnimatedNodeConfig
   ): void;
 }
@@ -2672,13 +2673,12 @@ type TextInputContentSizeChangeEventData = $ReadOnly<{
 }>;
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
+export type TextInputBlurEvent = BlurEvent;
+export type TextInputFocusEvent = FocusEvent;
 type TargetEvent = $ReadOnly<{
   target: number,
   ...
 }>;
-type TextInputFocusEventData = TargetEvent;
-export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type Selection = $ReadOnly<{
   start: number,
   end: number,
@@ -3010,10 +3010,12 @@ export type TextInputType = InternalTextInput & TextInputComponentStatics;
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
 "export type {
   AutoCapitalize,
+  BlurEvent,
   EnterKeyHintType,
   EnterKeyHintTypeAndroid,
   EnterKeyHintTypeIOS,
   EnterKeyHintTypeOptions,
+  FocusEvent,
   InputModeOptions,
   KeyboardType,
   KeyboardTypeAndroid,
@@ -3237,8 +3239,8 @@ declare const TouchableMixinImpl: {
   touchableHandleResponderRelease: (e: GestureResponderEvent) => void,
   touchableHandleResponderTerminate: (e: GestureResponderEvent) => void,
   touchableHandleResponderMove: (e: GestureResponderEvent) => void,
-  touchableHandleFocus: (e: Event) => void,
-  touchableHandleBlur: (e: Event) => void,
+  touchableHandleFocus: (e: FocusEvent) => void,
+  touchableHandleBlur: (e: BlurEvent) => void,
   withoutDefaultFocusAndBlur: { ... },
 };
 declare const TouchableImpl: {
@@ -3513,8 +3515,7 @@ declare export default typeof ReactNativeViewAttributes;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
-"export type Props = ViewProps;
-declare export default component(
+"declare export default component(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
@@ -4132,8 +4133,8 @@ declare export default typeof registerCallableModule;
 
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlay.js 1`] = `
 "type DebuggingOverlayHandle = {
-  highlightTraceUpdates(updates: TraceUpdate[]): void,
-  highlightElements(elements: ElementRectangle[]): void,
+  highlightTraceUpdates(updates: $ReadOnlyArray<TraceUpdate>): void,
+  highlightElements(elements: $ReadOnlyArray<ElementRectangle>): void,
   clearElementsHighlight(): void,
 };
 declare export default component(ref: React.RefSetter<DebuggingOverlayHandle>);
@@ -4551,7 +4552,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageUtils
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageViewNativeComponent.js 1`] = `
-"type Props = $ReadOnly<{
+"type ImageHostComponentProps = $ReadOnly<{
   ...ImageProps,
   ...ViewProps,
   style?: ImageStyleProp | DangerouslyImpreciseStyle,
@@ -4573,7 +4574,7 @@ interface NativeCommands {
 }
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ImageViewNativeComponent: HostComponent<Props>;
+declare const ImageViewNativeComponent: HostComponent<ImageHostComponentProps>;
 declare export default typeof ImageViewNativeComponent;
 "
 `;
@@ -4719,22 +4720,6 @@ declare const InteractionManagerStub: {
   setDeadline(deadline: number): void,
 };
 declare export default typeof InteractionManagerStub;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Interaction/JSEventLoopWatchdog.js 1`] = `
-"type Handler = {
-  onIterate?: () => void,
-  onStall: (params: { lastInterval: number, busyTime: number, ... }) => ?string,
-  ...
-};
-declare const JSEventLoopWatchdog: {
-  getStats: () => Object,
-  reset: () => void,
-  addHandler: (handler: Handler) => void,
-  install: ($$PARAM_0$$: { thresholdMS: number, ... }) => void,
-};
-declare export default typeof JSEventLoopWatchdog;
 "
 `;
 
@@ -5931,7 +5916,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
   ): EventSubscription,
   sendRequest(
     method: string,
-    trackingName: ?string,
+    trackingName: string | void,
     url: string,
     headers: { ... },
     data: RequestBody,

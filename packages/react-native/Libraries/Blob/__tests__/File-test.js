@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -25,6 +26,7 @@ describe('babel 7 smoke test', function () {
     class Array {
       constructor() {
         called = true;
+        // $FlowFixMe[incompatible-return]
         return {foo: 'PASS'};
       }
     }
@@ -37,6 +39,7 @@ describe('babel 7 smoke test', function () {
     // there is/was a regression in Babel where this would break and super()
     // would not actually invoke the constructor of the parent class if the
     // parent class had a name matching a built-in class (like Blob)
+    // $FlowFixMe[prop-missing]
     expect(new A().foo).toBe('PASS');
     expect(called).toBe(true);
   });
@@ -44,7 +47,7 @@ describe('babel 7 smoke test', function () {
 
 describe('Blob', function () {
   it('regression caused by circular dep && babel 7', function () {
-    const blob = new Blob([], {type: 'image/jpeg'});
+    const blob = new Blob([], {lastModified: 0, type: 'image/jpeg'});
     expect(blob).toBeInstanceOf(Blob);
   });
 });
@@ -62,17 +65,25 @@ describe('File', function () {
   });
 
   it('should create empty file with type', () => {
-    const file = new File([], 'test.jpg', {type: 'image/jpeg'});
+    const file = new File([], 'test.jpg', {
+      lastModified: 0,
+      type: 'image/jpeg',
+    });
     expect(file.type).toBe('image/jpeg');
   });
 
   it('should create empty file with lastModified', () => {
-    const file = new File([], 'test.jpg', {lastModified: 1337});
+    const file = new File([], 'test.jpg', {
+      lastModified: 1337,
+      type: 'image/jpeg',
+    });
     expect(file.lastModified).toBe(1337);
   });
 
   it('should throw on invalid arguments', () => {
+    // $FlowExpectedError[incompatible-call]
     expect(() => new File()).toThrow();
+    // $FlowExpectedError[incompatible-call]
     expect(() => new File([])).toThrow();
   });
 });

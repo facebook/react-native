@@ -55,10 +55,12 @@ const ComponentTemplate = ({
   className,
   extendClasses,
   props,
+  diffProps,
 }: {
   className: string,
   extendClasses: string,
   props: string,
+  diffProps: string,
 }) =>
   `
 ${className}::${className}(
@@ -66,10 +68,95 @@ ${className}::${className}(
     const ${className} &sourceProps,
     const RawProps &rawProps):${extendClasses}
 
-    ${props}
-      {}
+    ${props} {}
+    ${diffProps}
+
 `.trim();
 
+function generatePropsDiffString(
+  className: string,
+  componentName: string,
+  component: ComponentShape,
+) {
+  const diffProps = component.props
+    .map(prop => {
+      const typeAnnotation = prop.typeAnnotation;
+      switch (typeAnnotation.type) {
+        case 'StringTypeAnnotation':
+        case 'Int32TypeAnnotation':
+        case 'BooleanTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = ${prop.name};
+  }`;
+        case 'DoubleTypeAnnotation':
+        case 'FloatTypeAnnotation':
+          return `
+  if ((${prop.name} != oldProps->${prop.name}) && !(std::isnan(${prop.name}) && std::isnan(oldProps->${prop.name}))) {
+    result["${prop.name}"] = ${prop.name};
+  }`;
+        case 'ReservedPropTypeAnnotation':
+          switch (typeAnnotation.name) {
+            case 'ColorPrimitive':
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = *${prop.name};
+  }`;
+            case 'ImageSourcePrimitive':
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = ${prop.name}.toDynamic();
+  }`;
+            case 'ImageRequestPrimitive':
+              // Shouldn't be used in props
+              throw new Error(
+                'ImageRequestPrimitive should not be used in Props',
+              );
+            case 'PointPrimitive':
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    folly::dynamic pointResult = folly::dynamic::object();
+    pointResult["x"] = ${prop.name}.x;
+    pointResult["y"] = ${prop.name}.y;
+    result["${prop.name}"] = pointResult;
+  }`;
+            case 'EdgeInsetsPrimitive':
+            case 'DimensionPrimitive':
+              // TODO: Implement diffProps for complex types
+              return '';
+            default:
+              (typeAnnotation.name: empty);
+              throw new Error('Received unknown ReservedPropTypeAnnotation');
+          }
+        case 'ArrayTypeAnnotation':
+        case 'ObjectTypeAnnotation':
+        case 'StringEnumTypeAnnotation':
+        case 'Int32EnumTypeAnnotation':
+        case 'MixedTypeAnnotation':
+        default:
+          // TODO: Implement diffProps for complex types
+          return '';
+      }
+    })
+    .join('\n' + '    ');
+
+  return `
+#ifdef RN_SERIALIZABLE_STATE
+folly::dynamic ${className}::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ${className}();
+  const ${className}* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ${className}*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  ${diffProps}
+  return result;
+}
+#endif`;
+}
 function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
@@ -144,6 +231,11 @@ module.exports = {
 
             const propsString = generatePropsString(componentName, component);
             const extendString = getClassExtendString(component);
+            const diffPropsString = generatePropsDiffString(
+              newName,
+              componentName,
+              component,
+            );
 
             const imports = getImports(component.props);
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -153,6 +245,7 @@ module.exports = {
               className: newName,
               extendClasses: extendString,
               props: propsString,
+              diffProps: diffPropsString,
             });
 
             return replacedTemplate;

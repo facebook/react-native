@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -243,7 +244,7 @@ describe('delete empty files and folders', () => {
 
   it("when path is folder and it's empty, removes it", () => {
     const targetFolder = 'build';
-    const content = [];
+    const content = [] as Array<string>;
 
     let statSyncInvocationCount = 0;
     let readdirInvocationCount = 0;
@@ -290,8 +291,8 @@ describe('delete empty files and folders', () => {
       path.normalize('build/notEmptyFile'),
     ];
 
-    const emptyContent = [];
-    let fileSizes = {};
+    const emptyContent = [] as Array<string>;
+    let fileSizes = {} as {[string]: number};
     fileSizes[path.normalize('build/emptyFile')] = 0;
     fileSizes[path.normalize('build/notEmptyFile')] = 32;
 
@@ -344,7 +345,7 @@ describe('delete empty files and folders', () => {
   it('when path is folder and it contains only empty folders, removes everything', () => {
     const targetFolder = 'build';
     const content = ['emptyFolder1', 'emptyFolder2'];
-    const emptyContent = [];
+    const emptyContent = [] as Array<string>;
 
     let statSyncInvocation = [];
     let rmSyncInvocation = [];

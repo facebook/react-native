@@ -14,7 +14,6 @@ import expect from './expect';
 import {createMockFunction} from './mocks';
 import patchWeakRef from './patchWeakRef';
 import {setupSnapshotConfig, snapshotContext} from './snapshotContext';
-import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
 export type TestCaseResult = {
   ancestorTitles: Array<string>,
@@ -23,9 +22,16 @@ export type TestCaseResult = {
   status: 'passed' | 'failed' | 'pending',
   duration: number,
   failureMessages: Array<string>,
+  failureDetails: Array<FailureDetail>,
   numPassingAsserts: number,
   snapshotResults: TestSnapshotResults,
   // location: string,
+};
+
+export type FailureDetail = {
+  message: string,
+  stack: string,
+  cause?: FailureDetail,
 };
 
 export type TestSuiteResult =
@@ -33,10 +39,7 @@ export type TestSuiteResult =
       testResults: Array<TestCaseResult>,
     }
   | {
-      error: {
-        message: string,
-        stack: string,
-      },
+      error: FailureDetail,
     };
 
 type FocusState = {
@@ -191,18 +194,13 @@ global.jest = {
 
 global.expect = expect;
 
+let testSetupError: ?Error;
+
 function runWithGuard(fn: () => void) {
   try {
     fn();
   } catch (error) {
-    let reportedError =
-      error instanceof Error ? error : new Error(String(error));
-    reportTestSuiteResult({
-      error: {
-        message: reportedError.message,
-        stack: reportedError.stack,
-      },
-    });
+    testSetupError = error instanceof Error ? error : new Error(String(error));
   }
 }
 
@@ -312,6 +310,7 @@ function runSpec(spec: Spec): TestCaseResult {
     status: 'pending',
     duration: 0,
     failureMessages: [],
+    failureDetails: [],
     numPassingAsserts: 0,
     snapshotResults: {},
   };
@@ -339,10 +338,13 @@ function runSpec(spec: Spec): TestCaseResult {
 
   result.status = status;
   result.duration = Date.now() - start;
-  result.failureMessages =
-    status === 'failed' && error
-      ? [error.stack ?? error.message ?? String(error)]
-      : [];
+  if (status === 'failed' && error) {
+    result.failureMessages = [error.stack ?? error.message ?? String(error)];
+    result.failureDetails = [serializeError(error)];
+  } else {
+    result.failureMessages = [];
+    result.failureDetails = [];
+  }
 
   result.snapshotResults = snapshotContext.getSnapshotResults();
   return result;
@@ -380,6 +382,10 @@ function runSuite(suite: Suite): TestCaseResult[] {
 }
 
 function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+
   NativeFantom.reportTestSuiteResultsJSON(
     JSON.stringify({
       type: 'test-result',
@@ -389,13 +395,37 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
 }
 
 function validateEmptyMessageQueue(): void {
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+
   NativeFantom.validateEmptyMessageQueue();
 }
 
+function serializeError(error: Error): FailureDetail {
+  const result: FailureDetail = {
+    message: error.message,
+    stack: error.stack,
+  };
+  if (error.cause instanceof Error) {
+    result.cause = serializeError(error.cause);
+  }
+  return result;
+}
+
 global.$$RunTests$$ = () => {
-  reportTestSuiteResult({
-    testResults: runSuite(currentContext),
-  });
+  if (testSetupError != null) {
+    reportTestSuiteResult({
+      error: {
+        message: testSetupError.message,
+        stack: testSetupError.stack,
+      },
+    });
+  } else {
+    reportTestSuiteResult({
+      testResults: runSuite(currentContext),
+    });
+  }
 };
 
 export function registerTest(

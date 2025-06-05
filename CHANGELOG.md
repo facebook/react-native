@@ -1,5 +1,132 @@
 # Changelog
 
+## v0.80.0-rc.4
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+- Re-expose `src/*` subpaths when not using the Strict TypeScript API ([1a46b203b8](https://github.com/facebook/react-native/commit/1a46b203b83d7cbe44185cd7e437e77b850e1af5) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Fixed the generated type definitions for `Animated.FlatList` and `Animated.SectionList` to correctly infer item types. ([9be5ac1010](https://github.com/facebook/react-native/commit/9be5ac101051dd8121a48af1a29a60b7ba0b753e) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.80.0-rc.4 ([dffb675e70](https://github.com/facebook/react-native/commit/dffb675e70e9702d63d7fe04af8c97eff3e2398d) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([baa421decc](https://github.com/facebook/react-native/commit/baa421decc61b136979f06475757579b0da76dab) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.80.0-rc.3 ([e7901a720b](https://github.com/facebook/react-native/commit/e7901a720bcf3877e8a011f7b211c7d59c694853) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
+## v0.80.0-rc.3
+
+### Changed
+
+- **Deps:** Update debugger-frontend from bc635fa...343405b (S523384 mitigation) ([647af1c4ca](https://github.com/facebook/react-native/commit/647af1c4ca219515ab00b442370b61346ba1edb1) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+- **Deps:** Gradle to 8.14.1 ([827a6851d0](https://github.com/facebook/react-native/commit/827a6851d0a61c048fec7a73ca3b293ef90ad2ae) by [@cortinico](https://github.com/cortinico))
+
+### Fixed
+
+- **NewAppScreen:** Fix Networking URL in New app screen ([89e6c72fd4](https://github.com/facebook/react-native/commit/89e6c72fd4ba6c0610e892069ee5b96092dfc192) by [@riteshshukla04](https://github.com/riteshshukla04))
+- **Runtime:** Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
+- **TypeScript:** Reference `global.d.ts` using `path` so they can be resolved by TSC ([6399caef63](https://github.com/facebook/react-native/commit/6399caef635b6aadc4c98ec37c9f007f81fa1f79) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- **VirtualizeSectionList:** Fix VirtualizeSectionList generic arguments ([44b0f5560b](https://github.com/facebook/react-native/commit/44b0f5560b285dfd8e28e6056e9434d76734f3fd)) by [@coado](https://github.com/coado)
+
+#### Android specific
+
+- **Layout:** Restored the possibility to extend `LayoutAnimationController` ([bca7c5a553](https://github.com/facebook/react-native/commit/bca7c5a55301398beaa6ca35c96ae7ad5426c297) by [@tomekzaw](https://github.com/tomekzaw))
+- **TextInput:** Fix broken focus behavior for TextInput in older Android versions (< 9) ([fb62355555](https://github.com/facebook/react-native/commit/fb623555552075793086acdd1ddd0c1e3fba72c4)) by [@joevilches](https://github.com/joevilches)
+
 ## v0.80.0-rc.2
 
 ### Breaking

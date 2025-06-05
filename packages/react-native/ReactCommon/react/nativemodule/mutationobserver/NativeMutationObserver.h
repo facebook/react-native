@@ -8,6 +8,7 @@
 #pragma once
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#include <react/renderer/bridging/bridging.h>
 #include <react/renderer/observers/mutation/MutationObserverManager.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <vector>
@@ -19,7 +20,7 @@ using NativeMutationObserverObserveOptions =
         // mutationObserverId
         MutationObserverId,
         // targetShadowNode
-        jsi::Object,
+        ShadowNode::Shared,
         // subtree
         bool>;
 
@@ -51,13 +52,6 @@ class NativeMutationObserver
   void observe(
       jsi::Runtime& runtime,
       NativeMutationObserverObserveOptions options);
-
-  // TODO: remove in the next version
-  [[deprecated("use unobserveAll instead")]]
-  void unobserve(
-      jsi::Runtime& runtime,
-      MutationObserverId mutationObserverId,
-      jsi::Object targetShadowNode);
 
   void unobserveAll(
       jsi::Runtime& runtime,

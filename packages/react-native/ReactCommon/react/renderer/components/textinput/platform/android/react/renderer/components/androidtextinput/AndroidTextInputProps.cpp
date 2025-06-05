@@ -366,6 +366,10 @@ static folly::dynamic toDynamic(
   return acceptDragAndDropTypesArray;
 }
 
+ComponentName AndroidTextInputProps::getDiffPropsImplementationTarget() const {
+  return "TextInput";
+}
+
 folly::dynamic AndroidTextInputProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = AndroidTextInputProps();
@@ -419,6 +423,16 @@ folly::dynamic AndroidTextInputProps::getDiffProps(
       oldProps->paragraphAttributes.android_hyphenationFrequency) {
     result["android_hyphenationFrequency"] =
         toString(paragraphAttributes.android_hyphenationFrequency);
+  }
+
+  if (paragraphAttributes.textAlignVertical !=
+      oldProps->paragraphAttributes.textAlignVertical) {
+    if (!paragraphAttributes.textAlignVertical.has_value()) {
+      result["textAlignVertical"] = nullptr;
+    } else {
+      result["textAlignVertical"] =
+          toString(*paragraphAttributes.textAlignVertical);
+    }
   }
 
   // Base text input props

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -28,7 +29,10 @@ const THIRD_PARTY_COMPONENTS_MM_TEMPLATE_PATH = path.join(
   'RCTThirdPartyComponentsProviderMM.template',
 );
 
-function generateRCTThirdPartyComponents(libraries, outputDir) {
+function generateRCTThirdPartyComponents(
+  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+  outputDir /*: string */,
+) {
   fs.mkdirSync(outputDir, {recursive: true});
   // Generate Header File
   codegenLog('Generating RCTThirdPartyComponentsProvider.h');
@@ -41,7 +45,7 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
   codegenLog(`Generated artifact: ${finalPathH}`);
 
   codegenLog('Generating RCTThirdPartyComponentsProvider.mm');
-  let componentsInLibraries = {};
+  let componentsInLibraries = {} /*:: as {[string]: Array<$FlowFixMe>} */;
 
   const componentLibraries = libraries.filter(({config, libraryPath}) => {
     if (isReactNativeCoreLibrary(config.name) || config.type === 'modules') {
@@ -50,13 +54,13 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
     return true;
   });
 
-  const librariesToCrawl = {};
+  const librariesToCrawl = {} /*:: as {[string]: $FlowFixMe} */;
 
   // Old API
   componentLibraries.forEach(library => {
     const {config, libraryPath} = library;
     const libraryName = JSON.parse(
-      fs.readFileSync(path.join(libraryPath, 'package.json')),
+      fs.readFileSync(path.join(libraryPath, 'package.json'), 'utf8'),
     ).name;
 
     librariesToCrawl[libraryName] = library;
@@ -140,7 +144,10 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
 
 // Given a path, return the paths of all the files with extension .mm in
 // the path dir and all its subdirectories.
-function findFilesWithExtension(filePath, extension) {
+function findFilesWithExtension(
+  filePath /*: string */,
+  extension /*: string */,
+) /*: Array<string> */ {
   const files = [];
   const dir = fs.readdirSync(filePath);
   dir.forEach(file => {
@@ -172,7 +179,7 @@ function findFilesWithExtension(filePath, extension) {
 
 // Given a filepath, read the file and look for a string that starts with 'Class<RCTComponentViewProtocol> '
 // and ends with 'Cls(void)'. Return the string between the two.
-function findRCTComponentViewProtocolClass(filepath) {
+function findRCTComponentViewProtocolClass(filepath /*: string */) {
   const fileContent = fs.readFileSync(filepath, 'utf8');
   const regex = /Class<RCTComponentViewProtocol> (.*)Cls\(/;
   const match = fileContent.match(regex);
@@ -186,7 +193,7 @@ function findRCTComponentViewProtocolClass(filepath) {
     const lines = fileContent.split('\n');
     const signatureIndex = lines.findIndex(line => regex.test(line));
     const returnRegex = /return (.*)\.class/;
-    const classNameMatch = String(lines.slice(signatureIndex)).match(
+    const classNameMatch = String(lines.slice(signatureIndex).join('\n')).match(
       returnRegex,
     );
     if (classNameMatch) {

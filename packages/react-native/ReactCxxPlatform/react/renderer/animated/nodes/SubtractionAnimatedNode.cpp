@@ -24,9 +24,9 @@ void SubtractionAnimatedNode::update() {
     react_native_assert(
         node && "Invalid node tag set as input for SubtractionAnimatedNode");
     if (count == 0) {
-      rawValue = node->value();
+      rawValue = node->getValue();
     } else {
-      rawValue -= node->value();
+      rawValue -= node->getValue();
     }
 
     count++;

@@ -16,5 +16,5 @@ target_include_directories(react_nativemodule_devtoolsruntimesettings PUBLIC ${R
 target_link_libraries(react_nativemodule_devtoolsruntimesettings
         react_devtoolsruntimesettingscxx
 )
-target_compile_reactnative_options(react_nativemodule_devtoolsruntimesettings PRIVATE "ReactNative")
+target_compile_reactnative_options(react_nativemodule_devtoolsruntimesettings PRIVATE)
 target_compile_options(react_nativemodule_devtoolsruntimesettings PRIVATE -Wpedantic)

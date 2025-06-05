@@ -11,14 +11,14 @@
 import type {
   ElementRectangle,
   TraceUpdate,
-} from './DebuggingOverlayNativeComponent';
+} from '../../src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent';
 
+import DebuggingOverlayNativeComponent, {
+  Commands,
+} from '../../src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent';
 import View from '../Components/View/View';
 import UIManager from '../ReactNative/UIManager';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import DebuggingOverlayNativeComponent, {
-  Commands,
-} from './DebuggingOverlayNativeComponent';
 import * as React from 'react';
 
 const {useRef, useImperativeHandle} = React;
@@ -26,8 +26,8 @@ const isNativeComponentReady =
   UIManager.hasViewManagerConfig('DebuggingOverlay');
 
 type DebuggingOverlayHandle = {
-  highlightTraceUpdates(updates: TraceUpdate[]): void,
-  highlightElements(elements: ElementRectangle[]): void,
+  highlightTraceUpdates(updates: $ReadOnlyArray<TraceUpdate>): void,
+  highlightElements(elements: $ReadOnlyArray<ElementRectangle>): void,
   clearElementsHighlight(): void,
 };
 

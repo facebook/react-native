@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <folly/Exception.h>
+#include <memory>
+#include <string>
 
 #ifndef RN_EXPORT
 #ifdef _MSC_VER

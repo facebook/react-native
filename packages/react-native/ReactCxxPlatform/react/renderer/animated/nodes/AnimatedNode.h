@@ -54,7 +54,7 @@ class AnimatedNode {
   AnimatedNode(const AnimatedNode&) = default;
   AnimatedNode& operator=(const AnimatedNode&) = default;
 
-  Tag tag() const {
+  Tag tag() const noexcept {
     return tag_;
   }
 
@@ -62,15 +62,15 @@ class AnimatedNode {
 
   void removeChild(Tag tag);
 
-  const std::unordered_set<Tag>& children() const {
+  const std::unordered_set<Tag>& getChildren() const noexcept {
     return children_;
   }
 
-  AnimatedNodeType type() const {
+  AnimatedNodeType type() const noexcept {
     return type_;
   }
 
-  const folly::dynamic& getConfig() const {
+  const folly::dynamic& getConfig() const noexcept {
     return config_;
   }
 

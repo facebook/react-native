@@ -23,8 +23,6 @@ TEST_F(AnimatedNodeTests, setAnimatedNodeValue) {
   nodesManager_->createAnimatedNode(
       animatedNodeTag,
       folly::dynamic::object("type", "value")("value", 0)("offset", 5));
-  const auto node =
-      nodesManager_->getAnimatedNode<AnimatedNode>(animatedNodeTag);
   EXPECT_EQ(nodeNeedsUpdate(animatedNodeTag), true);
 
   runAnimationFrame(0);

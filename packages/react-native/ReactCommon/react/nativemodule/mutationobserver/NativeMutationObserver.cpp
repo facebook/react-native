@@ -36,21 +36,11 @@ void NativeMutationObserver::observe(
     NativeMutationObserverObserveOptions options) {
   auto mutationObserverId = options.mutationObserverId;
   auto subtree = options.subtree;
-  auto shadowNode =
-      shadowNodeFromValue(runtime, std::move(options).targetShadowNode);
+  auto shadowNode = options.targetShadowNode;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   mutationObserverManager_.observe(
       mutationObserverId, shadowNode, subtree, uiManager);
-}
-
-// TODO: remove in the next version
-void NativeMutationObserver::unobserve(
-    jsi::Runtime& /*runtime*/,
-    MutationObserverId mutationObserverId,
-    jsi::Object targetShadowNode) {
-  // This will not be used but cannot be removed yet because the compatibility
-  // check does not allow it.
 }
 
 void NativeMutationObserver::unobserveAll(

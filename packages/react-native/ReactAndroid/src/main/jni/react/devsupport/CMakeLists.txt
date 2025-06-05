@@ -21,4 +21,4 @@ target_link_libraries(react_devsupportjni
         fbjni
         jsinspector)
 
-target_compile_reactnative_options(react_devsupportjni PRIVATE "ReactNative")
+target_compile_reactnative_options(react_devsupportjni PRIVATE)

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6bd6a7cab18860963fc330ac76ed2c32>>
+ * @generated SignedSource<<ec96762892fa2809a0f46c1b2aaad261>>
  */
 
 /**
@@ -65,6 +65,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
+
+  /**
+   * Turns off the global measurement cache used by TextLayoutManager on Android.
+   */
+  @JvmStatic
+  public fun disableTextLayoutManagerCacheAndroid(): Boolean = accessor.disableTextLayoutManagerCacheAndroid()
 
   /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
@@ -173,6 +179,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLineHeightCenteringOnIOS(): Boolean = accessor.enableLineHeightCenteringOnIOS()
+
+  /**
+   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
+   */
+  @JvmStatic
+  public fun enableMainQueueCoordinatorOnIOS(): Boolean = accessor.enableMainQueueCoordinatorOnIOS()
 
   /**
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
@@ -341,6 +353,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModules(): Boolean = accessor.useTurboModules()
+
+  /**
+   * Initial prerender ratio for VirtualView.
+   */
+  @JvmStatic
+  public fun virtualViewPrerenderRatio(): Double = accessor.virtualViewPrerenderRatio()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

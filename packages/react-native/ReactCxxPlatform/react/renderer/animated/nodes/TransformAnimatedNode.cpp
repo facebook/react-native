@@ -43,7 +43,7 @@ void TransformAnimatedNode::update() {
       const auto inputTag = static_cast<Tag>(transform[sNodeTagName].asInt());
       if (const auto node =
               manager_->getAnimatedNode<ValueAnimatedNode>(inputTag)) {
-        value = node->value();
+        value = node->getValue();
       }
     } else {
       value = transform[sValueName].asDouble();

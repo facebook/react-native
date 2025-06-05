@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
@@ -13,7 +14,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 
 module.exports = {
-  getHasteName(filePath) {
+  getHasteName(filePath /*: string */) /*: ?string */ {
     if (filePath.endsWith('ReactNativeInternalFeatureFlags.js')) {
       return 'ReactNativeInternalFeatureFlags';
     }
@@ -21,7 +22,7 @@ module.exports = {
     return null;
   },
 
-  getCacheKey() {
+  getCacheKey() /*: string */ {
     return crypto
       .createHash('sha1')
       .update(fs.readFileSync(__filename))

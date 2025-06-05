@@ -176,53 +176,6 @@ void ImageProps::setProp(
 
 #ifdef RN_SERIALIZABLE_STATE
 
-static folly::dynamic convertImageSource(const ImageSource& imageSource) {
-  folly::dynamic imageSourceResult = folly::dynamic::object();
-  switch (imageSource.type) {
-    case ImageSource::Type::Invalid:
-      imageSourceResult["type"] = "invalid";
-      break;
-    case ImageSource::Type::Remote:
-      imageSourceResult["type"] = "remote";
-      break;
-    case ImageSource::Type::Local:
-      imageSourceResult["type"] = "local";
-      break;
-  }
-
-  imageSourceResult["uri"] = imageSource.uri;
-  imageSourceResult["bundle"] = imageSource.bundle;
-  imageSourceResult["scale"] = imageSource.scale;
-
-  imageSourceResult["width"] = imageSource.size.width;
-  imageSourceResult["height"] = imageSource.size.height;
-
-  imageSourceResult["body"] = imageSource.body;
-  imageSourceResult["method"] = imageSource.method;
-
-  switch (imageSource.cache) {
-    case ImageSource::CacheStategy::Default:
-      imageSourceResult["cache"] = "default";
-      break;
-    case ImageSource::CacheStategy::Reload:
-      imageSourceResult["cache"] = "reload";
-      break;
-    case ImageSource::CacheStategy::ForceCache:
-      imageSourceResult["cache"] = "force-cache";
-      break;
-    case ImageSource::CacheStategy::OnlyIfCached:
-      imageSourceResult["cache"] = "only-if-cached";
-      break;
-  }
-
-  folly::dynamic headersObject = folly::dynamic::object();
-  for (const auto& header : imageSource.headers) {
-    headersObject[header.first] = header.second;
-  }
-  imageSourceResult["headers"] = headersObject;
-  return imageSourceResult;
-}
-
 static folly::dynamic convertEdgeInsets(const EdgeInsets& edgeInsets) {
   folly::dynamic edgeInsetsResult = folly::dynamic::object();
   edgeInsetsResult["left"] = edgeInsets.left;
@@ -230,6 +183,10 @@ static folly::dynamic convertEdgeInsets(const EdgeInsets& edgeInsets) {
   edgeInsetsResult["right"] = edgeInsets.right;
   edgeInsetsResult["bottom"] = edgeInsets.bottom;
   return edgeInsetsResult;
+}
+
+ComponentName ImageProps::getDiffPropsImplementationTarget() const {
+  return "Image";
 }
 
 folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
@@ -244,18 +201,17 @@ folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
   if (sources != oldProps->sources) {
     auto sourcesArray = folly::dynamic::array();
     for (const auto& source : sources) {
-      sourcesArray.push_back(convertImageSource(source));
+      sourcesArray.push_back(source.toDynamic());
     }
     result["source"] = sourcesArray;
   }
 
   if (defaultSource != oldProps->defaultSource) {
-    result["defaultSource"] = convertImageSource(defaultSource);
+    result["defaultSource"] = defaultSource.toDynamic();
   }
 
   if (loadingIndicatorSource != oldProps->loadingIndicatorSource) {
-    result["loadingIndicatorSource"] =
-        convertImageSource(loadingIndicatorSource);
+    result["loadingIndicatorSource"] = loadingIndicatorSource.toDynamic();
   }
 
   if (resizeMode != oldProps->resizeMode) {

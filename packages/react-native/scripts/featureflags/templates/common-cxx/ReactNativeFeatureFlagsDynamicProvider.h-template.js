@@ -8,26 +8,14 @@
  * @format
  */
 
-import type {
-  CommonFeatureFlagConfig,
-  FeatureFlagDefinitions,
-} from '../../types';
+import type {FeatureFlagDefinitions} from '../../types';
 
-import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
+import {
+  DO_NOT_MODIFY_COMMENT,
+  getCxxFollyDynamicAccessorFromDefaultValue,
+  getCxxTypeFromDefaultValue,
+} from '../../utils';
 import signedsource from 'signedsource';
-
-function getFollyDynamicAccessor(config: CommonFeatureFlagConfig): string {
-  switch (typeof config.defaultValue) {
-    case 'boolean':
-      return 'getBool';
-    case 'number':
-      return 'getInt';
-    case 'string':
-      return 'getString';
-    default:
-      throw new Error(`Unsupported type: ${typeof config.defaultValue}`);
-  }
-}
 
 export default function (definitions: FeatureFlagDefinitions): string {
   return signedsource.signFile(`/*
@@ -77,7 +65,7 @@ ${Object.entries(definitions.common)
       )} ${flagName}() override {
     auto value = values_["${flagName}"];
     if (!value.isNull()) {
-      return value.${getFollyDynamicAccessor(flagConfig)}();
+      return value.${getCxxFollyDynamicAccessorFromDefaultValue(flagConfig.defaultValue)}();
     }
 
     return ReactNativeFeatureFlagsDefaults::${flagName}();

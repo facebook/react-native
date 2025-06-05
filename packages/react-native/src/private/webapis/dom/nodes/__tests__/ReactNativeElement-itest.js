@@ -1064,7 +1064,7 @@ describe('ReactNativeElement', () => {
     });
 
     describe('offsetParent / offsetTop / offsetLeft', () => {
-      it('retun the rounded offset values and the parent, or null and zeros when disconnected or hidden', () => {
+      it('return the rounded offset values and the parent, or null and zeros when disconnected or hidden', () => {
         const parentRef = createRef<HostInstance>();
         const elementRef = createRef<HostInstance>();
 
@@ -1088,6 +1088,8 @@ describe('ReactNativeElement', () => {
         expect(element.offsetTop).toBe(11);
         expect(element.offsetLeft).toBe(5);
         expect(element.offsetParent).toBe(parentElement);
+
+        expect(parentElement.offsetParent).toBe(root.document.documentElement);
 
         Fantom.runTask(() => {
           root.render(

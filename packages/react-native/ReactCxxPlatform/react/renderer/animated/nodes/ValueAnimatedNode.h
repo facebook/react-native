@@ -25,16 +25,16 @@ class ValueAnimatedNode : public AnimatedNode {
       Tag tag,
       const folly::dynamic& config,
       NativeAnimatedNodesManager& manager);
-  double value();
-  double rawValue();
-  bool setRawValue(double value);
-  double offset();
-  bool setOffset(double offset);
-  void flattenOffset();
-  void extractOffset();
-  void setValueListener(ValueListenerCallback&& callback);
+  double getValue() const noexcept;
+  double getRawValue() const noexcept;
+  bool setRawValue(double value) noexcept;
+  double getOffset() const noexcept;
+  bool setOffset(double offset) noexcept;
+  void flattenOffset() noexcept;
+  void extractOffset() noexcept;
+  void setValueListener(ValueListenerCallback&& callback) noexcept;
 
-  virtual bool isColorValue() {
+  bool getIsColorValue() const noexcept {
     return isColorValue_;
   }
 
@@ -42,7 +42,7 @@ class ValueAnimatedNode : public AnimatedNode {
   bool isColorValue_{false};
 
  private:
-  void onValueUpdate();
+  void onValueUpdate() noexcept;
 
   double value_{0.0};
   double offset_{0.0};

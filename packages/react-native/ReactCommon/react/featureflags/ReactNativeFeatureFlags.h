@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db8ca9a060fde84000f122a0889ac058>>
+ * @generated SignedSource<<2ef5930656b47239901029a9df4a3161>>
  */
 
 /**
@@ -68,6 +68,11 @@ class ReactNativeFeatureFlags {
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
+   * Turns off the global measurement cache used by TextLayoutManager on Android.
+   */
+  RN_EXPORT static bool disableTextLayoutManagerCacheAndroid();
 
   /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
@@ -158,6 +163,11 @@ class ReactNativeFeatureFlags {
    * When enabled, custom line height calculation will be centered from top to bottom.
    */
   RN_EXPORT static bool enableLineHeightCenteringOnIOS();
+
+  /**
+   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
+   */
+  RN_EXPORT static bool enableMainQueueCoordinatorOnIOS();
 
   /**
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
@@ -298,6 +308,11 @@ class ReactNativeFeatureFlags {
    * When enabled, NativeModules will be executed by using the TurboModule system
    */
   RN_EXPORT static bool useTurboModules();
+
+  /**
+   * Initial prerender ratio for VirtualView.
+   */
+  RN_EXPORT static double virtualViewPrerenderRatio();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

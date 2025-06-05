@@ -126,6 +126,12 @@ void ParagraphProps::setProp(
         paragraphAttributes,
         android_hyphenationFrequency,
         "android_hyphenationFrequency");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        textAlignVertical,
+        "textAlignVertical");
   }
 
   switch (hash) {
@@ -153,6 +159,10 @@ SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
 #endif
 
 #ifdef RN_SERIALIZABLE_STATE
+
+ComponentName ParagraphProps::getDiffPropsImplementationTarget() const {
+  return "Paragraph";
+}
 
 folly::dynamic ParagraphProps::getDiffProps(const Props* prevProps) const {
   static const auto defaultProps = ParagraphProps();
@@ -213,6 +223,14 @@ folly::dynamic ParagraphProps::getDiffProps(const Props* prevProps) const {
       oldProps->paragraphAttributes.android_hyphenationFrequency) {
     result["android_hyphenationFrequency"] =
         toString(paragraphAttributes.android_hyphenationFrequency);
+  }
+
+  if (paragraphAttributes.textAlignVertical !=
+      oldProps->paragraphAttributes.textAlignVertical) {
+    result["textAlignVertical"] =
+        paragraphAttributes.textAlignVertical.has_value()
+        ? toString(paragraphAttributes.textAlignVertical.value())
+        : nullptr;
   }
 
   if (isSelectable != oldProps->isSelectable) {

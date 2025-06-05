@@ -40,7 +40,8 @@ module.exports = function entrypointTemplate({
  */
 
 import {registerTest} from '${setupModulePath}';
-import {setConstants} from '@react-native/fantom';
+import {setConstants} from '@react-native/fantom/src/Constants';
+
 ${
   Object.keys(testConfig.flags.jsOnly).length > 0
     ? `import * as ReactNativeFeatureFlags from '${featureFlagsModulePath}';

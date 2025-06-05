@@ -32,7 +32,7 @@ ValueAnimatedNode::ValueAnimatedNode(
   offset_ = offset;
 }
 
-bool ValueAnimatedNode::setRawValue(double value) {
+bool ValueAnimatedNode::setRawValue(double value) noexcept {
   if (value_ != value) {
     value_ = value;
 
@@ -42,15 +42,15 @@ bool ValueAnimatedNode::setRawValue(double value) {
   return false;
 }
 
-double ValueAnimatedNode::rawValue() {
+double ValueAnimatedNode::getRawValue() const noexcept {
   return value_;
 }
 
-double ValueAnimatedNode::offset() {
+double ValueAnimatedNode::getOffset() const noexcept {
   return offset_;
 }
 
-bool ValueAnimatedNode::setOffset(double offset) {
+bool ValueAnimatedNode::setOffset(double offset) noexcept {
   if (offset_ != offset) {
     offset_ = offset;
 
@@ -60,27 +60,28 @@ bool ValueAnimatedNode::setOffset(double offset) {
   return true;
 }
 
-double ValueAnimatedNode::value() {
-  return value_ + offset();
+double ValueAnimatedNode::getValue() const noexcept {
+  return value_ + getOffset();
 }
 
-void ValueAnimatedNode::flattenOffset() {
-  setRawValue(value_ + offset());
+void ValueAnimatedNode::flattenOffset() noexcept {
+  setRawValue(value_ + getOffset());
   setOffset(0.0f);
 }
 
-void ValueAnimatedNode::extractOffset() {
-  setOffset(value_ + offset());
+void ValueAnimatedNode::extractOffset() noexcept {
+  setOffset(value_ + getOffset());
   setRawValue(0.0f);
 }
 
-void ValueAnimatedNode::onValueUpdate() {
+void ValueAnimatedNode::onValueUpdate() noexcept {
   if (valueListener_) {
-    valueListener_(value());
+    valueListener_(getValue());
   }
 }
 
-void ValueAnimatedNode::setValueListener(ValueListenerCallback&& callback) {
+void ValueAnimatedNode::setValueListener(
+    ValueListenerCallback&& callback) noexcept {
   valueListener_ = std::move(callback);
 }
 

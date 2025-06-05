@@ -10,6 +10,7 @@
 
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
@@ -38,12 +39,11 @@ int countAttachments(const AttributedString& attributedString) {
   return count;
 }
 
-Size measureAndroidComponent(
+Size measureText(
     const ContextContainer::Shared& contextContainer,
     Tag rootTag,
-    const std::string& componentName,
-    MapBuffer localData,
-    MapBuffer props,
+    MapBuffer attributedString,
+    MapBuffer paragraphAttributes,
     float minWidth,
     float maxWidth,
     float minHeight,
@@ -51,44 +51,34 @@ Size measureAndroidComponent(
     jfloatArray attachmentPositions) {
   const jni::global_ref<jobject>& fabricUIManager =
       contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
-  auto componentNameRef = jni::make_jstring(componentName);
 
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jint,
-              jstring,
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
-              JReadableMapBuffer::javaobject,
               jfloat,
               jfloat,
               jfloat,
               jfloat,
-              jfloatArray)>("measureMapBuffer");
+              jfloatArray)>("measureText");
 
-  auto localDataMap =
-      JReadableMapBuffer::createWithContents(std::move(localData));
-  auto propsMap = JReadableMapBuffer::createWithContents(std::move(props));
+  auto attributedStringBuffer =
+      JReadableMapBuffer::createWithContents(std::move(attributedString));
+  auto paragraphAttributesBuffer =
+      JReadableMapBuffer::createWithContents(std::move(paragraphAttributes));
 
-  auto size = yogaMeassureToSize(measure(
+  return yogaMeassureToSize(measure(
       fabricUIManager,
       rootTag,
-      componentNameRef.get(),
-      localDataMap.get(),
-      propsMap.get(),
-      nullptr,
+      attributedStringBuffer.get(),
+      paragraphAttributesBuffer.get(),
       minWidth,
       maxWidth,
       minHeight,
       maxHeight,
       attachmentPositions));
-
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  componentNameRef.reset();
-  localDataMap.reset();
-  propsMap.reset();
-  return size;
 }
 
 TextMeasurement doMeasure(
@@ -113,10 +103,9 @@ TextMeasurement doMeasure(
   auto attributedStringMap = toMapBuffer(attributedString);
   auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);
 
-  auto size = measureAndroidComponent(
+  auto size = measureText(
       contextContainer,
       layoutContext.surfaceId,
-      "RCTText",
       std::move(attributedStringMap),
       std::move(paragraphAttributesMap),
       minimumSize.width,
@@ -178,27 +167,34 @@ TextMeasurement TextLayoutManager::measure(
     const LayoutConstraints& layoutConstraints) const {
   auto& attributedString = attributedStringBox.getValue();
 
-  auto measurement = textMeasureCache_.get(
-      {attributedString, paragraphAttributes, layoutConstraints},
-      [&](const TextMeasureCacheKey& /*key*/) {
-        auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-        if (telemetry != nullptr) {
-          telemetry->willMeasureText();
-        }
+  auto measureText = [&]() {
+    auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+    if (telemetry != nullptr) {
+      telemetry->willMeasureText();
+    }
 
-        auto measurement = doMeasure(
-            contextContainer_,
-            attributedString,
-            paragraphAttributes,
-            layoutContext,
-            layoutConstraints);
+    auto measurement = doMeasure(
+        contextContainer_,
+        attributedString,
+        paragraphAttributes,
+        layoutContext,
+        layoutConstraints);
 
-        if (telemetry != nullptr) {
-          telemetry->didMeasureText();
-        }
+    if (telemetry != nullptr) {
+      telemetry->didMeasureText();
+    }
 
-        return measurement;
-      });
+    return measurement;
+  };
+
+  auto measurement =
+      ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid()
+      ? measureText()
+      : textMeasureCache_.get(
+            {.attributedString = attributedString,
+             .paragraphAttributes = paragraphAttributes,
+             .layoutConstraints = layoutConstraints},
+            std::move(measureText));
 
   measurement.size = layoutConstraints.clamp(measurement.size);
   return measurement;
@@ -219,10 +215,9 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   // TODO: this is always sourced from an int, and Java expects an int
   localDataBuilder.putInt(AS_KEY_CACHE_ID, static_cast<int32_t>(cacheId));
 
-  auto size = measureAndroidComponent(
+  auto size = measureText(
       contextContainer_,
       layoutContext.surfaceId,
-      "RCTText",
       localDataBuilder.build(),
       toMapBuffer(paragraphAttributes),
       minimumSize.width,
@@ -249,48 +244,52 @@ LinesMeasurements TextLayoutManager::measureLines(
       attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
   const auto& attributedString = attributedStringBox.getValue();
 
-  auto lineMeasurements = lineMeasureCache_.get(
-      {attributedString, paragraphAttributes, size},
-      [&](const LineMeasureCacheKey& /*key*/) {
-        const jni::global_ref<jobject>& fabricUIManager =
-            contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-        static auto measureLines =
-            jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-                ->getMethod<NativeArray::javaobject(
-                    JReadableMapBuffer::javaobject,
-                    JReadableMapBuffer::javaobject,
-                    jfloat,
-                    jfloat)>("measureLines");
+  auto doMeasureLines = [&]() {
+    const jni::global_ref<jobject>& fabricUIManager =
+        contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+    static auto measureLines =
+        jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+            ->getMethod<NativeArray::javaobject(
+                JReadableMapBuffer::javaobject,
+                JReadableMapBuffer::javaobject,
+                jfloat,
+                jfloat)>("measureLines");
 
-        auto attributedStringMB = JReadableMapBuffer::createWithContents(
-            toMapBuffer(attributedString));
-        auto paragraphAttributesMB = JReadableMapBuffer::createWithContents(
-            toMapBuffer(paragraphAttributes));
+    auto attributedStringMB =
+        JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+    auto paragraphAttributesMB = JReadableMapBuffer::createWithContents(
+        toMapBuffer(paragraphAttributes));
 
-        auto array = measureLines(
-            fabricUIManager,
-            attributedStringMB.get(),
-            paragraphAttributesMB.get(),
-            size.width,
-            size.height);
+    auto array = measureLines(
+        fabricUIManager,
+        attributedStringMB.get(),
+        paragraphAttributesMB.get(),
+        size.width,
+        size.height);
 
-        auto dynamicArray = cthis(array)->consume();
-        LinesMeasurements lineMeasurements;
-        lineMeasurements.reserve(dynamicArray.size());
+    auto dynamicArray = cthis(array)->consume();
+    LinesMeasurements lineMeasurements;
+    lineMeasurements.reserve(dynamicArray.size());
 
-        for (const auto& data : dynamicArray) {
-          lineMeasurements.push_back(LineMeasurement(data));
-        }
+    for (const auto& data : dynamicArray) {
+      lineMeasurements.emplace_back(data);
+    }
 
-        // Explicitly release smart pointers to free up space faster in JNI
-        // tables
-        attributedStringMB.reset();
-        paragraphAttributesMB.reset();
+    // Explicitly release smart pointers to free up space faster in JNI
+    // tables
+    attributedStringMB.reset();
+    paragraphAttributesMB.reset();
 
-        return lineMeasurements;
-      });
+    return lineMeasurements;
+  };
 
-  return lineMeasurements;
+  return ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid()
+      ? doMeasureLines()
+      : lineMeasureCache_.get(
+            {.attributedString = attributedString,
+             .paragraphAttributes = paragraphAttributes,
+             .size = size},
+            std::move(doMeasureLines));
 }
 
 TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
@@ -301,7 +300,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
   const auto& fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
-  static auto prepareLayout =
+  static auto prepareTextLayout =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<JPreparedLayout::javaobject(
               jint,
@@ -310,7 +309,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
               jfloat,
               jfloat,
               jfloat,
-              jfloat)>("prepareLayout");
+              jfloat)>("prepareTextLayout");
 
   auto attributedStringMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
@@ -322,7 +321,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
 
   // T222682416: We don't have any global cache here. We should investigate
   // whether that is desirable
-  return {jni::make_global(prepareLayout(
+  return {jni::make_global(prepareTextLayout(
       fabricUIManager,
       layoutContext.surfaceId,
       attributedStringMB.get(),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e0bb63612055cb460eabaa23ca6280ba>>
+ * @generated SignedSource<<157806d382e0a4fd9525bf1935f2a472>>
  */
 
 /**
@@ -48,6 +48,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableMountItemReorderingAndroid() override {
+    return false;
+  }
+
+  bool disableTextLayoutManagerCacheAndroid() override {
     return false;
   }
 
@@ -120,6 +124,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableLineHeightCenteringOnIOS() override {
+    return false;
+  }
+
+  bool enableMainQueueCoordinatorOnIOS() override {
     return false;
   }
 
@@ -233,6 +241,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useTurboModules() override {
     return false;
+  }
+
+  double virtualViewPrerenderRatio() override {
+    return 5.0;
   }
 };
 

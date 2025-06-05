@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -28,10 +29,10 @@ const MODULE_PROVIDERS_MM_TEMPLATE_PATH = path.join(
 );
 
 function generateRCTModuleProviders(
-  projectRoot,
-  pkgJson,
-  libraries,
-  outputDir,
+  projectRoot /*: string */,
+  pkgJson /*: $FlowFixMe */,
+  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+  outputDir /*: string */,
 ) {
   fs.mkdirSync(outputDir, {recursive: true});
   // Generate Header File
@@ -42,7 +43,7 @@ function generateRCTModuleProviders(
   codegenLog(`Generated artifact: ${finalPathH}`);
 
   codegenLog('Generating RCTModuleProviders.mm');
-  let modulesInLibraries = {};
+  let modulesInLibraries = {} /*:: as {[string]: Array<$FlowFixMe>}  */;
 
   let app = pkgJson.codegenConfig
     ? {config: pkgJson.codegenConfig, libraryPath: projectRoot}
@@ -64,7 +65,7 @@ function generateRCTModuleProviders(
   // Old API
   moduleLibraries.forEach(({config, libraryPath}) => {
     const libraryName = JSON.parse(
-      fs.readFileSync(path.join(libraryPath, 'package.json')),
+      fs.readFileSync(path.join(libraryPath, 'package.json'), 'utf8'),
     ).name;
 
     if (config.ios?.modulesProvider) {

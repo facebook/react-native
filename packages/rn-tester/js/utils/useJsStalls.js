@@ -56,8 +56,7 @@ const useJsStalls = (): ({
   }, []);
 
   const onEnableJsStallsTracking = useCallback(() => {
-    const JSEventLoopWatchdog =
-      require('react-native/Libraries/Interaction/JSEventLoopWatchdog').default;
+    const JSEventLoopWatchdog = require('./JSEventLoopWatchdog').default;
 
     JSEventLoopWatchdog.install({thresholdMS: 25});
 

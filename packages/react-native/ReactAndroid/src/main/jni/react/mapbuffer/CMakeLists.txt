@@ -34,4 +34,4 @@ target_link_libraries(mapbufferjni
         yoga
 )
 
-target_compile_reactnative_options(mapbufferjni PRIVATE "Fabric")
+target_compile_reactnative_options(mapbufferjni PRIVATE)

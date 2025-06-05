@@ -9,6 +9,7 @@ package com.facebook.react.views.view
 
 import android.graphics.Rect
 import android.view.View
+import android.view.View.OnFocusChangeListener
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.DynamicFromObject
@@ -33,6 +34,8 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
+import com.facebook.react.uimanager.events.BlurEvent
+import com.facebook.react.uimanager.events.FocusEvent
 import com.facebook.react.uimanager.style.BackgroundImageLayer
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle
@@ -191,11 +194,11 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
       ReadableType.Map -> {
         val hitSlopMap = hitSlop.asMap()
         if (hitSlopMap == null) {
-          view.setHitSlopRect(null)
+          view.hitSlopRect = null
           return
         }
-        view.setHitSlopRect(
-            Rect(
+        view.hitSlopRect =
+            (Rect(
                 hitSlopMap.px("left"),
                 hitSlopMap.px("top"),
                 hitSlopMap.px("right"),
@@ -205,13 +208,13 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
       ReadableType.Number -> {
         val hitSlopValue = hitSlop.asDouble().dpToPx().toInt()
-        view.setHitSlopRect(Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue))
+        view.hitSlopRect = Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue)
       }
 
-      ReadableType.Null -> view.setHitSlopRect(null)
+      ReadableType.Null -> view.hitSlopRect = null
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid type for 'hitSlop' value ${hitSlop.type}")
-        view.setHitSlopRect(null)
+        view.hitSlopRect = null
       }
     }
   }
@@ -220,7 +223,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public open fun setPointerEvents(view: ReactViewGroup, pointerEventsStr: String?) {
-    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr))
+    view.pointerEvents = PointerEvents.parsePointerEvents(pointerEventsStr)
   }
 
   @ReactProp(name = "nativeBackgroundAndroid")
@@ -316,7 +319,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = ViewProps.OVERFLOW)
   public open fun setOverflow(view: ReactViewGroup, overflow: String?) {
-    view.setOverflow(overflow)
+    view.overflow = overflow
   }
 
   @ReactProp(name = "backfaceVisibility")
@@ -341,6 +344,40 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   public override fun createViewInstance(context: ThemedReactContext): ReactViewGroup =
       ReactViewGroup(context)
+
+  override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
+    val baseEventTypeConstants = super.getExportedCustomBubblingEventTypeConstants()
+    val eventTypeConstants = baseEventTypeConstants ?: mutableMapOf()
+    eventTypeConstants.putAll(
+        mapOf(
+            FocusEvent.EVENT_NAME to
+                mapOf(
+                    "phasedRegistrationNames" to
+                        mapOf("bubbled" to "onFocus", "captured" to "onFocusCapture")),
+            BlurEvent.EVENT_NAME to
+                mapOf(
+                    "phasedRegistrationNames" to
+                        mapOf("bubbled" to "onBlur", "captured" to "onBlurCapture")),
+        ))
+    return eventTypeConstants
+  }
+
+  override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactViewGroup) {
+    view.onFocusChangeListener = OnFocusChangeListener { _: View?, hasFocus: Boolean ->
+      val surfaceId = UIManagerHelper.getSurfaceId(view.context)
+      if (surfaceId == View.NO_ID) {
+        return@OnFocusChangeListener
+      }
+      val eventDispatcher =
+          UIManagerHelper.getEventDispatcherForReactTag((view.context as ReactContext), view.id)
+              ?: return@OnFocusChangeListener
+      if (hasFocus) {
+        eventDispatcher.dispatchEvent(FocusEvent(surfaceId, view.id))
+      } else {
+        eventDispatcher.dispatchEvent(BlurEvent(surfaceId, view.id))
+      }
+    }
+  }
 
   override fun getCommandsMap(): MutableMap<String, Int> =
       mutableMapOf(HOTSPOT_UPDATE_KEY to CMD_HOTSPOT_UPDATE, "setPressed" to CMD_SET_PRESSED)

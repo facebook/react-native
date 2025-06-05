@@ -133,6 +133,7 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
 
+  ComponentName getDiffPropsImplementationTarget() const override;
   folly::dynamic getDiffProps(const Props* prevProps) const override;
 };
 

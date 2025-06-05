@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -11,16 +12,19 @@
 
 const {OS} = require('../../Utilities/Platform').default;
 const PlatformColorAndroid =
+  // $FlowFixMe[missing-platform-support]
   require('../PlatformColorValueTypes.android').PlatformColor;
 const PlatformColorIOS =
+  // $FlowFixMe[missing-platform-support]
   require('../PlatformColorValueTypes.ios').PlatformColor;
 const DynamicColorIOS =
+  // $FlowFixMe[missing-platform-support]
   require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
 const processColor = require('../processColor').default;
 
 const platformSpecific =
   OS === 'android'
-    ? unsigned => unsigned | 0 //eslint-disable-line no-bitwise
+    ? (unsigned: number) => unsigned | 0 // eslint-disable-line no-bitwise
     : x => x;
 
 describe('processColor', () => {

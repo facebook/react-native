@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2e80b3719a2a190f0ff11822b92a778b>>
+ * @generated SignedSource<<43cc316d142d97d0d6d431d5f66ab5fe>>
  */
 
 /**
@@ -48,6 +48,10 @@ bool ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS() {
 
 bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
+}
+
+bool ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid() {
+  return getAccessor().disableTextLayoutManagerCacheAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableAccessibilityOrder() {
@@ -120,6 +124,10 @@ bool ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS() {
 
 bool ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS() {
   return getAccessor().enableLineHeightCenteringOnIOS();
+}
+
+bool ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS() {
+  return getAccessor().enableMainQueueCoordinatorOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableMainQueueModulesOnIOS() {
@@ -232,6 +240,10 @@ bool ReactNativeFeatureFlags::useTurboModuleInterop() {
 
 bool ReactNativeFeatureFlags::useTurboModules() {
   return getAccessor().useTurboModules();
+}
+
+double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {
+  return getAccessor().virtualViewPrerenderRatio();
 }
 
 void ReactNativeFeatureFlags::override(

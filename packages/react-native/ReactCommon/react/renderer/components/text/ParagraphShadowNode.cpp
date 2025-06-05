@@ -58,26 +58,13 @@ ParagraphShadowNode::ParagraphShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
-  auto& sourceParagraphShadowNode =
-      static_cast<const ParagraphShadowNode&>(sourceShadowNode);
-  auto& state = getStateData();
-  const auto& sourceContent = sourceParagraphShadowNode.content_;
-
-  if (!fragment.children && !fragment.props &&
-      sourceParagraphShadowNode.getIsLayoutClean() &&
-      (!ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() ||
-       (sourceContent.has_value() &&
-        sourceContent.value()
-                .attributedString.getBaseTextAttributes()
-                .fontSizeMultiplier ==
-            state.attributedString.getBaseTextAttributes()
-                .fontSizeMultiplier))) {
-    // This ParagraphShadowNode was cloned but did not change
-    // in a way that affects its layout. Let's mark it clean
-    // to stop Yoga from traversing it.
-    cleanLayout();
-  }
   initialize();
+}
+
+bool ParagraphShadowNode::shouldNewRevisionDirtyMeasurement(
+    const ShadowNode& /*sourceShadowNode*/,
+    const ShadowNodeFragment& fragment) const {
+  return fragment.props != nullptr;
 }
 
 const Content& ParagraphShadowNode::getContent(

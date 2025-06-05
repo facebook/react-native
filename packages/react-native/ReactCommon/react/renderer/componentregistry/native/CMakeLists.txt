@@ -23,5 +23,5 @@ target_link_libraries(rrc_native
         react_utils
         callinvoker
 )
-target_compile_reactnative_options(rrc_native PRIVATE "Fabric")
+target_compile_reactnative_options(rrc_native PRIVATE)
 target_compile_options(rrc_native PRIVATE -Wpedantic)

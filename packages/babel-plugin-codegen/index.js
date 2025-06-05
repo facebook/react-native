@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @noflow
  * @format
  */
 
@@ -23,16 +24,19 @@ try {
 } catch (e) {
   // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
   FlowParser =
+    // $FlowIgnore[cannot-resolve-module]
     require('@react-native/codegen/lib/parsers/flow/parser').FlowParser;
   TypeScriptParser =
+    // $FlowIgnore[cannot-resolve-module]
     require('@react-native/codegen/lib/parsers/typescript/parser').TypeScriptParser;
+  // $FlowIgnore[cannot-resolve-module]
   RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen');
 }
 
 const flowParser = new FlowParser();
 const typeScriptParser = new TypeScriptParser();
 
-function parseFile(filename, code) {
+function parseFile(filename /*: string */, code /*: string */) {
   if (filename.endsWith('js')) {
     return flowParser.parseString(code);
   }
@@ -46,7 +50,7 @@ function parseFile(filename, code) {
   );
 }
 
-function generateViewConfig(filename, code) {
+function generateViewConfig(filename /*: string */, code /*: string */) {
   const schema = parseFile(filename, code);
 
   const libraryName = basename(filename).replace(
@@ -54,8 +58,8 @@ function generateViewConfig(filename, code) {
     '',
   );
   return RNCodegen.generateViewConfig({
-    schema,
     libraryName,
+    schema,
   });
 }
 

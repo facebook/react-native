@@ -20,14 +20,15 @@ namespace facebook::react {
 
 std::optional<AnimationDriverType> AnimationDriver::getDriverTypeByName(
     const std::string& driverTypeName) {
-  static std::unordered_map<std::string, AnimationDriverType> typeNames = {
-      {"frames", AnimationDriverType::Frames},
-      {"spring", AnimationDriverType::Spring},
-      {"decay", AnimationDriverType::Decay}};
-  if (auto iter = typeNames.find(driverTypeName); iter != typeNames.end()) {
-    return iter->second;
+  if (driverTypeName == "frames") {
+    return AnimationDriverType::Frames;
+  } else if (driverTypeName == "spring") {
+    return AnimationDriverType::Spring;
+  } else if (driverTypeName == "decay") {
+    return AnimationDriverType::Decay;
+  } else {
+    return std::nullopt;
   }
-  return std::nullopt;
 }
 
 AnimationDriver::AnimationDriver(
@@ -53,7 +54,7 @@ void AnimationDriver::stopAnimation(bool /*ignoreCompletedHandlers*/) {
   std::optional<double> value = std::nullopt;
   if (auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_)) {
-    value = node->value();
+    value = node->getValue();
   } else {
     LOG(ERROR)
         << "animatedValueTag should be associated with a ValueAnimatedNode";
@@ -69,7 +70,7 @@ void AnimationDriver::runAnimationStep(double renderingTime) {
   }
 
   // ticks are 100 nanoseconds, divide by 10000 to get milliseconds.
-  const auto frameTimeMs = renderingTime / TicksPerMs;
+  const auto frameTimeMs = renderingTime;
   auto restarting = false;
   if (startFrameTimeMs_ < 0) {
     startFrameTimeMs_ = frameTimeMs;

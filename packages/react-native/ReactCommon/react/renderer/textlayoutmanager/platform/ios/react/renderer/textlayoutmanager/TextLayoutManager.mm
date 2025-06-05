@@ -39,24 +39,23 @@ TextMeasurement TextLayoutManager::measure(
     case AttributedStringBox::Mode::Value: {
       auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(attributedStringBox.getValue());
 
-      measurement = textMeasureCache_.get(
-          {attributedString, paragraphAttributes, layoutConstraints}, [&](const TextMeasureCacheKey &key) {
-            auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-            if (telemetry) {
-              telemetry->willMeasureText();
-            }
+      measurement = textMeasureCache_.get({attributedString, paragraphAttributes, layoutConstraints}, [&]() {
+        auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+        if (telemetry) {
+          telemetry->willMeasureText();
+        }
 
-            auto measurement = [textLayoutManager measureAttributedString:attributedString
-                                                      paragraphAttributes:paragraphAttributes
-                                                            layoutContext:layoutContext
-                                                        layoutConstraints:layoutConstraints];
+        auto measurement = [textLayoutManager measureAttributedString:attributedString
+                                                  paragraphAttributes:paragraphAttributes
+                                                        layoutContext:layoutContext
+                                                    layoutConstraints:layoutConstraints];
 
-            if (telemetry) {
-              telemetry->didMeasureText();
-            }
+        if (telemetry) {
+          telemetry->didMeasureText();
+        }
 
-            return measurement;
-          });
+        return measurement;
+      });
       break;
     }
 
@@ -97,13 +96,12 @@ LinesMeasurements TextLayoutManager::measureLines(
 
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 
-  auto measurement =
-      lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&](const LineMeasureCacheKey &key) {
-        auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
-                                                      paragraphAttributes:paragraphAttributes
-                                                                     size:{size.width, size.height}];
-        return measurement;
-      });
+  auto measurement = lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&]() {
+    auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
+                                                  paragraphAttributes:paragraphAttributes
+                                                                 size:{size.width, size.height}];
+    return measurement;
+  });
 
   return measurement;
 }

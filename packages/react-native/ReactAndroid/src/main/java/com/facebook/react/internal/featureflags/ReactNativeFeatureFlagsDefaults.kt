@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<393a905f2e98c0e9e2974525f6c4e6ce>>
+ * @generated SignedSource<<7259ba9419cc76671d8bc3caf0177e32>>
  */
 
 /**
@@ -34,6 +34,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableMainQueueSyncDispatchIOS(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
+
+  override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
 
   override fun enableAccessibilityOrder(): Boolean = false
 
@@ -70,6 +72,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableLineHeightCenteringOnIOS(): Boolean = false
+
+  override fun enableMainQueueCoordinatorOnIOS(): Boolean = false
 
   override fun enableMainQueueModulesOnIOS(): Boolean = false
 
@@ -126,4 +130,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useTurboModuleInterop(): Boolean = false
 
   override fun useTurboModules(): Boolean = false
+
+  override fun virtualViewPrerenderRatio(): Double = 5.0
 }

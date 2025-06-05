@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-jsiexecutor"
   s.dependency "React-cxxreact"
-  s.dependency "React-runtimeexecutor"
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-jsi"
   s.dependency "React-jserrorhandler"
   s.dependency "React-performancetimeline"
@@ -50,6 +50,7 @@ Pod::Spec.new do |s|
 
   add_dependency(s, "React-Fabric")
 
+  depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 
   s.dependency "React-jsinspector"

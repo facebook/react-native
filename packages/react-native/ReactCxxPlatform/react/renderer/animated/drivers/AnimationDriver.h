@@ -34,11 +34,11 @@ class AnimationDriver {
   void startAnimation();
   void stopAnimation(bool ignoreCompletedHandlers = false);
 
-  inline constexpr int Id() {
+  inline int getId() const noexcept {
     return id_;
   }
 
-  inline constexpr Tag animatedValueTag() {
+  inline Tag getAnimatedValueTag() const noexcept {
     return animatedValueTag_;
   }
 
@@ -46,15 +46,11 @@ class AnimationDriver {
     return endCallback_;
   }
 
-  virtual double toValue() const noexcept {
-    return 0;
-  }
-
-  bool isComplete() const noexcept {
+  bool getIsComplete() const noexcept {
     return isComplete_;
   }
 
-  virtual void runAnimationStep(double renderingTime);
+  void runAnimationStep(double renderingTime);
 
   virtual void updateConfig(folly::dynamic config);
 

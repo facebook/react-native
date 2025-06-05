@@ -6,15 +6,14 @@
  */
 
 #include "RuntimeScheduler_Modern.h"
-#include "SchedulerPriorityUtils.h"
 
+#include <ReactCommon/RuntimeExecutorSyncUIThreadUtils.h>
 #include <cxxreact/TraceSection.h>
 #include <jsinspector-modern/tracing/EventLoopReporter.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/timing/primitives.h>
 #include <react/utils/OnScopeExit.h>
-#include <utility>
 
 namespace facebook::react {
 

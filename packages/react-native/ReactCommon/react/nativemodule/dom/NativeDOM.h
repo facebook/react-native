@@ -9,14 +9,14 @@
 
 #include <string>
 
-#if __has_include("rncoreJSI.h") // Cmake headers on Android
-#include "rncoreJSI.h"
-#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#if __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
 #include "FBReactNativeSpecJSI.h"
 #else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #endif
 
+#include <react/renderer/bridging/bridging.h>
+#include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFamily.h>
 
 namespace facebook::react {
@@ -47,7 +47,7 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       /* rightWidth: */ int,
       /* bottomWidth: */ int,
       /* leftWidth: */ int>
-  getBorderWidth(jsi::Runtime& rt, jsi::Value nativeElementReference);
+  getBorderWidth(jsi::Runtime& rt, ShadowNode::Shared shadowNode);
 
   std::tuple<
       /* x: */ double,
@@ -56,37 +56,37 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       /* height: */ double>
   getBoundingClientRect(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference,
+      ShadowNode::Shared shadowNode,
       bool includeTransform);
 
   std::tuple</* width: */ int, /* height: */ int> getInnerSize(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference);
+      ShadowNode::Shared shadowNode);
 
   std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>
-  getScrollPosition(jsi::Runtime& rt, jsi::Value nativeElementReference);
+  getScrollPosition(jsi::Runtime& rt, ShadowNode::Shared shadowNode);
 
   std::tuple</* scrollWidth: */ int, /* scrollHeight */ int> getScrollSize(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference);
+      ShadowNode::Shared shadowNode);
 
-  std::string getTagName(jsi::Runtime& rt, jsi::Value nativeElementReference);
+  std::string getTagName(jsi::Runtime& rt, ShadowNode::Shared shadowNode);
 
-  std::string getTextContent(jsi::Runtime& rt, jsi::Value nativeNodeReference);
+  std::string getTextContent(jsi::Runtime& rt, ShadowNode::Shared shadowNode);
 
   bool hasPointerCapture(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference,
+      ShadowNode::Shared shadowNode,
       double pointerId);
 
   void releasePointerCapture(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference,
+      ShadowNode::Shared shadowNode,
       double pointerId);
 
   void setPointerCapture(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference,
+      ShadowNode::Shared shadowNode,
       double pointerId);
 
 #pragma mark - Methods from the `HTMLElement` interface (for `ReactNativeElement`).
@@ -95,7 +95,7 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       /* offsetParent: */ jsi::Value,
       /* top: */ double,
       /* left: */ double>
-  getOffset(jsi::Runtime& rt, jsi::Value nativeElementReference);
+  getOffset(jsi::Runtime& rt, ShadowNode::Shared shadowNode);
 
 #pragma mark - Special methods to handle the root node.
 
@@ -108,18 +108,18 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
 
   void measure(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference,
+      ShadowNode::Shared shadowNode,
       jsi::Function callback);
 
   void measureInWindow(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference,
+      ShadowNode::Shared shadowNode,
       jsi::Function callback);
 
   void measureLayout(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference,
-      jsi::Value relativeToNativeElementReference,
+      ShadowNode::Shared shadowNode,
+      ShadowNode::Shared relativeToShadowNode,
       jsi::Function onFail,
       jsi::Function onSuccess);
 
@@ -127,7 +127,7 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
 
   void setNativeProps(
       jsi::Runtime& rt,
-      jsi::Value nativeElementReference,
+      ShadowNode::Shared shadowNode,
       jsi::Value updatePayload);
 };
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9a41a71cab001510ceb290b820dbd97>>
+ * @generated SignedSource<<3088726e231c95aa1dcd36c83a033162>>
  */
 
 /**
@@ -97,6 +97,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::disableMountItemReorderingAndroid();
+  }
+
+  bool disableTextLayoutManagerCacheAndroid() override {
+    auto value = values_["disableTextLayoutManagerCacheAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableTextLayoutManagerCacheAndroid();
   }
 
   bool enableAccessibilityOrder() override {
@@ -259,6 +268,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableLineHeightCenteringOnIOS();
+  }
+
+  bool enableMainQueueCoordinatorOnIOS() override {
+    auto value = values_["enableMainQueueCoordinatorOnIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableMainQueueCoordinatorOnIOS();
   }
 
   bool enableMainQueueModulesOnIOS() override {
@@ -511,6 +529,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModules();
+  }
+
+  double virtualViewPrerenderRatio() override {
+    auto value = values_["virtualViewPrerenderRatio"];
+    if (!value.isNull()) {
+      return value.getDouble();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::virtualViewPrerenderRatio();
   }
 };
 
