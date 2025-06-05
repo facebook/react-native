@@ -30,7 +30,7 @@ internal class DebuggingOverlayManager :
 
   override fun getDelegate(): ViewManagerDelegate<DebuggingOverlay> = delegate
 
-  override fun receiveCommand(view: DebuggingOverlay, commandId: String, args: ReadableArray?) =
+  override fun receiveCommand(view: DebuggingOverlay, commandId: String, args: ReadableArray) =
       delegate.receiveCommand(view, commandId, args)
 
   override fun highlightTraceUpdates(
