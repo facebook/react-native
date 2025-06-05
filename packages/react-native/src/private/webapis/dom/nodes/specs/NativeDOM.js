@@ -581,13 +581,6 @@ const NativeDOM: RefinedSpec = {
     return nullthrows(RawNativeDOM).measure(nativeNodeReference, callback);
   },
 
-  meaureAsyncOnUI(nativeNodeReference, callback) {
-    return nullthrows(RawNativeDOM).meaureAsyncOnUI(
-      nativeNodeReference,
-      callback,
-    );
-  },
-
   measureInWindow(nativeNodeReference, callback) {
     return nullthrows(RawNativeDOM).measureInWindow(
       nativeNodeReference,
