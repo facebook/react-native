@@ -56,16 +56,19 @@ function setDevelopmentModeForTests(dev: mixed) {
 function runExceptionsManagerTests() {
   describe('ExceptionsManager', () => {
     let nativeReportException: JestMockFn<[ExceptionData], void>;
-    let logBoxAddException;
+    let logBoxAddException: JestMockFn<[ExceptionData], void>;
+    let logBoxAddConsoleLog;
 
     beforeEach(() => {
       nativeReportException = jest.fn();
       logBoxAddException = jest.fn();
+      logBoxAddConsoleLog = jest.fn();
 
       jest.resetModules();
       jest.mock('../../LogBox/LogBox', () => ({
         default: {
           addException: logBoxAddException,
+          addConsoleLog: logBoxAddConsoleLog,
         },
       }));
       jest.mock('../NativeExceptionsManager', () => {
@@ -102,10 +105,12 @@ function runExceptionsManagerTests() {
 
         let exceptionData;
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBe(0);
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException.mock.calls.length).toBe(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -148,10 +153,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -183,10 +190,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -222,10 +231,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -257,10 +268,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -295,10 +308,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -324,10 +339,12 @@ function runExceptionsManagerTests() {
 
         let exceptionData;
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           expect(error.message).toBe(message);
@@ -354,6 +371,7 @@ function runExceptionsManagerTests() {
         for (const componentStack of componentStacks) {
           nativeReportException.mockClear();
           logBoxAddException.mockClear();
+          logBoxAddConsoleLog.mockClear();
           const formattedMessage =
             'ReferenceError: ' +
             message +
@@ -369,10 +387,12 @@ function runExceptionsManagerTests() {
           let exceptionData;
 
           if (__DEV__) {
+            expect(logBoxAddConsoleLog).not.toBeCalled();
             expect(nativeReportException).not.toBeCalled();
             expect(logBoxAddException).toBeCalledTimes(1);
             exceptionData = logBoxAddException.mock.calls[0][0];
           } else {
+            expect(logBoxAddConsoleLog).not.toBeCalled();
             expect(logBoxAddException).not.toBeCalled();
             expect(nativeReportException).toBeCalledTimes(1);
             exceptionData = nativeReportException.mock.calls[0][0];
@@ -422,11 +442,16 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException).toBeCalledTimes(1);
+          // In DEV we only send the raw arguments to LogBox.
+          // We do not include the the additional metadata.
+          expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
-          exceptionData = logBoxAddException.mock.calls[0][0];
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(error);
         } else {
           expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
           const formattedMessage = 'Error: ' + message;
@@ -452,11 +477,16 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException).toBeCalledTimes(1);
+          // In DEV we only send the raw arguments to LogBox.
+          // We do not include the the additional metadata.
+          expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
-          exceptionData = logBoxAddException.mock.calls[0][0];
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(message);
         } else {
           expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
           expect(exceptionData.message).toBe(
@@ -477,16 +507,20 @@ function runExceptionsManagerTests() {
 
         console.error(...args);
 
-        let exceptionData;
-
         if (__DEV__) {
-          expect(logBoxAddException).toBeCalledTimes(1);
+          // In DEV we only send the raw arguments to LogBox.
+          // We do not include the the additional metadata.
+          expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
-          exceptionData = logBoxAddException.mock.calls[0][0];
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          // $FlowIgnore[incompatible-call]
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(...args);
         } else {
           expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
-          exceptionData = nativeReportException.mock.calls[0][0];
+          const exceptionData = nativeReportException.mock.calls[0][0];
           expect(exceptionData.message).toBe(
             'console.error: 42 true ["symbol" failed to stringify] {"y":null}',
           );
@@ -512,9 +546,22 @@ function runExceptionsManagerTests() {
         const message = 'Warning: Some mild issue happened';
 
         console.error(message);
-        expect(logBoxAddException).not.toBeCalled();
-        expect(nativeReportException).not.toBeCalled();
-        expect(mockError.mock.calls[0]).toEqual([message]);
+
+        if (__DEV__) {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(
+            'Warning: Some mild issue happened',
+          );
+          expect(nativeReportException).not.toBeCalled();
+          expect(mockError.mock.calls[0]).toEqual([message]);
+        } else {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(mockError.mock.calls[0]).toEqual([message]);
+        }
       });
 
       test('logging a warning with more arguments', () => {
@@ -522,9 +569,21 @@ function runExceptionsManagerTests() {
 
         console.error(...args);
 
-        expect(logBoxAddException).not.toBeCalled();
-        expect(nativeReportException).not.toBeCalled();
-        expect(mockError.mock.calls[0]).toEqual(args);
+        if (__DEV__) {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(
+            'Warning: Some mild issue happened',
+          );
+          expect(nativeReportException).not.toBeCalled();
+          expect(mockError.mock.calls[0]).toEqual(args);
+        } else {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(mockError.mock.calls[0]).toEqual(args);
+        }
       });
 
       test('logging a warning-looking object', () => {
@@ -540,11 +599,16 @@ function runExceptionsManagerTests() {
         console.error(...args);
 
         if (__DEV__) {
-          expect(logBoxAddException).toBeCalledTimes(1);
+          // In DEV we only send the raw arguments to LogBox.
+          expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(...args);
         } else {
           expect(logBoxAddException).not.toBeCalled();
-          expect(nativeReportException).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
         }
       });
 
@@ -556,10 +620,16 @@ function runExceptionsManagerTests() {
         console.error(error);
 
         if (__DEV__) {
-          expect(logBoxAddException).toBeCalledTimes(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(error);
+        } else {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
         }
-
-        expect(nativeReportException).not.toBeCalled();
       });
 
       test('reportErrorsAsExceptions = false', () => {
@@ -570,6 +640,7 @@ function runExceptionsManagerTests() {
         console.error(message);
 
         expect(logBoxAddException).not.toBeCalled();
+        expect(logBoxAddConsoleLog).not.toBeCalled();
         expect(nativeReportException).not.toBeCalled();
         expect(mockError.mock.calls[0]).toEqual([message]);
       });
@@ -589,11 +660,14 @@ function runExceptionsManagerTests() {
 
         if (__DEV__) {
           // In DEV we only send the raw arguments to LogBox.
-          expect(logBoxAddException).toBeCalledTimes(1);
+          expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
-          exceptionData = logBoxAddException.mock.calls[0][0];
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(error);
         } else {
           expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException.mock.calls.length).toBe(1);
           exceptionData = nativeReportException.mock.calls[0][0];
           expect(getLineFromFrame(exceptionData.stack[0])).toBe(
@@ -614,10 +688,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -645,10 +721,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -675,10 +753,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -708,10 +788,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
@@ -735,9 +817,11 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
         }
@@ -791,11 +875,13 @@ function runExceptionsManagerTests() {
         let afterDecorator;
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(2);
           withoutDecoratorInstalled = logBoxAddException.mock.calls[0][0];
           afterDecorator = logBoxAddException.mock.calls[1][0];
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(2);
           withoutDecoratorInstalled = nativeReportException.mock.calls[0][0];
@@ -844,9 +930,11 @@ function runExceptionsManagerTests() {
 
         expect(decorator).not.toBeCalled();
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
         }
@@ -871,12 +959,14 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           expect(logBoxAddException.mock.calls[0][0].message).toMatch(
             /decorated: .*Some error happened/,
           );
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
@@ -908,16 +998,19 @@ function runExceptionsManagerTests() {
         console.error(error);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(2);
+          // In DEV we only send the raw arguments to LogBox.
+          expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
-          expect(logBoxAddException.mock.calls[0][0].message).toMatch(
-            /Logging an error within the decorator/,
-          );
-          expect(logBoxAddException.mock.calls[1][0].message).toMatch(
-            /decorated: .*Some error happened/,
+          expect(logBoxAddConsoleLog).toBeCalledTimes(2);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(error);
+          expect(logBoxAddConsoleLog.mock.calls[1][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[1][1]).toBe(
+            'Logging an error within the decorator',
           );
         } else {
           expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(2);
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /Logging an error within the decorator/,
@@ -948,6 +1041,7 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
@@ -955,6 +1049,7 @@ function runExceptionsManagerTests() {
             /Error: Some error happened/,
           );
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
@@ -979,13 +1074,14 @@ function runExceptionsManagerTests() {
         console.error(error);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
-          expect(logBoxAddException.mock.calls[0][0].message).toMatch(
-            /Error: Some error happened/,
-          );
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toEqual(error);
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
@@ -1009,12 +1105,14 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException).toBeCalledTimes(1);
           expect(logBoxAddException.mock.calls[0][0].extraData?.foo).toBe(
             'bar',
           );
         } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException).toBeCalledTimes(1);
           expect(nativeReportException.mock.calls[0][0].extraData?.foo).toBe(

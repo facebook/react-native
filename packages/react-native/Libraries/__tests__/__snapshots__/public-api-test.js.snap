@@ -5391,6 +5391,7 @@ interface ILogBox {
   ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
+  addConsoleLog(level: \\"warn\\" | \\"error\\", ...args: Array<mixed>): void;
   addException(error: ExtendedExceptionData): void;
 }
 declare export default ILogBox;

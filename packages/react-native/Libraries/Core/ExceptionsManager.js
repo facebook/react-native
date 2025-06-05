@@ -112,11 +112,16 @@ function reportException(
   }
 
   if (__DEV__) {
-    const LogBox = require('../LogBox/LogBox').default;
-    LogBox.addException({
-      ...data,
-      isComponentError: !!e.isComponentError,
-    });
+    // reportToConsole is only true when coming from handleException,
+    // and the error has not yet been logged. If it's false, then it was
+    // reported to LogBox in reactConsoleErrorHandler, and we don't need to.
+    if (reportToConsole) {
+      const LogBox = require('../LogBox/LogBox').default;
+      LogBox.addException({
+        ...data,
+        isComponentError: !!e.isComponentError,
+      });
+    }
   } else if (isFatal || e.type !== 'warn') {
     const NativeExceptionsManager =
       require('./NativeExceptionsManager').default;
@@ -223,12 +228,6 @@ function reactConsoleErrorHandler(...args) {
     error = firstArg;
   } else {
     const stringifySafe = require('../Utilities/stringifySafe').default;
-    if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
-      // React warnings use console.error so that a stack trace is shown, but
-      // we don't (currently) want these to show a redbox
-      // (Note: Logic duplicated in polyfills/console.js.)
-      return;
-    }
     const message = args
       .map(arg => (typeof arg === 'string' ? arg : stringifySafe(arg)))
       .join(' ');
@@ -243,6 +242,21 @@ function reactConsoleErrorHandler(...args) {
     !global.RN$handleException ||
     !global.RN$handleException(error, isFatal, reportToConsole)
   ) {
+    if (__DEV__) {
+      // If we're not reporting to the console in reportException,
+      // we need to report it as a console.error here.
+      if (!reportToConsole) {
+        require('../LogBox/LogBox').default.addConsoleLog('error', ...args);
+      }
+    }
+    if (error.message.startsWith('Warning: ')) {
+      // React warnings use console.error so that a stack trace is shown, but
+      // we don't (currently) want these to report to native.
+      // Note: We can probably remove this, but would be a breaking change
+      // if the warning module is still used somewhere.
+      // Logic duplicated in polyfills/console.js
+      return;
+    }
     reportException(
       /* $FlowFixMe[class-object-subtyping] added when improving typing for this
        * parameters */
