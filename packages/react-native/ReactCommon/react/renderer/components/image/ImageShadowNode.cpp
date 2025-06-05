@@ -20,6 +20,22 @@ const char ImageComponentName[] = "Image";
 void ImageShadowNode::setImageManager(const SharedImageManager& imageManager) {
   ensureUnsealed();
   imageManager_ = imageManager;
+
+  // TODO: T226624691 Improve image request creation to avoid double requests
+  // The image manager is set when the component descriptor adopts the shadow
+  // node. For instances where the shadow node was cloned without dirtying the
+  // layout, if the image source was changed we have to initiate the image
+  // request now since there is no guarantee that layout will run for the shadow
+  // node at a later time.
+  if (getIsLayoutClean()) {
+    auto sources = getConcreteProps().sources;
+    auto layoutMetric = getLayoutMetrics();
+    if (sources.size() <= 1 ||
+        (layoutMetric.frame.size.width > 0 &&
+         layoutMetric.frame.size.height > 0)) {
+      updateStateIfNeeded();
+    }
+  }
 }
 
 void ImageShadowNode::updateStateIfNeeded() {
