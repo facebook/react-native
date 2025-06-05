@@ -77,7 +77,7 @@ public abstract class LazyReactPackage : ReactPackage {
    * @param reactContext react application context that can be used to create modules
    * @return list of module specs that can create the native modules
    */
-  protected abstract fun getNativeModules(reactContext: ReactApplicationContext): List<ModuleSpec>
+  public abstract fun getNativeModules(reactContext: ReactApplicationContext): List<ModuleSpec>
 
   /**
    * @param reactContext react application context that can be used to create modules
