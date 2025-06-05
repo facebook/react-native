@@ -68,3 +68,17 @@
 -keepclassmembers class * {
     @com.facebook.yoga.annotations.DoNotStrip *;
 }
+
+# Keep our interfaces so they can be used by other ProGuard rules.
+-keep,allowobfuscation @interface com.facebook.react.common.annotations.internal.LegacyArchitectureDoNotStrip
+-keep,allowobfuscation @interface com.facebook.react.common.annotations.internal.LegacyArchitectureDoNotStripAny
+
+# Do not strip any method/class that is annotated with @LegacyArchitectureDoNotStrip or @LegacyArchitectureDoNotStripAny
+-keep @com.facebook.react.common.annotations.internal.LegacyArchitectureDoNotStrip class *
+-keepclassmembers class * {
+    @com.facebook.react.common.annotations.internal.LegacyArchitectureDoNotStrip *;
+}
+-keep @com.facebook.react.common.annotations.internal.LegacyArchitectureDoNotStripAny class * {
+    *;
+}
+-keepclassmembers @com.facebook.react.common.annotations.internal.LegacyArchitectureDoNotStripAny class * { *; }
