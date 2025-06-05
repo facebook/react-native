@@ -54,4 +54,7 @@ test('connects and disconnects views', () => {
 
   expect(mocks.connectAnimatedNodeToView).toBeCalledTimes(1);
   expect(mocks.disconnectAnimatedNodeFromView).toBeCalledTimes(1);
+
+  // TODO: investigate why previous task enqueues more tasks.
+  Fantom.runWorkLoop();
 });
