@@ -36,6 +36,7 @@ export default function mockNativeComponent<TProps: {...}>(
     blur: () => void = jest.fn();
     focus: () => void = jest.fn();
     measure: () => void = jest.fn();
+    measureAsyncOnUI: () => void = jest.fn();
     measureInWindow: () => void = jest.fn();
     measureLayout: () => void = jest.fn();
     setNativeProps: () => void = jest.fn();
