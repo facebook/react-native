@@ -9588,6 +9588,7 @@ exports[`public API should not change unintentionally src/private/webapis/inters
   observer: IntersectionObserver
 ) => mixed;
 export interface IntersectionObserverInit {
+  root?: ?ReactNativeElement;
   threshold?: number | $ReadOnlyArray<number>;
   rnRootThreshold?: number | $ReadOnlyArray<number>;
 }

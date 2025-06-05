@@ -23,6 +23,8 @@ using NativeIntersectionObserverObserveOptions =
     NativeIntersectionObserverNativeIntersectionObserverObserveOptions<
         // intersectionObserverId
         NativeIntersectionObserverIntersectionObserverId,
+        // rootShadowNode
+        std::optional<ShadowNode::Shared>,
         // targetShadowNode
         ShadowNode::Shared,
         // thresholds

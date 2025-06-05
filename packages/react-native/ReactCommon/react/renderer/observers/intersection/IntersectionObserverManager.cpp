@@ -39,6 +39,8 @@ IntersectionObserverManager::IntersectionObserverManager() = default;
 
 void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
+    const std::optional<ShadowNodeFamily::Shared>&
+        observationRootShadowNodeFamily,
     const ShadowNodeFamily::Shared& shadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds,
@@ -58,6 +60,7 @@ void IntersectionObserverManager::observe(
     auto& observers = observersBySurfaceId_[surfaceId];
     observers.emplace_back(std::make_unique<IntersectionObserver>(
         intersectionObserverId,
+        observationRootShadowNodeFamily,
         shadowNodeFamily,
         std::move(thresholds),
         std::move(rootThresholds)));

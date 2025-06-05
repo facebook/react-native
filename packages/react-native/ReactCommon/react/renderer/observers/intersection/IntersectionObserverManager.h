@@ -27,6 +27,7 @@ class IntersectionObserverManager final
 
   void observe(
       IntersectionObserverObserverId intersectionObserverId,
+      const std::optional<ShadowNodeFamily::Shared>& observationRootShadowNode,
       const ShadowNodeFamily::Shared& shadowNode,
       std::vector<Float> thresholds,
       std::optional<std::vector<Float>> rootThresholds,
