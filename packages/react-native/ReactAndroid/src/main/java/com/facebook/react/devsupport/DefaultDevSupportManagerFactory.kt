@@ -16,6 +16,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
+import com.facebook.redex.annotations.IgnoreStringLiterals
 
 /**
  * A simple factory that creates instances of [DevSupportManager] implementations. Uses reflection
@@ -23,6 +24,7 @@ import com.facebook.react.packagerconnection.RequestHandler
  * dependencies in release builds. If the class isn't found, [PerftestDevSupportManager] is returned
  * instead.
  */
+@IgnoreStringLiterals
 internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
 
   override fun create(
@@ -47,15 +49,9 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
           // trying to return the full support DevSupportManager and if it fails, then just
           // return PerftestDevSupportManager.
 
-          // ProGuard is surprisingly smart in this case and will keep a class if it detects a call
-          // to
-          // Class.forName() with a static string. So instead we generate a quasi-dynamic string to
-          // confuse it.
-          val className =
-              StringBuilder(DEVSUPPORT_IMPL_PACKAGE)
-                  .append(".")
-                  .append(DEVSUPPORT_IMPL_CLASS)
-                  .toString()
+          // @IgnoreStringLiterals annotation is used to enable ProGuard to strip out the
+          // BridgeDevSupportManager class
+          val className = "com.facebook.react.devsupport.BridgeDevSupportManager"
           val devSupportManagerClass = Class.forName(className)
           val constructor =
               devSupportManagerClass.getConstructor(
@@ -119,9 +115,4 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       } else {
         ReleaseDevSupportManager()
       }
-
-  private companion object {
-    private const val DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport"
-    private const val DEVSUPPORT_IMPL_CLASS = "BridgeDevSupportManager"
-  }
 }
