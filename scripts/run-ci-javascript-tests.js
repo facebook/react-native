@@ -50,7 +50,7 @@ try {
   }
 
   describe('Test: No JS build artifacts');
-  if (exec(`${YARN_BINARY} run build --check`).code) {
+  if (exec(`${YARN_BINARY} run build --validate`).code) {
     echo('Failed, there are build artifacts in this commit.');
     exitCode = 1;
     throw Error(exitCode);
