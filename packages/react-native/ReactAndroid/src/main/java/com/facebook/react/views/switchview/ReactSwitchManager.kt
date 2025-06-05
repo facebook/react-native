@@ -95,7 +95,7 @@ internal class ReactSwitchManager :
     setValueInternal(view, value)
   }
 
-  override fun receiveCommand(view: ReactSwitch, commandId: String, args: ReadableArray?) =
+  override fun receiveCommand(view: ReactSwitch, commandId: String, args: ReadableArray) =
       delegate.receiveCommand(view, commandId, args)
 
   override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactSwitch) {

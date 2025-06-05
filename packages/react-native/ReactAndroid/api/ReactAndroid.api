@@ -4645,6 +4645,7 @@ public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/re
 
 public abstract interface class com/facebook/react/uimanager/ViewManagerDelegate {
 	public abstract synthetic fun kotlinCompat$receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public synthetic fun kotlinCompat$receiveCommandNullableArgs (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public abstract synthetic fun kotlinCompat$setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V

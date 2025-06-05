@@ -268,14 +268,14 @@ public class MountingManager {
 
   @Deprecated
   public void receiveCommand(
-      int surfaceId, int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+      int surfaceId, int reactTag, int commandId, ReadableArray commandArgs) {
     UiThreadUtil.assertOnUiThread();
     getSurfaceManagerEnforced(surfaceId, "receiveCommand:int")
         .receiveCommand(reactTag, commandId, commandArgs);
   }
 
   public void receiveCommand(
-      int surfaceId, int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
+      int surfaceId, int reactTag, String commandId, ReadableArray commandArgs) {
     UiThreadUtil.assertOnUiThread();
     getSurfaceManagerEnforced(surfaceId, "receiveCommand:string")
         .receiveCommand(reactTag, commandId, commandArgs);

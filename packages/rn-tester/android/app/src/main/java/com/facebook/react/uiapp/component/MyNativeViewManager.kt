@@ -37,7 +37,7 @@ internal class MyNativeViewManager :
   override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView =
       MyNativeView(reactContext)
 
-  override fun receiveCommand(view: MyNativeView, commandName: String, args: ReadableArray?) {
+  override fun receiveCommand(view: MyNativeView, commandName: String, args: ReadableArray) {
     delegate.receiveCommand(view, commandName, args)
   }
 

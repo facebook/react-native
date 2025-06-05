@@ -328,7 +328,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param args optional arguments for the command
    */
   @Deprecated
-  public void receiveCommand(@NonNull T view, int commandId, @Nullable ReadableArray args) {}
+  public void receiveCommand(@NonNull T view, int commandId, ReadableArray args) {}
 
   /**
    * Subclasses may use this method to receive events/commands directly from JS through the {@link
@@ -339,7 +339,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
-  public void receiveCommand(@NonNull T view, String commandId, @Nullable ReadableArray args) {
+  public void receiveCommand(@NonNull T view, String commandId, ReadableArray args) {
     getOrCreateViewManagerDelegate().receiveCommand(view, commandId, args);
   }
 

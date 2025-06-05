@@ -173,7 +173,7 @@ public class ReactDrawerLayoutManager :
   public override fun receiveCommand(
       view: ReactDrawerLayout,
       commandId: String,
-      args: ReadableArray?
+      args: ReadableArray
   ): Unit = delegate.receiveCommand(view, commandId, args)
 
   public override fun getExportedViewConstants(): Map<String, Any> =

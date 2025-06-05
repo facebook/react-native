@@ -120,7 +120,7 @@ internal open class SwipeRefreshLayoutManager :
   override fun receiveCommand(
       view: ReactSwipeRefreshLayout,
       commandId: String,
-      args: ReadableArray?
+      args: ReadableArray
   ) = delegate.receiveCommand(view, commandId, args)
 
   override fun getExportedViewConstants(): MutableMap<String, Any> =
