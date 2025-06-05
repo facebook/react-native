@@ -300,7 +300,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
   const auto& fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
-  static auto prepareLayout =
+  static auto prepareTextLayout =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<JPreparedLayout::javaobject(
               jint,
@@ -309,7 +309,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
               jfloat,
               jfloat,
               jfloat,
-              jfloat)>("prepareLayout");
+              jfloat)>("prepareTextLayout");
 
   auto attributedStringMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
@@ -321,7 +321,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
 
   // T222682416: We don't have any global cache here. We should investigate
   // whether that is desirable
-  return {jni::make_global(prepareLayout(
+  return {jni::make_global(prepareTextLayout(
       fabricUIManager,
       layoutContext.surfaceId,
       attributedStringMB.get(),
