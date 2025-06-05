@@ -649,6 +649,47 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "measureAsyncOnUI") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [uiManager, methodName, paramCount](
+            jsi::Runtime& runtime,
+            const jsi::Value& /*thisValue*/,
+            const jsi::Value* arguments,
+            size_t count) {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+
+          auto shadowNode =
+              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]);
+          auto callbackFunction =
+              arguments[1].getObject(runtime).getFunction(runtime);
+
+          auto sharedCallback = std::make_shared<jsi::Function>(std::move(callbackFunction));
+          auto runtimeExecutor = uiManager->runtimeExecutor_;
+          std::function<void(folly::dynamic)> jsCallback = [sharedCallback, runtimeExecutor](folly::dynamic args) {
+            // Schedule call on JS
+            runtimeExecutor([sharedCallback, args](jsi::Runtime& jsRuntime) {
+              // Invoke the actual callback we got from JS
+              sharedCallback->call(jsRuntime, {
+                                                  jsi::Value{jsRuntime, args.at(0).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(1).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(2).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(3).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(4).getDouble()},
+                                                  jsi::Value{jsRuntime, args.at(5).getDouble()},
+                                              });
+            });
+          };
+
+          uiManager->getDelegate()->uiManagerMeasureAsync(shadowNode, std::move(jsCallback));
+
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "measureInWindow") {
     auto paramCount = 2;
     return jsi::Function::createFromHostFunction(
