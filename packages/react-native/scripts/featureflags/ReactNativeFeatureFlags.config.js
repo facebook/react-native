@@ -607,11 +607,31 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    virtualViewPrerenderRatio: {
+      defaultValue: 5,
+      metadata: {
+        dateAdded: '2025-05-30',
+        description: 'Initial prerender ratio for VirtualView.',
+        expectedReleaseValue: 5,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
   },
 
   jsOnly: {
     ...testDefinitions.jsOnly,
-
+    alwaysFlattenAnimatedStyles: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-02',
+        description:
+          'Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
       metadata: {

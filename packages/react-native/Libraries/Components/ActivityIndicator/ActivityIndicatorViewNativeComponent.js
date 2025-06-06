@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent';
-import ActivityIndicatorViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent';
-export default ActivityIndicatorViewNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent';

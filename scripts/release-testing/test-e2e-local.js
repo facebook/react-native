@@ -188,18 +188,11 @@ async function testRNTesterAndroid(
     const unzipFolder = path.join(ciArtifacts.baseTmpPath(), 'rntester-apks');
     exec(`rm -rf ${unzipFolder}`);
     exec(`unzip ${downloadPath} -d ${unzipFolder}`);
-    let apkPath = path.join(
-      unzipFolder,
-      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-debug.apk`,
-    );
+    let apkPath = path.join(unzipFolder, `app-${emulatorArch}-debug.apk`);
 
     exec(`adb install ${apkPath}`);
   } else {
-    exec(
-      `../../gradlew :packages:rn-tester:android:app:${
-        argv.hermes === true ? 'installHermesDebug' : 'installJscDebug'
-      } --quiet`,
-    );
+    exec(`../../gradlew :packages:rn-tester:android:app:installDebug --quiet`);
   }
 
   // launch the app
@@ -405,6 +398,5 @@ Force Quit via Activity Monitor.
 }
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

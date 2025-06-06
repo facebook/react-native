@@ -73,6 +73,5 @@ async function main() {
 }
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

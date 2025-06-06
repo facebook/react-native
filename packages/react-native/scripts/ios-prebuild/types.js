@@ -8,6 +8,16 @@
  * @format
  */
 
-declare module '@tsconfig/node18/tsconfig.json' {
-  declare module.exports: any;
-}
+/*::
+export type Platform =
+  'ios' |
+  'ios-simulator' |
+  'mac-catalyst';
+
+export type Destination =
+  'iOS' |
+  'iOS Simulator' |
+  'macOS,variant=Mac Catalyst';
+*/
+
+module.exports = {};

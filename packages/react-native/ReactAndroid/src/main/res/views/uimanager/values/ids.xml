@@ -9,17 +9,11 @@
   <!-- tag is used to store the accessibleElements tag -->
   <item type="id" name="accessibility_order"/>
 
-  <!-- tag is used to store the current state of the accessibility order tree-->
-  <item type="id" name="accessibility_order_dirty"/>
-
-  <!-- tag is used to store the accessibleElements parent View tag -->
+  <!-- tag is used to store whether the view is coopted by an accessibilityOrder-->
   <item type="id" name="accessibility_order_parent"/>
 
-  <!-- tag is used to store the next focusable View's id -->
-  <item type="id" name="accessibility_order_flow_to"/>
-
-  <!-- tag is used to store the original important for accessibility value-->
-  <item type="id" name="original_important_for_ax"/>
+  <!-- tag is used to store the current state of the accessibility order tree-->
+  <item type="id" name="accessibility_order_dirty"/>
 
   <!-- tag is used to store the nativeID tag -->
   <item type="id" name="view_tag_instance_handle"/>

@@ -5,11 +5,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
+/*::
+import type {IncomingMessage} from 'https';
+*/
+
+// $FlowFixMe[untyped-import]
 const {name, version: currentVersion} = require('./package.json');
 const chalk = require('chalk');
 const {spawn} = require('child_process');
@@ -23,23 +29,29 @@ const deprecated = () => {
   );
 };
 
-function findCommunityCli(startDir = process.cwd()) {
+function findCommunityCli(startDir /*: string */ = process.cwd()) {
   // With isolated node_modules (eg pnpm), we won't be able to find
   // `@react-native-community/cli` starting from the `react-native` directory.
   // Instead, we should use the project root, which we assume to be the cwd.
   const options = {paths: [startDir]};
   const rncli = require.resolve('@react-native-community/cli', options);
+  // $FlowFixMe[unsupported-syntax]
   return require(rncli);
 }
 
-function isMissingCliDependency(error) {
+function isMissingCliDependency(error /*: Error */) {
   return (
+    // $FlowFixMe[prop-missing]
     error.code === 'MODULE_NOT_FOUND' &&
     /@react-native-community\/cli/.test(error.message)
   );
 }
 
-let cli = {
+let cli /*: $ReadOnly<{
+  bin: string,
+  loadConfig: $FlowFixMe,
+  run: () => void
+}> */ = {
   bin: '/dev/null',
   loadConfig: deprecated,
   run: deprecated,
@@ -57,21 +69,23 @@ const HEAD = '1000.0.0';
 // See https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0759-react-native-frameworks.md
 const CLI_DEPRECATION_DATE = new Date('2024-12-31');
 
-async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
-  return new Promise((res, rej) => {
+function getLatestVersion(
+  registryHost /*: string */ = DEFAULT_REGISTRY_HOST,
+) /*: Promise<string> */ {
+  return new Promise((resolve, reject) => {
     const url = new URL(registryHost);
     url.pathname = 'react-native/latest';
-    get(url.toString(), resp => {
+    get(url.toString(), (resp /*: IncomingMessage */) => {
       const buffer = [];
       resp.on('data', data => buffer.push(data));
       resp.on('end', () => {
         try {
-          res(JSON.parse(Buffer.concat(buffer).toString('utf8')).version);
+          resolve(JSON.parse(Buffer.concat(buffer).toString('utf8')).version);
         } catch (e) {
-          rej(e);
+          reject(e);
         }
       });
-    }).on('error', e => rej(e));
+    }).on('error', e => reject(e));
   });
 }
 
@@ -134,7 +148,7 @@ function warnWithDeprecated() {
 - Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
 }
 
-function warnWithExplicitDependency(version = '*') {
+function warnWithExplicitDependency(version /*: string */ = '*') {
   console.warn(`
 ${chalk.yellow('⚠')}️ ${chalk.dim('react-native')} depends on ${chalk.dim('@react-native-community/cli')} for cli commands. To fix update your ${chalk.dim('package.json')} to include:
 
@@ -159,7 +173,7 @@ ${chalk.white.bold(`
 async function main() {
   if (
     isNpxRuntime &&
-    !process.env.SKIP &&
+    !Boolean(process.env.SKIP) &&
     currentVersion !== HEAD &&
     isInitCommand
   ) {
@@ -219,7 +233,7 @@ async function main() {
       },
     );
 
-    const code = await new Promise(resolve => {
+    const code /*: number */ = await new Promise(resolve => {
       proc.on('exit', resolve);
     });
     process.exit(code);
@@ -237,7 +251,7 @@ async function main() {
 }
 
 if (require.main === module) {
-  main();
+  void main();
 } else {
   try {
     cli = findCommunityCli();

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d92f20c3ec9183dd2539f41a7b45ad08>>
+ * @generated SignedSource<<7484b716c0cb8d12d307e3b34767e559>>
  */
 
 /**
@@ -347,6 +347,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModules(): Boolean = accessor.useTurboModules()
+
+  /**
+   * Initial prerender ratio for VirtualView.
+   */
+  @JvmStatic
+  public fun virtualViewPrerenderRatio(): Double = accessor.virtualViewPrerenderRatio()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

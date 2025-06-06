@@ -425,6 +425,16 @@ folly::dynamic AndroidTextInputProps::getDiffProps(
         toString(paragraphAttributes.android_hyphenationFrequency);
   }
 
+  if (paragraphAttributes.textAlignVertical !=
+      oldProps->paragraphAttributes.textAlignVertical) {
+    if (!paragraphAttributes.textAlignVertical.has_value()) {
+      result["textAlignVertical"] = nullptr;
+    } else {
+      result["textAlignVertical"] =
+          toString(*paragraphAttributes.textAlignVertical);
+    }
+  }
+
   // Base text input props
   if (defaultValue != oldProps->defaultValue) {
     result["defaultValue"] = defaultValue;

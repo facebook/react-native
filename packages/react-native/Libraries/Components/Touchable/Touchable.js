@@ -10,7 +10,11 @@
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
+import type {
+  BlurEvent,
+  FocusEvent,
+  GestureResponderEvent,
+} from '../../Types/CoreEventTypes';
 
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import UIManager from '../../ReactNative/UIManager';
@@ -589,7 +593,7 @@ const TouchableMixinImpl = {
    */
   /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
    * Flow's LTI update could not be added via codemod */
-  touchableHandleFocus: function (e: Event) {
+  touchableHandleFocus: function (e: FocusEvent) {
     this.props.onFocus && this.props.onFocus(e);
   },
 
@@ -603,7 +607,7 @@ const TouchableMixinImpl = {
    */
   /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
    * Flow's LTI update could not be added via codemod */
-  touchableHandleBlur: function (e: Event) {
+  touchableHandleBlur: function (e: BlurEvent) {
     this.props.onBlur && this.props.onBlur(e);
   },
 

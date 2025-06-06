@@ -982,15 +982,19 @@ void JavaTurboModule::configureEventEmitterCallback() {
     FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
   }
 
-  jvalue arg;
-  arg.l =
-      JCxxCallbackImpl::newObjectCxxArgs([&](folly::dynamic args) {
-        auto eventName = args.at(0).asString();
-        auto& eventEmitter = static_cast<AsyncEventEmitter<folly::dynamic>&>(
-            *eventEmitterMap_[eventName].get());
-        eventEmitter.emit(args.size() > 1 ? std::move(args).at(1) : nullptr);
-      }).release();
-  env->CallVoidMethod(instance_.get(), cachedMethodId, arg);
+  auto callback = JCxxCallbackImpl::newObjectCxxArgs([&](folly::dynamic args) {
+    auto eventName = args.at(0).asString();
+    auto& eventEmitter = static_cast<AsyncEventEmitter<folly::dynamic>&>(
+        *eventEmitterMap_[eventName].get());
+    eventEmitter.emit(args.size() > 1 ? std::move(args).at(1) : nullptr);
+  });
+
+  jvalue args[1];
+  args[0].l = callback.release();
+
+  // CallVoidMethod is replaced with CallVoidMethodA as it's unsafe on 32bit and
+  // causes crashes https://github.com/facebook/react-native/issues/51628
+  env->CallVoidMethodA(instance_.get(), cachedMethodId, args);
   FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 }
 

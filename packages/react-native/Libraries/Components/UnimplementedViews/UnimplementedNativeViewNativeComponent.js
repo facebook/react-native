@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent';
-import UnimplementedNativeViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent';
-export default UnimplementedNativeViewNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent';

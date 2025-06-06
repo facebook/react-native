@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent';
-import RCTInputAccessoryViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent';
-export default RCTInputAccessoryViewNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent';

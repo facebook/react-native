@@ -13,7 +13,7 @@
 #include <sstream>
 #include <string>
 
-using namespace facebook::react;
+namespace facebook::react {
 
 const std::string UNKNOWN_FUNCTION = "<unknown>";
 
@@ -315,3 +315,5 @@ std::vector<JsErrorHandler::ProcessedError::StackFrame> StackTraceParser::parse(
       isHermes ? parseHermes(stackString) : parseOthers(stackString);
   return stackFrames;
 }
+
+} // namespace facebook::react

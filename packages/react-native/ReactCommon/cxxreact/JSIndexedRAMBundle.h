@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <functional>
 #include <istream>
 #include <memory>
+#include <string>
 
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSModulesUnbundle.h>

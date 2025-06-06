@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<33870be221829e11a7e180b718c3738f>>
+ * @generated SignedSource<<a4b4716b9b0e9f84c38d83c991ecfba7>>
  * @flow strict
  * @noformat
  */
@@ -29,6 +29,7 @@ import {
 
 export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
+  alwaysFlattenAnimatedStyles: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
@@ -103,12 +104,18 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useShadowNodeStateOnClone: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
+  virtualViewPrerenderRatio: Getter<number>,
 }>;
 
 /**
  * JS-only flag for testing. Do NOT modify.
  */
 export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnlyTestFlag', false);
+
+/**
+ * Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.
+ */
+export const alwaysFlattenAnimatedStyles: Getter<boolean> = createJavaScriptFlagGetter('alwaysFlattenAnimatedStyles', false);
 
 /**
  * Enables an experimental flush-queue debouncing in Animated.js.
@@ -396,6 +403,10 @@ export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('us
  * When enabled, NativeModules will be executed by using the TurboModule system
  */
 export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', false);
+/**
+ * Initial prerender ratio for VirtualView.
+ */
+export const virtualViewPrerenderRatio: Getter<number> = createNativeFlagGetter('virtualViewPrerenderRatio', 5);
 
 /**
  * Overrides the feature flags with the provided methods.

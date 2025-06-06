@@ -146,7 +146,6 @@ class LayoutableShadowNode : public ShadowNode {
    * Indicates whether all nodes (and possibly their subtrees) along the path
    * to the root node should be re-laid out.
    */
-  virtual void cleanLayout() = 0;
   virtual void dirtyLayout() = 0;
   virtual bool getIsLayoutClean() const = 0;
 

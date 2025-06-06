@@ -236,6 +236,7 @@ function extractLibrariesFromJSON(
     const config = configFile.codegenConfig;
     return [
       {
+        name: configFile.name,
         config,
         libraryPath: dependencyPath,
       },
@@ -290,6 +291,7 @@ function extractLibrariesFromConfigurationArray(
 ) {
   return configFile.codegenConfig.libraries.map(config => {
     return {
+      name: config.name,
       config,
       libraryPath: dependencyPath,
     };

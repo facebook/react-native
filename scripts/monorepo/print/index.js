@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @noflow
  */
 
 const {getVersionsBySpec} = require('../../npm-utils');
@@ -81,6 +82,5 @@ async function main() {
 }
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

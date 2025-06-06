@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: "The node.js version to use"
     required: false
-    default: "20"
+    default: "22"
   github-token:
     description: "The GitHub token used by pull-bot"
     required: true
@@ -34,7 +34,7 @@ runs:
       run: ./.github/workflow-scripts/lint_files.sh
     - name: Verify not committing repo after running build
       shell: bash
-      run: yarn run build --check
+      run: yarn run build --validate
     - name: Run flowcheck
       shell: bash
       run: yarn flow-check
@@ -50,6 +50,9 @@ runs:
     - name: Lint markdown
       shell: bash
       run: yarn run lint-markdown
-    - name: Validate typegen
+    - name: Build types
       shell: bash
       run: yarn build-types
+    - name: Run typescript check of generated types
+      shell: bash
+      run: yarn test-generated-typescript

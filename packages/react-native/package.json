@@ -21,7 +21,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
   "bin": {
     "react-native": "cli.js"
@@ -197,7 +197,7 @@
     "libraries": [
       {
         "name": "FBReactNativeSpec",
-        "type": "modules",
+        "type": "all",
         "ios": {
           "modules": {
             "AccessibilityManager": {
@@ -220,13 +220,6 @@
             }
           }
         },
-        "android": {},
-        "jsSrcsDir": "src"
-      },
-      {
-        "name": "rncore",
-        "type": "components",
-        "ios": {},
         "android": {},
         "jsSrcsDir": "src"
       }

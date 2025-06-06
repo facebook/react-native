@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent';
-import AndroidSwipeRefreshLayoutNativeComponent from '../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent';
-export default AndroidSwipeRefreshLayoutNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent';

@@ -62,7 +62,7 @@ body:
             path: /bin/zsh
         Binaries:
           Node: ...
-            version: 18.14.0
+            version: 22.14.0
         ...
       render: text
     validations:

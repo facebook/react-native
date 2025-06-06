@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<8c6274bec0d166bb311325a3c6c468b5>>
+ * @generated SignedSource<<7430b56dac3186eca669ae53bbf1f23d>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -8075,6 +8075,8 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
         (offscreenSubtreeWasHidden ||
           null === current ||
           safelyDetachRef(current, current.return));
+      null !== finishedWork.alternate &&
+        (finishedWork.alternate.stateNode = finishedWork.stateNode);
       break;
     case 6:
       recursivelyTraverseMutationEffects(root, finishedWork);

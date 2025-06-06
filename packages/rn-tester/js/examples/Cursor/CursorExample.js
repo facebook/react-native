@@ -4,13 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
-
-const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
+import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 const styles = StyleSheet.create({
   invisibleBox: {
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function CursorExampleAuto() {
+function CursorExampleAuto(): React.Node {
   return (
     <View style={styles.row}>
       <View style={styles.box} />
@@ -65,7 +64,7 @@ function CursorExampleAuto() {
   );
 }
 
-function CursorExamplePointer() {
+function CursorExamplePointer(): React.Node {
   return (
     <View style={styles.row}>
       <View style={[styles.box, styles.pointer]} />
@@ -78,20 +77,7 @@ function CursorExamplePointer() {
   );
 }
 
-function CursorExamplePointer() {
-  return (
-    <View style={styles.row}>
-      <View style={[styles.box, styles.pointer]} />
-      <View style={[styles.circle, styles.pointer]} />
-      <View style={[styles.halfcircle, styles.pointer]} />
-      <View style={[styles.box, styles.solid, styles.pointer]} />
-      <View style={[styles.circle, styles.solid, styles.pointer]} />
-      <View style={[styles.halfcircle, styles.solid, styles.pointer]} />
-    </View>
-  );
-}
-
-function CursorExampleViewFlattening() {
+function CursorExampleViewFlattening(): React.Node {
   return (
     <View style={styles.row}>
       <View style={[styles.invisibleBox, styles.centerContent, styles.pointer]}>

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1cd5b56933a6fc03ff2cc3b09fe0c2e8>>
+ * @generated SignedSource<<daf78f5249ed27828d8e2fb83d5e5df3>>
  */
 
 /**
@@ -73,6 +73,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useShadowNodeStateOnCloneCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
+  private var virtualViewPrerenderRatioCache: Double? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -547,6 +548,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useTurboModules()
       useTurboModulesCache = cached
+    }
+    return cached
+  }
+
+  override fun virtualViewPrerenderRatio(): Double {
+    var cached = virtualViewPrerenderRatioCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.virtualViewPrerenderRatio()
+      virtualViewPrerenderRatioCache = cached
     }
     return cached
   }

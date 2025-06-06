@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @noflow
  */
 
 'use strict';
+
 const {danger, fail, warn} = require('danger');
 
 const body = danger.github.pr.body?.toLowerCase() ?? '';

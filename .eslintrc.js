@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @noflow
  * @format
  */
 
@@ -27,6 +28,9 @@ module.exports = {
       files: ['*.js', '*.js.flow', '*.jsx'],
       parser: 'hermes-eslint',
       rules: {
+        'ft-flow/require-valid-file-annotation': [2, 'always'],
+        'no-extra-boolean-cast': 0,
+        'no-void': 0,
         // These rules are not required with hermes-eslint
         'ft-flow/define-flow-type': 0,
         'ft-flow/use-flow-type': 0,
@@ -66,6 +70,7 @@ module.exports = {
     {
       files: ['flow-typed/**/*.js', 'packages/react-native/flow/**/*'],
       rules: {
+        'ft-flow/require-valid-file-annotation': 0,
         'lint/valid-flow-typed-signature': 2,
         'no-shadow': 0,
         'no-unused-vars': 0,

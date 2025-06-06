@@ -112,9 +112,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           if (mShouldNotifyOnTextLayout) {
             ThemedReactContext themedReactContext = getThemedContext();
-            WritableArray lines =
-                FontMetricsUtil.getFontMetrics(
-                    text, layout, sTextPaintInstance, themedReactContext);
+            WritableArray lines = FontMetricsUtil.getFontMetrics(text, layout, themedReactContext);
             WritableMap event = Arguments.createMap();
             event.putArray("lines", lines);
             if (themedReactContext.hasActiveReactInstance()) {

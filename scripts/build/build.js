@@ -36,7 +36,7 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 const config = {
   allowPositionals: true,
   options: {
-    check: {type: 'boolean'},
+    validate: {type: 'boolean'},
     help: {type: 'boolean'},
   },
 };
@@ -44,7 +44,7 @@ const config = {
 async function build() {
   const {
     positionals: packageNames,
-    values: {check, help},
+    values: {validate, help},
     /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
@@ -59,14 +59,14 @@ async function build() {
   a package list is provided, builds only those specified.
 
   Options:
-    --check           Validate that no build artifacts have been accidentally
+    --validate        Validate that no build artifacts have been accidentally
                       committed.
     `);
     process.exitCode = 0;
     return;
   }
 
-  if (!check) {
+  if (!validate) {
     console.log('\n' + chalk.bold.inverse('Building packages') + '\n');
   }
 
@@ -76,7 +76,7 @@ async function build() {
 
   let ok = true;
   for (const packageName of packagesToBuild) {
-    if (check) {
+    if (validate) {
       ok &&= await checkPackage(packageName);
     } else {
       await buildPackage(packageName);
@@ -432,7 +432,13 @@ function validateTypeScriptDefs(packageName /*: string */) {
     noEmit: true,
     skipLibCheck: false,
   };
-  const program = ts.createProgram(files, compilerOptions);
+  const program = ts.createProgram(
+    files,
+    ts.convertCompilerOptionsFromJson(
+      compilerOptions,
+      path.resolve(PACKAGES_DIR, packageName),
+    ),
+  );
   const emitResult = program.emit();
 
   if (emitResult.diagnostics.length) {

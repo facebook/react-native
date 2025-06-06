@@ -132,13 +132,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       &yogaNode_, &initializeYogaConfig(yogaConfig_, previousConfig));
   updateYogaChildrenOwnersIfNeeded();
 
-  // This is the only legit place where we can dirty cloned Yoga node.
-  // If we do it later, ancestor nodes will not be able to observe this and
-  // dirty (and clone) themselves as a result.
-  if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
-    yogaNode_.setDirty(true);
-  }
-
   // We do not need to reconfigure this subtree before the next layout pass if
   // the previous node with the same props and children has already been
   // configured.
@@ -159,8 +152,16 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   ensureConsistency();
 }
 
-void YogaLayoutableShadowNode::cleanLayout() {
-  yogaNode_.setDirty(false);
+void YogaLayoutableShadowNode::completeClone(
+    const ShadowNode& /*sourceShadowNode*/,
+    const ShadowNodeFragment& fragment) {
+  if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode) &&
+      // New children means we must always dirty to visit. Otherwise, ask the
+      // Node if the new revision invalidates measurement.
+      (fragment.children ||
+       shouldNewRevisionDirtyMeasurement(*this, fragment))) {
+    yogaNode_.setDirty(true);
+  }
 }
 
 void YogaLayoutableShadowNode::dirtyLayout() {
@@ -315,6 +316,12 @@ void YogaLayoutableShadowNode::replaceChild(
 bool YogaLayoutableShadowNode::doesOwn(
     const YogaLayoutableShadowNode& child) const {
   return YGNodeGetOwner(&child.yogaNode_) == &yogaNode_;
+}
+
+bool YogaLayoutableShadowNode::shouldNewRevisionDirtyMeasurement(
+    const ShadowNode& /*sourceShadowNode*/,
+    const ShadowNodeFragment& /*fragment*/) const {
+  return true;
 }
 
 void YogaLayoutableShadowNode::updateYogaChildrenOwnersIfNeeded() {

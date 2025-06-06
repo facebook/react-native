@@ -123,14 +123,6 @@ public open class ReactTextInputManager public constructor() :
                 mapOf(
                     "phasedRegistrationNames" to
                         mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")),
-            "topFocus" to
-                mapOf(
-                    "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onFocus", "captured" to "onFocusCapture")),
-            "topBlur" to
-                mapOf(
-                    "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onBlur", "captured" to "onBlurCapture")),
             "topKeyPress" to
                 mapOf(
                     "phasedRegistrationNames" to
@@ -152,10 +144,10 @@ public open class ReactTextInputManager public constructor() :
   @Deprecated("Deprecated in Java")
   override fun receiveCommand(reactEditText: ReactEditText, commandId: Int, args: ReadableArray?) {
     when (commandId) {
-      FOCUS_TEXT_INPUT -> this.receiveCommand(reactEditText, "focus", args)
-      BLUR_TEXT_INPUT -> this.receiveCommand(reactEditText, "blur", args)
+      FOCUS_TEXT_INPUT -> receiveCommand(reactEditText, "focus", args)
+      BLUR_TEXT_INPUT -> receiveCommand(reactEditText, "blur", args)
       SET_MOST_RECENT_EVENT_COUNT -> {}
-      SET_TEXT_AND_SELECTION -> this.receiveCommand(reactEditText, "setTextAndSelection", args)
+      SET_TEXT_AND_SELECTION -> receiveCommand(reactEditText, "setTextAndSelection", args)
     }
   }
 
@@ -894,6 +886,9 @@ public open class ReactTextInputManager public constructor() :
   override fun addEventEmitters(reactContext: ThemedReactContext, editText: ReactEditText) {
     editText.setEventDispatcher(getEventDispatcher(reactContext, editText))
     editText.addTextChangedListener(ReactTextInputTextWatcher(reactContext, editText))
+
+    // Implements focus/blur dispatching on behalf of BaseViewManager since only one focus listener
+    // can be set on a view instance
     editText.onFocusChangeListener = OnFocusChangeListener { _: View?, hasFocus: Boolean ->
       val surfaceId = reactContext.surfaceId
       val eventDispatcher = getEventDispatcher(reactContext, editText)

@@ -39,12 +39,11 @@ int countAttachments(const AttributedString& attributedString) {
   return count;
 }
 
-Size measureAndroidComponent(
+Size measureText(
     const ContextContainer::Shared& contextContainer,
     Tag rootTag,
-    const std::string& componentName,
-    MapBuffer localData,
-    MapBuffer props,
+    MapBuffer attributedString,
+    MapBuffer paragraphAttributes,
     float minWidth,
     float maxWidth,
     float minHeight,
@@ -52,44 +51,34 @@ Size measureAndroidComponent(
     jfloatArray attachmentPositions) {
   const jni::global_ref<jobject>& fabricUIManager =
       contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
-  auto componentNameRef = jni::make_jstring(componentName);
 
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jint,
-              jstring,
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
-              JReadableMapBuffer::javaobject,
               jfloat,
               jfloat,
               jfloat,
               jfloat,
-              jfloatArray)>("measureMapBuffer");
+              jfloatArray)>("measureText");
 
-  auto localDataMap =
-      JReadableMapBuffer::createWithContents(std::move(localData));
-  auto propsMap = JReadableMapBuffer::createWithContents(std::move(props));
+  auto attributedStringBuffer =
+      JReadableMapBuffer::createWithContents(std::move(attributedString));
+  auto paragraphAttributesBuffer =
+      JReadableMapBuffer::createWithContents(std::move(paragraphAttributes));
 
-  auto size = yogaMeassureToSize(measure(
+  return yogaMeassureToSize(measure(
       fabricUIManager,
       rootTag,
-      componentNameRef.get(),
-      localDataMap.get(),
-      propsMap.get(),
-      nullptr,
+      attributedStringBuffer.get(),
+      paragraphAttributesBuffer.get(),
       minWidth,
       maxWidth,
       minHeight,
       maxHeight,
       attachmentPositions));
-
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  componentNameRef.reset();
-  localDataMap.reset();
-  propsMap.reset();
-  return size;
 }
 
 TextMeasurement doMeasure(
@@ -114,10 +103,9 @@ TextMeasurement doMeasure(
   auto attributedStringMap = toMapBuffer(attributedString);
   auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);
 
-  auto size = measureAndroidComponent(
+  auto size = measureText(
       contextContainer,
       layoutContext.surfaceId,
-      "RCTText",
       std::move(attributedStringMap),
       std::move(paragraphAttributesMap),
       minimumSize.width,
@@ -227,10 +215,9 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   // TODO: this is always sourced from an int, and Java expects an int
   localDataBuilder.putInt(AS_KEY_CACHE_ID, static_cast<int32_t>(cacheId));
 
-  auto size = measureAndroidComponent(
+  auto size = measureText(
       contextContainer_,
       layoutContext.surfaceId,
-      "RCTText",
       localDataBuilder.build(),
       toMapBuffer(paragraphAttributes),
       minimumSize.width,
@@ -313,7 +300,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
   const auto& fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
-  static auto prepareLayout =
+  static auto prepareTextLayout =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<JPreparedLayout::javaobject(
               jint,
@@ -322,7 +309,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
               jfloat,
               jfloat,
               jfloat,
-              jfloat)>("prepareLayout");
+              jfloat)>("prepareTextLayout");
 
   auto attributedStringMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
@@ -334,7 +321,7 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
 
   // T222682416: We don't have any global cache here. We should investigate
   // whether that is desirable
-  return {jni::make_global(prepareLayout(
+  return {jni::make_global(prepareTextLayout(
       fabricUIManager,
       layoutContext.surfaceId,
       attributedStringMB.get(),

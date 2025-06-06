@@ -4,13 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
-
-const PlatformAndroid = require('../Platform.android').default;
-const PlatformIOS = require('../Platform.ios').default;
+// $FlowFixMe[missing-platform-support]
+import PlatformAndroid from '../Platform.android';
+// $FlowFixMe[missing-platform-support]
+import PlatformIOS from '../Platform.ios';
 
 describe('Platform', () => {
   describe('OS', () => {
