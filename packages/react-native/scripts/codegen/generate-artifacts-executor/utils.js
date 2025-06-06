@@ -325,13 +325,14 @@ function isReactNativeCoreLibrary(libraryName /*: string */) /*: boolean */ {
 function parseiOSAnnotations(
   libraries /*: $ReadOnlyArray<$FlowFixMe> */,
 ) /*: {[string]: $FlowFixMe} */ {
-  const mLibraryMap = {} /*:: as {[string]: $FlowFixMe} */;
-  const cLibraryMap = {} /*:: as {[string]: $FlowFixMe} */;
+  const mLibraryMap = {}; /*:: as {[string]: $FlowFixMe} */
+  const cLibraryMap = {}; /*:: as {[string]: $FlowFixMe} */
   const map = {};
 
   for (const library of libraries) {
     const iosConfig = library?.config?.ios;
-    if (!iosConfig) {
+
+    if (!iosConfig || (!iosConfig.modules && !iosConfig.components)) {
       continue;
     }
 
