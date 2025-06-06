@@ -16,17 +16,41 @@ namespace facebook::react {
 
 IntersectionObserver::IntersectionObserver(
     IntersectionObserverObserverId intersectionObserverId,
+    std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily,
     ShadowNodeFamily::Shared targetShadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds)
     : intersectionObserverId_(intersectionObserverId),
+      observationRootShadowNodeFamily_(
+          std::move(observationRootShadowNodeFamily)),
       targetShadowNodeFamily_(std::move(targetShadowNodeFamily)),
       thresholds_(std::move(thresholds)),
       rootThresholds_(std::move(rootThresholds)) {}
 
-static Rect getRootBoundingRect(
-    const LayoutableShadowNode& layoutableRootShadowNode) {
-  auto layoutMetrics = layoutableRootShadowNode.getLayoutMetrics();
+static std::shared_ptr<const ShadowNode> getShadowNode(
+    const ShadowNodeFamily::AncestorList& ancestors) {
+  if (ancestors.empty()) {
+    return nullptr;
+  }
+
+  const auto& lastAncestor = ancestors.back();
+  const ShadowNode& parentNode = lastAncestor.first.get();
+  int childIndex = lastAncestor.second;
+
+  const std::shared_ptr<const ShadowNode>& childNode =
+      parentNode.getChildren().at(childIndex);
+  return childNode;
+}
+
+static Rect getRootNodeBoundingRect(const RootShadowNode& rootShadowNode) {
+  const auto layoutableRootShadowNode =
+      dynamic_cast<const LayoutableShadowNode*>(&rootShadowNode);
+
+  react_native_assert(
+      layoutableRootShadowNode != nullptr &&
+      "RootShadowNode instances must always inherit from LayoutableShadowNode.");
+
+  auto layoutMetrics = layoutableRootShadowNode->getLayoutMetrics();
 
   if (layoutMetrics == EmptyLayoutMetrics ||
       layoutMetrics.displayType == DisplayType::None) {
@@ -35,13 +59,12 @@ static Rect getRootBoundingRect(
 
   // Apply the transform to translate the root view to its location in the
   // viewport.
-  return layoutMetrics.frame * layoutableRootShadowNode.getTransform();
+  return layoutMetrics.frame * layoutableRootShadowNode->getTransform();
 }
 
-static Rect getTargetBoundingRect(
-    const ShadowNodeFamily::AncestorList& targetAncestors) {
+static Rect getBoundingRect(const ShadowNodeFamily::AncestorList& ancestors) {
   auto layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
-      targetAncestors,
+      ancestors,
       {/* .includeTransform = */ true,
        /* .includeViewportOffset = */ true});
   return layoutMetrics == EmptyLayoutMetrics ? Rect{} : layoutMetrics.frame;
@@ -63,7 +86,8 @@ static Rect getClippedTargetBoundingRect(
 static Rect computeIntersection(
     const Rect& rootBoundingRect,
     const Rect& targetBoundingRect,
-    const ShadowNodeFamily::AncestorList& targetAncestors) {
+    const ShadowNodeFamily::AncestorList& targetToRootAncestors,
+    bool hasCustomRoot) {
   auto absoluteIntersectionRect =
       Rect::intersect(rootBoundingRect, targetBoundingRect);
 
@@ -79,10 +103,16 @@ static Rect computeIntersection(
     return {};
   }
 
-  // Coordinates of the target after clipping the parts hidden by a parent
-  // (e.g.: in scroll views, or in views with a parent with overflow: hidden)
-  auto clippedTargetBoundingRect =
-      getClippedTargetBoundingRect(targetAncestors);
+  // Coordinates of the target after clipping the parts hidden by a parent,
+  // until till the root (e.g.: in scroll views, or in views with a parent with
+  // overflow: hidden)
+  auto clippedTargetFromRoot =
+      getClippedTargetBoundingRect(targetToRootAncestors);
+
+  auto clippedTargetBoundingRect = hasCustomRoot ? Rect{
+      rootBoundingRect.origin + clippedTargetFromRoot.origin,
+      clippedTargetFromRoot.size}
+      : clippedTargetFromRoot;
 
   return Rect::intersect(rootBoundingRect, clippedTargetBoundingRect);
 }
@@ -105,23 +135,37 @@ std::optional<IntersectionObserverEntry>
 IntersectionObserver::updateIntersectionObservation(
     const RootShadowNode& rootShadowNode,
     HighResTimeStamp time) {
-  const auto layoutableRootShadowNode =
-      dynamic_cast<const LayoutableShadowNode*>(&rootShadowNode);
+  bool hasCustomRoot = observationRootShadowNodeFamily_.has_value();
 
-  react_native_assert(
-      layoutableRootShadowNode != nullptr &&
-      "RootShadowNode instances must always inherit from LayoutableShadowNode.");
+  auto rootAncestors = hasCustomRoot
+      ? observationRootShadowNodeFamily_.value()->getAncestors(rootShadowNode)
+      : ShadowNodeFamily::AncestorList{};
+
+  // Absolute coordinates of the root
+  auto rootBoundingRect = hasCustomRoot
+      ? getBoundingRect(rootAncestors)
+      : getRootNodeBoundingRect(rootShadowNode);
 
   auto targetAncestors = targetShadowNodeFamily_->getAncestors(rootShadowNode);
 
-  // Absolute coordinates of the root
-  auto rootBoundingRect = getRootBoundingRect(*layoutableRootShadowNode);
-
   // Absolute coordinates of the target
-  auto targetBoundingRect = getTargetBoundingRect(targetAncestors);
+  auto targetBoundingRect = getBoundingRect(targetAncestors);
+
+  if ((hasCustomRoot && rootAncestors.empty()) || targetAncestors.empty()) {
+    // If observation root or target is not a descendant of `rootShadowNode`
+    return setNotIntersectingState(
+        rootBoundingRect, targetBoundingRect, {}, time);
+  }
+
+  auto targetToRootAncestors = hasCustomRoot
+      ? targetShadowNodeFamily_->getAncestors(*getShadowNode(rootAncestors))
+      : targetAncestors;
 
   auto intersectionRect = computeIntersection(
-      rootBoundingRect, targetBoundingRect, targetAncestors);
+      rootBoundingRect,
+      targetBoundingRect,
+      targetToRootAncestors,
+      hasCustomRoot);
 
   Float targetBoundingRectArea =
       targetBoundingRect.size.width * targetBoundingRect.size.height;

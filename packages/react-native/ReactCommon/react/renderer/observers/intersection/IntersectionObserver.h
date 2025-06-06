@@ -38,6 +38,7 @@ class IntersectionObserver {
  public:
   IntersectionObserver(
       IntersectionObserverObserverId intersectionObserverId,
+      std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily,
       ShadowNodeFamily::Shared targetShadowNodeFamily,
       std::vector<Float> thresholds,
       std::optional<std::vector<Float>> rootThresholds = std::nullopt);
@@ -79,6 +80,7 @@ class IntersectionObserver {
       HighResTimeStamp time);
 
   IntersectionObserverObserverId intersectionObserverId_;
+  std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily_;
   ShadowNodeFamily::Shared targetShadowNodeFamily_;
   std::vector<Float> thresholds_;
   std::optional<std::vector<Float>> rootThresholds_;
