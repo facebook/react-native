@@ -432,7 +432,13 @@ function validateTypeScriptDefs(packageName /*: string */) {
     noEmit: true,
     skipLibCheck: false,
   };
-  const program = ts.createProgram(files, compilerOptions);
+  const program = ts.createProgram(
+    files,
+    ts.convertCompilerOptionsFromJson(
+      compilerOptions,
+      path.resolve(PACKAGES_DIR, packageName),
+    ),
+  );
   const emitResult = program.emit();
 
   if (emitResult.diagnostics.length) {
