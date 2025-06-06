@@ -41,11 +41,10 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
       disableHostLifecycleEvents = it.getBoolean(ARG_DISABLE_HOST_LIFECYCLE_EVENTS)
     }
     checkNotNull(mainComponentName) { "Cannot loadApp if component name is null" }
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
-      reactDelegate =
-          ReactDelegate(getActivity(), reactHost, mainComponentName, launchOptions)
+
+    reactDelegate = if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+      ReactDelegate(getActivity(), reactHost, mainComponentName, launchOptions)
     } else {
-      reactDelegate =
         ReactDelegate(
           getActivity(),
           reactNativeHost,
@@ -157,9 +156,9 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
 
   /** Builder class to help instantiate a ReactFragment. */
   public class Builder {
-    public var mComponentName: String? = null
-    public var mLaunchOptions: Bundle? = null
-    public var mFabricEnabled: Boolean = false
+    public var componentName: String? = null
+    public var launchOptions: Bundle? = null
+    public var fabricEnabled: Boolean = false
 
     /**
      * Set the Component name for our React Native instance.
@@ -168,7 +167,7 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
      * @return Builder
      */
     public fun setComponentName(componentName: String): Builder {
-      mComponentName = componentName
+      this.componentName = componentName
       return this
     }
 
@@ -179,19 +178,19 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
      * @return Builder
      */
     public fun setLaunchOptions(launchOptions: Bundle): Builder {
-      mLaunchOptions = launchOptions
+      this.launchOptions = launchOptions
       return this
     }
 
     public fun build(): ReactFragment =
       newInstance(
-        mComponentName,
-        mLaunchOptions,
-        mFabricEnabled
+        componentName,
+        launchOptions,
+        fabricEnabled
       )
 
     public fun setFabricEnabled(fabricEnabled: Boolean): Builder {
-      mFabricEnabled = fabricEnabled
+      this.fabricEnabled = fabricEnabled
       return this
     }
   }
@@ -207,19 +206,21 @@ public class ReactFragment : Fragment(), PermissionAwareActivity {
 
     /**
      * @param componentName The name of the react native component
+     * @param launchOptions The launch options for the react native component
      * @param fabricEnabled Flag to enable Fabric for ReactFragment
      * @return A new instance of fragment ReactFragment.
      */
     private fun newInstance(
         componentName: String?, launchOptions: Bundle?, fabricEnabled: Boolean
     ): ReactFragment {
-      val fragment = ReactFragment()
-      val args = Bundle()
-      args.putString(ARG_COMPONENT_NAME, componentName)
-      args.putBundle(ARG_LAUNCH_OPTIONS, launchOptions)
-      args.putBoolean(ARG_FABRIC_ENABLED, fabricEnabled)
-      fragment.setArguments(args)
-      return fragment
+      val args = Bundle().apply {
+        putString(ARG_COMPONENT_NAME, componentName)
+        putBundle(ARG_LAUNCH_OPTIONS, launchOptions)
+        putBoolean(ARG_FABRIC_ENABLED, fabricEnabled)
+      }
+      return ReactFragment().apply {
+        setArguments(args)
+      }
     }
   }
 }
