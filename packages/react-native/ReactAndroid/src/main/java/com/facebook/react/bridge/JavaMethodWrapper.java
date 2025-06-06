@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "JavaMethodWrapper", LegacyArchitectureLogLevel.WARNING);
+        "JavaMethodWrapper", LegacyArchitectureLogLevel.ERROR);
   }
 
   private abstract static class ArgumentExtractor<T> {

@@ -92,7 +92,7 @@ public class BridgeDevSupportManager(
 
   private companion object {
     init {
-      assertLegacyArchitecture("BridgeDevSupportManager", LegacyArchitectureLogLevel.WARNING)
+      assertLegacyArchitecture("BridgeDevSupportManager", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

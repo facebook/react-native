@@ -45,7 +45,7 @@ import java.util.Map;
 public class UIImplementation {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "UIImplementation", LegacyArchitectureLogLevel.WARNING);
+        "UIImplementation", LegacyArchitectureLogLevel.ERROR);
   }
 
   protected Object uiImplementationThreadLock = new Object();

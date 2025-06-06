@@ -100,7 +100,7 @@ internal abstract class AbstractLayoutAnimation {
   companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "AbstractLayoutAnimation", LegacyArchitectureLogLevel.WARNING)
+          "AbstractLayoutAnimation", LegacyArchitectureLogLevel.ERROR)
     }
 
     // Forces animation to be playing 10x slower, used for debug purposes.

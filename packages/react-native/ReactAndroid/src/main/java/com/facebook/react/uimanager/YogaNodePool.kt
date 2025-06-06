@@ -17,7 +17,8 @@ import com.facebook.yoga.YogaNode
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal object YogaNodePool {
   init {
-    LegacyArchitectureLogger.assertLegacyArchitecture("YogaNodePool")
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "YogaNodePool", LegacyArchitectureLogLevel.ERROR)
   }
 
   private val pool: ClearableSynchronizedPool<YogaNode> by

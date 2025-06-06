@@ -52,7 +52,7 @@ internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "LayoutUpdateAnimation", LegacyArchitectureLogLevel.WARNING)
+          "LayoutUpdateAnimation", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

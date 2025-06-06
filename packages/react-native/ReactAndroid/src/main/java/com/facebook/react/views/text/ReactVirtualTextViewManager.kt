@@ -10,6 +10,7 @@ package com.facebook.react.views.text
 import android.view.View
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -37,5 +38,10 @@ internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualT
 
   internal companion object {
     const val REACT_CLASS: String = "RCTVirtualText"
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "ReactVirtualTextViewManager", LegacyArchitectureLogLevel.ERROR)
+    }
   }
 }

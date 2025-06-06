@@ -19,7 +19,8 @@ public class JSCExecutorFactory(private val appName: String, private val deviceN
     JavaScriptExecutorFactory {
 
   init {
-    LegacyArchitectureLogger.assertLegacyArchitecture("JSCExecutorFactory")
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "JSCExecutorFactory", LegacyArchitectureLogLevel.ERROR)
   }
 
   @Throws(Exception::class)

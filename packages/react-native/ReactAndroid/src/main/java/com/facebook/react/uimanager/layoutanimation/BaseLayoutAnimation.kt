@@ -79,7 +79,7 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "BaseLayoutAnimation", LegacyArchitectureLogLevel.WARNING)
+          "BaseLayoutAnimation", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

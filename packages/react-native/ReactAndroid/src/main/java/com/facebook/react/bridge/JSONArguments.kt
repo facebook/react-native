@@ -19,7 +19,7 @@ public object JSONArguments {
 
   init {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "JSONArguments", LegacyArchitectureLogLevel.WARNING)
+        "JSONArguments", LegacyArchitectureLogLevel.ERROR)
   }
 
   /**

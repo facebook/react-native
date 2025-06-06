@@ -53,7 +53,7 @@ public class UIViewOperationQueue {
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "UIViewOperationQueue", LegacyArchitectureLogLevel.WARNING);
+        "UIViewOperationQueue", LegacyArchitectureLogLevel.ERROR);
   }
 
   public static final int DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS = 8;

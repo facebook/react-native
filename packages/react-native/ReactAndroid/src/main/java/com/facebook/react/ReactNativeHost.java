@@ -42,7 +42,7 @@ public abstract class ReactNativeHost {
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "ReactNativeHost", LegacyArchitectureLogLevel.WARNING);
+        "ReactNativeHost", LegacyArchitectureLogLevel.ERROR);
   }
 
   private final Application mApplication;

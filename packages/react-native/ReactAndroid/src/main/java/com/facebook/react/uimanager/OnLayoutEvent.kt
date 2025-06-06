@@ -60,7 +60,7 @@ public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
   public companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "OnLayoutEvent", LegacyArchitectureLogLevel.WARNING)
+          "OnLayoutEvent", LegacyArchitectureLogLevel.ERROR)
     }
 
     private val EVENTS_POOL: SynchronizedPool<OnLayoutEvent> = SynchronizedPool<OnLayoutEvent>(20)
