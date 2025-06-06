@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Builder class for {@link ReactInstanceManager} */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class ReactInstanceManagerBuilder {
 
   static {

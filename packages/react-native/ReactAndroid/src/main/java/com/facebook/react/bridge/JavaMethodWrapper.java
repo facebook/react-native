@@ -21,7 +21,7 @@ import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(

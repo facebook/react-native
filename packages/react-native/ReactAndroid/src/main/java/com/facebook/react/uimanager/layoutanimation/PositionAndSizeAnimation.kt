@@ -11,6 +11,7 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import java.lang.ref.WeakReference
 
@@ -20,7 +21,7 @@ import java.lang.ref.WeakReference
  * passes occurring on every frame. What we might want to try to do instead is use a combined
  * ScaleAnimation and TranslateAnimation.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class PositionAndSizeAnimation(view: View, x: Int, y: Int, width: Int, height: Int) :
     Animation(), LayoutHandlingAnimation {
   private val viewRef = WeakReference(view)

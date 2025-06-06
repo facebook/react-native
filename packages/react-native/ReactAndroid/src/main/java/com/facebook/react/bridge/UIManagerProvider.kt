@@ -8,12 +8,13 @@
 package com.facebook.react.bridge
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 
 /**
  * [UIManagerProvider] is used to create UIManager objects during the initialization of React
  * Native.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public fun interface UIManagerProvider {
 
   /* Provides a [com.facebook.react.bridge.UIManager] for the context received as a parameter. */

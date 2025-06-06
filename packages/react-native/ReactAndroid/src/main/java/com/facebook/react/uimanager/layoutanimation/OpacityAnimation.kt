@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference
  * Animation responsible for updating opacity of a view. It should ideally use hardware texture to
  * optimize rendering performances.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class OpacityAnimation(view: View, private val startOpacity: Float, endOpacity: Float) :
     Animation() {
   private val viewRef = WeakReference(view)
