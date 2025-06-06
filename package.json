@@ -108,7 +108,7 @@
     "supports-color": "^7.1.0",
     "temp-dir": "^2.0.0",
     "tinybench": "^3.1.0",
-    "typescript": "5.0.4",
+    "typescript": "5.8.3",
     "ws": "^6.2.3"
   },
   "resolutions": {
