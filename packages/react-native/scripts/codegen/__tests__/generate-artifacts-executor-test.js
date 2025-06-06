@@ -76,6 +76,7 @@ const packageJson = JSON.stringify({
           jsSrcsDir: '.',
         },
         libraryPath: '.',
+        name: undefined,
       });
     });
 
@@ -96,6 +97,7 @@ const packageJson = JSON.stringify({
           jsSrcsDir: '.',
         },
         libraryPath: rootPath,
+        name: 'react-native',
       });
     });
 
@@ -112,6 +114,7 @@ const packageJson = JSON.stringify({
           jsSrcsDir: '.',
         },
         libraryPath: myDependencyPath,
+        name: 'react-native',
       });
       expect(libraries[1]).toEqual({
         config: {
@@ -120,6 +123,7 @@ const packageJson = JSON.stringify({
           jsSrcsDir: 'component/js',
         },
         libraryPath: myDependencyPath,
+        name: 'my-component',
       });
       expect(libraries[2]).toEqual({
         config: {
@@ -128,6 +132,7 @@ const packageJson = JSON.stringify({
           jsSrcsDir: 'module/js',
         },
         libraryPath: myDependencyPath,
+        name: 'my-module',
       });
     });
   });
