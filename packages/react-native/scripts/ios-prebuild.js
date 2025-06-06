@@ -18,6 +18,7 @@ const {
   createLogger,
   throwIfOnEden,
 } = require('./ios-prebuild/utils');
+const {buildXCFrameworks} = require('./ios-prebuild/xcframework');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -55,9 +56,9 @@ async function main() {
      * in the source path, it creates a link in the target path with an
      * underscore prefix.
      */
-    const link = (fromPath /*:string*/, includePath /*:string*/) => {
+    const link = (fromPath /*:string*/, includePath /*:?string*/) => {
       const source = path.resolve(root, fromPath);
-      const target = path.resolve(linksFolder, includePath);
+      const target = path.resolve(linksFolder, includePath ?? fromPath);
 
       createFolderIfNotExists(target);
 
@@ -96,12 +97,16 @@ async function main() {
       }
 
       if (linkedFiles > 0) {
-        prebuildLog(`Linking ${source} to ${target}...`);
+        prebuildLog(
+          `Linked ${path.relative(root, source)} → ${path.relative(root, target)}`,
+        );
       }
 
       const subfolders = entries
         .filter(dirent => dirent.isDirectory())
         .filter(dirent => dirent.name !== '__tests__')
+        .filter(dirent => dirent.name !== 'tests')
+        .filter(dirent => dirent.name !== 'platform')
         .map(dirent => dirent.name);
 
       // Create links for subfolders
@@ -154,6 +159,8 @@ async function main() {
     link('React/Views/ScrollView', 'React');
     link('React/Views/RefreshControl', 'React');
     link('Libraries/Text', 'React');
+    link('Libraries/AppDelegate');
+    link('ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported', 'React');
     link(
       'ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported',
       'RCTDeprecation',
@@ -168,6 +175,10 @@ async function main() {
     link('Libraries/LinkingIOS', 'React');
     link('Libraries/Settings', 'React');
 
+    link('Libraries/PushNotificationIOS', 'React');
+    link('Libraries/Settings', 'React');
+    link('Libraries/Vibration', 'React');
+
     link('ReactCommon/hermes', 'reacthermes');
     link('ReactCommon/hermes', 'jsireact');
 
@@ -175,9 +186,47 @@ async function main() {
       'ReactCommon/react/renderer/imagemanager',
       'react/renderer/imagemanager',
     );
+    link('ReactCommon/yoga/Yoga', 'ReactCommon/yoga/Yoga');
+    link('ReactCommon/callinvoker', 'ReactCommon');
+    link('ReactCommon/react/renderer/componentregistry');
+    link('ReactCommon/react/renderer/core');
+    link('ReactCommon/react/bridging');
+    link('ReactCommon/react/timing');
+    link('ReactCommon/react/utils');
+    link('ReactCommon/react/debug');
+    link('ReactCommon/react/renderer/debug');
+    link('ReactCommon/react/featureflags');
+    link('ReactCommon/react/renderer/graphics');
+    link(
+      'ReactCommon/react/renderer/graphics/platform/ios',
+      'ReactCommon/react/renderer/graphics',
+    );
+    link('ReactCommon/react/nativemodule/core', 'ReactCommon');
+    link('ReactCommon/react/nativemodule/core/platform/ios', 'ReactCommon');
+
+    link('ReactCommon/react/utils/platform/ios', 'ReactCommon/react/utils');
+    link('ReactCommon/react/runtime');
+    link('ReactCommon/react/runtime/platform/ios', 'ReactCommon/react/runtime');
+    link('ReactCommon/jsitooling/react/runtime', 'ReactCommon/react/runtime');
+    link('ReactCommon/react/renderer/components/legacyviewmanagerinterop');
+    link('ReactCommon/react/renderer/components/view');
+    link(
+      'ReactCommon/react/renderer/components/view/platform/cxx',
+      'ReactCommon/react/renderer/components/view',
+    );
+    link('ReactCommon/react/renderer/mounting');
+    link('ReactCommon/react/renderer/attributedstring');
+    link('ReactCommon/runtimeexecutor/ReactCommon', 'ReactCommon');
+    link('ReactCommon/jsinspector-modern');
+    link('ReactCommon/cxxreact');
+
+    link('.build/codegen/build/generated/ios', 'ReactCodegen');
 
     // BUILD SWIFT PACKAGE
-    buildSwiftPackage(root, buildFolder, buildType);
+    const frameworkPaths = buildSwiftPackage(root, buildFolder, buildType);
+
+    // GENERATE XCFrameworks
+    buildXCFrameworks(root, buildFolder, frameworkPaths, buildType);
 
     // Done!
     prebuildLog('🏁 Done!');
