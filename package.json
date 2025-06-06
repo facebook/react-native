@@ -38,7 +38,7 @@
   },
   "workspaces": [
     "packages/*",
-    "tools/*",
+    "scripts/public-api",
     "!packages/helloworld"
   ],
   "devDependencies": {
