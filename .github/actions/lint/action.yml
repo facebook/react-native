@@ -34,7 +34,7 @@ runs:
       run: ./.github/workflow-scripts/lint_files.sh
     - name: Verify not committing repo after running build
       shell: bash
-      run: yarn run build --check
+      run: yarn run build --validate
     - name: Run flowcheck
       shell: bash
       run: yarn flow-check
