@@ -56,12 +56,20 @@ function generateRCTThirdPartyComponents(
 
   const librariesToCrawl = {} /*:: as {[string]: $FlowFixMe} */;
 
-  const componentLibrariesUsingOldApi = componentLibraries.filter(
-    library => library.config.ios?.componentProvider,
-  );
-  const componentLibrariesUsingNewApi = componentLibraries.filter(
-    library => !library.config.ios?.componentProvider,
-  );
+  // Using new API explicitly or not using any config field to define components.
+  const componentLibrariesUsingNewApi = [];
+  const componentLibrariesUsingOldApi = [];
+
+  for (const library of componentLibraries) {
+    if (
+      library.config.ios?.components ||
+      !library.config.ios?.componentProvider
+    ) {
+      componentLibrariesUsingNewApi.push(library);
+    } else {
+      componentLibrariesUsingOldApi.push(library);
+    }
+  }
 
   // Old API
   componentLibrariesUsingOldApi.forEach(library => {
