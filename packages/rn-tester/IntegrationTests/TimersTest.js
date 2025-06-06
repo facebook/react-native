@@ -12,6 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
+
 const {StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 

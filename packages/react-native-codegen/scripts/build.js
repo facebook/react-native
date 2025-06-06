@@ -30,6 +30,7 @@ const glob = require('glob');
 const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
+
 const prettierConfig = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '..', '.prettierrc'), 'utf8'),
 );

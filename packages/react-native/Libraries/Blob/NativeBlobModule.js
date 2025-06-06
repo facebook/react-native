@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeBlobModule';
 import NativeBlobModule from '../../src/private/specs_DEPRECATED/modules/NativeBlobModule';
+
 export default NativeBlobModule;

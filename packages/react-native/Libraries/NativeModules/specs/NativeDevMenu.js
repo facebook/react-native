@@ -10,4 +10,5 @@
 
 export * from '../../../src/private/devsupport/devmenu/specs/NativeDevMenu';
 import NativeDevMenu from '../../../src/private/devsupport/devmenu/specs/NativeDevMenu';
+
 export default NativeDevMenu;

@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeAnimatedModule';
 import NativeAnimatedModule from '../../src/private/specs_DEPRECATED/modules/NativeAnimatedModule';
+
 export default NativeAnimatedModule;
