@@ -70,7 +70,7 @@ const ERROR_CODES: {[string]: number} = {
   DATA_CLONE_ERR: 25,
 };
 
-/* eslint-disable lint/require-extends-error */
+/* eslint-disable @react-native/monorepo/require-extends-error */
 // $FlowExpectedError[incompatible-variance] name is writable in Error but not in DOMException, but this is how it works on Web.
 export default class DOMException extends Error {
   static +INDEX_SIZE_ERR: 1;

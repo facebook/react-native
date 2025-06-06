@@ -15,7 +15,7 @@ import path from 'path';
 const REPO_DIR = path.resolve(__dirname, '..', '..', '..');
 
 describe('react-native/.eslintrc.js', () => {
-  describe('lint/sort-imports', () => {
+  describe('@react-native/monorepo/sort-imports', () => {
     const testDirectories = [
       '.',
       'packages/react-native',
@@ -35,7 +35,7 @@ describe('react-native/.eslintrc.js', () => {
       expect(config).toHaveProperty(
         'rules',
         expect.objectContaining({
-          'lint/sort-imports': expect.arrayContaining([1]),
+          '@react-native/monorepo/sort-imports': expect.arrayContaining([1]),
         }),
       );
     });

@@ -20,5 +20,5 @@ const MessageQueueTestModule = {
   testHook2: function () {},
 };
 
-// eslint-disable-next-line lint/no-commonjs-exports
+// eslint-disable-next-line @react-native/monorepo/no-commonjs-exports
 module.exports = MessageQueueTestModule;

@@ -12,7 +12,7 @@
 import {Command} from 'commander';
 */
 
-// eslint-disable-next-line lint/sort-imports
+// eslint-disable-next-line @react-native/monorepo/sort-imports
 const {patchCoreCLIUtilsPackageJSON} = require('./scripts/monorepo');
 
 function injectCoreCLIUtilsRuntimePatch() {

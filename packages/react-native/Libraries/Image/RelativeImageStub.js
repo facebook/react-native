@@ -27,5 +27,5 @@ const RelativeImageStub = (AssetRegistry.registerAsset({
   type: 'png',
 }): number);
 
-// eslint-disable-next-line lint/no-commonjs-exports
+// eslint-disable-next-line @react-native/monorepo/no-commonjs-exports
 module.exports = RelativeImageStub;
