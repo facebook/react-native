@@ -196,6 +196,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
       - name: Download App
         uses: actions/download-artifact@v4
         with:

@@ -18,6 +18,8 @@ jobs:
     if: github.repository == 'facebook/react-native'
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
       - name: Danger
