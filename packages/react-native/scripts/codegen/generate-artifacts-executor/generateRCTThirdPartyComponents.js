@@ -56,8 +56,15 @@ function generateRCTThirdPartyComponents(
 
   const librariesToCrawl = {} /*:: as {[string]: $FlowFixMe} */;
 
+  const componentLibrariesUsingOldApi = componentLibraries.filter(
+    library => library.config.ios?.componentProvider,
+  );
+  const componentLibrariesUsingNewApi = componentLibraries.filter(
+    library => !library.config.ios?.componentProvider,
+  );
+
   // Old API
-  componentLibraries.forEach(library => {
+  componentLibrariesUsingOldApi.forEach(library => {
     const {config, libraryPath} = library;
     const libraryName = JSON.parse(
       fs.readFileSync(path.join(libraryPath, 'package.json'), 'utf8'),
@@ -66,9 +73,6 @@ function generateRCTThirdPartyComponents(
     librariesToCrawl[libraryName] = library;
 
     const componentsProvider = config.ios?.componentProvider;
-    if (!componentsProvider) {
-      return;
-    }
 
     delete librariesToCrawl[libraryName];
     componentsInLibraries[libraryName] =
@@ -83,7 +87,7 @@ function generateRCTThirdPartyComponents(
   });
 
   // New API
-  const iosAnnotations = parseiOSAnnotations(componentLibraries);
+  const iosAnnotations = parseiOSAnnotations(componentLibrariesUsingNewApi);
   for (const [libraryName, annotationMap] of Object.entries(iosAnnotations)) {
     const {library, components} = annotationMap;
     librariesToCrawl[libraryName] = library;

@@ -331,8 +331,7 @@ function parseiOSAnnotations(
 
   for (const library of libraries) {
     const iosConfig = library?.config?.ios;
-
-    if (!iosConfig || (!iosConfig.modules && !iosConfig.components)) {
+    if (!iosConfig) {
       continue;
     }
 
