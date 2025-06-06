@@ -36,6 +36,9 @@ async function main() {
   Usage: node ./scripts/build-types
 
   Build generated TypeScript types for react-native.
+
+  Options:
+    --withSnapshot    [Experimental] Include API snapshot generation.
     `);
     process.exitCode = 0;
     return;
