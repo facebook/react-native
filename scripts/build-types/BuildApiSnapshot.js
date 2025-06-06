@@ -27,6 +27,10 @@ const path = require('path');
 const prettier = require('prettier');
 const osTempDir = require('temp-dir');
 
+const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
+  require('./transforms/renameDefaultExportedIdentifiers'),
+];
+
 const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
   require('./transforms/sortTypeDefinitions'),
   require('./transforms/sortProperties'),
@@ -108,6 +112,18 @@ async function preparePackagesInTempDir(
       );
     }),
   );
+
+  const typeDefs = glob.sync(`${tempDirectory}/**/*.d.ts`);
+  await Promise.all(
+    typeDefs.map(async file => {
+      const source = await fs.readFile(file, 'utf-8');
+      const transformed = await applyPostTransforms(
+        source,
+        inputFilesPostTransforms,
+      );
+      await fs.writeFile(file, transformed);
+    }),
+  );
 }
 
 /**
@@ -149,7 +165,10 @@ async function getCleanedUpRollup(tempDirectory: string) {
     .replace(/^\s+$/gm, '') // Clear whitespace-only lines
     .replace(/\n+/gm, '\n'); // Collapse empty lines
 
-  const transformedRollup = await applyPostTransforms(cleanedRollup);
+  const transformedRollup = await applyPostTransforms(
+    cleanedRollup,
+    postTransforms,
+  );
 
   const formattedRollup = prettier.format(transformedRollup, {
     parser: 'typescript',
@@ -158,9 +177,12 @@ async function getCleanedUpRollup(tempDirectory: string) {
   return formattedRollup;
 }
 
-async function applyPostTransforms(inSrc: string): Promise<string> {
+async function applyPostTransforms(
+  inSrc: string,
+  transforms: $ReadOnlyArray<PluginObj<mixed>>,
+): Promise<string> {
   const result = await babel.transformAsync(inSrc, {
-    plugins: ['@babel/plugin-syntax-typescript', ...postTransforms],
+    plugins: ['@babel/plugin-syntax-typescript', ...transforms],
   });
 
   return result.code;
