@@ -10,7 +10,7 @@
     "directory": "packages/rn-tester"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
   "scripts": {
     "start": "react-native start",

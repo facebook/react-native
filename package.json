@@ -54,7 +54,7 @@
     "@microsoft/api-extractor": "^7.52.2",
     "@react-native/metro-babel-transformer": "0.80.0-main",
     "@react-native/metro-config": "0.80.0-main",
-    "@tsconfig/node18": "1.0.1",
+    "@tsconfig/node22": "22.0.2",
     "@types/react": "^19.0.0",
     "@typescript-eslint/parser": "^7.1.1",
     "ansi-styles": "^4.2.1",
