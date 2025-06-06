@@ -16,6 +16,7 @@ import {TextStyle} from '../StyleSheet/StyleSheetTypes';
 import {
   GestureResponderEvent,
   LayoutChangeEvent,
+  MouseEvent, // [macOS]
   NativeSyntheticEvent,
   TextLayoutEventData,
 } from '../Types/CoreEventTypes';
