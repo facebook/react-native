@@ -50,6 +50,9 @@ runs:
     - name: Lint markdown
       shell: bash
       run: yarn run lint-markdown
-    - name: Validate typegen
+    - name: Build types
       shell: bash
       run: yarn build-types
+    - name: Run typescript check of generated types
+      shell: bash
+      run: yarn test-generated-typescript
