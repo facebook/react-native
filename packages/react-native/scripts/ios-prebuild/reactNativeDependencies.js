@@ -141,20 +141,28 @@ function checkExistingVersion(
     'ReactNativeDependencies.xcframework',
   );
 
-  if (fs.existsSync(versionFilePath) && fs.existsSync(rndepXCFramework)) {
-    const versionFileContent = fs.readFileSync(versionFilePath, 'utf8');
-    if (versionFileContent.trim() === resolvedVersion) {
+  if (fs.existsSync(rndepXCFramework)) {
+    if (fs.existsSync(versionFilePath)) {
+      const versionFileContent = fs.readFileSync(versionFilePath, 'utf8');
+      dependencyLog(`Version found on disk: ${versionFileContent}`);
+      if (versionFileContent.trim().toLowerCase() === resolvedVersion) {
+        dependencyLog(
+          `ReactNativeDependencies artifacts already downloaded and up to date: ${artifactsPath}`,
+        );
+        return true;
+      }
+    } else {
       dependencyLog(
-        `ReactNativeDependencies artifacts already downloaded and up to date: ${artifactsPath}`,
+        `React Native Dependencies found on disk at: ${artifactsPath}.\nNo version file has been found. We are going to use it anyway, but there might be some unexpected behaviors.`,
       );
-      return true;
     }
+  } else {
+    dependencyLog('React Native Dependencies not found on disk');
   }
+
   // If the version file does not exist or the version does not match, delete the artifacts folder
   fs.rmSync(artifactsPath, {recursive: true, force: true});
-  dependencyLog(
-    `ReactNativeDependencies artifacts folder already exists, but version does not match. Deleting: ${artifactsPath}`,
-  );
+
   // Lets create the version.txt file
   fs.mkdirSync(artifactsPath, {recursive: true});
   fs.writeFileSync(versionFilePath, resolvedVersion, 'utf8');
