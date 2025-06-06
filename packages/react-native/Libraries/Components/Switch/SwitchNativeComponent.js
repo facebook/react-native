@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent';
-import SwitchNativeComponent from '../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent';
-export default SwitchNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent';

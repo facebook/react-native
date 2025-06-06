@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerIOS';
-import NativeStatusBarManagerIOS from '../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerIOS';
-export default NativeStatusBarManagerIOS;
+export {default} from '../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerIOS';

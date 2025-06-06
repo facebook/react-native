@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent';
-import AndroidDrawerLayoutNativeComponent from '../../../src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent';
-export default AndroidDrawerLayoutNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent';

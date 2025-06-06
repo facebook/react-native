@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeClipboard';
-import NativeClipboard from '../../../src/private/specs_DEPRECATED/modules/NativeClipboard';
-export default NativeClipboard;
+export {default} from '../../../src/private/specs_DEPRECATED/modules/NativeClipboard';
