@@ -74,6 +74,7 @@ const {
   bundleCommand,
   startCommand,
 } = require('@react-native/community-cli-plugin');
+
 commands.push(bundleCommand, startCommand);
 
 const codegenCommand /*: Command */ = {

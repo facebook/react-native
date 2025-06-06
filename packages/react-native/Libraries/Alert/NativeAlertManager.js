@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeAlertManager';
 import NativeAlertManager from '../../src/private/specs_DEPRECATED/modules/NativeAlertManager';
+
 export default NativeAlertManager;

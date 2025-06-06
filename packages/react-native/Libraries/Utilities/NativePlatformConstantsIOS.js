@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativePlatformConstantsIOS';
 import NativePlatformConstantsIOS from '../../src/private/specs_DEPRECATED/modules/NativePlatformConstantsIOS';
+
 export default NativePlatformConstantsIOS;

@@ -13,6 +13,7 @@
 const failureFixtures = require('../__test_fixtures__/failures.js');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const {FlowParser} = require('../../parser');
+
 jest.mock('fs', () => ({
   readFileSync: filename => {
     // Jest in the OSS does not allow to capture variables in closures.

@@ -11,6 +11,7 @@
 'use strict';
 
 import Easing from '../Easing';
+
 describe('Easing', () => {
   it('should work with linear', () => {
     const easing = Easing.linear;

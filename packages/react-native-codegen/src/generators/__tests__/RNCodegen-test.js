@@ -12,6 +12,7 @@
 
 const fixture = require('../__test_fixtures__/fixtures.js');
 const rnCodegen = require('../RNCodegen.js');
+
 const packageName = 'na';
 
 describe('RNCodegen.generate', () => {

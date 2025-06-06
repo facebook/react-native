@@ -11,4 +11,5 @@
 // This module exists to fit CodegenTypes into a namespace under Flow
 
 import * as CodegenTypes from './CodegenTypes';
+
 export type {CodegenTypes};

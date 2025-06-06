@@ -10,4 +10,5 @@
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeRedBox';
 import NativeRedBox from '../../../src/private/specs_DEPRECATED/modules/NativeRedBox';
+
 export default NativeRedBox;

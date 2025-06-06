@@ -25,6 +25,7 @@ import type {
   ____ViewStyleProp_Internal,
   NativeColorValue,
 } from './StyleSheetTypes';
+
 const StyleSheet: StyleSheetExports = (
   require('./StyleSheetExports') as $FlowFixMe
 ).default;
