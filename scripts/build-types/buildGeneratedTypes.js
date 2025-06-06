@@ -56,7 +56,7 @@ async function buildGeneratedTypes(): Promise<void> {
 
   await Promise.all([
     fs.copyFile(
-      path.join(__dirname, 'templates/tsconfig.json'),
+      path.join(__dirname, 'templates', 'tsconfig.json'),
       path.join(
         PACKAGES_DIR,
         'react-native',
@@ -65,7 +65,7 @@ async function buildGeneratedTypes(): Promise<void> {
       ),
     ),
     fs.copyFile(
-      path.join(__dirname, 'templates/tsconfig.test.json'),
+      path.join(__dirname, 'templates', 'tsconfig.test.json'),
       path.join(
         PACKAGES_DIR,
         'react-native',
