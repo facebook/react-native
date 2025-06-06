@@ -8,6 +8,6 @@
  * @format
  */
 
-declare module '@tsconfig/node18/tsconfig.json' {
+declare module '@tsconfig/node22/tsconfig.json' {
   declare module.exports: any;
 }

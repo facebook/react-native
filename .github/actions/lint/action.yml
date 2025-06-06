@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: "The node.js version to use"
     required: false
-    default: "20"
+    default: "22"
   github-token:
     description: "The GitHub token used by pull-bot"
     required: true

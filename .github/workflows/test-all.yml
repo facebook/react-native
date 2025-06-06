@@ -585,7 +585,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["22", "20", "18"]
+        node-version: ["24", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -601,7 +601,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run all the Linters
+      - name: Run all the linters
         uses: ./.github/actions/lint
         with:
           github-token: ${{ env.GH_TOKEN }}
