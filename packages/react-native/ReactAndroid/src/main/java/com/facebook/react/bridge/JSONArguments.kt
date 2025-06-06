@@ -14,7 +14,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public object JSONArguments {
 
   init {
