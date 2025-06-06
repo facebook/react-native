@@ -8,9 +8,13 @@
  * @format
  */
 
+const {
+  buildSwiftPackage,
+  computeFrameworkPaths,
+  computeProductsFolder,
+} = require('./ios-prebuild/build');
 const {getCLIConfiguration} = require('./ios-prebuild/cli');
 const {setup} = require('./ios-prebuild/setup');
-const {buildSwiftPackage} = require('./ios-prebuild/swiftpackage');
 const {createLogger, throwIfOnEden} = require('./ios-prebuild/utils');
 const {buildXCFrameworks} = require('./ios-prebuild/xcframework');
 const path = require('path');
@@ -49,9 +53,23 @@ async function main() {
       await setup(root, buildFolder, currentVersion, buildType);
     }
 
-    const frameworkPaths = buildSwiftPackage(root, buildFolder, buildType);
+    const outputFolder = path.join(buildFolder, 'output', 'spm', buildType);
+    // BUILD SWIFT PACKAGE
+    if (cli.tasks.build) {
+      cli.destinations.forEach(destination => {
+        buildSwiftPackage(
+          root,
+          buildFolder,
+          buildType,
+          destination,
+          outputFolder,
+        );
+      });
+    }
 
     // GENERATE XCFrameworks
+    const productsFolder = computeProductsFolder(outputFolder);
+    const frameworkPaths = computeFrameworkPaths(productsFolder);
     buildXCFrameworks(root, buildFolder, frameworkPaths, buildType);
 
     // Done!
