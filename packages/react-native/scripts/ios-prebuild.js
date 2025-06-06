@@ -12,6 +12,7 @@ const {prepareHermesArtifactsAsync} = require('./ios-prebuild/hermes');
 const {
   prepareReactNativeDependenciesArtifactsAsync,
 } = require('./ios-prebuild/reactNativeDependencies');
+const {buildSwiftPackage} = require('./ios-prebuild/swiftpackage');
 const {
   createFolderIfNotExists,
   createLogger,
@@ -53,10 +54,6 @@ async function main() {
      * Creates a hard link from one path to another. For each subfolder
      * in the source path, it creates a link in the target path with an
      * underscore prefix.
-     * @param {string} fromPath - The path to the source file or directory
-     * @param {string} includePath - Path in the headers folder to create the link
-     * @throws {Error} If the source path does not exist or if the link creation fails
-     * @returns {void}
      */
     const link = (fromPath /*:string*/, includePath /*:string*/) => {
       const source = path.resolve(root, fromPath);
@@ -113,10 +110,21 @@ async function main() {
       });
     };
 
-    // HERMES ARTIFACTS
-    await prepareHermesArtifactsAsync(currentVersion, 'debug');
+    // BUILD TYPE
+    const buildType = process.env.BUILD_TYPE ?? 'debug';
+    if (buildType !== 'debug' && buildType !== 'release') {
+      throw new Error(
+        `Invalid build type: ${buildType}. Must be either "debug" or "release".`,
+      );
+    }
 
-    await prepareReactNativeDependenciesArtifactsAsync(currentVersion, 'debug');
+    // HERMES ARTIFACTS
+    await prepareHermesArtifactsAsync(currentVersion, buildType);
+
+    await prepareReactNativeDependenciesArtifactsAsync(
+      currentVersion,
+      buildType,
+    );
 
     // CODEGEN
     const codegenPath = path.join(root, '.build/codegen');
@@ -167,6 +175,9 @@ async function main() {
       'ReactCommon/react/renderer/imagemanager',
       'react/renderer/imagemanager',
     );
+
+    // BUILD SWIFT PACKAGE
+    buildSwiftPackage(root, buildFolder, buildType);
 
     // Done!
     prebuildLog('🏁 Done!');
