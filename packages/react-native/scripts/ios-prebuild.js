@@ -68,9 +68,11 @@ async function main() {
     }
 
     // GENERATE XCFrameworks
-    const productsFolder = computeProductsFolder(outputFolder);
-    const frameworkPaths = computeFrameworkPaths(productsFolder);
-    buildXCFrameworks(root, buildFolder, frameworkPaths, buildType);
+    if (cli.tasks.compose) {
+      const productsFolder = computeProductsFolder(outputFolder);
+      const frameworkPaths = computeFrameworkPaths(productsFolder);
+      buildXCFrameworks(root, buildFolder, frameworkPaths, buildType);
+    }
 
     // Done!
     prebuildLog('🏁 Done!');

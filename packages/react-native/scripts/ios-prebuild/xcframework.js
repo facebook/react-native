@@ -74,7 +74,7 @@ function buildXCFrameworks(
   buildFolder /*: string */,
   frameworkFolders /*: Array<string> */,
   buildType /*: 'debug' | 'release' */,
-) /*: Array<string> */ {
+) {
   const outputPath = path.join(
     buildFolder,
     'output',
@@ -86,25 +86,26 @@ function buildXCFrameworks(
   cleanPlatformFolders(outputPath);
 
   // Build the XCFrameworks by using each framework folder as input
-  const frameworks = frameworkFolders.map(frameworkFolder => {
-    const buildCommand = `xcodebuild -create-xcframework  -framework "${frameworkFolder}" -output ${outputPath} -allow-internal-distribution`;
-    frameworkLog(`Building ${frameworkFolder}...`);
+  const frameworks = frameworkFolders
+    .map(frameworkFolder => {
+      return `-framework "${frameworkFolder}"`;
+    })
+    .join(' ');
 
-    frameworkLog(buildCommand);
-    try {
-      execSync(buildCommand, {
-        cwd: rootFolder,
-        stdio: 'inherit',
-      });
-    } catch (error) {
-      frameworkLog(
-        `Error building XCFramework: ${error.message}. Check if the build was successful.`,
-        'warning',
-      );
-    }
+  const buildCommand = `xcodebuild -create-xcframework ${frameworks} -output ${outputPath} -allow-internal-distribution`;
 
-    return outputPath;
-  });
+  frameworkLog(buildCommand);
+  try {
+    execSync(buildCommand, {
+      cwd: rootFolder,
+      stdio: 'inherit',
+    });
+  } catch (error) {
+    frameworkLog(
+      `Error building XCFramework: ${error.message}. Check if the build was successful.`,
+      'warning',
+    );
+  }
 
   // Copy header files from the headers folder that we used to build the swift package
   const outputHeaderFiles = copyHeaderFiles(
@@ -121,8 +122,6 @@ function buildXCFrameworks(
 
   // Create the module map file
   createModuleMapFile(outputPath, umbrellaHeaderFile);
-
-  return frameworks;
 }
 
 function copyHeaderFiles(
