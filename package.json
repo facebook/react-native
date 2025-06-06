@@ -31,6 +31,7 @@
     "test-e2e-local": "node ./scripts/release-testing/test-e2e-local.js",
     "test-ios": "./scripts/objc-test.sh test",
     "test-typescript": "tsc -p packages/react-native/types/tsconfig.json",
+    "test-generated-typescript": "tsc -p packages/react-native/types_generated/tsconfig.test.json",
     "test": "jest",
     "fantom": "JS_DIR='..' yarn jest --config packages/react-native-fantom/config/jest.config.js",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
