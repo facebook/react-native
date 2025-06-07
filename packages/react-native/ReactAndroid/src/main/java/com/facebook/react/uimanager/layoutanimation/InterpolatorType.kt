@@ -8,11 +8,12 @@
 package com.facebook.react.uimanager.layoutanimation
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 
 /**
  * Enum representing the different interpolators that can be used in layout animation configuration.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal enum class InterpolatorType {
   LINEAR,
   EASE_IN,

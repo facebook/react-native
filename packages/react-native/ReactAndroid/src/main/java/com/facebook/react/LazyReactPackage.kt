@@ -24,7 +24,7 @@ import com.facebook.systrace.SystraceMessage
 
 /** React package supporting lazy creation of native modules. */
 @Deprecated("This class is deprecated, please use BaseReactPackage instead.")
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public abstract class LazyReactPackage : ReactPackage {
   /**
    * We return an iterable

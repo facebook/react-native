@@ -9,11 +9,12 @@ package com.facebook.react.uimanager
 
 import com.facebook.react.common.ClearableSynchronizedPool
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.yoga.YogaNode
 
 /** Static holder for a recycling pool of YogaNodes. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal object YogaNodePool {
   init {
     LegacyArchitectureLogger.assertLegacyArchitecture("YogaNodePool")
