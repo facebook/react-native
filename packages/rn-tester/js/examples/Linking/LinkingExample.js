@@ -79,7 +79,11 @@ const SendIntentButton = ({
   const handleIntent = async () => {
     setIsOpeningIntent(true);
     try {
-      await Linking.sendIntent(action, extras);
+      await Linking.sendIntent(
+        this.props.action,
+        this.props.extras,
+        this.props.flags,
+      );
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.LONG);
     } finally {
@@ -124,6 +128,10 @@ class IntentAndroidExample extends React.Component<$ReadOnly<{}>> {
                   value: 'com.facebook.katana',
                 },
               ]}
+            />
+            <SendIntentButton
+              action="android.settings.BLUETOOTH_SETTINGS"
+              flags={[0x10000000, 0x00008000]}
             />
           </RNTesterBlock>
         ) : null}
