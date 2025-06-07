@@ -53,10 +53,10 @@ TEST_F(EventAnimationDriverTests, subscribeToViewEvent) {
   EXPECT_EQ(nodesManager_->getValue(animatedValueTag2), 0);
 
   auto scrollEvent = std::make_shared<ScrollEvent>();
-  scrollEvent->contentSize = {1, 2};
-  scrollEvent->contentOffset = {3, 4};
-  scrollEvent->contentInset = {5, 6, 7, 8};
-  scrollEvent->containerSize = {9, 10};
+  scrollEvent->contentSize = {.width = 1, .height = 2};
+  scrollEvent->contentOffset = {.x = 3, .y = 4};
+  scrollEvent->contentInset = {.left = 5, .top = 6, .right = 7, .bottom = 8};
+  scrollEvent->containerSize = {.width = 9, .height = 10};
   scrollEvent->zoomScale = 11.0f;
 
   const std::string eventType{eventName};
