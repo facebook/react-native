@@ -69,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(folly::dynamic)props
                       componentDescriptor:(const facebook::react::ComponentDescriptor &)componentDescriptor;
+
+- (void)measure:(ReactTag)reactTag callback:(const std::function<void (folly::dynamic)> &)callback;
 @end
 
 NS_ASSUME_NONNULL_END

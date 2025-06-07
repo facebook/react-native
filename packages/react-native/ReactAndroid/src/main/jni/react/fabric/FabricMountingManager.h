@@ -64,6 +64,10 @@ class FabricMountingManager final {
       Tag viewTag,
       const folly::dynamic& props);
 
+  void measureAsync(
+      const ShadowView& shadowView,
+      const std::function<void(folly::dynamic)>& callback);
+
  private:
   bool isOnMainThread();
 

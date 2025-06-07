@@ -10,7 +10,11 @@ package com.facebook.react.fabric.mounting;
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.view.View;
+import android.view.ViewParent;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -18,6 +22,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
@@ -31,7 +36,10 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootViewManager;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.ViewUtil;
@@ -427,5 +435,77 @@ public class MountingManager {
     return (surfaceId == ViewUtil.NO_SURFACE_ID
         ? getSurfaceManagerForView(reactTag)
         : getSurfaceManager(surfaceId));
+  }
+
+  public synchronized void measure(int surfaceId, int reactTag, final Callback callback) {
+    UiThreadUtil.assertOnUiThread();
+    SurfaceMountingManager smm = getSurfaceMountingManager(surfaceId, reactTag);
+    View view;
+    try {
+      view = smm.getView(reactTag);
+    } catch (IllegalViewOperationException ex) {
+      FLog.e(TAG, "Failed to find view for tag: %d. Error: %s", reactTag, ex.getMessage());
+      return;
+    }
+    int[] mMeasureBuffer = new int[4];
+    View rootView = (View) RootViewUtil.getRootView(view);
+    if (rootView == null) {
+      FLog.e(TAG, "Failed to get root view for surfaceId: %d", surfaceId);
+      return; // Simply omit the measure call, we assume that we are in the process of tearing down
+      // the surface and all its children, so we don't care at this point about delivering
+    }
+
+    measure(rootView, view, mMeasureBuffer);
+
+    float x = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
+    float y = PixelUtil.toDIPFromPixel(mMeasureBuffer[1]);
+    float width = PixelUtil.toDIPFromPixel(mMeasureBuffer[2]);
+    float height = PixelUtil.toDIPFromPixel(mMeasureBuffer[3]);
+    callback.invoke(0, 0, width, height, x, y);
+  }
+
+  public synchronized void measure(View rootView, View v, int[] outputBuffer) {
+    computeBoundingBox(rootView, outputBuffer);
+    int rootX = outputBuffer[0];
+    int rootY = outputBuffer[1];
+    computeBoundingBox(v, outputBuffer);
+    outputBuffer[0] -= rootX;
+    outputBuffer[1] -= rootY;
+  }
+
+  private void computeBoundingBox(View view, int[] outputBuffer) {
+    RectF mBoundingBox = new RectF();
+    mBoundingBox.set(0, 0, view.getWidth(), view.getHeight());
+    mapRectFromViewToWindowCoords(view, mBoundingBox);
+
+    outputBuffer[0] = Math.round(mBoundingBox.left);
+    outputBuffer[1] = Math.round(mBoundingBox.top);
+    outputBuffer[2] = Math.round(mBoundingBox.right - mBoundingBox.left);
+    outputBuffer[3] = Math.round(mBoundingBox.bottom - mBoundingBox.top);
+  }
+
+  private void mapRectFromViewToWindowCoords(View view, RectF rect) {
+    Matrix matrix = view.getMatrix();
+    if (!matrix.isIdentity()) {
+      matrix.mapRect(rect);
+    }
+
+    rect.offset(view.getLeft(), view.getTop());
+
+    ViewParent parent = view.getParent();
+    while (parent instanceof View) {
+      View parentView = (View) parent;
+
+      rect.offset(-parentView.getScrollX(), -parentView.getScrollY());
+
+      matrix = parentView.getMatrix();
+      if (!matrix.isIdentity()) {
+        matrix.mapRect(rect);
+      }
+
+      rect.offset(parentView.getLeft(), parentView.getTop());
+
+      parent = parentView.getParent();
+    }
   }
 }

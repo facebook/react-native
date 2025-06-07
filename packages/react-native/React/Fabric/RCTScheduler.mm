@@ -71,6 +71,11 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidSynchronouslyUpdateViewOnUIThread:tag props:props];
   }
+  
+  void schedulerMeasureAsync(const ShadowView& shadowView, const std::function<void(folly::dynamic)> &callback) override {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerMeasureAsync:shadowView callback:callback];
+  }
 
  private:
   void *scheduler_;

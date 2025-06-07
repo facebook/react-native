@@ -722,6 +722,14 @@ void FabricUIManagerBinding::schedulerShouldSynchronouslyUpdateViewOnUIThread(
   }
 }
 
+void FabricUIManagerBinding::schedulerMeasureAsync(
+    const facebook::react::ShadowView& shadowView,
+    const std::function<void(folly::dynamic)>& callback) {
+  if (mountingManager_) {
+    mountingManager_->measureAsync(shadowView, callback);
+  }
+}
+
 void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {

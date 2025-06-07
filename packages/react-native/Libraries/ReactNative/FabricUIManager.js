@@ -47,6 +47,14 @@ export interface Spec {
     node: Node | NativeElementReference,
     callback: MeasureOnSuccessCallback,
   ) => void;
+  /**
+   * Same as `measure()`, but instead of using the shadow nodes layout information,
+   * it uses the native layout hierarchy to measure the view on the UI thread.
+   */
+  +measureAsyncOnUI: (
+    node: Node | NativeElementReference,
+    callback: MeasureOnSuccessCallback,
+  ) => void;
   +measureInWindow: (
     node: Node | NativeElementReference,
     callback: MeasureInWindowOnSuccessCallback,
@@ -115,6 +123,7 @@ const CACHED_PROPERTIES = [
   'appendChildToSet',
   'completeRoot',
   'measure',
+  'measureAsyncOnUI',
   'measureInWindow',
   'measureLayout',
   'configureNextLayoutAnimation',
