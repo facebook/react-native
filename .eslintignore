@@ -12,8 +12,8 @@ packages/*/node_modules
 packages/*/dist
 packages/*/types_generated
 packages/debugger-frontend/dist/**/*
+packages/eslint-plugin-monorepo/rules/sort-imports.js
 packages/react-native-codegen/lib
-tools/eslint/rules/sort-imports.js
 **/Pods/*
 **/*.macos.js
 **/*.windows.js
