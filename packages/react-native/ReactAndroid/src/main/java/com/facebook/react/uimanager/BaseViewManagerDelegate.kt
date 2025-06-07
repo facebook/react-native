@@ -149,6 +149,5 @@ public abstract class BaseViewManagerDelegate<
   }
 
   @Suppress("ACCIDENTAL_OVERRIDE")
-  public override fun receiveCommand(view: T, commandName: String, args: ReadableArray?): Unit =
-      Unit
+  public override fun receiveCommand(view: T, commandName: String, args: ReadableArray): Unit = Unit
 }

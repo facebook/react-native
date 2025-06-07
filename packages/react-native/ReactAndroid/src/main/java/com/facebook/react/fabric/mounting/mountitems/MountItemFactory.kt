@@ -19,7 +19,7 @@ internal object MountItemFactory {
       surfaceId: Int,
       reactTag: Int,
       commandId: Int,
-      commandArgs: ReadableArray?
+      commandArgs: ReadableArray
   ): DispatchCommandMountItem =
       DispatchIntCommandMountItem(surfaceId, reactTag, commandId, commandArgs)
 
@@ -29,7 +29,7 @@ internal object MountItemFactory {
       surfaceId: Int,
       reactTag: Int,
       commandId: String,
-      commandArgs: ReadableArray?
+      commandArgs: ReadableArray
   ): DispatchCommandMountItem =
       DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs)
 

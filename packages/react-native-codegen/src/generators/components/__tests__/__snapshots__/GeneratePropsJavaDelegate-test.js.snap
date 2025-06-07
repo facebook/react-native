@@ -221,7 +221,7 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
   }
 
   @Override
-  public void receiveCommand(T view, String commandName, @Nullable ReadableArray args) {
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case \\"flashScrollIndicators\\":
         mViewManager.flashScrollIndicators(view);
@@ -272,7 +272,7 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
   }
 
   @Override
-  public void receiveCommand(T view, String commandName, @Nullable ReadableArray args) {
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case \\"handleRootTag\\":
         mViewManager.handleRootTag(view, args.getDouble(0));

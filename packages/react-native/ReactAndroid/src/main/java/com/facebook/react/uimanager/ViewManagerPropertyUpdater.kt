@@ -186,6 +186,6 @@ public object ViewManagerPropertyUpdater {
     }
 
     @Suppress("ACCIDENTAL_OVERRIDE")
-    override fun receiveCommand(view: T, commandName: String, args: ReadableArray?) = Unit
+    override fun receiveCommand(view: T, commandName: String, args: ReadableArray) = Unit
   }
 }
