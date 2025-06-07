@@ -19,6 +19,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 
 #import <React/RCTUtilsUIOverride.h>
+#import <ReactCommon/RuntimeExecutorSyncUIThreadUtils.h>
 #import "RCTAssert.h"
 #import "RCTLog.h"
 
@@ -314,6 +315,11 @@ void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *
     return;
   }
 
+  if (facebook::react::ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
+    facebook::react::unsafeExecuteOnMainThreadSync(block);
+    return;
+  }
+
   if (facebook::react::ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
     RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: %@", context);
   }
@@ -338,6 +344,11 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   }
 
   if (!DISPATCH_EXPECT(*onceToken == 0L, NO)) {
+    return;
+  }
+
+  if (facebook::react::ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
+    facebook::react::unsafeExecuteOnMainThreadSync(block);
     return;
   }
 
