@@ -32,11 +32,20 @@ const argv = yargs
   .option('s', {
     alias: 'schema-query',
   })
+  .option('e', {
+    alias: 'exclude',
+  })
+  .option('f', {
+    alias: 'filter',
+  })
   .parseSync();
 
 const platform: string = argv.platform.toLowerCase();
 const output: string = argv.output;
 const schemaQuery: string = argv.s;
+
+const exclude: string = argv.e;
+const filter: ?Array<string> = argv.filter;
 
 if (!['ios', 'android'].includes(platform)) {
   throw new Error(`Invalid platform ${platform}`);
@@ -85,10 +94,14 @@ for (const file of schemaFiles) {
         }
       }
 
-      modules[specName] = module;
-      specNameToFile[specName] = file;
+      if (!(exclude && exclude === specName)) {
+        if (module.type === 'Component' && filter?.includes(specName)) {
+          continue;
+        }
+        modules[specName] = module;
+        specNameToFile[specName] = file;
+      }
     }
   }
 }
-
 fs.writeFileSync(output, JSON.stringify({modules}));
