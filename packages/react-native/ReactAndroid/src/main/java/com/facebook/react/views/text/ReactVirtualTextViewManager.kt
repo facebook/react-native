@@ -9,6 +9,8 @@ package com.facebook.react.views.text
 
 import android.view.View
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -18,7 +20,7 @@ import com.facebook.react.uimanager.ThemedReactContext
  * operation will throw an [IllegalStateException]
  */
 @ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualTextShadowNode>() {
 
   override fun getName(): String = REACT_CLASS
@@ -36,5 +38,10 @@ internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualT
 
   internal companion object {
     const val REACT_CLASS: String = "RCTVirtualText"
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "ReactVirtualTextViewManager", LegacyArchitectureLogLevel.ERROR)
+    }
   }
 }

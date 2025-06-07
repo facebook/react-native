@@ -16,7 +16,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Simple spring interpolator */
 // TODO(7613736): Improve spring interpolator with friction and damping variable support
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class SimpleSpringInterpolator : Interpolator {
   private val _springDamping: Float
 
@@ -39,7 +39,7 @@ internal class SimpleSpringInterpolator : Interpolator {
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "SimpleSpringInterpolator", LegacyArchitectureLogLevel.WARNING)
+          "SimpleSpringInterpolator", LegacyArchitectureLogLevel.ERROR)
     }
 
     private const val FACTOR = 0.5f

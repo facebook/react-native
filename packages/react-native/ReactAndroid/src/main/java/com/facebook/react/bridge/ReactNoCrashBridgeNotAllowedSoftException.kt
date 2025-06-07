@@ -8,9 +8,10 @@
 package com.facebook.react.bridge
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class ReactNoCrashBridgeNotAllowedSoftException : ReactNoCrashSoftException {
 
   public constructor(m: String) : super(m)
@@ -21,7 +22,8 @@ public class ReactNoCrashBridgeNotAllowedSoftException : ReactNoCrashSoftExcepti
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("ReactNoCrashBridgeNotAllowedSoftException")
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "ReactNoCrashBridgeNotAllowedSoftException", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

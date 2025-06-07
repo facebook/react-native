@@ -37,11 +37,11 @@ import com.facebook.yoga.YogaWrap;
  * may or may not be embedded in a parent text. There are better solutions that should probably be
  * explored, namely using the VirtualText class in JS and setting the correct set of validAttributes
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class LayoutShadowNode extends ReactShadowNodeImpl {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "LayoutShadowNode", LegacyArchitectureLogLevel.WARNING);
+        "LayoutShadowNode", LegacyArchitectureLogLevel.ERROR);
   }
 
   /** A Mutable version of com.facebook.yoga.YogaValue */

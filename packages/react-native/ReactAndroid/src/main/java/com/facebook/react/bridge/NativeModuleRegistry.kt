@@ -10,6 +10,7 @@ package com.facebook.react.bridge
 import com.facebook.react.bridge.ReactMarker.logMarker
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger.assertLegacyArchitecture
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.systrace.Systrace
@@ -17,7 +18,7 @@ import com.facebook.systrace.Systrace.beginSection
 import com.facebook.systrace.Systrace.endSection
 
 /** A set of Java APIs to expose to a particular JavaScript instance. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class NativeModuleRegistry(
     private val reactApplicationContext: ReactApplicationContext,
     private val modules: MutableMap<String, ModuleHolder>
@@ -145,4 +146,11 @@ public class NativeModuleRegistry(
         add(module.module)
       }
     }
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "NativeModuleRegistry", logLevel = LegacyArchitectureLogLevel.ERROR)
+    }
+  }
 }

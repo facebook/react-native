@@ -19,6 +19,8 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode
@@ -27,7 +29,7 @@ import com.facebook.yoga.YogaConstants
 import java.util.Locale
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class FrescoBasedReactTextInlineImageShadowNode(
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, ImageRequest, *, *>,
     private val callerContext: Any?
@@ -135,6 +137,11 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
       val formattedName = name.lowercase(Locale.getDefault()).replace("-", "_")
       val resId = context.resources.getIdentifier(formattedName, "drawable", context.packageName)
       return Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(resId.toString()).build()
+    }
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "FrescoBasedReactTextInlineImageShadowNode", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

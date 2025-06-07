@@ -8,10 +8,19 @@
 package com.facebook.react.views.text
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** A virtual text node. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class ReactVirtualTextShadowNode : ReactBaseTextShadowNode() {
 
   override fun isVirtual(): Boolean = true
+
+  internal companion object {
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "ReactVirtualTextShadowNode", LegacyArchitectureLogLevel.ERROR)
+    }
+  }
 }

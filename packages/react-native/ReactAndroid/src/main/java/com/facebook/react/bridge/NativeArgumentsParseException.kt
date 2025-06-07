@@ -8,10 +8,11 @@
 package com.facebook.react.bridge
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Exception thrown when a native module method call receives unexpected arguments from JS. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class NativeArgumentsParseException : JSApplicationCausedNativeException {
 
   constructor(detailMessage: String) : super(detailMessage)
@@ -20,7 +21,8 @@ internal class NativeArgumentsParseException : JSApplicationCausedNativeExceptio
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("NativeArgumentsParseException")
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "NativeArgumentsParseException", logLevel = LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

@@ -15,7 +15,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  * Class responsible for handling layout view deletion animation, applied to view whenever a valid
  * config was supplied for the layout animation of DELETE type.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class LayoutDeleteAnimation : BaseLayoutAnimation() {
 
   override fun isReverse(): Boolean = true
@@ -23,7 +23,7 @@ internal class LayoutDeleteAnimation : BaseLayoutAnimation() {
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "LayoutDeleteAnimation", LegacyArchitectureLogLevel.WARNING)
+          "LayoutDeleteAnimation", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

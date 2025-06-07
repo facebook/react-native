@@ -54,7 +54,7 @@ import com.facebook.systrace.Systrace
             SourceCodeModule::class,
             TimingModule::class,
             UIManagerModule::class])
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class CoreModulesPackage(
     private val reactInstanceManager: ReactInstanceManager,
     private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
@@ -188,7 +188,7 @@ internal class CoreModulesPackage(
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "CoreModulesPackage", LegacyArchitectureLogLevel.WARNING)
+          "CoreModulesPackage", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

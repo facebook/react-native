@@ -19,7 +19,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  * Simple container class to keep track of [ReactShadowNode]s associated with a particular
  * UIManagerModule instance.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class ShadowNodeRegistry {
   private val tagsToCSSNodes = SparseArray<ReactShadowNode<*>>()
   private val rootTags = SparseBooleanArray()
@@ -85,7 +85,7 @@ internal class ShadowNodeRegistry {
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ShadowNodeRegistry", LegacyArchitectureLogLevel.WARNING)
+          "ShadowNodeRegistry", LegacyArchitectureLogLevel.ERROR)
     }
   }
 
