@@ -291,9 +291,7 @@ exports[`execute test-app "RCTThirdPartyComponentsProvider.mm" should match snap
 
   dispatch_once(&nativeComponentsToken, ^{
     thirdPartyComponents = @{
-		@\\"TestAppDeprecatedComponent\\": NSClassFromString(@\\"RCTTestAppDeprecatedComponentClass\\"), // test-app
 		@\\"TestAppComponent\\": NSClassFromString(@\\"RCTTestAppComponent\\"), // test-app
-		@\\"TestLibraryDeprecatedComponent\\": NSClassFromString(@\\"RCTTestLibraryDeprecatedComponentClass\\"), // test-library
 		@\\"TestLibraryComponent\\": NSClassFromString(@\\"RCTTestLibraryComponent\\"), // test-library
     };
   });
@@ -778,7 +776,7 @@ exports[`execute test-app-legacy "RCTThirdPartyComponentsProvider.mm" should mat
 
   dispatch_once(&nativeComponentsToken, ^{
     thirdPartyComponents = @{
-
+		@\\"TestAppDeprecatedComponent\\": NSClassFromString(@\\"RCTTestAppDeprecatedComponentClass\\"), // test-app-legacy
     };
   });
 
