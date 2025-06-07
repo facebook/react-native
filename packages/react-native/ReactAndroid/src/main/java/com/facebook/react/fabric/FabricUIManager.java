@@ -808,7 +808,7 @@ public class FabricUIManager
       int rootTag,
       int reactTag,
       final String componentName,
-      @Nullable Object props,
+      ReadableMap props,
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
     mMountItemDispatcher.addPreAllocateMountItem(
