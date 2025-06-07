@@ -131,7 +131,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
     }
-    val source = ImageSource(reactApplicationContext, uriString)
+    val source = ImageSource(getReactApplicationContext(), uriString)
     val imageRequestBuilder: ImageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(source.uri)
     val request: ImageRequest =
