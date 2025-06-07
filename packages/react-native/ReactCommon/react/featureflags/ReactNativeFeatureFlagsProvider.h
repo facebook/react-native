@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ae65ebd8470b768fa42f240842d0f87>>
+ * @generated SignedSource<<440fe6ac5cdeafa83d31bf7b4be162c2>>
  */
 
 /**
@@ -49,6 +49,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableIntersectionObserverEventLoopIntegration() = 0;
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
+  virtual bool enableLineHeightCenteringOnIOS() = 0;
   virtual bool enableMainQueueCoordinatorOnIOS() = 0;
   virtual bool enableMainQueueModulesOnIOS() = 0;
   virtual bool enableModuleArgumentNSNullConversionIOS() = 0;
