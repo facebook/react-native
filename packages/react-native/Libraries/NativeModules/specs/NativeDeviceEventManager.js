@@ -10,4 +10,5 @@
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeDeviceEventManager';
 import NativeDeviceEventManager from '../../../src/private/specs_DEPRECATED/modules/NativeDeviceEventManager';
+
 export default NativeDeviceEventManager;

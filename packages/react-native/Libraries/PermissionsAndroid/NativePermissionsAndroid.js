@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativePermissionsAndroid';
 import NativePermissionsAndroid from '../../src/private/specs_DEPRECATED/modules/NativePermissionsAndroid';
+
 export default NativePermissionsAndroid;

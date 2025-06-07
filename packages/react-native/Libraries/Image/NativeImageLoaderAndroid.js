@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeImageLoaderAndroid';
 import NativeImageLoaderAndroid from '../../src/private/specs_DEPRECATED/modules/NativeImageLoaderAndroid';
+
 export default NativeImageLoaderAndroid;

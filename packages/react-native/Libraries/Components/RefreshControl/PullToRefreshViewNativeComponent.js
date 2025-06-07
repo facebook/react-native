@@ -10,4 +10,5 @@
 
 export * from '../../../src/private/specs_DEPRECATED/components/PullToRefreshViewNativeComponent';
 import PullToRefreshViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/PullToRefreshViewNativeComponent';
+
 export default PullToRefreshViewNativeComponent;
