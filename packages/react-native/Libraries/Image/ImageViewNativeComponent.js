@@ -162,10 +162,10 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
       };
 
-const ImageViewNativeComponent: HostComponent<ImageHostComponentProps> =
+const ImageViewNativeComponent_default: HostComponent<ImageHostComponentProps> =
   NativeComponentRegistry.get<ImageHostComponentProps>(
     'RCTImageView',
     () => __INTERNAL_VIEW_CONFIG,
   );
 
-export default ImageViewNativeComponent;
+export default ImageViewNativeComponent_default;

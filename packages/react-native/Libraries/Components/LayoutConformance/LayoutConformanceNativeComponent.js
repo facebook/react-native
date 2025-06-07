@@ -18,7 +18,7 @@ type Props = $ReadOnly<{
   ...ViewProps,
 }>;
 
-const LayoutConformanceNativeComponent: HostComponent<Props> =
+const LayoutConformanceNativeComponent_default: HostComponent<Props> =
   NativeComponentRegistry.get<Props>('LayoutConformance', () => ({
     uiViewClassName: 'LayoutConformance',
     validAttributes: {
@@ -26,4 +26,4 @@ const LayoutConformanceNativeComponent: HostComponent<Props> =
     },
   }));
 
-export default LayoutConformanceNativeComponent;
+export default LayoutConformanceNativeComponent_default;
