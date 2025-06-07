@@ -10,4 +10,5 @@
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeDialogManagerAndroid';
 import NativeDialogManagerAndroid from '../../../src/private/specs_DEPRECATED/modules/NativeDialogManagerAndroid';
+
 export default NativeDialogManagerAndroid;

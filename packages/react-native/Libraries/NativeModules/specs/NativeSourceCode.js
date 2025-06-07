@@ -10,4 +10,5 @@
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeSourceCode';
 import NativeSourceCode from '../../../src/private/specs_DEPRECATED/modules/NativeSourceCode';
+
 export default NativeSourceCode;
