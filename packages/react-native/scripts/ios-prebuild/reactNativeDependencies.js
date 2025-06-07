@@ -14,6 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
 const {promisify} = require('util');
+
 const pipeline = promisify(stream.pipeline);
 
 const dependencyLog = createLogger('ReactNativeDependencies');

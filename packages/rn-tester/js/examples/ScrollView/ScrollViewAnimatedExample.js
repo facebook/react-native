@@ -14,6 +14,7 @@ import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedVa
 
 const React = require('react');
 const ReactNative = require('react-native');
+
 const {Component} = React;
 const {StyleSheet, Text, View, Animated, Easing, TouchableOpacity, Dimensions} =
   ReactNative;

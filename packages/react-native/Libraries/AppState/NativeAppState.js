@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeAppState';
 import NativeAppState from '../../src/private/specs_DEPRECATED/modules/NativeAppState';
+
 export default NativeAppState;

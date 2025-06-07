@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativePlatformConstantsAndroid';
 import NativePlatformConstantsAndroid from '../../src/private/specs_DEPRECATED/modules/NativePlatformConstantsAndroid';
+
 export default NativePlatformConstantsAndroid;
