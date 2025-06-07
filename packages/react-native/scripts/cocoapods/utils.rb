@@ -60,7 +60,7 @@ class ReactNativePodsUtils
         # this is needed for Xcode 14, see more details here https://github.com/facebook/react-native/issues/34673
         # we should be able to remove this once CocoaPods catches up to it, see more details here https://github.com/CocoaPods/CocoaPods/issues/11402
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-            if pod_name.to_s == 'React-Core'
+            if target_installation_result.target.root_spec.name == 'React-Core'
                 target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
                     resource_bundle_target.build_configurations.each do |config|
                         config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
@@ -181,7 +181,12 @@ class ReactNativePodsUtils
 
     def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration_type)
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-            if pod_name.to_s == target_pod_name
+            # https://github.com/CocoaPods/CocoaPods/blob/master/lib/cocoapods/target/pod_target.rb
+            # In multitarget project, pod_name may contain scope_suffix, namely: platform, OS version, swift version, etc.
+            # E.g. hermes-engine-tvOS16.0
+            # Root spec name is the original pod name, without any scope suffix.
+            original_pod_name = target_installation_result.target.root_spec.name
+            if original_pod_name == target_pod_name
                 target_installation_result.native_target.build_configurations.each do |config|
                         if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
                             config.build_settings[settings_name] ||= '$(inherited) '
@@ -348,7 +353,7 @@ class ReactNativePodsUtils
 
             # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
             # This helps with backward compatibility.
-            if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
+            if target_installation_result.target.root_spec.name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
                 Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
                 rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
                 target_installation_result.native_target.build_configurations.each do |config|
