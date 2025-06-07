@@ -117,7 +117,8 @@ void AnimatedModule::setAnimatedNodeValue(
     jsi::Runtime& /*rt*/,
     Tag nodeTag,
     double value) {
-  operations_.emplace_back(SetAnimatedNodeValueOp{nodeTag, value});
+  operations_.emplace_back(
+      SetAnimatedNodeValueOp{.nodeTag = nodeTag, .value = value});
 }
 
 void AnimatedModule::setAnimatedNodeOffset(
@@ -143,14 +144,16 @@ void AnimatedModule::connectAnimatedNodeToView(
     jsi::Runtime& /*rt*/,
     Tag nodeTag,
     Tag viewTag) {
-  operations_.emplace_back(ConnectAnimatedNodeToViewOp{nodeTag, viewTag});
+  operations_.emplace_back(
+      ConnectAnimatedNodeToViewOp{.nodeTag = nodeTag, .viewTag = viewTag});
 }
 
 void AnimatedModule::disconnectAnimatedNodeFromView(
     jsi::Runtime& /*rt*/,
     Tag nodeTag,
     Tag viewTag) {
-  operations_.emplace_back(DisconnectAnimatedNodeFromViewOp{nodeTag, viewTag});
+  operations_.emplace_back(
+      DisconnectAnimatedNodeFromViewOp{.nodeTag = nodeTag, .viewTag = viewTag});
 }
 
 void AnimatedModule::restoreDefaultValues(jsi::Runtime& /*rt*/, Tag nodeTag) {
