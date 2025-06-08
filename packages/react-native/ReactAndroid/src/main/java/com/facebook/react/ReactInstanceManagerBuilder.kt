@@ -79,7 +79,7 @@ public class ReactInstanceManagerBuilder {
     return this
   }
 
-  public fun setUIManagerProvider(uiManagerProvider: UIManagerProvider): ReactInstanceManagerBuilder {
+  public fun setUIManagerProvider(uiManagerProvider: UIManagerProvider?): ReactInstanceManagerBuilder {
     this.uiManagerProvider = uiManagerProvider
     return this
   }
@@ -191,7 +191,7 @@ public class ReactInstanceManagerBuilder {
    * Set the custom [DevSupportManagerFactory]. If not set, will use [DefaultDevSupportManagerFactory].
    */
   public fun setDevSupportManagerFactory(
-      devSupportManagerFactory: DevSupportManagerFactory
+      devSupportManagerFactory: DevSupportManagerFactory?
   ): ReactInstanceManagerBuilder {
     this.devSupportManagerFactory = devSupportManagerFactory
     return this
