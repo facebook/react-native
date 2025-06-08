@@ -25,7 +25,7 @@
     "@isaacs/ttlcache": "^1.4.1",
     "@react-native/debugger-frontend": "0.80.0-main",
     "chrome-launcher": "^0.15.2",
-    "chromium-edge-launcher": "^0.2.0",
+    "chromium-edge-launcher": "^0.3.0",
     "connect": "^3.6.5",
     "debug": "^4.4.0",
     "invariant": "^2.2.4",
