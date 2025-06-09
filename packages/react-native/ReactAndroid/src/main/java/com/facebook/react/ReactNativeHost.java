@@ -37,12 +37,12 @@ import java.util.List;
     message =
         "This class will be replaced by com.facebook.react.ReactHost in the new architecture of"
             + " React Native.")
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public abstract class ReactNativeHost {
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "ReactNativeHost", LegacyArchitectureLogLevel.WARNING);
+        "ReactNativeHost", LegacyArchitectureLogLevel.ERROR);
   }
 
   private final Application mApplication;

@@ -26,7 +26,7 @@ import com.facebook.react.uimanager.IllegalViewOperationException
  * Class responsible for parsing and converting layout animation data into native [Animation] in
  * order to animate layout when a valid configuration has been supplied by the application.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal abstract class AbstractLayoutAnimation {
   var interpolator: Interpolator? = null
   var delayMs: Int = 0
@@ -100,7 +100,7 @@ internal abstract class AbstractLayoutAnimation {
   companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "AbstractLayoutAnimation", LegacyArchitectureLogLevel.WARNING)
+          "AbstractLayoutAnimation", LegacyArchitectureLogLevel.ERROR)
     }
 
     // Forces animation to be playing 10x slower, used for debug purposes.

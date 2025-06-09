@@ -1,6 +1,6 @@
 # This jobs runs every day 2 hours after the nightly job and its purpose is to report
 # a failure in case the nightly failed to be published. We are going to hook this to an internal automation.
-name: Check Nigthlies
+name: Check Nightlies
 
 on:
   workflow_dispatch:

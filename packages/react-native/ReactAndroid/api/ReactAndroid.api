@@ -368,10 +368,10 @@ public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate 
 
 public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
 	public fun <init> ()V
-	public fun build ()Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
+	public final fun build ()Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
 	protected abstract fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
-	public fun setPackages (Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
-	public fun setReactApplicationContext (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
+	public final fun setPackages (Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
+	public final fun setReactApplicationContext (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
 }
 
 public class com/facebook/react/ReactRootView : android/widget/FrameLayout, com/facebook/react/uimanager/ReactRoot, com/facebook/react/uimanager/RootView {
@@ -2387,33 +2387,6 @@ public abstract interface class com/facebook/react/fabric/mounting/MountItemDisp
 	public abstract fun didDispatchMountItems ()V
 	public abstract fun didMountItems (Ljava/util/List;)V
 	public abstract fun willMountItems (Ljava/util/List;)V
-}
-
-public class com/facebook/react/fabric/mounting/MountingManager {
-	public static final field TAG Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/fabric/mounting/MountingManager$MountItemExecutor;)V
-	public fun attachRootView (ILandroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
-	public fun clearJSResponder ()V
-	public fun enqueuePendingEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
-	public fun getEventEmitter (II)Lcom/facebook/react/fabric/events/EventEmitterWrapper;
-	public fun getSurfaceManager (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerEnforced (ILjava/lang/String;)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerForView (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerForViewEnforced (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getViewExists (I)Z
-	public fun isWaitingForViewAttach (I)Z
-	public fun measure (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
-	public fun receiveCommand (IIILcom/facebook/react/bridge/ReadableArray;)V
-	public fun receiveCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun sendAccessibilityEvent (III)V
-	public fun startSurface (ILcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun stopSurface (I)V
-	public fun surfaceIsStopped (I)Z
-	public fun updateProps (ILcom/facebook/react/bridge/ReadableMap;)V
-}
-
-public abstract interface class com/facebook/react/fabric/mounting/MountingManager$MountItemExecutor {
-	public abstract fun executeItems (Ljava/util/Queue;)V
 }
 
 public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
