@@ -26,10 +26,10 @@ const {
   prepareArtifacts,
   setupGHAArtifacts,
 } = require('./utils/testing-utils');
-const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
+const {styleText} = require('util');
 const yargs = require('yargs');
 
 /* ::
@@ -387,12 +387,15 @@ async function main() {
     await testRNTestProject(ghaArtifacts);
 
     console.warn(
-      chalk.yellow(`
+      styleText(
+        'yellow',
+        `
 ================================================================================
 NOTE: Verdaccio may still be running on after this script has finished. Please
 Force Quit via Activity Monitor.
 ================================================================================
-    `),
+    `,
+      ),
     );
   }
 }

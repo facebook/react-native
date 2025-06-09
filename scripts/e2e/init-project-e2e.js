@@ -20,12 +20,11 @@ const {
   VERDACCIO_STORAGE_PATH,
   setupVerdaccio,
 } = require('./utils/verdaccio');
-const chalk = require('chalk');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const {popd, pushd} = require('shelljs');
-const {parseArgs} = require('util');
+const {parseArgs, styleText} = require('util');
 
 const config = {
   options: {
@@ -120,7 +119,7 @@ async function initNewProjectFromSource(
         packagePath,
       )})`;
       process.stdout.write(
-        `${desc} ${chalk.dim('.').repeat(Math.max(0, 72 - desc.length))} `,
+        `${desc} ${styleText('dim', '.').repeat(Math.max(0, 72 - desc.length))} `,
       );
       execSync(
         `npm publish --registry ${VERDACCIO_SERVER_URL} --access public`,
@@ -129,7 +128,9 @@ async function initNewProjectFromSource(
           stdio: verbose ? 'inherit' : [process.stderr],
         },
       );
-      process.stdout.write(chalk.reset.inverse.bold.green(' DONE ') + '\n');
+      process.stdout.write(
+        styleText(['reset', 'inverse', 'bold', 'green'], ' DONE ') + '\n',
+      );
     }
     console.log('\nDone ✅');
 
