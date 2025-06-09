@@ -1,6 +1,6 @@
 {
   "name": "@react-native/core-cli-utils",
-  "version": "0.80.0-rc.4",
+  "version": "0.80.0-rc.5",
   "description": "React Native CLI library for Frameworks to build on",
   "license": "MIT",
   "main": "./src/index.flow.js",
