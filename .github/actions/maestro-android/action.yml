@@ -1,5 +1,5 @@
 name: Maestro E2E Android
-description: Runs E2E Tests on Android using Maestro
+description: Runs E2E Tests on Android using Maestro.
 inputs:
   app-path:
     required: true
