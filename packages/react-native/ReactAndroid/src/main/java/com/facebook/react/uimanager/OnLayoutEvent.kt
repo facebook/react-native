@@ -19,7 +19,7 @@ import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.events.Event
 
 /** Event used to notify JS component about changes of its position or dimensions. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
   @VisibleForTesting internal var x: Int = 0
   @VisibleForTesting internal var y: Int = 0

@@ -26,6 +26,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -51,7 +52,7 @@ import java.util.ArrayList;
  * <p>The class measures text in {@code <Text>} view and feeds native {@link TextView} using {@code
  * Spannable} object constructed in superclass.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 

@@ -12,7 +12,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Implementation of javascript callback function that uses Bridge to schedule method execution. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class CallbackImpl(private val jsInstance: JSInstance, private val callbackId: Int) :
     Callback {
   private var invoked = false

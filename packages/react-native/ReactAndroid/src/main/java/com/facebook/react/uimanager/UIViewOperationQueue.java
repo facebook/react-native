@@ -48,7 +48,7 @@ import java.util.Map;
  * <p>TODO(7135923): Pooling of operation objects TODO(5694019): Consider a better data structure
  * for operations queue to save on allocations
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class UIViewOperationQueue {
 
   static {

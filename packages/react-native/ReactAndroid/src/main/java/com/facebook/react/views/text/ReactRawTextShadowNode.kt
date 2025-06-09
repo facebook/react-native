@@ -8,6 +8,7 @@
 package com.facebook.react.views.text
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.uimanager.ReactShadowNodeImpl
 import com.facebook.react.uimanager.annotations.ReactProp
 
@@ -16,7 +17,7 @@ import com.facebook.react.uimanager.annotations.ReactProp
  * terms of DOM). Raw text node can only have simple string value without any attributes, properties
  * or state.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class ReactRawTextShadowNode : ReactShadowNodeImpl() {
   @set:ReactProp(name = "text")
   var text: String? = null
