@@ -52,8 +52,23 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
 
   const librariesToCrawl = {};
 
+  // Using new API explicitly or not using any config field to define components.
+  const componentLibrariesUsingNewApi = [];
+  const componentLibrariesUsingOldApi = [];
+
+  for (const library of componentLibraries) {
+    if (
+      library.config.ios?.components ||
+      !library.config.ios?.componentProvider
+    ) {
+      componentLibrariesUsingNewApi.push(library);
+    } else {
+      componentLibrariesUsingOldApi.push(library);
+    }
+  }
+
   // Old API
-  componentLibraries.forEach(library => {
+  componentLibrariesUsingOldApi.forEach(library => {
     const {config, libraryPath} = library;
     const libraryName = JSON.parse(
       fs.readFileSync(path.join(libraryPath, 'package.json')),
@@ -62,9 +77,6 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
     librariesToCrawl[libraryName] = library;
 
     const componentsProvider = config.ios?.componentProvider;
-    if (!componentsProvider) {
-      return;
-    }
 
     delete librariesToCrawl[libraryName];
     componentsInLibraries[libraryName] =
@@ -79,7 +91,7 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
   });
 
   // New API
-  const iosAnnotations = parseiOSAnnotations(componentLibraries);
+  const iosAnnotations = parseiOSAnnotations(componentLibrariesUsingNewApi);
   for (const [libraryName, annotationMap] of Object.entries(iosAnnotations)) {
     const {library, components} = annotationMap;
     librariesToCrawl[libraryName] = library;
