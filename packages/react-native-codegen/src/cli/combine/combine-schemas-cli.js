@@ -85,6 +85,20 @@ for (const file of schemaFiles) {
         }
       }
 
+      if (module.type === 'Component') {
+        const components = module.components || {};
+        const isExcludedForPlatform = Object.values(components).some(
+          component =>
+            component.excludedPlatforms
+              ?.map(p => p.toLowerCase())
+              .includes(platform),
+        );
+
+        if (isExcludedForPlatform) {
+          continue;
+        }
+      }
+
       modules[specName] = module;
       specNameToFile[specName] = file;
     }
