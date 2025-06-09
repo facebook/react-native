@@ -30,7 +30,7 @@ type DrawerSlideEvent = $ReadOnly<{
   offset: Float,
 }>;
 
-type NativeProps = $ReadOnly<{
+type AndroidDrawerLayoutNativeProps = $ReadOnly<{
   ...ViewProps,
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
@@ -108,7 +108,7 @@ type NativeProps = $ReadOnly<{
   statusBarBackgroundColor?: ?ColorValue,
 }>;
 
-type NativeType = HostComponent<NativeProps>;
+type NativeType = HostComponent<AndroidDrawerLayoutNativeProps>;
 
 interface NativeCommands {
   +openDrawer: (viewRef: React.ElementRef<NativeType>) => void;
@@ -119,6 +119,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['openDrawer', 'closeDrawer'],
 });
 
-export default (codegenNativeComponent<NativeProps>(
+export default (codegenNativeComponent<AndroidDrawerLayoutNativeProps>(
   'AndroidDrawerLayout',
 ): NativeType);

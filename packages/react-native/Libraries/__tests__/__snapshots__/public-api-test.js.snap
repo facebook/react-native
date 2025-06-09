@@ -2436,7 +2436,7 @@ export type ReturnKeyType =
   | \\"route\\"
   | \\"yahoo\\";
 export type SubmitBehavior = \\"submit\\" | \\"blurAndSubmit\\" | \\"newline\\";
-export type NativeProps = $ReadOnly<{
+export type AndroidTextInputNativeProps = $ReadOnly<{
   ...Omit<ViewProps, \\"style\\">,
   autoComplete?: WithDefault<
     | \\"birthdate-day\\"
@@ -2594,11 +2594,11 @@ export type NativeProps = $ReadOnly<{
   mostRecentEventCount: Int32,
   text?: ?string,
 }>;
-type NativeType = HostComponent<NativeProps>;
+type NativeType = HostComponent<AndroidTextInputNativeProps>;
 type NativeCommands = TextInputNativeCommands<NativeType>;
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare export default HostComponent<NativeProps>;
+declare export default HostComponent<AndroidTextInputNativeProps>;
 "
 `;
 
@@ -4616,7 +4616,7 @@ declare module.exports: typeof RelativeImageStub;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/TextInlineImageNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
+"type RCTTextInlineImageNativeProps = $ReadOnly<{
   ...ViewProps,
   resizeMode?: ?ImageResizeMode,
   src?: ?$ReadOnlyArray<?$ReadOnly<{ uri?: ?string, ... }>>,
@@ -4624,7 +4624,7 @@ exports[`public API should not change unintentionally Libraries/Image/TextInline
   headers?: ?{ [string]: string },
 }>;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const TextInlineImage: HostComponent<NativeProps>;
+declare const TextInlineImage: HostComponent<RCTTextInlineImageNativeProps>;
 declare export default typeof TextInlineImage;
 "
 `;

@@ -30,6 +30,16 @@ describe('ensureNoUnprefixedProps', () => {
     await expect(translate(code)).rejects.toThrow();
   });
 
+  test('should throw when encountering unprefixed NativeProps type', async () => {
+    const code = `type NativeProps = {}`;
+    await expect(translate(code)).rejects.toThrow();
+  });
+
+  test('should throw when encountering unprefixed NativeProps interface', async () => {
+    const code = `interface NativeProps {}`;
+    await expect(translate(code)).rejects.toThrow();
+  });
+
   test('should not throw when encountering prefixed Props type', async () => {
     const code = `type ViewProps = {}`;
     await expect(translate(code)).resolves.toBeDefined();
