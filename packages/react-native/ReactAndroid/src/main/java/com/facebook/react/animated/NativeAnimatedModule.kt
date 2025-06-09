@@ -7,6 +7,7 @@
 
 package com.facebook.react.animated
 
+import android.os.Build
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import com.facebook.common.logging.FLog
@@ -34,6 +35,7 @@ import com.facebook.react.uimanager.common.ViewUtil
 import java.util.ArrayList
 import java.util.Queue
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.Volatile
 
@@ -130,7 +132,13 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
   }
 
   private inner class ConcurrentOperationQueue {
-    private val queue: Queue<UIThreadOperation> = ConcurrentLinkedQueue()
+    private val queue: Queue<UIThreadOperation> =
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S) {
+          // See https://issuetracker.google.com/issues/261481042
+          LinkedBlockingQueue()
+        } else {
+          ConcurrentLinkedQueue()
+        }
     private var peekedOperation: UIThreadOperation? = null
 
     @get:AnyThread
