@@ -6,6 +6,7 @@
  */
 
 #import "RCTMountingManager.h"
+#import "UIView+React.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -340,6 +341,39 @@ static void RCTPerformMountInstructions(
     UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
     UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, componentView);
   }
+}
+
+- (void)measure:(ReactTag)reactTag callback:(const std::function<void (folly::dynamic)> &)callback {
+  std::function<void (folly::dynamic)> callbackCopy = callback;
+  RCTExecuteOnMainQueue(^{
+    UIView<RCTComponentViewProtocol> *view = [self->_componentViewRegistry findComponentViewWithTag:reactTag];
+    if (!view) {
+      // this view was probably collapsed out
+      RCTLogWarn(@"measure cannot find view with tag #%@", reactTag);
+      callbackCopy({});
+      return;
+    }
+    
+    // If in a <Modal>, rootView will be the root of the modal container.
+    UIView *rootView = view;
+    while (rootView.superview && ![rootView isReactRootView]) {
+      rootView = rootView.superview;
+    }
+
+    // By convention, all coordinates, whether they be touch coordinates, or
+    // measurement coordinates are with respect to the root view.
+    CGRect frame = view.frame;
+    CGRect globalBounds = [view convertRect:view.bounds toView:rootView];
+
+    callbackCopy(
+             folly::dynamic::array(frame.origin.x,
+                                   frame.origin.y,
+                                   globalBounds.size.width,
+                                   globalBounds.size.height,
+                                   globalBounds.origin.x,
+                                   globalBounds.origin.y)
+             );
+  });
 }
 
 @end

@@ -122,6 +122,10 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
+  void schedulerMeasureAsync(
+      const ShadowView& shadowView,
+      const std::function<void(folly::dynamic)>& callback) override;
+
   void schedulerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) override;

@@ -68,6 +68,10 @@ class SchedulerDelegate {
       Tag tag,
       const folly::dynamic& props) = 0;
 
+  virtual void schedulerMeasureAsync(
+      const ShadowView& shadowView,
+      const std::function<void(folly::dynamic)>& callback) = 0;
+
   virtual ~SchedulerDelegate() noexcept = default;
 };
 

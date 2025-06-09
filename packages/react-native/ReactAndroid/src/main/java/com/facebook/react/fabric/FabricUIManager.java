@@ -25,6 +25,7 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.util.Preconditions;
@@ -34,6 +35,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -1267,6 +1269,26 @@ public class FabricUIManager
         });
   }
 
+  public void measureAsync(int surfaceId, int reactTag, final Callback callback) {
+    mMountItemDispatcher.addMountItem(
+      new MountItem() {
+        @Override
+        public void execute(@NonNull MountingManager mountingManager) {
+          mMountingManager.measure(surfaceId, reactTag, callback);
+        }
+
+        @Override
+        public int getSurfaceId() {
+          return surfaceId;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+          return "MEASURE_VIEW";
+        }
+      });
+  }
   @Override
   public void profileNextBatch() {
     // TODO T31905686: Remove this method and add support for multi-threading performance counters

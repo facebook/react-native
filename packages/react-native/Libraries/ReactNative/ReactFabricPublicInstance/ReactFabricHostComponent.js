@@ -29,6 +29,7 @@ import nullthrows from 'nullthrows';
 
 const {
   measure: fabricMeasure,
+  measureAsyncOnUI: fabricMeasureAsyncOnUI,
   measureInWindow: fabricMeasureInWindow,
   measureLayout: fabricMeasureLayout,
   getBoundingClientRect: fabricGetBoundingClientRect,
@@ -71,6 +72,15 @@ export default class ReactFabricHostComponent implements NativeMethods {
     );
     if (node != null) {
       fabricMeasure(node, callback);
+    }
+  }
+
+  measureAsyncOnUI(callback: MeasureOnSuccessCallback) {
+    const node = getNodeFromInternalInstanceHandle(
+      this.__internalInstanceHandle,
+    );
+    if (node != null) {
+      fabricMeasureAsyncOnUI(node, callback);
     }
   }
 
