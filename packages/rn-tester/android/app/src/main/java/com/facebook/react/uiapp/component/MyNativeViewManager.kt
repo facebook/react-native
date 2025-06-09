@@ -37,10 +37,6 @@ internal class MyNativeViewManager :
   override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView =
       MyNativeView(reactContext)
 
-  override fun receiveCommand(view: MyNativeView, commandName: String, args: ReadableArray) {
-    delegate.receiveCommand(view, commandName, args)
-  }
-
   override fun callNativeMethodToChangeBackgroundColor(view: MyNativeView, color: String) {
     view.setBackgroundColor(Color.parseColor(color))
   }
