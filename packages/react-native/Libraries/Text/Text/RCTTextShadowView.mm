@@ -15,8 +15,6 @@
 #import <React/RCTTextView.h>
 #import "NSTextStorage+FontScaling.h"
 
-#import <react/featureflags/ReactNativeFeatureFlags.h>
-
 @implementation RCTTextShadowView {
   __weak RCTBridge *_bridge;
   BOOL _needsUpdateView;
@@ -379,38 +377,17 @@
                                                        attribute:NSFontAttributeName
                                                          atIndex:0
                                                   effectiveRange:nil];
-                                                    
-                                              if (facebook::react::ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS()) {
-                                                  CGFloat ascender = font.ascender;
-                                                  CGFloat descender = fabs(font.descender);
-                                                  CGFloat textHeight = ascender + descender;
-                                                  CGFloat leading = usedRect.size.height - textHeight;
-                                                  CGFloat adjustedAscender = ascender + ceil(leading / 2.0);
-                                                  CGFloat adjustedDescender = descender + floor(leading / 2.0);
-                                                  [lineData addObject:@{
-                                                    @"text" : renderedString,
-                                                    @"x" : @(usedRect.origin.x),
-                                                    @"y" : @(usedRect.origin.y),
-                                                    @"width" : @(usedRect.size.width),
-                                                    @"height" : @(usedRect.size.height),
-                                                    @"descender" : @(adjustedDescender),
-                                                    @"capHeight" : @(font.capHeight),
-                                                    @"ascender" : @(adjustedAscender),
-                                                    @"xHeight" : @(font.xHeight),
-                                                  }];
-                                              } else {
-                                                  [lineData addObject:@{
-                                                    @"text" : renderedString,
-                                                    @"x" : @(usedRect.origin.x),
-                                                    @"y" : @(usedRect.origin.y),
-                                                    @"width" : @(usedRect.size.width),
-                                                    @"height" : @(usedRect.size.height),
-                                                    @"descender" : @(-font.descender),
-                                                    @"capHeight" : @(font.capHeight),
-                                                    @"ascender" : @(font.ascender),
-                                                    @"xHeight" : @(font.xHeight),
-                                                  }];
-                                              }
+                                              [lineData addObject:@{
+                                                @"text" : renderedString,
+                                                @"x" : @(usedRect.origin.x),
+                                                @"y" : @(usedRect.origin.y),
+                                                @"width" : @(usedRect.size.width),
+                                                @"height" : @(usedRect.size.height),
+                                                @"descender" : @(-font.descender),
+                                                @"capHeight" : @(font.capHeight),
+                                                @"ascender" : @(font.ascender),
+                                                @"xHeight" : @(font.xHeight),
+                                              }];
                                             }];
     NSDictionary *payload = @{
       @"lines" : lineData,
