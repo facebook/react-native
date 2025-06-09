@@ -87,7 +87,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
 @ReactModule(name = UIManagerModule.NAME)
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {

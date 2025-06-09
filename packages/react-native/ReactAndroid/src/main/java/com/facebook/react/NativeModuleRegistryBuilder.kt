@@ -15,7 +15,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Helper class to build NativeModuleRegistry. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class NativeModuleRegistryBuilder(
     private val reactApplicationContext: ReactApplicationContext,
 ) {

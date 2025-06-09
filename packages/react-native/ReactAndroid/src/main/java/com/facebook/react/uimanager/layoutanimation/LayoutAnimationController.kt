@@ -28,7 +28,7 @@ import javax.annotation.concurrent.NotThreadSafe
  * performing an animation.
  */
 @NotThreadSafe
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public open class LayoutAnimationController {
   private val layoutCreateAnimation: AbstractLayoutAnimation = LayoutCreateAnimation()
   private val layoutUpdateAnimation: AbstractLayoutAnimation = LayoutUpdateAnimation()

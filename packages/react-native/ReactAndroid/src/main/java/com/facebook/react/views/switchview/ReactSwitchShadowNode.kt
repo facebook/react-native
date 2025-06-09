@@ -10,13 +10,14 @@ package com.facebook.react.views.switchview
 import android.view.View
 import com.facebook.react.common.annotations.LegacyArchitectureShadowNodeWithCxxImpl
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.yoga.YogaMeasureFunction
 import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
 import com.facebook.yoga.YogaNode
 
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @LegacyArchitectureShadowNodeWithCxxImpl
 internal class ReactSwitchShadowNode : LayoutShadowNode(), YogaMeasureFunction {
   private var width = 0
