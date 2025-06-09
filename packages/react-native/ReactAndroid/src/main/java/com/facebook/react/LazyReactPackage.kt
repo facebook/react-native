@@ -80,6 +80,15 @@ public abstract class LazyReactPackage : ReactPackage {
   protected abstract fun getNativeModules(reactContext: ReactApplicationContext): List<ModuleSpec>
 
   /**
+   * Internal accessor to [getNativeModules]. This is needed because [getNativeModules] was
+   * originally protected in Java (which had subclass + package visibility) and is now protected in
+   * Kotlin (which has only subclass visiblity). We add this accessor to prevent making
+   * [getNativeModules] public
+   */
+  internal fun internal_getNativeModules(reactContext: ReactApplicationContext): List<ModuleSpec> =
+      getNativeModules(reactContext)
+
+  /**
    * @param reactContext react application context that can be used to create modules
    * @return A [List]<[NativeModule]> to register
    */

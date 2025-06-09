@@ -368,10 +368,10 @@ public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate 
 
 public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
 	public fun <init> ()V
-	public fun build ()Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
+	public final fun build ()Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
 	protected abstract fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
-	public fun setPackages (Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
-	public fun setReactApplicationContext (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
+	public final fun setPackages (Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
+	public final fun setReactApplicationContext (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
 }
 
 public class com/facebook/react/ReactRootView : android/widget/FrameLayout, com/facebook/react/uimanager/ReactRoot, com/facebook/react/uimanager/RootView {
