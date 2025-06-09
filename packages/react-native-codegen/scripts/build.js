@@ -24,12 +24,13 @@
 'use strict';
 
 const babel = require('@babel/core');
-const chalk = require('chalk');
 const fs = require('fs');
 const glob = require('glob');
 const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
+const {styleText} = require('util');
+
 const prettierConfig = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '..', '.prettierrc'), 'utf8'),
 );
@@ -45,7 +46,7 @@ const fixedWidth = str => {
   const strs = str.match(new RegExp(`(.{1,${WIDTH}})`, 'g')) || [str];
   let lastString = strs[strs.length - 1];
   if (lastString.length < WIDTH) {
-    lastString += Array(WIDTH - lastString.length).join(chalk.dim('.'));
+    lastString += Array(WIDTH - lastString.length).join(styleText('dim', '.'));
   }
   return strs.slice(0, -1).concat(lastString).join('\n');
 };
@@ -65,7 +66,7 @@ function buildFile(file, silent) {
   if (micromatch.isMatch(file, IGNORE_PATTERN)) {
     silent ||
       process.stdout.write(
-        chalk.dim('  \u2022 ') +
+        styleText('dim', '  \u2022 ') +
           path.relative(PACKAGE_DIR, file) +
           ' (ignore)\n',
       );
@@ -73,9 +74,9 @@ function buildFile(file, silent) {
     fs.createReadStream(file).pipe(fs.createWriteStream(destPath));
     silent ||
       process.stdout.write(
-        chalk.red('  \u2022 ') +
+        styleText('red', '  \u2022 ') +
           path.relative(PACKAGE_DIR, file) +
-          chalk.red(' \u21D2 ') +
+          styleText('red', ' \u21D2 ') +
           path.relative(PACKAGE_DIR, destPath) +
           ' (copy)' +
           '\n',
@@ -95,9 +96,9 @@ function buildFile(file, silent) {
     }
     silent ||
       process.stdout.write(
-        chalk.green('  \u2022 ') +
+        styleText('green', '  \u2022 ') +
           path.relative(PACKAGE_DIR, file) +
-          chalk.green(' \u21D2 ') +
+          styleText('green', ' \u21D2 ') +
           path.relative(PACKAGE_DIR, destPath) +
           '\n',
       );
@@ -112,4 +113,4 @@ process.stdout.write(fixedWidth(`${path.basename(PACKAGE_DIR)}\n`));
 
 files.forEach(file => buildFile(file, !process.argv.includes('--verbose')));
 
-process.stdout.write(`[  ${chalk.green('OK')}  ]\n`);
+process.stdout.write(`[  ${styleText('green', 'OK')}  ]\n`);
