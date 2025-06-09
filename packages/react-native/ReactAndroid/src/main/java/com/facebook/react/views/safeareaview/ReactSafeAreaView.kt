@@ -21,6 +21,12 @@ import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 
+@Deprecated(
+    message = "ReactSafeAreaView is deprecated and will be removed in a future release. " +
+              "Android 15 enforces edge-to-edge rendering and SafeAreaView is no longer supported. " +
+              "Use react-native-safe-area-context instead.",
+    level = DeprecationLevel.WARNING
+)
 internal class ReactSafeAreaView(val reactContext: ThemedReactContext) : ViewGroup(reactContext) {
   internal var stateWrapper: StateWrapper? = null
 

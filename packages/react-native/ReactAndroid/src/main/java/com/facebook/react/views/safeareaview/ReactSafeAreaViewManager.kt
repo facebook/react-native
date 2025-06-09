@@ -18,6 +18,11 @@ import com.facebook.react.viewmanagers.SafeAreaViewManagerDelegate
 import com.facebook.react.viewmanagers.SafeAreaViewManagerInterface
 
 /** View manager for [ReactSafeAreaView] components. */
+@Deprecated(
+    message = "ReactSafeAreaViewManager is deprecated and will be removed in a future release. " +
+              "SafeAreaView has been replaced by 'react-native-safe-area-context'.",
+    level = DeprecationLevel.WARNING
+)
 @ReactModule(name = ReactSafeAreaViewManager.REACT_CLASS)
 internal class ReactSafeAreaViewManager :
     ViewGroupManager<ReactSafeAreaView>(), SafeAreaViewManagerInterface<ReactSafeAreaView> {
