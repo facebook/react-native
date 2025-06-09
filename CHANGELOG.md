@@ -2,73 +2,7 @@
 
 ## v0.80.0-rc.5
 
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Added
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Fixed
-
-
-
-#### Android specific
-
-
 
 #### iOS specific
 
@@ -77,34 +11,11 @@
 - Fix codegen extracting `.class` from complex component classes ([f2b19608cc](https://github.com/facebook/react-native/commit/f2b19608cca36c118786b4e3d22bf2468fced86d) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Ignore `build/` and `DerivedData/` directories when reading `.plist` files. ([c783128f6e](https://github.com/facebook/react-native/commit/c783128f6e8541bb0b13c4f5c634e790ca854c23) by [@tjzel](https://github.com/tjzel))
 
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
 
 ### Unknown
 
 - Release 0.80.0-rc.5 ([6e8aa89830](https://github.com/facebook/react-native/commit/6e8aa89830ecfe23d86179fc60c0a0fc8e7e5e5a) by [@react-native-bot](https://github.com/react-native-bot))
 - Bump Podfile.lock ([c72f490766](https://github.com/facebook/react-native/commit/c72f49076664853becd24a76ff7bf9576bd3034f) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
 
 
 ## v0.80.0-rc.4
