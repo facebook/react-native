@@ -84,8 +84,12 @@ module.exports = {
       .default;
   },
   get SafeAreaView() {
-    return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
-  },
+  warnOnce(
+    'safe-area-view-deprecated',
+    'SafeAreaView has been deprecated and will be removed in a future release. ' +
+      "Please use 'react-native-safe-area-context' instead. " +
+      'See https://github.com/th3rdwave/react-native-safe-area-context',
+  );
   get ScrollView() {
     return require('./Libraries/Components/ScrollView/ScrollView').default;
   },
