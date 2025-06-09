@@ -8405,7 +8405,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
-"declare export default Platform;
+"declare export default PlatformType;
 "
 `;
 
@@ -8540,7 +8540,7 @@ type WebPlatform = {
   get isDisableAnimations(): boolean,
   select: <T>(spec: PlatformSelectSpec<T>) => T,
 };
-export type Platform =
+export type PlatformType =
   | IOSPlatform
   | AndroidPlatform
   | WindowsPlatform
