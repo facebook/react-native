@@ -11,6 +11,7 @@ on:
 jobs:
   check-nightly:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
