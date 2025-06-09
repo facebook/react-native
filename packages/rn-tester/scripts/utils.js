@@ -13,9 +13,9 @@ import type {Result} from 'execa';
 import type {ExecaPromise} from 'execa';
 import type {TaskResult, TaskSpec} from 'listr2';
 
-import chalk from 'chalk';
 import {Listr} from 'listr2';
 import {Observable} from 'rxjs';
+import {styleText} from 'util';
 
 export function trim(
   line: string,
@@ -57,7 +57,7 @@ export function observe(result: ExecaPromiseMetaized): TaskResult<{}, string> {
       error =>
         observer.error(
           new Error(
-            `${chalk.red.bold(error.shortMessage)}\n${
+            `${styleText(['red', 'bold'], error.shortMessage)}\n${
               error.stderr || error.stdout
             }`,
           ),

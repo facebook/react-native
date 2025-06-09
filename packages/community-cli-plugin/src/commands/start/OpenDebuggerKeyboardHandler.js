@@ -10,7 +10,7 @@
 
 import type {TerminalReporter} from 'metro';
 
-import chalk from 'chalk';
+import {styleText} from 'util';
 
 type PageDescription = $ReadOnly<{
   id: string,
@@ -108,7 +108,7 @@ export default class OpenDebuggerKeyboardHandler {
             .slice(0, 9)
             .map(
               ({title}, i) =>
-                `${chalk.white.inverse(` ${i + 1} `)} - "${title}"`,
+                `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title}"`,
             )
             .join('\n  ')}`,
         );
