@@ -33,6 +33,7 @@ function generateCustomURLHandlers(
   const imageURLLoaderModules = new Set /*::<string>*/();
   const imageDataDecoderModules = new Set /*::<string>*/();
   const urlRequestHandlersModules = new Set /*::<string>*/();
+  const bundleConsumerModules = new Set /*::<string>*/();
 
   // $FlowFixMe[missing-local-annot]]
   const wrapInArrayIfNecessary = value =>
@@ -60,6 +61,11 @@ function generateCustomURLHandlers(
     )?.forEach(moduleName => {
       urlRequestHandlersModules.add(moduleName);
     });
+    wrapInArrayIfNecessary(
+      modulesConformingToProtocol.RCTBundleConsumer,
+    )?.forEach(moduleName => {
+      bundleConsumerModules.add(moduleName);
+    });
   }
 
   // New API
@@ -81,6 +87,9 @@ function generateCustomURLHandlers(
       if (conformsToProtocols.includes('RCTURLRequestHandler')) {
         urlRequestHandlersModules.add(moduleName);
       }
+      if (conformsToProtocols.includes('RCTBundleConsumer')) {
+        bundleConsumerModules.add(moduleName);
+      }
     }
   }
 
@@ -96,11 +105,16 @@ function generateCustomURLHandlers(
     .map(className => `@"${className}"`)
     .join(',\n\t\t');
 
+  const customBundleConsumerClasses = Array.from(bundleConsumerModules)
+    .map(className => `@"${className}"`)
+    .join(',\n\t\t');
+
   const template = fs.readFileSync(MODULES_PROTOCOLS_MM_TEMPLATE_PATH, 'utf8');
   const finalMMFile = template
     .replace(/{imageURLLoaderClassNames}/, customImageURLLoaderClasses)
     .replace(/{imageDataDecoderClassNames}/, customImageDataDecoderClasses)
-    .replace(/{requestHandlersClassNames}/, customURLHandlerClasses);
+    .replace(/{requestHandlersClassNames}/, customURLHandlerClasses)
+    .replace(/{bundleConsumerClassNames}/, customBundleConsumerClasses);
 
   fs.mkdirSync(outputDir, {recursive: true});
 

@@ -15,4 +15,6 @@
 
 +(NSArray<NSString *> *)URLRequestHandlerClassNames;
 
++(NSArray<NSString *> *)bundleConsumerClassNames;
+
 @end

@@ -149,6 +149,21 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
     return resolvedModule as TurboModule
   }
 
+  fun <TInterface> getModulesConformingToInterfaceNames(clazz: Class<TInterface>): List<String> {
+    val moduleNames = mutableListOf<String>()
+
+    for (moduleProvider in moduleProviders) {
+      val moduleInfos = packageModuleInfos[moduleProvider]?.values ?: continue
+      for (moduleInfo in moduleInfos) {
+        val module = moduleProvider.getModule(moduleInfo.name)
+        if (clazz.isInstance(module)) {
+          moduleNames.add(moduleInfo.name)
+        }
+      }
+    }
+    return moduleNames
+  }
+
   override fun unstable_isModuleRegistered(moduleName: String): Boolean {
     for (moduleProvider in moduleProviders) {
       val moduleInfo: ReactModuleInfo? = packageModuleInfos[moduleProvider]?.get(moduleName)

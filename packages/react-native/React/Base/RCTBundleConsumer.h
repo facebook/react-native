@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTJavaScriptLoader.h>
-
-@protocol RCTBundleConsumer <NSObject>
+#import <Foundation/Foundation.h>
+#import <React/NSBigStringBuffer.h>
 
 /**
- * A reference to the RCTModuleRegistry. Useful for modules that require access
- * to other NativeModules. To implement this in your module, just add `@synthesize
- * moduleRegistry = _moduleRegistry;`. If using Swift, add
- * `@objc var moduleRegistry: RCTModuleRegistry!` to your module.
+ * Provides the interface needed to register a Bundle Consumer module.
  */
-@property (nonatomic, weak, readwrite) RCTSource *source;
+@protocol RCTBundleConsumer <NSObject>
+
+@property (nonatomic, strong, readwrite) NSBigStringBuffer *scriptBuffer;
+
+@property (nonatomic, strong, readwrite) NSString *sourceURL;
 
 @end

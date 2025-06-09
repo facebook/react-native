@@ -48,7 +48,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
       BindingsInstallFunc bindingsInstallFunc) noexcept;
 
   void loadScript(
-      std::unique_ptr<const JSBigString> script,
+      const std::shared_ptr<const BigStringBuffer>& script,
       const std::string& sourceURL,
       std::function<void(jsi::Runtime& runtime)>&& beforeLoad = nullptr,
       std::function<void(jsi::Runtime& runtime)>&& afterLoad = nullptr);
