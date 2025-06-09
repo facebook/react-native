@@ -15,6 +15,7 @@
 #include <functional>
 #include <mutex>
 #include <string>
+#include <unordered_map>
 
 namespace facebook::react::jsinspector_modern {
 
