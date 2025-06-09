@@ -178,7 +178,8 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
 
   private companion object {
     init {
-      LegacyArchitectureLogger.assertLegacyArchitecture("BridgelessCatalystInstance")
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "BridgelessCatalystInstance", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

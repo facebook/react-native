@@ -188,7 +188,7 @@ internal class CoreModulesPackage(
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "CoreModulesPackage", LegacyArchitectureLogLevel.WARNING)
+          "CoreModulesPackage", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

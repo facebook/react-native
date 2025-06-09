@@ -16,7 +16,8 @@ import com.facebook.yoga.YogaDirection
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal object LayoutDirectionUtil {
   init {
-    LegacyArchitectureLogger.assertLegacyArchitecture("LayoutDirectionUtil")
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "LayoutDirectionUtil", LegacyArchitectureLogLevel.ERROR)
   }
 
   @JvmStatic

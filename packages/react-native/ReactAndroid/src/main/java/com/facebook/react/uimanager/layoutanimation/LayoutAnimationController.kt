@@ -219,7 +219,7 @@ public open class LayoutAnimationController {
 
   private companion object {
     init {
-      assertLegacyArchitecture("LayoutAnimationController", LegacyArchitectureLogLevel.WARNING)
+      assertLegacyArchitecture("LayoutAnimationController", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

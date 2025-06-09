@@ -39,7 +39,7 @@ internal class SimpleSpringInterpolator : Interpolator {
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "SimpleSpringInterpolator", LegacyArchitectureLogLevel.WARNING)
+          "SimpleSpringInterpolator", LegacyArchitectureLogLevel.ERROR)
     }
 
     private const val FACTOR = 0.5f

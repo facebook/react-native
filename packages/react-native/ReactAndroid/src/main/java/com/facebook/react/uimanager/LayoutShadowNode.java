@@ -41,7 +41,7 @@ import com.facebook.yoga.YogaWrap;
 public class LayoutShadowNode extends ReactShadowNodeImpl {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "LayoutShadowNode", LegacyArchitectureLogLevel.WARNING);
+        "LayoutShadowNode", LegacyArchitectureLogLevel.ERROR);
   }
 
   /** A Mutable version of com.facebook.yoga.YogaValue */

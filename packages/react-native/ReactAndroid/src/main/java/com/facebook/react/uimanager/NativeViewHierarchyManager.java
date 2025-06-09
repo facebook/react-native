@@ -72,7 +72,7 @@ public class NativeViewHierarchyManager {
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "NativeViewHierarchyManager", LegacyArchitectureLogLevel.WARNING);
+        "NativeViewHierarchyManager", LegacyArchitectureLogLevel.ERROR);
   }
 
   private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();

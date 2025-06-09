@@ -11,6 +11,7 @@ import android.view.View
 import com.facebook.react.common.annotations.LegacyArchitectureShadowNodeWithCxxImpl
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.yoga.YogaMeasureFunction
 import com.facebook.yoga.YogaMeasureMode
@@ -53,5 +54,12 @@ internal class ReactSwitchShadowNode : LayoutShadowNode(), YogaMeasureFunction {
     }
 
     return YogaMeasureOutput.make(this.width, this.height)
+  }
+
+  companion object {
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "ReactSwitchShadowNode", LegacyArchitectureLogLevel.ERROR)
+    }
   }
 }

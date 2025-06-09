@@ -53,7 +53,7 @@ public class NativeViewHierarchyOptimizer {
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "NativeViewHierarchyOptimizer", LegacyArchitectureLogLevel.WARNING);
+        "NativeViewHierarchyOptimizer", LegacyArchitectureLogLevel.ERROR);
   }
 
   private static final String TAG = "NativeViewHierarchyOptimizer";

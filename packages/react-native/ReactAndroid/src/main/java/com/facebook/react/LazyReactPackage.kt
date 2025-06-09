@@ -137,7 +137,7 @@ public abstract class LazyReactPackage : ReactPackage {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
           "LazyReactPackage",
-          LegacyArchitectureLogLevel.WARNING,
+          LegacyArchitectureLogLevel.ERROR,
       )
     }
   }
