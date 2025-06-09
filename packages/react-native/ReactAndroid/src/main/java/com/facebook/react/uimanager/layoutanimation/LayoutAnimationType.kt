@@ -14,7 +14,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 /**
  * Enum representing the different animation type that can be specified in layout animation config.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal enum class LayoutAnimationType {
   CREATE,
   UPDATE,

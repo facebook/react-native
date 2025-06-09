@@ -18,7 +18,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  * Class responsible for handling layout update animation, applied to view whenever a valid config
  * was supplied for the layout animation of UPDATE type.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
   internal override fun isValid(): Boolean = durationMs > 0

@@ -17,7 +17,7 @@ import com.facebook.systrace.Systrace.beginSection
 import com.facebook.systrace.Systrace.endSection
 
 /** A set of Java APIs to expose to a particular JavaScript instance. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class NativeModuleRegistry(
     private val reactApplicationContext: ReactApplicationContext,
     private val modules: MutableMap<String, ModuleHolder>

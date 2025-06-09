@@ -16,7 +16,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.IllegalViewOperationException
 
 /** Class responsible for default layout animation, i.e animation of view creation and deletion. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
   abstract fun isReverse(): Boolean
 

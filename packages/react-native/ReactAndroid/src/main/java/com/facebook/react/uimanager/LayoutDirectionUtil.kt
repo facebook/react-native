@@ -9,10 +9,11 @@ package com.facebook.react.uimanager
 
 import android.view.View
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.yoga.YogaDirection
 
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal object LayoutDirectionUtil {
   init {
     LegacyArchitectureLogger.assertLegacyArchitecture("LayoutDirectionUtil")
