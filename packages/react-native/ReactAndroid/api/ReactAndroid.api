@@ -2389,33 +2389,6 @@ public abstract interface class com/facebook/react/fabric/mounting/MountItemDisp
 	public abstract fun willMountItems (Ljava/util/List;)V
 }
 
-public class com/facebook/react/fabric/mounting/MountingManager {
-	public static final field TAG Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/fabric/mounting/MountingManager$MountItemExecutor;)V
-	public fun attachRootView (ILandroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
-	public fun clearJSResponder ()V
-	public fun enqueuePendingEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
-	public fun getEventEmitter (II)Lcom/facebook/react/fabric/events/EventEmitterWrapper;
-	public fun getSurfaceManager (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerEnforced (ILjava/lang/String;)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerForView (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerForViewEnforced (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getViewExists (I)Z
-	public fun isWaitingForViewAttach (I)Z
-	public fun measure (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
-	public fun receiveCommand (IIILcom/facebook/react/bridge/ReadableArray;)V
-	public fun receiveCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun sendAccessibilityEvent (III)V
-	public fun startSurface (ILcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun stopSurface (I)V
-	public fun surfaceIsStopped (I)Z
-	public fun updateProps (ILcom/facebook/react/bridge/ReadableMap;)V
-}
-
-public abstract interface class com/facebook/react/fabric/mounting/MountingManager$MountItemExecutor {
-	public abstract fun executeItems (Ljava/util/Queue;)V
-}
-
 public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public static final field TAG Ljava/lang/String;
 	public fun <init> (ILcom/facebook/react/touch/JSResponderHandler;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/RootViewManager;Lcom/facebook/react/fabric/mounting/MountingManager$MountItemExecutor;Lcom/facebook/react/uimanager/ThemedReactContext;)V
