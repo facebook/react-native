@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react-native
  */
 
 'use strict';
@@ -37,6 +36,8 @@ async function main() {
   const {
     positionals: [version],
     values: {help, skipReactNativeVersion},
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help) {
@@ -104,6 +105,5 @@ module.exports = {
 };
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

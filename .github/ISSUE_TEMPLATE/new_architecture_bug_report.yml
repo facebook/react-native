@@ -16,10 +16,10 @@ body:
         Do not attempt to open a bug in this category if you're not using the New Architecture as your bug will be closed.
 
         Make sure that your issue:
-        * Have a **valid reproducer** (either a [Expo Snack](https://snack.expo.dev/) or a [empty project from template](https://github.com/react-native-community/reproducer-react-native).
+        * Have a **valid reproducer** (See [How to report a bug](https://reactnative.dev/contributing/how-to-report-a-bug)).
         * Is tested against the [**latest stable**](https://github.com/facebook/react-native/releases/) of React Native.
 
-        Due to the extreme number of bugs we receive, we will be looking **ONLY** into issues with a reproducer, and on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) of React Native.
+        🚨 IMPORTANT: Due to the extreme number of bugs we receive, issues **without a reproducer** or for an [**unsupported versions**](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) of React Native **will be closed**.
   - type: textarea
     id: description
     attributes:
@@ -95,7 +95,7 @@ body:
             path: /bin/zsh
         Binaries:
           Node: ...
-            version: 18.14.0
+            version: 22.14.0
         ...
       render: text
     validations:
@@ -121,8 +121,8 @@ body:
   - type: input
     id: reproducer
     attributes:
-      label: Reproducer
-      description: A link to a Expo Snack or a public repository that reproduces this bug, using [this template](https://github.com/react-native-community/reproducer-react-native). Reproducers are **mandatory**.
+      label: MANDATORY Reproducer
+      description: A link to either a failing RNTesterPlayground.js file, an Expo Snack or a public repository from [this template](https://github.com/react-native-community/reproducer-react-native) that reproduces this bug. Reproducers are **mandatory**, issues without a reproducer will be closed.
       placeholder: "https://github.com/<myuser>/<myreproducer>"
     validations:
       required: true

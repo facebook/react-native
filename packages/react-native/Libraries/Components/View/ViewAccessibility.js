@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -258,6 +258,14 @@ export type AccessibilityPropsAndroid = $ReadOnly<{
    * See https://reactnative.dev/docs/view#importantforaccessibility
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
+
+  /**
+   * Enables the view to be screen reader focusable, not keyboard focusable. This has lower priority
+   * than focusable or accessible props.
+   *
+   * @platform android
+   */
+  screenReaderFocusable?: boolean,
 }>;
 
 export type AccessibilityPropsIOS = $ReadOnly<{
@@ -320,6 +328,14 @@ export type AccessibilityPropsIOS = $ReadOnly<{
    * @platform ios
    */
   accessibilityLanguage?: ?Stringish,
+
+  /**
+   * Blocks the user from interacting with the component through keyboard while still allowing
+   * screen reader to interact with it if this View is still accessible.
+   *
+   * @platform ios
+   */
+  accessibilityRespondsToUserInteraction?: ?boolean,
 }>;
 
 export type AccessibilityProps = $ReadOnly<{

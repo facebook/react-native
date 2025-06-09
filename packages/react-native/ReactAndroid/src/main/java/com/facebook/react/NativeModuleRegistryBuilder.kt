@@ -15,7 +15,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Helper class to build NativeModuleRegistry. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class NativeModuleRegistryBuilder(
     private val reactApplicationContext: ReactApplicationContext,
 ) {
@@ -28,7 +28,7 @@ public class NativeModuleRegistryBuilder(
   public constructor(
       reactApplicationContext: ReactApplicationContext,
       @Suppress("UNUSED_PARAMETER") reactInstanceManager: ReactInstanceManager
-  ) : this(reactApplicationContext) {}
+  ) : this(reactApplicationContext)
 
   public fun processPackage(reactPackage: ReactPackage) {
     // We use an iterable instead of an iterator here to ensure thread safety, and that this list
@@ -66,7 +66,7 @@ by autolinking. Try removing the existing entry and rebuild.
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "NativeModuleRegistryBuilder", LegacyArchitectureLogLevel.WARNING)
+          "NativeModuleRegistryBuilder", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

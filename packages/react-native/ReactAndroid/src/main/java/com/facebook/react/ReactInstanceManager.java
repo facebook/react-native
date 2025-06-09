@@ -78,6 +78,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
@@ -412,15 +413,17 @@ public class ReactInstanceManager {
   }
 
   private void registerCxxErrorHandlerFunc() {
-    Class[] parameterTypes = new Class[1];
-    parameterTypes[0] = Exception.class;
-    Method handleCxxErrorFunc = null;
-    try {
-      handleCxxErrorFunc = ReactInstanceManager.class.getMethod("handleCxxError", parameterTypes);
-    } catch (NoSuchMethodException e) {
-      FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
+    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+      Class[] parameterTypes = new Class[1];
+      parameterTypes[0] = Exception.class;
+      Method handleCxxErrorFunc = null;
+      try {
+        handleCxxErrorFunc = ReactInstanceManager.class.getMethod("handleCxxError", parameterTypes);
+      } catch (NoSuchMethodException e) {
+        FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
+      }
+      ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
     }
-    ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
   }
 
   private void unregisterCxxErrorHandlerFunc() {
@@ -646,9 +649,7 @@ public class ReactInstanceManager {
   public void onHostPause(@Nullable Activity activity) {
     if (mRequireActivity) {
       if (mCurrentActivity == null) {
-        String message =
-            "ReactInstanceManager.onHostPause called with null activity, expected:"
-                + mCurrentActivity.getClass().getSimpleName();
+        String message = "ReactInstanceManager.onHostPause called with null activity";
         FLog.e(TAG, message);
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : stackTrace) {

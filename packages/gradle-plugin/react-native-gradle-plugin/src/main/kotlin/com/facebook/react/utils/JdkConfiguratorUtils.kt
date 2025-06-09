@@ -7,7 +7,8 @@
 
 package com.facebook.react.utils
 
-import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.facebook.react.utils.PropertyUtils.INTERNAL_DISABLE_JAVA_VERSION_ALIGNMENT
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
@@ -31,16 +32,27 @@ internal object JdkConfiguratorUtils {
       if (project.hasProperty(INTERNAL_DISABLE_JAVA_VERSION_ALIGNMENT)) {
         return@allprojects
       }
-      val action =
+
+      val applicationAction =
           Action<AppliedPlugin> {
-            project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext
-              ->
-              ext.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
-              ext.compileOptions.targetCompatibility = JavaVersion.VERSION_17
-            }
+            project.extensions
+                .getByType(ApplicationAndroidComponentsExtension::class.java)
+                .finalizeDsl { ext ->
+                  ext.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+                  ext.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+                }
           }
-      project.pluginManager.withPlugin("com.android.application", action)
-      project.pluginManager.withPlugin("com.android.library", action)
+      val libraryAction =
+          Action<AppliedPlugin> {
+            project.extensions
+                .getByType(LibraryAndroidComponentsExtension::class.java)
+                .finalizeDsl { ext ->
+                  ext.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+                  ext.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+                }
+          }
+      project.pluginManager.withPlugin("com.android.application", applicationAction)
+      project.pluginManager.withPlugin("com.android.library", libraryAction)
       project.pluginManager.withPlugin("org.jetbrains.kotlin.android") {
         project.kotlinExtension.jvmToolchain(17)
       }

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 // ----------------------------------------------------------------------------
@@ -50,7 +50,11 @@ export type {
   ImageSize,
   ImageSourcePropType,
 } from './Libraries/Image/Image';
-export type {ImageSource, ImageURISource} from './Libraries/Image/ImageSource';
+export type {
+  ImageRequireSource,
+  ImageSource,
+  ImageURISource,
+} from './Libraries/Image/ImageSource';
 export {default as Image} from './Libraries/Image/Image';
 export {default as ImageBackground} from './Libraries/Image/ImageBackground';
 
@@ -102,6 +106,7 @@ export type {
   SectionListProps,
   SectionListRenderItem,
   SectionListRenderItemInfo,
+  SectionListData,
 } from './Libraries/Lists/SectionList';
 export {default as SectionList} from './Libraries/Lists/SectionList';
 
@@ -157,9 +162,12 @@ export type {TouchableWithoutFeedbackProps} from './Libraries/Components/Touchab
 export {default as TouchableWithoutFeedback} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
 
 export type {
+  AccessibilityActionEvent,
   AccessibilityProps,
   AccessibilityRole,
   AccessibilityState,
+  AccessibilityValue,
+  Role,
 } from './Libraries/Components/View/ViewAccessibility';
 export type {
   GestureResponderHandlers,
@@ -241,7 +249,7 @@ export {default as DeviceEventEmitter} from './Libraries/EventEmitter/RCTDeviceE
 export type {DeviceInfoConstants} from './Libraries/Utilities/DeviceInfo';
 export {default as DeviceInfo} from './Libraries/Utilities/DeviceInfo';
 
-export {default as DevMenu} from './src/private/devmenu/DevMenu';
+export {default as DevMenu} from './src/private/devsupport/devmenu/DevMenu';
 export {default as DevSettings} from './Libraries/Utilities/DevSettings';
 
 export type {
@@ -404,6 +412,7 @@ export type {
   LayoutChangeEvent,
   LayoutRectangle,
   MouseEvent,
+  PointerEvent,
   NativeMouseEvent,
   NativePointerEvent,
   NativeScrollEvent,
@@ -430,5 +439,9 @@ export type {
 export type {HostComponent} from './src/private/types/HostComponent';
 export type {ColorSchemeName} from './src/private/specs_DEPRECATED/modules/NativeAppearance';
 export type {ErrorUtils} from './Libraries/vendor/core/ErrorUtils';
+export type {
+  PublicRootInstance,
+  PublicTextInstance,
+} from './Libraries/ReactPrivate/ReactNativePrivateInterface';
 
 // #endregion

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -25,10 +26,10 @@ const REACT_CODEGEN_PODSPEC_TEMPLATE_PATH = path.join(
 );
 
 function generateReactCodegenPodspec(
-  appPath,
-  appPkgJson,
-  outputPath,
-  baseOutputPath,
+  appPath /*: string */,
+  appPkgJson /*: $FlowFixMe */,
+  outputPath /*: string */,
+  baseOutputPath /*: string */,
 ) {
   const inputFiles = getInputFiles(appPath, appPkgJson);
   const codegenScript = codegenScripts(appPath, baseOutputPath);
@@ -42,8 +43,8 @@ function generateReactCodegenPodspec(
   codegenLog(`Generated podspec: ${finalPathPodspec}`);
 }
 
-function getInputFiles(appPath, appPkgJSon) {
-  const jsSrcsDir = appPkgJSon.codegenConfig?.jsSrcsDir;
+function getInputFiles(appPath /*: string */, appPkgJson /*: $FlowFixMe */) {
+  const jsSrcsDir = appPkgJson.codegenConfig?.jsSrcsDir;
   if (!jsSrcsDir) {
     return '[]';
   }
@@ -70,7 +71,7 @@ function getInputFiles(appPath, appPkgJSon) {
   return `[${list}]`;
 }
 
-function codegenScripts(appPath, outputPath) {
+function codegenScripts(appPath /*: string */, outputPath /*: string */) {
   const relativeAppPath = path.relative(outputPath, appPath);
   return `<<-SCRIPT
 pushd "$PODS_ROOT/../" > /dev/null

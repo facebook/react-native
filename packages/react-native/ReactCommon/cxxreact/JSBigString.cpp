@@ -9,12 +9,12 @@
 
 #include <glog/logging.h>
 
-#include <folly/Memory.h>
 #include <folly/portability/Fcntl.h>
 #include <folly/portability/SysMman.h>
 #include <folly/portability/SysStat.h>
 #include <folly/portability/Unistd.h>
 
+#include <cstring>
 #include <memory>
 
 namespace facebook::react {
@@ -60,8 +60,8 @@ const char* JSBigFileString::c_str() const {
     return "";
   }
   if (!m_data) {
-    m_data =
-        (const char*)mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
+    m_data = (const char*)mmap(
+        nullptr, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
     CHECK(m_data != MAP_FAILED)
         << " fd: " << m_fd << " size: " << m_size << " offset: " << m_mapOff
         << " error: " << std::strerror(errno);

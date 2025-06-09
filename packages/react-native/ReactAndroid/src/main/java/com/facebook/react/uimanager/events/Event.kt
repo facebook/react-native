@@ -24,9 +24,9 @@ import com.facebook.react.common.SystemClock.uptimeMillis
  * future and it is highly recommended to use only `getEventData`.
  *
  * Old, pre-Fabric Events only used viewTag as the identifier, but Fabric needs surfaceId as well as
- * viewTag. You may use [UIManagerHelper.getSurfaceId] on a Fabric-managed View to get the
- * surfaceId. Fabric will work without surfaceId - making [Event] backwards-compatible - but Events
- * without SurfaceId are slightly slower to propagate.
+ * viewTag. You may use [com.facebook.react.uimanager.UIManagerHelper.getSurfaceId] on a
+ * Fabric-managed View to get the surfaceId. Fabric will work without surfaceId - making [Event]
+ * backwards-compatible - but Events without SurfaceId are slightly slower to propagate.
  */
 public abstract class Event<T : Event<T>> {
   public var isInitialized: Boolean = false
@@ -52,7 +52,8 @@ public abstract class Event<T : Event<T>> {
 
   protected constructor()
 
-  @Deprecated("Use constructor with explicit surfaceId instead")
+  @Deprecated(
+      "Use constructor with explicit surfaceId instead", ReplaceWith("Event(surfaceId, viewTag)"))
   protected constructor(viewTag: Int) {
     init(viewTag)
   }
@@ -61,7 +62,8 @@ public abstract class Event<T : Event<T>> {
     init(surfaceId, viewTag)
   }
 
-  @Deprecated("Use version with explicit surfaceId instead")
+  @Deprecated(
+      "Use version with explicit surfaceId instead", ReplaceWith("init(surfaceId, viewTag)"))
   protected fun init(viewTag: Int) {
     init(-1, viewTag)
   }
@@ -117,13 +119,18 @@ public abstract class Event<T : Event<T>> {
   /** @return the name of this event as registered in JS */
   public abstract fun getEventName(): String
 
+  /** Property added for backward compatibility with property accessors */
+  @get:JvmName("internal_getEventNameCompat")
+  public val eventName: String
+    get() = getEventName()
+
   public open val eventAnimationDriverMatchSpec: EventAnimationDriverMatchSpec?
     get() {
       if (eventAnimationDriverMatchSpecCached == null) {
         eventAnimationDriverMatchSpecCached =
             object : EventAnimationDriverMatchSpec {
               override fun match(viewTagRhs: Int, eventNameRhs: String): Boolean {
-                return viewTag == viewTagRhs && getEventName() == eventNameRhs
+                return viewTag == viewTagRhs && eventName == eventNameRhs
               }
             }
       }
@@ -137,7 +144,7 @@ public abstract class Event<T : Event<T>> {
    */
   @Deprecated("Prefer to override getEventData instead")
   public open fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, getEventName(), getEventData())
+    rctEventEmitter.receiveEvent(viewTag, eventName, getEventData())
   }
 
   /** Can be overridden by classes when no custom logic for dispatching is needed. */
@@ -181,7 +188,7 @@ public abstract class Event<T : Event<T>> {
       rctEventEmitter.receiveEvent(
           surfaceId,
           viewTag,
-          getEventName(),
+          eventName,
           canCoalesce(),
           getCoalescingKey().toInt(),
           getEventData(),

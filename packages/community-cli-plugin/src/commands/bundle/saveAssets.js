@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type {AssetData} from 'metro/src/Assets';
+import type {AssetData} from 'metro';
 
 import {
   cleanAssetCatalog,

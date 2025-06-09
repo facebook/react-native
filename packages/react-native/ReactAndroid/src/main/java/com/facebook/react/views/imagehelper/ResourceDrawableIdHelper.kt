@@ -15,14 +15,16 @@ import javax.annotation.concurrent.ThreadSafe
 
 /** Helper class for obtaining information about local images. */
 @ThreadSafe
-public class ResourceDrawableIdHelper private constructor() {
+public object ResourceDrawableIdHelper {
   private val resourceDrawableIdMap: MutableMap<String, Int> = HashMap()
 
   @Synchronized
+  @JvmStatic
   public fun clear() {
     resourceDrawableIdMap.clear()
   }
 
+  @JvmStatic
   public fun getResourceDrawableId(context: Context, name: String?): Int {
     if (name.isNullOrEmpty()) {
       return 0
@@ -47,11 +49,13 @@ public class ResourceDrawableIdHelper private constructor() {
     return newId
   }
 
+  @JvmStatic
   public fun getResourceDrawable(context: Context, name: String?): Drawable? {
     val resId = getResourceDrawableId(context, name)
     return if (resId > 0) ResourcesCompat.getDrawable(context.resources, resId, null) else null
   }
 
+  @JvmStatic
   public fun getResourceDrawableUri(context: Context, name: String?): Uri {
     val resId = getResourceDrawableId(context, name)
     return if (resId > 0) {
@@ -61,21 +65,20 @@ public class ResourceDrawableIdHelper private constructor() {
     }
   }
 
-  public companion object {
-    private const val LOCAL_RESOURCE_SCHEME = "res"
-    private val resourceDrawableIdHelper: ResourceDrawableIdHelper = ResourceDrawableIdHelper()
-    @JvmStatic
-    public val instance: ResourceDrawableIdHelper
-      get() = resourceDrawableIdHelper
+  @JvmStatic
+  @Deprecated("Use object methods instead, this API is for backward compat")
+  public val instance: ResourceDrawableIdHelper
+    get() = this
 
-    /**
-     * We're just re-adding this to reduce a breaking change for libraries in React Native 0.75.
-     *
-     * @deprecated Use instance instead
-     */
-    @Deprecated("Use .instance instead, this API is for backward compat", ReplaceWith("instance"))
-    @JvmName(
-        "DEPRECATED\$getInstance") // We intentionally don't want to expose this accessor to Java.
-    public fun getInstance(): ResourceDrawableIdHelper = instance
-  }
+  private const val LOCAL_RESOURCE_SCHEME = "res"
+
+  /**
+   * We're just re-adding this to reduce a breaking change for libraries in React Native 0.75.
+   *
+   * @deprecated Use instance instead
+   */
+  @Deprecated("Use .instance instead, this API is for backward compat", ReplaceWith("instance"))
+  @JvmName(
+      "DEPRECATED\$getInstance") // We intentionally don't want to expose this accessor to Java.
+  public fun getInstance(): ResourceDrawableIdHelper = this
 }

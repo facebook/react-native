@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -170,7 +170,7 @@ class XMLHttpRequest extends EventTarget {
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
-  _trackingName: ?string = null;
+  _trackingName: ?string;
   _incrementalEvents: boolean = false;
   _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
@@ -632,7 +632,7 @@ class XMLHttpRequest extends EventTarget {
       );
       RCTNetworking.sendRequest(
         this._method,
-        this._trackingName,
+        this._trackingName ?? undefined,
         this._url,
         this._headers,
         data,

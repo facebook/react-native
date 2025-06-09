@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @noflow
  */
 
 'use strict';
@@ -49,7 +50,7 @@ try {
   }
 
   describe('Test: No JS build artifacts');
-  if (exec(`${YARN_BINARY} run build --check`).code) {
+  if (exec(`${YARN_BINARY} run build --validate`).code) {
     echo('Failed, there are build artifacts in this commit.');
     exitCode = 1;
     throw Error(exitCode);
@@ -108,7 +109,7 @@ try {
   }
 
   describe('Test: TypeScript tests');
-  if (exec(`${YARN_BINARY} run test-typescript-offline`).code) {
+  if (exec(`${YARN_BINARY} run test-typescript`).code) {
     echo('Failed to run TypeScript tests.');
     exitCode = 1;
     throw Error(exitCode);

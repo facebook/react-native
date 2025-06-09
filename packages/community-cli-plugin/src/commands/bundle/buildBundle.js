@@ -6,21 +6,18 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {Config} from '@react-native-community/cli-types';
+import type {RunBuildOptions} from 'metro';
 import type {ConfigT} from 'metro-config';
-import type {RequestOptions} from 'metro/src/shared/types.flow';
 
 import loadMetroConfig from '../../utils/loadMetroConfig';
 import parseKeyValueParamArray from '../../utils/parseKeyValueParamArray';
 import saveAssets from './saveAssets';
 import chalk from 'chalk';
 import {promises as fs} from 'fs';
-import Server from 'metro/src/Server';
-import metroBundle from 'metro/src/shared/output/bundle';
-import metroRamBundle from 'metro/src/shared/output/RamBundle';
+import {runBuild} from 'metro';
 import path from 'path';
 
 export type BundleCommandArgs = {
@@ -41,7 +38,7 @@ export type BundleCommandArgs = {
   sourcemapSourcesRoot?: string,
   sourcemapUseAbsolutePath: boolean,
   verbose: boolean,
-  unstableTransformProfile: string,
+  unstableTransformProfile: 'hermes-stable' | 'hermes-canary' | 'default',
   indexedRamBundle?: boolean,
   resolverOption?: Array<string>,
 };
@@ -50,7 +47,7 @@ async function buildBundle(
   _argv: Array<string>,
   ctx: Config,
   args: BundleCommandArgs,
-  bundleImpl: typeof metroBundle | typeof metroRamBundle = metroBundle,
+  bundleImpl?: RunBuildOptions['output'],
 ): Promise<void> {
   const config = await loadMetroConfig(ctx, {
     maxWorkers: args.maxWorkers,
@@ -64,7 +61,7 @@ async function buildBundle(
 async function buildBundleWithConfig(
   args: BundleCommandArgs,
   config: ConfigT,
-  bundleImpl: typeof metroBundle | typeof metroRamBundle = metroBundle,
+  bundleImpl?: RunBuildOptions['output'],
 ): Promise<void> {
   const customResolverOptions = parseKeyValueParamArray(
     args.resolverOption ?? [],
@@ -97,50 +94,48 @@ async function buildBundleWithConfig(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
-  // $FlowIgnore[prop-missing]
-  const requestOpts: RequestOptions & {...} = {
-    entryFile: args.entryFile,
-    sourceMapUrl,
-    dev: args.dev,
-    minify: args.minify !== undefined ? args.minify : !args.dev,
-    platform: args.platform,
-    unstable_transformProfile: args.unstableTransformProfile,
+  const runBuildOptions: RunBuildOptions = {
+    assets: args.assetsDest != null,
+    bundleOut: args.bundleOutput,
     customResolverOptions,
+    dev: args.dev,
+    entry: args.entryFile,
+    minify: args.minify !== undefined ? args.minify : !args.dev,
+    output: bundleImpl,
+    platform: args.platform,
+    sourceMap: args.sourcemapOutput != null,
+    sourceMapOut: args.sourcemapOutput,
+    sourceMapUrl,
+    unstable_transformProfile: args.unstableTransformProfile,
   };
-  const server = new Server(config);
 
-  try {
-    const bundle = await bundleImpl.build(server, requestOpts);
+  // Ensure destination directory exists before running the build
+  await fs.mkdir(path.dirname(args.bundleOutput), {
+    recursive: true,
+    mode: 0o755,
+  });
 
-    // Ensure destination directory exists before saving the bundle
-    await fs.mkdir(path.dirname(args.bundleOutput), {
-      recursive: true,
-      mode: 0o755,
-    });
+  const result = await runBuild(config, runBuildOptions);
 
-    // $FlowIgnore[class-object-subtyping]
-    // $FlowIgnore[incompatible-call]
-    // $FlowIgnore[prop-missing]
-    // $FlowIgnore[incompatible-exact]
-    await bundleImpl.save(bundle, args, console.info);
-
-    // Save the assets of the bundle
-    const outputAssets = await server.getAssets({
-      ...Server.DEFAULT_BUNDLE_OPTIONS,
-      ...requestOpts,
-      bundleType: 'todo',
-    });
-
-    // When we're done saving bundle output and the assets, we're done.
-    return await saveAssets(
-      outputAssets,
-      args.platform,
-      args.assetsDest,
-      args.assetCatalogDest,
-    );
-  } finally {
-    await server.end();
+  if (args.assetsDest == null) {
+    console.warn('Warning: Assets destination folder is not set, skipping...');
+    return;
   }
+
+  // Save the assets of the bundle
+  if (result.assets == null) {
+    throw new Error("Assets missing from Metro's runBuild result");
+  }
+
+  const outputAssets = result.assets;
+
+  // When we're done saving bundle output and the assets, we're done.
+  await saveAssets(
+    outputAssets,
+    args.platform,
+    args.assetsDest,
+    args.assetCatalogDest,
+  );
 }
 
 /**

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 // To be able to execute the cli as a yarn script, we have to strip our yarn types.

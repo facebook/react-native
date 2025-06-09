@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.network.NetworkingModule
 import com.facebook.react.modules.websocket.WebSocketModule
@@ -49,13 +50,14 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           params.putString("data", text)
         }
 
-        override fun onMessage(bytes: ByteString, params: WritableMap) {
-          val data = bytes.toByteArray()
+        override fun onMessage(byteString: ByteString, params: WritableMap) {
+          val data = byteString.toByteArray()
 
-          val blob = Arguments.createMap()
-          blob.putString("blobId", store(data))
-          blob.putInt("offset", 0)
-          blob.putInt("size", data.size)
+          val blob = buildReadableMap {
+            put("blobId", store(data))
+            put("offset", 0)
+            put("size", data.size)
+          }
 
           params.putMap("data", blob)
           params.putString("type", "blob")
@@ -89,20 +91,20 @@ public class BlobModule(reactContext: ReactApplicationContext) :
 
   private val networkingRequestBodyHandler =
       object : NetworkingModule.RequestBodyHandler {
-        override fun supports(data: ReadableMap): Boolean {
-          return data.hasKey("blob")
+        override fun supports(map: ReadableMap): Boolean {
+          return map.hasKey("blob")
         }
 
-        override fun toRequestBody(data: ReadableMap, contentType: String?): RequestBody {
+        override fun toRequestBody(map: ReadableMap, contentType: String?): RequestBody {
           var type: String? = contentType
-          if (data.hasKey("type") && !data.getString("type").isNullOrEmpty()) {
-            type = data.getString("type")
+          if (map.hasKey("type") && !map.getString("type").isNullOrEmpty()) {
+            type = map.getString("type")
           }
           if (type == null) {
             type = "application/octet-stream"
           }
 
-          val blob = checkNotNull(data.getMap("blob"))
+          val blob = checkNotNull(map.getMap("blob"))
           val bytes =
               checkNotNull(
                   resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size")))
@@ -128,7 +130,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
       }
 
   public override fun initialize() {
-    BlobCollector.install(getReactApplicationContext(), this)
+    BlobCollector.install(reactApplicationContext, this)
   }
 
   public override fun getTypedExportedConstants(): Map<String, Any> {
@@ -136,7 +138,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
     val packageName = getReactApplicationContext().packageName
     val resourceId = resources.getIdentifier("blob_provider_authority", "string", packageName)
     if (resourceId == 0) {
-      return mapOf<String, Any>()
+      return mapOf()
     }
 
     return mapOf("BLOB_URI_SCHEME" to "content", "BLOB_URI_HOST" to resources.getString(resourceId))
@@ -204,7 +206,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
   @Throws(IOException::class)
   private fun getBytesFromUri(contentUri: Uri): ByteArray {
     val inputStream =
-        getReactApplicationContext().contentResolver.openInputStream(contentUri)
+        reactApplicationContext.contentResolver.openInputStream(contentUri)
             ?: throw FileNotFoundException("File not found for $contentUri")
 
     try {
@@ -241,7 +243,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
     }
     val projection = arrayOf(MediaStore.MediaColumns.DISPLAY_NAME)
     val metaCursor =
-        getReactApplicationContext().contentResolver.query(contentUri, projection, null, null, null)
+        reactApplicationContext.contentResolver.query(contentUri, projection, null, null, null)
     metaCursor?.use {
       if (it.moveToFirst()) {
         return it.getString(0)
@@ -257,7 +259,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
   }
 
   private fun getMimeTypeFromUri(contentUri: Uri): String {
-    var type = getReactApplicationContext().contentResolver.getType(contentUri)
+    var type = reactApplicationContext.contentResolver.getType(contentUri)
     if (type == null) {
       val ext = MimeTypeMap.getFileExtensionFromUrl(contentUri.path)
       if (ext != null) {
@@ -267,37 +269,29 @@ public class BlobModule(reactContext: ReactApplicationContext) :
     return type.orEmpty()
   }
 
-  private fun getWebSocketModule(reason: String): WebSocketModule? {
-    val reactApplicationContext = getReactApplicationContext()
-    return reactApplicationContext?.getNativeModule(WebSocketModule::class.java)
-  }
+  private val webSocketModule: WebSocketModule?
+    get() = reactApplicationContext.getNativeModule(WebSocketModule::class.java)
 
   public override fun addNetworkingHandler() {
-    val reactApplicationContext = getReactApplicationContext()
-
-    reactApplicationContext?.let {
-      val networkingModule = checkNotNull(it.getNativeModule(NetworkingModule::class.java))
-      networkingModule.addUriHandler(networkingUriHandler)
-      networkingModule.addRequestBodyHandler(networkingRequestBodyHandler)
-      networkingModule.addResponseHandler(networkingResponseHandler)
-    }
+    val networkingModule =
+        checkNotNull(reactApplicationContext.getNativeModule(NetworkingModule::class.java))
+    networkingModule.addUriHandler(networkingUriHandler)
+    networkingModule.addRequestBodyHandler(networkingRequestBodyHandler)
+    networkingModule.addResponseHandler(networkingResponseHandler)
   }
 
   public override fun addWebSocketHandler(idDouble: Double) {
     val id = idDouble.toInt()
-    val webSocketModule = getWebSocketModule("addWebSocketHandler")
     webSocketModule?.setContentHandler(id, webSocketContentHandler)
   }
 
   public override fun removeWebSocketHandler(idDouble: Double) {
     val id = idDouble.toInt()
-    val webSocketModule = getWebSocketModule("removeWebSocketHandler")
     webSocketModule?.setContentHandler(id, null)
   }
 
   public override fun sendOverSocket(blob: ReadableMap, idDouble: Double) {
     val id = idDouble.toInt()
-    val webSocketModule = getWebSocketModule("sendOverSocket")
     webSocketModule?.let {
       val data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"))
       data?.let { bytes -> it.sendBinary(ByteString.of(ByteBuffer.wrap(bytes)), id) }

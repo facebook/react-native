@@ -11,14 +11,14 @@
 import type {
   ElementRectangle,
   TraceUpdate,
-} from './DebuggingOverlayNativeComponent';
+} from '../../src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent';
 
+import DebuggingOverlayNativeComponent, {
+  Commands,
+} from '../../src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent';
 import View from '../Components/View/View';
 import UIManager from '../ReactNative/UIManager';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import DebuggingOverlayNativeComponent, {
-  Commands,
-} from './DebuggingOverlayNativeComponent';
 import * as React from 'react';
 
 const {useRef, useImperativeHandle} = React;
@@ -26,15 +26,16 @@ const isNativeComponentReady =
   UIManager.hasViewManagerConfig('DebuggingOverlay');
 
 type DebuggingOverlayHandle = {
-  highlightTraceUpdates(updates: TraceUpdate[]): void,
-  highlightElements(elements: ElementRectangle[]): void,
+  highlightTraceUpdates(updates: $ReadOnlyArray<TraceUpdate>): void,
+  highlightElements(elements: $ReadOnlyArray<ElementRectangle>): void,
   clearElementsHighlight(): void,
 };
 
-function DebuggingOverlay(
-  _props: {},
+function DebuggingOverlay({
+  ref,
+}: {
   ref: React.RefSetter<DebuggingOverlayHandle>,
-): React.Node {
+}): React.Node {
   useImperativeHandle(
     ref,
     () => ({
@@ -102,9 +103,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const DebuggingOverlayWithForwardedRef: component(
+export default DebuggingOverlay as component(
   ref: React.RefSetter<DebuggingOverlayHandle>,
-  ...props: {}
-) = React.forwardRef(DebuggingOverlay);
-
-export default DebuggingOverlayWithForwardedRef;
+);

@@ -21,4 +21,4 @@ package com.facebook.react.common.annotations.internal
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 public annotation class LegacyArchitecture(
     val logLevel: LegacyArchitectureLogLevel = LegacyArchitectureLogLevel.WARNING
-) {}
+)

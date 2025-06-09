@@ -12,13 +12,12 @@ on:
 jobs:
   monitor-issues:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+        uses: ./.github/actions/setup-node
       - name: Install dependencies
         uses:  ./.github/actions/yarn-install
       - name: Extract next oncall

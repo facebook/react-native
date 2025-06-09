@@ -66,8 +66,12 @@ static void sliceChildShadowNodeViewPairsRecursively(
     auto shadowView = ShadowView(childShadowNode);
 
     if (ReactNativeFeatureFlags::enableViewCulling()) {
-      if (cullingContext.shouldConsiderCulling() &&
-          shadowView.layoutMetrics != EmptyLayoutMetrics) {
+      auto isViewCullable =
+          !shadowView.traits.check(
+              ShadowNodeTraits::Trait::Unstable_uncullableView) &&
+          !shadowView.traits.check(
+              ShadowNodeTraits::Trait::Unstable_uncullableTrace);
+      if (cullingContext.shouldConsiderCulling() && isViewCullable) {
         auto overflowInsetFrame =
             shadowView.layoutMetrics.getOverflowInsetFrame() *
             cullingContext.transform;

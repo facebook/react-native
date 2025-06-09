@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -18,7 +18,16 @@ const MODULE_IDS = 0;
 const METHOD_IDS = 1;
 const PARAMS = 2;
 
-const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
+const assertQueue = (
+  flushedQueue: null | [Array<number>, Array<number>, Array<mixed>, number],
+  index: number,
+  moduleID: number,
+  methodID: number,
+  params: $ReadOnlyArray<mixed>,
+) => {
+  if (flushedQueue == null) {
+    throw new Error('Expected `flushedQueue` to be non-null');
+  }
   expect(flushedQueue[MODULE_IDS][index]).toEqual(moduleID);
   expect(flushedQueue[METHOD_IDS][index]).toEqual(methodID);
   expect(flushedQueue[PARAMS][index]).toEqual(params);
@@ -30,8 +39,8 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 //
 // [ ] Local modules that throw exceptions are gracefully caught. In that case
 // local callbacks stored by IDs are cleaned up.
-describe('MessageQueue', function () {
-  beforeEach(function () {
+describe('MessageQueue', () => {
+  beforeEach(() => {
     jest.resetModules();
     MessageQueue = require('../MessageQueue').default;
     MessageQueueTestModule = require('../__mocks__/MessageQueueTestModule');
@@ -53,10 +62,11 @@ describe('MessageQueue', function () {
   });
 
   it('should call a local function with the function name', () => {
-    MessageQueueTestModule.testHook2 = jest.fn();
-    expect(MessageQueueTestModule.testHook2.mock.calls.length).toEqual(0);
+    const testHook2 = jest.fn();
+    MessageQueueTestModule.testHook2 = testHook2;
+    expect(testHook2.mock.calls.length).toEqual(0);
     queue.__callFunction('MessageQueueTestModule', 'testHook2', [2]);
-    expect(MessageQueueTestModule.testHook2.mock.calls.length).toEqual(1);
+    expect(testHook2.mock.calls.length).toEqual(1);
   });
 
   it('should store callbacks', () => {
@@ -107,7 +117,9 @@ describe('MessageQueue', function () {
   it('should throw when calling with unknown module', () => {
     const unknownModule = 'UnknownModule',
       unknownMethod = 'UnknownMethod';
-    expect(() => queue.__callFunction(unknownModule, unknownMethod)).toThrow(
+    expect(() =>
+      queue.__callFunction(unknownModule, unknownMethod, []),
+    ).toThrow(
       `Failed to call into JavaScript module method ${unknownModule}.${unknownMethod}()`,
     );
   });
@@ -123,7 +135,7 @@ describe('MessageQueue', function () {
   it('should not initialize lazily registered module before it was used for the first time', () => {
     const dummyModule = {},
       name = 'modulesName';
-    const factory = jest.fn(() => dummyModule);
+    const factory = jest.fn(() => dummyModule) as (void) => interface {};
     queue.registerLazyCallableModule(name, factory);
     expect(factory).not.toHaveBeenCalled();
   });
@@ -131,7 +143,7 @@ describe('MessageQueue', function () {
   it('should initialize lazily registered module only once', () => {
     const dummyModule = {},
       name = 'modulesName';
-    const factory = jest.fn(() => dummyModule);
+    const factory = jest.fn(() => dummyModule) as (void) => interface {};
     queue.registerLazyCallableModule(name, factory);
     queue.getCallableModule(name);
     queue.getCallableModule(name);
@@ -143,7 +155,8 @@ describe('MessageQueue', function () {
       dummy: function () {},
     };
     const name = 'emptyModuleName';
-    const factory = jest.fn(() => dummyModule);
+    const factory = jest.fn(() => dummyModule) as (void) => interface {};
+    // $FlowFixMe[cannot-write]
     queue.__shouldPauseOnThrow = jest.fn(() => false);
     queue.registerLazyCallableModule(name, factory);
     queue.callFunctionReturnFlushedQueue(name, 'dummy', []);
@@ -155,7 +168,8 @@ describe('MessageQueue', function () {
       dummy: function () {},
     };
     const name = 'emptyModuleName';
-    const factory = jest.fn(() => dummyModule);
+    const factory = jest.fn(() => dummyModule) as (void) => interface {};
+    // $FlowFixMe[cannot-write]
     queue.__shouldPauseOnThrow = jest.fn(() => true);
     queue.registerLazyCallableModule(name, factory);
     queue.callFunctionReturnFlushedQueue(name, 'dummy', []);

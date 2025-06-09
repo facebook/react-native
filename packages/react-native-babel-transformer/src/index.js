@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 // This file uses Flow comment syntax so that it may be used from source as a
@@ -189,7 +188,7 @@ const transform /*: BabelTransformer['transform'] */ = ({
     : process.env.BABEL_ENV || 'production';
 
   try {
-    const babelConfig = {
+    const babelConfig /*: BabelCoreOptions */ = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
       ...buildBabelConfig(filename, options, plugins),
@@ -210,6 +209,7 @@ const transform /*: BabelTransformer['transform'] */ = ({
         : // $FlowFixMe[incompatible-exact]
           require('hermes-parser').parse(src, {
             babel: true,
+            reactRuntimeTarget: '19',
             sourceType: babelConfig.sourceType,
           });
 

@@ -6,15 +6,17 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+
+import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import invariant from 'invariant';
 import * as React from 'react';
+import {createRef} from 'react';
 import {NativeText} from 'react-native/Libraries/Text/TextNativeComponent';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
@@ -34,22 +36,15 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 
 describe('ReadOnlyText', () => {
   it('should be used to create public text instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
-    let lastParentNode;
+    const parentNodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
 
     Fantom.runTask(() => {
-      root.render(
-        <NativeText
-          ref={node => {
-            lastParentNode = node;
-          }}>
-          Some text
-        </NativeText>,
-      );
+      root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
     });
 
-    const parentNode = ensureReadOnlyNode(lastParentNode);
+    const parentNode = ensureReadOnlyNode(parentNodeRef.current);
     const textNode = parentNode.childNodes[0];
 
     expect(textNode).toBeInstanceOf(ReadOnlyText);
@@ -58,22 +53,15 @@ describe('ReadOnlyText', () => {
   describe('extends `ReadOnlyNode`', () => {
     describe('nodeName', () => {
       it('returns "#text"', () => {
-        let lastParentNode;
+        const parentNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
-          root.render(
-            <NativeText
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              Some text
-            </NativeText>,
-          );
+          root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
         });
 
-        const parentNode = ensureReadOnlyNode(lastParentNode);
+        const parentNode = ensureReadOnlyNode(parentNodeRef.current);
         const textNode = parentNode.childNodes[0];
 
         expect(textNode.nodeName).toBe('#text');
@@ -82,22 +70,15 @@ describe('ReadOnlyText', () => {
 
     describe('nodeType', () => {
       it('returns ReadOnlyNode.TEXT_NODE', () => {
-        let lastParentNode;
+        const parentNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
-          root.render(
-            <NativeText
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              Some text
-            </NativeText>,
-          );
+          root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
         });
 
-        const parentNode = ensureReadOnlyNode(lastParentNode);
+        const parentNode = ensureReadOnlyNode(parentNodeRef.current);
         const textNode = parentNode.childNodes[0];
 
         expect(textNode.nodeType).toBe(ReadOnlyNode.TEXT_NODE);
@@ -106,22 +87,15 @@ describe('ReadOnlyText', () => {
 
     describe('nodeValue / textContent', () => {
       it('returns the string data contained in the node', () => {
-        let lastParentNode;
+        const parentNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
-          root.render(
-            <NativeText
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              Some text
-            </NativeText>,
-          );
+          root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
         });
 
-        const parentNode = ensureReadOnlyNode(lastParentNode);
+        const parentNode = ensureReadOnlyNode(parentNodeRef.current);
         const textNode = parentNode.childNodes[0];
 
         expect(textNode.nodeValue).toBe('Some text');
@@ -131,34 +105,27 @@ describe('ReadOnlyText', () => {
 
     describe('traversal', () => {
       it('only preserves text nodes when their contents do not change', () => {
-        let lastParentElement;
-        let lastChildElementA;
+        const parentElementRef = createRef<HostInstance>();
+        const childElementARef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
           root.render(
-            <NativeText
-              key="parent"
-              ref={element => {
-                lastParentElement = element;
-              }}>
+            <NativeText key="parent" ref={parentElementRef}>
               Text A
-              <NativeText
-                key="childA"
-                ref={element => {
-                  lastChildElementA = element;
-                }}
-              />
+              <NativeText key="childA" ref={childElementARef} />
               Text B
             </NativeText>,
           );
         });
 
-        const parentElement: ReactNativeElement =
-          ensureReactNativeElement(lastParentElement);
-        const childElementA: ReactNativeElement =
-          ensureReactNativeElement(lastChildElementA);
+        const parentElement: ReactNativeElement = ensureReactNativeElement(
+          parentElementRef.current,
+        );
+        const childElementA: ReactNativeElement = ensureReactNativeElement(
+          childElementARef.current,
+        );
 
         // Get text nodes and refine them as text nodes for Flow
         const childTextA = parentElement.childNodes[0];
@@ -183,18 +150,9 @@ describe('ReadOnlyText', () => {
         // Change contents of the second text only
         Fantom.runTask(() => {
           root.render(
-            <NativeText
-              key="parent"
-              ref={element => {
-                lastParentElement = element;
-              }}>
+            <NativeText key="parent" ref={parentElementRef}>
               Text A
-              <NativeText
-                key="childA"
-                ref={element => {
-                  lastChildElementA = element;
-                }}
-              />
+              <NativeText key="childA" ref={childElementARef} />
               Text B modified
             </NativeText>,
           );
@@ -216,22 +174,17 @@ describe('ReadOnlyText', () => {
   describe('extends `ReadOnlyCharacterData`', () => {
     describe('data / length', () => {
       it('returns the string data and its length, respectively', () => {
-        let lastParentNode;
+        const parentNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
-          root.render(
-            <NativeText
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              Some text
-            </NativeText>,
-          );
+          root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
         });
 
-        const parentNode: ReadOnlyNode = ensureReadOnlyNode(lastParentNode);
+        const parentNode: ReadOnlyNode = ensureReadOnlyNode(
+          parentNodeRef.current,
+        );
         const textNode = ensureReadOnlyText(parentNode.childNodes[0]);
 
         expect(textNode.data).toBe('Some text');
@@ -241,50 +194,39 @@ describe('ReadOnlyText', () => {
 
     describe('previousElementSibling / nextElementSibling', () => {
       it('return updated relative elements', () => {
-        let lastParentElement;
-        let lastChildElementA;
-        let lastChildElementB;
-        let lastChildElementC;
+        const parentElementRef = createRef<HostInstance>();
+        const childElementARef = createRef<HostInstance>();
+        const childElementBRef = createRef<HostInstance>();
+        const childElementCRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
           root.render(
-            <NativeText
-              key="parent"
-              ref={element => {
-                lastParentElement = element;
-              }}>
+            <NativeText key="parent" ref={parentElementRef}>
               Text A
-              <NativeText
-                key="childA"
-                ref={element => {
-                  lastChildElementA = element;
-                }}
-              />
+              <NativeText key="childA" ref={childElementARef} />
               Text B
-              <NativeText
-                key="childB"
-                ref={element => {
-                  lastChildElementB = element;
-                }}
-              />
+              <NativeText key="childB" ref={childElementBRef} />
               Text C
-              <NativeText
-                key="childC"
-                ref={element => {
-                  lastChildElementC = element;
-                }}
-              />
+              <NativeText key="childC" ref={childElementCRef} />
               Text D
             </NativeText>,
           );
         });
 
-        const parentElement = ensureReactNativeElement(lastParentElement);
-        const childElementA = ensureReactNativeElement(lastChildElementA);
-        const childElementB = ensureReactNativeElement(lastChildElementB);
-        const childElementC = ensureReactNativeElement(lastChildElementC);
+        const parentElement = ensureReactNativeElement(
+          parentElementRef.current,
+        );
+        const childElementA = ensureReactNativeElement(
+          childElementARef.current,
+        );
+        const childElementB = ensureReactNativeElement(
+          childElementBRef.current,
+        );
+        const childElementC = ensureReactNativeElement(
+          childElementCRef.current,
+        );
 
         // Get text nodes and refine them as text nodes for Flow
         const childTextA = parentElement.childNodes[0];
@@ -334,23 +276,21 @@ describe('ReadOnlyText', () => {
 
     describe('substringData', () => {
       it('returns a slice of the text content', () => {
-        let lastParentElement;
+        const parentElementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
           root.render(
-            <NativeText
-              key="parent"
-              ref={element => {
-                lastParentElement = element;
-              }}>
+            <NativeText key="parent" ref={parentElementRef}>
               Text A
             </NativeText>,
           );
         });
 
-        const parentElement = ensureReactNativeElement(lastParentElement);
+        const parentElement = ensureReactNativeElement(
+          parentElementRef.current,
+        );
 
         // Get text nodes and refine them as text nodes for Flow
         const childTextA = parentElement.childNodes[0];

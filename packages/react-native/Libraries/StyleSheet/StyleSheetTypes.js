@@ -11,7 +11,6 @@
 'use strict';
 
 import type {WithAnimatedValue} from '../Animated/createAnimatedComponent';
-import type AnimatedNode from '../Animated/nodes/AnimatedNode';
 import type {ImageResizeMode} from './../Image/ImageResizeMode';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
@@ -21,6 +20,7 @@ import type {
   ____ViewStyle_InternalOverrides,
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
+import type {ColorValue} from './StyleSheet';
 
 export type {____TransformStyle_Internal};
 
@@ -725,8 +725,8 @@ export type DropShadowValue = {
   color?: ____ColorValue_Internal,
 };
 
-export type GradientValue = {
-  type: 'linearGradient',
+type LinearGradientValue = {
+  type: 'linear-gradient',
   // Angle or direction enums
   direction?: string,
   colorStops: $ReadOnlyArray<{
@@ -734,6 +734,50 @@ export type GradientValue = {
     positions?: $ReadOnlyArray<string>,
   }>,
 };
+
+type RadialExtent =
+  | 'closest-corner'
+  | 'closest-side'
+  | 'farthest-corner'
+  | 'farthest-side';
+export type RadialGradientPosition =
+  | {
+      top: number | string,
+      left: number | string,
+    }
+  | {
+      top: number | string,
+      right: number | string,
+    }
+  | {
+      bottom: number | string,
+      left: number | string,
+    }
+  | {
+      bottom: number | string,
+      right: number | string,
+    };
+
+export type RadialGradientShape = 'circle' | 'ellipse';
+export type RadialGradientSize =
+  | RadialExtent
+  | {
+      x: string | number,
+      y: string | number,
+    };
+
+type RadialGradientValue = {
+  type: 'radial-gradient',
+  shape: RadialGradientShape,
+  size: RadialGradientSize,
+  position: RadialGradientPosition,
+  colorStops: $ReadOnlyArray<{
+    color: ____ColorValue_Internal,
+    positions?: $ReadOnlyArray<string>,
+  }>,
+};
+
+export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
 
 export type BoxShadowValue = {
   offsetX: number | string,
@@ -808,7 +852,7 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
   filter?: $ReadOnlyArray<FilterFunction> | string,
   mixBlendMode?: ____BlendMode_Internal,
-  experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
+  experimental_backgroundImage?: $ReadOnlyArray<BackgroundImageValue> | string,
   isolation?: 'auto' | 'isolate',
 }>;
 
@@ -957,7 +1001,8 @@ export type ____ImageStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
+  overflow?: 'visible' | 'hidden',
 }>;
 
 export type ____ImageStyle_Internal = $ReadOnly<{
@@ -970,7 +1015,7 @@ export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
 }>;
 
 export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{

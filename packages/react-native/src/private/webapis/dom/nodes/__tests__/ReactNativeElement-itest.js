@@ -6,14 +6,16 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+
+import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {createRef} from 'react';
 import {ScrollView, View} from 'react-native';
 import {
   NativeText,
@@ -33,82 +35,51 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 
 describe('ReactNativeElement', () => {
   it('should be used to create public instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
-    let node;
+    const ref = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
-      root.render(
-        <View
-          ref={receivedNode => {
-            node = receivedNode;
-          }}
-        />,
-      );
+      root.render(<View ref={ref} />);
     });
 
-    expect(node).toBeInstanceOf(ReactNativeElement);
+    expect(ref.current).toBeInstanceOf(ReactNativeElement);
   });
 
   describe('extends `ReadOnlyNode`', () => {
     it('should be an instance of `ReadOnlyNode`', () => {
-      let lastNode;
+      const ref = createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={node => {
-              lastNode = node;
-            }}
-          />,
-        );
+        root.render(<View ref={ref} />);
       });
 
-      expect(lastNode).toBeInstanceOf(ReadOnlyNode);
+      expect(ref.current).toBeInstanceOf(ReadOnlyNode);
     });
 
     describe('nodeType', () => {
       it('returns ReadOnlyNode.ELEMENT_NODE', () => {
-        let lastParentNode;
-        let lastChildNodeA;
-        let lastChildNodeB;
-        let lastChildNodeC;
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              <View
-                key="childA"
-                ref={node => {
-                  lastChildNodeA = node;
-                }}
-              />
-              <View
-                key="childB"
-                ref={node => {
-                  lastChildNodeB = node;
-                }}
-              />
-              <View
-                key="childC"
-                ref={node => {
-                  lastChildNodeC = node;
-                }}
-              />
+            <View key="parent" ref={parentRef}>
+              <View key="childA" ref={childNodeARef} />
+              <View key="childB" ref={childNodeBRef} />
+              <View key="childC" ref={childNodeCRef} />
             </View>,
           );
         });
 
-        const parentNode = ensureReactNativeElement(lastParentNode);
-        const childNodeA = ensureReactNativeElement(lastChildNodeA);
-        const childNodeB = ensureReactNativeElement(lastChildNodeB);
-        const childNodeC = ensureReactNativeElement(lastChildNodeC);
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNodeA = ensureReactNativeElement(childNodeARef.current);
+        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
+        const childNodeC = ensureReactNativeElement(childNodeCRef.current);
 
         expect(parentNode.nodeType).toBe(ReadOnlyNode.ELEMENT_NODE);
         expect(childNodeA.nodeType).toBe(ReadOnlyNode.ELEMENT_NODE);
@@ -119,46 +90,27 @@ describe('ReactNativeElement', () => {
 
     describe('nodeValue', () => {
       it('returns null', () => {
-        let lastParentNode;
-        let lastChildNodeA;
-        let lastChildNodeB;
-        let lastChildNodeC;
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              <View
-                key="childA"
-                ref={node => {
-                  lastChildNodeA = node;
-                }}
-              />
-              <View
-                key="childB"
-                ref={node => {
-                  lastChildNodeB = node;
-                }}
-              />
-              <View
-                key="childC"
-                ref={node => {
-                  lastChildNodeC = node;
-                }}
-              />
+            <View key="parent" ref={parentRef}>
+              <View key="childA" ref={childNodeARef} />
+              <View key="childB" ref={childNodeBRef} />
+              <View key="childC" ref={childNodeCRef} />
             </View>,
           );
         });
 
-        const parentNode = ensureReactNativeElement(lastParentNode);
-        const childNodeA = ensureReactNativeElement(lastChildNodeA);
-        const childNodeB = ensureReactNativeElement(lastChildNodeB);
-        const childNodeC = ensureReactNativeElement(lastChildNodeC);
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNodeA = ensureReactNativeElement(childNodeARef.current);
+        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
+        const childNodeC = ensureReactNativeElement(childNodeCRef.current);
 
         expect(parentNode.nodeValue).toBe(null);
         expect(childNodeA.nodeValue).toBe(null);
@@ -169,46 +121,27 @@ describe('ReactNativeElement', () => {
 
     describe('childNodes / hasChildNodes()', () => {
       it('returns updated child nodes information', () => {
-        let lastParentNode;
-        let lastChildNodeA;
-        let lastChildNodeB;
-        let lastChildNodeC;
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              <View
-                key="childA"
-                ref={node => {
-                  lastChildNodeA = node;
-                }}
-              />
-              <View
-                key="childB"
-                ref={node => {
-                  lastChildNodeB = node;
-                }}
-              />
-              <View
-                key="childC"
-                ref={node => {
-                  lastChildNodeC = node;
-                }}
-              />
+            <View key="parent" ref={parentRef}>
+              <View key="childA" ref={childNodeARef} />
+              <View key="childB" ref={childNodeBRef} />
+              <View key="childC" ref={childNodeCRef} />
             </View>,
           );
         });
 
-        const parentNode = ensureReactNativeElement(lastParentNode);
-        const childNodeA = ensureReactNativeElement(lastChildNodeA);
-        const childNodeB = ensureReactNativeElement(lastChildNodeB);
-        const childNodeC = ensureReactNativeElement(lastChildNodeC);
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNodeA = ensureReactNativeElement(childNodeARef.current);
+        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
+        const childNodeC = ensureReactNativeElement(childNodeCRef.current);
 
         const childNodes = parentNode.childNodes;
         expect(childNodes).toBeInstanceOf(NodeList);
@@ -253,47 +186,29 @@ describe('ReactNativeElement', () => {
     describe('getRootNode()', () => {
       // This is the desired implementation (not implemented yet).
       it('returns a root node representing the document', () => {
-        let lastParentANode;
-        let lastParentBNode;
-        let lastChildANode;
-        let lastChildBNode;
+        const parentANodeRef = createRef<HostInstance>();
+        const parentBNodeRef = createRef<HostInstance>();
+        const childANodeRef = createRef<HostInstance>();
+        const childBNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
             <>
-              <View
-                key="parentA"
-                ref={node => {
-                  lastParentANode = node;
-                }}>
-                <View
-                  key="childA"
-                  ref={node => {
-                    lastChildANode = node;
-                  }}
-                />
+              <View key="parentA" ref={parentANodeRef}>
+                <View key="childA" ref={childANodeRef} />
               </View>
-              <View
-                key="parentB"
-                ref={node => {
-                  lastParentBNode = node;
-                }}>
-                <View
-                  key="childB"
-                  ref={node => {
-                    lastChildBNode = node;
-                  }}
-                />
+              <View key="parentB" ref={parentBNodeRef}>
+                <View key="childB" ref={childBNodeRef} />
               </View>
             </>,
           );
         });
 
-        const parentANode = ensureReactNativeElement(lastParentANode);
-        const childANode = ensureReactNativeElement(lastChildANode);
-        const parentBNode = ensureReactNativeElement(lastParentBNode);
-        const childBNode = ensureReactNativeElement(lastChildBNode);
+        const parentANode = ensureReactNativeElement(parentANodeRef.current);
+        const childANode = ensureReactNativeElement(childANodeRef.current);
+        const parentBNode = ensureReactNativeElement(parentBNodeRef.current);
+        const childBNode = ensureReactNativeElement(childBNodeRef.current);
 
         expect(childANode.getRootNode()).toBe(childBNode.getRootNode());
         const document = childANode.getRootNode();
@@ -329,46 +244,27 @@ describe('ReactNativeElement', () => {
 
     describe('firstChild / lastChild / previousSibling / nextSibling / parentNode / parentElement', () => {
       it('return updated relative nodes', () => {
-        let lastParentNode;
-        let lastChildNodeA;
-        let lastChildNodeB;
-        let lastChildNodeC;
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              <View
-                key="childA"
-                ref={node => {
-                  lastChildNodeA = node;
-                }}
-              />
-              <View
-                key="childB"
-                ref={node => {
-                  lastChildNodeB = node;
-                }}
-              />
-              <View
-                key="childC"
-                ref={node => {
-                  lastChildNodeC = node;
-                }}
-              />
+            <View key="parent" ref={parentRef}>
+              <View key="childA" ref={childNodeARef} />
+              <View key="childB" ref={childNodeBRef} />
+              <View key="childC" ref={childNodeCRef} />
             </View>,
           );
         });
 
-        const parentNode = ensureReactNativeElement(lastParentNode);
-        const childNodeA = ensureReactNativeElement(lastChildNodeA);
-        const childNodeB = ensureReactNativeElement(lastChildNodeB);
-        const childNodeC = ensureReactNativeElement(lastChildNodeC);
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNodeA = ensureReactNativeElement(childNodeARef.current);
+        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
+        const childNodeC = ensureReactNativeElement(childNodeCRef.current);
 
         expect(parentNode.isConnected).toBe(true);
         expect(parentNode.firstChild).toBe(childNodeA);
@@ -486,54 +382,32 @@ describe('ReactNativeElement', () => {
 
     describe('compareDocumentPosition / contains', () => {
       it('handles containment, order and connection', () => {
-        let lastParentNode;
-        let lastChildNodeA;
-        let lastChildNodeAA;
-        let lastChildNodeB;
-        let lastChildNodeBB;
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
+        const childNodeAARef = createRef<HostInstance>();
+        const childNodeBRef = createRef<HostInstance>();
+        const childNodeBBRef = createRef<HostInstance>();
 
         // Initial render with 2 children
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={node => {
-                lastParentNode = node;
-              }}>
-              <View
-                key="childA"
-                ref={node => {
-                  lastChildNodeA = node;
-                }}>
-                <View
-                  key="childAA"
-                  ref={node => {
-                    lastChildNodeAA = node;
-                  }}
-                />
+            <View key="parent" ref={parentRef}>
+              <View key="childA" ref={childNodeARef}>
+                <View key="childAA" ref={childNodeAARef} />
               </View>
-              <View
-                key="childB"
-                ref={node => {
-                  lastChildNodeB = node;
-                }}>
-                <View
-                  key="childBB"
-                  ref={node => {
-                    lastChildNodeBB = node;
-                  }}
-                />
+              <View key="childB" ref={childNodeBRef}>
+                <View key="childBB" ref={childNodeBBRef} />
               </View>
             </View>,
           );
         });
 
-        const parentNode = ensureReactNativeElement(lastParentNode);
-        const childNodeA = ensureReactNativeElement(lastChildNodeA);
-        const childNodeAA = ensureReactNativeElement(lastChildNodeAA);
-        const childNodeB = ensureReactNativeElement(lastChildNodeB);
-        const childNodeBB = ensureReactNativeElement(lastChildNodeBB);
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNodeA = ensureReactNativeElement(childNodeARef.current);
+        const childNodeAA = ensureReactNativeElement(childNodeAARef.current);
+        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
+        const childNodeBB = ensureReactNativeElement(childNodeBBRef.current);
 
         // Node/self
         expect(parentNode.compareDocumentPosition(parentNode)).toBe(0);
@@ -617,24 +491,22 @@ describe('ReactNativeElement', () => {
         expect(childNodeBB.compareDocumentPosition(childNodeBB)).toBe(0);
         expect(childNodeBB.contains(childNodeBB)).toBe(true);
 
-        let lastAltParentNode;
+        const altParentNodeRef = createRef<HostInstance>();
 
         // Similar structure in a different tree
         const root2 = Fantom.createRoot();
         Fantom.runTask(() => {
           root2.render(
-            <View
-              key="altParent"
-              ref={node => {
-                lastAltParentNode = node;
-              }}>
+            <View key="altParent" ref={altParentNodeRef}>
               <View key="childA" />
               <View key="childB" />
             </View>,
           );
         });
 
-        const altParentNode = ensureReactNativeElement(lastAltParentNode);
+        const altParentNode = ensureReactNativeElement(
+          altParentNodeRef.current,
+        );
 
         // Node/same position in different tree
         expect(altParentNode.compareDocumentPosition(parentNode)).toBe(
@@ -676,64 +548,45 @@ describe('ReactNativeElement', () => {
 
   describe('extends `ReadOnlyElement`', () => {
     it('should be an instance of `ReadOnlyElement`', () => {
-      let lastNode;
+      const ref = createRef<HostInstance>();
 
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={node => {
-              lastNode = node;
-            }}
-          />,
-        );
+        root.render(<View ref={ref} />);
       });
 
-      expect(lastNode).toBeInstanceOf(ReadOnlyElement);
+      expect(ref.current).toBeInstanceOf(ReadOnlyElement);
     });
 
     describe('children / childElementCount', () => {
       it('return updated element children information', () => {
-        let lastParentElement;
-        let lastChildElementA;
-        let lastChildElementB;
-        let lastChildElementC;
+        const parentRef = createRef<HostInstance>();
+        const childElementARef = createRef<HostInstance>();
+        const childElementBRef = createRef<HostInstance>();
+        const childElementCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={element => {
-                lastParentElement = element;
-              }}>
-              <View
-                key="childA"
-                ref={element => {
-                  lastChildElementA = element;
-                }}
-              />
-              <View
-                key="childB"
-                ref={element => {
-                  lastChildElementB = element;
-                }}
-              />
-              <View
-                key="childC"
-                ref={element => {
-                  lastChildElementC = element;
-                }}
-              />
+            <View key="parent" ref={parentRef}>
+              <View key="childA" ref={childElementARef} />
+              <View key="childB" ref={childElementBRef} />
+              <View key="childC" ref={childElementCRef} />
             </View>,
           );
         });
 
-        const parentElement = ensureReactNativeElement(lastParentElement);
-        const childElementA = ensureReactNativeElement(lastChildElementA);
-        const childElementB = ensureReactNativeElement(lastChildElementB);
-        const childElementC = ensureReactNativeElement(lastChildElementC);
+        const parentElement = ensureReactNativeElement(parentRef.current);
+        const childElementA = ensureReactNativeElement(
+          childElementARef.current,
+        );
+        const childElementB = ensureReactNativeElement(
+          childElementBRef.current,
+        );
+        const childElementC = ensureReactNativeElement(
+          childElementCRef.current,
+        );
 
         const children = parentElement.children;
         expect(children).toBeInstanceOf(HTMLCollection);
@@ -777,46 +630,33 @@ describe('ReactNativeElement', () => {
 
     describe('firstElementChild / lastElementChild / previousElementSibling / nextElementSibling', () => {
       it('return updated relative elements', () => {
-        let lastParentElement;
-        let lastChildElementA;
-        let lastChildElementB;
-        let lastChildElementC;
+        const parentRef = createRef<HostInstance>();
+        const childElementARef = createRef<HostInstance>();
+        const childElementBRef = createRef<HostInstance>();
+        const childElementCRef = createRef<HostInstance>();
 
         // Initial render with 3 children
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={element => {
-                lastParentElement = element;
-              }}>
-              <View
-                key="childA"
-                ref={element => {
-                  lastChildElementA = element;
-                }}
-              />
-              <View
-                key="childB"
-                ref={element => {
-                  lastChildElementB = element;
-                }}
-              />
-              <View
-                key="childC"
-                ref={element => {
-                  lastChildElementC = element;
-                }}
-              />
+            <View key="parent" ref={parentRef}>
+              <View key="childA" ref={childElementARef} />
+              <View key="childB" ref={childElementBRef} />
+              <View key="childC" ref={childElementCRef} />
             </View>,
           );
         });
 
-        const parentElement = ensureReactNativeElement(lastParentElement);
-        const childElementA = ensureReactNativeElement(lastChildElementA);
-        const childElementB = ensureReactNativeElement(lastChildElementB);
-        const childElementC = ensureReactNativeElement(lastChildElementC);
+        const parentElement = ensureReactNativeElement(parentRef.current);
+        const childElementA = ensureReactNativeElement(
+          childElementARef.current,
+        );
+        const childElementB = ensureReactNativeElement(
+          childElementBRef.current,
+        );
+        const childElementC = ensureReactNativeElement(
+          childElementCRef.current,
+        );
 
         expect(parentElement.firstElementChild).toBe(childElementA);
         expect(parentElement.lastElementChild).toBe(childElementC);
@@ -902,36 +742,28 @@ describe('ReactNativeElement', () => {
 
     describe('textContent', () => {
       it('should return the concatenated values of all its text node descendants (using DFS)', () => {
-        let lastParentNode;
-        let lastChildNodeA;
+        const parentRef = createRef<HostInstance>();
+        const childNodeARef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={node => {
-                lastParentNode = node;
-              }}>
+            <View key="parent" ref={parentRef}>
               <NativeText>Hello </NativeText>
-              <View
-                key="childA"
-                ref={node => {
-                  lastChildNodeA = node;
-                }}>
+              <View key="childA" ref={childNodeARef}>
                 <NativeText>world!</NativeText>
               </View>
             </View>,
           );
         });
 
-        const parentNode = ensureReactNativeElement(lastParentNode);
-        const childNodeA = ensureReactNativeElement(lastChildNodeA);
+        const parentNode = ensureReactNativeElement(parentRef.current);
+        const childNodeA = ensureReactNativeElement(childNodeARef.current);
 
         expect(parentNode.textContent).toBe('Hello world!');
         expect(childNodeA.textContent).toBe('world!');
 
-        let lastChildNodeB;
+        const childNodeBRef = createRef<HostInstance>();
         Fantom.runTask(() => {
           root.render(
             <View key="parent">
@@ -939,11 +771,7 @@ describe('ReactNativeElement', () => {
               <View key="childA">
                 <NativeText>world </NativeText>
               </View>
-              <View
-                key="childB"
-                ref={node => {
-                  lastChildNodeB = node;
-                }}>
+              <View key="childB" ref={childNodeBRef}>
                 <View key="childBB">
                   <NativeText>
                     again
@@ -955,7 +783,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const childNodeB = ensureReactNativeElement(lastChildNodeB);
+        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
 
         expect(parentNode.textContent).toBe('Hello world again and again!');
         expect(childNodeA.textContent).toBe('world ');
@@ -965,7 +793,7 @@ describe('ReactNativeElement', () => {
 
     describe('getBoundingClientRect', () => {
       it('returns a DOMRect with its size and position, or an empty DOMRect when disconnected', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
@@ -980,14 +808,12 @@ describe('ReactNativeElement', () => {
                 width: 50.3,
                 height: 100.4,
               }}
-              ref={element => {
-                lastElement = element;
-              }}
+              ref={elementRef}
             />,
           );
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         const boundingClientRect = element.getBoundingClientRect();
         expect(boundingClientRect).toBeInstanceOf(DOMRect);
@@ -1007,11 +833,45 @@ describe('ReactNativeElement', () => {
         expect(boundingClientRectAfterUnmount.width).toBe(0);
         expect(boundingClientRectAfterUnmount.height).toBe(0);
       });
+
+      it('returns a DOMRect with its size and position respecting viewport offsets', () => {
+        const elementRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot({
+          viewportOffsetX: 111,
+          viewportOffsetY: 222,
+        });
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              key="parent"
+              style={{
+                position: 'absolute',
+                left: 5.1,
+                top: 10.2,
+                width: 50.3,
+                height: 100.4,
+              }}
+              ref={elementRef}
+            />,
+          );
+        });
+
+        const element = ensureReactNativeElement(elementRef.current);
+
+        const boundingClientRect = element.getBoundingClientRect();
+        expect(boundingClientRect).toBeInstanceOf(DOMRect);
+        expect(boundingClientRect.x).toBe(116);
+        expect(boundingClientRect.y).toBeCloseTo(232.33);
+        expect(boundingClientRect.width).toBeCloseTo(50.33);
+        expect(boundingClientRect.height).toBeCloseTo(100.33);
+      });
     });
 
     describe('scrollLeft / scrollTop', () => {
       it('return the scroll position on each axis', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1019,14 +879,12 @@ describe('ReactNativeElement', () => {
             <ScrollView
               key="parent"
               contentOffset={{x: 5.1, y: 10.2}}
-              ref={element => {
-                lastElement = element;
-              }}
+              ref={elementRef}
             />,
           );
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.scrollLeft).toBeCloseTo(5.1);
         expect(element.scrollTop).toBeCloseTo(10.2);
@@ -1042,7 +900,7 @@ describe('ReactNativeElement', () => {
 
     describe('scrollWidth / scrollHeight', () => {
       it('return the scroll size on each axis', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1050,15 +908,13 @@ describe('ReactNativeElement', () => {
             <ScrollView
               key="parent"
               style={{width: 100, height: 100}}
-              ref={element => {
-                lastElement = element;
-              }}>
+              ref={elementRef}>
               <View style={{width: 200, height: 1500}} />
             </ScrollView>,
           );
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.scrollWidth).toBe(200);
         expect(element.scrollHeight).toBe(1500);
@@ -1074,7 +930,7 @@ describe('ReactNativeElement', () => {
 
     describe('clientWidth / clientHeight', () => {
       it('return the inner size of the node', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1085,14 +941,12 @@ describe('ReactNativeElement', () => {
                 width: 200,
                 height: 250,
               }}
-              ref={element => {
-                lastElement = element;
-              }}
+              ref={elementRef}
             />,
           );
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.clientWidth).toBe(200);
         expect(element.clientHeight).toBe(250);
@@ -1108,7 +962,7 @@ describe('ReactNativeElement', () => {
 
     describe('clientLeft / clientTop', () => {
       it('return the border size of the node', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1119,14 +973,12 @@ describe('ReactNativeElement', () => {
                 borderTopWidth: 250,
                 borderLeftWidth: 200,
               }}
-              ref={element => {
-                lastElement = element;
-              }}
+              ref={elementRef}
             />,
           );
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.clientLeft).toBe(200);
         expect(element.clientTop).toBe(250);
@@ -1142,7 +994,7 @@ describe('ReactNativeElement', () => {
 
     describe('id', () => {
       it('returns the current `id` prop from the node', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1150,20 +1002,18 @@ describe('ReactNativeElement', () => {
             <View
               key="parent"
               id="<react-native-element-id>"
-              ref={element => {
-                lastElement = element;
-              }}
+              ref={elementRef}
             />,
           );
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.id).toBe('<react-native-element-id>');
       });
 
       it('returns the current `nativeID` prop from the node', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1171,14 +1021,12 @@ describe('ReactNativeElement', () => {
             <View
               key="parent"
               nativeID="<react-native-element-id>"
-              ref={element => {
-                lastElement = element;
-              }}
+              ref={elementRef}
             />,
           );
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.id).toBe('<react-native-element-id>');
       });
@@ -1186,20 +1034,14 @@ describe('ReactNativeElement', () => {
 
     describe('tagName', () => {
       it('returns the normalized tag name for the node', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
-          root.render(
-            <View
-              ref={element => {
-                lastElement = element;
-              }}
-            />,
-          );
+          root.render(<View ref={elementRef} />);
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.tagName).toBe('RN:View');
       });
@@ -1208,27 +1050,21 @@ describe('ReactNativeElement', () => {
 
   describe('extends `ReactNativeElement`', () => {
     it('should be an instance of `ReactNativeElement`', () => {
-      let lastNode;
+      const ref = createRef<HostInstance>();
 
       // Initial render with 3 children
       const root = Fantom.createRoot();
       Fantom.runTask(() => {
-        root.render(
-          <View
-            ref={node => {
-              lastNode = node;
-            }}
-          />,
-        );
+        root.render(<View ref={ref} />);
       });
 
-      const node = ensureReactNativeElement(lastNode);
+      const node = ensureReactNativeElement(ref.current);
       expect(node).toBeInstanceOf(ReactNativeElement);
     });
 
     describe('offsetWidth / offsetHeight', () => {
       it('return the rounded width and height, or 0 when disconnected', () => {
-        let lastElement;
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
         Fantom.runTask(() => {
@@ -1242,14 +1078,12 @@ describe('ReactNativeElement', () => {
                 width: 50.3,
                 height: 100.5,
               }}
-              ref={element => {
-                lastElement = element;
-              }}
+              ref={elementRef}
             />,
           );
         });
 
-        const element = ensureReactNativeElement(lastElement);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.offsetWidth).toBe(50);
         expect(element.offsetHeight).toBe(100);
@@ -1264,36 +1098,32 @@ describe('ReactNativeElement', () => {
     });
 
     describe('offsetParent / offsetTop / offsetLeft', () => {
-      it('retun the rounded offset values and the parent, or null and zeros when disconnected or hidden', () => {
-        let lastParentElement;
-        let lastElement;
+      it('return the rounded offset values and the parent, or null and zeros when disconnected or hidden', () => {
+        const parentRef = createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
           root.render(
-            <View
-              key="parent"
-              ref={element => {
-                lastParentElement = element;
-              }}>
+            <View key="parent" ref={parentRef}>
               <View
                 key="child"
                 style={{marginTop: 10.6, marginLeft: 5.1}}
-                ref={element => {
-                  lastElement = element;
-                }}
+                ref={elementRef}
               />
             </View>,
           );
         });
 
-        const parentElement = ensureReactNativeElement(lastParentElement);
-        const element = ensureReactNativeElement(lastElement);
+        const parentElement = ensureReactNativeElement(parentRef.current);
+        const element = ensureReactNativeElement(elementRef.current);
 
         expect(element.offsetTop).toBe(11);
         expect(element.offsetLeft).toBe(5);
         expect(element.offsetParent).toBe(parentElement);
+
+        expect(parentElement.offsetParent).toBe(root.document.documentElement);
 
         Fantom.runTask(() => {
           root.render(
@@ -1314,6 +1144,61 @@ describe('ReactNativeElement', () => {
         expect(element.offsetTop).toBe(0);
         expect(element.offsetLeft).toBe(0);
         expect(element.offsetParent).toBe(null);
+      });
+
+      it('return the rounded offset values from the parent with view offsets', () => {
+        const parentRef = createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot({
+          viewportOffsetX: 111,
+          viewportOffsetY: 222,
+        });
+
+        Fantom.runTask(() => {
+          root.render(
+            <View key="parent" ref={parentRef}>
+              <View
+                key="child"
+                style={{marginTop: 10.6, marginLeft: 5.1}}
+                ref={elementRef}
+              />
+            </View>,
+          );
+        });
+
+        const parentElement = ensureReactNativeElement(parentRef.current);
+        const element = ensureReactNativeElement(elementRef.current);
+
+        expect(element.offsetTop).toBe(11);
+        expect(element.offsetLeft).toBe(5);
+        expect(element.offsetParent).toBe(parentElement);
+
+        expect(parentElement.offsetParent).toBe(root.document.documentElement);
+      });
+
+      it('return the rounded offset values from the root with view offsets', () => {
+        const elementRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot({
+          viewportOffsetX: 111,
+          viewportOffsetY: 222,
+        });
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              key="child"
+              style={{marginTop: 10.6, marginLeft: 5.1}}
+              ref={elementRef}
+            />,
+          );
+        });
+
+        const element = ensureReactNativeElement(elementRef.current);
+
+        expect(element.offsetTop).toBe(11);
+        expect(element.offsetLeft).toBe(5);
       });
     });
   });

@@ -32,5 +32,5 @@ target_link_libraries(react_nativemodule_core
         react_featureflags
         reactperflogger
         reactnativejni)
-target_compile_reactnative_options(react_nativemodule_core PRIVATE "ReactNative")
+target_compile_reactnative_options(react_nativemodule_core PRIVATE)
 target_compile_options(react_nativemodule_core PRIVATE -Wpedantic)

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
@@ -29,6 +29,7 @@ const Settings = {
 
   set(settings: Object) {
     // $FlowFixMe[object-this-reference]
+    // $FlowFixMe[unsafe-object-assign]
     this._settings = Object.assign(this._settings, settings);
     NativeSettingsManager.setValues(settings);
   },

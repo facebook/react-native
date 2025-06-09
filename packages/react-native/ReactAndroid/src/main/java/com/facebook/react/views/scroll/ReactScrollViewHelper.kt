@@ -11,15 +11,21 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Point
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
+import androidx.annotation.RequiresApi
+import androidx.core.view.ViewCompat.FocusDirection
+import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
+import com.facebook.react.uimanager.ReactClippingViewGroup
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType
@@ -218,9 +224,10 @@ public object ReactScrollViewHelper {
     scrollListeners.add(WeakReference(listener))
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeScrollListener(listener: ScrollListener) {
-    scrollListeners.remove(WeakReference(listener))
+    scrollListeners.removeIf { it.get() == null || it.get() == listener }
   }
 
   @JvmStatic
@@ -228,9 +235,10 @@ public object ReactScrollViewHelper {
     layoutChangeListeners.add(WeakReference(listener))
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeLayoutChangeListener(listener: LayoutChangeListener) {
-    layoutChangeListeners.remove(WeakReference(listener))
+    layoutChangeListeners.removeIf { it.get() == null || it.get() == listener }
   }
 
   /**
@@ -462,6 +470,55 @@ public object ReactScrollViewHelper {
     return Point(scroller.finalX, scroller.finalY)
   }
 
+  @JvmStatic
+  public fun findNextFocusableView(
+      host: ViewGroup,
+      focused: View,
+      @FocusDirection direction: Int,
+  ): View? {
+    if (host !is ReactClippingViewGroup) {
+      return null
+    }
+
+    val uimanager =
+        UIManagerHelper.getUIManager(host.context as ReactContext, UIManagerType.FABRIC)
+            ?: return null
+
+    val nextFocusableViewId =
+        (uimanager as FabricUIManager).findNextFocusableElement(host.id, focused.id, direction)
+            ?: return null
+
+    val ancestorIdList =
+        uimanager
+            .getRelativeAncestorList(host.getChildAt(0).id, nextFocusableViewId)
+            ?.toMutableSet() ?: return null
+
+    ancestorIdList.add(nextFocusableViewId)
+
+    host.updateClippingRect(ancestorIdList)
+
+    return host.findViewById(nextFocusableViewId)
+  }
+
+  @JvmStatic
+  public fun resolveAbsoluteDirection(
+      @FocusRealDirection direction: Int,
+      horizontal: Boolean,
+      layoutDirection: Int
+  ): Int {
+    val rtl: Boolean = layoutDirection == View.LAYOUT_DIRECTION_RTL
+
+    return if (direction == View.FOCUS_FORWARD || direction == View.FOCUS_BACKWARD) {
+      if (horizontal) {
+        if ((direction == View.FOCUS_FORWARD) != rtl) View.FOCUS_RIGHT else View.FOCUS_LEFT
+      } else {
+        if (direction == View.FOCUS_FORWARD) View.FOCUS_DOWN else View.FOCUS_UP
+      }
+    } else {
+      direction
+    }
+  }
+
   public interface ScrollListener {
     public fun onScroll(
         scrollView: ViewGroup?,
@@ -498,7 +555,7 @@ public object ReactScrollViewHelper {
     }
   }
 
-  public class ReactScrollViewScrollState() {
+  public class ReactScrollViewScrollState {
 
     /** Get the position after current animation is finished */
     public val finalAnimatedPositionScroll: Point = Point()

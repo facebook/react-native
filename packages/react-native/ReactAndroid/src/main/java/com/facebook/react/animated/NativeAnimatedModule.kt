@@ -11,7 +11,6 @@ import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import com.facebook.common.logging.FLog
 import com.facebook.fbreact.specs.NativeAnimatedModuleSpec
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
@@ -20,6 +19,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UIManagerListener
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
@@ -230,14 +230,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
       return
     }
 
-    val tagsArray = Arguments.createArray()
-    for (tag in tags) {
-      tagsArray.pushInt(tag)
-    }
-
     // emit the event to JS to resync the trees
-    val onAnimationEndedData = Arguments.createMap()
-    onAnimationEndedData.putArray("tags", tagsArray)
+    val onAnimationEndedData = buildReadableMap { putArray("tags") { tags.forEach { add(it) } } }
 
     val reactApplicationContext = reactApplicationContextIfActiveOrWarn
     reactApplicationContext?.emitDeviceEvent("onUserDrivenAnimationEnded", onAnimationEndedData)
@@ -542,10 +536,12 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
       FLog.d(NAME, "queue startListeningToAnimatedNodeValue: $tag")
     }
 
-    val listener = AnimatedNodeValueListener { value ->
-      val onAnimatedValueData = Arguments.createMap()
-      onAnimatedValueData.putInt("tag", tag)
-      onAnimatedValueData.putDouble("value", value)
+    val listener = AnimatedNodeValueListener { value, offset ->
+      val onAnimatedValueData = buildReadableMap {
+        put("tag", tag)
+        put("value", value)
+        put("offset", offset)
+      }
 
       val reactApplicationContext = reactApplicationContextIfActiveOrWarn
       reactApplicationContext?.emitDeviceEvent("onAnimatedValueUpdate", onAnimatedValueData)
@@ -945,10 +941,6 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
           i++ // eventName
           i++ // eventMapping
         }
-
-        else ->
-            throw IllegalArgumentException(
-                "Batch animation execution op: fetching viewTag: unknown op code")
       }
     }
 
@@ -980,10 +972,12 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
 
                 BatchExecutionOpCodes.OP_START_LISTENING_TO_ANIMATED_NODE_VALUE -> {
                   val tag = opsAndArgs.getInt(i++)
-                  val listener = AnimatedNodeValueListener { value ->
-                    val onAnimatedValueData = Arguments.createMap()
-                    onAnimatedValueData.putInt("tag", tag)
-                    onAnimatedValueData.putDouble("value", value)
+                  val listener = AnimatedNodeValueListener { value, offset ->
+                    val onAnimatedValueData = buildReadableMap {
+                      put("tag", tag)
+                      put("value", value)
+                      put("offset", offset)
+                    }
 
                     val reactApplicationContext = reactApplicationContextIfActiveOrWarn
                     reactApplicationContext?.emitDeviceEvent(
@@ -1018,7 +1012,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
                         opsAndArgs.getInt(i++), opsAndArgs.getDouble(i++))
 
                 BatchExecutionOpCodes.OP_CODE_SET_ANIMATED_NODE_OFFSET ->
-                    animatedNodesManager.setAnimatedNodeValue(
+                    animatedNodesManager.setAnimatedNodeOffset(
                         opsAndArgs.getInt(i++), opsAndArgs.getDouble(i++))
 
                 BatchExecutionOpCodes.OP_CODE_FLATTEN_ANIMATED_NODE_OFFSET ->
@@ -1059,8 +1053,6 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
 
                 BatchExecutionOpCodes.OP_CODE_ADD_LISTENER,
                 BatchExecutionOpCodes.OP_CODE_REMOVE_LISTENERS -> i++
-                else ->
-                    throw IllegalArgumentException("Batch animation execution op: unknown op code")
               }
             }
           }

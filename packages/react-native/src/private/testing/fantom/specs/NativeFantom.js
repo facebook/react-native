@@ -49,6 +49,12 @@ export enum NativeEventCategory {
    * isn't ongoing.
    */
   Continuous = 4,
+
+  /*
+   * Priority for events that can be processed in idle times or in the
+   * background.
+   */
+  Idle = 5,
 }
 
 export type ScrollOptions = {
@@ -63,6 +69,8 @@ interface Spec extends TurboModule {
     viewportWidth: number,
     viewportHeight: number,
     devicePixelRatio: number,
+    viewportOffsetX?: number,
+    viewportOffsetY?: number,
   ) => void;
   stopSurface: (surfaceId: number) => void;
   enqueueNativeEvent: (
@@ -82,11 +90,19 @@ interface Spec extends TurboModule {
     width: number,
   ) => void;
   takeMountingManagerLogs: (surfaceId: number) => Array<string>;
+  getDirectManipulationProps: (shadowNode: mixed /* ShadowNode */) => mixed;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
+  produceFramesForDuration: (miliseconds: number) => void;
   validateEmptyMessageQueue: () => void;
   getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
   reportTestSuiteResultsJSON: (results: string) => void;
+  createShadowNodeReferenceCounter(
+    shadowNode: mixed /* ShadowNode */,
+  ): () => number;
+  createShadowNodeRevisionGetter(
+    shadowNode: mixed /* ShadowNode */,
+  ): () => ?number;
   saveJSMemoryHeapSnapshot: (filePath: string) => void;
 }
 

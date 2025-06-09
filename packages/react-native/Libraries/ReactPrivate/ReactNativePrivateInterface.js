@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import typeof CustomEvent from '../../src/private/webapis/dom/events/CustomEvent';
@@ -51,6 +51,7 @@ export type {PublicRootInstance} from '../ReactNative/ReactFabricPublicInstance/
 export type PublicTextInstance = ReturnType<createPublicTextInstance>;
 
 // flowlint unsafe-getters-setters:off
+// eslint-disable-next-line lint/no-commonjs-exports
 module.exports = {
   get BatchedBridge(): BatchedBridge {
     return require('../BatchedBridge/BatchedBridge').default;

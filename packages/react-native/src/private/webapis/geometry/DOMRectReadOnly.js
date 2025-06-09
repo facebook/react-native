@@ -14,6 +14,8 @@
  * licensed under [CC-BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/).
  */
 
+import {setPlatformObject} from '../webidl/PlatformObjects';
+
 // flowlint sketchy-null:off, unsafe-getters-setters:off
 
 export interface DOMRectInit {
@@ -186,3 +188,7 @@ export default class DOMRectReadOnly {
     this.#height = castToNumber(height);
   }
 }
+
+setPlatformObject(DOMRectReadOnly, {
+  clone: rect => new DOMRectReadOnly(rect.x, rect.y, rect.width, rect.height),
+});

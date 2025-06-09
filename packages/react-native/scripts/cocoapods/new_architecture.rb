@@ -145,6 +145,12 @@ class NewArchitectureHelper
         return package["version"]
     end
 
+    # Deprecated method. This has been restored because some libraries (e.g. react-native-exit-app) still use it.
+    def self.folly_compiler_flags
+      folly_config = Helpers::Constants.folly_config
+      return folly_config[:compiler_flags]
+    end
+
     def self.new_arch_enabled
         return ENV["RCT_NEW_ARCH_ENABLED"] == '0' ? false : true
     end
@@ -155,7 +161,7 @@ class NewArchitectureHelper
             .uniq{ |p| p.path }
             .map{ |p| p.path }
 
-        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle"]
+        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/"]
         projectPaths.each do |projectPath|
             projectFolderPath = File.dirname(projectPath)
             infoPlistFiles = `find #{projectFolderPath} -name "Info.plist"`

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @noflow
  */
 
 'use strict';
@@ -28,7 +29,10 @@ module.exports = {
   create: function (context) {
     return {
       ImportDeclaration(node) {
-        if (!isDeepReactNativeImport(node.source)) {
+        if (
+          !isDeepReactNativeImport(node.source) ||
+          isInitializeCoreImport(node.source)
+        ) {
           return;
         }
         if (isDefaultImport(node)) {
@@ -54,7 +58,7 @@ module.exports = {
         }
       },
       CallExpression(node) {
-        if (!isDeepRequire(node)) {
+        if (!isDeepRequire(node) || isInitializeCoreImport(node.arguments[0])) {
           return;
         }
 
@@ -124,6 +128,14 @@ module.exports = {
       const importPath = source.value;
       const parts = importPath.split('/');
       return parts.length > 1 && parts[0] === 'react-native';
+    }
+
+    function isInitializeCoreImport(source) {
+      if (source.type !== 'Literal' || typeof source.value !== 'string') {
+        return false;
+      }
+
+      return source.value === 'react-native/Libraries/Core/InitializeCore';
     }
   },
 };

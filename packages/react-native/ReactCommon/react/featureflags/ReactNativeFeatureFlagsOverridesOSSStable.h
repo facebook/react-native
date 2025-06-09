@@ -26,5 +26,8 @@ class ReactNativeFeatureFlagsOverridesOSSStable
   bool useNativeViewConfigsInBridgelessMode() override {
     return true;
   }
+  bool useShadowNodeStateOnClone() override {
+    return true;
+  }
 };
 } // namespace facebook::react

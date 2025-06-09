@@ -22,6 +22,7 @@ import SwitchNativeComponent, {
   Commands as SwitchCommands,
 } from './SwitchNativeComponent';
 import * as React from 'react';
+import {useLayoutEffect, useRef, useState} from 'react';
 
 export type SwitchPropsIOS = {
   /**
@@ -164,7 +165,13 @@ type SwitchRef = React.ElementRef<
 const Switch: component(
   ref?: React.RefSetter<SwitchRef>,
   ...props: SwitchProps
-) = React.forwardRef(function Switch(props, forwardedRef): React.Node {
+) = function Switch({
+  ref: forwardedRef,
+  ...props
+}: {
+  ref?: React.RefSetter<SwitchRef>,
+  ...SwitchProps,
+}): React.Node {
   const {
     disabled,
     ios_backgroundColor,
@@ -179,13 +186,16 @@ const Switch: component(
   const trackColorForFalse = trackColor?.false;
   const trackColorForTrue = trackColor?.true;
 
-  const nativeSwitchRef = React.useRef<React.ElementRef<
+  const nativeSwitchRef = useRef<React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
   > | null>(null);
 
   const ref = useMergeRefs(nativeSwitchRef, forwardedRef);
 
-  const [native, setNative] = React.useState({value: (null: ?boolean)});
+  // We wrap the native state in an object to force the layout-effect
+  // below to re-run whenever we get an update from native, even if it's
+  // not different from the previous native state.
+  const [native, setNative] = useState({value: (null: ?boolean)});
 
   const handleChange = (event: SwitchChangeEvent) => {
     // $FlowFixMe[unused-promise]
@@ -195,7 +205,7 @@ const Switch: component(
     setNative({value: event.nativeEvent.value});
   };
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     // This is necessary in case native updates the switch and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
@@ -213,7 +223,7 @@ const Switch: component(
         SwitchCommands.setValue(nativeSwitchRef.current, jsValue);
       }
     }
-  }, [value, native.value]);
+  }, [value, native]);
 
   if (Platform.OS === 'android') {
     const {onTintColor, tintColor, ...androidProps} = restProps;
@@ -281,6 +291,6 @@ const Switch: component(
       />
     );
   }
-});
+};
 
 export default Switch;

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -18,10 +18,11 @@ import type {
 import ExampleTextInput from './ExampleTextInput';
 import TextInputSharedExamples from './TextInputSharedExamples';
 import React from 'react';
+import {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 const ToggleDefaultPaddingExample = (): React.Node => {
-  const [hasPadding, setHasPadding] = React.useState(false);
+  const [hasPadding, setHasPadding] = useState(false);
 
   return (
     <View>
@@ -118,19 +119,21 @@ const examples: Array<RNTesterModuleExample> = [
             defaultValue="Font Weight (default)"
             style={[styles.singleLine]}
           />
-          {[
-            'normal',
-            'bold',
-            '900',
-            800,
-            '700',
-            '600',
-            '500',
-            '400',
-            '300',
-            '200',
-            '100',
-          ].map(fontWeight => (
+          {(
+            [
+              'normal',
+              'bold',
+              '900',
+              800,
+              '700',
+              '600',
+              '500',
+              '400',
+              '300',
+              '200',
+              '100',
+            ] as const
+          ).map(fontWeight => (
             <ExampleTextInput
               defaultValue={`Font Weight (${fontWeight})`}
               key={fontWeight}
@@ -388,7 +391,7 @@ const examples: Array<RNTesterModuleExample> = [
         'done',
         'previous',
         'next',
-      ];
+      ] as const;
       const returnKeyLabels = ['Compile', 'React Native'];
       const returnKeyExamples = returnKeyTypes.map(type => {
         return (

@@ -66,9 +66,13 @@ export default function createAnimatedPropsHook(
     );
 
     useEffect(() => {
-      // If multiple components call `flushQueue`, the first one will flush the
-      // queue and subsequent ones will do nothing.
-      NativeAnimatedHelper.API.flushQueue();
+      // Animated queue flush is handled deterministically in setImmediate for the following feature flags:
+      // animatedShouldSignalBatch, cxxNativeAnimatedEnabled
+      if (!NativeAnimatedHelper.shouldSignalBatch) {
+        // If multiple components call `flushQueue`, the first one will flush the
+        // queue and subsequent ones will do nothing.
+        NativeAnimatedHelper.API.flushQueue();
+      }
       let drivenAnimationEndedListener: ?EventSubscription = null;
       if (node.__isNative) {
         drivenAnimationEndedListener =
@@ -128,7 +132,10 @@ export default function createAnimatedPropsHook(
           if (node.__isNative) {
             // Check 2: this is an animation driven by native.
             // In native driven animations, this callback is only called once the animation completes.
-            if (isFabricNode) {
+            if (
+              isFabricNode &&
+              !ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()
+            ) {
               // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
               // Must not be called in Paper.
               scheduleUpdate();

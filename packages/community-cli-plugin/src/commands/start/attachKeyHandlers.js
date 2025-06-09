@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type TerminalReporter from 'metro/src/lib/TerminalReporter';
+import type {TerminalReporter} from 'metro';
 
 import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import chalk from 'chalk';
@@ -96,7 +95,6 @@ export default function attachKeyHandlers({
         messageSocket.broadcast('devMenu', null);
         break;
       case 'j':
-        // eslint-disable-next-line no-void
         void openDebuggerKeyboardHandler.handleOpenDebugger();
         break;
       case CTRL_C:

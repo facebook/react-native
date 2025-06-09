@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 // flowlint unsafe-getters-setters:off
@@ -17,6 +17,7 @@ import {
   createKeyIterator,
   createValueIterator,
 } from '../../utils/ArrayLikeUtils';
+import {setPlatformObject} from '../../webidl/PlatformObjects';
 
 // IMPORTANT: The Flow type definition for this module is defined in `NodeList.js.flow`
 // because Flow only supports indexers in classes in declaration files.
@@ -92,6 +93,8 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
     return createValueIterator(this);
   }
 }
+
+setPlatformObject(NodeList);
 
 /**
  * This is an internal method to create instances of `NodeList`,

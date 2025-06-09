@@ -434,7 +434,7 @@ function generateEnum(
       )
       .join(' else ') +
     ` else {
-      throw jsi::JSError(rt, "No appropriate enum member found for value");
+      throw jsi::JSError(rt, "No appropriate enum member found for value in ${enumName}");
     }`;
 
   const toCases =
@@ -446,7 +446,7 @@ function generateEnum(
       )
       .join(' else ') +
     ` else {
-      throw jsi::JSError(rt, "No appropriate enum member found for enum value");
+      throw jsi::JSError(rt, "No appropriate enum member found for enum value in ${enumName}");
     }`;
 
   return EnumTemplate({

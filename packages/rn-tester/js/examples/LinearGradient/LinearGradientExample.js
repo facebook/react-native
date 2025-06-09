@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -153,7 +153,7 @@ exports.examples = [
           style={{
             experimental_backgroundImage: [
               {
-                type: 'linearGradient',
+                type: 'linear-gradient',
                 direction: 'to bottom',
                 colorStops: [
                   {color: 'purple', positions: ['0%']},
@@ -206,7 +206,7 @@ exports.examples = [
           style={{
             experimental_backgroundImage: [
               {
-                type: 'linearGradient',
+                type: 'linear-gradient',
                 direction: 'to bottom',
                 colorStops: [
                   {

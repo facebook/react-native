@@ -35,7 +35,7 @@
     "ws": "^6.2.3"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
   "devDependencies": {
     "selfsigned": "^2.4.1",

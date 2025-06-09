@@ -42,7 +42,7 @@ export type ScrollViewNativeProps = $ReadOnly<{
   directionalLockEnabled?: ?boolean,
   disableIntervalMomentum?: ?boolean,
   endFillColor?: ?ColorValue,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | {start: number, end: number},
   indicatorStyle?: ?('default' | 'black' | 'white'),
   isInvertedVirtualizedList?: ?boolean,
   keyboardDismissMode?: ?('none' | 'on-drag' | 'interactive'),

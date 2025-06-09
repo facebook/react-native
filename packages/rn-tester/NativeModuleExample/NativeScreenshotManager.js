@@ -8,12 +8,11 @@
  * @format
  */
 
-import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
-import type {UnsafeObject} from 'react-native/Libraries/Types/CodegenTypes';
+import type {CodegenTypes, TurboModule} from 'react-native';
 
-import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry} from 'react-native';
 
-export type ScreenshotManagerOptions = UnsafeObject;
+export type ScreenshotManagerOptions = CodegenTypes.UnsafeObject;
 
 export interface Spec extends TurboModule {
   +getConstants: () => {};

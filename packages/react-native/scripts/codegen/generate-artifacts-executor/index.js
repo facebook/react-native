@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -35,8 +36,10 @@ const {
   cleanupEmptyFilesAndFolders,
   codegenLog,
   findCodegenEnabledLibraries,
+  findDisabledLibrariesByPlatform,
   pkgJsonIncludesGeneratedCode,
   readPkgJsonInDirectory,
+  readReactNativeConfig,
 } = require('./utils');
 const path = require('path');
 
@@ -56,11 +59,11 @@ const path = require('path');
  * @throws If it can't find a cli for the CodeGen.
  */
 function execute(
-  projectRoot,
-  targetPlatform,
-  baseOutputPath,
-  source,
-  runReactNativeCodegen = true,
+  projectRoot /*: string */,
+  targetPlatform /*: string */,
+  baseOutputPath /*: string */,
+  source /*: string */,
+  runReactNativeCodegen /*: boolean */ = true,
 ) {
   try {
     codegenLog(`Analyzing ${path.join(projectRoot, 'package.json')}`);
@@ -83,9 +86,14 @@ function execute(
       buildCodegenIfNeeded();
     }
 
-    const libraries = findCodegenEnabledLibraries(pkgJson, projectRoot);
+    const reactNativeConfig = readReactNativeConfig(projectRoot);
+    const codegenEnabledLibraries = findCodegenEnabledLibraries(
+      pkgJson,
+      projectRoot,
+      reactNativeConfig,
+    );
 
-    if (libraries.length === 0) {
+    if (codegenEnabledLibraries.length === 0) {
       codegenLog('No codegen-enabled libraries found.', true);
       return;
     }
@@ -94,6 +102,18 @@ function execute(
       targetPlatform === 'all' ? supportedPlatforms : [targetPlatform];
 
     for (const platform of platforms) {
+      const disabledLibraries = findDisabledLibrariesByPlatform(
+        reactNativeConfig,
+        platform,
+      );
+      const libraries = codegenEnabledLibraries.filter(
+        ({name}) => !disabledLibraries.includes(name),
+      );
+
+      if (!libraries.length) {
+        continue;
+      }
+
       const outputPath = computeOutputPath(
         projectRoot,
         baseOutputPath,
@@ -142,7 +162,10 @@ function execute(
   return;
 }
 
-function readOutputDirFromPkgJson(pkgJson, platform) {
+function readOutputDirFromPkgJson(
+  pkgJson /*: $FlowFixMe */,
+  platform /*: string */,
+) {
   const codegenConfig = pkgJson.codegenConfig;
   if (codegenConfig == null || typeof codegenConfig !== 'object') {
     return null;
@@ -160,12 +183,19 @@ function readOutputDirFromPkgJson(pkgJson, platform) {
   return null;
 }
 
-function computeOutputPath(projectRoot, baseOutputPath, pkgJson, platform) {
+function computeOutputPath(
+  projectRoot /*: string */,
+  baseOutputPath /*: string */,
+  pkgJson /*: $FlowFixMe */,
+  platform /*: string */,
+) {
   if (baseOutputPath == null) {
     const outputDirFromPkgJson = readOutputDirFromPkgJson(pkgJson, platform);
     if (outputDirFromPkgJson != null) {
+      // $FlowFixMe[reassign-const]
       baseOutputPath = path.join(projectRoot, outputDirFromPkgJson);
     } else {
+      // $FlowFixMe[reassign-const]
       baseOutputPath = projectRoot;
     }
   }
@@ -182,7 +212,7 @@ function computeOutputPath(projectRoot, baseOutputPath, pkgJson, platform) {
   return baseOutputPath;
 }
 
-function defaultOutputPathForAndroid(baseOutputPath) {
+function defaultOutputPathForAndroid(baseOutputPath /*: string */) {
   return path.join(
     baseOutputPath,
     'android',
@@ -194,11 +224,14 @@ function defaultOutputPathForAndroid(baseOutputPath) {
   );
 }
 
-function defaultOutputPathForIOS(baseOutputPath) {
+function defaultOutputPathForIOS(baseOutputPath /*: string */) {
   return path.join(baseOutputPath, 'build', 'generated', 'ios');
 }
 
-function mustGenerateNativeCode(includeLibraryPath, schemaInfo) {
+function mustGenerateNativeCode(
+  includeLibraryPath /*: string */,
+  schemaInfo /*: $FlowFixMe */,
+) {
   // If library's 'codegenConfig' sets 'includesGeneratedCode' to 'true',
   // then we assume that native code is shipped with the library,
   // and we don't need to generate it.

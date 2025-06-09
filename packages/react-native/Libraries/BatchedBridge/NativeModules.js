@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
@@ -65,6 +65,7 @@ function genModule(
       module[methodName] = genMethod(moduleID, methodID, methodType);
     });
 
+  // $FlowFixMe[unsafe-object-assign]
   Object.assign(module, constants);
 
   if (module.getConstants == null) {
@@ -173,6 +174,7 @@ function updateErrorWithErrorData(
   /* $FlowFixMe[class-object-subtyping] added when improving typing for this
    * parameters */
   // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[unsafe-object-assign]
   return Object.assign(error, errorData || {});
 }
 

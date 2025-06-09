@@ -10,15 +10,15 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
-#include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriorityUtils.h>
 #include <react/renderer/runtimescheduler/Task.h>
+#include <react/timing/primitives.h>
 #include "RuntimeSchedulerEventTimingDelegate.h"
+#include "RuntimeSchedulerIntersectionObserverDelegate.h"
 
 namespace facebook::react {
 
 using RuntimeSchedulerRenderingUpdate = std::function<void()>;
-using RuntimeSchedulerTimeout = std::chrono::milliseconds;
 using SurfaceId = int32_t;
 
 using RuntimeSchedulerTaskErrorHandler =
@@ -41,16 +41,16 @@ class RuntimeSchedulerBase {
       RawCallback&& callback) noexcept = 0;
   virtual std::shared_ptr<Task> scheduleIdleTask(
       jsi::Function&& callback,
-      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+      HighResDuration timeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept = 0;
   virtual std::shared_ptr<Task> scheduleIdleTask(
       RawCallback&& callback,
-      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+      HighResDuration timeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
   virtual bool getShouldYield() noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
-  virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
+  virtual HighResTimeStamp now() const noexcept = 0;
   virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
   virtual void scheduleRenderingUpdate(
       SurfaceId surfaceId,
@@ -61,6 +61,9 @@ class RuntimeSchedulerBase {
       PerformanceEntryReporter* reporter) = 0;
   virtual void setEventTimingDelegate(
       RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) = 0;
+  virtual void setIntersectionObserverDelegate(
+      RuntimeSchedulerIntersectionObserverDelegate*
+          intersectionObserverDelegate) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -69,8 +72,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now,
+      std::function<HighResTimeStamp()> now = HighResTimeStamp::now,
       RuntimeSchedulerTaskErrorHandler onTaskError = handleTaskErrorDefault);
 
   /*
@@ -112,12 +114,12 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
 
   std::shared_ptr<Task> scheduleIdleTask(
       jsi::Function&& callback,
-      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+      HighResDuration timeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept override;
 
   std::shared_ptr<Task> scheduleIdleTask(
       RawCallback&& callback,
-      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+      HighResDuration timeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept override;
 
   /*
@@ -149,7 +151,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
    *
    * Thread synchronization must be enforced externally.
    */
-  RuntimeSchedulerTimePoint now() const noexcept override;
+  HighResTimeStamp now() const noexcept override;
 
   /*
    * Expired task is a task that should have been already executed. Designed to
@@ -173,6 +175,10 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
 
   void setEventTimingDelegate(
       RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
+
+  void setIntersectionObserverDelegate(
+      RuntimeSchedulerIntersectionObserverDelegate*
+          intersectionObserverDelegate) override;
 
  private:
   // Actual implementation, stored as a unique pointer to simplify memory

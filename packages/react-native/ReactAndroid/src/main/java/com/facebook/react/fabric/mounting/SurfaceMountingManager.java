@@ -462,7 +462,7 @@ public class SurfaceMountingManager {
     // TODO: throw exception here?
     if (parentViewState == null) {
       ReactSoftExceptionLogger.logSoftException(
-          MountingManager.TAG,
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
           new IllegalStateException(
               "Unable to find viewState for tag: [" + parentTag + "] for removeViewAt"));
       return;
@@ -698,7 +698,7 @@ public class SurfaceMountingManager {
   }
 
   @Deprecated
-  public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+  public void receiveCommand(int reactTag, int commandId, ReadableArray commandArgs) {
     if (isStopped()) {
       return;
     }
@@ -726,8 +726,7 @@ public class SurfaceMountingManager {
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
   }
 
-  public void receiveCommand(
-      int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
+  public void receiveCommand(int reactTag, @NonNull String commandId, ReadableArray commandArgs) {
     if (isStopped()) {
       return;
     }

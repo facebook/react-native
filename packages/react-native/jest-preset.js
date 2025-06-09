@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @noflow
  * @format
  */
 
@@ -14,6 +15,7 @@ module.exports = {
     defaultPlatform: 'ios',
     platforms: ['android', 'ios', 'native'],
   },
+  resolver: require.resolve('./jest/resolver.js'),
   transform: {
     '^.+\\.(js|ts|tsx)$': 'babel-jest',
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$': require.resolve(

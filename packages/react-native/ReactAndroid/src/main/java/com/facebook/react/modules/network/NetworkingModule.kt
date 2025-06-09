@@ -164,11 +164,11 @@ public class NetworkingModule(
         https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914""")
   public interface CustomClientBuilder : com.facebook.react.modules.network.CustomClientBuilder
 
-  override final fun initialize() {
+  override fun initialize() {
     cookieJarContainer?.setCookieJar(JavaNetCookieJar(cookieHandler))
   }
 
-  override final fun invalidate() {
+  override fun invalidate() {
     shuttingDown = true
     cancelAllRequests()
 
@@ -204,7 +204,7 @@ public class NetworkingModule(
     responseHandlers.remove(handler)
   }
 
-  override final fun sendRequest(
+  override fun sendRequest(
       method: String,
       url: String,
       requestIdAsDouble: Double,
@@ -256,6 +256,10 @@ public class NetworkingModule(
       for (handler in uriHandlers) {
         if (handler.supports(uri, responseType)) {
           val res = handler.fetch(uri)
+          // fix: UriHandlers which are not using file:// scheme fail in whatwg-fetch at this line
+          // https://github.com/JakeChampion/fetch/blob/main/fetch.js#L547
+          ResponseUtil.onResponseReceived(
+              reactApplicationContext, requestId, 200, Arguments.createMap(), url)
           ResponseUtil.onDataReceived(reactApplicationContext, requestId, res)
           ResponseUtil.onRequestSuccess(reactApplicationContext, requestId)
           return
@@ -659,7 +663,7 @@ public class NetworkingModule(
     requestIds.clear()
   }
 
-  final override fun abortRequest(requestIdAsDouble: Double) {
+  override fun abortRequest(requestIdAsDouble: Double) {
     val requestId = requestIdAsDouble.toInt()
     cancelRequest(requestId)
     removeRequest(requestId)
@@ -670,13 +674,13 @@ public class NetworkingModule(
   }
 
   @ReactMethod
-  public final override fun clearCookies(callback: com.facebook.react.bridge.Callback): Unit {
+  public override fun clearCookies(callback: com.facebook.react.bridge.Callback): Unit {
     cookieHandler.clearCookies(callback)
   }
 
-  public final override fun addListener(eventName: String?): Unit = Unit
+  public override fun addListener(eventName: String?): Unit = Unit
 
-  public final override fun removeListeners(count: Double): Unit = Unit
+  public override fun removeListeners(count: Double): Unit = Unit
 
   private fun constructMultipartBody(
       body: ReadableArray,

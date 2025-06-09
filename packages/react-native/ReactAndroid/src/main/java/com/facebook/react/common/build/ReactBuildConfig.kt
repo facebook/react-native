@@ -30,7 +30,7 @@ public object ReactBuildConfig {
 
   @JvmField public val EXOPACKAGE_FLAGS: Int = BuildConfig.EXOPACKAGE_FLAGS
 
-  /** [Experimental] Enable React Native DevTools in release builds. */
+  /** **Experimental** Enable React Native DevTools in release builds. */
   @JvmField
   public val UNSTABLE_ENABLE_FUSEBOX_RELEASE: Boolean = BuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE
 

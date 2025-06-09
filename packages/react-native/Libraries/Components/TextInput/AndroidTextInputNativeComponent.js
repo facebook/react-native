@@ -10,11 +10,7 @@
 
 import type {HostComponent} from '../../../src/private/types/HostComponent';
 import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
-import type {
-  ColorValue,
-  TextStyleProp,
-  ViewStyleProp,
-} from '../../StyleSheet/StyleSheet';
+import type {ColorValue, TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BubblingEventHandler,
   DirectEventHandler,
@@ -621,22 +617,10 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   uiViewClassName: 'AndroidTextInput',
   bubblingEventTypes: {
-    topBlur: {
-      phasedRegistrationNames: {
-        bubbled: 'onBlur',
-        captured: 'onBlurCapture',
-      },
-    },
     topEndEditing: {
       phasedRegistrationNames: {
         bubbled: 'onEndEditing',
         captured: 'onEndEditingCapture',
-      },
-    },
-    topFocus: {
-      phasedRegistrationNames: {
-        bubbled: 'onFocus',
-        captured: 'onFocusCapture',
       },
     },
     topKeyPress: {
@@ -658,6 +642,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     },
   },
   validAttributes: {
+    acceptDragAndDropTypes: true,
     maxFontSizeMultiplier: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,

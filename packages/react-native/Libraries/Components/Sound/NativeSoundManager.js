@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeSoundManager';
-import NativeSoundManager from '../../../src/private/specs_DEPRECATED/modules/NativeSoundManager';
-export default NativeSoundManager;
+export {default} from '../../../src/private/specs_DEPRECATED/modules/NativeSoundManager';

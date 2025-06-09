@@ -48,12 +48,12 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
  * manageChildren calls for various parent views may be issued to the native view hierarchy
  * depending on where the views being added/removed are attached in the optimized hierarchy
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class NativeViewHierarchyOptimizer {
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "NativeViewHierarchyOptimizer", LegacyArchitectureLogLevel.WARNING);
+        "NativeViewHierarchyOptimizer", LegacyArchitectureLogLevel.ERROR);
   }
 
   private static final String TAG = "NativeViewHierarchyOptimizer";
@@ -462,9 +462,9 @@ public class NativeViewHierarchyOptimizer {
       return false;
     }
 
-    ReadableMapKeySetIterator keyIterator = props.backingMap.keySetIterator();
+    ReadableMapKeySetIterator keyIterator = props.internal_backingMap().keySetIterator();
     while (keyIterator.hasNextKey()) {
-      if (!ViewProps.isLayoutOnly(props.backingMap, keyIterator.nextKey())) {
+      if (!ViewProps.isLayoutOnly(props.internal_backingMap(), keyIterator.nextKey())) {
         return false;
       }
     }

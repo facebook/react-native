@@ -18,7 +18,7 @@ import type {
   Message,
 } from './parseLogBoxLog';
 
-import DebuggerSessionObserver from '../../../src/private/debugging/FuseboxSessionObserver';
+import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
@@ -413,8 +413,8 @@ export function observe(observer: Observer): Subscription {
   };
 }
 
-type Props = $ReadOnly<{}>;
-type State = $ReadOnly<{
+type LogBoxStateSubscriptionProps = $ReadOnly<{}>;
+type LogBoxStateSubscriptionState = $ReadOnly<{
   logs: LogBoxLogs,
   isDisabled: boolean,
   hasError: boolean,
@@ -432,7 +432,10 @@ type SubscribedComponent = React.ComponentType<
 export function withSubscription(
   WrappedComponent: SubscribedComponent,
 ): React.ComponentType<{}> {
-  class LogBoxStateSubscription extends React.Component<Props, State> {
+  class LogBoxStateSubscription extends React.Component<
+    LogBoxStateSubscriptionProps,
+    LogBoxStateSubscriptionState,
+  > {
     static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};
     }
@@ -446,7 +449,7 @@ export function withSubscription(
 
     _subscription: ?Subscription;
 
-    state: State = {
+    state: LogBoxStateSubscriptionState = {
       logs: new Set(),
       isDisabled: false,
       hasError: false,

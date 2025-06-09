@@ -46,9 +46,8 @@ Pod::Spec.new do |s|
   s.dependency "React-jsiexecutor"
   s.dependency "React-cxxreact"
   s.dependency "React-callinvoker"
-  s.dependency "React-runtimeexecutor"
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-runtimescheduler"
-  s.dependency "React-utils"
   s.dependency "React-jsi"
   s.dependency "React-Core/Default"
   s.dependency "React-CoreModules"
@@ -61,6 +60,7 @@ Pod::Spec.new do |s|
   s.dependency "React-featureflags"
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-RCTFBReactNativeSpec")
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

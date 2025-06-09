@@ -18,7 +18,6 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.common.assets.ReactFontManager
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost
@@ -54,45 +53,35 @@ internal class RNTesterApplication : Application(), ReactApplication {
               override fun getModule(
                   name: String,
                   reactContext: ReactApplicationContext
-              ): NativeModule? {
-                if (!isNewArchEnabled) {
-                  return null
-                }
-                if (SampleTurboModule.NAME == name) {
-                  return SampleTurboModule(reactContext)
-                }
-                if (SampleLegacyModule.NAME == name) {
-                  return SampleLegacyModule(reactContext)
-                }
-                return null
-              }
+              ): NativeModule? =
+                  when {
+                    SampleTurboModule.NAME == name -> SampleTurboModule(reactContext)
+                    SampleLegacyModule.NAME == name -> SampleLegacyModule(reactContext)
+                    else -> null
+                  }
 
               // Note: Specialized annotation processor for @ReactModule isn't configured in OSS
               // yet. For now, hardcode this information, though it's not necessary for most
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
-                    if (isNewArchEnabled) {
-                      mapOf(
-                          SampleTurboModule.NAME to
-                              ReactModuleInfo(
-                                  SampleTurboModule.NAME,
-                                  "SampleTurboModule",
-                                  canOverrideExistingModule = false,
-                                  needsEagerInit = false,
-                                  isCxxModule = false,
-                                  isTurboModule = true),
-                          SampleLegacyModule.NAME to
-                              ReactModuleInfo(
-                                  SampleLegacyModule.NAME,
-                                  "SampleLegacyModule",
-                                  canOverrideExistingModule = false,
-                                  needsEagerInit = false,
-                                  isCxxModule = false,
-                                  isTurboModule = false))
-                    } else {
-                      emptyMap()
-                    }
+                    mapOf(
+                        SampleTurboModule.NAME to
+                            ReactModuleInfo(
+                                SampleTurboModule.NAME,
+                                "SampleTurboModule",
+                                canOverrideExistingModule = false,
+                                needsEagerInit = false,
+                                isCxxModule = false,
+                                isTurboModule = true),
+                        SampleLegacyModule.NAME to
+                            ReactModuleInfo(
+                                SampleLegacyModule.NAME,
+                                "SampleLegacyModule",
+                                canOverrideExistingModule = false,
+                                needsEagerInit = false,
+                                isCxxModule = false,
+                                isTurboModule = false))
                   }
             },
             object : ReactPackage, ViewManagerOnDemandReactPackage {
@@ -125,7 +114,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
       }
 
       override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-      override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR
+      override val isHermesEnabled: Boolean = true
     }
   }
 
@@ -145,7 +134,6 @@ internal class RNTesterApplication : Application(), ReactApplication {
     }
 
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      LegacyArchitectureLogger.OSS_LEGACY_WARNINGS_ENABLED = true
       load()
     }
   }

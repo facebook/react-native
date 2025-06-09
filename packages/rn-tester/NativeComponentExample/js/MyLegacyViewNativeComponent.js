@@ -8,8 +8,7 @@
  * @format
  */
 
-import type {HostComponent} from 'react-native';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {HostComponent, ViewProps} from 'react-native';
 
 import ReactNative from '../../../react-native/Libraries/Renderer/shims/ReactNative';
 import * as React from 'react';

@@ -11,6 +11,8 @@
 #include "ProfileTreeNode.h"
 #include "RuntimeSamplingProfile.h"
 
+#include <react/timing/primitives.h>
+
 namespace facebook::react::jsinspector_modern::tracing {
 
 namespace {
@@ -36,7 +38,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
     ProfileChunk(
         uint16_t chunkSize,
         uint64_t chunkThreadId,
-        uint64_t chunkTimestamp)
+        HighResTimeStamp chunkTimestamp)
         : size(chunkSize), threadId(chunkThreadId), timestamp(chunkTimestamp) {
       samples.reserve(size);
       timeDeltas.reserve(size);
@@ -50,12 +52,12 @@ class RuntimeSamplingProfileTraceEventSerializer {
       return samples.empty();
     }
 
-    std::vector<std::shared_ptr<ProfileTreeNode>> nodes;
+    std::vector<ProfileTreeNode> nodes;
     std::vector<uint32_t> samples;
-    std::vector<long long> timeDeltas;
+    std::vector<HighResDuration> timeDeltas;
     uint16_t size;
     uint64_t threadId;
-    uint64_t timestamp;
+    HighResTimeStamp timestamp;
   };
 
  public:
@@ -89,7 +91,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
    */
   void serializeAndNotify(
       const RuntimeSamplingProfile& profile,
-      std::chrono::steady_clock::time_point tracingStartTime);
+      HighResTimeStamp tracingStartTime);
 
  private:
   /**
@@ -102,7 +104,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
   void sendProfileTraceEvent(
       uint64_t threadId,
       uint16_t profileId,
-      uint64_t profileStartUnixTimestamp) const;
+      HighResTimeStamp profileStartTimestamp) const;
 
   /**
    * Encapsulates logic for processing the empty sample, when the VM was idling.
@@ -114,7 +116,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
   void chunkEmptySample(
       ProfileChunk& chunk,
       uint32_t idleNodeId,
-      long long samplesTimeDelta);
+      HighResDuration samplesTimeDelta);
 
   /**
    * Records ProfileChunk as a "ProfileChunk" Trace Event in traceEventBuffer_.
@@ -128,11 +130,10 @@ class RuntimeSamplingProfileTraceEventSerializer {
    * \param callStack The call stack that will be processed.
    * \param chunk The profile chunk, which will buffer the sample with the
    * provided call stack.
-   * \param rootNode Shared pointer to the (root) node. Will be the parent node
-   * of the corresponding profile tree branch.
-   * \param idleNode Shared pointer to the (idle) node. Will be the only node
-   * that is used for the corresponding profile tree branch, in case of an empty
-   * call stack.
+   * \param rootNode The (root) node. Will be the parent node of the
+   * corresponding profile tree branch.
+   * \param idleNodeId Id of the (idle) node. Will be the only node that is used
+   * for the corresponding profile tree branch, in case of an empty call stack.
    * \param samplesTimeDelta Delta between the current sample and the previous
    * one.
    * \param nodeIdGenerator NodeIdGenerator instance that will be used for
@@ -142,9 +143,9 @@ class RuntimeSamplingProfileTraceEventSerializer {
       const std::vector<RuntimeSamplingProfile::SampleCallStackFrame>&
           callStack,
       ProfileChunk& chunk,
-      std::shared_ptr<ProfileTreeNode> rootNode,
-      std::shared_ptr<ProfileTreeNode> idleNode,
-      long long samplesTimeDelta,
+      ProfileTreeNode& rootNode,
+      uint32_t idleNodeId,
+      HighResDuration samplesTimeDelta,
       NodeIdGenerator& nodeIdGenerator);
 
   /**

@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 
 import Platform from '../Utilities/Platform';
-import RCTAlertManager from './RCTAlertManager';
+import {alertWithArgs} from './RCTAlertManager';
 
 /**
  * @platform ios
@@ -178,7 +178,7 @@ class Alert {
         });
       }
 
-      RCTAlertManager.alertWithArgs(
+      alertWithArgs(
         {
           title: title || '',
           message: message || undefined,

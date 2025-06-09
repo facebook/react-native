@@ -28,12 +28,14 @@ import android.text.method.KeyListener
 import android.text.method.QwertyKeyListener
 import android.util.TypedValue
 import android.view.ActionMode
+import android.view.DragEvent
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
@@ -46,7 +48,6 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger.logSoftException
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.uimanager.BackgroundStyleApplicator.clipToPaddingBox
 import com.facebook.react.uimanager.BackgroundStyleApplicator.getBackgroundColor
@@ -121,6 +122,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   public var stagedInputType: Int
   protected var containsImages: Boolean = false
   public var submitBehavior: String? = null
+  public var dragAndDropFilter: List<String>? = null
 
   private var disableFullscreen: Boolean
   private var selectionWatcher: SelectionWatcher? = null
@@ -196,10 +198,6 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
   init {
-    if (!useEditTextStockAndroidFocusBehavior()) {
-      isFocusableInTouchMode = false
-    }
-
     inputMethodManager =
         context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     defaultGravityHorizontal =
@@ -238,8 +236,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
                 // selection on accessibility click to undo that.
                 setSelection(length)
               }
-              return if (useEditTextStockAndroidFocusBehavior()) requestFocusProgrammatically()
-              else requestFocusInternal()
+              return requestFocusProgrammatically()
             }
             return super.performAccessibilityAction(host, action, args)
           }
@@ -363,37 +360,24 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
       super.onTextContextMenuItem(
           if (id == android.R.id.paste) android.R.id.pasteAsPlainText else id)
 
-  override fun clearFocus() {
-    val useStockFocusBehavior = useEditTextStockAndroidFocusBehavior()
-    if (!useStockFocusBehavior) {
-      isFocusableInTouchMode = false
+  internal fun clearFocusAndMaybeRefocus() {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || !isInTouchMode) {
+      super.clearFocus()
+    } else {
+      // Avoid refocusing to a new view on old versions of Android by default
+      // by preventing `requestFocus()` on the rootView from moving focus to any child.
+      // https://cs.android.com/android/_/android/platform/frameworks/base/+/bdc66cb5a0ef513f4306edf9156cc978b08e06e4
+      val rootViewGroup = rootView as ViewGroup
+      val oldDescendantFocusability = rootViewGroup.descendantFocusability
+      rootViewGroup.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
+      super.clearFocus()
+      rootViewGroup.descendantFocusability = oldDescendantFocusability
     }
-    super.clearFocus()
     hideSoftKeyboard()
   }
 
-  override fun requestFocus(direction: Int, previouslyFocusedRect: Rect?): Boolean =
-      // This is a no-op so that when the OS calls requestFocus(), nothing will happen.
-      // ReactEditText
-      // is a controlled component, which means its focus is controlled by JS, with two exceptions:
-      // autofocus when it's attached to the window, and responding to accessibility events. In both
-      // of these cases, we call requestFocusInternal() directly.
-      if (useEditTextStockAndroidFocusBehavior()) {
-        super.requestFocus(direction, previouslyFocusedRect)
-      } else {
-        isFocused
-      }
-
-  private fun requestFocusInternal(): Boolean {
-    isFocusableInTouchMode = true
-    // We must explicitly call this method on the super class; if we call requestFocus() without
-    // any arguments, it will call into the overridden requestFocus(int, Rect) above, which no-ops.
-    val focused = super.requestFocus(FOCUS_DOWN, null)
-    if (showSoftInputOnFocus) {
-      showSoftKeyboard()
-    }
-
-    return focused
+  internal fun clearFocusFromJS() {
+    clearFocusAndMaybeRefocus()
   }
 
   // For cases like autoFocus, or ref.focus() where we request focus programmatically and not
@@ -627,15 +611,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   }
 
   public fun requestFocusFromJS() {
-    if (useEditTextStockAndroidFocusBehavior()) {
-      requestFocusProgrammatically()
-    } else {
-      requestFocusInternal()
-    }
-  }
-
-  internal fun clearFocusFromJS() {
-    clearFocus()
+    requestFocusProgrammatically()
   }
 
   public fun incrementAndGetEventCounter(): Int = ++nativeEventCount
@@ -827,7 +803,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
-    if (!java.lang.Float.isNaN(effectiveLetterSpacing)) {
+    if (!effectiveLetterSpacing.isNaN()) {
       workingText.setSpan(
           CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length, spanFlags)
     }
@@ -844,7 +820,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     val lineHeight = textAttributes.effectiveLineHeight
-    if (!java.lang.Float.isNaN(lineHeight)) {
+    if (!lineHeight.isNaN()) {
       workingText.setSpan(CustomLineHeightSpan(lineHeight), 0, workingText.length, spanFlags)
     }
   }
@@ -981,11 +957,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     if (autoFocus && !didAttachToWindow) {
-      if (useEditTextStockAndroidFocusBehavior()) {
-        requestFocusProgrammatically()
-      } else {
-        requestFocusInternal()
-      }
+      requestFocusProgrammatically()
     }
 
     didAttachToWindow = true
@@ -1023,7 +995,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
   public fun setBorderRadius(borderRadius: Float, position: Int) {
     val radius =
-        if (java.lang.Float.isNaN(borderRadius)) {
+        if (borderRadius.isNaN()) {
           null
         } else {
           LengthPercentage(toDIPFromPixel(borderRadius), LengthPercentageType.POINT)
@@ -1080,7 +1052,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     setTextSize(TypedValue.COMPLEX_UNIT_PX, textAttributes.effectiveFontSize.toFloat())
 
     val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
-    if (!java.lang.Float.isNaN(effectiveLetterSpacing)) {
+    if (!effectiveLetterSpacing.isNaN()) {
       letterSpacing = effectiveLetterSpacing
     }
   }
@@ -1190,6 +1162,17 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     super.onDraw(canvas)
+  }
+
+  public override fun onDragEvent(event: DragEvent): Boolean {
+    val dragFilter = dragAndDropFilter
+    if (dragFilter != null && event.action == DragEvent.ACTION_DRAG_STARTED) {
+      val shouldHandle = dragFilter.any { filter -> event.clipDescription.hasMimeType(filter) }
+      if (!shouldHandle) {
+        return false
+      }
+    }
+    return super.onDragEvent(event)
   }
 
   /**

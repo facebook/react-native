@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 import type {PluginObj} from '@babel/core';
@@ -27,6 +26,8 @@ const preTransforms: Array<PreTransformFn> = [
   require('./transforms/replaceEmptyWithNever'),
   require('./transforms/replaceStringishWithString'),
   require('./transforms/replaceNullablePropertiesWithUndefined'),
+  require('./transforms/reattachDocComments'),
+  require('./transforms/ensureNoUnprefixedProps'),
 ];
 const postTransforms: Array<PluginObj<mixed>> = [];
 const prettierOptions = {parser: 'babel'};

@@ -42,12 +42,14 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.internal.LegacyArchitectureShadowNodeLogger;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
@@ -85,12 +87,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
 @ReactModule(name = UIManagerModule.NAME)
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "UIManagerModule", LegacyArchitectureLogLevel.WARNING);
+        "UIManagerModule", LegacyArchitectureLogLevel.ERROR);
   }
 
   public static final String TAG = UIManagerModule.class.getSimpleName();
@@ -155,6 +157,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             mViewManagerRegistry,
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
+
+    if (ReactBuildConfig.DEBUG) {
+      for (ViewManager<?, ?> viewManager : viewManagersList) {
+        LegacyArchitectureShadowNodeLogger.assertUnsupportedViewManager(
+            reactContext, viewManager.getShadowNodeClass(), viewManager.getClass().getSimpleName());
+      }
+    }
 
     reactContext.addLifecycleEventListener(this);
   }

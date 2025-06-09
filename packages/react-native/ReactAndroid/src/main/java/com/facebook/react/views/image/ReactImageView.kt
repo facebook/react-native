@@ -73,7 +73,7 @@ import com.facebook.react.views.image.MultiPostprocessor.Companion.from
 import com.facebook.react.views.imagehelper.ImageSource
 import com.facebook.react.views.imagehelper.ImageSource.Companion.getTransparentBitmapImageSource
 import com.facebook.react.views.imagehelper.MultiSourceHelper.getBestSourceForSize
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper.Companion.instance
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import kotlin.math.abs
 
 /**
@@ -326,7 +326,7 @@ public class ReactImageView(
   }
 
   public fun setDefaultSource(name: String?) {
-    val newDefaultDrawable = instance.getResourceDrawable(context, name)
+    val newDefaultDrawable = ResourceDrawableIdHelper.getResourceDrawable(context, name)
     if (defaultImageDrawable != newDefaultDrawable) {
       defaultImageDrawable = newDefaultDrawable
       isDirty = true
@@ -334,7 +334,7 @@ public class ReactImageView(
   }
 
   public fun setLoadingIndicatorSource(name: String?) {
-    val drawable = instance.getResourceDrawable(context, name)
+    val drawable = ResourceDrawableIdHelper.getResourceDrawable(context, name)
     val newLoadingIndicatorSource = drawable?.let { AutoRotateDrawable(it, 1000) }
     if (loadingImageDrawable != newLoadingIndicatorSource) {
       loadingImageDrawable = newLoadingIndicatorSource

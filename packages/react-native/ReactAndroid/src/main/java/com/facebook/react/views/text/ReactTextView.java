@@ -542,7 +542,16 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
-    setTextIsSelectable(mTextIsSelectable);
+
+    // This is a workaround to ensure the text becomes selectable as it doesn't work if we call
+    // `setTextIsSelectable(true)` directly when setTextIsSelectable was already true.
+    if (mTextIsSelectable) {
+      setTextIsSelectable(false);
+      setTextIsSelectable(true);
+    } else {
+      setTextIsSelectable(false);
+    }
+
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
@@ -725,6 +734,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     return super.dispatchHoverEvent(event);
   }
 
+  /**
+   * Note that if we have a movement method then we DO NOT forward these events to the accessibility
+   * delegate. This is because the movement method should handle the focus highlighting and
+   * changing. If we don't do this then we have mutliple selections happening at once. We cannot get
+   * rid of movement method since links found by Linkify will not be clickable. Also, putting this
+   * gating in the accessibility delegate itself will break screen reader accessibility more
+   * generally, since we still need to register virtual views.
+   */
   @Override
   public final void onFocusChanged(
       boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
@@ -732,7 +749,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     AccessibilityDelegateCompat accessibilityDelegateCompat =
         ViewCompat.getAccessibilityDelegate(this);
     if (accessibilityDelegateCompat != null
-        && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate) {
+        && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate
+        && getMovementMethod() == null) {
       ((ReactTextViewAccessibilityDelegate) accessibilityDelegateCompat)
           .onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     }
@@ -743,6 +761,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     AccessibilityDelegateCompat accessibilityDelegateCompat =
         ViewCompat.getAccessibilityDelegate(this);
     return (accessibilityDelegateCompat != null
+            && getMovementMethod() == null
             && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate
             && ((ReactTextViewAccessibilityDelegate) accessibilityDelegateCompat)
                 .dispatchKeyEvent(event))

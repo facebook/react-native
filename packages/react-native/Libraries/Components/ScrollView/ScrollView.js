@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {HostInstance} from '../../../src/private/types/HostInstance';
@@ -52,6 +52,7 @@ import invariant from 'invariant';
 import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {cloneElement} from 'react';
 
 /*
  * iOS scroll event timing nuances:
@@ -372,17 +373,20 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
    */
   persistentScrollbar?: ?boolean,
   /**
-   * Fades out the edges of the scroll content.
+   * Controls the fading effect at the edges of the scroll content.
    *
-   * If the value is greater than 0, the fading edges will be set accordingly
-   * to the current scroll direction and position,
-   * indicating if there is more content to show.
+   * A value greater than 0 will apply the fading effect, indicating more content is available
+   * to scroll.
+   *
+   * You can specify a single number to apply the same fading length to both edges.
+   * Alternatively, use an object with `start` and `end` properties to set different
+   * fading lengths for the start and end of the scroll content.
    *
    * The default value is 0.
    *
    * @platform android
    */
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | {start: number, end: number},
 }>;
 
 type StickyHeaderComponentType = component(
@@ -1165,6 +1169,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       // they are callable from the ref.
 
       // $FlowFixMe[prop-missing] - Known issue with appending custom methods.
+      // $FlowFixMe[unsafe-object-assign]
       const publicInstance: PublicScrollViewInstance = Object.assign(
         nativeInstance,
         {
@@ -1641,7 +1646,9 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
     if (__DEV__ && this.props.style !== undefined) {
       // $FlowFixMe[underconstrained-implicit-instantiation]
       const style = flattenStyle(this.props.style);
-      const childLayoutProps = ['alignItems', 'justifyContent'].filter(
+      const childLayoutProps = (
+        ['alignItems', 'justifyContent'] as const
+      ).filter(
         // $FlowFixMe[incompatible-use]
         prop => style && style[prop] !== undefined,
       );
@@ -1826,7 +1833,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
         // however, the ScrollView still needs the baseStyle to be scrollable
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         // $FlowFixMe[incompatible-call]
-        return React.cloneElement(
+        return cloneElement(
           refreshControl,
           {style: StyleSheet.compose(baseStyle, outer)},
           <NativeScrollView
@@ -1906,23 +1913,25 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
   return state;
 }
 
-// TODO: After upgrading to React 19, remove `forwardRef` from this component.
 // NOTE: This wrapper component is necessary because `ScrollView` is a class
 // component and we need to map `ref` to a differently named prop. This can be
 // removed when `ScrollView` is a functional component.
 const ScrollViewWrapper: component(
   ref?: React.RefSetter<PublicScrollViewInstance>,
   ...props: ScrollViewProps
-) = React.forwardRef(function Wrapper(
-  props: ScrollViewProps,
-  ref: ?React.RefSetter<PublicScrollViewInstance>,
-): React.Node {
+) = function Wrapper({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<PublicScrollViewInstance>,
+  ...ScrollViewProps,
+}): React.Node {
   return ref == null ? (
     <ScrollView {...props} />
   ) : (
     <ScrollView {...props} scrollViewRef={ref} />
   );
-});
+};
 ScrollViewWrapper.displayName = 'ScrollView';
 // $FlowExpectedError[prop-missing]
 ScrollViewWrapper.Context = ScrollViewContext;

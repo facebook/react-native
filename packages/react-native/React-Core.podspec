@@ -119,17 +119,23 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
-  s.dependency "React-utils"
   s.dependency "React-featureflags"
   s.dependency "React-runtimescheduler"
   s.dependency "Yoga"
 
+  if use_hermes
+    s.dependency "React-hermes"
+  end
+
   s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
 
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
   add_dependency(s, "RCTDeprecation")
+
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)

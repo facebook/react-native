@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 const {setVersion} = require('../releases/set-version');
@@ -67,6 +66,5 @@ async function main() {
 }
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

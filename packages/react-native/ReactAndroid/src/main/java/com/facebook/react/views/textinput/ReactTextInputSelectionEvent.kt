@@ -9,6 +9,7 @@ package com.facebook.react.views.textinput
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
@@ -30,12 +31,11 @@ internal class ReactTextInputSelectionEvent(
 
   override fun getEventName(): String = EVENT_NAME
 
-  override fun getEventData(): WritableMap? {
-    val selectionData =
-        Arguments.createMap().apply {
-          putInt("end", selectionEnd)
-          putInt("start", selectionStart)
-        }
+  override fun getEventData(): WritableMap {
+    val selectionData = buildReadableMap {
+      put("start", selectionStart)
+      put("end", selectionEnd)
+    }
 
     return Arguments.createMap().apply { putMap("selection", selectionData) }
   }

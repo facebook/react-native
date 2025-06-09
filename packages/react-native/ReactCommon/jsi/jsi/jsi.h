@@ -31,6 +31,107 @@ class FBJSRuntime;
 namespace facebook {
 namespace jsi {
 
+/// UUID version 1 implementation. This should be constructed with constant
+/// arguments to identify fixed UUIDs.
+class JSI_EXPORT UUID {
+ public:
+  // Construct from raw parts
+  constexpr UUID(
+      uint32_t timeLow,
+      uint16_t timeMid,
+      uint16_t timeHighAndVersion,
+      uint16_t variantAndClockSeq,
+      uint64_t node)
+      : high(
+            ((uint64_t)(timeLow) << 32) | ((uint64_t)(timeMid) << 16) |
+            ((uint64_t)(timeHighAndVersion))),
+        low(((uint64_t)(variantAndClockSeq) << 48) | node) {}
+
+  // Default constructor (zero UUID)
+  constexpr UUID() : high(0), low(0) {}
+
+  constexpr UUID(const UUID&) = default;
+  constexpr UUID& operator=(const UUID&) = default;
+
+  constexpr bool operator==(const UUID& other) const {
+    return high == other.high && low == other.low;
+  }
+  constexpr bool operator!=(const UUID& other) const {
+    return !(*this == other);
+  }
+
+  // Ordering (for std::map, sorting, etc.)
+  constexpr bool operator<(const UUID& other) const {
+    return (high < other.high) || (high == other.high && low < other.low);
+  }
+
+  // Hash support for UUID (for unordered_map compatibility)
+  struct Hash {
+    std::size_t operator()(const UUID& uuid) const noexcept {
+      return std::hash<uint64_t>{}(uuid.high) ^
+          (std::hash<uint64_t>{}(uuid.low) << 1);
+    }
+  };
+
+  // UUID format: 8-4-4-4-12
+  std::string toString() const {
+    std::string buffer(36, ' ');
+    std::snprintf(
+        buffer.data(),
+        buffer.size() + 1,
+        "%08x-%04x-%04x-%04x-%012llx",
+        getTimeLow(),
+        getTimeMid(),
+        getTimeHighAndVersion(),
+        getVariantAndClockSeq(),
+        (unsigned long long)getNode());
+    return buffer;
+  }
+
+  constexpr uint32_t getTimeLow() const {
+    return (uint32_t)(high >> 32);
+  }
+
+  constexpr uint16_t getTimeMid() const {
+    return (uint16_t)(high >> 16);
+  }
+
+  constexpr uint16_t getTimeHighAndVersion() const {
+    return (uint16_t)high;
+  }
+
+  constexpr uint16_t getVariantAndClockSeq() const {
+    return (uint16_t)(low >> 48);
+  }
+
+  constexpr uint64_t getNode() const {
+    return low & 0xFFFFFFFFFFFF;
+  }
+
+ private:
+  uint64_t high;
+  uint64_t low;
+};
+
+/// Base interface that all JSI interfaces inherit from. Users should not try to
+/// manipulate this base type directly, and should use castInterface to get the
+/// appropriate subtype.
+struct JSI_EXPORT ICast {
+  /// If the current object can be cast into the interface specified by \p
+  /// interfaceUUID, return a pointer to the object. Otherwise, return a null
+  /// pointer.
+  /// The returned interface has the same lifetime as the underlying object. It
+  /// does not need to be released when not needed.
+  virtual ICast* castInterface(const UUID& interfaceUUID) = 0;
+
+ protected:
+  /// Interfaces are not destructible, thus the destructor is intentionally
+  /// protected to prevent delete calls on the interface.
+  /// Additionally, the destructor is non-virtual to reduce the vtable
+  /// complexity from inheritance.
+  ~ICast() = default;
+};
+
 /// Base class for buffers of data or bytecode that need to be passed to the
 /// runtime. The buffer is expected to be fully immutable, so the result of
 /// size(), data(), and the contents of the pointer returned by data() must not
@@ -169,9 +270,11 @@ class JSI_EXPORT NativeState {
 /// in a non-Runtime-managed object, and not clean it up before the Runtime
 /// is shut down.  If your lifecycle is such that avoiding this is hard,
 /// you will probably need to do use your own locks.
-class JSI_EXPORT Runtime {
+class JSI_EXPORT Runtime : public ICast {
  public:
   virtual ~Runtime();
+
+  ICast* castInterface(const UUID& interfaceUUID) override;
 
   /// Evaluates the given JavaScript \c buffer.  \c sourceURL is used
   /// to annotate the stack trace if there is an exception.  The
@@ -267,6 +370,16 @@ class JSI_EXPORT Runtime {
   /// which returns no metrics.
   virtual Instrumentation& instrumentation();
 
+  /// Stores the pointer \p data with the \p uuid in the runtime. This can be
+  /// used to store some custom data within the runtime. When the runtime is
+  /// destroyed, or if an entry at an existing key is overwritten, the runtime
+  /// will release its ownership of the held object.
+  void setRuntimeData(const UUID& uuid, const std::shared_ptr<void>& data);
+
+  /// Returns the data associated with the \p uuid in the runtime. If there's no
+  /// data associated with the uuid, return a null pointer.
+  std::shared_ptr<void> getRuntimeData(const UUID& uuid);
+
  protected:
   friend class Pointer;
   friend class PropNameID;
@@ -281,6 +394,19 @@ class JSI_EXPORT Runtime {
   friend class Value;
   friend class Scope;
   friend class JSError;
+
+  /// Stores the pointer \p data with the \p uuid in the runtime. This can be
+  /// used to store some custom data within the runtime. When the runtime is
+  /// destroyed, or if an entry at an existing key is overwritten, the runtime
+  /// will release its ownership by calling \p deleter.
+  virtual void setRuntimeDataImpl(
+      const UUID& uuid,
+      const void* data,
+      void (*deleter)(const void* data));
+
+  /// Returns the data associated with the \p uuid in the runtime. If there's no
+  /// data associated with the uuid, return a null pointer.
+  virtual const void* getRuntimeDataImpl(const UUID& uuid);
 
   // Potential optimization: avoid the cloneFoo() virtual dispatch,
   // and instead just fix the number of fields, and copy them, since
@@ -1657,6 +1783,32 @@ class JSI_EXPORT JSError : public JSIException {
   std::string message_;
   std::string stack_;
 };
+
+/// Helper function to cast the object pointed to by \p ptr into an interface
+/// specified by \c U. If cast is successful, return a pointer to the object
+/// as a raw pointer of \c U. Otherwise, return nullptr.
+/// The returned interface same lifetime as the object referenced by \p ptr.
+template <typename U, typename T>
+U* castInterface(T* ptr) {
+  if (ptr) {
+    return static_cast<U*>(ptr->castInterface(U::uuid));
+  }
+  return nullptr;
+};
+
+/// Helper function to cast the object managed by the shared_ptr \p ptr into an
+/// interface specified by \c U. If the cast is successful, return a shared_ptr
+/// of type \c U to the object. Otherwise, return an empty pointer.
+/// The returned shared_ptr shares ownership of the object with \p ptr.
+template <typename U, typename T>
+std::shared_ptr<U> dynamicInterfaceCast(T&& ptr) {
+  auto* p = ptr->castInterface(U::uuid);
+  U* res = static_cast<U*>(p);
+  if (res) {
+    return std::shared_ptr<U>(std::forward<T>(ptr), res);
+  }
+  return nullptr;
+}
 
 } // namespace jsi
 } // namespace facebook

@@ -30,21 +30,10 @@ internal class DebuggingOverlayManager :
 
   override fun getDelegate(): ViewManagerDelegate<DebuggingOverlay> = delegate
 
-  override fun receiveCommand(view: DebuggingOverlay, commandId: String, args: ReadableArray?) {
-    when (commandId) {
-      "highlightTraceUpdates" -> highlightTraceUpdates(view, args)
-      "highlightElements" -> highlightElements(view, args)
-      "clearElementsHighlights" -> clearElementsHighlights(view)
-      else -> {
-        ReactSoftExceptionLogger.logSoftException(
-            REACT_CLASS,
-            ReactNoCrashSoftException("Received unexpected command in DebuggingOverlayManager"))
-      }
-    }
-  }
-
-  override fun highlightTraceUpdates(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    val providedTraceUpdates = args?.getArray(0) ?: return
+  override fun highlightTraceUpdates(
+      view: DebuggingOverlay,
+      providedTraceUpdates: ReadableArray
+  ): Unit {
     val formattedTraceUpdates = mutableListOf<TraceUpdate>()
 
     var successfullyParsedPayload = true
@@ -93,8 +82,7 @@ internal class DebuggingOverlayManager :
     }
   }
 
-  override fun highlightElements(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    val providedElements = args?.getArray(0) ?: return
+  override fun highlightElements(view: DebuggingOverlay, providedElements: ReadableArray): Unit {
     val elementsRectangles = mutableListOf<RectF>()
 
     var successfullyParsedPayload = true

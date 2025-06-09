@@ -82,6 +82,9 @@ public abstract class BaseViewManagerDelegate<
       ViewProps.IMPORTANT_FOR_ACCESSIBILITY ->
           mViewManager.setImportantForAccessibility(view, value as String?)
 
+      ViewProps.SCREEN_READER_FOCUSABLE ->
+          mViewManager.setScreenReaderFocusable(view, value as Boolean? ?: false)
+
       ViewProps.ROLE -> mViewManager.setRole(view, value as String?)
       ViewProps.NATIVE_ID -> mViewManager.setNativeId(view, value as String?)
       ViewProps.ACCESSIBILITY_LABELLED_BY -> {
@@ -146,6 +149,5 @@ public abstract class BaseViewManagerDelegate<
   }
 
   @Suppress("ACCIDENTAL_OVERRIDE")
-  public override fun receiveCommand(view: T, commandName: String, args: ReadableArray?): Unit =
-      Unit
+  public override fun receiveCommand(view: T, commandName: String, args: ReadableArray): Unit = Unit
 }

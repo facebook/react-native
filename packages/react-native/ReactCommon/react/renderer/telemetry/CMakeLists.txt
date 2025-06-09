@@ -24,5 +24,5 @@ target_link_libraries(react_renderer_telemetry
         rrc_root
         rrc_view
         yoga)
-target_compile_reactnative_options(react_renderer_telemetry PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_telemetry PRIVATE)
 target_compile_options(react_renderer_telemetry PRIVATE -Wpedantic)

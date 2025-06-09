@@ -13,7 +13,6 @@ import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
-import {hasComponentStack} from './Data/parseLogBoxLog';
 import * as React from 'react';
 
 export type {LogData, ExtendedExceptionData, IgnorePattern};
@@ -28,6 +27,7 @@ interface ILogBox {
   ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
+  addConsoleLog(level: 'warn' | 'error', ...args: Array<mixed>): void;
   addException(error: ExtendedExceptionData): void;
 }
 
@@ -36,11 +36,12 @@ interface ILogBox {
  */
 if (__DEV__) {
   const LogBoxData = require('./Data/LogBoxData');
-  const {parseLogBoxLog, parseInterpolation} = require('./Data/parseLogBoxLog');
+  const {
+    parseLogBoxLog,
+    parseComponentStack,
+  } = require('./Data/parseLogBoxLog');
 
-  let originalConsoleError;
   let originalConsoleWarn;
-  let consoleErrorImpl;
   let consoleWarnImpl: (...args: Array<mixed>) => void;
 
   let isLogBoxInstalled: boolean = false;
@@ -70,22 +71,20 @@ if (__DEV__) {
       // IMPORTANT: we only overwrite `console.error` and `console.warn` once.
       // When we uninstall we keep the same reference and only change its
       // internal implementation
-      const isFirstInstall = originalConsoleError == null;
+      const isFirstInstall = originalConsoleWarn == null;
       if (isFirstInstall) {
-        originalConsoleError = console.error.bind(console);
+        // We only patch warning for legacy reasons.
+        // This will be removed in the future, once warnings
+        // are fully moved to fusebox. Error handling is done
+        // via the ExceptionManager.
         originalConsoleWarn = console.warn.bind(console);
 
-        // $FlowExpectedError[cannot-write]
-        console.error = (...args) => {
-          consoleErrorImpl(...args);
-        };
         // $FlowExpectedError[cannot-write]
         console.warn = (...args) => {
           consoleWarnImpl(...args);
         };
       }
 
-      consoleErrorImpl = registerError;
       consoleWarnImpl = registerWarning;
 
       if (Platform.isTesting) {
@@ -108,7 +107,6 @@ if (__DEV__) {
       // decorated again after installing LogBox. E.g.:
       // Before uninstalling: original > LogBox > OtherErrorHandler
       // After uninstalling:  original > LogBox (noop) > OtherErrorHandler
-      consoleErrorImpl = originalConsoleError;
       consoleWarnImpl = originalConsoleWarn;
     },
 
@@ -142,6 +140,64 @@ if (__DEV__) {
       }
     },
 
+    addConsoleLog(level: 'warn' | 'error', ...args: Array<mixed>) {
+      if (isLogBoxInstalled) {
+        let filteredLevel: 'warn' | 'error' | 'fatal' = level;
+        try {
+          let format = args[0];
+          if (typeof format === 'string') {
+            const filterResult =
+              require('../LogBox/Data/LogBoxData').checkWarningFilter(
+                // For legacy reasons, we strip the warning prefix from the message.
+                // Can remove this once we remove the warning module altogether.
+                format.replace(/^Warning: /, ''),
+              );
+            if (filterResult.monitorEvent !== 'warning_unhandled') {
+              if (filterResult.suppressCompletely) {
+                return;
+              }
+
+              if (filterResult.suppressDialog_LEGACY === true) {
+                filteredLevel = 'warn';
+              } else if (filterResult.forceDialogImmediately === true) {
+                filteredLevel = 'fatal'; // Do not downgrade. These are real bugs with same severity as throws.
+              }
+              args[0] = filterResult.finalFormat;
+            }
+          }
+
+          const result = parseLogBoxLog(args);
+          const category = result.category;
+          const message = result.message;
+          let componentStackType = result.componentStackType;
+          let componentStack = result.componentStack;
+          if (
+            (!componentStack || componentStack.length === 0) &&
+            // $FlowExpectedError[prop-missing]
+            React.captureOwnerStack
+          ) {
+            const ownerStack = React.captureOwnerStack();
+            if (ownerStack != null && ownerStack.length > 0) {
+              const parsedComponentStack = parseComponentStack(ownerStack);
+              componentStack = parsedComponentStack.stack;
+              componentStackType = parsedComponentStack.type;
+            }
+          }
+          if (!LogBoxData.isMessageIgnored(message.content)) {
+            LogBoxData.addLog({
+              level: filteredLevel,
+              category,
+              message,
+              componentStack,
+              componentStackType,
+            });
+          }
+        } catch (err) {
+          LogBoxData.reportLogBoxError(err);
+        }
+      }
+    },
+
     addException,
   };
 
@@ -157,14 +213,9 @@ if (__DEV__) {
     return typeof args[0] === 'string' && args[0].startsWith('(ADVICE)');
   };
 
-  const isWarningModuleWarning = (...args: Array<mixed>) => {
-    return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
-  };
-
   const registerWarning = (...args: Array<mixed>): void => {
     // Let warnings within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
-      originalConsoleError(...args);
       return;
     } else {
       // Be sure to pass LogBox warnings through.
@@ -185,88 +236,6 @@ if (__DEV__) {
             componentStackType,
           });
         }
-      }
-    } catch (err) {
-      LogBoxData.reportLogBoxError(err);
-    }
-  };
-
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  const registerError = (...args): void => {
-    // Let errors within LogBox itself fall through.
-    if (LogBoxData.isLogBoxErrorMessage(args[0])) {
-      originalConsoleError(...args);
-      return;
-    }
-
-    try {
-      let stack;
-      // $FlowFixMe[prop-missing] Not added to flow types yet.
-      if (!hasComponentStack(args) && React.captureOwnerStack != null) {
-        stack = React.captureOwnerStack();
-        if (!hasComponentStack(args)) {
-          if (stack != null && stack !== '') {
-            args[0] = args[0] += '%s';
-            args.push(stack);
-          }
-        }
-      }
-      if (!isWarningModuleWarning(...args) && !hasComponentStack(args)) {
-        // Only show LogBox for the 'warning' module, or React errors with
-        // component stacks, otherwise pass the error through.
-        //
-        // By passing through, this will get picked up by the React console override,
-        // potentially adding the component stack. React then passes it back to the
-        // React Native ExceptionsManager, which reports it to LogBox as an error.
-        //
-        // Ideally, we refactor all RN error handling so that LogBox patching
-        // errors is not necessary, and they are reported the same as a framework.
-        // The blocker to this is that the ExceptionManager console.error override
-        // strigifys all of the args before passing it through to LogBox, which
-        // would lose all of the interpolation information.
-        //
-        // The 'warning' module needs to be handled here because React internally calls
-        // `console.error('Warning: ')` with the component stack already included.
-        originalConsoleError(...args);
-        return;
-      }
-
-      const format = args[0].replace('Warning: ', '');
-      const filterResult = LogBoxData.checkWarningFilter(format);
-      let level = 'error';
-      if (filterResult.monitorEvent !== 'warning_unhandled') {
-        if (filterResult.suppressCompletely) {
-          return;
-        }
-
-        if (filterResult.suppressDialog_LEGACY === true) {
-          level = 'warn';
-        } else if (filterResult.forceDialogImmediately === true) {
-          level = 'fatal'; // Do not downgrade. These are real bugs with same severity as throws.
-        }
-      }
-
-      // Unfortunately, we need to add the Warning: prefix back for downstream dependencies.
-      // Downstream, we check for this prefix to know that LogBox already handled it, so
-      // it doesn't get reported back to LogBox. It's an absolute mess.
-      args[0] = `Warning: ${filterResult.finalFormat}`;
-      const {category, message, componentStack, componentStackType} =
-        parseLogBoxLog(args);
-
-      // Interpolate the message so they are formatted for adb and other CLIs.
-      // This is different than the message.content above because it includes component stacks.
-      const interpolated = parseInterpolation(args);
-      originalConsoleError(interpolated.message.content);
-
-      if (!LogBoxData.isMessageIgnored(message.content)) {
-        LogBoxData.addLog({
-          level,
-          category,
-          message,
-          componentStack,
-          componentStackType,
-        });
       }
     } catch (err) {
       LogBoxData.reportLogBoxError(err);
@@ -299,6 +268,10 @@ if (__DEV__) {
     },
 
     addLog(log: LogData): void {
+      // Do nothing.
+    },
+
+    addConsoleLog(level: 'warn' | 'error', ...args: Array<mixed>): void {
       // Do nothing.
     },
 

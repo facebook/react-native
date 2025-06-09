@@ -14,8 +14,8 @@ public object FloatUtil {
 
   @JvmStatic
   public fun floatsEqual(f1: Float, f2: Float): Boolean {
-    return if (java.lang.Float.isNaN(f1) || java.lang.Float.isNaN(f2)) {
-      java.lang.Float.isNaN(f1) && java.lang.Float.isNaN(f2)
+    return if (f1.isNaN() || f2.isNaN()) {
+      f1.isNaN() && f2.isNaN()
     } else abs(f2 - f1) < EPSILON
   }
 

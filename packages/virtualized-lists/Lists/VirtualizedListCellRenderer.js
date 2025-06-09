@@ -19,6 +19,7 @@ import type {
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import invariant from 'invariant';
 import * as React from 'react';
+import {isValidElement} from 'react';
 import {StyleSheet, View} from 'react-native';
 
 export type Props<ItemT> = {
@@ -193,9 +194,7 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
 
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
-    const itemSeparator: React.Node = React.isValidElement(
-      ItemSeparatorComponent,
-    )
+    const itemSeparator: React.Node = isValidElement(ItemSeparatorComponent)
       ? // $FlowFixMe[incompatible-type]
         ItemSeparatorComponent
       : // $FlowFixMe[incompatible-type]

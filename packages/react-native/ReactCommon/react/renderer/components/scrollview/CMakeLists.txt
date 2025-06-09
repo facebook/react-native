@@ -13,6 +13,9 @@ add_library(rrc_scrollview STATIC ${rrc_scrollview_SRC})
 
 target_include_directories(rrc_scrollview PUBLIC ${REACT_COMMON_DIR} . ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/)
 
+target_include_directories(rrc_scrollview PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/react/renderer/components/scrollview/)
+
 target_link_libraries(rrc_scrollview
         glog
         folly_runtime
@@ -26,5 +29,5 @@ target_link_libraries(rrc_scrollview
         rrc_view
         yoga
 )
-target_compile_reactnative_options(rrc_scrollview PRIVATE "Fabric")
+target_compile_reactnative_options(rrc_scrollview PRIVATE)
 target_compile_options(rrc_scrollview PRIVATE -Wpedantic)

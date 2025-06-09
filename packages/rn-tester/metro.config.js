@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @noflow
  */
 
 'use strict';
@@ -26,6 +27,7 @@ const config = {
     path.resolve(__dirname, '../assets'),
     path.resolve(__dirname, '../community-cli-plugin'),
     path.resolve(__dirname, '../dev-middleware'),
+    path.resolve(__dirname, '../new-app-screen'),
     path.resolve(__dirname, '../normalize-color'),
     path.resolve(__dirname, '../polyfills'),
     path.resolve(__dirname, '../react-native'),

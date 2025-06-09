@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 /* eslint-env node */
@@ -59,6 +59,9 @@ const babelPluginPreventBabelRegister = [
 
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
+    if (file.endsWith('.json')) {
+      return {code: src};
+    }
     if (nodeFiles.test(file)) {
       // node specific transforms only
       return babelTransformSync(src, {

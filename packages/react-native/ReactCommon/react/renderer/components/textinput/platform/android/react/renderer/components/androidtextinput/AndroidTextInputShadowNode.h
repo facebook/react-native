@@ -9,9 +9,9 @@
 
 #include "AndroidTextInputEventEmitter.h"
 #include "AndroidTextInputProps.h"
+#include "AndroidTextInputState.h"
 
 #include <react/renderer/attributedstring/AttributedString.h>
-#include <react/renderer/components/textinput/TextInputState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/utils/ContextContainer.h>
 
@@ -22,13 +22,11 @@ extern const char AndroidTextInputComponentName[];
 /*
  * `ShadowNode` for <AndroidTextInput> component.
  */
-class AndroidTextInputShadowNode final
-    : public ConcreteViewShadowNode<
-          AndroidTextInputComponentName,
-          AndroidTextInputProps,
-          AndroidTextInputEventEmitter,
-          TextInputState,
-          /* usesMapBufferForStateData */ true> {
+class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
+                                             AndroidTextInputComponentName,
+                                             AndroidTextInputProps,
+                                             AndroidTextInputEventEmitter,
+                                             AndroidTextInputState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

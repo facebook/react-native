@@ -47,6 +47,7 @@ class HostPlatformViewProps : public BaseViewProps {
   bool hasTVPreferredFocus{false};
   bool needsOffscreenAlphaCompositing{false};
   bool renderToHardwareTextureAndroid{false};
+  bool screenReaderFocusable{false};
 
 #pragma mark - Convenience Methods
 
@@ -56,10 +57,9 @@ class HostPlatformViewProps : public BaseViewProps {
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
 
-#ifdef ANDROID
-
+#ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
   folly::dynamic getDiffProps(const Props* prevProps) const override;
-
 #endif
 };
 

@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {ListRenderItemInfo} from '../../../../virtualized-lists';
+import type {ListRenderItemInfo} from '../../../../virtualized-lists/Lists/VirtualizedListProps';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';

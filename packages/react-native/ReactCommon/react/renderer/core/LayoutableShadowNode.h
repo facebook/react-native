@@ -49,6 +49,16 @@ class LayoutableShadowNode : public ShadowNode {
 
   /*
    * Returns layout metrics of a node represented as `descendantNodeFamily`
+   * from `rootNode` like `computeRelativeLayoutMetrics` but returns absolute
+   * transform for node if used as root.
+   */
+  static LayoutMetrics computeLayoutMetricsFromRoot(
+      const ShadowNodeFamily& descendantNodeFamily,
+      const LayoutableShadowNode& rootNode,
+      LayoutInspectingPolicy policy);
+
+  /*
+   * Returns layout metrics of a node represented as `descendantNodeFamily`
    * computed relatively to given `ancestorNode`. Returns `EmptyLayoutMetrics`
    * if the nodes don't form an ancestor-descender relationship in the same
    * tree.
@@ -146,7 +156,6 @@ class LayoutableShadowNode : public ShadowNode {
    * Indicates whether all nodes (and possibly their subtrees) along the path
    * to the root node should be re-laid out.
    */
-  virtual void cleanLayout() = 0;
   virtual void dirtyLayout() = 0;
   virtual bool getIsLayoutClean() const = 0;
 

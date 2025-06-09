@@ -36,7 +36,6 @@ end
 def depend_on_js_engine(s)
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency 'hermes-engine'
-    s.dependency 'React-hermes'
   elsif ENV['USE_THIRD_PARTY_JSC'] != '1'
     s.dependency 'React-jsc'
   end

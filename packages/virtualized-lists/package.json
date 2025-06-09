@@ -3,10 +3,6 @@
   "version": "0.80.0-main",
   "description": "Virtualized lists for React Native.",
   "license": "MIT",
-  "exports": {
-    ".": "./index.js",
-    "./package.json": "./package.json"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/facebook/react-native.git",
@@ -21,14 +17,38 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
+  "exports": {
+    ".": {
+      "react-native-strict-api": "./types_generated/index.d.ts",
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./*": {
+      "types": null,
+      "default": "./*.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "Lists",
+    "README.md",
+    "types_generated",
+    "Utilities",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ],
   "dependencies": {
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "react-test-renderer": "19.0.0"
+    "react-test-renderer": "19.1.0"
   },
   "peerDependencies": {
     "@types/react": "^19.0.0",

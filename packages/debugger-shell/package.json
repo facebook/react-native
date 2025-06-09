@@ -1,0 +1,39 @@
+{
+  "name": "@react-native/debugger-shell",
+  "version": "0.80.0-main",
+  "description": "Experimental debugger shell for React Native for use with @react-native/debugger-frontend",
+  "keywords": [
+    "react-native",
+    "tools"
+  ],
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/debugger-shell#readme",
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "main": "./src/node/index.js",
+  "exports": {
+    ".": {
+      "node": "./src/node/index.js",
+      "electron": "./src/electron/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "electron src/electron"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facebook/react-native.git",
+    "directory": "packages/debugger-shell"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 22.14.0",
+    "electron": ">=36.2.0"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.6",
+    "electron": "36.2.0"
+  },
+  "devDependencies": {
+    "semver": "^7.1.3"
+  }
+}

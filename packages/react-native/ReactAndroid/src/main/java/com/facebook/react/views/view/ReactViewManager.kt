@@ -104,8 +104,10 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
         val backgroundImageLayers = ArrayList<BackgroundImageLayer>(backgroundImage.size())
         for (i in 0 until backgroundImage.size()) {
           val backgroundImageMap = backgroundImage.getMap(i)
-          val layer = BackgroundImageLayer(backgroundImageMap, view.context)
-          backgroundImageLayers.add(layer)
+          val layer = BackgroundImageLayer.parse(backgroundImageMap, view.context)
+          if (layer != null) {
+            backgroundImageLayers.add(layer)
+          }
         }
         BackgroundStyleApplicator.setBackgroundImage(view, backgroundImageLayers)
       } else {
@@ -189,11 +191,11 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
       ReadableType.Map -> {
         val hitSlopMap = hitSlop.asMap()
         if (hitSlopMap == null) {
-          view.setHitSlopRect(null)
+          view.hitSlopRect = null
           return
         }
-        view.setHitSlopRect(
-            Rect(
+        view.hitSlopRect =
+            (Rect(
                 hitSlopMap.px("left"),
                 hitSlopMap.px("top"),
                 hitSlopMap.px("right"),
@@ -203,13 +205,13 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
       ReadableType.Number -> {
         val hitSlopValue = hitSlop.asDouble().dpToPx().toInt()
-        view.setHitSlopRect(Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue))
+        view.hitSlopRect = Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue)
       }
 
-      ReadableType.Null -> view.setHitSlopRect(null)
+      ReadableType.Null -> view.hitSlopRect = null
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid type for 'hitSlop' value ${hitSlop.type}")
-        view.setHitSlopRect(null)
+        view.hitSlopRect = null
       }
     }
   }
@@ -218,7 +220,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public open fun setPointerEvents(view: ReactViewGroup, pointerEventsStr: String?) {
-    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr))
+    view.pointerEvents = PointerEvents.parsePointerEvents(pointerEventsStr)
   }
 
   @ReactProp(name = "nativeBackgroundAndroid")
@@ -314,7 +316,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = ViewProps.OVERFLOW)
   public open fun setOverflow(view: ReactViewGroup, overflow: String?) {
-    view.setOverflow(overflow)
+    view.overflow = overflow
   }
 
   @ReactProp(name = "backfaceVisibility")

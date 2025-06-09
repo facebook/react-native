@@ -11,11 +11,11 @@
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-bots#readme",
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
   "devDependencies": {
     "@rnx-kit/rn-changelog-generator": "^0.4.0",
-    "danger": "^11.2.1",
+    "danger": "^13.0.4",
     "lodash.includes": "^4.3.0",
     "minimatch": "^3.0.4"
   }

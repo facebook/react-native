@@ -346,11 +346,16 @@ public object BackgroundStyleApplicator {
 
   @JvmStatic
   public fun clipToPaddingBox(view: View, canvas: Canvas): Unit {
-    // The canvas may be scrolled, so we need to offset
     if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
       val drawingRect = Rect()
       view.getDrawingRect(drawingRect)
-      val composite = ensureCompositeBackgroundDrawable(view)
+
+      val composite = getCompositeBackgroundDrawable(view)
+      if (composite == null) {
+        canvas.clipRect(drawingRect)
+        return
+      }
+
       val paddingBoxRect = RectF()
 
       val computedBorderInsets =

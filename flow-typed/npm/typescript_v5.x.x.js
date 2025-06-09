@@ -48,6 +48,11 @@ declare module 'typescript' {
       file: SourceFile,
       start?: number,
     ): $ReadOnly<{line: number, character: number}>,
+    convertCompilerOptionsFromJson(
+      jsonOptions: any,
+      basePath: string,
+      configFileName?: string,
+    ): {options: Object, errors: Diagnostic[]},
     ModuleResolutionKind: typeof ModuleResolutionKind,
     ...
   };

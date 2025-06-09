@@ -27,6 +27,8 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.core.util.Preconditions;
+import androidx.core.view.ViewCompat.FocusDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -77,6 +79,7 @@ import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
@@ -85,6 +88,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.FabricEventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.events.SynchronousEventReceiver;
+import com.facebook.react.views.text.PreparedLayout;
+import com.facebook.react.views.text.ReactTextViewManager;
+import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.TextLayoutManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -260,6 +266,58 @@ public class FabricUIManager
     Assertions.assertNotNull(mBinding, "Binding in FabricUIManager is null");
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
+  }
+
+  /**
+   * Find the next focusable element's id and position relative to the parent from the shadow tree
+   * based on the current focusable element and the direction.
+   *
+   * @return A NextFocusableNode object where the 'id' is the reactId/Tag of the next focusable
+   *     view, returns null if no view could be found
+   */
+  public @Nullable Integer findNextFocusableElement(
+      int parentTag, int focusedTag, @FocusDirection int direction) {
+    if (mBinding == null) {
+      return null;
+    }
+
+    int generalizedDirection;
+
+    switch (direction) {
+      case View.FOCUS_DOWN:
+        generalizedDirection = 0;
+        break;
+      case View.FOCUS_UP:
+        generalizedDirection = 1;
+        break;
+      case View.FOCUS_RIGHT:
+        generalizedDirection = 2;
+        break;
+      case View.FOCUS_LEFT:
+        generalizedDirection = 3;
+        break;
+      case View.FOCUS_FORWARD:
+        generalizedDirection = 4;
+        break;
+      case View.FOCUS_BACKWARD:
+        generalizedDirection = 5;
+        break;
+      default:
+        return null;
+    }
+
+    int serializedNextFocusableNodeMetrics =
+        mBinding.findNextFocusableElement(parentTag, focusedTag, generalizedDirection);
+
+    if (serializedNextFocusableNodeMetrics == -1) {
+      return null;
+    }
+
+    return serializedNextFocusableNodeMetrics;
+  }
+
+  public @Nullable int[] getRelativeAncestorList(int rootTag, int childTag) {
+    return mBinding != null ? mBinding.getRelativeAncestorList(rootTag, childTag) : null;
   }
 
   @Override
@@ -478,31 +536,6 @@ public class FabricUIManager
             PixelUtil.toPixelFromDIP(height));
   }
 
-  @SuppressWarnings("unused")
-  private long measure(
-      int rootTag,
-      String componentName,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
-      float minWidth,
-      float maxWidth,
-      float minHeight,
-      float maxHeight) {
-    return measure(
-        rootTag,
-        componentName,
-        localData,
-        props,
-        state,
-        minWidth,
-        maxWidth,
-        minHeight,
-        maxHeight,
-        null);
-  }
-
-  @SuppressWarnings("unused")
   public int getColor(int surfaceId, String[] resourcePaths) {
     ThemedReactContext context =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
@@ -520,8 +553,13 @@ public class FabricUIManager
     return 0;
   }
 
-  @SuppressWarnings("unused")
-  private long measure(
+  /**
+   * Calls the measure() function on a specific view manager. This may be used for implementing
+   * custom Fabric ShadowNodes
+   */
+  @AnyThread
+  @ThreadConfined(ANY)
+  public long measure(
       int surfaceId,
       String componentName,
       ReadableMap localData,
@@ -530,9 +568,7 @@ public class FabricUIManager
       float minWidth,
       float maxWidth,
       float minHeight,
-      float maxHeight,
-      @Nullable float[] attachmentsPositions) {
-
+      float maxHeight) {
     ReactContext context;
     if (surfaceId > 0) {
       SurfaceMountingManager surfaceMountingManager =
@@ -557,16 +593,16 @@ public class FabricUIManager
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
-        attachmentsPositions);
+        null);
   }
 
-  @SuppressWarnings("unused")
-  private long measureMapBuffer(
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
+  public long measureText(
       int surfaceId,
-      String componentName,
-      ReadableMapBuffer localData,
-      ReadableMapBuffer props,
-      @Nullable ReadableMapBuffer state,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
       float minWidth,
       float maxWidth,
       float minHeight,
@@ -576,7 +612,7 @@ public class FabricUIManager
     ReactContext context;
     if (surfaceId > 0) {
       SurfaceMountingManager surfaceMountingManager =
-          mMountingManager.getSurfaceManagerEnforced(surfaceId, "measure");
+          mMountingManager.getSurfaceManagerEnforced(surfaceId, "measureText");
       if (surfaceMountingManager.isStopped()) {
         return 0;
       }
@@ -587,18 +623,65 @@ public class FabricUIManager
       context = mReactApplicationContext;
     }
 
-    // TODO: replace ReadableNativeMap -> ReadableMapBuffer
-    return mMountingManager.measureMapBuffer(
+    ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
+
+    return TextLayoutManager.measureText(
         context,
-        componentName,
-        localData,
-        props,
-        state,
+        attributedString,
+        paragraphAttributes,
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
+        textViewManager instanceof ReactTextViewManagerCallback
+            ? (ReactTextViewManagerCallback) textViewManager
+            : null,
         attachmentsPositions);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
+  public PreparedLayout prepareTextLayout(
+      int surfaceId,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight) {
+    SurfaceMountingManager surfaceMountingManager =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "prepareTextLayout");
+    ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
+
+    return TextLayoutManager.createPreparedLayout(
+        Preconditions.checkNotNull(surfaceMountingManager.getContext()),
+        attributedString,
+        paragraphAttributes,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight),
+        textViewManager instanceof ReactTextViewManagerCallback
+            ? (ReactTextViewManagerCallback) textViewManager
+            : null);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
+  public float[] measurePreparedLayout(
+      PreparedLayout preparedLayout,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight) {
+    return TextLayoutManager.measurePreparedLayout(
+        preparedLayout,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight));
   }
 
   /**

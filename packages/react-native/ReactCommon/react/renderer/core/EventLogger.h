@@ -9,6 +9,8 @@
 
 #include <react/renderer/core/EventTarget.h>
 #include <react/timing/primitives.h>
+
+#include <optional>
 #include <string_view>
 
 namespace facebook::react {
@@ -32,8 +34,7 @@ class EventLogger {
   virtual EventTag onEventStart(
       std::string_view name,
       SharedEventTarget target,
-      DOMHighResTimeStamp eventStartTimeStamp =
-          DOM_HIGH_RES_TIME_STAMP_UNSET) = 0;
+      std::optional<HighResTimeStamp> eventStartTimeStamp = std::nullopt) = 0;
 
   /*
    * Called when event starts getting dispatched (processed by the handlers, if

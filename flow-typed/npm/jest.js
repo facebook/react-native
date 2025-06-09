@@ -4,15 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
- * @oncall react_native
  */
 
 // Modified from https://raw.githubusercontent.com/flow-typed/flow-typed/master/definitions/npm/jest_v29.x.x/flow_v0.134.x-/jest_v29.x.x.js
 // Modifications are explained inline by comments beginning with `// MODIFIED`.
 
 // MODIFIED: Added ESLint suppression comment - no-unused-vars doesn't understand declaration files
-/* eslint-disable no-unused-vars */
 
 type JestMockFn<TArguments: $ReadOnlyArray<mixed>, TReturn> = {
   (...args: TArguments): TReturn,
@@ -855,6 +854,10 @@ type JestObjectType = {
    * Returns the number of fake timers still left to run.
    */
   getTimerCount(): number,
+  /**
+   * Returns the time in ms of the current clock.
+   */
+  now(): number,
   /**
    * Set the current system time used by fake timers.
    * Simulates a user changing the system clock while your program is running.

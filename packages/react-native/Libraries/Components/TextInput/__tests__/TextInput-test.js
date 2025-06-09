@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -15,12 +16,13 @@ const {
 } = require('../../../Utilities/ReactNativeTestTools');
 const TextInput = require('../TextInput').default;
 const React = require('react');
+const {createRef, useState} = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
 jest.unmock('../TextInput');
 
 [true, false].forEach(useTextChildren => {
-  describe(`TextInput tests (useTextChildren = ${useTextChildren})`, () => {
+  describe(`TextInput tests (useTextChildren = ${String(useTextChildren)})`, () => {
     let input;
     let inputRef;
     let onChangeListener;
@@ -29,12 +31,12 @@ jest.unmock('../TextInput');
     beforeEach(async () => {
       jest.resetModules();
 
-      inputRef = React.createRef(null);
+      inputRef = createRef<React.ElementRef<typeof TextInput>>();
       onChangeListener = jest.fn();
       onChangeTextListener = jest.fn();
 
       function TextInputWrapper() {
-        const [state, setState] = React.useState({text: initialValue});
+        const [state, setState] = useState({text: initialValue});
 
         return (
           <TextInput
@@ -56,20 +58,27 @@ jest.unmock('../TextInput');
     });
 
     it('has expected instance functions', () => {
-      expect(inputRef.current.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
-      expect(inputRef.current.clear).toBeInstanceOf(Function);
-      expect(inputRef.current.focus).toBeInstanceOf(jest.fn().constructor);
-      expect(inputRef.current.blur).toBeInstanceOf(jest.fn().constructor);
-      expect(inputRef.current.setNativeProps).toBeInstanceOf(
+      const inputElement = inputRef.current;
+      if (inputElement == null) {
+        throw new Error('Expected `inputElement` to be non-null');
+      }
+
+      expect(inputElement.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
+      expect(inputElement.clear).toBeInstanceOf(Function);
+      // $FlowFixMe[method-unbinding]
+      expect(inputElement.focus).toBeInstanceOf(jest.fn().constructor);
+      // $FlowFixMe[method-unbinding]
+      expect(inputElement.blur).toBeInstanceOf(jest.fn().constructor);
+      // $FlowFixMe[method-unbinding]
+      expect(inputElement.setNativeProps).toBeInstanceOf(jest.fn().constructor);
+      // $FlowFixMe[method-unbinding]
+      expect(inputElement.measure).toBeInstanceOf(jest.fn().constructor);
+      // $FlowFixMe[method-unbinding]
+      expect(inputElement.measureInWindow).toBeInstanceOf(
         jest.fn().constructor,
       );
-      expect(inputRef.current.measure).toBeInstanceOf(jest.fn().constructor);
-      expect(inputRef.current.measureInWindow).toBeInstanceOf(
-        jest.fn().constructor,
-      );
-      expect(inputRef.current.measureLayout).toBeInstanceOf(
-        jest.fn().constructor,
-      );
+      // $FlowFixMe[method-unbinding]
+      expect(inputElement.measureLayout).toBeInstanceOf(jest.fn().constructor);
     });
     it('calls onChange callbacks', () => {
       if (!useTextChildren) {
@@ -92,8 +101,10 @@ jest.unmock('../TextInput');
       });
     });
 
-    async function createTextInput(extraProps) {
-      const textInputRef = React.createRef(null);
+    async function createTextInput(
+      extraProps: ?React.ElementConfig<typeof TextInput>,
+    ) {
+      const textInputRef = createRef<React.ElementRef<typeof TextInput>>();
       await create(
         <TextInput
           ref={textInputRef}
@@ -107,25 +118,35 @@ jest.unmock('../TextInput');
 
     it('focus() should not do anything if the TextInput is not editable', async () => {
       const textInputRef = await createTextInput({editable: false});
-      textInputRef.current.currentProps = textInputRef.current.props;
-      expect(textInputRef.current.isFocused()).toBe(false);
+      const textInputElement = textInputRef.current;
+      if (textInputElement == null) {
+        throw new Error('Expected `textInputElement` to be non-null');
+      }
 
-      TextInput.State.focusTextInput(textInputRef.current);
-      expect(textInputRef.current.isFocused()).toBe(false);
+      // $FlowFixMe[prop-missing]
+      textInputElement.currentProps = textInputElement.props;
+      expect(textInputElement.isFocused()).toBe(false);
+
+      TextInput.State.focusTextInput(textInputElement);
+      expect(textInputElement.isFocused()).toBe(false);
     });
 
     it('should have support for being focused and blurred', async () => {
       const textInputRef = await createTextInput();
+      const textInputElement = textInputRef.current;
+      if (textInputElement == null) {
+        throw new Error('Expected `textInputElement` to be non-null');
+      }
 
-      expect(textInputRef.current.isFocused()).toBe(false);
-      ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
+      expect(textInputElement.isFocused()).toBe(false);
+      jest.spyOn(ReactNative, 'findNodeHandle').mockImplementation(ref => {
         if (ref == null) {
           return null;
         }
 
         if (
-          ref === textInputRef.current ||
-          ref === textInputRef.current.getNativeRef()
+          ref === textInputElement ||
+          ref === textInputElement.getNativeRef()
         ) {
           return 1;
         }
@@ -133,14 +154,12 @@ jest.unmock('../TextInput');
         return 2;
       });
 
-      TextInput.State.focusTextInput(textInputRef.current);
-      expect(textInputRef.current.isFocused()).toBe(true);
-      expect(TextInput.State.currentlyFocusedInput()).toBe(
-        textInputRef.current,
-      );
+      TextInput.State.focusTextInput(textInputElement);
+      expect(textInputElement.isFocused()).toBe(true);
+      expect(TextInput.State.currentlyFocusedInput()).toBe(textInputElement);
 
-      TextInput.State.blurTextInput(textInputRef.current);
-      expect(textInputRef.current.isFocused()).toBe(false);
+      TextInput.State.blurTextInput(textInputElement);
+      expect(textInputElement.isFocused()).toBe(false);
       expect(TextInput.State.currentlyFocusedInput()).toBe(null);
     });
 
@@ -148,6 +167,7 @@ jest.unmock('../TextInput');
       const defaultValue = 'value1';
       // create content
       let renderTree = await create(
+        // $FlowFixMe[incompatible-use]
         <TextInput
           value={useTextChildren ? undefined : defaultValue}
           position={{start: 1, end: 1}}>
@@ -156,14 +176,17 @@ jest.unmock('../TextInput');
       );
       input = renderTree.root.findByType(TextInput);
       expect(
+        // $FlowFixMe[prop-missing]
         useTextChildren ? input.children[0].props.children : input.props.value,
       ).toBe(defaultValue);
       expect(input.props.position.start).toBe(1);
       expect(input.props.position.end).toBe(1);
 
       // update position
+      // $FlowFixMe[incompatible-type]
       renderTree = await update(
         renderTree,
+        // $FlowFixMe[incompatible-use]
         <TextInput
           value={useTextChildren ? undefined : defaultValue}
           position={{start: 2, end: 2}}>
@@ -171,6 +194,7 @@ jest.unmock('../TextInput');
         </TextInput>,
       );
       expect(
+        // $FlowFixMe[prop-missing]
         useTextChildren ? input.children[0].props.children : input.props.value,
       ).toBe(defaultValue);
       expect(input.props.position.start).toBe(2);
@@ -178,8 +202,8 @@ jest.unmock('../TextInput');
     });
 
     it('should unfocus when other TextInput is focused', async () => {
-      const textInputRe1 = React.createRef(null);
-      const textInputRe2 = React.createRef(null);
+      const textInputRe1 = createRef<React.ElementRef<typeof TextInput>>();
+      const textInputRe2 = createRef<React.ElementRef<typeof TextInput>>();
 
       await create(
         <>
@@ -195,17 +219,17 @@ jest.unmock('../TextInput');
           </TextInput>
         </>,
       );
-      ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
+      jest.spyOn(ReactNative, 'findNodeHandle').mockImplementation(ref => {
         if (
           ref === textInputRe1.current ||
-          ref === textInputRe1.current.getNativeRef()
+          ref === textInputRe1.current?.getNativeRef()
         ) {
           return 1;
         }
 
         if (
           ref === textInputRe2.current ||
-          ref === textInputRe2.current.getNativeRef()
+          ref === textInputRe2.current?.getNativeRef()
         ) {
           return 2;
         }
@@ -213,21 +237,21 @@ jest.unmock('../TextInput');
         return 3;
       });
 
-      expect(textInputRe1.current.isFocused()).toBe(false);
-      expect(textInputRe2.current.isFocused()).toBe(false);
+      expect(textInputRe1.current?.isFocused()).toBe(false);
+      expect(textInputRe2.current?.isFocused()).toBe(false);
 
       TextInput.State.focusTextInput(textInputRe1.current);
 
-      expect(textInputRe1.current.isFocused()).toBe(true);
-      expect(textInputRe2.current.isFocused()).toBe(false);
+      expect(textInputRe1.current?.isFocused()).toBe(true);
+      expect(textInputRe2.current?.isFocused()).toBe(false);
       expect(TextInput.State.currentlyFocusedInput()).toBe(
         textInputRe1.current,
       );
 
       TextInput.State.focusTextInput(textInputRe2.current);
 
-      expect(textInputRe1.current.isFocused()).toBe(false);
-      expect(textInputRe2.current.isFocused()).toBe(true);
+      expect(textInputRe1.current?.isFocused()).toBe(false);
+      expect(textInputRe2.current?.isFocused()).toBe(true);
       expect(TextInput.State.currentlyFocusedInput()).toBe(
         textInputRe2.current,
       );
@@ -243,7 +267,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -287,7 +310,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -323,6 +345,7 @@ jest.unmock('../TextInput');
         testID: 'testID',
       };
 
+      // $FlowFixMe[incompatible-use]
       const instance = await create(<TextInput {...props} />);
 
       expect(instance.toJSON()).toMatchInlineSnapshot(`
@@ -330,7 +353,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         nativeID="id"
         onBlur={[Function]}
@@ -405,6 +427,7 @@ jest.unmock('../TextInput');
         'aria-valuetext': '3',
       };
 
+      // $FlowFixMe[incompatible-use]
       const instance = await create(<TextInput {...props} />);
 
       expect(instance.toJSON()).toMatchInlineSnapshot(`
@@ -461,7 +484,6 @@ jest.unmock('../TextInput');
         aria-valuenow={3}
         aria-valuetext="3"
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}
@@ -495,6 +517,7 @@ jest.unmock('../TextInput');
         verticalAlign: 'middle',
       };
 
+      // $FlowFixMe[incompatible-use]
       const instance = await create(<TextInput style={style} />);
 
       expect(instance.toJSON()).toMatchInlineSnapshot(`
@@ -502,7 +525,6 @@ jest.unmock('../TextInput');
         accessible={true}
         allowFontScaling={true}
         focusable={true}
-        forwardedRef={null}
         mostRecentEventCount={0}
         onBlur={[Function]}
         onChange={[Function]}

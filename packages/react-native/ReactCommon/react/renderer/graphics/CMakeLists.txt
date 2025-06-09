@@ -24,5 +24,5 @@ target_link_libraries(react_renderer_graphics
         react_debug
         react_utils
 )
-target_compile_reactnative_options(react_renderer_graphics PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_graphics PRIVATE)
 target_compile_options(react_renderer_graphics PRIVATE -Wpedantic)

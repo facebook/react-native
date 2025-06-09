@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6f24701d1581b744185caaee1ca5fc06>>
+ * @generated SignedSource<<e3792f1be08a9175b71c3bef175fbb71>>
  */
 
 /**
@@ -27,13 +27,15 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun animatedShouldSignalBatch(): Boolean = false
 
+  override fun avoidCeilingAvailableAndroidTextWidth(): Boolean = true
+
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
   override fun disableMainQueueSyncDispatchIOS(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
-  override fun disableShadowNodeOnNewArchitectureAndroid(): Boolean = true
+  override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
 
   override fun enableAccessibilityOrder(): Boolean = false
 
@@ -43,29 +45,49 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableCppPropsIteratorSetter(): Boolean = false
 
+  override fun enableCustomFocusSearchOnClippedElementsAndroid(): Boolean = true
+
+  override fun enableDestroyShadowTreeRevisionAsync(): Boolean = false
+
+  override fun enableDoubleMeasurementFixAndroid(): Boolean = false
+
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
 
+  override fun enableFixForParentTagDuringReparenting(): Boolean = false
+
   override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
+
+  override fun enableIOSTextBaselineOffsetPerLine(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
-  override fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean = false
+  override fun enableIntersectionObserverEventLoopIntegration(): Boolean = true
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
+  override fun enableMainQueueCoordinatorOnIOS(): Boolean = false
+
   override fun enableMainQueueModulesOnIOS(): Boolean = false
+
+  override fun enableModuleArgumentNSNullConversionIOS(): Boolean = false
 
   override fun enableNativeCSSParsing(): Boolean = false
 
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
+  override fun enableNetworkEventReporting(): Boolean = false
+
+  override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
+
+  override fun enablePreparedTextLayout(): Boolean = false
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
+
+  override fun enableResourceTimingAPI(): Boolean = false
 
   override fun enableSynchronousStateUpdates(): Boolean = false
 
@@ -83,7 +105,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
-  override fun removeTurboModuleManagerDelegateMutex(): Boolean = false
+  override fun incorporateMaxLinesDuringAndroidLayout(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
@@ -91,7 +113,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
-  override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
+  override fun useAndroidTextLayoutWidthDirectly(): Boolean = true
 
   override fun useFabricInterop(): Boolean = true
 
@@ -106,4 +128,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useTurboModuleInterop(): Boolean = false
 
   override fun useTurboModules(): Boolean = false
+
+  override fun virtualViewPrerenderRatio(): Double = 5.0
 }

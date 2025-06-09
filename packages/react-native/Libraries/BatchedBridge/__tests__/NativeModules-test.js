@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -20,7 +20,16 @@ const METHOD_IDS = 1;
 const PARAMS = 2;
 const CALL_ID = 3;
 
-const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
+const assertQueue = (
+  flushedQueue: null | [Array<number>, Array<number>, Array<mixed>, number],
+  index: number,
+  moduleID: number,
+  methodID: number,
+  params: $ReadOnlyArray<mixed>,
+) => {
+  if (flushedQueue == null) {
+    throw new Error('Expected `flushedQueue` to be non-null');
+  }
   expect(flushedQueue[MODULE_IDS][index]).toEqual(moduleID);
   expect(flushedQueue[METHOD_IDS][index]).toEqual(methodID);
   expect(flushedQueue[PARAMS][index]).toEqual(params);
@@ -65,6 +74,9 @@ describe('MessageQueue', function () {
     NativeModules.RemoteModule2.promiseMethod('mac', 'windows', onFail, onSucc);
 
     const resultingRemoteInvocations = BatchedBridge.flushedQueue();
+    if (resultingRemoteInvocations == null) {
+      throw new Error('Expected `resultingRemoteInvocations` to be non-null');
+    }
 
     // As always, the message queue has four fields
     expect(resultingRemoteInvocations.length).toBe(4);
@@ -77,21 +89,29 @@ describe('MessageQueue', function () {
     expect(resultingRemoteInvocations[1][0]).toBe(1); // `promiseMethod`
     expect([
       // the arguments
+      // $FlowFixMe[incompatible-use]
       resultingRemoteInvocations[2][0][0],
+      // $FlowFixMe[incompatible-use]
       resultingRemoteInvocations[2][0][1],
     ]).toEqual(['paloAlto', 'menloPark']);
     // Callbacks ids are tacked onto the end of the remote arguments.
+    // $FlowFixMe[incompatible-use]
     const firstFailCBID = resultingRemoteInvocations[2][0][2];
+    // $FlowFixMe[incompatible-use]
     const firstSuccCBID = resultingRemoteInvocations[2][0][3];
 
     expect(resultingRemoteInvocations[0][1]).toBe(1); // `RemoteModule2`
     expect(resultingRemoteInvocations[1][1]).toBe(1); // `promiseMethod`
     expect([
       // the arguments
+      // $FlowFixMe[incompatible-use]
       resultingRemoteInvocations[2][1][0],
+      // $FlowFixMe[incompatible-use]
       resultingRemoteInvocations[2][1][1],
     ]).toEqual(['mac', 'windows']);
+    // $FlowFixMe[incompatible-use]
     const secondFailCBID = resultingRemoteInvocations[2][1][2];
+    // $FlowFixMe[incompatible-use]
     const secondSuccCBID = resultingRemoteInvocations[2][1][3];
 
     // Handle the first remote invocation by signaling failure.
@@ -125,6 +145,9 @@ describe('MessageQueue', function () {
     );
 
     const resultingRemoteInvocations = BatchedBridge.flushedQueue();
+    if (resultingRemoteInvocations == null) {
+      throw new Error('Expected `resultingRemoteInvocations` to be non-null');
+    }
 
     // As always, the message queue has four fields
     expect(resultingRemoteInvocations.length).toBe(4);
@@ -137,22 +160,30 @@ describe('MessageQueue', function () {
     expect(resultingRemoteInvocations[1][0]).toBe(2); // `promiseReturningMethod`
     expect([
       // the arguments
+      // $FlowFixMe[incompatible-use]
       resultingRemoteInvocations[2][0][0],
+      // $FlowFixMe[incompatible-use]
       resultingRemoteInvocations[2][0][1],
     ]).toEqual(['paloAlto', 'menloPark']);
     // For promise-returning methods, the order of callbacks is flipped from
     // regular async methods.
+    // $FlowFixMe[incompatible-use]
     const firstSuccCBID = resultingRemoteInvocations[2][0][2];
+    // $FlowFixMe[incompatible-use]
     const firstFailCBID = resultingRemoteInvocations[2][0][3];
 
     expect(resultingRemoteInvocations[0][1]).toBe(1); // `RemoteModule2`
     expect(resultingRemoteInvocations[1][1]).toBe(2); // `promiseReturningMethod`
     expect([
       // the arguments
+      // $FlowFixMe[incompatible-use]
       resultingRemoteInvocations[2][1][0],
+      // $FlowFixMe[incompatible-use]
       resultingRemoteInvocations[2][1][1],
     ]).toEqual(['mac', 'windows']);
+    // $FlowFixMe[incompatible-use]
     const secondSuccCBID = resultingRemoteInvocations[2][1][2];
+    // $FlowFixMe[incompatible-use]
     const secondFailCBID = resultingRemoteInvocations[2][1][3];
 
     // Handle the first remote invocation by signaling failure.

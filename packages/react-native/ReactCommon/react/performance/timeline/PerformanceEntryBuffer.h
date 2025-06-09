@@ -14,7 +14,7 @@ namespace facebook::react {
 
 // Default duration threshold for reporting performance entries (0 means "report
 // all")
-constexpr double DEFAULT_DURATION_THRESHOLD = 0.0;
+constexpr HighResDuration DEFAULT_DURATION_THRESHOLD = HighResDuration::zero();
 
 /**
  * Abstract performance entry buffer with reporting flags.
@@ -22,7 +22,7 @@ constexpr double DEFAULT_DURATION_THRESHOLD = 0.0;
  */
 class PerformanceEntryBuffer {
  public:
-  double durationThreshold{DEFAULT_DURATION_THRESHOLD};
+  HighResDuration durationThreshold = DEFAULT_DURATION_THRESHOLD;
   size_t droppedEntriesCount{0};
 
   explicit PerformanceEntryBuffer() = default;

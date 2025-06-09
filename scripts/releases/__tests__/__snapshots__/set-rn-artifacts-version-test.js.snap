@@ -8,6 +8,7 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict
+ * @noformat
  * << GENERATED >>
  */
 
@@ -121,6 +122,12 @@ constexpr struct {
 "
 `;
 
+exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/scripts/codegen/__tests__/__snapshots__/generate-artifacts-executor-test.js.snap 1`] = `
+"version = \\"0.81.0-nightly-29282302-abcd1234\\\\
+other text
+version = \\"0.81.0-nightly-29282302-abcd1234\\\\"
+`;
+
 exports[`updateReactNativeArtifacts should set release version: packages/react-native/Libraries/Core/ReactNativeVersion.js 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -129,6 +136,7 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict
+ * @noformat
  * << GENERATED >>
  */
 
@@ -240,4 +248,10 @@ constexpr struct {
 
 } // namespace facebook::react
 "
+`;
+
+exports[`updateReactNativeArtifacts should set release version: packages/react-native/scripts/codegen/__tests__/__snapshots__/generate-artifacts-executor-test.js.snap 1`] = `
+"version = \\"0.81.0\\\\
+other text
+version = \\"0.81.0\\\\"
 `;

@@ -221,9 +221,15 @@ class TouchableBounce extends React.Component<
   }
 }
 
-export default (React.forwardRef((props, hostRef: React.RefSetter<mixed>) => (
-  <TouchableBounce {...props} hostRef={hostRef} />
-)): component(
+export default (function TouchableBounceWrapper({
+  ref: hostRef,
+  ...props
+}: {
+  ref: React.RefSetter<mixed>,
+  ...$ReadOnly<Omit<TouchableBounceProps, 'hostRef'>>,
+}) {
+  return <TouchableBounce {...props} hostRef={hostRef} />;
+} as component(
   ref: React.RefSetter<mixed>,
   ...props: $ReadOnly<Omit<TouchableBounceProps, 'hostRef'>>
 ));

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {RNTesterModuleInfo, ScreenTypes} from './types/RNTesterTypes';
@@ -28,6 +28,7 @@ import {
   initialNavigationState,
 } from './utils/testerStateUtils';
 import * as React from 'react';
+import {useCallback, useEffect, useMemo, useReducer} from 'react';
 import {
   BackHandler,
   Button,
@@ -64,7 +65,7 @@ const RNTesterApp = ({
   },
   customBackButton?: BackButton,
 }): React.Node => {
-  const [state, dispatch] = React.useReducer(
+  const [state, dispatch] = useReducer(
     RNTesterNavigationReducer,
     initialNavigationState,
   );
@@ -79,22 +80,21 @@ const RNTesterApp = ({
     hadDeepLink,
   } = state;
 
-  const {height, scale} = useWindowDimensions();
-  const isScreenTiny = height / scale < 400;
+  const isScreenTiny = useWindowDimensions().height < 600;
 
-  const examplesList = React.useMemo(
+  const examplesList = useMemo(
     () => getExamplesListWithRecentlyUsed({recentlyUsed, testList}),
     [recentlyUsed, testList],
   );
 
-  const handleBackPress = React.useCallback(() => {
+  const handleBackPress = useCallback(() => {
     if (activeModuleKey != null) {
       dispatch({type: RNTesterNavigationActionsType.BACK_BUTTON_PRESS});
     }
   }, [dispatch, activeModuleKey]);
 
   // Setup hardware back button press listener
-  React.useEffect(() => {
+  useEffect(() => {
     const handleHardwareBackPress = () => {
       if (activeModuleKey) {
         handleBackPress();
@@ -110,7 +110,7 @@ const RNTesterApp = ({
     return () => subscription.remove();
   }, [activeModuleKey, handleBackPress]);
 
-  const handleModuleCardPress = React.useCallback(
+  const handleModuleCardPress = useCallback(
     ({exampleType, key, title}: any) => {
       dispatch({
         type: RNTesterNavigationActionsType.MODULE_CARD_PRESS,
@@ -120,7 +120,7 @@ const RNTesterApp = ({
     [dispatch],
   );
 
-  const handleModuleExampleCardPress = React.useCallback(
+  const handleModuleExampleCardPress = useCallback(
     (exampleName: string) => {
       dispatch({
         type: RNTesterNavigationActionsType.EXAMPLE_CARD_PRESS,
@@ -130,7 +130,7 @@ const RNTesterApp = ({
     [dispatch],
   );
 
-  const handleNavBarPress = React.useCallback(
+  const handleNavBarPress = useCallback(
     (args: {screen: ScreenTypes}) => {
       if (args.screen === 'playgrounds') {
         dispatch({
@@ -152,7 +152,7 @@ const RNTesterApp = ({
   );
 
   // Setup Linking event subscription
-  const handleOpenUrlRequest = React.useCallback(
+  const handleOpenUrlRequest = useCallback(
     ({url}: {url: string, ...}) => {
       // Supported URL pattern(s):
       // *  rntester://example/<moduleKey>
@@ -230,7 +230,7 @@ const RNTesterApp = ({
     },
     [dispatch],
   );
-  React.useEffect(() => {
+  useEffect(() => {
     // Initial deeplink
     Linking.getInitialURL()
       .then(url => url != null && handleOpenUrlRequest({url: url}))

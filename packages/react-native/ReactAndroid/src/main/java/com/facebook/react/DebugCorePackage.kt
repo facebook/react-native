@@ -16,11 +16,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager
 
-/**
- * Package defining core framework modules (e.g. [UIManager]). It should be used for modules that
- * require special integration with other framework parts (e.g. with the list of packages to load
- * view managers from).
- */
+/** Package defining core debugging modules and viewManagers e.g. [DebuggingOverlayManager]). */
 @ReactModuleList(nativeModules = [])
 public class DebugCorePackage public constructor() :
     BaseReactPackage(), ViewManagerOnDemandReactPackage {

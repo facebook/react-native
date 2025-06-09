@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
+#include <jsinspector-modern/tracing/Timing.h>
+#include <react/timing/primitives.h>
 
-#include <utility>
+#include <folly/dynamic.h>
 
 namespace facebook::react::jsinspector_modern::tracing {
 
@@ -19,21 +20,16 @@ struct TraceEventProfileChunk {
   /// Deltas between timestamps of chronolocigally sorted samples.
   /// Will be sent as part of the "ProfileChunk" trace event.
   struct TimeDeltas {
-   public:
-    explicit TimeDeltas(std::vector<long long> deltas)
-        : deltas_(std::move(deltas)) {}
-
-    folly::dynamic asDynamic() const {
-      folly::dynamic value = folly::dynamic::array();
-      for (auto delta : deltas_) {
-        value.push_back(delta);
+    folly::dynamic toDynamic() const {
+      auto value = folly::dynamic::array();
+      value.reserve(deltas.size());
+      for (const auto& delta : deltas) {
+        value.push_back(highResDurationToTracingClockDuration(delta));
       }
-
       return value;
     }
 
-   private:
-    std::vector<long long> deltas_;
+    std::vector<HighResDuration> deltas;
   };
 
   /// Contains Profile information that will be emitted in this chunk: nodes and
@@ -45,113 +41,73 @@ struct TraceEventProfileChunk {
     struct Node {
       /// Unique call frame in the call stack.
       struct CallFrame {
-       public:
-        CallFrame(
-            std::string codeType,
-            uint32_t scriptId,
-            std::string functionName,
-            std::optional<std::string> url = std::nullopt,
-            std::optional<uint32_t> lineNumber = std::nullopt,
-            std::optional<uint32_t> columnNumber = std::nullopt)
-            : codeType_(std::move(codeType)),
-              scriptId_(scriptId),
-              functionName_(std::move(functionName)),
-              url_(std::move(url)),
-              lineNumber_(lineNumber),
-              columnNumber_(columnNumber) {}
-
-        folly::dynamic asDynamic() const {
+        folly::dynamic toDynamic() const {
           folly::dynamic dynamicCallFrame = folly::dynamic::object();
-          dynamicCallFrame["codeType"] = codeType_;
-          dynamicCallFrame["scriptId"] = scriptId_;
-          dynamicCallFrame["functionName"] = functionName_;
-          if (url_.has_value()) {
-            dynamicCallFrame["url"] = url_.value();
+          dynamicCallFrame["codeType"] = codeType;
+          dynamicCallFrame["scriptId"] = scriptId;
+          dynamicCallFrame["functionName"] = functionName;
+          if (url.has_value()) {
+            dynamicCallFrame["url"] = url.value();
           }
-          if (lineNumber_.has_value()) {
-            dynamicCallFrame["lineNumber"] = lineNumber_.value();
+          if (lineNumber.has_value()) {
+            dynamicCallFrame["lineNumber"] = lineNumber.value();
           }
-          if (columnNumber_.has_value()) {
-            dynamicCallFrame["columnNumber"] = columnNumber_.value();
+          if (columnNumber.has_value()) {
+            dynamicCallFrame["columnNumber"] = columnNumber.value();
           }
 
           return dynamicCallFrame;
         }
 
-       private:
-        std::string codeType_;
-        uint32_t scriptId_;
-        std::string functionName_;
-        std::optional<std::string> url_;
-        std::optional<uint32_t> lineNumber_;
-        std::optional<uint32_t> columnNumber_;
+        std::string codeType;
+        uint32_t scriptId;
+        std::string functionName;
+        std::optional<std::string> url;
+        std::optional<uint32_t> lineNumber;
+        std::optional<uint32_t> columnNumber;
       };
 
-     public:
-      Node(
-          uint32_t id,
-          CallFrame callFrame,
-          std::optional<uint32_t> parentId = std::nullopt)
-          : id_(id), callFrame_(std::move(callFrame)), parentId_(parentId) {}
-
-      folly::dynamic asDynamic() const {
+      folly::dynamic toDynamic() const {
         folly::dynamic dynamicNode = folly::dynamic::object();
 
-        dynamicNode["callFrame"] = callFrame_.asDynamic();
-        dynamicNode["id"] = id_;
-        if (parentId_.has_value()) {
-          dynamicNode["parent"] = parentId_.value();
+        dynamicNode["callFrame"] = callFrame.toDynamic();
+        dynamicNode["id"] = id;
+        if (parentId.has_value()) {
+          dynamicNode["parent"] = parentId.value();
         }
 
         return dynamicNode;
       }
 
-     private:
-      uint32_t id_;
-      CallFrame callFrame_;
-      std::optional<uint32_t> parentId_;
+      uint32_t id;
+      CallFrame callFrame;
+      std::optional<uint32_t> parentId;
     };
 
-   public:
-    CPUProfile(std::vector<Node> nodes, std::vector<uint32_t> samples)
-        : nodes_(std::move(nodes)), samples_(std::move(samples)) {}
-
-    folly::dynamic asDynamic() const {
+    folly::dynamic toDynamic() const {
       folly::dynamic dynamicNodes = folly::dynamic::array();
-      for (const auto& node : nodes_) {
-        dynamicNodes.push_back(node.asDynamic());
+      dynamicNodes.reserve(nodes.size());
+      for (const auto& node : nodes) {
+        dynamicNodes.push_back(node.toDynamic());
       }
-
-      folly::dynamic dynamicSamples = folly::dynamic::array();
-      for (auto sample : samples_) {
-        dynamicSamples.push_back(sample);
-      }
+      folly::dynamic dynamicSamples =
+          folly::dynamic::array(samples.begin(), samples.end());
 
       return folly::dynamic::object("nodes", dynamicNodes)(
           "samples", dynamicSamples);
     }
 
-   private:
-    std::vector<Node> nodes_;
-    std::vector<uint32_t> samples_;
+    std::vector<Node> nodes;
+    std::vector<uint32_t> samples;
   };
 
- public:
-  TraceEventProfileChunk(CPUProfile cpuProfile, TimeDeltas timeDeltas)
-      : cpuProfile_(std::move(cpuProfile)),
-        timeDeltas_(std::move(timeDeltas)) {}
-
-  folly::dynamic asDynamic() const {
-    folly::dynamic value = folly::dynamic::object;
-    value["cpuProfile"] = cpuProfile_.asDynamic();
-    value["timeDeltas"] = timeDeltas_.asDynamic();
-
-    return value;
+  folly::dynamic toDynamic() const {
+    return folly::dynamic::object("cpuProfile", cpuProfile.toDynamic())(
+        "timeDeltas", timeDeltas.toDynamic());
   }
 
- private:
-  CPUProfile cpuProfile_;
-  TimeDeltas timeDeltas_;
+  CPUProfile cpuProfile;
+  TimeDeltas timeDeltas;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

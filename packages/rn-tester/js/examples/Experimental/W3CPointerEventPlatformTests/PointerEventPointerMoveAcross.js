@@ -4,14 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
-import RNTesterPlatformTestEventRecorder from '../PlatformTest/RNTesterPlatformTestEventRecorder';
+import RNTesterPlatformTestEventRecorder, {
+  useRecorderTestEventHandlers,
+} from '../PlatformTest/RNTesterPlatformTestEventRecorder';
 import * as React from 'react';
 import {useCallback, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
@@ -126,7 +128,8 @@ function PointerEventPointerMoveAcrossTestCase(
     [eventRecorder, pointermove_across],
   );
 
-  const eventProps = eventRecorder.useRecorderTestEventHandlers(
+  const eventProps = useRecorderTestEventHandlers(
+    eventRecorder,
     targetNames,
     eventHandler,
   );

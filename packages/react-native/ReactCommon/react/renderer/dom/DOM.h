@@ -11,7 +11,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <cstdint>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace facebook::react::dom {

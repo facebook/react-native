@@ -4,24 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {
   PlatformTestResult,
   PlatformTestResultStatus,
 } from './RNTesterPlatformTestTypes';
-import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
-import type {
-  TextStyle,
-  ViewStyleProp,
-} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {ListRenderItemInfo, TextStyle} from 'react-native';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterPlatformTestMinimizedResultView from './RNTesterPlatformTestMinimizedResultView';
 import RNTesterPlatformTestResultsText from './RNTesterPlatformTestResultsText';
 import * as React from 'react';
-import {useCallback, useMemo, useState} from 'react';
+import {memo, useCallback, useMemo, useState} from 'react';
 import {
   Button,
   FlatList,
@@ -147,35 +144,33 @@ function TableHeader() {
   );
 }
 
-const TableRow = React.memo(
-  ({testResult}: {testResult: PlatformTestResult}) => {
-    return (
-      <View style={styles.tableRow}>
-        <View style={styles.tableResultColumn}>
-          <Text style={STATUS_TEXT_STYLE_MAPPING[testResult.status]}>
-            {DISPLAY_STATUS_MAPPING[testResult.status]}
-          </Text>
-        </View>
-        <View style={styles.tableTestNameColumn}>
-          <Text>{testResult.name}</Text>
-        </View>
-        <View style={styles.tableMessageColumn}>
-          {testResult.assertions.map((assertion, assertionIdx) => {
-            if (assertion.passing) {
-              return null;
-            }
-            return (
-              <Text key={assertionIdx}>
-                {assertion.name}: {assertion.description}{' '}
-                {assertion.failureMessage}
-              </Text>
-            );
-          })}
-        </View>
+const TableRow = memo(({testResult}: {testResult: PlatformTestResult}) => {
+  return (
+    <View style={styles.tableRow}>
+      <View style={styles.tableResultColumn}>
+        <Text style={STATUS_TEXT_STYLE_MAPPING[testResult.status]}>
+          {DISPLAY_STATUS_MAPPING[testResult.status]}
+        </Text>
       </View>
-    );
-  },
-);
+      <View style={styles.tableTestNameColumn}>
+        <Text>{testResult.name}</Text>
+      </View>
+      <View style={styles.tableMessageColumn}>
+        {testResult.assertions.map((assertion, assertionIdx) => {
+          if (assertion.passing) {
+            return null;
+          }
+          return (
+            <Text key={assertionIdx}>
+              {assertion.name}: {assertion.description}{' '}
+              {assertion.failureMessage}
+            </Text>
+          );
+        })}
+      </View>
+    </View>
+  );
+});
 
 function renderTableRow({item}: ListRenderItemInfo<PlatformTestResult>) {
   return <TableRow testResult={item} />;

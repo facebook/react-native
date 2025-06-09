@@ -32,7 +32,7 @@ using NativePerformancePerformanceObserverObserveOptions =
         // buffered
         std::optional<bool>,
         // durationThreshold
-        std::optional<double>>;
+        std::optional<HighResDuration>>;
 
 template <>
 struct Bridging<PerformanceEntryType> {
@@ -42,16 +42,37 @@ struct Bridging<PerformanceEntryType> {
     return static_cast<PerformanceEntryType>(value.asNumber());
   }
 
-  static jsi::Value toJs(
-      jsi::Runtime& /*rt*/,
-      const PerformanceEntryType& value) {
-    return {static_cast<int>(value)};
+  static int toJs(jsi::Runtime& /*rt*/, const PerformanceEntryType& value) {
+    return static_cast<int>(value);
   }
 };
 
+// Our Native Module codegen does not support JS type unions, so we use a
+// flattened object here as an intermediate format.
+struct NativePerformanceEntry {
+  std::string name;
+  PerformanceEntryType entryType;
+  HighResTimeStamp startTime;
+  HighResDuration duration;
+
+  // For PerformanceEventTiming only
+  std::optional<HighResTimeStamp> processingStart;
+  std::optional<HighResTimeStamp> processingEnd;
+  std::optional<PerformanceEntryInteractionId> interactionId;
+
+  // For PerformanceResourceTiming only
+  std::optional<HighResTimeStamp> fetchStart;
+  std::optional<HighResTimeStamp> requestStart;
+  std::optional<HighResTimeStamp> connectStart;
+  std::optional<HighResTimeStamp> connectEnd;
+  std::optional<HighResTimeStamp> responseStart;
+  std::optional<HighResTimeStamp> responseEnd;
+  std::optional<int> responseStatus;
+};
+
 template <>
-struct Bridging<PerformanceEntry>
-    : NativePerformanceRawPerformanceEntryBridging<PerformanceEntry> {};
+struct Bridging<NativePerformanceEntry>
+    : NativePerformanceRawPerformanceEntryBridging<NativePerformanceEntry> {};
 
 template <>
 struct Bridging<NativePerformancePerformanceObserverObserveOptions>
@@ -65,23 +86,23 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 #pragma mark - DOM Performance (High Resolution Time) (https://www.w3.org/TR/hr-time-3/#dom-performance)
 
   // https://www.w3.org/TR/hr-time-3/#now-method
-  double now(jsi::Runtime& rt);
+  HighResTimeStamp now(jsi::Runtime& rt);
 
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 
   // https://w3c.github.io/user-timing/#mark-method
-  double markWithResult(
+  HighResTimeStamp markWithResult(
       jsi::Runtime& rt,
       std::string name,
-      std::optional<double> startTime);
+      std::optional<HighResTimeStamp> startTime);
 
   // https://w3c.github.io/user-timing/#measure-method
-  std::tuple<double, double> measureWithResult(
+  std::tuple<HighResTimeStamp, HighResDuration> measureWithResult(
       jsi::Runtime& rt,
       std::string name,
-      double startTime,
-      double endTime,
-      std::optional<double> duration,
+      HighResTimeStamp startTime,
+      HighResTimeStamp endTime,
+      std::optional<HighResDuration> duration,
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
 
@@ -98,15 +119,15 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 #pragma mark - Performance Timeline (https://w3c.github.io/performance-timeline/#performance-timeline)
 
   // https://www.w3.org/TR/performance-timeline/#getentries-method
-  std::vector<PerformanceEntry> getEntries(jsi::Runtime& rt);
+  std::vector<NativePerformanceEntry> getEntries(jsi::Runtime& rt);
 
   // https://www.w3.org/TR/performance-timeline/#getentriesbytype-method
-  std::vector<PerformanceEntry> getEntriesByType(
+  std::vector<NativePerformanceEntry> getEntriesByType(
       jsi::Runtime& rt,
       PerformanceEntryType entryType);
 
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
-  std::vector<PerformanceEntry> getEntriesByName(
+  std::vector<NativePerformanceEntry> getEntriesByName(
       jsi::Runtime& rt,
       std::string entryName,
       std::optional<PerformanceEntryType> entryType = std::nullopt);
@@ -125,7 +146,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       jsi::Object observer,
       NativePerformancePerformanceObserverObserveOptions options);
   void disconnect(jsi::Runtime& rt, jsi::Object observer);
-  std::vector<PerformanceEntry> takeRecords(
+  std::vector<NativePerformanceEntry> takeRecords(
       jsi::Runtime& rt,
       jsi::Object observerObj,
       // When called via `observer.takeRecords` it should be in insertion order.

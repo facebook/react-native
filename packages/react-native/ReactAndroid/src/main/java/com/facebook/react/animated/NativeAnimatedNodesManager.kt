@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.events.Event
@@ -269,18 +270,22 @@ public class NativeAnimatedNodesManager(
         val animatedValueNonnull = checkNotNull(animation.animatedValue)
         if (animation.endCallback != null) {
           // Invoke animation end callback with {finished: false}
-          val endCallbackResponse = Arguments.createMap()
-          endCallbackResponse.putBoolean("finished", false)
-          endCallbackResponse.putDouble("value", animatedValueNonnull.nodeValue)
+          val endCallbackResponse = buildReadableMap {
+            put("finished", false)
+            put("value", animatedValueNonnull.nodeValue)
+            put("offset", animatedValueNonnull.offset)
+          }
           animation.endCallback?.invoke(endCallbackResponse)
         } else if (reactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
           // instruction from JS, meaning that no jsi::functions are passed into native and
           // we communicate via RCTDeviceEventEmitter instead of callbacks.
-          val params = Arguments.createMap()
-          params.putInt("animationId", animation.id)
-          params.putBoolean("finished", false)
-          params.putDouble("value", animatedValueNonnull.nodeValue)
+          val params = buildReadableMap {
+            put("animationId", animation.id)
+            put("finished", false)
+            put("value", animatedValueNonnull.nodeValue)
+            put("offset", animatedValueNonnull.offset)
+          }
           events = events ?: Arguments.createArray()
           events.pushMap(params)
         }
@@ -306,18 +311,22 @@ public class NativeAnimatedNodesManager(
       if (animation.id == animationId) {
         if (animation.endCallback != null) {
           // Invoke animation end callback with {finished: false}
-          val endCallbackResponse = Arguments.createMap()
-          endCallbackResponse.putBoolean("finished", false)
-          endCallbackResponse.putDouble("value", checkNotNull(animation.animatedValue).nodeValue)
+          val endCallbackResponse = buildReadableMap {
+            put("finished", false)
+            put("value", checkNotNull(animation.animatedValue).nodeValue)
+            put("offset", checkNotNull(animation.animatedValue).offset)
+          }
           checkNotNull(animation.endCallback).invoke(endCallbackResponse)
         } else if (reactApplicationContext != null) {
           // If no callback is passed in, this /may/ be an animation set up by the single-op
           // instruction from JS, meaning that no jsi::functions are passed into native and
           // we communicate via RCTDeviceEventEmitter instead of callbacks.
-          val params = Arguments.createMap()
-          params.putInt("animationId", animation.id)
-          params.putBoolean("finished", false)
-          params.putDouble("value", checkNotNull(animation.animatedValue).nodeValue)
+          val params = buildReadableMap {
+            put("animationId", animation.id)
+            put("finished", false)
+            put("value", checkNotNull(animation.animatedValue).nodeValue)
+            put("offset", checkNotNull(animation.animatedValue).offset)
+          }
           events = events ?: Arguments.createArray()
           events.pushMap(params)
         }
@@ -421,9 +430,10 @@ public class NativeAnimatedNodesManager(
     if (reactApplicationContext == null) {
       return
     }
-    val params = Arguments.createMap()
-    params.putInt("tag", tag)
-    params.putDouble("value", value)
+    val params = buildReadableMap {
+      put("tag", tag)
+      put("value", value)
+    }
     reactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleGetValue", params)
   }
 
@@ -575,18 +585,22 @@ public class NativeAnimatedNodesManager(
         if (animation.hasFinished) {
           val animatedValueNonnull = checkNotNull(animation.animatedValue)
           if (animation.endCallback != null) {
-            val endCallbackResponse = Arguments.createMap()
-            endCallbackResponse.putBoolean("finished", true)
-            endCallbackResponse.putDouble("value", animatedValueNonnull.nodeValue)
+            val endCallbackResponse = buildReadableMap {
+              put("finished", true)
+              put("value", animatedValueNonnull.nodeValue)
+              put("offset", animatedValueNonnull.offset)
+            }
             animation.endCallback?.invoke(endCallbackResponse)
           } else if (reactApplicationContext != null) {
             // If no callback is passed in, this /may/ be an animation set up by the single-op
             // instruction from JS, meaning that no jsi::functions are passed into native and
             // we communicate via RCTDeviceEventEmitter instead of callbacks.
-            val params = Arguments.createMap()
-            params.putInt("animationId", animation.id)
-            params.putBoolean("finished", true)
-            params.putDouble("value", animatedValueNonnull.nodeValue)
+            val params = buildReadableMap {
+              put("animationId", animation.id)
+              put("finished", true)
+              put("value", animatedValueNonnull.nodeValue)
+              put("offset", animatedValueNonnull.offset)
+            }
             events = events ?: Arguments.createArray()
             events.pushMap(params)
           }

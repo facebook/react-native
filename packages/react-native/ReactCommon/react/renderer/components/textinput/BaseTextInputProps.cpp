@@ -132,7 +132,13 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "disableKeyboardShortcuts",
           sourceProps.disableKeyboardShortcuts,
-          {false})) {}
+          {false})),
+      acceptDragAndDropTypes(convertRawProp(
+          context,
+          rawProps,
+          "acceptDragAndDropTypes",
+          sourceProps.acceptDragAndDropTypes,
+          {})) {}
 
 void BaseTextInputProps::setProp(
     const PropsParserContext& context,
@@ -195,6 +201,12 @@ void BaseTextInputProps::setProp(
         paragraphAttributes,
         android_hyphenationFrequency,
         "android_hyphenationFrequency");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        textAlignVertical,
+        "textAlignVertical");
   }
 
   switch (hash) {
@@ -215,6 +227,7 @@ void BaseTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
     RAW_SET_PROP_SWITCH_CASE_BASIC(disableKeyboardShortcuts);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(acceptDragAndDropTypes);
   }
 }
 

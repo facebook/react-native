@@ -10,17 +10,15 @@
 
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {
+  BlurEvent,
+  FocusEvent,
   GestureResponderEvent,
   NativeSyntheticEvent,
   ScrollEvent,
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-import {
-  type ColorValue,
-  type TextStyleProp,
-  type ViewStyleProp,
-} from '../../StyleSheet/StyleSheet';
+import {type ColorValue, type TextStyleProp} from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
 /**
@@ -62,22 +60,22 @@ type TextInputContentSizeChangeEventData = $ReadOnly<{
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 
+/**
+ * @see TextInputProps.onBlur
+ * @deprecated Use `BlurEvent` instead.
+ */
+export type TextInputBlurEvent = BlurEvent;
+
+/**
+ * @see TextInputProps.onFocus
+ * @deprecated Use `FocusEvent` instead.
+ */
+export type TextInputFocusEvent = FocusEvent;
+
 type TargetEvent = $ReadOnly<{
   target: number,
   ...
 }>;
-
-type TextInputFocusEventData = TargetEvent;
-
-/**
- * @see TextInputProps.onBlur
- */
-export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-
-/**
- * @see TextInputProps.onFocus
- */
-export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 
 export type Selection = $ReadOnly<{
   start: number,
@@ -514,6 +512,26 @@ export type TextInputAndroidProps = $ReadOnly<{
 }>;
 
 type TextInputBaseProps = $ReadOnly<{
+  /**
+   * When provided, the text input will only accept drag and drop events for the specified
+   * types. If null or not provided, the text input will accept all types of drag and drop events.
+   * An empty array will accept no drag and drop events.
+   * Defaults to null.
+   *
+   * On Android, types must correspond to MIME types from ClipData:
+   * https://developer.android.com/reference/android/content/ClipData
+   * (e.g. "text/plain" or "image/*")
+   *
+   * On iOS, types must correspond to UTIs:
+   * https://developer.apple.com/documentation/uniformtypeidentifiers
+   * (e.g. "public.plain-text" or "public.image")
+   *
+   * *NOTE*: This prop is experimental and its API may change in the future. Use at your own risk.
+   *
+   * @see https://developer.android.com/reference/android/content/ClipData for more information on MIME types
+   */
+  experimental_acceptDragAndDropTypes?: ?$ReadOnlyArray<string>,
+
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
    *
@@ -1005,6 +1023,11 @@ type TextInputBaseProps = $ReadOnly<{
    * unwanted edits without flicker.
    */
   value?: ?Stringish,
+
+  /**
+   * Align the input text to the left, center, or right sides of the input field.
+   */
+  textAlign?: ?('left' | 'center' | 'right'),
 }>;
 
 export type TextInputProps = $ReadOnly<{

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import StyleSheet from '../StyleSheet';
@@ -13,15 +13,13 @@ import StyleSheet from '../StyleSheet';
 const setStyleAttributePreprocessor = StyleSheet.setStyleAttributePreprocessor;
 
 describe(setStyleAttributePreprocessor, () => {
-  const originalConsoleWarn = console.warn;
-
   beforeEach(() => {
     jest.resetModules();
-    console.warn = jest.fn();
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    console.warn = originalConsoleWarn;
+    jest.restoreAllMocks();
   });
 
   it('should not show warning when set preprocessor first time', () => {

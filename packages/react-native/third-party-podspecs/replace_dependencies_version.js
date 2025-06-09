@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -15,19 +16,19 @@ const yargs = require('yargs');
 
 const LAST_BUILD_FILENAME = 'ReactNativeDependencies/.last_build_configuration';
 
-function validateBuildConfiguration(configuration) {
+function validateBuildConfiguration(configuration /*: string */) {
   if (!['Debug', 'Release'].includes(configuration)) {
     throw new Error(`Invalid configuration ${configuration}`);
   }
 }
 
-function validateVersion(version) {
+function validateVersion(version /*: ?string */) {
   if (version == null || version === '') {
     throw new Error('Version cannot be empty');
   }
 }
 
-function shouldReplaceRnDepsConfiguration(configuration) {
+function shouldReplaceRnDepsConfiguration(configuration /*: string */) {
   const fileExists = fs.existsSync(LAST_BUILD_FILENAME);
 
   if (fileExists) {
@@ -52,7 +53,11 @@ function shouldReplaceRnDepsConfiguration(configuration) {
   return true;
 }
 
-function replaceRNDepsConfiguration(configuration, version, podsRoot) {
+function replaceRNDepsConfiguration(
+  configuration /*: string */,
+  version /*: string */,
+  podsRoot /*: string */,
+) {
   const tarballURLPath = `${podsRoot}/ReactNativeDependencies-artifacts/reactnative-dependencies-${version.toLowerCase()}-${configuration.toLowerCase()}.tar.gz`;
 
   const finalLocation = 'ReactNativeDependencies/framework';
@@ -64,12 +69,16 @@ function replaceRNDepsConfiguration(configuration, version, podsRoot) {
   execSync(`tar -xf ${tarballURLPath} -C ${finalLocation}`);
 }
 
-function updateLastBuildConfiguration(configuration) {
+function updateLastBuildConfiguration(configuration /*: string */) {
   console.log(`Updating ${LAST_BUILD_FILENAME} with ${configuration}`);
   fs.writeFileSync(LAST_BUILD_FILENAME, configuration);
 }
 
-function main(configuration, version, podsRoot) {
+function main(
+  configuration /*: string */,
+  version /*: string */,
+  podsRoot /*: string */,
+) {
   validateBuildConfiguration(configuration);
   validateVersion(version);
 
@@ -100,8 +109,11 @@ const argv = yargs
   })
   .usage('Usage: $0 -c Debug -r <version> -p <path/to/react-native>').argv;
 
+// $FlowFixMe[prop-missing]
 const configuration = argv.configuration;
+// $FlowFixMe[prop-missing]
 const version = argv.reactNativeVersion;
+// $FlowFixMe[prop-missing]
 const podsRoot = argv.podsRoot;
 
 main(configuration, version, podsRoot);

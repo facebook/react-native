@@ -2,6 +2,9 @@ name: Test Libraries on Nightlies
 
 on:
   workflow_call:
+    secrets:
+      discord_webhook_url:
+        required: true
 
 
 # We use the matrix.library entry to specify the dependency we want to use
@@ -10,7 +13,7 @@ jobs:
   runner-setup:
     runs-on: ubuntu-latest
     outputs:
-      runners: '{"ios":"macos-13-large", "android": "ubuntu-latest"}'
+      runners: '{"ios":"macos-14-large", "android": "ubuntu-latest"}'
     steps:
       - run: echo no-op
 
@@ -30,7 +33,7 @@ jobs:
           "react-native-image-picker",
           "react-native-linear-gradient",
           "@react-native-masked-view/masked-view",
-          "react-native-maps",
+          # "react-native-maps", React Native Maps with the New Arch support has a complex cocoapods setup for iOS. It needs a dedicated workflow.
           "@react-native-community/netinfo",
           "react-native-reanimated@nightly react-native-worklets@nightly", #reanimated requires worklet to be explicitly installed as a separate package
           "react-native-svg",
@@ -40,12 +43,11 @@ jobs:
           "react-native-screens",
           "react-native-pager-view",
           "@react-native-community/slider",
-          #additional OSS libs used internally
+          # additional OSS libs used internally
           "scandit-react-native-datacapture-barcode scandit-react-native-datacapture-core",
           "react-native-contacts",
           "react-native-device-info",
           "react-native-email-link",
-          "react-native-exit-app",
           "@dr.pogodin/react-native-fs",
           "react-native-permissions",
           "react-native-vector-icons",
@@ -56,6 +58,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: ./.github/actions/setup-node
       - name: Test ${{ matrix.library }}
         id: run-test
         uses: ./.github/actions/test-library-on-nightly
@@ -93,4 +97,4 @@ jobs:
         with:
           script: |
             const {collectResults} = require('./.github/workflow-scripts/collectNightlyOutcomes.js');
-            collectResults();
+            await collectResults('${{secrets.discord_webhook_url}}');
