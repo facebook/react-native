@@ -23,7 +23,7 @@ internal enum class LayoutAnimationType {
   companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "LayoutAnimationType", LegacyArchitectureLogLevel.WARNING)
+          "LayoutAnimationType", LegacyArchitectureLogLevel.ERROR)
     }
 
     @JvmStatic

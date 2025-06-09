@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode
@@ -136,6 +137,11 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
       val formattedName = name.lowercase(Locale.getDefault()).replace("-", "_")
       val resId = context.resources.getIdentifier(formattedName, "drawable", context.packageName)
       return Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(resId.toString()).build()
+    }
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "FrescoBasedReactTextInlineImageShadowNode", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

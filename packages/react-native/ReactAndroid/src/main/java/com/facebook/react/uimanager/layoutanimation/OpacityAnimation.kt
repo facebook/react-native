@@ -29,7 +29,7 @@ internal class OpacityAnimation(view: View, private val startOpacity: Float, end
   init {
     setAnimationListener(OpacityAnimationListener(view))
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "OpacityAnimation", LegacyArchitectureLogLevel.WARNING)
+        "OpacityAnimation", LegacyArchitectureLogLevel.ERROR)
   }
 
   class OpacityAnimationListener(view: View) : Animation.AnimationListener {

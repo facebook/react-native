@@ -92,7 +92,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "UIManagerModule", LegacyArchitectureLogLevel.WARNING);
+        "UIManagerModule", LegacyArchitectureLogLevel.ERROR);
   }
 
   public static final String TAG = UIManagerModule.class.getSimpleName();

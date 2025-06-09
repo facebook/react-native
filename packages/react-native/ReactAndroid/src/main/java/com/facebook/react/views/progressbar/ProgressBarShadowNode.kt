@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import com.facebook.react.common.annotations.LegacyArchitectureShadowNodeWithCxxImpl
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.yoga.YogaMeasureFunction
@@ -60,5 +61,12 @@ internal class ProgressBarShadowNode : LayoutShadowNode(), YogaMeasureFunction {
       measured.add(style)
     }
     return YogaMeasureOutput.make(this.width[style], this.height[style])
+  }
+
+  companion object {
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "ProgressBarShadowNode", LegacyArchitectureLogLevel.ERROR)
+    }
   }
 }

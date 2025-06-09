@@ -40,7 +40,7 @@ internal class ViewAtIndex(
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ViewAtIndex", LegacyArchitectureLogLevel.WARNING)
+          "ViewAtIndex", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

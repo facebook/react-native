@@ -68,7 +68,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "ReactShadowNodeImpl", LegacyArchitectureLogLevel.WARNING);
+        "ReactShadowNodeImpl", LegacyArchitectureLogLevel.ERROR);
   }
 
   private int mReactTag;

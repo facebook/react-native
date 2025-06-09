@@ -21,6 +21,7 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.LegacyArchitectureShadowNodeWithCxxImpl
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIViewOperationQueue
@@ -207,5 +208,10 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
     const val PROP_TEXT: String = "text"
 
     const val PROP_PLACEHOLDER: String = "placeholder"
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "ReactTextInputShadowNode", LegacyArchitectureLogLevel.ERROR)
+    }
   }
 }
