@@ -186,11 +186,12 @@ public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, 
 	protected static final field ARG_DISABLE_HOST_LIFECYCLE_EVENTS Ljava/lang/String;
 	protected static final field ARG_FABRIC_ENABLED Ljava/lang/String;
 	protected static final field ARG_LAUNCH_OPTIONS Ljava/lang/String;
-	protected field mReactDelegate Lcom/facebook/react/ReactDelegate;
+	public static final field Companion Lcom/facebook/react/ReactFragment$Companion;
+	protected field reactDelegate Lcom/facebook/react/ReactDelegate;
 	public fun <init> ()V
 	public fun checkPermission (Ljava/lang/String;II)I
 	public fun checkSelfPermission (Ljava/lang/String;)I
-	protected fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
+	protected final fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
 	protected fun getReactHost ()Lcom/facebook/react/ReactHost;
 	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	public fun onActivityResult (IILandroid/content/Intent;)V
@@ -203,14 +204,24 @@ public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, 
 	public fun onRequestPermissionsResult (I[Ljava/lang/String;[I)V
 	public fun onResume ()V
 	public fun requestPermissions ([Ljava/lang/String;ILcom/facebook/react/modules/core/PermissionListener;)V
+	protected final fun setReactDelegate (Lcom/facebook/react/ReactDelegate;)V
 }
 
-public class com/facebook/react/ReactFragment$Builder {
+public final class com/facebook/react/ReactFragment$Builder {
 	public fun <init> ()V
-	public fun build ()Lcom/facebook/react/ReactFragment;
-	public fun setComponentName (Ljava/lang/String;)Lcom/facebook/react/ReactFragment$Builder;
-	public fun setFabricEnabled (Z)Lcom/facebook/react/ReactFragment$Builder;
-	public fun setLaunchOptions (Landroid/os/Bundle;)Lcom/facebook/react/ReactFragment$Builder;
+	public final fun build ()Lcom/facebook/react/ReactFragment;
+	public final fun getComponentName ()Ljava/lang/String;
+	public final fun getFabricEnabled ()Z
+	public final fun getLaunchOptions ()Landroid/os/Bundle;
+	public final fun setComponentName (Ljava/lang/String;)Lcom/facebook/react/ReactFragment$Builder;
+	public final fun setComponentName (Ljava/lang/String;)V
+	public final fun setFabricEnabled (Z)Lcom/facebook/react/ReactFragment$Builder;
+	public final fun setFabricEnabled (Z)V
+	public final fun setLaunchOptions (Landroid/os/Bundle;)Lcom/facebook/react/ReactFragment$Builder;
+	public final fun setLaunchOptions (Landroid/os/Bundle;)V
+}
+
+public final class com/facebook/react/ReactFragment$Companion {
 }
 
 public abstract interface class com/facebook/react/ReactHost {
