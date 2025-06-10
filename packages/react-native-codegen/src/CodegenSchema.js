@@ -104,6 +104,8 @@ export type ComponentShape = $ReadOnly<{
 }>;
 
 export type OptionsShape = $ReadOnly<{
+  // Use to generate only interfaces of components (C++ Props, C++ EventEmitters, JVM interfaces) and not their implementation.
+  // This is useful for components that have a custom implementation of ShadowNode, ComponentDescriptor, State.
   interfaceOnly?: boolean,
   // Use for components with no current paper rename in progress
   // Does not check for new name
