@@ -1,5 +1,5 @@
 {
-  "name": "public-api",
+  "name": "@react-native/cxx-public-api",
   "version": "0.0.1",
   "description": "Captures the Objective-C / C++ public API of React Native",
   "main": "public-api.js",

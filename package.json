@@ -40,7 +40,6 @@
   "workspaces": [
     "packages/*",
     "private/*",
-    "tools/*",
     "!packages/helloworld"
   ],
   "devDependencies": {
