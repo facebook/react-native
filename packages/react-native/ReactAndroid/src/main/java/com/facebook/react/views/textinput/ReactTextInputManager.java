@@ -1164,7 +1164,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             }
 
             if (shouldBlur) {
-              editText.clearFocusAndMaybeRefocus();
+              editText.clearFocus();
             }
 
             // Prevent default behavior except when we want it to insert a newline.
