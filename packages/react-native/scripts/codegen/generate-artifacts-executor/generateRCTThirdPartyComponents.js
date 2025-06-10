@@ -32,7 +32,7 @@ const THIRD_PARTY_COMPONENTS_MM_TEMPLATE_PATH = path.join(
 
 function generateRCTThirdPartyComponents(
   libraries /*: $ReadOnlyArray<$FlowFixMe> */,
-  librariesSupportedApplePlatforms /*: $FlowFixMe */,
+  librariesSupportedApplePlatforms /*: ApplePlatformSupportMap */,
   outputDir /*: string */,
 ) {
   fs.mkdirSync(outputDir, {recursive: true});
@@ -48,7 +48,7 @@ function generateRCTThirdPartyComponents(
 
   codegenLog('Generating RCTThirdPartyComponentsProvider.mm');
   let componentsInLibraries = {} /*:: as {[string]: Array<$FlowFixMe>} */;
-  let componentsSupportedApplePlatforms = {};
+  let componentsSupportedApplePlatforms = {}; /* ApplePlatformSupportMap */;
 
   const componentLibraries = libraries.filter(({config, libraryPath}) => {
     if (isReactNativeCoreLibrary(config.name) || config.type === 'modules') {
@@ -230,7 +230,7 @@ function findRCTComponentViewProtocolClass(filepath /*: string */) {
 
 function _generateComponentRegistry(
   libraryComponentsMap /*: $FlowFixMe */,
-  platformSupportByLibrary /*: $FlowFixMe */,
+  platformSupportByLibrary /*: ?ApplePlatformSupportMap */,
 ) /*: string */ {
   if (!libraryComponentsMap || Object.keys(libraryComponentsMap).length === 0) {
     return '';
@@ -276,3 +276,14 @@ module.exports = {
   // exported for testing purposes only:
   _generateComponentRegistry,
 };
+
+/*::
+type ApplePlatformSupportMap = {
+  [moduleName: string]: {
+    ios: boolean,
+    macos: boolean,
+    tvos: boolean,
+    visionos: boolean,
+  },
+};
+*/
