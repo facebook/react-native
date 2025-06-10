@@ -10,4 +10,5 @@
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeSegmentFetcher';
 import NativeSegmentFetcher from '../../../src/private/specs_DEPRECATED/modules/NativeSegmentFetcher';
+
 export default NativeSegmentFetcher;

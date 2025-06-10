@@ -17,6 +17,7 @@ import type {
 import type {SchemaType} from '../../CodegenSchema';
 
 const core = require('@babel/core');
+
 const t = core.types;
 
 // File path -> contents

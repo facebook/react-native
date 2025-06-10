@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeModalManager';
 import NativeModalManager from '../../src/private/specs_DEPRECATED/modules/NativeModalManager';
+
 export default NativeModalManager;
