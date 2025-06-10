@@ -8,12 +8,12 @@
  * @format
  */
 
-const chalk = require('chalk');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const glob = require('glob');
 const ini = require('ini');
 const path = require('path');
+const {styleText} = require('util');
 
 const CONFIG_PATH = path.join(__dirname, './public-api.conf');
 const GLOB_PROJECT_ROOT = path.resolve(path.join(__dirname, '../../'));
@@ -82,8 +82,8 @@ function checkDependencies(
       ok = false;
     }
     const output = found
-      ? chalk.green(`✅ ${version}`)
-      : chalk.red('🚨 not found');
+      ? styleText('green', `✅ ${version}`)
+      : styleText('red', '🚨 not found');
     log.info(`🔍 ${command} → ${output}`);
   }
   return ok;
@@ -306,7 +306,7 @@ function main() {
     );
   }
 
-  log.info(chalk.bold('✅ Done!'));
+  log.info(styleText('bold', '✅ Done!'));
 }
 
 main();

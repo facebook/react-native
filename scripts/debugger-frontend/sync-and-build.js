@@ -11,7 +11,6 @@
 const {PACKAGES_DIR} = require('../consts');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');
-const chalk = require('chalk');
 const {execSync, spawnSync} = require('child_process');
 const {promises: fs} = require('fs');
 const nullthrows = require('nullthrows');
@@ -23,7 +22,7 @@ const rimraf = require('rimraf');
 const SignedSource = require('signedsource');
 // $FlowFixMe[untyped-import]: TODO type supports-color
 const supportsColor = require('supports-color');
-const {parseArgs} = require('util');
+const {parseArgs, styleText} = require('util');
 
 const DEVTOOLS_FRONTEND_REPO_URL =
   'https://github.com/facebook/react-native-devtools-frontend';
@@ -76,7 +75,7 @@ async function main() {
   const localCheckoutPath = positionals?.[0];
 
   if (branch == null && !localCheckoutPath?.length) {
-    console.error(chalk.red('Error: Missing option --branch'));
+    console.error(styleText('red', 'Error: Missing option --branch'));
     showHelp();
     process.exitCode = 1;
     return;
@@ -84,7 +83,7 @@ async function main() {
 
   console.log(
     '\n' +
-      chalk.bold.inverse('Syncing debugger-frontend') +
+      styleText(['bold', 'inverse'], 'Syncing debugger-frontend') +
       (noBuild ? ' (--no-build)' : '') +
       '\n',
   );
@@ -92,7 +91,7 @@ async function main() {
   const scratchPath = await fs.mkdtemp(
     path.join(tmpdir(), 'debugger-frontend-build-'),
   );
-  process.stdout.write(chalk.dim(`Scratch path: ${scratchPath}\n\n`));
+  process.stdout.write(styleText('dim', `Scratch path: ${scratchPath}\n\n`));
 
   await checkRequiredTools();
   const packagePath = path.join(PACKAGES_DIR, 'debugger-frontend');
@@ -116,7 +115,7 @@ async function main() {
   await cleanup(scratchPath, keepScratch === true);
   if (!noBuild) {
     process.stdout.write(
-      chalk.green('Sync done.') +
+      styleText('green', 'Sync done.') +
         ' Check in any updated files under packages/debugger-frontend.\n',
     );
   }
@@ -293,7 +292,7 @@ async function performReleaseBuild(
     },
   );
   const gnArgsSummary = gnArgsStdout.toString().trim();
-  process.stdout.write(chalk.dim(gnArgsSummary) + '\n');
+  process.stdout.write(styleText('dim', gnArgsSummary) + '\n');
   await spawnSafe('autoninja', ['-C', 'out/Release'], {cwd: checkoutPath});
   process.stdout.write('\n');
   return {gnArgsSummary, buildPath};
