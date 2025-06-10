@@ -74,7 +74,7 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDe
           classNames = dependencyProvider ? dependencyProvider.imageDataDecoderClassNames : @[];
         } else if (protocol == @protocol(RCTURLRequestHandler)) {
           classNames = dependencyProvider ? dependencyProvider.URLRequestHandlerClassNames : @[];
-        } else if (protocol = @protocol(RCTBundleConsumer)) {
+        } else if (protocol == @protocol(RCTBundleConsumer)) {
           classNames = dependencyProvider ? dependencyProvider.bundleConsumerClassNames : @[];
         } 
 
