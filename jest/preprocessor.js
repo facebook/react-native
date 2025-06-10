@@ -12,7 +12,7 @@
 
 'use strict';
 
-// eslint-disable-next-line lint/sort-imports
+// eslint-disable-next-line @react-native/monorepo/sort-imports
 const {
   transformFromAstSync: babelTransformFromAstSync,
   transformSync: babelTransformSync,
