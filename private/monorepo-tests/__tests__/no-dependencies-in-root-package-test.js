@@ -12,21 +12,20 @@ import fs from 'fs';
 import path from 'path';
 
 const CURRENT_DIR = __dirname;
-const PATH_TO_REACT_NATIVE_PACKAGE_MANIFEST = path.join(
+const PATH_TO_ROOT_PACKAGE_MANIFEST = path.join(
   CURRENT_DIR,
   '..',
   '..',
-  'packages',
-  'react-native',
+  '..',
   'package.json',
 );
 
 const manifest = JSON.parse(
-  fs.readFileSync(PATH_TO_REACT_NATIVE_PACKAGE_MANIFEST).toString(),
+  fs.readFileSync(PATH_TO_ROOT_PACKAGE_MANIFEST).toString(),
 );
 
-describe('react-native package', () => {
-  it('expected not to list any devDependencies', () => {
-    expect(manifest).not.toHaveProperty('devDependencies');
+describe('@react-native/monorepo root package', () => {
+  it('expected not to list any dependencies', () => {
+    expect(manifest).not.toHaveProperty('dependencies');
   });
 });
