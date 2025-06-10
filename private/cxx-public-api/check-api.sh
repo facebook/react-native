@@ -73,12 +73,13 @@ pushd "$FBSOURCE_ROOT/xplat/js/react-native-github" || exit $ERR_CODE_CANT_FIND_
 trap cleanup EXIT
 
 # TODO: This operates in the sandbox and can't modify files in the repository, which we need for change detection
-# buck2 run //xplat/js/react-native-github/tools/api:public-api
-(cd tools/api && $YARN_BINARY install)
-$NODE_BINARY tools/api/public-api.js
+# buck2 run //xplat/js/react-native-github/private/cxx-public-api:public-api
+REPO_RELATIVE_DIR="private/cxx-public-api"
+(cd "$REPO_RELATIVE_DIR" && $YARN_BINARY install)
+$NODE_BINARY "$REPO_RELATIVE_DIR/public-api.js"
 echo
 
-API_FILE=$(grep -oP '(?<=output=)[^ \n]+' tools/api/public-api.conf)
+API_FILE=$(grep -oP '(?<=output=)[^ \n]+' "$REPO_RELATIVE_DIR/public-api.conf")
 
 API_STATUS=$(hg status --no-status "$API_FILE")
 if [ -z "$API_STATUS" ]; then
