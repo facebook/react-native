@@ -9,11 +9,23 @@ package com.facebook.react.views.common
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.res.Configuration
 
 /**
  * Class containing static methods involving manipulations of Contexts and their related subclasses.
  */
 internal object ContextUtils {
+
+  /**
+   * Determines whether the current UI mode is dark mode
+   *
+   * @param context The context to check the UI mode from
+   * @return true if the current UI mode is dark mode, false otherwise
+   */
+  @JvmStatic
+  public fun isDarkMode(context: Context): Boolean =
+    context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+      Configuration.UI_MODE_NIGHT_YES
 
   /**
    * Returns the nearest context in the chain (as defined by ContextWrapper.getBaseContext()) which
