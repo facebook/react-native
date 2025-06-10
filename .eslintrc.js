@@ -28,6 +28,7 @@ module.exports = {
       files: ['*.js', '*.js.flow', '*.jsx'],
       parser: 'hermes-eslint',
       rules: {
+        'eslint-comments/no-unlimited-disable': 0,
         'ft-flow/require-valid-file-annotation': [2, 'always'],
         'no-extra-boolean-cast': 0,
         'no-void': 0,
