@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeImageLoaderIOS';
 import NativeImageLoaderIOS from '../../src/private/specs_DEPRECATED/modules/NativeImageLoaderIOS';
+
 export default NativeImageLoaderIOS;

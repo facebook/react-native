@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeNetworkingAndroid';
 import NativeNetworkingAndroid from '../../src/private/specs_DEPRECATED/modules/NativeNetworkingAndroid';
+
 export default NativeNetworkingAndroid;

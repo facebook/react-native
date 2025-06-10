@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeNetworkingIOS';
 import NativeNetworkingIOS from '../../src/private/specs_DEPRECATED/modules/NativeNetworkingIOS';
+
 export default NativeNetworkingIOS;
