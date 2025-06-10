@@ -26,7 +26,7 @@ type SwitchChangeEvent = $ReadOnly<{
   target: Int32,
 }>;
 
-type NativeProps = $ReadOnly<{
+type SwitchNativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
@@ -45,7 +45,7 @@ type NativeProps = $ReadOnly<{
   onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
 }>;
 
-type ComponentType = HostComponent<NativeProps>;
+type ComponentType = HostComponent<SwitchNativeProps>;
 
 interface NativeCommands {
   +setValue: (viewRef: React.ElementRef<ComponentType>, value: boolean) => void;
@@ -55,7 +55,7 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setValue'],
 });
 
-export default (codegenNativeComponent<NativeProps>('Switch', {
+export default (codegenNativeComponent<SwitchNativeProps>('Switch', {
   paperComponentName: 'RCTSwitch',
   excludedPlatforms: ['android'],
 }): ComponentType);

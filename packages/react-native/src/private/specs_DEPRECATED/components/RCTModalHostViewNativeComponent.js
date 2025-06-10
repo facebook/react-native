@@ -22,7 +22,7 @@ type OrientationChangeEvent = $ReadOnly<{
   orientation: 'portrait' | 'landscape',
 }>;
 
-type NativeProps = $ReadOnly<{
+type RCTModalHostViewNativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -141,7 +141,10 @@ type NativeProps = $ReadOnly<{
   identifier?: WithDefault<Int32, 0>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>('ModalHostView', {
-  interfaceOnly: true,
-  paperComponentName: 'RCTModalHostView',
-}): HostComponent<NativeProps>);
+export default (codegenNativeComponent<RCTModalHostViewNativeProps>(
+  'ModalHostView',
+  {
+    interfaceOnly: true,
+    paperComponentName: 'RCTModalHostView',
+  },
+): HostComponent<RCTModalHostViewNativeProps>);

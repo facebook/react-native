@@ -15,7 +15,7 @@ import type {HostComponent} from '../../types/HostComponent';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{
+type RCTActivityIndicatorViewNativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -48,6 +48,9 @@ type NativeProps = $ReadOnly<{
   size?: WithDefault<'small' | 'large', 'small'>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
-  paperComponentName: 'RCTActivityIndicatorView',
-}): HostComponent<NativeProps>);
+export default (codegenNativeComponent<RCTActivityIndicatorViewNativeProps>(
+  'ActivityIndicatorView',
+  {
+    paperComponentName: 'RCTActivityIndicatorView',
+  },
+): HostComponent<RCTActivityIndicatorViewNativeProps>);
