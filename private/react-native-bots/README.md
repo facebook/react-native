@@ -9,7 +9,7 @@ You'll need a GitHub Public Access Token (PAT). It will look like `github_pat_<R
 So, for example:
 
 ```
-cd packages/react-native-bots && yarn
+cd private/react-native-bots && yarn
 DANGER_GITHUB_API_TOKEN=ghp_<REDACTED> yarn danger pr https://github.com/facebook/react-native/pull/1234
 ```
 

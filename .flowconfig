@@ -9,7 +9,7 @@
 <PROJECT_ROOT>/packages/react-native-codegen/e2e/__test_fixtures__/modules/NativeEnumTurboModule.js
 
 ; Ignore the Dangerfile
-<PROJECT_ROOT>/packages/react-native-bots/dangerfile.js
+<PROJECT_ROOT>/private/react-native-bots/dangerfile.js
 
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
