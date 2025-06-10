@@ -8,8 +8,6 @@
  * @format
  */
 
-// These don't actually exist anywhere in the code.
-
 'use strict';
 
 import type {ModuleConfig} from '../NativeModules';
@@ -35,5 +33,5 @@ const MessageQueueTestConfig = {
   remoteModuleConfig: remoteModulesConfig,
 };
 
-// eslint-disable-next-line lint/no-commonjs-exports
+// eslint-disable-next-line @react-native/monorepo/no-commonjs-exports
 module.exports = MessageQueueTestConfig;

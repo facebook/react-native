@@ -10,16 +10,12 @@
 
 'use strict';
 
-const path = require('node:path');
-
-require('eslint-plugin-lint').load(path.join(__dirname, 'tools/eslint/rules'));
-
 module.exports = {
   root: true,
 
   extends: ['@react-native'],
 
-  plugins: ['@react-native/eslint-plugin-specs', 'lint'],
+  plugins: ['@react-native/monorepo', '@react-native/specs'],
 
   overrides: [
     // overriding the JS config from @react-native/eslint-config to ensure
@@ -28,6 +24,7 @@ module.exports = {
       files: ['*.js', '*.js.flow', '*.jsx'],
       parser: 'hermes-eslint',
       rules: {
+        '@react-native/monorepo/sort-imports': 1,
         'eslint-comments/no-unlimited-disable': 0,
         'ft-flow/require-valid-file-annotation': [2, 'always'],
         'no-extra-boolean-cast': 0,
@@ -35,7 +32,6 @@ module.exports = {
         // These rules are not required with hermes-eslint
         'ft-flow/define-flow-type': 0,
         'ft-flow/use-flow-type': 0,
-        'lint/sort-imports': 1,
         // Flow handles these checks for us, so they aren't required
         'no-undef': 0,
         'no-unreachable': 0,
@@ -55,7 +51,7 @@ module.exports = {
       ],
       parser: 'hermes-eslint',
       rules: {
-        'lint/no-commonjs-exports': 1,
+        '@react-native/monorepo/no-commonjs-exports': 1,
       },
     },
     {
@@ -65,14 +61,14 @@ module.exports = {
     {
       files: ['package.json'],
       rules: {
-        'lint/react-native-manifest': 2,
+        '@react-native/monorepo/react-native-manifest': 2,
       },
     },
     {
       files: ['flow-typed/**/*.js', 'packages/react-native/flow/**/*'],
       rules: {
+        '@react-native/monorepo/valid-flow-typed-signature': 2,
         'ft-flow/require-valid-file-annotation': 0,
-        'lint/valid-flow-typed-signature': 2,
         'no-shadow': 0,
         'no-unused-vars': 0,
         quotes: 0,
@@ -84,14 +80,14 @@ module.exports = {
         'packages/react-native/src/**/*.js',
       ],
       rules: {
+        '@react-native/monorepo/no-haste-imports': 2,
+        '@react-native/monorepo/no-react-default-imports': 2,
+        '@react-native/monorepo/no-react-named-type-imports': 2,
+        '@react-native/monorepo/no-react-native-imports': 2,
+        '@react-native/monorepo/no-react-node-imports': 2,
+        '@react-native/monorepo/require-extends-error': 2,
         '@react-native/platform-colors': 2,
         '@react-native/specs/react-native-modules': 2,
-        'lint/no-haste-imports': 2,
-        'lint/no-react-native-imports': 2,
-        'lint/require-extends-error': 2,
-        'lint/no-react-node-imports': 2,
-        'lint/no-react-default-imports': 2,
-        'lint/no-react-named-type-imports': 2,
       },
     },
     {
@@ -145,7 +141,7 @@ module.exports = {
     {
       files: ['**/__tests__/**'],
       rules: {
-        'lint/no-react-native-imports': 'off',
+        '@react-native/monorepo/no-react-native-imports': 'off',
       },
     },
   ],

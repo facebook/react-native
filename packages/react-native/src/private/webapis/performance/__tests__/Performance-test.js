@@ -8,8 +8,9 @@
  * @format
  */
 
-// eslint-disable-next-line lint/sort-imports
+// eslint-disable-next-line @react-native/monorepo/sort-imports
 import type Performance from '../Performance';
+
 import {performanceEntryTypeToRaw} from '../internals/RawPerformanceEntry';
 import {reportEntry} from '../specs/__mocks__/NativePerformanceMock';
 
