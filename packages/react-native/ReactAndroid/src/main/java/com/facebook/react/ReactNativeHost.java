@@ -114,7 +114,6 @@ public abstract class ReactNativeHost {
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
                 getReactPackageTurboModuleManagerDelegateBuilder())
-            .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm())
             .setChoreographerProvider(getChoreographerProvider())
             .setPausedInDebuggerOverlayManager(getPausedInDebuggerOverlayManager());
 
@@ -240,14 +239,6 @@ public abstract class ReactNativeHost {
    * default ones, you'll want to include more packages here.
    */
   protected abstract List<ReactPackage> getPackages();
-
-  /**
-   * Returns the {@link JSEngineResolutionAlgorithm} to be used when loading the JS engine. If null,
-   * will try to load JSC first and fallback to Hermes if JSC is not available.
-   */
-  protected @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
-    return null;
-  }
 
   /**
    * Returns a custom implementation of ChoreographerProvider to be used this host. If null - React
