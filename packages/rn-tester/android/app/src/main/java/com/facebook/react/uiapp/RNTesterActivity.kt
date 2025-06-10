@@ -7,11 +7,12 @@
 
 package com.facebook.react.uiapp
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.FBRNTesterEndToEndHelper
@@ -43,13 +44,23 @@ internal class RNTesterActivity : ReactActivity() {
         if (this::initialProps.isInitialized) initialProps else Bundle()
   }
 
+  // set background color so it will show below transparent system bars on forced edge-to-edge
+  private fun maybeUpdateBackgroundColor() {
+    val isDarkMode =
+      resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+        Configuration.UI_MODE_NIGHT_YES
+
+    val color = if (isDarkMode) "#0b0600" else "#f3f8ff"
+
+    window?.setBackgroundDrawable(color.toColorInt().toDrawable())
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     fullyDrawnReporter.addReporter()
+    maybeUpdateBackgroundColor()
 
-    // set background color so it will show below transparent system bars on forced edge-to-edge
-    this.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
     // register insets listener to update margins on the ReactRootView to avoid overlap w/ system
     // bars
     getReactDelegate()?.getReactRootView()?.let { rootView ->
@@ -67,6 +78,13 @@ internal class RNTesterActivity : ReactActivity() {
       }
       ViewCompat.setOnApplyWindowInsetsListener(rootView, windowInsetsListener)
     }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+
+    // update background color on UI mode change
+    maybeUpdateBackgroundColor()
   }
 
   override fun createReactActivityDelegate() = RNTesterActivityDelegate(this, mainComponentName)
