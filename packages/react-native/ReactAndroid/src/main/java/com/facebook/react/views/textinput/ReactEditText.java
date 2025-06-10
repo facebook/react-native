@@ -358,6 +358,17 @@ public class ReactEditText extends AppCompatEditText {
     clearFocusAndMaybeRefocus();
   }
 
+  private boolean requestFocusInternal() {
+    // We must explicitly call this method on the super class; if we call requestFocus() without
+    // any arguments, it will call into the overridden requestFocus(int, Rect) above, which no-ops.
+    boolean focused = super.requestFocus(View.FOCUS_DOWN, null);
+    if (getShowSoftInputOnFocus()) {
+      showSoftKeyboard();
+    }
+
+    return focused;
+  }
+
   // For cases like autoFocus, or ref.focus() where we request focus programatically and not through
   // interacting with the EditText directly (like clicking on it). We cannot use stock
   // requestFocus() because it will not pop up the soft keyboard, only clicking the input will do
