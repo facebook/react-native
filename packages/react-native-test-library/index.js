@@ -11,5 +11,6 @@
 export {default as SampleNativeComponent} from './src/SampleNativeComponent';
 export type {NativeComponentType} from './src/SampleNativeComponent';
 import {Commands as SampleNativeComponentCommands} from './src/SampleNativeComponent';
+
 export {SampleNativeComponentCommands};
 export {default as NativeSampleModule} from './src/NativeSampleModule';
