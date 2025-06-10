@@ -16,10 +16,11 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type NativeProps = $ReadOnly<{
+type DebuggingOverlayNativeProps = $ReadOnly<{
   ...ViewProps,
 }>;
-export type DebuggingOverlayNativeComponentType = HostComponent<NativeProps>;
+export type DebuggingOverlayNativeComponentType =
+  HostComponent<DebuggingOverlayNativeProps>;
 
 export type TraceUpdate = {
   id: number,
@@ -56,6 +57,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   ],
 });
 
-export default (codegenNativeComponent<NativeProps>(
+export default (codegenNativeComponent<DebuggingOverlayNativeProps>(
   'DebuggingOverlay',
-): HostComponent<NativeProps>);
+): HostComponent<DebuggingOverlayNativeProps>);

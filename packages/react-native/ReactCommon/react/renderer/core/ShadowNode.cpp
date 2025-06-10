@@ -96,6 +96,8 @@ ShadowNode::ShadowNode(
     child->family_->setParent(family_);
   }
 
+  updateTraitsIfNeccessary();
+
   // The first node of the family gets its state committed automatically.
   family_->setMostRecentState(state_);
 }
@@ -130,6 +132,7 @@ ShadowNode::ShadowNode(
     for (const auto& child : *children_) {
       child->family_->setParent(family_);
     }
+    updateTraitsIfNeccessary();
   }
 }
 
@@ -242,6 +245,7 @@ void ShadowNode::appendChild(const ShadowNode::Shared& child) {
   children.push_back(child);
 
   child->family_->setParent(family_);
+  updateTraitsIfNeccessary();
 }
 
 void ShadowNode::replaceChild(
@@ -274,6 +278,7 @@ void ShadowNode::replaceChild(
   }
 
   react_native_assert(false && "Child to replace was not found.");
+  updateTraitsIfNeccessary();
 }
 
 void ShadowNode::cloneChildrenIfShared() {
@@ -283,6 +288,25 @@ void ShadowNode::cloneChildrenIfShared() {
 
   traits_.unset(ShadowNodeTraits::Trait::ChildrenAreShared);
   children_ = std::make_shared<ShadowNode::ListOfShared>(*children_);
+}
+
+void ShadowNode::updateTraitsIfNeccessary() {
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    if (traits_.check(ShadowNodeTraits::Trait::Unstable_uncullableView)) {
+      return;
+    }
+
+    for (const auto& child : *children_) {
+      if (child->getTraits().check(
+              ShadowNodeTraits::Trait::Unstable_uncullableView) ||
+          child->getTraits().check(
+              ShadowNodeTraits::Trait::Unstable_uncullableTrace)) {
+        traits_.set(ShadowNodeTraits::Trait::Unstable_uncullableTrace);
+        return;
+      }
+    }
+    traits_.unset(ShadowNodeTraits::Trait::Unstable_uncullableTrace);
+  }
 }
 
 void ShadowNode::setMounted(bool mounted) const {
@@ -375,6 +399,79 @@ std::shared_ptr<ShadowNode> ShadowNode::cloneTree(
   }
 
   return std::const_pointer_cast<ShadowNode>(childNode);
+}
+
+namespace {
+
+std::shared_ptr<ShadowNode> cloneMultipleRecursive(
+    const ShadowNode& shadowNode,
+    const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
+    const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
+    const std::function<std::shared_ptr<
+        ShadowNode>(const ShadowNode&, const ShadowNodeFragment&)>& callback) {
+  const auto* family = &shadowNode.getFamily();
+  auto& children = shadowNode.getChildren();
+  std::shared_ptr<ShadowNode::ListOfShared> newChildren;
+  auto count = childrenCount.at(family);
+
+  for (int i = 0; count > 0 && i < children.size(); i++) {
+    const auto childFamily = &children[i]->getFamily();
+    if (childrenCount.contains(childFamily)) {
+      count--;
+      if (!newChildren) {
+        newChildren = std::make_shared<ShadowNode::ListOfShared>(children);
+      }
+      (*newChildren)[i] = cloneMultipleRecursive(
+          *children[i], familiesToUpdate, childrenCount, callback);
+    }
+  }
+
+  ShadowNodeFragment fragment{.children = newChildren};
+  if (familiesToUpdate.contains(family)) {
+    return callback(shadowNode, fragment);
+  }
+  return shadowNode.clone(fragment);
+}
+
+} // namespace
+
+std::shared_ptr<ShadowNode> ShadowNode::cloneMultiple(
+    const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
+    const std::function<std::shared_ptr<ShadowNode>(
+        const ShadowNode& oldShadowNode,
+        const ShadowNodeFragment& fragment)>& callback) const {
+  std::unordered_map<const ShadowNodeFamily*, int> childrenCount;
+
+  for (const auto& family : familiesToUpdate) {
+    if (childrenCount.contains(family)) {
+      continue;
+    }
+
+    childrenCount[family] = 0;
+
+    auto ancestor = family->parent_.lock();
+    while ((ancestor != nullptr) && ancestor != family_) {
+      auto ancestorIt = childrenCount.find(ancestor.get());
+      if (ancestorIt != childrenCount.end()) {
+        ancestorIt->second++;
+        break;
+      }
+      childrenCount[ancestor.get()] = 1;
+
+      ancestor = ancestor->parent_.lock();
+    }
+
+    if (ancestor == family_) {
+      childrenCount[ancestor.get()]++;
+    }
+  }
+
+  if (childrenCount.empty()) {
+    return nullptr;
+  }
+
+  return cloneMultipleRecursive(
+      *this, familiesToUpdate, childrenCount, callback);
 }
 
 #pragma mark - DebugStringConvertible

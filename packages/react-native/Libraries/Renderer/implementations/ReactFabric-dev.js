@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<d944291b21bfca6afd58b1fd5a118042>>
+ * @generated SignedSource<<6b3694149dd8856f0c741d3d94e05646>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -10561,6 +10561,8 @@ __DEV__ &&
             (offscreenSubtreeWasHidden ||
               null === current ||
               safelyDetachRef(current, current.return));
+          null !== finishedWork.alternate &&
+            (finishedWork.alternate.stateNode = finishedWork.stateNode);
           break;
         case 6:
           recursivelyTraverseMutationEffects(root, finishedWork);

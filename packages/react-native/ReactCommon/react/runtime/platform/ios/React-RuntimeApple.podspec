@@ -46,7 +46,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsiexecutor"
   s.dependency "React-cxxreact"
   s.dependency "React-callinvoker"
-  s.dependency "React-runtimeexecutor"
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-runtimescheduler"
   s.dependency "React-jsi"
   s.dependency "React-Core/Default"

@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeImageStoreIOS';
 import NativeImageStoreIOS from '../../src/private/specs_DEPRECATED/modules/NativeImageStoreIOS';
+
 export default NativeImageStoreIOS;

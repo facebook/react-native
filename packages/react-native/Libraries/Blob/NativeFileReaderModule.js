@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeFileReaderModule';
 import NativeFileReaderModule from '../../src/private/specs_DEPRECATED/modules/NativeFileReaderModule';
+
 export default NativeFileReaderModule;

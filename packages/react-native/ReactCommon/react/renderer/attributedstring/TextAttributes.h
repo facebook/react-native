@@ -86,8 +86,6 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<AccessibilityRole> accessibilityRole{};
   std::optional<Role> role{};
 
-  std::optional<TextAlignmentVertical> textAlignVertical{};
-
 #pragma mark - Operations
 
   void apply(TextAttributes textAttributes);
@@ -127,7 +125,6 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textTransform,
         textAttributes.lineHeight,
         textAttributes.alignment,
-        textAttributes.textAlignVertical,
         textAttributes.baseWritingDirection,
         textAttributes.lineBreakStrategy,
         textAttributes.lineBreakMode,
@@ -141,8 +138,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.isPressable,
         textAttributes.layoutDirection,
         textAttributes.accessibilityRole,
-        textAttributes.role,
-        textAttributes.textAlignVertical);
+        textAttributes.role);
   }
 };
 } // namespace std

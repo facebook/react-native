@@ -45,7 +45,7 @@ import com.facebook.react.packagerconnection.RequestHandler
  * manager is responsible for enabling/disabling dev support in case when app is backgrounded or
  * when all the views has been detached from the instance (through `setDevSupportEnabled` method).
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class BridgeDevSupportManager(
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
@@ -92,7 +92,7 @@ public class BridgeDevSupportManager(
 
   private companion object {
     init {
-      assertLegacyArchitecture("BridgeDevSupportManager", LegacyArchitectureLogLevel.WARNING)
+      assertLegacyArchitecture("BridgeDevSupportManager", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

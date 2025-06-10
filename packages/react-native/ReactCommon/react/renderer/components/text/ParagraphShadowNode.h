@@ -90,6 +90,11 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
     Attachments attachments;
   };
 
+ protected:
+  bool shouldNewRevisionDirtyMeasurement(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment) const override;
+
  private:
   void initialize() noexcept;
   /*

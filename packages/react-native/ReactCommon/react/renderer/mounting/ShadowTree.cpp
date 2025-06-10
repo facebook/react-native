@@ -318,7 +318,8 @@ CommitStatus ShadowTree::tryCommit(
       std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
       updateMountedFlag(
           currentRevision_.rootShadowNode->getChildren(),
-          newRootShadowNode->getChildren());
+          newRootShadowNode->getChildren(),
+          commitOptions.source);
     }
 
     telemetry.didCommit();

@@ -12,7 +12,7 @@
 
 'use strict';
 
-// eslint-disable-next-line lint/sort-imports
+// eslint-disable-next-line @react-native/monorepo/sort-imports
 const {
   transformFromAstSync: babelTransformFromAstSync,
   transformSync: babelTransformSync,
@@ -59,6 +59,9 @@ const babelPluginPreventBabelRegister = [
 
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
+    if (file.endsWith('.json')) {
+      return {code: src};
+    }
     if (nodeFiles.test(file)) {
       // node specific transforms only
       return babelTransformSync(src, {

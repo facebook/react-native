@@ -39,6 +39,8 @@ IntersectionObserverManager::IntersectionObserverManager() = default;
 
 void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
+    const std::optional<ShadowNodeFamily::Shared>&
+        observationRootShadowNodeFamily,
     const ShadowNodeFamily::Shared& shadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds,
@@ -58,6 +60,7 @@ void IntersectionObserverManager::observe(
     auto& observers = observersBySurfaceId_[surfaceId];
     observers.emplace_back(std::make_unique<IntersectionObserver>(
         intersectionObserverId,
+        observationRootShadowNodeFamily,
         shadowNodeFamily,
         std::move(thresholds),
         std::move(rootThresholds)));
@@ -243,6 +246,12 @@ void IntersectionObserverManager::updateIntersectionObservations(
   // In those cases it is ok to dispatch the notifications now, because the
   // current state is already accurate.
 
+  if (observersPendingInitialization_.empty()) {
+    return;
+  }
+
+  TraceSection s("IntersectionObserverManager::updateIntersectionObservations");
+
   std::unordered_map<SurfaceId, RootShadowNode::Shared> rootShadowNodeCache;
 
   for (auto observer : observersPendingInitialization_) {
@@ -297,7 +306,8 @@ void IntersectionObserverManager::updateIntersectionObservations(
     SurfaceId surfaceId,
     const RootShadowNode* rootShadowNode,
     HighResTimeStamp time) {
-  TraceSection s("IntersectionObserverManager::updateIntersectionObservations");
+  TraceSection s(
+      "IntersectionObserverManager::updateIntersectionObservations(mount)");
 
   std::vector<IntersectionObserverEntry> entries;
 

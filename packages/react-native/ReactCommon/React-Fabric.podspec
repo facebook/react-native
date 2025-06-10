@@ -49,6 +49,7 @@ Pod::Spec.new do |s|
   s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"
 
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
@@ -66,6 +67,12 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/attributedstring/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/attributedstring/tests"
     ss.header_dir           = "react/renderer/attributedstring"
+  end
+
+  s.subspec "bridging" do |ss|
+    ss.source_files         = "react/renderer/bridging/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/bridging/tests"
+    ss.header_dir           = "react/renderer/bridging"
   end
 
   s.subspec "core" do |ss|
@@ -116,7 +123,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/view/tests", "react/renderer/components/view/platform/android", "react/renderer/components/view/platform/windows"
       sss.header_dir           = "react/renderer/components/view"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
     end
 
     ss.subspec "scrollview" do |sss|
@@ -129,7 +135,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/legacyviewmanagerinterop/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/legacyviewmanagerinterop/tests"
       sss.header_dir           = "react/renderer/components/legacyviewmanagerinterop"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\"" }
     end
   end
 
@@ -202,21 +207,4 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/leakchecker"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
   end
-
-  s.script_phases = [
-    {
-      :name => '[RN]Check rncore',
-      :execution_position => :before_compile,
-      :always_out_of_date => '1',
-      :script => <<-EOS
-echo "Checking whether Codegen has run..."
-rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"
-
-if [[ ! -d "$rncorePath" ]]; then
-  echo 'error: Codegen did not run properly in your project. Please reinstall cocoapods with `bundle exec pod install`.'
-  exit 1
-fi
-      EOS
-    }
-  ]
 end

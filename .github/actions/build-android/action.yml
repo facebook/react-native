@@ -87,12 +87,12 @@ runs:
       uses: actions/upload-artifact@v4.3.4
       with:
         name: rntester-debug
-        path: packages/rn-tester/android/app/build/outputs/apk/hermes/debug/
+        path: packages/rn-tester/android/app/build/outputs/apk/debug/
         compression-level: 0
     - name: Upload RNTester APK - hermes-release
       if: ${{ always() }}
       uses: actions/upload-artifact@v4.3.4
       with:
         name: rntester-release
-        path: packages/rn-tester/android/app/build/outputs/apk/hermes/release/
+        path: packages/rn-tester/android/app/build/outputs/apk/release/
         compression-level: 0

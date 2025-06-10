@@ -70,7 +70,6 @@ val FAST_FLOAT_VERSION = libs.versions.fastFloat.get()
 val FMT_VERSION = libs.versions.fmt.get()
 val FOLLY_VERSION = libs.versions.folly.get()
 val GLOG_VERSION = libs.versions.glog.get()
-val GTEST_VERSION = libs.versions.gtest.get()
 
 val preparePrefab by
     tasks.registering(PreparePrefabHeadersTask::class) {
@@ -378,26 +377,6 @@ val downloadGlog by
       dest(downloadGlogDest)
     }
 
-val downloadGtestDest = File(downloadsDir, "gtest.tar.gz")
-val downloadGtest by
-    tasks.registering(Download::class) {
-      dependsOn(createNativeDepsDirectories)
-      src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
-      onlyIfModified(true)
-      overwrite(false)
-      retries(5)
-      quiet(true)
-      dest(downloadGtestDest)
-    }
-
-val prepareGtest by
-    tasks.registering(Copy::class) {
-      dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGtest))
-      from(dependenciesPath ?: tarTree(downloadGtestDest))
-      eachFile { path = path.substringAfter("/") }
-      into(File(thirdPartyNdkDir, "googletest"))
-    }
-
 val prepareGlog by
     tasks.registering(PrepareGlogTask::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGlog))
@@ -417,7 +396,6 @@ val prepareNative3pDependencies by
           prepareFmt,
           prepareFolly,
           prepareGlog,
-          prepareGtest,
       )
     }
 
@@ -570,17 +548,6 @@ android {
     }
   }
 
-  buildTypes {
-    debug {
-      externalNativeBuild {
-        cmake {
-          // We want to build Gtest suite only for the debug variant.
-          targets("reactnative_unittest")
-        }
-      }
-    }
-  }
-
   tasks
       .getByName("preBuild")
       .dependsOn(
@@ -691,9 +658,7 @@ dependencies {
 }
 
 react {
-  // TODO: The library name is chosen for parity with Fabric components & iOS
-  // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
-  libraryName = "rncore"
+  libraryName = "FBReactNativeSpec"
   jsRootDir = file("../src")
 }
 

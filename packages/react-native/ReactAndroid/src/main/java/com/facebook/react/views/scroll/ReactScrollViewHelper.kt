@@ -11,10 +11,12 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Point
-import android.view.FocusFinder
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
+import androidx.annotation.RequiresApi
+import androidx.core.view.ViewCompat.FocusDirection
 import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
@@ -222,9 +224,10 @@ public object ReactScrollViewHelper {
     scrollListeners.add(WeakReference(listener))
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeScrollListener(listener: ScrollListener) {
-    scrollListeners.remove(WeakReference(listener))
+    scrollListeners.removeIf { it.get() == null || it.get() == listener }
   }
 
   @JvmStatic
@@ -232,9 +235,10 @@ public object ReactScrollViewHelper {
     layoutChangeListeners.add(WeakReference(listener))
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeLayoutChangeListener(listener: LayoutChangeListener) {
-    layoutChangeListeners.remove(WeakReference(listener))
+    layoutChangeListeners.removeIf { it.get() == null || it.get() == listener }
   }
 
   /**
@@ -470,23 +474,8 @@ public object ReactScrollViewHelper {
   public fun findNextFocusableView(
       host: ViewGroup,
       focused: View,
-      @FocusRealDirection direction: Int,
-      horizontal: Boolean
+      @FocusDirection direction: Int,
   ): View? {
-    val absDir = resolveAbsoluteDirection(direction, horizontal, host.getLayoutDirection())
-
-    /*
-     * Check if we can focus the next element in the absolute direction within the ScrollView this
-     * would mean the view is not clipped, if we can't, look into the shadow tree to find the next
-     * focusable element
-     */
-    val ff = FocusFinder.getInstance()
-    val result = ff.findNextFocus(host, focused, absDir)
-
-    if (result != null) {
-      return result
-    }
-
     if (host !is ReactClippingViewGroup) {
       return null
     }
@@ -496,8 +485,8 @@ public object ReactScrollViewHelper {
             ?: return null
 
     val nextFocusableViewId =
-        (uimanager as FabricUIManager).findNextFocusableElement(
-            host.getChildAt(0).id, focused.id, absDir) ?: return null
+        (uimanager as FabricUIManager).findNextFocusableElement(host.id, focused.id, direction)
+            ?: return null
 
     val ancestorIdList =
         uimanager

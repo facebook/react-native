@@ -69,6 +69,8 @@ interface Spec extends TurboModule {
     viewportWidth: number,
     viewportHeight: number,
     devicePixelRatio: number,
+    viewportOffsetX?: number,
+    viewportOffsetY?: number,
   ) => void;
   stopSurface: (surfaceId: number) => void;
   enqueueNativeEvent: (
@@ -88,8 +90,10 @@ interface Spec extends TurboModule {
     width: number,
   ) => void;
   takeMountingManagerLogs: (surfaceId: number) => Array<string>;
+  getDirectManipulationProps: (shadowNode: mixed /* ShadowNode */) => mixed;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
+  produceFramesForDuration: (miliseconds: number) => void;
   validateEmptyMessageQueue: () => void;
   getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
   reportTestSuiteResultsJSON: (results: string) => void;

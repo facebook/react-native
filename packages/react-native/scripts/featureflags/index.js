@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -18,6 +19,11 @@ if (require.main === module) {
     command = 'verify-unchanged';
   } else if (process.argv.includes('--print')) {
     command = 'print';
+  } else if (process.argv.includes('--help')) {
+    command = 'help';
+  } else {
+    console.log('Defaulting to `--update`. See all options using `--help`.');
+    command = 'update';
   }
 
   switch (command) {
@@ -30,10 +36,12 @@ if (require.main === module) {
     case 'print':
       require('./print').default(process.argv.includes('--json'));
       break;
-    default:
-      console.error(
-        'Usage: node featureflags.js [--update|--verify-unchanged|--print]',
+    case 'help':
+      console.log(
+        'Usage: node featureflags.js [--update|--verify-unchanged|--print|--help]',
       );
-      process.exit(1);
+      break;
+    default:
+      throw new Error('Unexpected script execution.');
   }
 }

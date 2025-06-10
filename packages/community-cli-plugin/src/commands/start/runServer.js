@@ -18,11 +18,11 @@ import * as version from '../../utils/version';
 import attachKeyHandlers from './attachKeyHandlers';
 import {createDevServerMiddleware} from './middleware';
 import {createDevMiddleware} from '@react-native/dev-middleware';
-import chalk from 'chalk';
 import Metro from 'metro';
 import {Terminal} from 'metro-core';
 import path from 'path';
 import url from 'url';
+import {styleText} from 'util';
 
 export type StartCommandArgs = {
   assetPlugins?: string[],
@@ -68,7 +68,10 @@ async function runServer(
   const devServerUrl = url.format({protocol, hostname, port});
 
   console.info(
-    chalk.blue(`\nWelcome to React Native v${cliConfig.reactNativeVersion}`),
+    styleText(
+      'blue',
+      `\nWelcome to React Native v${cliConfig.reactNativeVersion}`,
+    ),
   );
 
   const serverStatus = await isDevServerRunning(devServerUrl, projectRoot);
@@ -80,7 +83,7 @@ async function runServer(
     return;
   } else if (serverStatus === 'port_taken') {
     console.error(
-      `${chalk.red('error')}: Another process is running on port ${port}. Please terminate this ` +
+      `${styleText('red', 'error')}: Another process is running on port ${port}. Please terminate this ` +
         'process and try again, or use another port with "--port".',
     );
     return;
@@ -131,7 +134,7 @@ async function runServer(
         terminalReporter.update({
           type: 'unstable_server_log',
           level: 'info',
-          data: `Dev server ready. ${chalk.dim('Press Ctrl+C to exit.')}`,
+          data: `Dev server ready. ${styleText('dim', 'Press Ctrl+C to exit.')}`,
         });
         attachKeyHandlers({
           devServerUrl,

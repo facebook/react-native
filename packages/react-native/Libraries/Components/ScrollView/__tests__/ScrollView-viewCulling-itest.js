@@ -784,18 +784,22 @@ test('culling inside of Modal', () => {
       height: 100,
     });
   });
+
   Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "RootView", nativeID: (root)}',
     'Create {type: "ScrollView", nativeID: (N/A)}',
-    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     'Create {type: "View", nativeID: (N/A)}',
     'Create {type: "ModalHostView", nativeID: (root)}',
     'Create {type: "View", nativeID: (N/A)}',
     'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     'Insert {type: "ModalHostView", parentNativeID: (N/A), index: 0, nativeID: (root)}',
     'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Update {type: "View", nativeID: (N/A)}',
+    'Update {type: "ModalHostView", nativeID: (root)}',
+    'Update {type: "View", nativeID: (N/A)}',
   ]);
 
   Fantom.runTask(() => {
@@ -1241,6 +1245,122 @@ describe('reparenting', () => {
       'Delete {type: "View", nativeID: (N/A)}',
       'Delete {type: "View", nativeID: (N/A)}',
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    ]);
+  });
+
+  test('flattening grandparent ', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View // grandparent
+            style={{
+              marginTop: 70,
+              opacity: 0, // opacity 0 - can't be flattened
+            }}>
+            <View // parent
+              nativeID="parent"
+              style={{height: 10, width: 10, marginTop: 10}}>
+              <View // child
+                nativeID="child"
+                style={{height: 5, width: 5, marginTop: 5}}
+              />
+            </View>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Insert {type: "View", parentNativeID: "parent", index: 0, nativeID: "child"}',
+    );
+
+    // Flatten grandparent by changing opacity to default value.
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View // grandparent
+            style={{
+              marginTop: 70,
+            }}>
+            <View // parent
+              nativeID="parent"
+              style={{height: 10, width: 11, marginTop: 10}}>
+              <View // child
+                nativeID="child"
+                style={{height: 5, width: 5, marginTop: 5}}
+              />
+            </View>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "View", nativeID: "parent"}',
+      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "parent"}',
+      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Delete {type: "View", nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "parent"}',
+    ]);
+  });
+
+  test('unflattening grandparent', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View // grandparent
+            style={{
+              marginTop: 70,
+            }}>
+            <View // parent
+              nativeID={'parent'}
+              style={{height: 10, width: 10, marginTop: 10}}>
+              <View // child
+                nativeID="child"
+                style={{height: 5, width: 5, marginTop: 5}}
+              />
+            </View>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Insert {type: "View", parentNativeID: "parent", index: 0, nativeID: "child"}',
+    );
+
+    // Unflatten grandparent by setting opacity to 0.
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View // grandparent
+            style={{
+              marginTop: 70,
+              opacity: 0, // opacity 0 - can't be flattened
+            }}>
+            <View // parent
+              nativeID={'parent'}
+              style={{height: 10, width: 11, marginTop: 10}}>
+              <View // child
+                nativeID="child"
+                style={{height: 5, width: 5, marginTop: 5}}
+              />
+            </View>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "View", nativeID: "parent"}',
+      'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "parent"}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "parent"}',
     ]);
   });
 
@@ -2206,5 +2326,211 @@ describe('reparenting', () => {
       'Create {type: "View", nativeID: "grandgrandchild"}',
       'Insert {type: "View", parentNativeID: "grandchild", index: 0, nativeID: "grandgrandchild"}',
     ]);
+  });
+
+  test('parent-child flattening with deep hierarchy', () => {
+    function renderTree(root: Fantom.Root, isFinal: boolean) {
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            style={{height: 100, width: 100}}
+            contentOffset={{x: 0, y: 52}}>
+            <View
+              style={{
+                marginTop: isFinal ? 92 : 100,
+                opacity: isFinal ? 0 : undefined,
+              }}>
+              <View
+                style={{
+                  marginTop: 50,
+                  opacity: isFinal ? 0 : undefined,
+                }}>
+                <View collapsable={false} style={{height: 10, width: 10}}>
+                  <View
+                    collapsable={false}
+                    style={{height: 5, width: 5, marginTop: 5}}>
+                    <View
+                      nativeID="child"
+                      style={{height: 2.5, width: 2.5, marginTop: 2.5}}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>,
+        );
+      });
+    }
+
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    renderTree(root, false);
+
+    expect(root.takeMountingManagerLogs()).not.toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+
+    renderTree(root, true);
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+
+    const finalRoot = Fantom.createRoot({
+      viewportWidth: 100,
+      viewportHeight: 100,
+    });
+
+    renderTree(finalRoot, true);
+
+    expect(root.getRenderedOutput().toJSON).toEqual(
+      finalRoot.getRenderedOutput().toJSON,
+    );
+  });
+
+  test('parent-child unflattening with deep hierarchy', () => {
+    function renderTree(root: Fantom.Root, isFinal: boolean) {
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            style={{height: 100, width: 100}}
+            contentOffset={{x: 0, y: 52}}>
+            <View
+              style={{
+                marginTop: isFinal ? 92 : 100,
+                opacity: isFinal ? undefined : 0,
+              }}>
+              <View
+                style={{
+                  marginTop: 50,
+                  opacity: isFinal ? undefined : 0,
+                }}>
+                <View collapsable={false} style={{height: 10, width: 10}}>
+                  <View
+                    collapsable={false}
+                    style={{height: 5, width: 5, marginTop: 5}}>
+                    <View
+                      nativeID="child"
+                      style={{height: 2.5, width: 2.5, marginTop: 2.5}}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>,
+        );
+      });
+    }
+
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    renderTree(root, false);
+
+    expect(root.takeMountingManagerLogs()).not.toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+
+    renderTree(root, true);
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+
+    const finalRoot = Fantom.createRoot({
+      viewportWidth: 100,
+      viewportHeight: 100,
+    });
+
+    renderTree(finalRoot, true);
+
+    expect(root.getRenderedOutput().toJSON).toEqual(
+      finalRoot.getRenderedOutput().toJSON,
+    );
+  });
+});
+
+describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace', () => {
+  test('modal is still rendered even though it is in culling region', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+    const nodeRef = createRef<HostInstance>();
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View nativeID="modal parent" style={{marginTop: 101}}>
+            <Modal ref={nodeRef}>
+              <View nativeID="child" style={{height: 10, width: 10}} />
+            </Modal>
+          </View>
+        </ScrollView>,
+      );
+    });
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+
+    Fantom.runOnUIThread(() => {
+      Fantom.enqueueModalSizeUpdate(element, {
+        width: 100,
+        height: 100,
+      });
+    });
+    Fantom.runWorkLoop();
+
+    const logs = root.takeMountingManagerLogs();
+    expect(logs).toContain('Create {type: "View", nativeID: "child"}');
+    expect(logs).toContain('Create {type: "View", nativeID: "modal parent"}');
+
+    // Modal is unmounted. Views that were only mounted because of its existence must be unmounted.
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View nativeID="modal parent" style={{marginTop: 101}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Delete {type: "View", nativeID: "modal parent"}',
+    );
+  });
+
+  test('modal is mounted in second update', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View style={{marginTop: 101}} />
+        </ScrollView>,
+      );
+    });
+
+    const nodeRef = createRef<HostInstance>();
+
+    // Adding modal to view hierarchy.
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View style={{marginTop: 101}}>
+            <Modal ref={nodeRef}>
+              <View nativeID="child" style={{height: 10, width: 10}} />
+            </Modal>
+          </View>
+        </ScrollView>,
+      );
+    });
+
+    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+
+    Fantom.runOnUIThread(() => {
+      Fantom.enqueueModalSizeUpdate(element, {
+        width: 100,
+        height: 100,
+      });
+    });
+    Fantom.runWorkLoop();
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
   });
 });

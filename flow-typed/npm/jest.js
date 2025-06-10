@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
  */
 
@@ -853,6 +854,10 @@ type JestObjectType = {
    * Returns the number of fake timers still left to run.
    */
   getTimerCount(): number,
+  /**
+   * Returns the time in ms of the current clock.
+   */
+  now(): number,
   /**
    * Set the current system time used by fake timers.
    * Simulates a user changing the system clock while your program is running.

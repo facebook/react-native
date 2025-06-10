@@ -149,7 +149,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
 
   private fun getLayoutFromHost(): Layout? {
     return if (hostView is PreparedLayoutTextView) {
-      (hostView as PreparedLayoutTextView).layout
+      (hostView as PreparedLayoutTextView).preparedLayout?.layout
     } else if (hostView is TextView) {
       (hostView as TextView).layout
     } else {
@@ -166,7 +166,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
   private fun getSpannedFromHost(): Spanned? {
     val host = hostView
     return if (host is PreparedLayoutTextView) {
-      host.layout?.text as? Spanned
+      host.preparedLayout?.layout?.text as? Spanned
     } else if (host is TextView) {
       host.text as? Spanned
     } else {

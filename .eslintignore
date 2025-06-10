@@ -13,7 +13,6 @@ packages/*/dist
 packages/*/types_generated
 packages/debugger-frontend/dist/**/*
 packages/react-native-codegen/lib
-tools/eslint/rules/sort-imports.js
 **/Pods/*
 **/*.macos.js
 **/*.windows.js

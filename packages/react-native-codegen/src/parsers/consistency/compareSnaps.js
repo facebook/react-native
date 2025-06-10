@@ -4,19 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
 function compareSnaps(
-  flowFixtures,
-  flowSnaps,
-  flowExtraCases,
-  tsFixtures,
-  tsSnaps,
-  tsExtraCases,
-  ignoredCases,
+  flowFixtures /*: $ReadOnly<{[string]: string}> */,
+  flowSnaps /*: $ReadOnly<{[string]: string}> */,
+  flowExtraCases /*: $ReadOnlyArray<string> */,
+  tsFixtures /*: $ReadOnly<{[string]: string}> */,
+  tsSnaps /*: $ReadOnly<{[string]: string}> */,
+  tsExtraCases /*: $ReadOnlyArray<string> */,
+  ignoredCases /*: $ReadOnlyArray<string> */,
 ) {
   const flowCases = Object.keys(flowFixtures).sort();
   const tsCases = Object.keys(tsFixtures).sort();
@@ -66,7 +67,10 @@ function compareSnaps(
   });
 }
 
-function compareTsArraySnaps(tsSnaps, tsExtraCases) {
+function compareTsArraySnaps(
+  tsSnaps /*: $ReadOnly<{[string]: string}> */,
+  tsExtraCases /*: $ReadOnlyArray<string> */,
+) {
   for (const array2Case of tsExtraCases.filter(
     name => name.indexOf('ARRAY2') !== -1,
   )) {

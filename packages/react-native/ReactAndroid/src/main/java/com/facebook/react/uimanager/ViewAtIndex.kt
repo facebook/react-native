@@ -16,7 +16,7 @@ import java.util.Objects
  * Data structure that couples view tag to it's index in parent view. Used for managing children
  * operation.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class ViewAtIndex(
     @Suppress("NoHungarianNotation") @JvmField public val mTag: Int,
     @Suppress("NoHungarianNotation") @JvmField public val mIndex: Int
@@ -40,7 +40,7 @@ internal class ViewAtIndex(
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ViewAtIndex", LegacyArchitectureLogLevel.WARNING)
+          "ViewAtIndex", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

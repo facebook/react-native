@@ -36,11 +36,11 @@ import java.util.Collection;
  */
 @DeprecatedInNewArchitecture
 @VisibleForTesting
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class BridgeReactContext extends ReactApplicationContext {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "BridgeReactContext", LegacyArchitectureLogLevel.WARNING);
+        "BridgeReactContext", LegacyArchitectureLogLevel.ERROR);
   }
 
   @DoNotStrip

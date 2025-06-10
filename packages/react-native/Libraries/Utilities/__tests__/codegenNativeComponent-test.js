@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -29,34 +30,36 @@ jest
 
 describe('codegenNativeComponent', () => {
   beforeEach(() => {
+    jest.restoreAllMocks();
+    // $FlowExpectedError[cannot-write]
     global.RN$Bridgeless = false;
-    jest
-      .spyOn(console, 'warn')
-      .mockReset()
-      .mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('should require component as is ', () => {
-    const component = codegenNativeComponent('ComponentName');
+    const component = codegenNativeComponent<$FlowFixMe>('ComponentName');
     expect(component).toBe('ComponentName');
   });
 
   it('should require paperComponentName', () => {
-    const component = codegenNativeComponent('ComponentName', {
+    const component = codegenNativeComponent<$FlowFixMe>('ComponentName', {
       paperComponentName: 'PaperComponentName',
     });
     expect(component).toBe('PaperComponentName');
   });
 
   it('should fall back to requiring the deprecated paper component name', () => {
-    const component = codegenNativeComponent('ComponentNameDoesNotExist', {
-      paperComponentNameDeprecated: 'ComponentName',
-    });
+    const component = codegenNativeComponent<$FlowFixMe>(
+      'ComponentNameDoesNotExist',
+      {
+        paperComponentNameDeprecated: 'ComponentName',
+      },
+    );
     expect(component).toBe('ComponentName');
   });
 
   it('should require the new component name', () => {
-    const component = codegenNativeComponent('ComponentName', {
+    const component = codegenNativeComponent<$FlowFixMe>('ComponentName', {
       paperComponentNameDeprecated: 'ComponentNameDoesNotExist',
     });
     expect(component).toBe('ComponentName');
@@ -64,7 +67,7 @@ describe('codegenNativeComponent', () => {
 
   it('should throw if neither component names exist', () => {
     expect(() =>
-      codegenNativeComponent('ComponentNameDoesNotExistOne', {
+      codegenNativeComponent<$FlowFixMe>('ComponentNameDoesNotExistOne', {
         paperComponentNameDeprecated: 'ComponentNameDoesNotExistTwo',
       }),
     ).toThrow(
@@ -73,14 +76,16 @@ describe('codegenNativeComponent', () => {
   });
 
   it('should NOT warn if called directly in BRIDGE mode', () => {
+    // $FlowExpectedError[cannot-write]
     global.RN$Bridgeless = false;
-    codegenNativeComponent('ComponentName');
+    codegenNativeComponent<$FlowFixMe>('ComponentName');
     expect(console.warn).not.toHaveBeenCalled();
   });
 
   it('should warn if called directly in BRIDGELESS mode', () => {
+    // $FlowExpectedError[cannot-write]
     global.RN$Bridgeless = true;
-    codegenNativeComponent('ComponentName');
+    codegenNativeComponent<$FlowFixMe>('ComponentName');
     expect(console.warn).toHaveBeenCalledWith(
       `Codegen didn't run for ComponentName. This will be an error in the future. Make sure you are using @react-native/babel-preset when building your JavaScript code.`,
     );

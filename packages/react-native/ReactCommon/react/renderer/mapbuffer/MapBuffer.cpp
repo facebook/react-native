@@ -7,8 +7,6 @@
 
 #include "MapBuffer.h"
 
-using namespace facebook::react;
-
 namespace facebook::react {
 
 static inline int32_t bucketOffset(int32_t index) {

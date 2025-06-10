@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import * as React from 'react';
 import {useState} from 'react';
@@ -22,7 +21,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-export function ScrollViewIndicatorInsetsExample() {
+function ScrollViewIndicatorInsetsExample(): React.Node {
   const [
     automaticallyAdjustsScrollIndicatorInsets,
     setAutomaticallyAdjustsScrollIndicatorInsets,
@@ -73,7 +72,7 @@ export function ScrollViewIndicatorInsetsExample() {
                 <Text style={styles.code}>
                   automaticallyAdjustsScrollIndicatorInsets
                 </Text>{' '}
-                is {automaticallyAdjustsScrollIndicatorInsets + ''}
+                is {String(automaticallyAdjustsScrollIndicatorInsets)}
               </Text>
               <Switch
                 onValueChange={v =>

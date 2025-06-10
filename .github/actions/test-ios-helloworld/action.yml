@@ -4,9 +4,6 @@ inputs:
   use-frameworks:
     description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
     default: StaticLibraries
-  architecture:
-    description: The React Native architecture to Test. RNTester has always Fabric enabled, but we want to run integration test with the old arch setup. Must be one of "OldArch" or "NewArch"
-    default: OldArch
   ruby-version:
     description: The version of ruby that must be used
     default: 2.6.10
@@ -51,15 +48,11 @@ runs:
     - name: Print third-party folder
       shell: bash
       run: ls -lR /tmp/third-party
-    - name: Install iOS dependencies - Configuration ${{ inputs.flavor }}; New Architecture ${{ inputs.architecture }}
+    - name: Install iOS dependencies - Configuration ${{ inputs.flavor }};
       shell: bash
       run: |
         cd packages/helloworld
         args=()
-
-        if [[ ${{ inputs.architecture }} == "OldArch" ]]; then
-          args+=(--arch old)
-        fi
 
         if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
           args+=(--frameworks dynamic)

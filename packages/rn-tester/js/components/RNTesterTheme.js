@@ -15,7 +15,7 @@ import {createContext} from 'react';
 import {use} from 'react';
 import {Appearance} from 'react-native';
 
-export type RNTesterTheme = {
+export type RNTesterTheme = $ReadOnly<{
   LabelColor: ColorValue,
   SecondaryLabelColor: ColorValue,
   TertiaryLabelColor: ColorValue,
@@ -54,7 +54,7 @@ export type RNTesterTheme = {
   NavBarPlaygroundActiveIcon: ImageSource,
   NavBarPlaygroundInactiveIcon: ImageSource,
   ...
-};
+}>;
 
 export const RNTesterLightTheme = {
   LabelColor: '#000000ff',

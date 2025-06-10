@@ -11,6 +11,8 @@
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {____TextStyle_Internal as TextStyleInternal} from '../../StyleSheet/StyleSheetTypes';
 import type {
+  BlurEvent,
+  FocusEvent,
   GestureResponderEvent,
   ScrollEvent,
 } from '../../Types/CoreEventTypes';
@@ -86,10 +88,12 @@ if (Platform.OS === 'android') {
 
 export type {
   AutoCapitalize,
+  BlurEvent,
   EnterKeyHintType,
   EnterKeyHintTypeAndroid,
   EnterKeyHintTypeIOS,
   EnterKeyHintTypeOptions,
+  FocusEvent,
   InputModeOptions,
   KeyboardType,
   KeyboardTypeAndroid,
@@ -520,14 +524,14 @@ function InternalTextInput(props: TextInputProps): React.Node {
     });
   };
 
-  const _onFocus = (event: TextInputFocusEvent) => {
+  const _onFocus = (event: FocusEvent) => {
     TextInputState.focusInput(inputRef.current);
     if (props.onFocus) {
       props.onFocus(event);
     }
   };
 
-  const _onBlur = (event: TextInputBlurEvent) => {
+  const _onBlur = (event: BlurEvent) => {
     TextInputState.blurInput(inputRef.current);
     if (props.onBlur) {
       props.onBlur(event);

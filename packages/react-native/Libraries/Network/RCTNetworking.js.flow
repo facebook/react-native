@@ -25,7 +25,7 @@ declare const RCTNetworking: interface {
 
   sendRequest(
     method: string,
-    trackingName: ?string,
+    trackingName: string | void,
     url: string,
     headers: {...},
     data: RequestBody,

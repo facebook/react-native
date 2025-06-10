@@ -23,9 +23,6 @@ class AndroidSwitchMeasurementsManager {
 
  private:
   const ContextContainer::Shared contextContainer_;
-  mutable std::mutex mutex_;
-  mutable bool hasBeenMeasured_ = false;
-  mutable Size cachedMeasurement_{};
 };
 
 } // namespace facebook::react

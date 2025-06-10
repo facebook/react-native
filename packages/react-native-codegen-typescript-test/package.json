@@ -11,7 +11,7 @@
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-typescript-test",
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose && tsc",

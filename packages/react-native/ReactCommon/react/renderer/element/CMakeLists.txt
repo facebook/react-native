@@ -19,5 +19,5 @@ target_link_libraries(react_renderer_element
         react_renderer_core
         react_renderer_componentregistry
 )
-target_compile_reactnative_options(react_renderer_element PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_element PRIVATE)
 target_compile_options(react_renderer_element PRIVATE -Wpedantic)

@@ -39,11 +39,13 @@ fun getSDKManagerPath(): String {
   val ossSdkManagerPath = File("${getSDKPath()}/tools/bin/sdkmanager")
   val windowsMetaSdkManagerPath = File("${getSDKPath()}/cmdline-tools/latest/bin/sdkmanager.bat")
   val windowsOssSdkManagerPath = File("${getSDKPath()}/tools/bin/sdkmanager.bat")
+  val linuxSdkManagerPath = File("${getSDKPath()}/cmdline-tools/tools/bin/sdkmanager")
   return when {
     metaSdkManagerPath.exists() -> metaSdkManagerPath.absolutePath
     windowsMetaSdkManagerPath.exists() -> windowsMetaSdkManagerPath.absolutePath
     ossSdkManagerPath.exists() -> ossSdkManagerPath.absolutePath
     windowsOssSdkManagerPath.exists() -> windowsOssSdkManagerPath.absolutePath
+    linuxSdkManagerPath.exists() -> linuxSdkManagerPath.absolutePath
     else -> throw GradleException("Could not find sdkmanager executable.")
   }
 }

@@ -848,6 +848,19 @@ inline void fromRawValue(
   react_native_expect(false);
 }
 
+inline std::string toString(const PointerEventsMode& value) {
+  switch (value) {
+    case PointerEventsMode::Auto:
+      return "auto";
+    case PointerEventsMode::None:
+      return "none";
+    case PointerEventsMode::BoxNone:
+      return "box-none";
+    case PointerEventsMode::BoxOnly:
+      return "box-only";
+  }
+}
+
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,

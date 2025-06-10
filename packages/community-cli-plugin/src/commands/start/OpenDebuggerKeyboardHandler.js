@@ -10,7 +10,7 @@
 
 import type {TerminalReporter} from 'metro';
 
-import chalk from 'chalk';
+import {styleText} from 'util';
 
 type PageDescription = $ReadOnly<{
   id: string,
@@ -92,7 +92,6 @@ export default class OpenDebuggerKeyboardHandler {
         this.#clearTerminalMenu();
       } else if (targets.length === 1) {
         const target = targets[0];
-        // eslint-disable-next-line no-void
         void this.#tryOpenDebuggerForTarget(target);
       } else {
         this.#targetsShownForSelection = targets;
@@ -109,7 +108,7 @@ export default class OpenDebuggerKeyboardHandler {
             .slice(0, 9)
             .map(
               ({title}, i) =>
-                `${chalk.white.inverse(` ${i + 1} `)} - "${title}"`,
+                `${styleText(['white', 'inverse'], ` ${i + 1} `)} - "${title}"`,
             )
             .join('\n  ')}`,
         );
@@ -135,7 +134,6 @@ export default class OpenDebuggerKeyboardHandler {
         targetIndex < this.#targetsShownForSelection.length
       ) {
         const target = this.#targetsShownForSelection[targetIndex];
-        // eslint-disable-next-line no-void
         void this.#tryOpenDebuggerForTarget(target);
         return true;
       }

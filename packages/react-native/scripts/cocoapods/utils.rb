@@ -177,27 +177,6 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.apply_xcode_15_patch(installer, xcodebuild_manager: Xcodebuild)
-        projects = self.extract_projects(installer)
-
-        other_ld_flags_key = 'OTHER_LDFLAGS'
-        xcode15_compatibility_flags = '-Wl -ld_classic '
-
-        projects.each do |project|
-            project.build_configurations.each do |config|
-                # fix for weak linking
-                self.safe_init(config, other_ld_flags_key)
-                if self.is_using_xcode15_0(:xcodebuild_manager => xcodebuild_manager)
-                    self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
-                else
-                    self.remove_value_from_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
-                end
-            end
-            project.save()
-        end
-
-    end
-
     private
 
     def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration_type)
@@ -423,16 +402,6 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.is_using_xcode15_0(xcodebuild_manager: Xcodebuild)
-        xcodebuild_version = xcodebuild_manager.version
-
-        if version = self.parse_xcode_version(xcodebuild_version)
-            return version["major"] == 15 && version["minor"] == 0
-        end
-
-        return false
-    end
-
     def self.parse_xcode_version(version_string)
         # The output of xcodebuild -version is something like
         # Xcode 15.0
@@ -643,7 +612,6 @@ class ReactNativePodsUtils
             "React-logger",
             "React-oscompat",
             "React-perflogger",
-            "React-rncore",
             "React-runtimeexecutor",
             "React-timing",
             "ReactCommon",

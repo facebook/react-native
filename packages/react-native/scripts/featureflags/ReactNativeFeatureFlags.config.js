@@ -112,6 +112,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableTextLayoutManagerCacheAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-28',
+        description:
+          'Turns off the global measurement cache used by TextLayoutManager on Android.',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAccessibilityOrder: {
       defaultValue: false,
       metadata: {
@@ -286,6 +297,17 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, LayoutAnimations API will animate state changes on iOS.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableMainQueueCoordinatorOnIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-17',
+        description:
+          'Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -585,11 +607,31 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    virtualViewPrerenderRatio: {
+      defaultValue: 5,
+      metadata: {
+        dateAdded: '2025-05-30',
+        description: 'Initial prerender ratio for VirtualView.',
+        expectedReleaseValue: 5,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
   },
 
   jsOnly: {
     ...testDefinitions.jsOnly,
-
+    alwaysFlattenAnimatedStyles: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-02',
+        description:
+          'Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
       metadata: {

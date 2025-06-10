@@ -31,4 +31,4 @@ target_link_libraries(react_newarchdefaults
         react_nativemodule_idlecallbacks
         jsi)
 
-target_compile_reactnative_options(react_newarchdefaults PRIVATE "ReactNative")
+target_compile_reactnative_options(react_newarchdefaults PRIVATE)

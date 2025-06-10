@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.80.0-rc.4
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+- Re-expose `src/*` subpaths when not using the Strict TypeScript API ([1a46b203b8](https://github.com/facebook/react-native/commit/1a46b203b83d7cbe44185cd7e437e77b850e1af5) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Fixed the generated type definitions for `Animated.FlatList` and `Animated.SectionList` to correctly infer item types. ([9be5ac1010](https://github.com/facebook/react-native/commit/9be5ac101051dd8121a48af1a29a60b7ba0b753e) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.80.0-rc.4 ([dffb675e70](https://github.com/facebook/react-native/commit/dffb675e70e9702d63d7fe04af8c97eff3e2398d) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([baa421decc](https://github.com/facebook/react-native/commit/baa421decc61b136979f06475757579b0da76dab) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.80.0-rc.3 ([e7901a720b](https://github.com/facebook/react-native/commit/e7901a720bcf3877e8a011f7b211c7d59c694853) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.80.0-rc.3
 
 ### Changed
@@ -580,6 +685,26 @@
 - Add changelog entry for v0.79.0-rc.2 ([2259db6d4b](https://github.com/facebook/react-native/commit/2259db6d4bd30eda91aa952e40e98bd27f758fb6) by [@fabriziocucci](https://github.com/fabriziocucci))
 - Remove (more) unused variables from AtWork ([486d38c024](https://github.com/facebook/react-native/commit/486d38c0242989e0d22b0d9b13dd597a29014c0f) by [@ellishg](https://github.com/ellishg))
 
+## v0.79.3
+
+### Fixed
+
+- **Runtime:** Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
+- **Typescript:** Reference `global.d.ts` using path not types so they can be resolved by TSC ([af21f260a1](https://github.com/facebook/react-native/commit/af21f260a1cee460d11fc9c292aaa9f602cbd5a4) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+#### Android specific
+
+- **Runtime:** Fixes issue with z-indexed sibling removal ([34ae9facd5](https://github.com/facebook/react-native/commit/34ae9facd52b5da28b5ced22110532bbcdad2cec) by [@rozele](https://github.com/rozele))
+- **Style:** Wrong borderBottomEndRadius on RTL ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+#### iOS specific
+
+- **Cocoapods:** enable DEFINES_MODULE in React-jsc ([c8fcac2765](https://github.com/facebook/react-native/commit/c8fcac2765e0f79f0e7bb3a422a65698aec62536) by [@cipolleschi](https://github.com/cipolleschi))
+- **Codegen:** Allow the .pnpm folder to be discovered during code generation ([ed7b4d86ab2b77b4cba6c2105e35047ac68c93e1](https://github.com/facebook/react-native/commit/ed7b4d86ab2b77b4cba6c2105e35047ac68c93e1) by [@kirill3333](https://github.com/kirill3333))
+- **Codegen:** Exclude selectively disabled libraries from codegen generation ([e5c089669a](https://github.com/facebook/react-native/commit/e5c089669a82bd2075c1657d0291aa32a6b61966) by [@cipolleschi](https://github.com/cipolleschi))
+- **Interop Layer:** Fixed adding child views to a native view using the interop layer ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
+- **RedBox:** Fix disappearing redbox on initial load of an invalid bundle. ([4cc9db1cd5](https://github.com/facebook/react-native/commit/4cc9db1cd501b019e90bb540ce836e2a2c2bf2ff) by [@aleqsio](https://github.com/aleqsio))
+- **Switch:** Fixes Switch component incorrectly renders as toggled on even though value prop is hardcoded to false ([8d42fc40bc](https://github.com/facebook/react-native/commit/8d42fc40bc1b31efa7913198e23f39ac46532dc7) by [@zhongwuzw](https://github.com/zhongwuzw))
 
 ## v0.79.2
 

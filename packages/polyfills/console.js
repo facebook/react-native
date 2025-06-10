@@ -5,13 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @noflow
  * @nolint
  * @polyfill
  */
 
 'use client';
 
-/* eslint-disable no-shadow, eqeqeq, no-unused-vars, no-void, no-control-regex  */
+/* eslint-disable no-shadow, eqeqeq, no-unused-vars, no-control-regex  */
 
 /**
  * This pipes all of our console logging functions to native logging so that

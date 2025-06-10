@@ -11,10 +11,10 @@
 import type {TerminalReporter} from 'metro';
 
 import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
-import chalk from 'chalk';
 import invariant from 'invariant';
 import readline from 'readline';
 import {ReadStream} from 'tty';
+import {styleText} from 'util';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -95,7 +95,6 @@ export default function attachKeyHandlers({
         messageSocket.broadcast('devMenu', null);
         break;
       case 'j':
-        // eslint-disable-next-line no-void
         void openDebuggerKeyboardHandler.handleOpenDebugger();
         break;
       case CTRL_C:
@@ -118,9 +117,9 @@ export default function attachKeyHandlers({
     level: 'info',
     data: `Key commands available:
 
-  ${chalk.bold.inverse(' r ')} - reload app(s)
-  ${chalk.bold.inverse(' d ')} - open Dev Menu
-  ${chalk.bold.inverse(' j ')} - open DevTools
+  ${styleText(['bold', 'inverse'], ' r ')} - reload app(s)
+  ${styleText(['bold', 'inverse'], ' d ')} - open Dev Menu
+  ${styleText(['bold', 'inverse'], ' j ')} - open DevTools
 `,
   });
 }

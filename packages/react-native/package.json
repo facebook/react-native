@@ -21,7 +21,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
   "bin": {
     "react-native": "cli.js"
@@ -50,6 +50,11 @@
       "default": "./Libraries/*.d.ts"
     },
     "./scripts/*": "./scripts/*",
+    "./src/*": {
+      "react-native-strict-api": null,
+      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/src/*.d.ts",
+      "default": "./src/*.js"
+    },
     "./types/*.d.ts": {
       "react-native-strict-api": null,
       "default": "./types/*.d.ts"
@@ -61,7 +66,6 @@
     "./ReactCommon/*": null,
     "./sdks/*": null,
     "./src/fb_internal/*": "./src/fb_internal/*",
-    "./src/*": null,
     "./third-party-podspecs/*": null,
     "./types/*": null,
     "./types_generated/*": null,
@@ -167,7 +171,6 @@
     "babel-jest": "^29.7.0",
     "babel-plugin-syntax-hermes-parser": "0.28.1",
     "base64-js": "^1.5.1",
-    "chalk": "^4.0.0",
     "commander": "^12.0.0",
     "flow-enums-runtime": "^0.0.6",
     "glob": "^7.1.1",
@@ -193,7 +196,7 @@
     "libraries": [
       {
         "name": "FBReactNativeSpec",
-        "type": "modules",
+        "type": "all",
         "ios": {
           "modules": {
             "AccessibilityManager": {
@@ -216,13 +219,6 @@
             }
           }
         },
-        "android": {},
-        "jsSrcsDir": "src"
-      },
-      {
-        "name": "rncore",
-        "type": "components",
-        "ios": {},
         "android": {},
         "jsSrcsDir": "src"
       }

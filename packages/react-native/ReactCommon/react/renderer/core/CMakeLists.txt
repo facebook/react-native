@@ -25,5 +25,5 @@ target_link_libraries(react_renderer_core
         react_renderer_runtimescheduler
         react_utils
         runtimeexecutor)
-target_compile_reactnative_options(react_renderer_core PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_core PRIVATE)
 target_compile_options(react_renderer_core PRIVATE -Wpedantic)

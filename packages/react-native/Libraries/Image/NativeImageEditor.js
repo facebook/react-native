@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeImageEditor';
 import NativeImageEditor from '../../src/private/specs_DEPRECATED/modules/NativeImageEditor';
+
 export default NativeImageEditor;

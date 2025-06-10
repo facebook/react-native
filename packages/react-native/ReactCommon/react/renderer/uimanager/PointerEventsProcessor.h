@@ -12,7 +12,6 @@
 #include <jsi/jsi.h>
 #include <react/renderer/uimanager/PointerHoverTracker.h>
 #include <react/renderer/uimanager/UIManager.h>
-#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
 

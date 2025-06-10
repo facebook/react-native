@@ -11,9 +11,9 @@
 
 'use strict';
 
-const chalk = require('chalk');
 const {execSync: exec} = require('child_process');
 const fetch = require('node-fetch');
+const {styleText} = require('util');
 
 /*::
 type CIHeaders = {
@@ -174,12 +174,15 @@ async function initialize(
   const started_by = workflow.triggering_actor.login;
 
   console.log(
-    chalk.green(`The artifact being used is from a workflow started ${chalk.bold.magentaBright(hours.toFixed(0))} hours ago by ${chalk.bold.magentaBright(started_by)}:
+    styleText(
+      'green',
+      `The artifact being used is from a workflow started ${styleText(['bold', 'magentaBright'], hours.toFixed(0))} hours ago by ${styleText(['bold', 'magentaBright'], started_by)}:
 
-Author: ${chalk.bold(commit.author.name)}
+Author: ${styleText('bold', commit.author.name)}
 Message:
-${chalk.magentaBright(quote(commit.message))}
-  `),
+${styleText('magentaBright', quote(commit.message))}
+  `,
+    ),
   );
 
   artifacts = await _getArtifacts(workflow.id);

@@ -18,10 +18,6 @@ inputs:
     required: false
     default: "."
     description: The directory from which metro should be started
-  architecture:
-    required: false
-    default: "NewArch"
-    description: The react native architecture to test
 
 runs:
   using: composite
@@ -70,7 +66,7 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.flavor }}_${{ inputs.architecture }}
+        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.flavor }}_NewArch
         path: |
           video_record_1.mov
           video_record_2.mov
@@ -82,5 +78,5 @@ runs:
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.flavor }}-${{ inputs.architecture }}
+        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.flavor }}-NewArch
         path: /tmp/MaestroLogs

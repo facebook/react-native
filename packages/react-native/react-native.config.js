@@ -4,10 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
+
+/*::
+import type {Command} from '@react-native-community/cli-types';
+ */
 
 // React Native shouldn't be exporting itself like this, the Community Template should be be directly
 // depending on and injecting:
@@ -18,9 +23,12 @@
 //
 // This is a temporary workaround.
 
-const verbose = process.env.DEBUG && process.env.DEBUG.includes('react-native');
+const verbose = Boolean(process.env.DEBUG?.includes('react-native'));
 
-function findCommunityPlatformPackage(spec, startDir = process.cwd()) {
+function findCommunityPlatformPackage(
+  spec /*: string */,
+  startDir /*: string */ = process.cwd(),
+) {
   // In monorepos, we cannot make any assumptions on where
   // `@react-native-community/*` gets installed. The safest way to find it
   // (barring adding an optional peer dependency) is to start from the project
@@ -30,6 +38,7 @@ function findCommunityPlatformPackage(spec, startDir = process.cwd()) {
   // root. This is also what `@react-native-community/cli` assumes (see
   // https://github.com/react-native-community/cli/blob/14.x/packages/cli-tools/src/findProjectRoot.ts).
   const main = require.resolve(spec, {paths: [startDir]});
+  // $FlowIgnore[unsupported-syntax]
   return require(main);
 }
 
@@ -59,15 +68,16 @@ try {
   }
 }
 
-const commands = [];
+const commands /*: Array<Command> */ = [];
 
 const {
   bundleCommand,
   startCommand,
 } = require('@react-native/community-cli-plugin');
+
 commands.push(bundleCommand, startCommand);
 
-const codegenCommand = {
+const codegenCommand /*: Command */ = {
   name: 'codegen',
   options: [
     {
@@ -104,7 +114,10 @@ commands.push(codegenCommand);
 
 const config = {
   commands,
-  platforms: {},
+  platforms: {} /*:: as {[string]: $ReadOnly<{
+      projectConfig: mixed,
+      dependencyConfig: mixed,
+    }>} */,
 };
 
 if (ios != null) {

@@ -39,19 +39,6 @@ public class ReactPopupMenuManager :
     return REACT_CLASS
   }
 
-  override fun receiveCommand(
-      view: ReactPopupMenuContainer,
-      commandId: String,
-      items: ReadableArray?
-  ) {
-    when (commandId) {
-      "show" -> show(view)
-      else -> {
-        // no-op
-      }
-    }
-  }
-
   override fun show(popupMenu: ReactPopupMenuContainer) {
     popupMenu.showPopupMenu()
   }

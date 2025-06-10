@@ -4,14 +4,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
+import FillRateHelper from '../FillRateHelper';
 
-const FillRateHelper = require('../FillRateHelper').default;
-
-let rowFramesGlobal;
+let rowFramesGlobal: ?{
+  [string]: $ReadOnly<{
+    height: number,
+    isMounted: boolean,
+    y: number,
+  }>,
+};
 const dataGlobal = [
   {key: 'header'},
   {key: 'a'},
@@ -21,21 +26,40 @@ const dataGlobal = [
   {key: 'footer'},
 ];
 function getCellMetrics(index: number) {
+  if (rowFramesGlobal == null) {
+    throw new Error('Expected `rowFramesGlobal` to have been initialized.');
+  }
   const frame = rowFramesGlobal[dataGlobal[index].key];
   return {length: frame.height, offset: frame.y, isMounted: frame.isMounted};
 }
 
-function computeResult({helper, props, state, scroll}): number {
+function computeResult({
+  helper,
+  state,
+  scroll,
+}: $ReadOnly<{
+  helper: FillRateHelper,
+  state?: $ReadOnly<{
+    first?: number,
+    last?: number,
+  }>,
+  scroll?: $ReadOnly<{
+    offset?: number,
+    visibleLength?: number,
+  }>,
+}>): number {
   helper.activate();
   return helper.computeBlankness(
     {
       data: dataGlobal,
+      getItem: () => {
+        throw new Error('Unexpected call to `getItem`.');
+      },
       getItemCount: data2 => data2.length,
       initialNumToRender: 10,
-      ...(props || {}),
     },
-    {first: 1, last: 2, ...(state || {})},
-    {offset: 0, visibleLength: 100, ...(scroll || {})},
+    {first: 1, last: 2, ...(state ?? {})},
+    {dOffset: 0, offset: 0, velocity: 0, visibleLength: 100, ...(scroll ?? {})},
   );
 }
 
@@ -46,6 +70,7 @@ describe('computeBlankness', function () {
   });
 
   it('computes correct blankness of viewport', function () {
+    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
     const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: true},
@@ -65,6 +90,7 @@ describe('computeBlankness', function () {
   });
 
   it('skips frames that are not in layout', function () {
+    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
     const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: false},
@@ -79,6 +105,7 @@ describe('computeBlankness', function () {
   });
 
   it('sampling rate can disable', function () {
+    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
     let helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: true},
@@ -90,6 +117,7 @@ describe('computeBlankness', function () {
 
     FillRateHelper.setSampleRate(0);
 
+    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
     helper = new FillRateHelper({getCellMetrics});
     blankness = computeResult({helper});
     expect(blankness).toBe(0);
@@ -101,6 +129,7 @@ describe('computeBlankness', function () {
       FillRateHelper.addListener(listener),
     );
     subscriptions[1].remove();
+    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
     const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: true},

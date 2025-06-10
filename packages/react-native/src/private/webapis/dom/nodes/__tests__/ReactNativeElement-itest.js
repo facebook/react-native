@@ -833,6 +833,40 @@ describe('ReactNativeElement', () => {
         expect(boundingClientRectAfterUnmount.width).toBe(0);
         expect(boundingClientRectAfterUnmount.height).toBe(0);
       });
+
+      it('returns a DOMRect with its size and position respecting viewport offsets', () => {
+        const elementRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot({
+          viewportOffsetX: 111,
+          viewportOffsetY: 222,
+        });
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              key="parent"
+              style={{
+                position: 'absolute',
+                left: 5.1,
+                top: 10.2,
+                width: 50.3,
+                height: 100.4,
+              }}
+              ref={elementRef}
+            />,
+          );
+        });
+
+        const element = ensureReactNativeElement(elementRef.current);
+
+        const boundingClientRect = element.getBoundingClientRect();
+        expect(boundingClientRect).toBeInstanceOf(DOMRect);
+        expect(boundingClientRect.x).toBe(116);
+        expect(boundingClientRect.y).toBeCloseTo(232.33);
+        expect(boundingClientRect.width).toBeCloseTo(50.33);
+        expect(boundingClientRect.height).toBeCloseTo(100.33);
+      });
     });
 
     describe('scrollLeft / scrollTop', () => {
@@ -1064,7 +1098,7 @@ describe('ReactNativeElement', () => {
     });
 
     describe('offsetParent / offsetTop / offsetLeft', () => {
-      it('retun the rounded offset values and the parent, or null and zeros when disconnected or hidden', () => {
+      it('return the rounded offset values and the parent, or null and zeros when disconnected or hidden', () => {
         const parentRef = createRef<HostInstance>();
         const elementRef = createRef<HostInstance>();
 
@@ -1089,6 +1123,8 @@ describe('ReactNativeElement', () => {
         expect(element.offsetLeft).toBe(5);
         expect(element.offsetParent).toBe(parentElement);
 
+        expect(parentElement.offsetParent).toBe(root.document.documentElement);
+
         Fantom.runTask(() => {
           root.render(
             <View key="parent" style={{display: 'none'}}>
@@ -1108,6 +1144,61 @@ describe('ReactNativeElement', () => {
         expect(element.offsetTop).toBe(0);
         expect(element.offsetLeft).toBe(0);
         expect(element.offsetParent).toBe(null);
+      });
+
+      it('return the rounded offset values from the parent with view offsets', () => {
+        const parentRef = createRef<HostInstance>();
+        const elementRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot({
+          viewportOffsetX: 111,
+          viewportOffsetY: 222,
+        });
+
+        Fantom.runTask(() => {
+          root.render(
+            <View key="parent" ref={parentRef}>
+              <View
+                key="child"
+                style={{marginTop: 10.6, marginLeft: 5.1}}
+                ref={elementRef}
+              />
+            </View>,
+          );
+        });
+
+        const parentElement = ensureReactNativeElement(parentRef.current);
+        const element = ensureReactNativeElement(elementRef.current);
+
+        expect(element.offsetTop).toBe(11);
+        expect(element.offsetLeft).toBe(5);
+        expect(element.offsetParent).toBe(parentElement);
+
+        expect(parentElement.offsetParent).toBe(root.document.documentElement);
+      });
+
+      it('return the rounded offset values from the root with view offsets', () => {
+        const elementRef = createRef<HostInstance>();
+
+        const root = Fantom.createRoot({
+          viewportOffsetX: 111,
+          viewportOffsetY: 222,
+        });
+
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              key="child"
+              style={{marginTop: 10.6, marginLeft: 5.1}}
+              ref={elementRef}
+            />,
+          );
+        });
+
+        const element = ensureReactNativeElement(elementRef.current);
+
+        expect(element.offsetTop).toBe(11);
+        expect(element.offsetLeft).toBe(5);
       });
     });
   });
