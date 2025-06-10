@@ -40,21 +40,21 @@ TEST_F(AnimationDriverTests, framesAnimation) {
           "toValue", toValue),
       std::nullopt);
 
-  const auto startTimeInTick = 12345;
+  const double startTimeInTick = 12345;
 
   runAnimationFrame(startTimeInTick);
   EXPECT_EQ(round(nodesManager_->getValue(valueNodeTag).value()), 0);
 
-  runAnimationFrame(startTimeInTick + SingleFrameIntervalMs * 2.5 * TicksPerMs);
+  runAnimationFrame(startTimeInTick + SingleFrameIntervalMs * 2.5);
   EXPECT_EQ(round(nodesManager_->getValue(valueNodeTag).value()), 65);
 
-  runAnimationFrame(startTimeInTick + SingleFrameIntervalMs * 3 * TicksPerMs);
+  runAnimationFrame(startTimeInTick + SingleFrameIntervalMs * 3);
   EXPECT_EQ(round(nodesManager_->getValue(valueNodeTag).value()), 90);
 
-  runAnimationFrame(startTimeInTick + SingleFrameIntervalMs * 4 * TicksPerMs);
+  runAnimationFrame(startTimeInTick + SingleFrameIntervalMs * 4);
   EXPECT_EQ(round(nodesManager_->getValue(valueNodeTag).value()), toValue);
 
-  runAnimationFrame(startTimeInTick + SingleFrameIntervalMs * 10 * TicksPerMs);
+  runAnimationFrame(startTimeInTick + SingleFrameIntervalMs * 10);
   EXPECT_EQ(round(nodesManager_->getValue(valueNodeTag).value()), toValue);
 }
 
