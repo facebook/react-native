@@ -16,7 +16,7 @@ export GITHUB_REPO=-react-native
 
   echo google-java-format
   node scripts/lint-java.js --diff
-} | node packages/react-native-bots/code-analysis-bot.js
+} | node private/react-native-bots/code-analysis-bot.js
 
 STATUS=$?
 if [ $STATUS == 0 ]; then
