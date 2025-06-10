@@ -107,7 +107,12 @@ describe('ReactNativeDocument', () => {
   it('provides a documentElement node that behaves like a regular element', () => {
     const nodeRef = createRef<HostInstance>();
 
-    const root = Fantom.createRoot({viewportWidth: 200, viewportHeight: 100});
+    const root = Fantom.createRoot({
+      viewportWidth: 200,
+      viewportHeight: 100,
+      viewportOffsetX: 111,
+      viewportOffsetY: 222,
+    });
     Fantom.runTask(() => {
       root.render(<View ref={nodeRef} />);
     });
@@ -118,8 +123,8 @@ describe('ReactNativeDocument', () => {
     const {x, y, width, height} =
       document.documentElement.getBoundingClientRect();
 
-    expect(x).toBe(0);
-    expect(y).toBe(0);
+    expect(x).toBe(111);
+    expect(y).toBe(222);
     expect(width).toBe(200);
     expect(height).toBe(100);
 

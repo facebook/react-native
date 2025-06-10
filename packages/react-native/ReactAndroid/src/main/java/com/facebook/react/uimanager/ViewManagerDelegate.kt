@@ -55,7 +55,17 @@ public interface ViewManagerDelegate<T : View> {
   @Suppress("INAPPLICABLE_JVM_NAME")
   @JvmName("kotlinCompat\$receiveCommand")
   @JvmSynthetic
-  public fun receiveCommand(view: T, commandName: String, args: ReadableArray?)
+  public fun receiveCommand(view: T, commandName: String, args: ReadableArray)
+
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @Deprecated(
+      message = "args is not nullable, please update your method signature",
+      replaceWith =
+          ReplaceWith("receiveCommand(view: T, commandName: String, args: ReadableArray)"))
+  @JvmName("kotlinCompat\$receiveCommandNullableArgs")
+  @JvmSynthetic
+  public fun receiveCommand(view: T, commandName: String, args: ReadableArray?): Unit =
+      receiveCommand(view, commandName, checkNotNull(args))
 
   @Suppress("INAPPLICABLE_JVM_NAME")
   @Deprecated(
@@ -63,5 +73,5 @@ public interface ViewManagerDelegate<T : View> {
       replaceWith = ReplaceWith("receiveCommand(view, commandName, args)"))
   @JvmName("receiveCommand")
   public fun javaCompat_receiveCommand(view: T, commandName: String?, args: ReadableArray?): Unit =
-      receiveCommand(view, checkNotNull(commandName), args)
+      receiveCommand(view, checkNotNull(commandName), checkNotNull(args))
 }

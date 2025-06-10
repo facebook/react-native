@@ -48,12 +48,16 @@ function sortMembers<T>(members: T[]): T[] {
       ? a.key.id.name
       : t.isTSEnumMember(a)
         ? a.id.name
-        : a.key.name;
+        : t.isStringLiteral(a.key)
+          ? a.key.value
+          : a.key.name;
     const bName = t.isClassPrivateProperty(b)
       ? b.key.id.name
       : t.isTSEnumMember(b)
         ? b.id.name
-        : b.key.name;
+        : t.isStringLiteral(b.key)
+          ? b.key.value
+          : b.key.name;
 
     if (aName === undefined || bName === undefined) {
       return 0;

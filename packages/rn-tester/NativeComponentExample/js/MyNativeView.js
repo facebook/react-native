@@ -23,6 +23,7 @@ import RNTMyNativeView, {
 import * as React from 'react';
 import {useRef, useState} from 'react';
 import {Button, Platform, Text, UIManager, View} from 'react-native';
+
 const colors = [
   '#0000FF',
   '#FF0000',

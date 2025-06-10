@@ -58,6 +58,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: ./.github/actions/setup-node
       - name: Test ${{ matrix.library }}
         id: run-test
         uses: ./.github/actions/test-library-on-nightly

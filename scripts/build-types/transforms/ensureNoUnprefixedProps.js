@@ -16,25 +16,24 @@ const {transformAST} = require('hermes-transform/dist/transform/transformAST');
 
 const visitors: TransformVisitor = context => ({
   TypeAlias(node): void {
-    if (node.id.name === 'Props') {
+    if (node.id.name === 'Props' || node.id.name === 'NativeProps') {
       throw new Error(
-        `Type alias 'Props' is not allowed. Use more descriptive name.`,
+        `Type aliases 'Props' and 'NativeProps' are not allowed. Use more descriptive name.`,
       );
     }
   },
   InterfaceDeclaration(node): void {
-    if (node.id.name === 'Props') {
+    if (node.id.name === 'Props' || node.id.name === 'NativeProps') {
       throw new Error(
-        `Type alias 'Props' is not allowed. Use more descriptive name.`,
+        `Type aliases 'Props' and 'NativeProps' are not allowed. Use more descriptive name.`,
       );
     }
   },
 });
 
 /**
- * flow-api-translator doesn't translate empty type to never due to difference
- * in semantics between the two. This is desirable behavtior in this case,
- * as it's the closest approximation of the empty type.
+ * Prevents the usage of 'Props' and 'NativeProps' type aliases across the
+ * public API of React Native.
  */
 async function ensureNoUnprefixedProps(
   source: ParseResult,

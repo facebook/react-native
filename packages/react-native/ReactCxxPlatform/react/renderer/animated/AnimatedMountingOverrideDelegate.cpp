@@ -9,6 +9,7 @@
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
@@ -53,6 +54,7 @@ AnimatedMountingOverrideDelegate::pullTransaction(
   }
 
   ShadowViewMutation::List filteredMutations;
+  filteredMutations.reserve(mutations.size());
   for (const auto& mutation : mutations) {
     folly::dynamic modifiedProps = folly::dynamic::object();
     if (mutation.type == ShadowViewMutation::Update) {
@@ -62,7 +64,7 @@ AnimatedMountingOverrideDelegate::pullTransaction(
       }
     }
     if (modifiedProps.empty()) {
-      filteredMutations.emplace_back(mutation);
+      filteredMutations.push_back(mutation);
     } else {
       if (const auto* componentDescriptor =
               scheduler_
@@ -75,7 +77,19 @@ AnimatedMountingOverrideDelegate::pullTransaction(
         modifiedNewChildShadowView.props = componentDescriptor->cloneProps(
             propsParserContext,
             mutation.newChildShadowView.props,
-            RawProps(std::move(modifiedProps)));
+            RawProps(modifiedProps));
+#ifdef RN_SERIALIZABLE_STATE
+        // Until Props 2.0 is shipped, android uses rawProps.
+        // RawProps must be kept synced with C++ Animated as well
+        // as props object.
+        auto& castedProps =
+            const_cast<Props&>(*modifiedNewChildShadowView.props);
+        castedProps.rawProps = mergeDynamicProps(
+            mutation.newChildShadowView.props->rawProps,
+            modifiedProps,
+            NullValueStrategy::Override);
+#endif
+
         filteredMutations.emplace_back(ShadowViewMutation::UpdateMutation(
             mutation.oldChildShadowView,
             std::move(modifiedNewChildShadowView),

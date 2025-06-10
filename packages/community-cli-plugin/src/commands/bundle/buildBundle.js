@@ -15,10 +15,10 @@ import type {ConfigT} from 'metro-config';
 import loadMetroConfig from '../../utils/loadMetroConfig';
 import parseKeyValueParamArray from '../../utils/parseKeyValueParamArray';
 import saveAssets from './saveAssets';
-import chalk from 'chalk';
 import {promises as fs} from 'fs';
 import {runBuild} from 'metro';
 import path from 'path';
+import {styleText} from 'util';
 
 export type BundleCommandArgs = {
   assetsDest?: string,
@@ -69,14 +69,14 @@ async function buildBundleWithConfig(
 
   if (config.resolver.platforms.indexOf(args.platform) === -1) {
     console.error(
-      `${chalk.red('error')}: Invalid platform ${
-        args.platform ? `"${chalk.bold(args.platform)}" ` : ''
+      `${styleText('red', 'error')}: Invalid platform ${
+        args.platform ? `"${styleText('bold', args.platform)}" ` : ''
       }selected.`,
     );
 
     console.info(
       `Available platforms are: ${config.resolver.platforms
-        .map(x => `"${chalk.bold(x)}"`)
+        .map(x => `"${styleText('bold', x)}"`)
         .join(
           ', ',
         )}. If you are trying to bundle for an out-of-tree platform, it may not be installed.`,

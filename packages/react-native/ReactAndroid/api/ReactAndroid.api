@@ -186,11 +186,12 @@ public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, 
 	protected static final field ARG_DISABLE_HOST_LIFECYCLE_EVENTS Ljava/lang/String;
 	protected static final field ARG_FABRIC_ENABLED Ljava/lang/String;
 	protected static final field ARG_LAUNCH_OPTIONS Ljava/lang/String;
-	protected field mReactDelegate Lcom/facebook/react/ReactDelegate;
+	public static final field Companion Lcom/facebook/react/ReactFragment$Companion;
+	protected field reactDelegate Lcom/facebook/react/ReactDelegate;
 	public fun <init> ()V
 	public fun checkPermission (Ljava/lang/String;II)I
 	public fun checkSelfPermission (Ljava/lang/String;)I
-	protected fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
+	protected final fun getReactDelegate ()Lcom/facebook/react/ReactDelegate;
 	protected fun getReactHost ()Lcom/facebook/react/ReactHost;
 	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	public fun onActivityResult (IILandroid/content/Intent;)V
@@ -203,14 +204,24 @@ public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, 
 	public fun onRequestPermissionsResult (I[Ljava/lang/String;[I)V
 	public fun onResume ()V
 	public fun requestPermissions ([Ljava/lang/String;ILcom/facebook/react/modules/core/PermissionListener;)V
+	protected final fun setReactDelegate (Lcom/facebook/react/ReactDelegate;)V
 }
 
-public class com/facebook/react/ReactFragment$Builder {
+public final class com/facebook/react/ReactFragment$Builder {
 	public fun <init> ()V
-	public fun build ()Lcom/facebook/react/ReactFragment;
-	public fun setComponentName (Ljava/lang/String;)Lcom/facebook/react/ReactFragment$Builder;
-	public fun setFabricEnabled (Z)Lcom/facebook/react/ReactFragment$Builder;
-	public fun setLaunchOptions (Landroid/os/Bundle;)Lcom/facebook/react/ReactFragment$Builder;
+	public final fun build ()Lcom/facebook/react/ReactFragment;
+	public final fun getComponentName ()Ljava/lang/String;
+	public final fun getFabricEnabled ()Z
+	public final fun getLaunchOptions ()Landroid/os/Bundle;
+	public final fun setComponentName (Ljava/lang/String;)Lcom/facebook/react/ReactFragment$Builder;
+	public final fun setComponentName (Ljava/lang/String;)V
+	public final fun setFabricEnabled (Z)Lcom/facebook/react/ReactFragment$Builder;
+	public final fun setFabricEnabled (Z)V
+	public final fun setLaunchOptions (Landroid/os/Bundle;)Lcom/facebook/react/ReactFragment$Builder;
+	public final fun setLaunchOptions (Landroid/os/Bundle;)V
+}
+
+public final class com/facebook/react/ReactFragment$Companion {
 }
 
 public abstract interface class com/facebook/react/ReactHost {
@@ -368,10 +379,10 @@ public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate 
 
 public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder {
 	public fun <init> ()V
-	public fun build ()Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
+	public final fun build ()Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
 	protected abstract fun build (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate;
-	public fun setPackages (Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
-	public fun setReactApplicationContext (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
+	public final fun setPackages (Ljava/util/List;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
+	public final fun setReactApplicationContext (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
 }
 
 public class com/facebook/react/ReactRootView : android/widget/FrameLayout, com/facebook/react/uimanager/ReactRoot, com/facebook/react/uimanager/RootView {
@@ -2387,33 +2398,6 @@ public abstract interface class com/facebook/react/fabric/mounting/MountItemDisp
 	public abstract fun didDispatchMountItems ()V
 	public abstract fun didMountItems (Ljava/util/List;)V
 	public abstract fun willMountItems (Ljava/util/List;)V
-}
-
-public class com/facebook/react/fabric/mounting/MountingManager {
-	public static final field TAG Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/fabric/mounting/MountingManager$MountItemExecutor;)V
-	public fun attachRootView (ILandroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
-	public fun clearJSResponder ()V
-	public fun enqueuePendingEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
-	public fun getEventEmitter (II)Lcom/facebook/react/fabric/events/EventEmitterWrapper;
-	public fun getSurfaceManager (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerEnforced (ILjava/lang/String;)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerForView (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getSurfaceManagerForViewEnforced (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun getViewExists (I)Z
-	public fun isWaitingForViewAttach (I)Z
-	public fun measure (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;[F)J
-	public fun receiveCommand (IIILcom/facebook/react/bridge/ReadableArray;)V
-	public fun receiveCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun sendAccessibilityEvent (III)V
-	public fun startSurface (ILcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
-	public fun stopSurface (I)V
-	public fun surfaceIsStopped (I)Z
-	public fun updateProps (ILcom/facebook/react/bridge/ReadableMap;)V
-}
-
-public abstract interface class com/facebook/react/fabric/mounting/MountingManager$MountItemExecutor {
-	public abstract fun executeItems (Ljava/util/Queue;)V
 }
 
 public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
@@ -4646,6 +4630,7 @@ public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/re
 
 public abstract interface class com/facebook/react/uimanager/ViewManagerDelegate {
 	public abstract synthetic fun kotlinCompat$receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public synthetic fun kotlinCompat$receiveCommandNullableArgs (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public abstract synthetic fun kotlinCompat$setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 	public fun receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
@@ -5446,9 +5431,7 @@ public final class com/facebook/react/views/drawer/ReactDrawerLayoutManager : co
 	public synthetic fun openDrawer (Landroid/view/View;)V
 	public fun openDrawer (Lcom/facebook/react/views/drawer/ReactDrawerLayout;)V
 	public synthetic fun receiveCommand (Landroid/view/View;ILcom/facebook/react/bridge/ReadableArray;)V
-	public synthetic fun receiveCommand (Landroid/view/View;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun receiveCommand (Lcom/facebook/react/views/drawer/ReactDrawerLayout;ILcom/facebook/react/bridge/ReadableArray;)V
-	public fun receiveCommand (Lcom/facebook/react/views/drawer/ReactDrawerLayout;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public synthetic fun setDrawerBackgroundColor (Landroid/view/View;Ljava/lang/Integer;)V
 	public fun setDrawerBackgroundColor (Lcom/facebook/react/views/drawer/ReactDrawerLayout;Ljava/lang/Integer;)V
 	public synthetic fun setDrawerLockMode (Landroid/view/View;Ljava/lang/String;)V

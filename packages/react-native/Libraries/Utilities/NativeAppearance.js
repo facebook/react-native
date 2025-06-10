@@ -10,4 +10,5 @@
 
 export type * from '../../src/private/specs_DEPRECATED/modules/NativeAppearance';
 import NativeAppearance from '../../src/private/specs_DEPRECATED/modules/NativeAppearance';
+
 export default NativeAppearance;
