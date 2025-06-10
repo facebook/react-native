@@ -13,7 +13,7 @@ const {promises: fs} = require('fs');
 const glob = require('glob');
 const path = require('path');
 
-const WORKSPACES_CONFIG = 'packages/*';
+const WORKSPACES_CONFIG = '{packages,private}/*';
 
 /*::
 export type PackageJson = {
