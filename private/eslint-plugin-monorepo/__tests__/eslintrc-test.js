@@ -35,7 +35,9 @@ describe('react-native/.eslintrc.js', () => {
       expect(config).toHaveProperty(
         'rules',
         expect.objectContaining({
-          '@react-native/monorepo/sort-imports': expect.arrayContaining([1]),
+          '@react-native/monorepo/sort-imports': expect.arrayContaining([
+            'warn',
+          ]),
         }),
       );
     });
