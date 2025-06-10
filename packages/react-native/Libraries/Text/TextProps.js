@@ -64,6 +64,16 @@ export type TextPropsIOS = {
   ),
 
   /**
+   * When `true`, enables native Dynamic Type font scaling and accessibility support on iOS.
+   */
+  dynamicTypeEnabled?: ?boolean,
+
+  /**
+   * The iOS Dynamic Type text style to use, e.g. "body", "headline", etc.
+   */
+  textStyle?: ?string,
+
+  /**
    * When `true`, no visual change is made when text is pressed down. By
    * default, a gray oval highlights the text on press down.
    *

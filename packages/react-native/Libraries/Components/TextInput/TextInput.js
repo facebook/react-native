@@ -64,6 +64,26 @@ import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react';
 
+
+import type {
+  // ... all your existing imports ...
+  TextInputProps as OriginalTextInputProps,
+  // ... rest unchanged ...
+} from './TextInput.flow';
+
+// PATCH: redefine TextInputProps to include the new props
+export type TextInputProps = {
+  ...OriginalTextInputProps,
+  /**
+   * Enables true iOS Dynamic Type support if implemented natively.
+   */
+  dynamicTypeEnabled?: ?boolean,
+  /**
+   * The iOS Dynamic Type style to use, e.g. "body", "headline", etc.
+   */
+  textStyle?: ?string,
+};
+
 let AndroidTextInput;
 let AndroidTextInputCommands;
 let RCTSinglelineTextInputView;
@@ -167,6 +187,117 @@ const emptyFunctionThatReturnsTrue = () => true;
  * in native and in JavaScript. This is necessary due to the asynchronous nature
  * of text input events.
  */
+
+// In InternalTextInput and all usages: replace the type with the new TextInputProps
+
+function InternalTextInput(props: TextInputProps): React.Node {
+  // ...existing code...
+  const {
+    // ...existing props...
+    dynamicTypeEnabled, // PATCH: extract new prop
+    textStyle,          // PATCH: extract new prop
+    ...otherProps
+  } = props;
+
+  // ...existing code...
+
+  if (Platform.OS === 'ios') {
+    const RCTTextInputView =
+      props.multiline === true
+        ? RCTMultilineTextInputView
+        : RCTSinglelineTextInputView;
+
+    const useMultilineDefaultStyle =
+      props.multiline === true &&
+      (flattenedStyle == null ||
+        (flattenedStyle.padding == null &&
+          flattenedStyle.paddingVertical == null &&
+          flattenedStyle.paddingTop == null));
+
+    textInput = (
+      <RCTTextInputView
+        // ...existing props...
+        dynamicTypeEnabled={dynamicTypeEnabled} // PATCH: pass through
+        textStyle={textStyle}                   // PATCH: pass through
+      />
+    );
+  } else if (Platform.OS === 'android') {
+    // ...existing code...
+    textInput = (
+      <AndroidTextInput
+        // ...existing props...
+        dynamicTypeEnabled={dynamicTypeEnabled} // PATCH: pass through
+        textStyle={textStyle}                   // PATCH: pass through
+      />
+    );
+  }
+  // ...existing code...
+}
+
+// PATCH: In the TextInput component definition, update the types for the new props
+const TextInput: component(
+  ref?: React.RefSetter<TextInputInstance>,
+  ...props: React.ElementConfig<typeof InternalTextInput>
+) = function TextInput({
+  ref: forwardedRef,
+  allowFontScaling = true,
+  rejectResponderTermination = true,
+  underlineColorAndroid = 'transparent',
+  autoComplete,
+  textContentType,
+  readOnly,
+  editable,
+  enterKeyHint,
+  returnKeyType,
+  inputMode,
+  showSoftInputOnFocus,
+  keyboardType,
+  dynamicTypeEnabled, // PATCH: extract
+  textStyle,         // PATCH: extract
+  ...restProps
+}: {
+  ref?: React.RefSetter<TextInputInstance>,
+  dynamicTypeEnabled?: ?boolean, // PATCH: pass through
+  textStyle?: ?string,           // PATCH: pass through
+  ...React.ElementConfig<typeof InternalTextInput>,
+}) {
+  return (
+    <InternalTextInput
+      allowFontScaling={allowFontScaling}
+      rejectResponderTermination={rejectResponderTermination}
+      underlineColorAndroid={underlineColorAndroid}
+      editable={readOnly !== undefined ? !readOnly : editable}
+      returnKeyType={
+        enterKeyHint ? enterKeyHintToReturnTypeMap[enterKeyHint] : returnKeyType
+      }
+      keyboardType={
+        inputMode ? inputModeToKeyboardTypeMap[inputMode] : keyboardType
+      }
+      showSoftInputOnFocus={
+        inputMode == null ? showSoftInputOnFocus : inputMode !== 'none'
+      }
+      autoComplete={
+        Platform.OS === 'android'
+          ? autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ?? autoComplete
+          : undefined
+      }
+      textContentType={
+        textContentType != null
+          ? textContentType
+          : Platform.OS === 'ios' &&
+              autoComplete &&
+              autoComplete in autoCompleteWebToTextContentTypeMap
+            ? autoCompleteWebToTextContentTypeMap[autoComplete]
+            : textContentType
+      }
+      dynamicTypeEnabled={dynamicTypeEnabled} // PATCH: pass through
+      textStyle={textStyle}                   // PATCH: pass through
+      {...restProps}
+      forwardedRef={forwardedRef}
+    />
+  );
+};
+
 function useTextInputStateSynchronization({
   props,
   mostRecentEventCount,

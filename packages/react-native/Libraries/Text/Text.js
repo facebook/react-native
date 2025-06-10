@@ -44,6 +44,8 @@ const TextImpl: component(
   accessibilityLabel,
   accessibilityState,
   allowFontScaling,
+  dynamicTypeEnabled, // NEW PROP
+  textStyle,         // NEW PROP
   'aria-busy': ariaBusy,
   'aria-checked': ariaChecked,
   'aria-disabled': ariaDisabled,
@@ -75,6 +77,8 @@ const TextImpl: component(
 }: {
   ref?: React.RefSetter<TextForwardRef>,
   ...TextProps,
+  dynamicTypeEnabled?: boolean, // NEW PROP
+  textStyle?: string,           // NEW PROP
 }) => {
   const _accessibilityLabel = ariaLabel ?? accessibilityLabel;
 
@@ -185,6 +189,8 @@ const TextImpl: component(
             selectionColor: _selectionColor,
             style: _style,
             disabled: disabled,
+            dynamicTypeEnabled, // PATCH: pass through
+            textStyle,          // PATCH: pass through
             children,
           }}
           textPressabilityProps={{
@@ -216,7 +222,10 @@ const TextImpl: component(
         selectable={_selectable}
         selectionColor={_selectionColor}
         style={_style}
-        disabled={disabled}>
+        disabled={disabled}
+        dynamicTypeEnabled={dynamicTypeEnabled} // PATCH: pass through
+        textStyle={textStyle}                   // PATCH: pass through
+      >
         {children}
       </NativeVirtualText>
     );
@@ -258,6 +267,8 @@ const TextImpl: component(
           selectable: _selectable,
           selectionColor: _selectionColor,
           style: _style,
+          dynamicTypeEnabled, // PATCH: pass through
+          textStyle,          // PATCH: pass through
           children,
         }}
         textPressabilityProps={{
@@ -291,7 +302,10 @@ const TextImpl: component(
         ref={forwardedRef}
         selectable={_selectable}
         selectionColor={_selectionColor}
-        style={_style}>
+        style={_style}
+        dynamicTypeEnabled={dynamicTypeEnabled} // PATCH: pass through
+        textStyle={textStyle}                   // PATCH: pass through
+      >
         {children}
       </NativeText>
     );

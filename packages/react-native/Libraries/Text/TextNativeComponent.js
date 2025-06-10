@@ -26,6 +26,14 @@ export type NativeTextProps = $ReadOnly<{
   // react-native-windows. It can be used to only hit test virtual text spans
   // that have pressable events attached to them.
   isPressable?: ?boolean,
+  /**
+   * Enables true iOS Dynamic Type support if implemented natively.
+   */
+  dynamicTypeEnabled?: ?boolean,
+  /**
+   * The iOS Dynamic Type style to use, e.g. "body", "headline", etc.
+   */
+  textStyle?: ?string,
 }>;
 
 const textViewConfig = {
@@ -36,6 +44,8 @@ const textViewConfig = {
     ellipsizeMode: true,
     allowFontScaling: true,
     dynamicTypeRamp: true,
+    dynamicTypeEnabled: true, // Added
+    textStyle: true, // Added
     maxFontSizeMultiplier: true,
     disabled: true,
     selectable: true,
@@ -61,6 +71,8 @@ const virtualTextViewConfig = {
     isHighlighted: true,
     isPressable: true,
     maxFontSizeMultiplier: true,
+    dynamicTypeEnabled: true, // Added for virtual text
+    textStyle: true, // Added for virtual text
   },
   uiViewClassName: 'RCTVirtualText',
 };
