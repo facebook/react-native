@@ -1751,8 +1751,8 @@ exports[`public API should not change unintentionally Libraries/Components/Layou
   mode: \\"strict\\" | \\"compatibility\\",
   ...ViewProps,
 }>;
-declare const LayoutConformanceNativeComponent: HostComponent<Props>;
-declare export default typeof LayoutConformanceNativeComponent;
+declare const LayoutConformanceNativeComponent_default: HostComponent<Props>;
+declare export default typeof LayoutConformanceNativeComponent_default;
 "
 `;
 
@@ -1948,15 +1948,15 @@ export { default } from \\"../../../src/private/specs_DEPRECATED/components/Andr
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/AndroidHorizontalScrollViewNativeComponent.js 1`] = `
 "declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props>;
-declare export default typeof AndroidHorizontalScrollViewNativeComponent;
+declare const AndroidHorizontalScrollViewNativeComponent_default: HostComponent<Props>;
+declare export default typeof AndroidHorizontalScrollViewNativeComponent_default;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollContentViewNativeComponent.js 1`] = `
 "declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ScrollContentViewNativeComponent: HostComponent<Props>;
-declare export default typeof ScrollContentViewNativeComponent;
+declare const ScrollContentViewNativeComponent_default: HostComponent<Props>;
+declare export default typeof ScrollContentViewNativeComponent_default;
 "
 `;
 
@@ -2147,8 +2147,8 @@ declare export const VERTICAL: Value;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollViewNativeComponent.js 1`] = `
 "declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ScrollViewNativeComponent: HostComponent<Props>;
-declare export default typeof ScrollViewNativeComponent;
+declare const ScrollViewNativeComponent_default: HostComponent<Props>;
+declare export default typeof ScrollViewNativeComponent_default;
 "
 `;
 
@@ -4574,8 +4574,8 @@ interface NativeCommands {
 }
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ImageViewNativeComponent: HostComponent<ImageHostComponentProps>;
-declare export default typeof ImageViewNativeComponent;
+declare const ImageViewNativeComponent_default: HostComponent<ImageHostComponentProps>;
+declare export default typeof ImageViewNativeComponent_default;
 "
 `;
 

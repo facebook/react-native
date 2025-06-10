@@ -107,7 +107,7 @@ const ActivityIndicator: component(
     styleAttr: 'Normal',
     indeterminate: true,
   };
-
+  console.log('aaaaaaaa', PlatformActivityIndicator, Platform.OS);
   return (
     <View
       onLayout={onLayout}
