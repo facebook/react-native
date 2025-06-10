@@ -97,7 +97,12 @@ const visitor: PluginObj<mixed> = {
       const newName = `${localSymbol}_default`;
       nodePath.traverse({
         Identifier(innerPath) {
-          if (innerPath.node.name === localSymbol) {
+          if (
+            innerPath.node.name === localSymbol &&
+            !innerPath.findParent(
+              path => t.isMemberExpression(path) || t.isTSQualifiedName(path),
+            )
+          ) {
             innerPath.node.name = newName;
           }
         },
