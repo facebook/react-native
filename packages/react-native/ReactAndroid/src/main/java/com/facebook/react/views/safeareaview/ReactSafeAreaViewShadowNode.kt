@@ -11,10 +11,5 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.uimanager.LayoutShadowNode
 
-@Deprecated(
-    message = "ReactSafeAreaViewShadowNode is deprecated and will be removed in a future release. " +
-              "Use react-native-safe-area-context instead.",
-    level = DeprecationLevel.WARNING
-)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class ReactSafeAreaViewShadowNode : LayoutShadowNode()
