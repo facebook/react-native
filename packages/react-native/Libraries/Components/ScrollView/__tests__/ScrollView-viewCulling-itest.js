@@ -2534,3 +2534,25 @@ describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace
     );
   });
 });
+
+describe('culling inside ScrollView with overflow visible', () => {
+  it('shows view outside of bounds', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100, overflow: 'visible'}}>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 145}} // 145 is below the viewport
+          />
+        </ScrollView>,
+      );
+    });
+
+    // Child is not culled because overflow:visible.
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+  });
+});
