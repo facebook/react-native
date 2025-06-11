@@ -35,8 +35,6 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.ChoreographerProvider;
-import com.facebook.react.jscexecutor.JSCExecutor;
-import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.RequestHandler;
@@ -383,19 +381,11 @@ public class ReactInstanceManagerBuilder {
       HermesExecutor.loadLibrary();
       return new HermesExecutorFactory();
     } catch (UnsatisfiedLinkError ignoredHermesError) {
-      try {
-        JSCExecutor.loadLibrary();
-        return new JSCExecutorFactory(appName, deviceName);
-      } catch (UnsatisfiedLinkError jscError) {
-        FLog.e(
-            TAG,
-            "Unable to load neither the Hermes nor the JSC native library. "
-                + "Your application is not built correctly and will fail to execute");
-        if (jscError.getMessage().contains("__cxa_bad_typeid")) {
-          throw jscError;
-        }
-        return null;
-      }
+      FLog.e(
+          TAG,
+          "Unable to load Hermes JS engine. Your application is not built correctly and will fail"
+              + " to execute");
+      return null;
     }
   }
 }
