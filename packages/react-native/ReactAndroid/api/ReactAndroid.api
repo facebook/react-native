@@ -290,37 +290,38 @@ public class com/facebook/react/ReactInstanceManager {
 public abstract interface class com/facebook/react/ReactInstanceManager$ReactInstanceEventListener : com/facebook/react/ReactInstanceEventListener {
 }
 
-public class com/facebook/react/ReactInstanceManagerBuilder {
-	public fun addPackage (Lcom/facebook/react/ReactPackage;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun addPackages (Ljava/util/List;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun build ()Lcom/facebook/react/ReactInstanceManager;
-	public fun setApplication (Landroid/app/Application;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setBundleAssetName (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setChoreographerProvider (Lcom/facebook/react/internal/ChoreographerProvider;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setCurrentActivity (Landroid/app/Activity;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setCustomPackagerCommandHandlers (Ljava/util/Map;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setDefaultHardwareBackBtnHandler (Lcom/facebook/react/modules/core/DefaultHardwareBackBtnHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setDevBundleDownloadListener (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setDevLoadingViewManager (Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setDevSupportManagerFactory (Lcom/facebook/react/devsupport/DevSupportManagerFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setInitialLifecycleState (Lcom/facebook/react/common/LifecycleState;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setJSBundleFile (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setJSBundleLoader (Lcom/facebook/react/bridge/JSBundleLoader;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setJSExceptionHandler (Lcom/facebook/react/bridge/JSExceptionHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setJSMainModulePath (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setJavaScriptExecutorFactory (Lcom/facebook/react/bridge/JavaScriptExecutorFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setKeepActivity (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setLazyViewManagersEnabled (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setMinNumShakes (I)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setMinTimeLeftInFrameForNonBatchedOperationMs (I)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setPausedInDebuggerOverlayManager (Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setReactPackageTurboModuleManagerDelegateBuilder (Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setRedBoxHandler (Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setRequireActivity (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setSurfaceDelegateFactory (Lcom/facebook/react/common/SurfaceDelegateFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setUIManagerProvider (Lcom/facebook/react/bridge/UIManagerProvider;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setUseDeveloperSupport (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
+public final class com/facebook/react/ReactInstanceManagerBuilder {
+	public fun <init> ()V
+	public final fun addPackage (Lcom/facebook/react/ReactPackage;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun addPackages (Ljava/util/List;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun build ()Lcom/facebook/react/ReactInstanceManager;
+	public final fun setApplication (Landroid/app/Application;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setBridgeIdleDebugListener (Lcom/facebook/react/bridge/NotThreadSafeBridgeIdleDebugListener;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setBundleAssetName (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setChoreographerProvider (Lcom/facebook/react/internal/ChoreographerProvider;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setCurrentActivity (Landroid/app/Activity;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setCustomPackagerCommandHandlers (Ljava/util/Map;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setDefaultHardwareBackBtnHandler (Lcom/facebook/react/modules/core/DefaultHardwareBackBtnHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setDevBundleDownloadListener (Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setDevLoadingViewManager (Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setDevSupportManagerFactory (Lcom/facebook/react/devsupport/DevSupportManagerFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setInitialLifecycleState (Lcom/facebook/react/common/LifecycleState;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setJSBundleFile (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setJSBundleLoader (Lcom/facebook/react/bridge/JSBundleLoader;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setJSExceptionHandler (Lcom/facebook/react/bridge/JSExceptionHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setJSMainModulePath (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setJavaScriptExecutorFactory (Lcom/facebook/react/bridge/JavaScriptExecutorFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setKeepActivity (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setLazyViewManagersEnabled (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setMinNumShakes (I)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setMinTimeLeftInFrameForNonBatchedOperationMs (I)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setPausedInDebuggerOverlayManager (Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setReactPackageTurboModuleManagerDelegateBuilder (Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setRedBoxHandler (Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setRequireActivity (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setSurfaceDelegateFactory (Lcom/facebook/react/common/SurfaceDelegateFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setUIManagerProvider (Lcom/facebook/react/bridge/UIManagerProvider;)Lcom/facebook/react/ReactInstanceManagerBuilder;
+	public final fun setUseDeveloperSupport (Z)Lcom/facebook/react/ReactInstanceManagerBuilder;
 }
 
 public abstract class com/facebook/react/ReactNativeHost {

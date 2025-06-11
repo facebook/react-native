@@ -24,7 +24,7 @@ public class JSCExecutor internal constructor(jscConfig: ReadableNativeMap) :
     return "JSCExecutor"
   }
 
-  private companion object {
+  internal companion object {
     init {
       loadLibrary()
       LegacyArchitectureLogger.assertLegacyArchitecture("JSCExecutor")
