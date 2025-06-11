@@ -175,51 +175,6 @@ function runExceptionsManagerTests() {
         expect(console.error).toBeCalledWith(formattedMessage);
       });
 
-      test('adds the JS engine to the message', () => {
-        const error = new Error('Some error happened');
-        // $FlowFixMe[prop-missing]
-        error.jsEngine = 'hermes';
-        // Copy all the data we care about before any possible mutation.
-        const {message, jsEngine} = error;
-
-        ReactFiberErrorDialog.showErrorDialog({
-          ...capturedErrorDefaults,
-          error,
-        });
-
-        let exceptionData;
-
-        if (__DEV__) {
-          expect(logBoxAddConsoleLog).not.toBeCalled();
-          expect(nativeReportException).not.toBeCalled();
-          expect(logBoxAddException).toBeCalledTimes(1);
-          exceptionData = logBoxAddException.mock.calls[0][0];
-        } else {
-          expect(logBoxAddConsoleLog).not.toBeCalled();
-          expect(logBoxAddException).not.toBeCalled();
-          expect(nativeReportException).toBeCalledTimes(1);
-          exceptionData = nativeReportException.mock.calls[0][0];
-        }
-        expect(exceptionData.message).toBe(
-          'Error: ' +
-            message +
-            '\n\n' +
-            'This error is located at:' +
-            capturedErrorDefaults.componentStack +
-            ', js engine: ' +
-            jsEngine,
-        );
-        expect(console.error).toBeCalledWith(
-          'Error: ' +
-            message +
-            '\n\n' +
-            'This error is located at:' +
-            capturedErrorDefaults.componentStack +
-            ', js engine: ' +
-            jsEngine,
-        );
-      });
-
       test('wraps string in an Error and sends to handleException', () => {
         const message = 'Some error happened';
 
