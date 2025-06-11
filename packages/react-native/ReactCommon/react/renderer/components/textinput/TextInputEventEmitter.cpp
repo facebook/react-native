@@ -11,8 +11,6 @@ namespace facebook::react {
 
 static jsi::Value textInputMetricsPayload(
     jsi::Runtime& runtime,
-    const std::string& name,
-
     const TextInputEventEmitter::Metrics& textInputMetrics,
     bool includeSelectionState) {
   auto payload = jsi::Object(runtime);
@@ -184,10 +182,9 @@ void TextInputEventEmitter::dispatchTextInputEvent(
     const Metrics& textInputMetrics,
     bool includeSelectionState) const {
   dispatchEvent(
-      name,
-      [name, includeSelectionState, textInputMetrics](jsi::Runtime& runtime) {
+      name, [includeSelectionState, textInputMetrics](jsi::Runtime& runtime) {
         return textInputMetricsPayload(
-            runtime, name, textInputMetrics, includeSelectionState);
+            runtime, textInputMetrics, includeSelectionState);
       });
 }
 
