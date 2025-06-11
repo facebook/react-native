@@ -41,7 +41,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   private var clickableSpans: List<ClickableSpan> = emptyList()
   private var selection: TextSelection? = null
 
-  public var preparedLayout: PreparedLayout? = null
+  var preparedLayout: PreparedLayout? = null
     set(value) {
       if (field != value) {
         val lastSelection = selection
@@ -63,7 +63,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
   // T221698007: This is closest to existing behavior, but does not align with web. We may want to
   // change in the future if not too breaking.
-  public var overflow: Overflow = Overflow.HIDDEN
+  var overflow: Overflow = Overflow.HIDDEN
     set(value) {
       if (field != value) {
         field = value
@@ -71,9 +71,9 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
     }
 
-  public @ColorInt var selectionColor: Int? = null
+  @ColorInt var selectionColor: Int? = null
 
-  public val text: CharSequence?
+  val text: CharSequence?
     get() = preparedLayout?.layout?.text
 
   init {
@@ -88,7 +88,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     preparedLayout = null
   }
 
-  public fun recycleView(): Unit {
+  fun recycleView(): Unit {
     initView()
     BackgroundStyleApplicator.reset(this)
     overflow = Overflow.HIDDEN
@@ -122,7 +122,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     // No-op
   }
 
-  public fun setSelection(start: Int, end: Int) {
+  fun setSelection(start: Int, end: Int) {
     val layout = checkNotNull(preparedLayout).layout
     if (start < 0 || end > layout.text.length || start >= end) {
       throw IllegalArgumentException(
@@ -143,7 +143,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     invalidate()
   }
 
-  public fun clearSelection() {
+  fun clearSelection() {
     selection = null
     invalidate()
   }

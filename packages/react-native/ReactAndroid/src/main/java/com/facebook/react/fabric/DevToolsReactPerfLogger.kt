@@ -148,15 +148,15 @@ public class DevToolsReactPerfLogger : FabricMarkerListener {
   }
 
   private companion object {
-    @JvmField internal val streamingCommitStats: LongStreamingStats = LongStreamingStats()
+    @JvmField val streamingCommitStats: LongStreamingStats = LongStreamingStats()
 
-    @JvmField internal val streamingLayoutStats: LongStreamingStats = LongStreamingStats()
+    @JvmField val streamingLayoutStats: LongStreamingStats = LongStreamingStats()
 
-    @JvmField internal val streamingDiffStats: LongStreamingStats = LongStreamingStats()
+    @JvmField val streamingDiffStats: LongStreamingStats = LongStreamingStats()
 
-    @JvmField internal val streamingTransactionEndStats: LongStreamingStats = LongStreamingStats()
+    @JvmField val streamingTransactionEndStats: LongStreamingStats = LongStreamingStats()
 
-    @JvmField internal val streamingBatchExecutionStats: LongStreamingStats = LongStreamingStats()
+    @JvmField val streamingBatchExecutionStats: LongStreamingStats = LongStreamingStats()
 
     private fun isFabricCommitMarker(name: ReactMarkerConstants): Boolean =
         name == ReactMarkerConstants.FABRIC_COMMIT_START ||

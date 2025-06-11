@@ -67,7 +67,7 @@ public class JavaScriptModuleRegistry {
       return name ?: getJSModuleName(moduleInterface).also { name = it }
     }
 
-    public override fun invoke(proxy: Any, method: Method, args: Array<Any?>?): Any? {
+    override fun invoke(proxy: Any, method: Method, args: Array<Any?>?): Any? {
       val jsArgs = if (args != null) Arguments.fromJavaArgs(args) else WritableNativeArray()
       catalystInstance.callFunction(getJSModuleName(), method.name, jsArgs)
       return null

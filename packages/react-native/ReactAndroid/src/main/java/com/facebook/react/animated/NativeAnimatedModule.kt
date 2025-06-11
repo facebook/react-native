@@ -111,7 +111,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
       private var valueMap: Array<BatchExecutionOpCodes>? = null
 
       @JvmStatic
-      public fun fromId(id: Int): BatchExecutionOpCodes {
+      fun fromId(id: Int): BatchExecutionOpCodes {
         val valueMapNonnull: Array<BatchExecutionOpCodes> =
             valueMap ?: BatchExecutionOpCodes.values()
         if (valueMap == null) {
