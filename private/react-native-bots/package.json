@@ -1,0 +1,15 @@
+{
+  "name": "@react-native/bots",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">= 22.14.0"
+  },
+  "devDependencies": {
+    "@rnx-kit/rn-changelog-generator": "^0.4.0",
+    "danger": "^13.0.4",
+    "lodash.includes": "^4.3.0",
+    "minimatch": "^3.0.4"
+  }
+}
