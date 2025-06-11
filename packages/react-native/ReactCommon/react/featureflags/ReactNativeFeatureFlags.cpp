@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b724dc9b1812a124f4964640b7fca8a1>>
+ * @generated SignedSource<<a0e59fa5c3d19106f20268393bc00d6c>>
  */
 
 /**
@@ -176,6 +176,10 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForText() {
 
 bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
   return getAccessor().enableViewRecyclingForView();
+}
+
+bool ReactNativeFeatureFlags::enableVirtualViewDebugFeatures() {
+  return getAccessor().enableVirtualViewDebugFeatures();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {

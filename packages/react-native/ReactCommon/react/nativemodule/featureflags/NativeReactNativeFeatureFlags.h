@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e292665e2ee20e82b3a76b33743225d9>>
+ * @generated SignedSource<<a555900c430a994a19aa707c6b46d36c>>
  */
 
 /**
@@ -111,6 +111,8 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForText(jsi::Runtime& runtime);
 
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
+
+  bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 

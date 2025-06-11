@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<daf78f5249ed27828d8e2fb83d5e5df3>>
+ * @generated SignedSource<<a37cb95e16d878b254a839f7db66e708>>
  */
 
 /**
@@ -58,6 +58,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
+  private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
@@ -413,6 +414,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecyclingForView()
       enableViewRecyclingForViewCache = cached
+    }
+    return cached
+  }
+
+  override fun enableVirtualViewDebugFeatures(): Boolean {
+    var cached = enableVirtualViewDebugFeaturesCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewDebugFeatures()
+      enableVirtualViewDebugFeaturesCache = cached
     }
     return cached
   }

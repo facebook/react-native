@@ -449,6 +449,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewDebugFeatures: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables VirtualView debug features such as logging and overlays.',
+        expectedReleaseValue: false,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -681,16 +691,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableVirtualViewDebugFeatures: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables VirtualView debug features such as logging and overlays.',
-        expectedReleaseValue: false,
-        purpose: 'operational',
       },
       ossReleaseStage: 'none',
     },

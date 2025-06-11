@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ac09fd0e72e9fa41a5a13578fcd98d03>>
+ * @generated SignedSource<<3eab0cf94209edf798e41649ebabb6ca>>
  */
 
 /**
@@ -385,6 +385,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableViewRecyclingForView();
+  }
+
+  bool enableVirtualViewDebugFeatures() override {
+    auto value = values_["enableVirtualViewDebugFeatures"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableVirtualViewDebugFeatures();
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
