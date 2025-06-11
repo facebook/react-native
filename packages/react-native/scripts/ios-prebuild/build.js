@@ -58,7 +58,8 @@ function buildSwiftPackage(
 ) {
   const buildCommand =
     `xcodebuild -scheme React -destination "generic/platform=${platform}" -derivedDataPath "${outputFolder}" ` +
-    `-configuration "${buildType}" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface"`;
+    `-configuration "${buildType}" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface" ` +
+    `DEBUG_INFORMATION_FORMAT="dwarf-with-dsym"`;
   buildLog(`Building Swift package for ${buildType}`);
   buildLog(buildCommand);
 

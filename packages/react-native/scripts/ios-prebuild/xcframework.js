@@ -125,6 +125,19 @@ function buildXCFrameworks(
 
   // Create the module map file
   createModuleMapFile(outputPath, umbrellaHeaderFile);
+
+  // Copy Symbols to symbols folder
+  const symbolPaths = frameworkFolders.map(framework =>
+    path.join(framework, `..`, `..`, `React.framework.dSYM`),
+  );
+  console.log('Copying symbols to symbols folder...');
+  const symbolOutput = path.join(outputPath, '..', 'Symbols');
+  symbolPaths.forEach(symbol => {
+    const destination = extractDestinationFromPath(symbol);
+    const outputFolder = path.join(symbolOutput, destination);
+    fs.mkdirSync(outputFolder, {recursive: true});
+    execSync(`cp -r ${symbol} ${outputFolder}`);
+  });
 }
 
 function copyHeaderFiles(
@@ -323,6 +336,23 @@ function cleanPlatformFolders(outputPath /*:string*/) {
   });
 }
 
+function extractDestinationFromPath(symbolPath /*: string */) /*: string */ {
+  if (symbolPath.includes('iphoneos')) {
+    return 'iphoneos';
+  }
+
+  if (symbolPath.includes('iphonesimulator')) {
+    return 'iphonesimulator';
+  }
+
+  if (symbolPath.includes('maccatalyst')) {
+    return 'catalyst';
+  }
+
+  throw new Error(
+    `Impossible to extract destination from ${symbolPath}. Valid destinations are iphoneos, iphonesimulator and catalyst.`,
+  );
+}
 module.exports = {
   buildXCFrameworks,
 };
