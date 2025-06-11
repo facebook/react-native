@@ -12,7 +12,7 @@
 
 /*:: import type {ProjectInfo} from '../utils/monorepo'; */
 
-const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
+const {PRIVATE_DIR, REPO_ROOT} = require('../consts');
 const {getPackages} = require('../utils/monorepo');
 const {retry} = require('./utils/retry');
 const {
@@ -135,9 +135,9 @@ async function initNewProjectFromSource(
     console.log('\nDone ✅');
 
     if (useHelloWorld) {
-      console.log('Preparing packages/helloworld/ to be built');
+      console.log('Preparing private/helloworld/ to be built');
       _prepareHelloWorld(version, pathToLocalReactNative);
-      directory = path.join(PACKAGES_DIR, 'helloworld');
+      directory = path.join(PRIVATE_DIR, 'helloworld');
     } else {
       const pathToTemplate = _prepareTemplate(
         version,
@@ -210,7 +210,7 @@ function _prepareHelloWorld(
   version /*: string */,
   pathToLocalReactNative /*: ?string*/,
 ) {
-  const helloworldDir = path.join(PACKAGES_DIR, 'helloworld');
+  const helloworldDir = path.join(PRIVATE_DIR, 'helloworld');
   const helloworldPackageJson = path.join(helloworldDir, 'package.json');
   const packageJson = JSON.parse(
     fs.readFileSync(helloworldPackageJson, 'utf8'),

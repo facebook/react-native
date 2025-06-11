@@ -1,4 +1,4 @@
-require "../../react-native/scripts/cocoapods/autolinking.rb"
+require "../../../packages/react-native/scripts/cocoapods/autolinking.rb"
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
@@ -13,7 +13,7 @@ target 'HelloWorld' do
   config = use_native_modules!(['sh', '../scripts/config.sh'])
 
   use_react_native!(
-    :path => "../../react-native",
+    :path => "../../../packages/react-native",
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
