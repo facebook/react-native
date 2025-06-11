@@ -6,25 +6,17 @@
  */
 
 #include "PerformanceTracer.h"
+#include "Timing.h"
 
 #include <oscompat/OSCompat.h>
+#include <react/timing/primitives.h>
 
 #include <folly/json.h>
 
 #include <array>
 #include <mutex>
 
-namespace facebook::react::jsinspector_modern {
-
-namespace {
-
-uint64_t getUnixTimestampOfNow() {
-  return std::chrono::duration_cast<std::chrono::microseconds>(
-             std::chrono::steady_clock::now().time_since_epoch())
-      .count();
-}
-
-} // namespace
+namespace facebook::react::jsinspector_modern::tracing {
 
 PerformanceTracer& PerformanceTracer::getInstance() {
   static PerformanceTracer tracer;
@@ -52,7 +44,7 @@ bool PerformanceTracer::startTracing() {
         .name = "TracingStartedInPage",
         .cat = "disabled-by-default-devtools.timeline",
         .ph = 'I',
-        .ts = getUnixTimestampOfNow(),
+        .ts = HighResTimeStamp::now(),
         .pid = processId_,
         .tid = oscompat::getCurrentThreadId(),
         .args = folly::dynamic::object("data", folly::dynamic::object()),
@@ -78,7 +70,7 @@ bool PerformanceTracer::stopTracing() {
       .name = "ReactNative-TracingStopped",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
-      .ts = getUnixTimestampOfNow(),
+      .ts = HighResTimeStamp::now(),
       .pid = processId_,
       .tid = oscompat::getCurrentThreadId(),
   });
@@ -117,7 +109,7 @@ void PerformanceTracer::collectEvents(
 
 void PerformanceTracer::reportMark(
     const std::string_view& name,
-    uint64_t start) {
+    HighResTimeStamp start) {
   if (!tracing_) {
     return;
   }
@@ -139,8 +131,8 @@ void PerformanceTracer::reportMark(
 
 void PerformanceTracer::reportMeasure(
     const std::string_view& name,
-    uint64_t start,
-    uint64_t duration,
+    HighResTimeStamp start,
+    HighResDuration duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
   if (!tracing_) {
     return;
@@ -197,7 +189,7 @@ void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
       .name = "process_name",
       .cat = "__metadata",
       .ph = 'M',
-      .ts = 0,
+      .ts = TRACING_TIME_ORIGIN,
       .pid = id,
       .tid = 0,
       .args = folly::dynamic::object("name", name),
@@ -222,7 +214,7 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
       .name = "thread_name",
       .cat = "__metadata",
       .ph = 'M',
-      .ts = 0,
+      .ts = TRACING_TIME_ORIGIN,
       .pid = processId_,
       .tid = id,
       .args = folly::dynamic::object("name", name),
@@ -237,13 +229,15 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
       .name = "ReactNative-ThreadRegistered",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
-      .ts = 0,
+      .ts = TRACING_TIME_ORIGIN,
       .pid = processId_,
       .tid = id,
   });
 }
 
-void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
+void PerformanceTracer::reportEventLoopTask(
+    HighResTimeStamp start,
+    HighResTimeStamp end) {
   if (!tracing_) {
     return;
   }
@@ -265,8 +259,8 @@ void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
 }
 
 void PerformanceTracer::reportEventLoopMicrotasks(
-    uint64_t start,
-    uint64_t end) {
+    HighResTimeStamp start,
+    HighResTimeStamp end) {
   if (!tracing_) {
     return;
   }
@@ -290,7 +284,7 @@ void PerformanceTracer::reportEventLoopMicrotasks(
 folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
     uint64_t threadId,
     uint16_t profileId,
-    uint64_t eventUnixTimestamp) {
+    HighResTimeStamp profileTimestamp) {
   // CDT prioritizes event timestamp over startTime metadata field.
   // https://fburl.com/lo764pf4
   return serializeTraceEvent(TraceEvent{
@@ -298,25 +292,28 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
       .name = "Profile",
       .cat = "disabled-by-default-v8.cpu_profiler",
       .ph = 'P',
-      .ts = eventUnixTimestamp,
+      .ts = profileTimestamp,
       .pid = processId_,
       .tid = threadId,
       .args = folly::dynamic::object(
-          "data", folly ::dynamic::object("startTime", eventUnixTimestamp)),
+          "data",
+          folly::dynamic::object(
+              "startTime",
+              highResTimeStampToTracingClockTimeStamp(profileTimestamp))),
   });
 }
 
 folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
     uint16_t profileId,
     uint64_t threadId,
-    uint64_t eventUnixTimestamp,
+    HighResTimeStamp chunkTimestamp,
     const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
   return serializeTraceEvent(TraceEvent{
       .id = profileId,
       .name = "ProfileChunk",
       .cat = "disabled-by-default-v8.cpu_profiler",
       .ph = 'P',
-      .ts = eventUnixTimestamp,
+      .ts = chunkTimestamp,
       .pid = processId_,
       .tid = threadId,
       .args =
@@ -336,15 +333,15 @@ folly::dynamic PerformanceTracer::serializeTraceEvent(
   result["name"] = event.name;
   result["cat"] = event.cat;
   result["ph"] = std::string(1, event.ph);
-  result["ts"] = event.ts;
+  result["ts"] = highResTimeStampToTracingClockTimeStamp(event.ts);
   result["pid"] = event.pid;
   result["tid"] = event.tid;
   result["args"] = event.args;
   if (event.dur.has_value()) {
-    result["dur"] = event.dur.value();
+    result["dur"] = highResDurationToTracingClockDuration(event.dur.value());
   }
 
   return result;
 }
 
-} // namespace facebook::react::jsinspector_modern
+} // namespace facebook::react::jsinspector_modern::tracing

@@ -57,7 +57,12 @@ class HermesExecutorHolder
     JReactMarker::setLogPerfMarkerIfNeeded();
 
     std::call_once(flag, []() {
-      facebook::hermes::HermesRuntime::setFatalHandler(hermesFatalHandler);
+      auto* fatalHandlerInterface =
+          castInterface<facebook::hermes::ISetFatalHandler>(
+              facebook::hermes::makeHermesRootAPI());
+      if (fatalHandlerInterface) {
+        fatalHandlerInterface->setFatalHandler(hermesFatalHandler);
+      }
     });
     auto factory = std::make_unique<HermesExecutorFactory>(installBindings);
     factory->setEnableDebugger(enableDebugger);
@@ -75,7 +80,10 @@ class HermesExecutorHolder
     JReactMarker::setLogPerfMarkerIfNeeded();
     auto runtimeConfig = makeRuntimeConfig(heapSizeMB);
     std::call_once(flag, []() {
-      facebook::hermes::HermesRuntime::setFatalHandler(hermesFatalHandler);
+      auto fatalHandlerInterface =
+          castInterface<facebook::hermes::ISetFatalHandler>(
+              facebook::hermes::makeHermesRootAPI());
+      fatalHandlerInterface->setFatalHandler(hermesFatalHandler);
     });
     auto factory = std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig);

@@ -8,6 +8,7 @@
 #include "PointerEventsProcessor.h"
 
 #include <glog/logging.h>
+#include <react/renderer/bridging/bridging.h>
 
 namespace facebook::react {
 
@@ -26,7 +27,9 @@ ShadowNode::Shared PointerEventsProcessor::getShadowNodeFromEventTarget(
           auto stateNodeObj = stateNode.asObject(runtime);
           if (stateNodeObj.hasProperty(runtime, "node")) {
             auto node = stateNodeObj.getProperty(runtime, "node");
-            return shadowNodeFromValue(runtime, node);
+            if (node.isObject()) {
+              return Bridging<ShadowNode::Shared>::fromJs(runtime, node);
+            }
           }
         }
       }
@@ -119,7 +122,7 @@ static ShadowNode::Shared getCaptureTargetOverride(
     return nullptr;
   }
 
-  ShadowNode::Weak maybeTarget = pendingPointerItr->second;
+  std::weak_ptr<const ShadowNode> maybeTarget = pendingPointerItr->second;
   if (maybeTarget.expired()) {
     // target has expired so it should functionally behave the same as if it
     // was removed from the override list.

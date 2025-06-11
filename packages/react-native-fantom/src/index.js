@@ -13,14 +13,15 @@ import type {
   RenderOutputConfig,
 } from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
-import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
+import type {RootTag} from 'react-native';
 import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 
 import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
+import {getConstants} from './Constants';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
+import {LogBox} from 'react-native';
 import {createRootTag} from 'react-native/Libraries/ReactNative/RootTag';
-import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/testing/fantom/specs/NativeFantom';
@@ -36,7 +37,11 @@ export type RootConfig = {
   viewportWidth?: number,
   viewportHeight?: number,
   devicePixelRatio?: number,
+  viewportOffsetX?: number,
+  viewportOffsetY?: number,
 };
+
+export {getConstants} from './Constants';
 
 // Defaults use iPhone 14 values (very common device).
 const DEFAULT_VIEWPORT_WIDTH = 390;
@@ -47,6 +52,8 @@ class Root {
   #surfaceId: number;
   #viewportWidth: number;
   #viewportHeight: number;
+  #viewportOffsetX: number;
+  #viewportOffsetY: number;
   #devicePixelRatio: number;
   #document: ?ReactNativeDocument;
 
@@ -59,6 +66,8 @@ class Root {
     this.#devicePixelRatio =
       config?.devicePixelRatio ?? DEFAULT_DEVICE_PIXEL_RATIO;
     globalSurfaceIdCounter += 10;
+    this.#viewportOffsetX = config?.viewportOffsetX ?? 0;
+    this.#viewportOffsetY = config?.viewportOffsetY ?? 0;
   }
 
   // $FlowExpectedError[unsafe-getters-setters]
@@ -85,10 +94,16 @@ class Root {
         this.#viewportWidth,
         this.#viewportHeight,
         this.#devicePixelRatio,
+        this.#viewportOffsetX,
+        this.#viewportOffsetY,
       );
       this.#hasRendered = true;
     }
 
+    // Require Fabric lazily to prevent it from running InitializeCore before the test
+    // has a change to do its environment setup.
+    const ReactFabric =
+      require('react-native/Libraries/Renderer/shims/ReactFabric').default;
     ReactFabric.render(element, this.#surfaceId, null, true);
 
     if (this.#document == null) {
@@ -152,6 +167,7 @@ export function scheduleTask(task: () => void | Promise<void>) {
 }
 
 let flushingQueue = false;
+let isLogBoxCheckEnabled = true;
 
 /**
  * Runs a task on the event loop.
@@ -176,6 +192,45 @@ export function runTask(task: () => void | Promise<void>) {
 
   scheduleTask(task);
   runWorkLoop();
+}
+
+/**
+ * Simulates the production of animation frames for a specified duration.
+ * This function is useful for testing animations or time-dependent behaviors
+ * by advancing the animation frame timeline without waiting for real time to pass.
+ *
+ * @param milliseconds - The duration in milliseconds for which to produce animation frames
+ *
+ * @example
+ * ```
+ * // Simulate 500ms of animation frames
+ * Fantom.unstable_produceFramesForDuration(500);
+ *
+ * // Now you can test the state of your UI after those frames have been produced
+ * ```
+ *
+ * Note: This API is marked as unstable and may change in future versions.
+ */
+export function unstable_produceFramesForDuration(milliseconds: number) {
+  NativeFantom.produceFramesForDuration(milliseconds);
+}
+
+/**
+ * Returns props appplied via direct manipulation to a view represented by shadow node.
+ * Direct manipulation is used by C++ Animated to change view properties on UI tick
+ * while the animation is in progress. Once animation finishes, the final state is committed
+ * to the shadow tree and result is observable through other JavaScript APIs, like `measure`.
+ *
+ * @param node - The node for which to retrieve direct manipulation props.
+ * @returns Mixed type data containing the direct manipulation properties
+ *
+ * Note: This API is marked as unstable and may change in future versions.
+ */
+export function unstable_getDirectManipulationProps(
+  node: ReactNativeElement,
+): mixed {
+  const shadowNode = getNativeNodeReference(node);
+  return NativeFantom.getDirectManipulationProps(shadowNode);
 }
 
 /**
@@ -236,12 +291,41 @@ export function runWorkLoop(): void {
     );
   }
 
+  if (__DEV__) {
+    // We don't want to run these checks in optimized mode
+    // to avoid the small performance overhead in benchmarks.
+    runLogBoxCheck();
+  }
+
   try {
     flushingQueue = true;
     NativeFantom.flushMessageQueue();
   } finally {
     flushingQueue = false;
   }
+
+  if (__DEV__) {
+    // We also do it after because a task might trigger the initialization of the environment that enables LogBox,
+    // which could be equally dangerous.
+    runLogBoxCheck();
+  }
+}
+
+/**
+ * Set this flag to `false` to let Fantom run tasks with LogBox installed
+ * (necessary only if you are testing LogBox specifically).
+ *
+ * Otherwise, it will throw an error when running its work loop,
+ * as LogBox would intercept all errors in tasks instead of making them throw.
+ *
+ * @example
+ * ```
+ * // In LogBox tests:
+ * Fantom.setLogBoxCheckEnabled(false);
+ * ```
+ */
+export function setLogBoxCheckEnabled(enabled: boolean) {
+  isLogBoxCheckEnabled = enabled;
 }
 
 /**
@@ -486,22 +570,6 @@ export function enqueueModalSizeUpdate(
 
 export const unstable_benchmark = Benchmark;
 
-type FantomConstants = $ReadOnly<{
-  isRunningFromCI: boolean,
-}>;
-
-let constants: FantomConstants = {
-  isRunningFromCI: false,
-};
-
-export function getConstants(): FantomConstants {
-  return constants;
-}
-
-export function setConstants(newConstants: FantomConstants): void {
-  constants = newConstants;
-}
-
 /**
  * Quick and dirty polyfills required by tinybench.
  */
@@ -567,6 +635,33 @@ if (typeof global.EventTarget === 'undefined') {
 }
 
 /**
+ * Returns a function that returns the current reference count for the supplied
+ * element's shadow node. If the reference count is zero, that means the shadow
+ * node has been deallocated.
+ *
+ * @param node The node for which to create a reference counting function.
+ */
+export function createShadowNodeReferenceCounter(
+  node: ReactNativeElement,
+): () => number {
+  let shadowNode = getNativeNodeReference(node);
+  return NativeFantom.createShadowNodeReferenceCounter(shadowNode);
+}
+
+/**
+ * Returns a function that returns the current revision number for the supplied
+ * element's shadow node.
+ *
+ * @param node The node for which to create a revision getter.
+ */
+export function createShadowNodeRevisionGetter(
+  node: ReactNativeElement,
+): () => ?number {
+  let shadowNode = getNativeNodeReference(node);
+  return NativeFantom.createShadowNodeRevisionGetter(shadowNode);
+}
+
+/**
  * Saves a heap snapshot after forcing garbage collection.
  *
  * The heapsnapshot is saved to the filename supplied as an argument.
@@ -584,3 +679,20 @@ export function saveJSMemoryHeapSnapshot(filePath: string): void {
 
   NativeFantom.saveJSMemoryHeapSnapshot(filePath);
 }
+
+function runLogBoxCheck() {
+  if (isLogBoxCheckEnabled && LogBox.isInstalled()) {
+    const message =
+      'Cannot run work loop while LogBox is installed, as LogBox intercepts errors thrown in tests.' +
+      ' If you are installing LogBox unintentionally using `InitializeCore`, replace it with `@react-native/fantom/src/setUpDefaultReactNativeEnvironment` to avoid this problem.';
+
+    // This is will go through even if throwing doesn't.
+    console.error(message);
+
+    // Throwing here won't re-throw in the test if LogBox is enabled,
+    // but will hopefully fail it for some other reason.
+    throw new Error(message);
+  }
+}
+
+global.__FANTOM_PACKAGE_LOADED__ = true;

@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
@@ -17,6 +16,7 @@ import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import invariant from 'invariant';
 import * as React from 'react';
+import {createRef} from 'react';
 import {NativeText} from 'react-native/Libraries/Text/TextNativeComponent';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
@@ -36,7 +36,7 @@ function ensureReactNativeElement(value: mixed): ReactNativeElement {
 
 describe('ReadOnlyText', () => {
   it('should be used to create public text instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
-    const parentNodeRef = React.createRef<HostInstance>();
+    const parentNodeRef = createRef<HostInstance>();
 
     const root = Fantom.createRoot();
 
@@ -53,7 +53,7 @@ describe('ReadOnlyText', () => {
   describe('extends `ReadOnlyNode`', () => {
     describe('nodeName', () => {
       it('returns "#text"', () => {
-        const parentNodeRef = React.createRef<HostInstance>();
+        const parentNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
@@ -70,7 +70,7 @@ describe('ReadOnlyText', () => {
 
     describe('nodeType', () => {
       it('returns ReadOnlyNode.TEXT_NODE', () => {
-        const parentNodeRef = React.createRef<HostInstance>();
+        const parentNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
@@ -87,7 +87,7 @@ describe('ReadOnlyText', () => {
 
     describe('nodeValue / textContent', () => {
       it('returns the string data contained in the node', () => {
-        const parentNodeRef = React.createRef<HostInstance>();
+        const parentNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
@@ -105,8 +105,8 @@ describe('ReadOnlyText', () => {
 
     describe('traversal', () => {
       it('only preserves text nodes when their contents do not change', () => {
-        const parentElementRef = React.createRef<HostInstance>();
-        const childElementARef = React.createRef<HostInstance>();
+        const parentElementRef = createRef<HostInstance>();
+        const childElementARef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
@@ -174,7 +174,7 @@ describe('ReadOnlyText', () => {
   describe('extends `ReadOnlyCharacterData`', () => {
     describe('data / length', () => {
       it('returns the string data and its length, respectively', () => {
-        const parentNodeRef = React.createRef<HostInstance>();
+        const parentNodeRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
@@ -194,10 +194,10 @@ describe('ReadOnlyText', () => {
 
     describe('previousElementSibling / nextElementSibling', () => {
       it('return updated relative elements', () => {
-        const parentElementRef = React.createRef<HostInstance>();
-        const childElementARef = React.createRef<HostInstance>();
-        const childElementBRef = React.createRef<HostInstance>();
-        const childElementCRef = React.createRef<HostInstance>();
+        const parentElementRef = createRef<HostInstance>();
+        const childElementARef = createRef<HostInstance>();
+        const childElementBRef = createRef<HostInstance>();
+        const childElementCRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 
@@ -276,7 +276,7 @@ describe('ReadOnlyText', () => {
 
     describe('substringData', () => {
       it('returns a slice of the text content', () => {
-        const parentElementRef = React.createRef<HostInstance>();
+        const parentElementRef = createRef<HostInstance>();
 
         const root = Fantom.createRoot();
 

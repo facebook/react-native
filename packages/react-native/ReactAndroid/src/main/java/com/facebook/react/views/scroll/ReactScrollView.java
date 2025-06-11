@@ -32,7 +32,7 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.ViewCompat.FocusRealDirection;
+import androidx.core.view.ViewCompat.FocusDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -131,6 +131,8 @@ public class ReactScrollView extends ScrollView
   private int mScrollEventThrottle = 0;
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper =
       null;
+  private int mFadingEdgeLengthStart = 0;
+  private int mFadingEdgeLengthEnd = 0;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -263,6 +265,36 @@ public class ReactScrollView extends ScrollView
     awakenScrollBars();
   }
 
+  public int getFadingEdgeLengthStart() {
+    return mFadingEdgeLengthStart;
+  }
+
+  public int getFadingEdgeLengthEnd() {
+    return mFadingEdgeLengthEnd;
+  }
+
+  public void setFadingEdgeLengthStart(int start) {
+    mFadingEdgeLengthStart = start;
+    invalidate();
+  }
+
+  public void setFadingEdgeLengthEnd(int end) {
+    mFadingEdgeLengthEnd = end;
+    invalidate();
+  }
+
+  @Override
+  protected float getTopFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    return (mFadingEdgeLengthStart / max);
+  }
+
+  @Override
+  protected float getBottomFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    return (mFadingEdgeLengthEnd / max);
+  }
+
   public void setOverflow(@Nullable String overflow) {
     if (overflow == null) {
       mOverflow = Overflow.SCROLL;
@@ -364,16 +396,24 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
-  public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
+  public @Nullable View focusSearch(View focused, @FocusDirection int direction) {
+    View nextFocus = super.focusSearch(focused, direction);
+
     if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
-      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, false);
+      // If we can find the next focus and it is a child of this view, return it, else it means we
+      // are leaving the scroll view and we should try to find a clipped element
+      if (nextFocus != null && this.findViewById(nextFocus.getId()) != null) {
+        return nextFocus;
+      }
+
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction);
 
       if (nextfocusableView != null) {
         return nextfocusableView;
       }
     }
 
-    return super.focusSearch(focused, direction);
+    return nextFocus;
   }
 
   /**

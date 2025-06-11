@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 const {REPO_ROOT} = require('../consts');
@@ -14,7 +13,7 @@ const {promises: fs} = require('fs');
 const glob = require('glob');
 const path = require('path');
 
-const WORKSPACES_CONFIG = 'packages/*';
+const WORKSPACES_CONFIG = '{packages,private}/*';
 
 /*::
 export type PackageJson = {
@@ -118,7 +117,10 @@ async function updatePackageJson(
     packageJson.version = newPackageVersions[packageName];
   }
 
-  for (const dependencyField of ['dependencies', 'devDependencies']) {
+  for (const dependencyField of [
+    'dependencies',
+    'devDependencies',
+  ] /*:: as const */) {
     const deps = packageJson[dependencyField];
 
     if (deps == null) {

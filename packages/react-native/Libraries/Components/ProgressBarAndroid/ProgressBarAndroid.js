@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -17,11 +17,23 @@ import Platform from '../../Utilities/Platform';
 
 export type {ProgressBarAndroidProps};
 
+// A utility type to preserve the semantics of the union uses in the definition
+// of ProgressBarAndroidProps. TS's Omit does not distribute over unions, so
+// we define our own version which does. This does not affect Flow.
+// $FlowExpectedError[unclear-type]
+type Omit<T, K> = T extends any ? Pick<T, Exclude<$Keys<T>, K>> : T;
+
+/**
+ * ProgressBarAndroid has been extracted from react-native core and will be removed in a future release.
+ * It can now be installed and imported from `@react-native-community/progress-bar-android` instead of 'react-native'.
+ * @see https://github.com/react-native-community/progress-bar-android
+ * @deprecated
+ */
 let ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<ProgressBarAndroidNativeComponentType>,
   >,
-  ...props: ProgressBarAndroidProps
+  ...props: Omit<ProgressBarAndroidProps, empty>
 );
 
 if (Platform.OS === 'android') {

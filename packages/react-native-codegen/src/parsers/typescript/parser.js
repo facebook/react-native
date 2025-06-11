@@ -118,6 +118,8 @@ class TypeScriptParser implements Parser {
         : 'ObjectTypeAnnotation';
     };
 
+    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     return [...new Set(membersTypes.map(remapLiteral))];
   }
 

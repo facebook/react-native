@@ -13,4 +13,4 @@ package com.facebook.react.common.annotations.internal
  */
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-public annotation class InteropLegacyArchitecture()
+public annotation class InteropLegacyArchitecture

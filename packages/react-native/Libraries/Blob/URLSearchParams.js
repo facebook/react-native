@@ -4,14 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 // Small subset from whatwg-url: https://github.com/jsdom/whatwg-url/tree/master/src
 // The reference code bloat comes from Unicode issues with URLs, so those won't work here.
 export class URLSearchParams {
   _searchParams: Map<string, string[]> = new Map();
+
+  get size(): number {
+    return this._searchParams.size;
+  }
 
   constructor(params?: Record<string, string> | string | [string, string][]) {
     if (params === null) {

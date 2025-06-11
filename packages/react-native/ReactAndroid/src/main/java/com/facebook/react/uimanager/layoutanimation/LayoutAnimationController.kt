@@ -28,8 +28,8 @@ import javax.annotation.concurrent.NotThreadSafe
  * performing an animation.
  */
 @NotThreadSafe
-@LegacyArchitecture
-public class LayoutAnimationController {
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+public open class LayoutAnimationController {
   private val layoutCreateAnimation: AbstractLayoutAnimation = LayoutCreateAnimation()
   private val layoutUpdateAnimation: AbstractLayoutAnimation = LayoutUpdateAnimation()
   private val layoutDeleteAnimation: AbstractLayoutAnimation = LayoutDeleteAnimation()
@@ -68,7 +68,7 @@ public class LayoutAnimationController {
     }
   }
 
-  public fun reset() {
+  public open fun reset() {
     layoutCreateAnimation.reset()
     layoutUpdateAnimation.reset()
     layoutDeleteAnimation.reset()
@@ -83,7 +83,7 @@ public class LayoutAnimationController {
     }
   }
 
-  public fun shouldAnimateLayout(viewToAnimate: View?): Boolean {
+  public open fun shouldAnimateLayout(viewToAnimate: View?): Boolean {
     // if view parent is null, skip animation: view have been clipped, we don't want animation to
     // resume when view is re-attached to parent, which is the standard android animation behavior.
     // If there's a layout handling animation going on, it should be animated nonetheless since the
@@ -106,7 +106,7 @@ public class LayoutAnimationController {
    * @param width the new width value for the view
    * @param height the new height value for the view
    */
-  public fun applyLayoutUpdate(view: View, x: Int, y: Int, width: Int, height: Int) {
+  public open fun applyLayoutUpdate(view: View, x: Int, y: Int, width: Int, height: Int) {
     assertOnUiThread()
 
     val reactTag = view.id
@@ -167,7 +167,7 @@ public class LayoutAnimationController {
    * @param listener Called once the animation is finished, should be used to completely remove the
    *   view.
    */
-  public fun deleteView(view: View, listener: LayoutAnimationListener) {
+  public open fun deleteView(view: View, listener: LayoutAnimationListener) {
     assertOnUiThread()
 
     val animation =
@@ -219,7 +219,7 @@ public class LayoutAnimationController {
 
   private companion object {
     init {
-      assertLegacyArchitecture("LayoutAnimationController", LegacyArchitectureLogLevel.WARNING)
+      assertLegacyArchitecture("LayoutAnimationController", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

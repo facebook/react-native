@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
@@ -35,6 +36,9 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import com.facebook.react.uimanager.events.BlurEvent;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.FocusEvent;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.style.OutlineStyle;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -165,6 +169,36 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     return view;
   }
 
+  @Override
+  protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull T view) {
+    super.addEventEmitters(reactContext, view);
+
+    @Nullable OnFocusChangeListener originalFocusChangeListener = view.getOnFocusChangeListener();
+    view.setOnFocusChangeListener(
+        (v, hasFocus) -> {
+          if (originalFocusChangeListener != null) {
+            originalFocusChangeListener.onFocusChange(v, hasFocus);
+          }
+          int surfaceId = UIManagerHelper.getSurfaceId(v.getContext());
+          if (surfaceId == View.NO_ID) {
+            return;
+          }
+          if (view.getContext() instanceof ThemedReactContext) {
+            ThemedReactContext themedReactContext = (ThemedReactContext) v.getContext();
+            @Nullable
+            EventDispatcher eventDispatcher =
+                UIManagerHelper.getEventDispatcherForReactTag(themedReactContext, view.getId());
+            if (eventDispatcher != null) {
+              if (hasFocus) {
+                eventDispatcher.dispatchEvent(new FocusEvent(surfaceId, view.getId()));
+              } else {
+                eventDispatcher.dispatchEvent(new BlurEvent(surfaceId, view.getId()));
+              }
+            }
+          }
+        });
+  }
+
   // Currently, layout listener is only attached when transform or transformOrigin is set.
   @Override
   public void onLayoutChange(
@@ -292,7 +326,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (view.getTag(R.id.accessibility_order_parent) != null) {
       ViewGroup accessibilityParent = (ViewGroup) view.getTag(R.id.accessibility_order_parent);
 
-      ReactAxOrderHelper.unsetAccessibilityOrder(accessibilityParent);
       accessibilityParent.setTag(R.id.accessibility_order_dirty, true);
 
       accessibilityParent.notifySubtreeAccessibilityStateChanged(
@@ -334,12 +367,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                   view.setTag(R.id.accessibility_order_dirty, true);
                 }
               });
-    }
 
-    ReactAxOrderHelper.unsetAccessibilityOrder(view);
-    ((ViewGroup) view)
-        .notifySubtreeAccessibilityStateChanged(
-            view, view, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+      ((ViewGroup) view)
+          .notifySubtreeAccessibilityStateChanged(
+              view, view, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+    }
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
@@ -780,6 +812,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onClick", "captured", "onClickCapture")))
+            .put(
+                "topBlur",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+            .put(
+                "topFocus",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
             .build());
     return eventTypeConstants;
   }

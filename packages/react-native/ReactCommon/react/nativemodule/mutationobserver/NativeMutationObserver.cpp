@@ -36,20 +36,17 @@ void NativeMutationObserver::observe(
     NativeMutationObserverObserveOptions options) {
   auto mutationObserverId = options.mutationObserverId;
   auto subtree = options.subtree;
-  auto shadowNode =
-      shadowNodeFromValue(runtime, std::move(options).targetShadowNode);
+  auto shadowNode = options.targetShadowNode;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   mutationObserverManager_.observe(
       mutationObserverId, shadowNode, subtree, uiManager);
 }
 
-void NativeMutationObserver::unobserve(
+void NativeMutationObserver::unobserveAll(
     jsi::Runtime& runtime,
-    MutationObserverId mutationObserverId,
-    jsi::Object targetShadowNode) {
-  auto shadowNode = shadowNodeFromValue(runtime, std::move(targetShadowNode));
-  mutationObserverManager_.unobserve(mutationObserverId, *shadowNode);
+    MutationObserverId mutationObserverId) {
+  mutationObserverManager_.unobserveAll(mutationObserverId);
 }
 
 void NativeMutationObserver::connect(

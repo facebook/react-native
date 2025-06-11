@@ -6,33 +6,38 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 require('../babel-register').registerForScript();
 
+const buildApiSnapshot = require('./BuildApiSnapshot');
 const buildGeneratedTypes = require('./buildGeneratedTypes');
-const chalk = require('chalk');
 const debug = require('debug');
-const {parseArgs} = require('util');
+const {parseArgs, styleText} = require('util');
 
 const config = {
   options: {
     debug: {type: 'boolean'},
     help: {type: 'boolean'},
+    withSnapshot: {type: 'boolean'},
   },
 };
 
 async function main() {
   const {
-    values: {debug: debugEnabled, help},
+    values: {debug: debugEnabled, help, withSnapshot},
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help) {
     console.log(`
   Usage: node ./scripts/build-types
 
-  [Experimental] Build generated TypeScript types for react-native.
+  Build generated TypeScript types for react-native.
+
+  Options:
+    --withSnapshot    [Experimental] Include API snapshot generation.
     `);
     process.exitCode = 0;
     return;
@@ -44,28 +49,29 @@ async function main() {
 
   console.log(
     '\n' +
-      chalk.bold.inverse.yellow(
-        'EXPERIMENTAL - Building generated react-native package types',
+      styleText(
+        ['bold', 'inverse'],
+        'Building generated react-native package types',
       ) +
       '\n',
   );
 
-  try {
-    // $FlowIgnore[cannot-resolve-module]
-    const prepareFlowApiTranslator = require('./prepare-flow-api-translator');
-    await prepareFlowApiTranslator();
-  } catch (e) {
-    console.warn(
-      chalk.yellow(
-        'WARNING: Failed to build flow-api-translator from source. Using npm version (may be out of date).',
-      ),
-    );
-  }
-
   await buildGeneratedTypes();
+
+  if (withSnapshot) {
+    console.log(
+      '\n' +
+        styleText(
+          ['bold', 'inverse', 'yellow'],
+          'EXPERIMENTAL - Building API snapshot',
+        ) +
+        '\n',
+    );
+
+    await buildApiSnapshot();
+  }
 }
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

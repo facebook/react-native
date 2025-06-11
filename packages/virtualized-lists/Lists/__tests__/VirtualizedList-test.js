@@ -4,16 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @noflow
  * @format
- * @oncall react_native
  */
 
-'use strict';
-
 import VirtualizedList from '../VirtualizedList';
-import {format} from 'node:util';
 import * as React from 'react';
+import {createElement, createRef} from 'react';
 import {act, create} from 'react-test-renderer';
+import {format} from 'util';
 
 jest.useFakeTimers();
 
@@ -164,7 +163,7 @@ describe('VirtualizedList', () => {
   });
 
   it('scrollToEnd works with null list', async () => {
-    const listRef = React.createRef(null);
+    const listRef = createRef(null);
     await act(() => {
       create(
         <VirtualizedList
@@ -338,7 +337,7 @@ describe('VirtualizedList', () => {
   });
 
   it('empty component returns the original element if it is a React.Fragment', () => {
-    const listRef = React.createRef();
+    const listRef = createRef();
     const fragment = (
       <React.Fragment>
         <div>Test</div>
@@ -363,7 +362,7 @@ describe('VirtualizedList', () => {
   });
 
   it('empty component clones the element and adds onLayout and style props if not a Fragment', () => {
-    const listRef = React.createRef();
+    const listRef = createRef();
     const element = <div>Test</div>;
     const inversionStyle = {transform: [{scaleY: -1}]};
 
@@ -396,7 +395,7 @@ describe('VirtualizedList', () => {
   });
 
   it('empty component preserves original onLayout handler if present', () => {
-    const listRef = React.createRef();
+    const listRef = createRef();
     const originalOnLayout = jest.fn();
     const element = <div onLayout={originalOnLayout}>Test</div>;
     const inversionStyle = {transform: [{scaleY: -1}]};
@@ -494,7 +493,7 @@ describe('VirtualizedList', () => {
   });
 
   it('getScrollRef for case where it returns a ScrollView', async () => {
-    const listRef = React.createRef(null);
+    const listRef = createRef(null);
 
     await act(() => {
       create(
@@ -516,7 +515,7 @@ describe('VirtualizedList', () => {
   });
 
   it('getScrollRef for case where it returns a View', async () => {
-    const listRef = React.createRef(null);
+    const listRef = createRef(null);
 
     await act(() => {
       create(
@@ -888,7 +887,7 @@ describe('VirtualizedList', () => {
     await act(() => {
       component = create(
         <VirtualizedList
-          ListHeaderComponent={() => React.createElement('Header')}
+          ListHeaderComponent={() => createElement('Header')}
           initialNumToRender={10}
           {...baseItemProps(items)}
           {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
@@ -1068,7 +1067,7 @@ it('gracefully handles too large initialScrollIndex', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const listRef = React.createRef();
+  const listRef = createRef();
 
   const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -1128,7 +1127,7 @@ it('scrolls after content sizing with integer initialScrollIndex', async () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const listRef = React.createRef(null);
+  const listRef = createRef(null);
 
   let component;
   await act(() => {
@@ -1160,7 +1159,7 @@ it('scrolls after content sizing with near-zero initialScrollIndex', async () =>
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const listRef = React.createRef(null);
+  const listRef = createRef(null);
 
   let component;
   await act(() => {
@@ -1192,7 +1191,7 @@ it('scrolls after content sizing with near-end initialScrollIndex', async () => 
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
-  const listRef = React.createRef(null);
+  const listRef = createRef(null);
 
   let component;
   await act(() => {
@@ -1229,7 +1228,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (getItemLayo
     index,
   });
 
-  const listRef = React.createRef(null);
+  const listRef = createRef(null);
 
   let component;
   await act(() => {
@@ -1259,7 +1258,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (getItemLayo
 
 it('scrolls after content sizing with fractional initialScrollIndex (cached layout)', async () => {
   const items = generateItems(10);
-  const listRef = React.createRef(null);
+  const listRef = createRef(null);
 
   let component;
   await act(() => {
@@ -1300,7 +1299,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (cached layo
 
 it('scrolls after content sizing with fractional initialScrollIndex (layout estimation)', async () => {
   const items = generateItems(10);
-  const listRef = React.createRef(null);
+  const listRef = createRef(null);
 
   let component;
   await act(() => {
@@ -2557,7 +2556,7 @@ function baseItemProps(items) {
   return {
     data: items,
     renderItem: ({item}) =>
-      React.createElement('MockCellItem', {value: item.key, ...item}),
+      createElement('MockCellItem', {value: item.key, ...item}),
     getItem: (data, index) => data[index],
     getItemCount: data => data.length,
     stickyHeaderIndices: stickyHeaderIndices(items),

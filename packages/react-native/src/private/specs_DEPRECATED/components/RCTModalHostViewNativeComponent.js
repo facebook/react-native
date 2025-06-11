@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
@@ -22,7 +22,7 @@ type OrientationChangeEvent = $ReadOnly<{
   orientation: 'portrait' | 'landscape',
 }>;
 
-type NativeProps = $ReadOnly<{
+type RCTModalHostViewNativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -141,7 +141,10 @@ type NativeProps = $ReadOnly<{
   identifier?: WithDefault<Int32, 0>,
 }>;
 
-export default (codegenNativeComponent<NativeProps>('ModalHostView', {
-  interfaceOnly: true,
-  paperComponentName: 'RCTModalHostView',
-}): HostComponent<NativeProps>);
+export default (codegenNativeComponent<RCTModalHostViewNativeProps>(
+  'ModalHostView',
+  {
+    interfaceOnly: true,
+    paperComponentName: 'RCTModalHostView',
+  },
+): HostComponent<RCTModalHostViewNativeProps>);

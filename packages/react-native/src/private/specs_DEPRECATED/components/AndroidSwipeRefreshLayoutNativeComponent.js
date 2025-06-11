@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
@@ -21,7 +21,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type NativeProps = $ReadOnly<{
+type AndroidSwipeRefreshLayoutNativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -56,7 +56,7 @@ type NativeProps = $ReadOnly<{
   refreshing: boolean,
 }>;
 
-type NativeType = HostComponent<NativeProps>;
+type NativeType = HostComponent<AndroidSwipeRefreshLayoutNativeProps>;
 
 interface NativeCommands {
   +setNativeRefreshing: (
@@ -69,6 +69,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeRefreshing'],
 });
 
-export default (codegenNativeComponent<NativeProps>(
+export default (codegenNativeComponent<AndroidSwipeRefreshLayoutNativeProps>(
   'AndroidSwipeRefreshLayout',
 ): NativeType);

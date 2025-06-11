@@ -31,19 +31,19 @@ internal class ToastModule(reactContext: ReactApplicationContext) :
 
   override fun show(message: String?, durationDouble: Double) {
     val duration = durationDouble.toInt()
-    UiThreadUtil.runOnUiThread(
-        Runnable { Toast.makeText(getReactApplicationContext(), message, duration).show() })
+    UiThreadUtil.runOnUiThread {
+      Toast.makeText(getReactApplicationContext(), message, duration).show()
+    }
   }
 
   override fun showWithGravity(message: String?, durationDouble: Double, gravityDouble: Double) {
     val duration = durationDouble.toInt()
     val gravity = gravityDouble.toInt()
-    UiThreadUtil.runOnUiThread(
-        Runnable {
-          val toast = Toast.makeText(getReactApplicationContext(), message, duration)
-          toast.setGravity(gravity, 0, 0)
-          toast.show()
-        })
+    UiThreadUtil.runOnUiThread {
+      val toast = Toast.makeText(getReactApplicationContext(), message, duration)
+      toast.setGravity(gravity, 0, 0)
+      toast.show()
+    }
   }
 
   override fun showWithGravityAndOffset(
@@ -57,12 +57,11 @@ internal class ToastModule(reactContext: ReactApplicationContext) :
     val gravity = gravityDouble.toInt()
     val xOffset = xOffsetDouble.toInt()
     val yOffset = yOffsetDouble.toInt()
-    UiThreadUtil.runOnUiThread(
-        Runnable {
-          val toast = Toast.makeText(getReactApplicationContext(), message, duration)
-          toast.setGravity(gravity, xOffset, yOffset)
-          toast.show()
-        })
+    UiThreadUtil.runOnUiThread {
+      val toast = Toast.makeText(getReactApplicationContext(), message, duration)
+      toast.setGravity(gravity, xOffset, yOffset)
+      toast.show()
+    }
   }
 
   companion object {

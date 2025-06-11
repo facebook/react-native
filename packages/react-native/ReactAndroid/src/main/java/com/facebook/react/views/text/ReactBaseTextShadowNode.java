@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -66,7 +67,7 @@ import java.util.Map;
  * <p>This also node calculates {@link Spannable} object based on subnodes of the same type, which
  * can be used in concrete classes to feed native views and compute layout.
  */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
@@ -109,7 +110,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (child instanceof ReactRawTextShadowNode) {
         String childText = ((ReactRawTextShadowNode) child).getText();
         if (childText != null) {
-          sb.append(TextTransform.applyNonNull(childText, textAttributes.getTextTransform()));
+          sb.append(TextTransform.applyNonNull(childText, textAttributes.textTransform));
         }
       } else if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode(
@@ -264,8 +265,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
       // TextInput).
-      sb.append(
-          TextTransform.applyNonNull(text, textShadowNode.mTextAttributes.getTextTransform()));
+      sb.append(TextTransform.applyNonNull(text, textShadowNode.mTextAttributes.textTransform));
     }
 
     buildSpannedFromShadowNode(textShadowNode, sb, ops, null, supportsInlineViews, inlineViews, 0);
@@ -633,20 +633,21 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = PROP_TEXT_TRANSFORM)
   public void setTextTransform(@Nullable String textTransform) {
+    TextTransform textTransformEnum = TextTransform.UNSET;
     if (textTransform == null) {
-      mTextAttributes.setTextTransform(TextTransform.UNSET);
+      textTransformEnum = TextTransform.UNSET;
     } else if ("none".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.NONE);
+      textTransformEnum = TextTransform.NONE;
     } else if ("uppercase".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.UPPERCASE);
+      textTransformEnum = TextTransform.UPPERCASE;
     } else if ("lowercase".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.LOWERCASE);
+      textTransformEnum = TextTransform.LOWERCASE;
     } else if ("capitalize".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.CAPITALIZE);
+      textTransformEnum = TextTransform.CAPITALIZE;
     } else {
       FLog.w(ReactConstants.TAG, "Invalid textTransform: " + textTransform);
-      mTextAttributes.setTextTransform(TextTransform.UNSET);
     }
+    mTextAttributes.textTransform = textTransformEnum;
     markUpdated();
   }
 

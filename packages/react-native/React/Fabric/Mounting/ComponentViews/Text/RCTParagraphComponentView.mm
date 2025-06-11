@@ -202,7 +202,8 @@ using namespace facebook::react;
 
   NSArray<UIAccessibilityElement *> *elements = _accessibilityProvider.accessibilityElements;
   if ([elements count] > 0) {
-    elements[0].isAccessibilityElement = ![self isAccessibilityCoopted];
+    elements[0].isAccessibilityElement =
+        elements[0].accessibilityTraits & UIAccessibilityTraitLink || ![self isAccessibilityCoopted];
   }
   return elements;
 }

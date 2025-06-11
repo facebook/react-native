@@ -19,13 +19,13 @@ internal enum class TextTransform {
   CAPITALIZE,
   UNSET;
 
-  companion object {
+  internal companion object {
     @JvmStatic
     fun apply(text: String?, textTransform: TextTransform?): String? =
         text?.applyTextTransform(textTransform)
 
     @JvmStatic
-    public fun applyNonNull(text: String, textTransform: TextTransform?): String =
+    fun applyNonNull(text: String, textTransform: TextTransform?): String =
         text.applyTextTransform(textTransform)
   }
 }

@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
-
-'use strict';
 
 const MockNativeMethods = {
   measure: jest.fn(),
@@ -16,6 +15,13 @@ const MockNativeMethods = {
   setNativeProps: jest.fn(),
   focus: jest.fn(),
   blur: jest.fn(),
+} as {
+  measure: () => void,
+  measureInWindow: () => void,
+  measureLayout: () => void,
+  setNativeProps: () => void,
+  focus: () => void,
+  blur: () => void,
 };
 
-module.exports = MockNativeMethods;
+export default MockNativeMethods;

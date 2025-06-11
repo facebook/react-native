@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -41,7 +41,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
 const PAGE_SIZE = 100;
 const NUM_PAGES = 10;
@@ -402,7 +401,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
   }) => {
     // Impressions can be logged here
     if (this.state.logViewable) {
-      infoLog(
+      console.log(
         'onViewableItemsChanged: ',
         info.changed.map(v => ({...v, item: '...'})),
       );

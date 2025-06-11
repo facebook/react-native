@@ -28,7 +28,7 @@ internal class JavaModuleWrapper(
     private val jsInstance: JSInstance,
     private val moduleHolder: ModuleHolder
 ) {
-  internal interface NativeMethod {
+  interface NativeMethod {
     fun invoke(jsInstance: JSInstance, parameters: ReadableArray)
 
     val type: String
@@ -134,7 +134,7 @@ internal class JavaModuleWrapper(
     methods[methodId].invoke(jsInstance, parameters)
   }
 
-  companion object {
+  private companion object {
     init {
       assertLegacyArchitecture("JavaModuleWrapper", LegacyArchitectureLogLevel.WARNING)
     }

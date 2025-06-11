@@ -8,15 +8,19 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_utils_SRC CONFIGURE_DEPENDS *.cpp *.mm)
+file(GLOB react_utils_SRC CONFIGURE_DEPENDS *.cpp platform/android/react/utils/*.cpp)
 add_library(react_utils OBJECT ${react_utils_SRC})
 
-target_include_directories(react_utils PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_utils
+        PUBLIC
+          ${REACT_COMMON_DIR}
+          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+)
 
 target_link_libraries(react_utils
         glog
         glog_init
         jsireact
         react_debug)
-target_compile_reactnative_options(react_utils PRIVATE "Fabric")
+target_compile_reactnative_options(react_utils PRIVATE)
 target_compile_options(react_utils PRIVATE -Wpedantic)

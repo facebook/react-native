@@ -147,15 +147,12 @@ jobs:
     continue-on-error: true
     strategy:
       fail-fast: false
-      matrix:
-        jsengine: [Hermes, JSC]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          jsengine: ${{ matrix.jsengine }}
           use-frameworks: DynamicFrameworks
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
@@ -171,24 +168,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [Hermes, JSC]
-        architecture: [NewArch, OldArch]
         flavor: [Debug, Release]
-        exclude: # We don't want to test the Old Arch in Release for E2E
-          - jsengine: Hermes
-            architecture: OldArch
-            flavor: Release
-          - jsengine: JSC
-            architecture: OldArch
-            flavor: Release
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          jsengine: ${{ matrix.jsengine }}
-          architecture: ${{ matrix.architecture }}
           run-unit-tests: "false"
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
@@ -203,20 +189,19 @@ jobs:
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [Hermes, JSC]
-        architecture: [NewArch]
         flavor: [Debug, Release]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
       - name: Download App
         uses: actions/download-artifact@v4
         with:
-          name: RNTesterApp-${{ matrix.architecture }}-${{ matrix.jsengine }}-${{ matrix.flavor }}
+          name: RNTesterApp-NewArch-${{ matrix.flavor }}
           path: /tmp/RNTesterBuild/RNTester.app
       - name: Check downloaded folder content
         run: ls -lR /tmp/RNTesterBuild
@@ -227,7 +212,6 @@ jobs:
         with:
           app-path: "/tmp/RNTesterBuild/RNTester.app"
           app-id: com.meta.RNTester.localDevelopment
-          jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro/
           flavor: ${{ matrix.flavor }}
 
@@ -238,13 +222,10 @@ jobs:
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [Hermes, JSC]
         flavor: [Debug, Release]
-        architecture: [OldArch, NewArch]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -298,10 +279,6 @@ jobs:
           cd /tmp/RNTestProject/ios
           bundle install
           NEW_ARCH_ENABLED=1
-          if [[ ${{ matrix.architecture }} == "OldArch" ]]; then
-            echo "Disable the New Architecture"
-            NEW_ARCH_ENABLED=0
-          fi
 
           export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
           HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
@@ -318,23 +295,18 @@ jobs:
         with:
           app-path: "/tmp/RNTestProject/Build/Products/${{ matrix.flavor }}-iphonesimulator/RNTestProject.app"
           app-id: org.reactjs.native.example.RNTestProject
-          jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
-          architecture: ${{ matrix.architecture }}
 
   test_e2e_android_templateapp:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: 4-core-ubuntu
     needs: build_npm_package
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [Hermes, JSC]
         flavor: [debug, release]
-        architecture: [OldArch, NewArch]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -380,16 +352,6 @@ jobs:
           cd /tmp/RNTestProject
           echo "react.internal.mavenLocalRepo=$MAVEN_LOCAL" >> android/gradle.properties
 
-          if [[ ${{matrix.architecture}} == "OldArch" ]]; then
-            echo "Disabling the New Architecture"
-            sed -i 's/newArchEnabled=true/newArchEnabled=false/' android/gradle.properties
-          fi
-
-          if [[ ${{matrix.jsengine}} == "JSC" ]]; then
-            echo "Using JSC instead of Hermes"
-            sed -i 's/hermesEnabled=true/hermesEnabled=false/' android/gradle.properties
-          fi
-
           # Build
           cd android
           CAPITALIZED_FLAVOR=$(echo "${{ matrix.flavor }}" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
@@ -401,12 +363,10 @@ jobs:
         with:
           app-path: /tmp/RNTestProject/android/app/build/outputs/apk/${{ matrix.flavor }}/app-${{ matrix.flavor }}.apk
           app-id: com.rntestproject
-          jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./scripts/e2e/.maestro/
           install-java: 'false'
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
-          architecture: ${{ matrix.architecture }}
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -424,7 +384,7 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermesc_windows:
-    runs-on: windows-2019
+    runs-on: windows-2025
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: 'D:\tmp\hermes'
@@ -469,7 +429,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jsengine: [hermes, jsc]
         flavor: [debug, release]
     steps:
       - name: Checkout
@@ -481,17 +440,16 @@ jobs:
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
-          name: rntester-${{ matrix.jsengine }}-${{ matrix.flavor }}
-          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
+          name: rntester-${{ matrix.flavor }}
+          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.flavor }}/
       - name: Print folder structure
-        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         timeout-minutes: 60
         with:
-          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/app-${{ matrix.jsengine }}-x86-${{ matrix.flavor }}.apk
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.flavor }}/app-x86-${{ matrix.flavor }}.apk
           app-id: com.facebook.react.uiapp
-          jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro
           flavor: ${{ matrix.flavor }}
 
@@ -542,8 +500,6 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
-        architecture: [NewArch, OldArch]
-        jsengine: [Hermes, JSC]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -568,17 +524,11 @@ jobs:
       - name: Prepare the Helloworld application
         shell: bash
         run: node ./scripts/e2e/init-project-e2e.js --useHelloWorld --pathToLocalReactNative "$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)"
-      - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to ${{ matrix.architecture }}, and using the ${{ matrix.jsengine }} JS engine.
+      - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to New Architecture.
         shell: bash
         run: |
           cd packages/helloworld/android
           args=()
-          if [[ ${{ matrix.architecture }} == "OldArch" ]]; then
-            args+=(--arch old)
-          fi
-          if [[ ${{ matrix.jsengine }} == "JSC" ]]; then
-            args+=(--jsvm jsc)
-          fi
           if [[ ${{ matrix.flavor }} == "Release" ]]; then
             args+=(--prod)
           fi
@@ -586,7 +536,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.4
         with:
-          name: helloworld-apk-${{ matrix.flavor }}-${{ matrix.architecture }}-${{ matrix.jsengine }}
+          name: helloworld-apk-${{ matrix.flavor }}-NewArch-hermes
           path: ./packages/helloworld/android/app/build/outputs/apk/
           compression-level: 0
 
@@ -603,7 +553,6 @@ jobs:
       - uses: ./.github/actions/test-ios-helloworld
         with:
           ruby-version: 3.2.0
-          architecture: NewArch
           flavor: Debug
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
@@ -614,12 +563,10 @@ jobs:
     strategy:
       matrix:
         flavor: [Debug, Release]
-        jsengine: [Hermes, JSC]
         use_frameworks: [StaticLibraries, DynamicFrameworks]
         exclude:
           # This config is tested with Ruby 3.2.0. Let's not double test it.
           - flavor: Debug
-            jsengine: Hermes
             use_frameworks: StaticLibraries
     env:
       PROJECT_NAME: iOSTemplateProject
@@ -631,7 +578,6 @@ jobs:
       - uses: ./.github/actions/test-ios-helloworld
         with:
           flavor: ${{ matrix.flavor }}
-          jsengine: ${{ matrix.jsengine }}
           use-frameworks: ${{ matrix.use_frameworks }}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
@@ -641,7 +587,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["22", "20", "18"]
+        node-version: ["24", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -657,7 +603,47 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run all the Linters
+      - name: Run all the linters
         uses: ./.github/actions/lint
         with:
           github-token: ${{ env.GH_TOKEN }}
+
+  # This job should help with the E2E flakyness.
+  # In case E2E tests fails, it launches a new retry-workflow workflow, passing the current run_id as input.
+  # The retry-workflow reruns only the failed jobs of the current test-all workflow using
+  # ```
+  # gh run rerun ${{ inputs.run_id }} --failed
+  # ```
+  # From https://stackoverflow.com/a/78314483 it seems like that adding the extra workflow
+  # rather then calling directly this command should improve stability of this solution.
+  # This is exactly the same as rerunning failed tests from the GH UI, but automated.
+  rerun-failed-jobs:
+    runs-on: ubuntu-latest
+    needs: [test_e2e_ios_rntester, test_e2e_android_rntester, test_e2e_ios_templateapp, test_e2e_android_templateapp]
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Rerun failed jobs in the current workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHOULD_RETRY=${{fromJSON(github.run_attempt) < 3}}
+          if [[ $SHOULD_RETRY == "false" ]]; then
+            exit 0
+          fi
+
+          RNTESTER_ANDROID_FAILED=${{ needs.test_e2e_android_rntester.result == 'failure' }}
+          TEMPLATE_ANDROID_FAILED=${{ needs.test_e2e_android_templateapp.result == 'failure' }}
+          RNTESTER_IOS_FAILED=${{ needs.test_e2e_ios_rntester.result == 'failure' }}
+          TEMPLATE_IOS_FAILED=${{ needs.test_e2e_ios_templateapp.result == 'failure' }}
+
+          echo "RNTESTER_ANDROID_FAILED: $RNTESTER_ANDROID_FAILED"
+          echo "TEMPLATE_ANDROID_FAILED: $TEMPLATE_ANDROID_FAILED"
+          echo "RNTESTER_IOS_FAILED: $RNTESTER_IOS_FAILED"
+          echo "TEMPLATE_IOS_FAILED: $TEMPLATE_IOS_FAILED"
+
+          if [[ $RNTESTER_ANDROID_FAILED == "true" || $TEMPLATE_ANDROID_FAILED == "true" || $RNTESTER_IOS_FAILED == "true" || $TEMPLATE_IOS_FAILED == "true" ]]; then
+            echo "Rerunning failed jobs in the current workflow"
+            gh workflow run retry-workflow.yml -F run_id=${{ github.run_id }}
+          fi

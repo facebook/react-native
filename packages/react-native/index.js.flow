@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 // ----------------------------------------------------------------------------
@@ -106,6 +106,7 @@ export type {
   SectionListProps,
   SectionListRenderItem,
   SectionListRenderItemInfo,
+  SectionListData,
 } from './Libraries/Lists/SectionList';
 export {default as SectionList} from './Libraries/Lists/SectionList';
 
@@ -438,5 +439,9 @@ export type {
 export type {HostComponent} from './src/private/types/HostComponent';
 export type {ColorSchemeName} from './src/private/specs_DEPRECATED/modules/NativeAppearance';
 export type {ErrorUtils} from './Libraries/vendor/core/ErrorUtils';
+export type {
+  PublicRootInstance,
+  PublicTextInstance,
+} from './Libraries/ReactPrivate/ReactNativePrivateInterface';
 
 // #endregion

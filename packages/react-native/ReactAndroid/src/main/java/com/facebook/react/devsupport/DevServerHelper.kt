@@ -59,7 +59,7 @@ import okio.Okio
  */
 @SuppressLint(
     "StaticFieldLeak") // TODO: This entire class should be rewritten to don't use AsyncTask
-public class DevServerHelper(
+public open class DevServerHelper(
     private val settings: DeveloperSettings,
     private val applicationContext: Context,
     private val packagerConnectionSettings: PackagerConnectionSettings
@@ -287,20 +287,20 @@ public class DevServerHelper(
         additionalOptionsBuilder.toString())
   }
 
-  public fun getDevServerBundleURL(jsModulePath: String): String =
+  public open fun getDevServerBundleURL(jsModulePath: String): String =
       createBundleURL(jsModulePath, BundleType.BUNDLE, packagerConnectionSettings.debugServerHost)
 
-  public fun getDevServerSplitBundleURL(jsModulePath: String): String =
+  public open fun getDevServerSplitBundleURL(jsModulePath: String): String =
       createSplitBundleURL(jsModulePath, packagerConnectionSettings.debugServerHost)
 
-  public fun isPackagerRunning(callback: PackagerStatusCallback) {
+  public open fun isPackagerRunning(callback: PackagerStatusCallback) {
     packagerStatusCheck.run(packagerConnectionSettings.debugServerHost, callback)
   }
 
-  public fun getSourceMapUrl(mainModuleName: String): String =
+  public open fun getSourceMapUrl(mainModuleName: String): String =
       createBundleURL(mainModuleName, BundleType.MAP)
 
-  public fun getSourceUrl(mainModuleName: String): String =
+  public open fun getSourceUrl(mainModuleName: String): String =
       createBundleURL(mainModuleName, BundleType.BUNDLE)
 
   /**

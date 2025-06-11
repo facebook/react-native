@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -15,11 +16,17 @@ const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
 
-function generateSchemaInfos(libraries) {
+function generateSchemaInfos(
+  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+) /*: Array<$FlowFixMe> */ {
+  // $FlowFixMe[incompatible-call]
   return libraries.map(generateSchemaInfo);
 }
 
-function generateSchemaInfo(library, platform) {
+function generateSchemaInfo(
+  library /*: $FlowFixMe */,
+  platform /*: string */,
+) /*: $FlowFixMe */ {
   const pathToJavaScriptSources = path.join(
     library.libraryPath,
     library.config.jsSrcsDir,
@@ -45,7 +52,10 @@ function generateSchemaInfo(library, platform) {
 
 const APPLE_PLATFORMS = ['ios', 'macos', 'tvos', 'visionos'];
 
-function extractSupportedApplePlatforms(dependency, dependencyPath) {
+function extractSupportedApplePlatforms(
+  dependency /*: string */,
+  dependencyPath /*: string */,
+) /*: ?{[string]: boolean} */ {
   codegenLog('Searching for podspec in the project dependencies.', true);
   const podspecs = glob.sync('*.podspec', {cwd: dependencyPath});
 
@@ -80,7 +90,7 @@ function extractSupportedApplePlatforms(dependency, dependencyPath) {
         getCocoaPodsPlatformKey(platform),
       ),
     }),
-    {},
+    {} /*:: as {[string]: boolean} */,
   );
 
   const supportedPlatformsList = Object.keys(supportedPlatformsMap).filter(
@@ -99,7 +109,7 @@ function extractSupportedApplePlatforms(dependency, dependencyPath) {
 }
 
 // Cocoapods specific platform keys
-function getCocoaPodsPlatformKey(platformName) {
+function getCocoaPodsPlatformKey(platformName /*: string */) {
   if (platformName === 'macos') {
     return 'osx';
   }

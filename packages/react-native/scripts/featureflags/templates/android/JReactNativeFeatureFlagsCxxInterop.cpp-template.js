@@ -10,7 +10,11 @@
 
 import type {FeatureFlagDefinitions} from '../../types';
 
-import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
+import {
+  DO_NOT_MODIFY_COMMENT,
+  getCxxJNITypeFromDefaultValue,
+  getCxxTypeFromDefaultValue,
+} from '../../utils';
 import signedsource from 'signedsource';
 
 export default function (definitions: FeatureFlagDefinitions): string {
@@ -54,7 +58,7 @@ ${Object.entries(definitions.common)
         flagConfig.defaultValue,
       )} ${flagName}() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("${flagName}");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<${getCxxJNITypeFromDefaultValue(flagConfig.defaultValue)}()>("${flagName}");
     return method(javaProvider_);
   }`,
   )

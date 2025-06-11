@@ -630,7 +630,8 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     return;
   }
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    auto mountingTransaction = mountingCoordinator->pullTransaction();
+    auto mountingTransaction = mountingCoordinator->pullTransaction(
+        /* willPerformAsynchronously = */ true);
     if (mountingTransaction.has_value()) {
       auto transaction = std::move(*mountingTransaction);
       mountingManager->executeMount(transaction);

@@ -267,7 +267,9 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithoutDelay) {
   EXPECT_CALL(
       *mockRegistry_,
       createTimer(_, 0)); // If delay is not provided, it should use 0
-  eval("setTimeout(() => {});");
+  auto val = eval("setTimeout(() => {});");
+  expectNoError();
+  EXPECT_EQ(val.asNumber(), 1); // First timer id should start at 1
 }
 
 TEST_F(ReactInstanceTest, testSetTimeoutWithPassThroughArgs) {
@@ -299,8 +301,9 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithInvalidArgs) {
       getErrorMessage("setTimeout();"),
       "setTimeout must be called with at least one argument (the function to call).");
 
-  eval("setTimeout('invalid');");
+  auto val = eval("setTimeout('invalid')");
   expectNoError();
+  EXPECT_EQ(val.asNumber(), 0);
 
   eval("setTimeout(() => {}, 'invalid');");
   expectNoError();
@@ -417,9 +420,10 @@ TEST_F(ReactInstanceTest, testSetIntervalWithInvalidArgs) {
   EXPECT_EQ(
       getErrorMessage("setInterval();"),
       "setInterval must be called with at least one argument (the function to call).");
-  EXPECT_EQ(
-      getErrorMessage("setInterval('invalid', 100);"),
-      "The first argument to setInterval must be a function.");
+
+  auto val = eval("setInterval('invalid', 100)");
+  expectNoError();
+  EXPECT_EQ(val.asNumber(), 0);
 }
 
 TEST_F(ReactInstanceTest, testClearInterval) {

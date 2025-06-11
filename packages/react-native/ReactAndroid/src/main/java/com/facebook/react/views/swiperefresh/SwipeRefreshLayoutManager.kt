@@ -117,20 +117,6 @@ internal open class SwipeRefreshLayoutManager :
     }
   }
 
-  override fun receiveCommand(
-      root: ReactSwipeRefreshLayout,
-      commandId: String,
-      args: ReadableArray?
-  ) {
-    when (commandId) {
-      "setNativeRefreshing" ->
-          if (args != null) {
-            setRefreshing(root, args.getBoolean(0))
-          }
-      else -> {}
-    }
-  }
-
   override fun getExportedViewConstants(): MutableMap<String, Any> =
       mutableMapOf(
           "SIZE" to

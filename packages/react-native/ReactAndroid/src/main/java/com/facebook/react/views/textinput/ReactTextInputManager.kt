@@ -52,7 +52,9 @@ import com.facebook.react.uimanager.ViewDefaults
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
+import com.facebook.react.uimanager.events.BlurEvent
 import com.facebook.react.uimanager.events.EventDispatcher
+import com.facebook.react.uimanager.events.FocusEvent
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle.Companion.fromString
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -121,14 +123,6 @@ public open class ReactTextInputManager public constructor() :
                 mapOf(
                     "phasedRegistrationNames" to
                         mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")),
-            "topFocus" to
-                mapOf(
-                    "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onFocus", "captured" to "onFocusCapture")),
-            "topBlur" to
-                mapOf(
-                    "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onBlur", "captured" to "onBlurCapture")),
             "topKeyPress" to
                 mapOf(
                     "phasedRegistrationNames" to
@@ -150,10 +144,10 @@ public open class ReactTextInputManager public constructor() :
   @Deprecated("Deprecated in Java")
   override fun receiveCommand(reactEditText: ReactEditText, commandId: Int, args: ReadableArray?) {
     when (commandId) {
-      FOCUS_TEXT_INPUT -> this.receiveCommand(reactEditText, "focus", args)
-      BLUR_TEXT_INPUT -> this.receiveCommand(reactEditText, "blur", args)
+      FOCUS_TEXT_INPUT -> receiveCommand(reactEditText, "focus", args)
+      BLUR_TEXT_INPUT -> receiveCommand(reactEditText, "blur", args)
       SET_MOST_RECENT_EVENT_COUNT -> {}
-      SET_TEXT_AND_SELECTION -> this.receiveCommand(reactEditText, "setTextAndSelection", args)
+      SET_TEXT_AND_SELECTION -> receiveCommand(reactEditText, "setTextAndSelection", args)
     }
   }
 
@@ -807,7 +801,7 @@ public open class ReactTextInputManager public constructor() :
       defaultFloat = Float.NaN)
   public fun setBorderRadius(view: ReactEditText, index: Int, borderRadius: Float) {
     val radius =
-        if (java.lang.Float.isNaN(borderRadius)) {
+        if (borderRadius.isNaN()) {
           null
         } else {
           LengthPercentage(borderRadius, LengthPercentageType.POINT)
@@ -892,13 +886,16 @@ public open class ReactTextInputManager public constructor() :
   override fun addEventEmitters(reactContext: ThemedReactContext, editText: ReactEditText) {
     editText.setEventDispatcher(getEventDispatcher(reactContext, editText))
     editText.addTextChangedListener(ReactTextInputTextWatcher(reactContext, editText))
+
+    // Implements focus/blur dispatching on behalf of BaseViewManager since only one focus listener
+    // can be set on a view instance
     editText.onFocusChangeListener = OnFocusChangeListener { _: View?, hasFocus: Boolean ->
       val surfaceId = reactContext.surfaceId
       val eventDispatcher = getEventDispatcher(reactContext, editText)
       if (hasFocus) {
-        eventDispatcher?.dispatchEvent(ReactTextInputFocusEvent(surfaceId, editText.id))
+        eventDispatcher?.dispatchEvent(FocusEvent(surfaceId, editText.id))
       } else {
-        eventDispatcher?.dispatchEvent(ReactTextInputBlurEvent(surfaceId, editText.id))
+        eventDispatcher?.dispatchEvent(BlurEvent(surfaceId, editText.id))
         eventDispatcher?.dispatchEvent(
             ReactTextInputEndEditingEvent(surfaceId, editText.id, editText.text.toString()))
       }
@@ -926,7 +923,7 @@ public open class ReactTextInputManager public constructor() :
         }
 
         if (shouldBlur) {
-          editText.clearFocus()
+          editText.clearFocusAndMaybeRefocus()
         }
 
         // Prevent default behavior except when we want it to insert a newline.

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
@@ -17,8 +16,6 @@ import LogBoxInspectorContainer from '../LogBoxInspectorContainer';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-
-import '../../Core/InitializeCore.js';
 
 interface InspectorUI {
   header: ?string;

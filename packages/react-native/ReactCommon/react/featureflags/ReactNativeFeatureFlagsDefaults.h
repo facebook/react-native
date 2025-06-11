@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9efccdd812d3d0fdd2d1a0061d778eaa>>
+ * @generated SignedSource<<999bacd5ad8eac2c69f0d7e8d20dcba9>>
  */
 
 /**
@@ -35,6 +35,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool avoidCeilingAvailableAndroidTextWidth() override {
+    return true;
+  }
+
   bool cxxNativeAnimatedEnabled() override {
     return false;
   }
@@ -44,6 +48,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableMountItemReorderingAndroid() override {
+    return false;
+  }
+
+  bool disableTextLayoutManagerCacheAndroid() override {
     return false;
   }
 
@@ -65,6 +73,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableCustomFocusSearchOnClippedElementsAndroid() override {
     return true;
+  }
+
+  bool enableDestroyShadowTreeRevisionAsync() override {
+    return false;
   }
 
   bool enableDoubleMeasurementFixAndroid() override {
@@ -91,12 +103,16 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableIOSTextBaselineOffsetPerLine() override {
+    return false;
+  }
+
   bool enableIOSViewClipToPaddingBox() override {
     return false;
   }
 
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
-    return false;
+  bool enableIntersectionObserverEventLoopIntegration() override {
+    return true;
   }
 
   bool enableLayoutAnimationsOnAndroid() override {
@@ -107,7 +123,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enableMainQueueCoordinatorOnIOS() override {
+    return false;
+  }
+
   bool enableMainQueueModulesOnIOS() override {
+    return false;
+  }
+
+  bool enableModuleArgumentNSNullConversionIOS() override {
     return false;
   }
 
@@ -121,6 +145,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableNewBackgroundAndBorderDrawables() override {
     return true;
+  }
+
+  bool enablePreparedTextLayout() override {
+    return false;
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {
@@ -163,6 +191,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool incorporateMaxLinesDuringAndroidLayout() override {
+    return true;
+  }
+
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     return false;
   }
@@ -175,7 +207,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool useEditTextStockAndroidFocusBehavior() override {
+  bool useAndroidTextLayoutWidthDirectly() override {
     return true;
   }
 
@@ -205,6 +237,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useTurboModules() override {
     return false;
+  }
+
+  double virtualViewPrerenderRatio() override {
+    return 5.0;
   }
 };
 

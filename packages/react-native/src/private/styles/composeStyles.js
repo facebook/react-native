@@ -13,10 +13,10 @@
  * If either style is null or undefined, the other one is returned without
  * allocating an array, saving allocations and enabling memoization.
  */
-export default function composeStyles<T1, T2>(
-  style1: ?T1,
-  style2: ?T2,
-): ?(T1 | T2 | $ReadOnlyArray<T1 | T2>) {
+export default function composeStyles<T, U: T, V: T>(
+  style1: ?U,
+  style2: ?V,
+): ?(T | $ReadOnlyArray<T>) {
   if (style1 == null) {
     return style2;
   }

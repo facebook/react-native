@@ -6,11 +6,10 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {Server} from 'connect';
-import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
+import type {TerminalReportableEvent} from 'metro';
 
 import {typeof createDevServerMiddleware as CreateDevServerMiddleware} from '@react-native-community/cli-server-api';
 

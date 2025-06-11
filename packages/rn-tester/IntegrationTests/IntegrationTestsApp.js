@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -13,6 +13,7 @@
 require('react-native/Libraries/Core/InitializeCore');
 const React = require('react');
 const ReactNative = require('react-native');
+
 const {AppRegistry, ScrollView, StyleSheet, Text, TouchableOpacity, View} =
   ReactNative;
 

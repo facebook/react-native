@@ -16,6 +16,7 @@ import type {
 import {type RNTesterTheme, RNTesterThemeContext} from './RNTesterTheme';
 import RNTPressableRow from './RNTPressableRow';
 import * as React from 'react';
+import {useContext} from 'react';
 import {Platform, ScrollView, StyleSheet, Text, View} from 'react-native';
 
 const RNTesterBlock = require('./RNTesterBlock');
@@ -33,7 +34,7 @@ function getExampleTitle(title: $FlowFixMe, platform: $FlowFixMe) {
 
 export default function RNTesterModuleContainer(props: Props): React.Node {
   const {module, example, onExampleCardPress} = props;
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
   const renderExample = (e: $FlowFixMe, i: $FlowFixMe) => {
     // Filter platform-specific es
     const {title, description, platform, render: ExampleComponent} = e;

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -14,6 +13,7 @@
 const failureFixtures = require('../__test_fixtures__/failures.js');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const {TypeScriptParser} = require('../../parser');
+
 jest.mock('fs', () => ({
   readFileSync: filename => {
     // Jest in the OSS does not allow to capture variables in closures.

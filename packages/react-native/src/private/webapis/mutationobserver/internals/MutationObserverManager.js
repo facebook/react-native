@@ -41,13 +41,6 @@ const registeredMutationObservers: Map<
   $ReadOnly<{observer: MutationObserver, callback: MutationObserverCallback}>,
 > = new Map();
 
-// The mapping between ReactNativeElement and their corresponding shadow node
-// needs to be kept here because React removes the link when unmounting.
-const targetToShadowNodeMap: WeakMap<
-  ReactNativeElement,
-  ReturnType<typeof getNativeNodeReference>,
-> = new WeakMap();
-
 /**
  * Registers the given mutation observer and returns a unique ID for it,
  * which is required to start observing targets.
@@ -90,10 +83,10 @@ export function observe({
   mutationObserverId: MutationObserverId,
   target: ReactNativeElement,
   subtree: boolean,
-}): boolean {
+}): void {
   if (NativeMutationObserver == null) {
     warnNoNativeMutationObserver();
-    return false;
+    return;
   }
 
   const registeredObserver =
@@ -102,16 +95,14 @@ export function observe({
     console.error(
       `MutationObserverManager: could not start observing target because MutationObserver with ID ${mutationObserverId} was not registered.`,
     );
-    return false;
+    return;
   }
 
   const targetShadowNode = getNativeNodeReference(target);
   if (targetShadowNode == null) {
     // The target is disconnected. We can't observe it anymore.
-    return false;
+    return;
   }
-
-  targetToShadowNodeMap.set(target, targetShadowNode);
 
   if (!isConnected) {
     NativeMutationObserver.connect(
@@ -131,14 +122,9 @@ export function observe({
     targetShadowNode,
     subtree,
   });
-
-  return true;
 }
 
-export function unobserve(
-  mutationObserverId: number,
-  target: ReactNativeElement,
-): void {
+export function unobserveAll(mutationObserverId: number): void {
   if (NativeMutationObserver == null) {
     warnNoNativeMutationObserver();
     return;
@@ -148,20 +134,12 @@ export function unobserve(
     registeredMutationObservers.get(mutationObserverId);
   if (registeredObserver == null) {
     console.error(
-      `MutationObserverManager: could not stop observing target because MutationObserver with ID ${mutationObserverId} was not registered.`,
+      `MutationObserverManager: could not disconnect MutationObserver with ID ${mutationObserverId} because it was not registered.`,
     );
     return;
   }
 
-  const targetShadowNode = targetToShadowNodeMap.get(target);
-  if (targetShadowNode == null) {
-    console.error(
-      'MutationObserverManager: could not find registration data for target',
-    );
-    return;
-  }
-
-  NativeMutationObserver.unobserve(mutationObserverId, targetShadowNode);
+  NativeMutationObserver.unobserveAll(mutationObserverId);
 }
 
 /**

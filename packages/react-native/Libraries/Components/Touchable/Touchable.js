@@ -10,7 +10,11 @@
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
+import type {
+  BlurEvent,
+  FocusEvent,
+  GestureResponderEvent,
+} from '../../Types/CoreEventTypes';
 
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import UIManager from '../../ReactNative/UIManager';
@@ -589,7 +593,7 @@ const TouchableMixinImpl = {
    */
   /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
    * Flow's LTI update could not be added via codemod */
-  touchableHandleFocus: function (e: Event) {
+  touchableHandleFocus: function (e: FocusEvent) {
     this.props.onFocus && this.props.onFocus(e);
   },
 
@@ -603,7 +607,7 @@ const TouchableMixinImpl = {
    */
   /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
    * Flow's LTI update could not be added via codemod */
-  touchableHandleBlur: function (e: Event) {
+  touchableHandleBlur: function (e: BlurEvent) {
     this.props.onBlur && this.props.onBlur(e);
   },
 
@@ -869,11 +873,15 @@ const TouchableMixinImpl = {
       curState === States.NOT_RESPONDER &&
       nextState === States.RESPONDER_INACTIVE_PRESS_IN;
 
+    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     const isActiveTransition = !IsActive[curState] && IsActive[nextState];
     if (isInitialTransition || isActiveTransition) {
       this._remeasureMetricsOnActivation();
     }
 
+    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     if (IsPressingIn[curState] && signal === Signals.LONG_PRESS_DETECTED) {
       this.touchableHandleLongPress && this.touchableHandleLongPress(e);
     }
@@ -884,13 +892,19 @@ const TouchableMixinImpl = {
       this._endHighlight(e);
     }
 
+    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     if (IsPressingIn[curState] && signal === Signals.RESPONDER_RELEASE) {
       const hasLongPressHandler = !!this.props.onLongPress;
       const pressIsLongButStillCallOnPress =
+        /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         IsLongPressingIn[curState] && // We *are* long pressing.. // But either has no long handler
         (!hasLongPressHandler || !this.touchableLongPressCancelsPress()); // or we're told to ignore it.
 
       const shouldInvokePress =
+        /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         !IsLongPressingIn[curState] || pressIsLongButStillCallOnPress;
       if (shouldInvokePress && this.touchableHandlePress) {
         if (!newIsHighlight && !curIsHighlight) {

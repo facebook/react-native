@@ -27,6 +27,12 @@ struct AndroidTextInputTextShadowOffsetStruct {
   double height;
 };
 
+inline static bool operator==(
+    const AndroidTextInputTextShadowOffsetStruct& lhs,
+    const AndroidTextInputTextShadowOffsetStruct& rhs) {
+  return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
 static inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
@@ -124,8 +130,11 @@ class AndroidTextInputProps final : public BaseTextInputProps {
   bool hasPaddingEnd{};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-  SharedDebugStringConvertibleList getDebugProps() const;
+  SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
+
+  ComponentName getDiffPropsImplementationTarget() const override;
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
 };
 
 } // namespace facebook::react

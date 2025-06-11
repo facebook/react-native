@@ -102,17 +102,15 @@ declare export default typeof NativeAlertManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js 1`] = `
-"declare export default typeof RCTAlertManager;
+"export * from \\"./RCTAlertManager\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js.flow 1`] = `
-"declare export default {
-  alertWithArgs(
-    args: Args,
-    callback: (id: number, value: string) => void
-  ): void,
-};
+"declare export function alertWithArgs(
+  args: Args,
+  callback: (id: number, value: string) => void
+): void;
 "
 `;
 
@@ -156,10 +154,10 @@ declare export class AnimatedEvent {
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedExports.js 1`] = `
 "declare const Animated: typeof AnimatedImplementation;
 declare export default {
-  get FlatList(): AnimatedFlatList,
+  get FlatList(): AnimatedFlatList<any>,
   get Image(): AnimatedImage,
   get ScrollView(): AnimatedScrollView,
-  get SectionList(): AnimatedSectionList,
+  get SectionList(): AnimatedSectionList<any, any>,
   get Text(): AnimatedText,
   get View(): AnimatedView,
   ...typeof Animated,
@@ -190,7 +188,10 @@ export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
 export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
-export type { WithAnimatedValue } from \\"./createAnimatedComponent\\";
+export type {
+  WithAnimatedValue,
+  AnimatedProps,
+} from \\"./createAnimatedComponent\\";
 export type { AnimatedComponentType as AnimatedComponent } from \\"./createAnimatedComponent\\";
 declare export const add: typeof AnimatedImplementation.add;
 declare export const attachNativeEvent: typeof AnimatedImplementation.attachNativeEvent;
@@ -611,10 +612,10 @@ exports[`public API should not change unintentionally Libraries/Animated/bezier.
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedFlatList.js 1`] = `
-"declare export default AnimatedComponentType<
-  React.ElementConfig<typeof FlatList>,
-  FlatList<mixed>,
->;
+"declare export default component<ItemT = any>(
+  ref?: React.RefSetter<FlatList<ItemT>>,
+  ...props: AnimatedProps<FlatListProps<ItemT>>
+);
 "
 `;
 
@@ -638,10 +639,10 @@ declare export default typeof AnimatedScrollView;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedSectionList.js 1`] = `
-"declare export default AnimatedComponentType<
-  React.ElementConfig<typeof SectionList>,
-  SectionList<any, SectionBase<any>>,
->;
+"declare export default component<ItemT = any, SectionT = any>(
+  ref?: React.RefSetter<SectionList<ItemT, SectionT>>,
+  ...props: AnimatedProps<SectionListProps<ItemT, SectionT>>
+);
 "
 `;
 
@@ -904,7 +905,7 @@ declare export default class AnimatedObject extends AnimatedWithChildren {
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedProps.js 1`] = `
 "export type AnimatedPropsAllowlist = $ReadOnly<{
   style?: ?AnimatedStyleAllowlist,
-  [string]: true,
+  [key: string]: true | AnimatedStyleAllowlist,
 }>;
 type TargetViewInstance = React.ElementRef<React.ElementType>;
 declare export default class AnimatedProps extends AnimatedNode {
@@ -922,16 +923,19 @@ declare export default class AnimatedProps extends AnimatedNode {
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedStyle.js 1`] = `
 "export type AnimatedStyleAllowlist = $ReadOnly<{ [string]: true }>;
+type FlatStyle = { [string]: mixed };
+type FlatStyleForWeb<TStyle: FlatStyle> = [mixed, TStyle];
 declare export default class AnimatedStyle extends AnimatedWithChildren {
   static from(
-    inputStyle: any,
-    allowlist: ?AnimatedStyleAllowlist
+    flatStyle: ?FlatStyle,
+    allowlist: ?AnimatedStyleAllowlist,
+    originalStyleForWeb: ?mixed
   ): ?AnimatedStyle;
   constructor(
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
     style: { [string]: mixed },
-    inputStyle: any,
+    originalStyleForWeb: ?mixed,
     config?: ?AnimatedNodeConfig
   ): void;
 }
@@ -1077,7 +1081,12 @@ exports[`public API should not change unintentionally Libraries/Animated/useAnim
 `;
 
 exports[`public API should not change unintentionally Libraries/AppState/AppState.js 1`] = `
-"export type AppStateStatus = \\"inactive\\" | \\"background\\" | \\"active\\";
+"export type AppStateStatus =
+  | \\"inactive\\"
+  | \\"background\\"
+  | \\"active\\"
+  | \\"extension\\"
+  | \\"unknown\\";
 type AppStateEventDefinitions = {
   change: [AppStateStatus],
   memoryWarning: [],
@@ -1335,6 +1344,7 @@ declare export class URL {
 
 exports[`public API should not change unintentionally Libraries/Blob/URLSearchParams.js.flow 1`] = `
 "declare export class URLSearchParams {
+  +size: number;
   constructor(
     params?: Record<string, string> | string | Array<[string, string]>
   ): void;
@@ -1449,13 +1459,13 @@ declare export default typeof AccessibilityInfo;
 
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/NativeAccessibilityInfo.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityInfo\\";
-declare export default typeof NativeAccessibilityInfo;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityInfo\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/NativeAccessibilityManager.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager\\";
-declare export default typeof NativeAccessibilityManager;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager\\";
 "
 `;
 
@@ -1485,17 +1495,17 @@ export type ActivityIndicatorProps = $ReadOnly<{
   color?: ?ColorValue,
   size?: ?IndicatorSize,
 }>;
-declare const ActivityIndicatorWithRef: component(
+declare const ActivityIndicator: component(
   ref?: React.RefSetter<HostComponent<empty>>,
   ...props: ActivityIndicatorProps
 );
-declare export default typeof ActivityIndicatorWithRef;
+declare export default typeof ActivityIndicator;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ActivityIndicator/ActivityIndicatorViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent\\";
-declare export default typeof ActivityIndicatorViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent\\";
 "
 `;
 
@@ -1550,13 +1560,13 @@ exports[`public API should not change unintentionally Libraries/Components/Clipb
 
 exports[`public API should not change unintentionally Libraries/Components/Clipboard/NativeClipboard.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeClipboard\\";
-declare export default typeof NativeClipboard;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeClipboard\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/AndroidDrawerLayoutNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent\\";
-declare export default typeof AndroidDrawerLayoutNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent\\";
 "
 `;
 
@@ -1723,7 +1733,7 @@ declare export default typeof KeyboardAvoidingView;
 
 exports[`public API should not change unintentionally Libraries/Components/Keyboard/NativeKeyboardObserver.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeKeyboardObserver\\";
-declare export default typeof NativeKeyboardObserver;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeKeyboardObserver\\";
 "
 `;
 
@@ -1818,11 +1828,12 @@ declare export default function useAndroidRippleForView(
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.js 1`] = `
 "export type { ProgressBarAndroidProps };
+type Omit<T, K> = T extends any ? Pick<T, Exclude<$Keys<T>, K>> : T;
 declare let ProgressBarAndroid: component(
   ref?: React.RefSetter<
     React.ElementRef<ProgressBarAndroidNativeComponentType>,
   >,
-  ...props: ProgressBarAndroidProps
+  ...props: Omit<ProgressBarAndroidProps, empty>
 );
 declare export default typeof ProgressBarAndroid;
 "
@@ -1830,41 +1841,49 @@ declare export default typeof ProgressBarAndroid;
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroidNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent\\";
-declare export default typeof ProgressBarAndroidNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroidTypes.js 1`] = `
-"type ProgressBarAndroidStyleAttrProp =
-  | {
-      styleAttr: \\"Horizontal\\",
-      indeterminate: false,
-      progress: number,
-    }
-  | {
-      styleAttr:
-        | \\"Horizontal\\"
-        | \\"Normal\\"
-        | \\"Small\\"
-        | \\"Large\\"
-        | \\"Inverse\\"
-        | \\"SmallInverse\\"
-        | \\"LargeInverse\\",
-      indeterminate: true,
-    };
-export type ProgressBarAndroidProps = $ReadOnly<{
-  ...ViewProps,
-  ...ProgressBarAndroidStyleAttrProp,
+"type DeterminateProgressBarAndroidStyleAttrProp = {
+  styleAttr: \\"Horizontal\\",
+  indeterminate: false,
+  progress: number,
+};
+type IndeterminateProgressBarAndroidStyleAttrProp = {
+  styleAttr:
+    | \\"Horizontal\\"
+    | \\"Normal\\"
+    | \\"Small\\"
+    | \\"Large\\"
+    | \\"Inverse\\"
+    | \\"SmallInverse\\"
+    | \\"LargeInverse\\",
+  indeterminate: true,
+};
+type ProgressBarAndroidBaseProps = $ReadOnly<{
   animating?: ?boolean,
   color?: ?ColorValue,
   testID?: ?string,
 }>;
+export type ProgressBarAndroidProps =
+  | $ReadOnly<{
+      ...ViewProps,
+      ...ProgressBarAndroidBaseProps,
+      ...DeterminateProgressBarAndroidStyleAttrProp,
+    }>
+  | $ReadOnly<{
+      ...ViewProps,
+      ...ProgressBarAndroidBaseProps,
+      ...IndeterminateProgressBarAndroidStyleAttrProp,
+    }>;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/RefreshControl/AndroidSwipeRefreshLayoutNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent\\";
-declare export default typeof AndroidSwipeRefreshLayoutNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent\\";
 "
 `;
 
@@ -1908,7 +1927,7 @@ declare export default typeof RefreshControl;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/RCTSafeAreaViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent\\";
-declare export default typeof RCTSafeAreaViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent\\";
 "
 `;
 
@@ -1923,7 +1942,7 @@ declare export default typeof exported;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/AndroidHorizontalScrollContentViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent\\";
-declare export default typeof AndroidHorizontalScrollContentViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent\\";
 "
 `;
 
@@ -2018,7 +2037,7 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
   scrollPerfTag?: ?string,
   overScrollMode?: ?(\\"auto\\" | \\"always\\" | \\"never\\"),
   persistentScrollbar?: ?boolean,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
 }>;
 type StickyHeaderComponentType = component(
   ref?: React.RefSetter<
@@ -2157,7 +2176,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   directionalLockEnabled?: ?boolean,
   disableIntervalMomentum?: ?boolean,
   endFillColor?: ?ColorValue,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
   indicatorStyle?: ?(\\"default\\" | \\"black\\" | \\"white\\"),
   isInvertedVirtualizedList?: ?boolean,
   keyboardDismissMode?: ?(\\"none\\" | \\"on-drag\\" | \\"interactive\\"),
@@ -2213,11 +2232,11 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 interface Instance extends React.ElementRef<typeof Animated.View> {
   +setNextHeaderY: (number) => void;
 }
-declare const ScrollViewStickyHeaderWithForwardedRef: component(
+declare const ScrollViewStickyHeader: component(
   ref: React.RefSetter<Instance>,
   ...props: ScrollViewStickyHeaderProps
 );
-declare export default typeof ScrollViewStickyHeaderWithForwardedRef;
+declare export default typeof ScrollViewStickyHeader;
 "
 `;
 
@@ -2231,7 +2250,7 @@ declare export default typeof processDecelerationRate;
 
 exports[`public API should not change unintentionally Libraries/Components/Sound/NativeSoundManager.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeSoundManager\\";
-declare export default typeof NativeSoundManager;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeSoundManager\\";
 "
 `;
 
@@ -2256,13 +2275,13 @@ declare export default typeof StaticRenderer;
 
 exports[`public API should not change unintentionally Libraries/Components/StatusBar/NativeStatusBarManagerAndroid.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerAndroid\\";
-declare export default typeof NativeStatusBarManagerAndroid;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerAndroid\\";
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/StatusBar/NativeStatusBarManagerIOS.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerIOS\\";
-declare export default typeof NativeStatusBarManagerIOS;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerIOS\\";
 "
 `;
 
@@ -2338,7 +2357,7 @@ declare export default typeof StatusBar;
 
 exports[`public API should not change unintentionally Libraries/Components/Switch/AndroidSwitchNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent\\";
-declare export default typeof AndroidSwitchNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent\\";
 "
 `;
 
@@ -2383,7 +2402,7 @@ declare export default typeof Switch;
 
 exports[`public API should not change unintentionally Libraries/Components/Switch/SwitchNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent\\";
-declare export default typeof SwitchNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent\\";
 "
 `;
 
@@ -2417,7 +2436,7 @@ export type ReturnKeyType =
   | \\"route\\"
   | \\"yahoo\\";
 export type SubmitBehavior = \\"submit\\" | \\"blurAndSubmit\\" | \\"newline\\";
-export type NativeProps = $ReadOnly<{
+export type AndroidTextInputNativeProps = $ReadOnly<{
   ...Omit<ViewProps, \\"style\\">,
   autoComplete?: WithDefault<
     | \\"birthdate-day\\"
@@ -2575,11 +2594,11 @@ export type NativeProps = $ReadOnly<{
   mostRecentEventCount: Int32,
   text?: ?string,
 }>;
-type NativeType = HostComponent<NativeProps>;
+type NativeType = HostComponent<AndroidTextInputNativeProps>;
 type NativeCommands = TextInputNativeCommands<NativeType>;
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare export default HostComponent<NativeProps>;
+declare export default HostComponent<AndroidTextInputNativeProps>;
 "
 `;
 
@@ -2597,7 +2616,7 @@ declare export default typeof InputAccessoryView;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTInputAccessoryViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent\\";
-declare export default typeof RCTInputAccessoryViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent\\";
 "
 `;
 
@@ -2654,13 +2673,12 @@ type TextInputContentSizeChangeEventData = $ReadOnly<{
 }>;
 export type TextInputContentSizeChangeEvent =
   NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
+export type TextInputBlurEvent = BlurEvent;
+export type TextInputFocusEvent = FocusEvent;
 type TargetEvent = $ReadOnly<{
   target: number,
   ...
 }>;
-type TextInputFocusEventData = TargetEvent;
-export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
-export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type Selection = $ReadOnly<{
   start: number,
   end: number,
@@ -2992,10 +3010,12 @@ export type TextInputType = InternalTextInput & TextInputComponentStatics;
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
 "export type {
   AutoCapitalize,
+  BlurEvent,
   EnterKeyHintType,
   EnterKeyHintTypeAndroid,
   EnterKeyHintTypeIOS,
   EnterKeyHintTypeOptions,
+  FocusEvent,
   InputModeOptions,
   KeyboardType,
   KeyboardTypeAndroid,
@@ -3082,7 +3102,7 @@ declare export default typeof TextInputState;
 
 exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/NativeToastAndroid.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeToastAndroid\\";
-declare export default typeof NativeToastAndroid;
+export { default } from \\"../../../src/private/specs_DEPRECATED/modules/NativeToastAndroid\\";
 "
 `;
 
@@ -3219,8 +3239,8 @@ declare const TouchableMixinImpl: {
   touchableHandleResponderRelease: (e: GestureResponderEvent) => void,
   touchableHandleResponderTerminate: (e: GestureResponderEvent) => void,
   touchableHandleResponderMove: (e: GestureResponderEvent) => void,
-  touchableHandleFocus: (e: Event) => void,
-  touchableHandleBlur: (e: Event) => void,
+  touchableHandleFocus: (e: FocusEvent) => void,
+  touchableHandleBlur: (e: BlurEvent) => void,
   withoutDefaultFocusAndBlur: { ... },
 };
 declare const TouchableImpl: {
@@ -3429,7 +3449,7 @@ declare export default function TouchableWithoutFeedback(
 
 exports[`public API should not change unintentionally Libraries/Components/UnimplementedViews/UnimplementedNativeViewNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent\\";
-declare export default typeof UnimplementedNativeViewNativeComponent;
+export { default } from \\"../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent\\";
 "
 `;
 
@@ -3495,12 +3515,10 @@ declare export default typeof ReactNativeViewAttributes;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
-"export type Props = ViewProps;
-declare const View: component(
+"declare export default component(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
-declare export default typeof View;
 "
 `;
 
@@ -3843,7 +3861,27 @@ declare export default function getDevServer(): DevServerInfo;
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/Devtools/loadBundleFromServer.js 1`] = `
-"declare export default function loadBundleFromServer(
+"declare export class LoadBundleFromServerError extends Error {
+  url: string;
+  isTimeout: boolean;
+  constructor(
+    message: string,
+    url: string,
+    isTimeout: boolean,
+    options?: { cause: mixed, ... }
+  ): void;
+}
+declare export class LoadBundleFromServerRequestError
+  extends LoadBundleFromServerError
+{
+  constructor(
+    message: string,
+    url: string,
+    isTimeout: boolean,
+    options?: { cause: mixed, ... }
+  ): void;
+}
+declare export default function loadBundleFromServer(
   bundlePathAndQuery: string
 ): Promise<void>;
 "
@@ -4095,15 +4133,11 @@ declare export default typeof registerCallableModule;
 
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlay.js 1`] = `
 "type DebuggingOverlayHandle = {
-  highlightTraceUpdates(updates: TraceUpdate[]): void,
-  highlightElements(elements: ElementRectangle[]): void,
+  highlightTraceUpdates(updates: $ReadOnlyArray<TraceUpdate>): void,
+  highlightElements(elements: $ReadOnlyArray<ElementRectangle>): void,
   clearElementsHighlight(): void,
 };
-declare const DebuggingOverlayWithForwardedRef: component(
-  ref: React.RefSetter<DebuggingOverlayHandle>,
-  ...props: {}
-);
-declare export default typeof DebuggingOverlayWithForwardedRef;
+declare export default component(ref: React.RefSetter<DebuggingOverlayHandle>);
 "
 `;
 
@@ -4152,7 +4186,7 @@ declare export default class NativeEventEmitter<
   > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
-  constructor(nativeModule: ?NativeModule): void;
+  constructor(nativeModule?: ?NativeModule): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
@@ -4187,11 +4221,10 @@ declare export default typeof RCTNativeAppEventEmitter;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/AssetRegistry.js 1`] = `
-"declare const AssetRegistry: {
-  registerAsset: (asset: PackagerAsset) => number,
-  getAssetByID: (assetId: number) => PackagerAsset,
-};
-declare module.exports: typeof AssetRegistry;
+"export {
+  registerAsset,
+  getAssetByID,
+} from \\"@react-native/assets-registry/registry\\";
 "
 `;
 
@@ -4202,6 +4235,19 @@ exports[`public API should not change unintentionally Libraries/Image/AssetSourc
   +uri: string,
   +scale: number,
 };
+type AssetDestPathResolver = \\"android\\" | \\"generic\\";
+type PackagerAsset = $ReadOnly<{
+  fileSystemLocation: string,
+  httpServerLocation: string,
+  width: ?number,
+  height: ?number,
+  scales: Array<number>,
+  hash: string,
+  name: string,
+  type: string,
+  resolver?: AssetDestPathResolver,
+  ...
+}>;
 declare class AssetSourceResolver {
   serverUrl: ?string;
   jsbundleUrl: ?string;
@@ -4506,7 +4552,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageUtils
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageViewNativeComponent.js 1`] = `
-"type Props = $ReadOnly<{
+"type ImageHostComponentProps = $ReadOnly<{
   ...ImageProps,
   ...ViewProps,
   style?: ImageStyleProp | DangerouslyImpreciseStyle,
@@ -4528,7 +4574,7 @@ interface NativeCommands {
 }
 declare export const Commands: NativeCommands;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const ImageViewNativeComponent: HostComponent<Props>;
+declare const ImageViewNativeComponent: HostComponent<ImageHostComponentProps>;
 declare export default typeof ImageViewNativeComponent;
 "
 `;
@@ -4570,7 +4616,7 @@ declare module.exports: typeof RelativeImageStub;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/TextInlineImageNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
+"type RCTTextInlineImageNativeProps = $ReadOnly<{
   ...ViewProps,
   resizeMode?: ?ImageResizeMode,
   src?: ?$ReadOnlyArray<?$ReadOnly<{ uri?: ?string, ... }>>,
@@ -4578,7 +4624,7 @@ exports[`public API should not change unintentionally Libraries/Image/TextInline
   headers?: ?{ [string]: string },
 }>;
 declare export const __INTERNAL_VIEW_CONFIG: PartialViewConfig;
-declare const TextInlineImage: HostComponent<NativeProps>;
+declare const TextInlineImage: HostComponent<RCTTextInlineImageNativeProps>;
 declare export default typeof TextInlineImage;
 "
 `;
@@ -4674,22 +4720,6 @@ declare const InteractionManagerStub: {
   setDeadline(deadline: number): void,
 };
 declare export default typeof InteractionManagerStub;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Interaction/JSEventLoopWatchdog.js 1`] = `
-"type Handler = {
-  onIterate?: () => void,
-  onStall: (params: { lastInterval: number, busyTime: number, ... }) => ?string,
-  ...
-};
-declare const JSEventLoopWatchdog: {
-  getStats: () => Object,
-  reset: () => void,
-  addHandler: (handler: Handler) => void,
-  install: ($$PARAM_0$$: { thresholdMS: number, ... }) => void,
-};
-declare export default typeof JSEventLoopWatchdog;
 "
 `;
 
@@ -4934,7 +4964,7 @@ type OptionalProps<ItemT> = {
   keyExtractor?: ?(item: ItemT, index: number) => string,
   numColumns?: number,
   removeClippedSubviews?: boolean,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | { start: number, end: number },
   strictMode?: boolean,
 };
 type FlatListBaseProps<ItemT> = {
@@ -5361,6 +5391,7 @@ interface ILogBox {
   ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
+  addConsoleLog(level: \\"warn\\" | \\"error\\", ...args: Array<mixed>): void;
   addException(error: ExtendedExceptionData): void;
 }
 declare export default ILogBox;
@@ -5783,7 +5814,7 @@ exports[`public API should not change unintentionally Libraries/NativeComponent/
   object: T
 ): T;
 declare export function ConditionallyIgnoredEventHandlers<
-  T: { [name: string]: true },
+  const T: { +[name: string]: true },
 >(
   value: T
 ): T | void;
@@ -5886,7 +5917,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
   ): EventSubscription,
   sendRequest(
     method: string,
-    trackingName: ?string,
+    trackingName: string | void,
     url: string,
     headers: { ... },
     data: RequestBody,
@@ -7080,7 +7111,9 @@ declare export const setStyleAttributePreprocessor: (
   property: string,
   process: (nextProp: any) => any
 ) => void;
-declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
+declare export const create: <+S: ____Styles_Internal>(
+  obj: S & ____Styles_Internal
+) => $ReadOnly<S>;
 "
 `;
 
@@ -7485,7 +7518,8 @@ export type ____ImageStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
+  overflow?: \\"visible\\" | \\"hidden\\",
 }>;
 export type ____ImageStyle_Internal = $ReadOnly<{
   ...____ImageStyle_InternalCore,
@@ -7496,7 +7530,7 @@ export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   resizeMode?: ImageResizeMode,
   objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
-  overlayColor?: string,
+  overlayColor?: ColorValue,
 }>;
 export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
   ...____DangerouslyImpreciseStyle_InternalCore,
@@ -7580,29 +7614,52 @@ export type ____ViewStyle_InternalOverrides = $ReadOnly<{}>;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/private/_TransformStyle.js 1`] = `
-"export type ____TransformStyle_Internal = $ReadOnly<{
+"type KeysOfUnion<T> = T extends any ? $Keys<T> : empty;
+type ValueOfUnion<T, K> = T extends any
+  ? K extends $Keys<T>
+    ? T[K]
+    : empty
+  : empty;
+type MergeUnion<T> = {
+  [K in KeysOfUnion<T>]?: ValueOfUnion<T, K>,
+};
+type MaximumOneOf<T: { ... }> = $Values<{
+  [K in keyof T]: $Exact<{
+    [P in keyof T]?: P extends K ? T[P] : empty,
+  }>,
+}>;
+export type ____TransformStyle_Internal = $ReadOnly<{
   transform?:
     | $ReadOnlyArray<
-        | { +perspective: number | AnimatedNode }
-        | { +rotate: string | AnimatedNode }
-        | { +rotateX: string | AnimatedNode }
-        | { +rotateY: string | AnimatedNode }
-        | { +rotateZ: string | AnimatedNode }
-        | { +scale: number | AnimatedNode }
-        | { +scaleX: number | AnimatedNode }
-        | { +scaleY: number | AnimatedNode }
-        | { +translateX: number | string | AnimatedNode }
-        | { +translateY: number | string | AnimatedNode }
-        | {
-            +translate:
-              | [number | string | AnimatedNode, number | string | AnimatedNode]
-              | AnimatedNode,
-          }
-        | { +skewX: string | AnimatedNode }
-        | { +skewY: string | AnimatedNode }
-        | {
-            +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-          },
+        $ReadOnly<
+          MaximumOneOf<
+            MergeUnion<
+              | { +perspective: number | AnimatedNode }
+              | { +rotate: string | AnimatedNode }
+              | { +rotateX: string | AnimatedNode }
+              | { +rotateY: string | AnimatedNode }
+              | { +rotateZ: string | AnimatedNode }
+              | { +scale: number | AnimatedNode }
+              | { +scaleX: number | AnimatedNode }
+              | { +scaleY: number | AnimatedNode }
+              | { +translateX: number | string | AnimatedNode }
+              | { +translateY: number | string | AnimatedNode }
+              | {
+                  +translate:
+                    | [
+                        number | string | AnimatedNode,
+                        number | string | AnimatedNode,
+                      ]
+                    | AnimatedNode,
+                }
+              | { +skewX: string | AnimatedNode }
+              | { +skewY: string | AnimatedNode }
+              | {
+                  +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+                },
+            >,
+          >,
+        >,
       >
     | string,
   transformOrigin?:
@@ -7760,8 +7817,7 @@ declare export default typeof TextImpl;
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/TextAncestor.js 1`] = `
-"declare const React: $FlowFixMe;
-declare const TextAncestorContext: React.Context<boolean>;
+"declare const TextAncestorContext: React.Context<boolean>;
 declare export default typeof TextAncestorContext;
 "
 `;
@@ -7818,23 +7874,9 @@ export type TextPropsAndroid = {
   minimumFontScale?: ?number,
 };
 type TextBaseProps = $ReadOnly<{
-  accessible?: ?boolean,
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
-  accessibilityHint?: ?Stringish,
-  accessibilityLanguage?: ?Stringish,
-  accessibilityLabel?: ?Stringish,
-  accessibilityRole?: ?AccessibilityRole,
-  accessibilityState?: ?AccessibilityState,
-  \\"aria-label\\"?: ?string,
   allowFontScaling?: ?boolean,
   android_hyphenationFrequency?: ?(\\"normal\\" | \\"none\\" | \\"full\\"),
-  \\"aria-busy\\"?: ?boolean,
-  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
-  \\"aria-disabled\\"?: ?boolean,
-  \\"aria-expanded\\"?: ?boolean,
-  \\"aria-selected\\"?: ?boolean,
-  \\"aria-labelledby\\"?: ?string,
   children?: ?React.Node,
   ellipsizeMode?: ?(\\"clip\\" | \\"head\\" | \\"middle\\" | \\"tail\\"),
   id?: string,
@@ -7865,6 +7907,7 @@ export type TextProps = $ReadOnly<{
   ...TextPropsIOS,
   ...TextPropsAndroid,
   ...TextBaseProps,
+  ...AccessibilityProps,
 }>;
 "
 `;
@@ -8362,7 +8405,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
-"declare export default Platform;
+"declare export default PlatformType;
 "
 `;
 
@@ -8375,7 +8418,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
   | \\"web\\"
   | \\"native\\";
 type OptionalPlatformSelectSpec<T> = {
-  [_key in PlatformOSType]?: T,
+  [key in PlatformOSType]?: T,
 };
 export type PlatformSelectSpec<T> =
   | {
@@ -8497,7 +8540,7 @@ type WebPlatform = {
   get isDisableAnimations(): boolean,
   select: <T>(spec: PlatformSelectSpec<T>) => T,
 };
-export type Platform =
+export type PlatformType =
   | IOSPlatform
   | AndroidPlatform
   | WindowsPlatform
@@ -8709,12 +8752,6 @@ declare export default typeof dismissKeyboard;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/infoLog.js 1`] = `
-"declare function infoLog(...args: Array<mixed>): void;
-declare export default typeof infoLog;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Utilities/logError.js 1`] = `
 "declare const logError: (...args: $ReadOnlyArray<mixed>) => void;
 declare export default typeof logError;
@@ -8892,8 +8929,33 @@ declare export default typeof rejectionTrackingOptions;
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/core/ErrorUtils.js 1`] = `
-"export type ErrorUtils = ErrorUtilsT;
-declare export default ErrorUtilsT;
+"type ErrorHandler = (error: mixed, isFatal: boolean) => void;
+type Fn<Args: $ReadOnlyArray<mixed>, Return> = (...Args) => Return;
+export type ErrorUtils = {
+  applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    context?: mixed,
+    args?: ?TArgs,
+    unused_onError?: null,
+    unused_name?: ?string
+  ): ?TOut,
+  applyWithGuardIfNeeded<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    context?: mixed,
+    args?: ?TArgs
+  ): ?TOut,
+  getGlobalHandler(): ErrorHandler,
+  guard<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    name?: ?string,
+    context?: mixed
+  ): ?(...TArgs) => ?TOut,
+  inGuard(): boolean,
+  reportError(error: mixed): void,
+  reportFatalError(error: mixed): void,
+  setGlobalHandler(fun: ErrorHandler): void,
+};
+declare export default ErrorUtils;
 "
 `;
 
@@ -9010,6 +9072,7 @@ export type {
   SectionListProps,
   SectionListRenderItem,
   SectionListRenderItemInfo,
+  SectionListData,
 } from \\"./Libraries/Lists/SectionList\\";
 export { default as SectionList } from \\"./Libraries/Lists/SectionList\\";
 export type {
@@ -9281,11 +9344,22 @@ export type {
 export type { HostComponent } from \\"./src/private/types/HostComponent\\";
 export type { ColorSchemeName } from \\"./src/private/specs_DEPRECATED/modules/NativeAppearance\\";
 export type { ErrorUtils } from \\"./Libraries/vendor/core/ErrorUtils\\";
+export type {
+  PublicRootInstance,
+  PublicTextInstance,
+} from \\"./Libraries/ReactPrivate/ReactNativePrivateInterface\\";
 "
 `;
 
 exports[`public API should not change unintentionally src/private/setup/setUpDOM.js 1`] = `
 "declare export default function setUpDOM(): void;
+"
+`;
+
+exports[`public API should not change unintentionally src/private/setup/setUpDefaultReactNativeEnvironment.js 1`] = `
+"declare export default function setUpDefaltReactNativeEnvironment(
+  enableDeveloperTools?: boolean
+): void;
 "
 `;
 
@@ -9514,6 +9588,7 @@ exports[`public API should not change unintentionally src/private/webapis/inters
   observer: IntersectionObserver
 ) => mixed;
 export interface IntersectionObserverInit {
+  root?: ?ReactNativeElement;
   threshold?: number | $ReadOnlyArray<number>;
   rnRootThreshold?: number | $ReadOnlyArray<number>;
 }
@@ -9696,7 +9771,12 @@ declare export default class Performance {
 
 exports[`public API should not change unintentionally src/private/webapis/performance/PerformanceEntry.js 1`] = `
 "export type DOMHighResTimeStamp = number;
-export type PerformanceEntryType = \\"mark\\" | \\"measure\\" | \\"event\\" | \\"longtask\\";
+export type PerformanceEntryType =
+  | \\"mark\\"
+  | \\"measure\\"
+  | \\"event\\"
+  | \\"longtask\\"
+  | \\"resource\\";
 export type PerformanceEntryJSON = {
   name: string,
   entryType: PerformanceEntryType,

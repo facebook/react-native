@@ -22,6 +22,7 @@ import Platform from '../../Utilities/Platform';
 import {Commands} from '../View/ViewNativeComponent';
 import invariant from 'invariant';
 import * as React from 'react';
+import {cloneElement} from 'react';
 
 type TVProps = {
   /**
@@ -334,7 +335,7 @@ class TouchableNativeFeedback extends React.Component<
 
     const accessibilityLabel =
       this.props['aria-label'] ?? this.props.accessibilityLabel;
-    return React.cloneElement(
+    return cloneElement(
       element,
       {
         ...eventHandlersWithoutBlurAndFocus,

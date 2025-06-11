@@ -21,10 +21,9 @@
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <cmath>
 #include <unordered_map>
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
@@ -978,6 +977,12 @@ inline ParagraphAttributes convertRawProp(
       "android_hyphenationFrequency",
       sourceParagraphAttributes.android_hyphenationFrequency,
       defaultParagraphAttributes.android_hyphenationFrequency);
+  paragraphAttributes.textAlignVertical = convertRawProp(
+      context,
+      rawProps,
+      "textAlignVertical",
+      sourceParagraphAttributes.textAlignVertical,
+      defaultParagraphAttributes.textAlignVertical);
 
   return paragraphAttributes;
 }
@@ -1003,7 +1008,7 @@ inline std::string toString(const AttributedString::Range& range) {
       ", length: " + std::to_string(range.length) + "}";
 }
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 
 // constants for AttributedString serialization
 constexpr static MapBuffer::Key AS_KEY_HASH = 0;
@@ -1060,6 +1065,7 @@ constexpr static MapBuffer::Key PA_KEY_INCLUDE_FONT_PADDING = 4;
 constexpr static MapBuffer::Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 constexpr static MapBuffer::Key PA_KEY_MINIMUM_FONT_SIZE = 6;
 constexpr static MapBuffer::Key PA_KEY_MAXIMUM_FONT_SIZE = 7;
+constexpr static MapBuffer::Key PA_KEY_TEXT_ALIGN_VERTICAL = 8;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes& paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -1077,6 +1083,11 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes& paragraphAttributes) {
   builder.putString(
       PA_KEY_HYPHENATION_FREQUENCY,
       toString(paragraphAttributes.android_hyphenationFrequency));
+  if (paragraphAttributes.textAlignVertical.has_value()) {
+    builder.putString(
+        PA_KEY_TEXT_ALIGN_VERTICAL,
+        toString(*paragraphAttributes.textAlignVertical));
+  }
   builder.putDouble(
       PA_KEY_MINIMUM_FONT_SIZE, paragraphAttributes.minimumFontSize);
   builder.putDouble(
@@ -1219,10 +1230,6 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   }
   if (textAttributes.role.has_value()) {
     builder.putInt(TA_KEY_ROLE, static_cast<int32_t>(*textAttributes.role));
-  }
-  if (textAttributes.textAlignVertical.has_value()) {
-    builder.putString(
-        TA_KEY_ALIGNMENT_VERTICAL, toString(*textAttributes.textAlignVertical));
   }
   return builder.build();
 }

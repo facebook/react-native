@@ -62,7 +62,7 @@ struct Bridging<CustomEnumInt> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime& rt, CustomEnumInt value) {
+  static int32_t toJs(jsi::Runtime& rt, CustomEnumInt value) {
     return bridging::toJs(rt, static_cast<int32_t>(value));
   }
 };

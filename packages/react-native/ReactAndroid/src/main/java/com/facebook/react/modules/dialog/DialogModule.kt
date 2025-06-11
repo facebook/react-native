@@ -8,8 +8,6 @@
 package com.facebook.react.modules.dialog
 
 import android.content.DialogInterface
-import android.content.DialogInterface.OnClickListener
-import android.content.DialogInterface.OnDismissListener
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
@@ -19,6 +18,7 @@ describe('getDevToolsFrontendUrl', () => {
   const experiments = {
     enableNetworkInspector: false,
     enableOpenDebuggerRedirect: false,
+    enableStandaloneFuseboxShell: false,
   };
 
   describe('relative: false, launchId: undefined, telemetryInfo: undefined, (default)', () => {

@@ -163,6 +163,10 @@ class ArrayPropsNativeComponentViewProps final : public ViewProps {
   std::vector<ArrayPropsNativeComponentViewObjectStruct> object{};
   std::vector<ArrayPropsNativeComponentViewArrayOfObjectsStruct> arrayOfObjects{};
   std::vector<folly::dynamic> arrayOfMixed{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -197,6 +201,10 @@ class BooleanPropNativeComponentViewProps final : public ViewProps {
 
   bool disabled{false};
   bool disabledNullable{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -231,6 +239,10 @@ class ColorPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   SharedColor tintColor{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -265,6 +277,10 @@ class DimensionPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   YGValue marginBack{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -298,6 +314,10 @@ class EdgeInsetsPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -380,6 +400,10 @@ class EnumPropNativeComponentViewProps final : public ViewProps {
 
   EnumPropNativeComponentViewAlignment alignment{EnumPropNativeComponentViewAlignment::Center};
   EnumPropNativeComponentViewIntervals intervals{EnumPropNativeComponentViewIntervals::Intervals0};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -413,6 +437,10 @@ class EventNestedObjectPropsNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   bool disabled{false};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -446,6 +474,10 @@ class EventPropsNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   bool disabled{false};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -485,6 +517,10 @@ class FloatPropsNativeComponentViewProps final : public ViewProps {
   Float blurRadius5{1.0};
   Float blurRadius6{0.0};
   Float blurRadiusNullable{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -519,6 +555,10 @@ class ImagePropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   ImageSource thumbImage{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -554,6 +594,10 @@ class IntegerPropNativeComponentViewProps final : public ViewProps {
   int progress1{0};
   int progress2{-1};
   int progress3{10};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -587,6 +631,10 @@ class InterfaceOnlyNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   std::string title{\\"\\"};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -620,6 +668,10 @@ class MixedPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   folly::dynamic mixedProp{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -659,6 +711,10 @@ class MultiNativePropNativeComponentViewProps final : public ViewProps {
   SharedColor color{};
   SharedColor thumbTintColor{};
   Point point{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -692,6 +748,10 @@ class NoPropsNoEventsNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -855,6 +915,10 @@ class ObjectPropsNativeComponentProps final : public ViewProps {
   ObjectPropsNativeComponentObjectPropStruct objectProp{};
   ObjectPropsNativeComponentObjectArrayPropStruct objectArrayProp{};
   ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -889,6 +953,10 @@ class PointPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   Point startPoint{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -923,6 +991,10 @@ class StringPropNativeComponentViewProps final : public ViewProps {
 
   std::string placeholder{\\"\\"};
   std::string defaultValue{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react

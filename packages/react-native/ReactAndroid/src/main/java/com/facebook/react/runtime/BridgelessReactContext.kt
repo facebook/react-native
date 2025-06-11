@@ -24,6 +24,7 @@ import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
@@ -62,7 +63,12 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   @Deprecated("This method is deprecated, please use UIManagerHelper.getUIManager() instead.")
   override fun getFabricUIManager(): UIManager? = reactHost.uiManager
 
+  @OptIn(FrameworkAPI::class)
   override fun getCatalystInstance(): CatalystInstance {
+    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+      throw UnsupportedOperationException(
+          "CatalystInstance is not supported when Bridgeless mode is enabled.")
+    }
     Log.w(
         TAG,
         "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of" +
@@ -131,7 +137,7 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
       reactHost.hasNativeModule(nativeModuleInterface)
 
-  override fun getNativeModules(): MutableCollection<NativeModule>? = reactHost.nativeModules
+  override fun getNativeModules(): Collection<NativeModule> = reactHost.nativeModules
 
   override fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? =
       reactHost.getNativeModule(nativeModuleInterface)

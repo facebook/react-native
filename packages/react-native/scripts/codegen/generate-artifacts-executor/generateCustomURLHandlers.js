@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -13,6 +14,7 @@ const {TEMPLATES_FOLDER_PATH} = require('./constants');
 const {parseiOSAnnotations} = require('./utils');
 const fs = require('fs');
 const path = require('path');
+
 const MODULES_PROTOCOLS_H_TEMPLATE_PATH = path.join(
   TEMPLATES_FOLDER_PATH,
   'RCTModulesConformingToProtocolsProviderH.template',
@@ -23,13 +25,19 @@ const MODULES_PROTOCOLS_MM_TEMPLATE_PATH = path.join(
   'RCTModulesConformingToProtocolsProviderMM.template',
 );
 
-function generateCustomURLHandlers(libraries, outputDir) {
+function generateCustomURLHandlers(
+  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+  outputDir /*: string */,
+) {
   const iosAnnotations = parseiOSAnnotations(libraries);
 
-  const imageURLLoaderModules = new Set();
-  const imageDataDecoderModules = new Set();
-  const urlRequestHandlersModules = new Set();
+  const imageURLLoaderModules = new Set /*::<string>*/();
+  const imageDataDecoderModules = new Set /*::<string>*/();
+  const urlRequestHandlersModules = new Set /*::<string>*/();
 
+  // $FlowFixMe[missing-local-annot]]
+  const wrapInArrayIfNecessary = value =>
+    Array.isArray(value) || value == null ? value : [value];
   // Old API
   for (const library of libraries) {
     const modulesConformingToProtocol =
@@ -38,13 +46,19 @@ function generateCustomURLHandlers(libraries, outputDir) {
       continue;
     }
 
-    modulesConformingToProtocol.RCTImageURLLoader.forEach(moduleName => {
+    wrapInArrayIfNecessary(
+      modulesConformingToProtocol.RCTImageURLLoader,
+    )?.forEach(moduleName => {
       imageURLLoaderModules.add(moduleName);
     });
-    modulesConformingToProtocol.RCTImageDataDecoder.forEach(moduleName => {
+    wrapInArrayIfNecessary(
+      modulesConformingToProtocol.RCTImageDataDecoder,
+    )?.forEach(moduleName => {
       imageDataDecoderModules.add(moduleName);
     });
-    modulesConformingToProtocol.RCTURLRequestHandler.forEach(moduleName => {
+    wrapInArrayIfNecessary(
+      modulesConformingToProtocol.RCTURLRequestHandler,
+    )?.forEach(moduleName => {
       urlRequestHandlersModules.add(moduleName);
     });
   }

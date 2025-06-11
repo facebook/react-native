@@ -11,7 +11,7 @@
 import typeof VirtualizedList from './VirtualizedList';
 
 import * as React from 'react';
-import {useContext, useMemo} from 'react';
+import {createContext, useContext, useMemo} from 'react';
 
 type Context = $ReadOnly<{
   cellKey: ?string,
@@ -35,7 +35,7 @@ type Context = $ReadOnly<{
 }>;
 
 export const VirtualizedListContext: React.Context<?Context> =
-  React.createContext(null);
+  createContext(null);
 if (__DEV__) {
   VirtualizedListContext.displayName = 'VirtualizedListContext';
 }

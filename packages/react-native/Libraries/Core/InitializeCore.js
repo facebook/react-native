@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use client';
@@ -28,28 +28,7 @@
 
 const start = Date.now();
 
-require('./setUpGlobals');
-require('../../src/private/setup/setUpDOM').default();
-require('./setUpPerformance');
-require('./polyfillPromise');
-require('./setUpTimers');
-if (__DEV__) {
-  require('./setUpReactDevTools');
-}
-require('./setUpErrorHandling');
-require('./setUpRegeneratorRuntime');
-require('./setUpXHR');
-require('./setUpAlert');
-require('./setUpNavigator');
-require('./setUpBatchedBridge');
-require('./setUpSegmentFetcher');
-if (__DEV__) {
-  require('./checkNativeVersion');
-  require('./setUpDeveloperTools');
-  require('../LogBox/LogBox').default.install();
-}
-
-require('../ReactNative/AppRegistry');
+require('../../src/private/setup/setUpDefaultReactNativeEnvironment').default();
 
 const GlobalPerformanceLogger =
   require('../Utilities/GlobalPerformanceLogger').default;

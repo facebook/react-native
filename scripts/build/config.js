@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 import type {BabelCoreOptions} from '@babel/core';
@@ -43,6 +42,10 @@ const buildConfig: BuildConfig = {
       target: 'node',
     },
     'core-cli-utils': {
+      emitTypeScriptDefs: true,
+      target: 'node',
+    },
+    'debugger-shell': {
       emitTypeScriptDefs: true,
       target: 'node',
     },
@@ -94,7 +97,7 @@ function getTypeScriptCompilerOptions(
   switch (target) {
     case 'node':
       return {
-        ...require('@tsconfig/node18/tsconfig.json').compilerOptions,
+        ...require('@tsconfig/node22/tsconfig.json').compilerOptions,
         moduleResolution: ModuleResolutionKind.NodeJs,
       };
   }

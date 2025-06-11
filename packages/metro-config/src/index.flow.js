@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type {ConfigT} from 'metro-config';
+import type {ConfigT, InputConfigT} from 'metro-config';
 
 import {getDefaultConfig as getBaseConfig, mergeConfig} from 'metro-config';
 
@@ -44,11 +43,16 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
 
 export {mergeConfig} from 'metro-config';
 
+let frameworkDefaults = {};
+export function setFrameworkDefaults(config: InputConfigT) {
+  frameworkDefaults = config;
+}
+
 /**
  * Get the base Metro configuration for a React Native project.
  */
 export function getDefaultConfig(projectRoot: string): ConfigT {
-  const config = {
+  const reactNativeDefaults = {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['android', 'ios'],
@@ -100,5 +104,7 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
   // Set global hook so that the CLI can detect when this config has been loaded
   global.__REACT_NATIVE_METRO_CONFIG_LOADED = true;
 
-  return mergeConfig(getBaseConfig.getDefaultValues(projectRoot), config);
+  const metroDefaults = getBaseConfig.getDefaultValues(projectRoot);
+
+  return mergeConfig(metroDefaults, reactNativeDefaults, frameworkDefaults);
 }

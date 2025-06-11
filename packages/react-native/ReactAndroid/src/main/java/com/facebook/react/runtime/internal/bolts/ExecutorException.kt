@@ -12,4 +12,4 @@ package com.facebook.react.runtime.internal.bolts
  * the continuation block it self.
  */
 internal class ExecutorException(e: Exception?) :
-    RuntimeException("An exception was thrown by an Executor", e) {}
+    RuntimeException("An exception was thrown by an Executor", e)

@@ -15,6 +15,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManagerExtended.h>
 
 namespace facebook::react {
 
@@ -89,6 +90,11 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
     Attachments attachments;
   };
 
+ protected:
+  bool shouldNewRevisionDirtyMeasurement(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment) const override;
+
  private:
   void initialize() noexcept;
   /*
@@ -107,7 +113,27 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
+  template <typename ParagraphStateT>
+  void updateStateIfNeeded(
+      const Content& content,
+      const MeasuredPreparedLayout& layout);
+
+  /*
+   * Creates a `State` object (with `AttributedText` and
+   * `TextLayoutManager`) if needed.
+   */
   void updateStateIfNeeded(const Content& content);
+
+  /**
+   * Returns any previously prepared layout, generated for measurement, which
+   * may be used, given the currently assigned layout to the ShadowNode
+   */
+  MeasuredPreparedLayout* findUsableLayout();
+
+  /**
+   * Returns the final measure of the content frame, before layout rounding
+   */
+  Size rawContentSize();
 
   std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
@@ -115,6 +141,12 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * Cached content of the subtree started from the node.
    */
   mutable std::optional<Content> content_{};
+
+  /*
+   * Intermediate layout results generated during measurement, that may be
+   * reused by the platform.
+   */
+  mutable std::vector<MeasuredPreparedLayout> measuredLayouts_;
 };
 
 } // namespace facebook::react

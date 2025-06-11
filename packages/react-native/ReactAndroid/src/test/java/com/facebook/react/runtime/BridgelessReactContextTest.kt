@@ -12,7 +12,7 @@ package com.facebook.react.runtime
 import android.app.Activity
 import android.content.Context
 import com.facebook.react.bridge.WritableNativeArray
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.UIManagerModule
@@ -46,7 +46,7 @@ import org.robolectric.annotation.Config
             ShadowNativeLoader::class,
             ShadowArguments::class,
             ShadowWritableNativeArray::class])
-@OptIn(UnstableReactNativeAPI::class)
+@OptIn(FrameworkAPI::class)
 class BridgelessReactContextTest {
   private lateinit var context: Context
   private lateinit var reactHost: ReactHostImpl

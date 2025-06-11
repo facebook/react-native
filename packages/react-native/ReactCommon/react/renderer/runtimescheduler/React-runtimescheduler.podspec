@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../../.."
   end
 
-  s.dependency "React-runtimeexecutor"
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-callinvoker"
   s.dependency "React-cxxreact"
   s.dependency "React-rendererdebug"

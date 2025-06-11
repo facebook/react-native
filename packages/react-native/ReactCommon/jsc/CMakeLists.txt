@@ -30,5 +30,5 @@ if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
         target_compile_options(jscruntime PRIVATE -DNDEBUG)
 endif()
 
-target_compile_reactnative_options(jscruntime PRIVATE "ReactNative")
+target_compile_reactnative_options(jscruntime PRIVATE)
 target_compile_options(jscruntime PRIVATE -O3 -Wno-unused-lambda-capture)

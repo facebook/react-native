@@ -4,12 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 // flowlint unsafe-getters-setters:off
-/* eslint-disable lint/no-commonjs-exports */
 
 'use strict';
 'use client';

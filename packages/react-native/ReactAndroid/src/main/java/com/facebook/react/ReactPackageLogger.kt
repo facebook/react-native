@@ -8,9 +8,10 @@
 package com.facebook.react
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 
 /** Interface for the bridge to call for TTI start and end markers. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal interface ReactPackageLogger {
   fun startProcessPackage(): Unit
 

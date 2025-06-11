@@ -114,10 +114,6 @@ void TextAttributes::apply(TextAttributes textAttributes) {
       ? textAttributes.accessibilityRole
       : accessibilityRole;
   role = textAttributes.role.has_value() ? textAttributes.role : role;
-
-  textAlignVertical = textAttributes.textAlignVertical.has_value()
-      ? textAttributes.textAlignVertical
-      : textAlignVertical;
 }
 
 #pragma mark - Operators
@@ -133,7 +129,6 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              allowFontScaling,
              dynamicTypeRamp,
              alignment,
-             textAlignVertical,
              baseWritingDirection,
              lineBreakStrategy,
              textDecorationColor,
@@ -146,8 +141,7 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              layoutDirection,
              accessibilityRole,
              role,
-             textTransform,
-             textAlignVertical) ==
+             textTransform) ==
       std::tie(
              rhs.foregroundColor,
              rhs.backgroundColor,
@@ -158,7 +152,6 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              rhs.allowFontScaling,
              rhs.dynamicTypeRamp,
              rhs.alignment,
-             rhs.textAlignVertical,
              rhs.baseWritingDirection,
              rhs.lineBreakStrategy,
              rhs.textDecorationColor,
@@ -171,8 +164,7 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              rhs.layoutDirection,
              rhs.accessibilityRole,
              rhs.role,
-             rhs.textTransform,
-             rhs.textAlignVertical) &&
+             rhs.textTransform) &&
       floatEquality(maxFontSizeMultiplier, rhs.maxFontSizeMultiplier) &&
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
@@ -241,7 +233,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem(
           "alignment", alignment, textAttributes.alignment),
       debugStringConvertibleItem(
-          "baseWritingDirection",
+          "writingDirection",
           baseWritingDirection,
           textAttributes.baseWritingDirection),
       debugStringConvertibleItem(
@@ -289,11 +281,6 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
           accessibilityRole,
           textAttributes.accessibilityRole),
       debugStringConvertibleItem("role", role, textAttributes.role),
-
-      debugStringConvertibleItem(
-          "textAlignVertical",
-          textAlignVertical,
-          textAttributes.textAlignVertical),
   };
 }
 #endif

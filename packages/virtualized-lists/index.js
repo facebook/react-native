@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -13,7 +13,7 @@
 import typeof FillRateHelper from './Lists/FillRateHelper';
 import typeof ViewabilityHelper from './Lists/ViewabilityHelper';
 import typeof VirtualizedList from './Lists/VirtualizedList';
-import typeof VirtualizedSectionList from './Lists/VirtualizedSectionList';
+import type {AnyVirtualizedSectionList} from './Lists/VirtualizedSectionList';
 
 import {typeof VirtualizedListContextResetter} from './Lists/VirtualizedListContext';
 import {keyExtractor} from './Lists/VirtualizeUtils';
@@ -45,7 +45,7 @@ export default {
   get VirtualizedList(): VirtualizedList {
     return require('./Lists/VirtualizedList').default;
   },
-  get VirtualizedSectionList(): VirtualizedSectionList<any, any> {
+  get VirtualizedSectionList(): AnyVirtualizedSectionList {
     return require('./Lists/VirtualizedSectionList').default;
   },
   get VirtualizedListContextResetter(): VirtualizedListContextResetter {

@@ -8,7 +8,6 @@
 #include "RuntimeScheduler.h"
 #include "RuntimeScheduler_Legacy.h"
 #include "RuntimeScheduler_Modern.h"
-#include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
 #include <cxxreact/TraceSection.h>
@@ -22,7 +21,7 @@ extern const char RuntimeSchedulerKey[] = "RuntimeScheduler";
 namespace {
 std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now,
+    std::function<HighResTimeStamp()> now,
     RuntimeSchedulerTaskErrorHandler onTaskError) {
   if (ReactNativeFeatureFlags::enableBridgelessArchitecture()) {
     return std::make_unique<RuntimeScheduler_Modern>(
@@ -37,7 +36,7 @@ std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
 
 RuntimeScheduler::RuntimeScheduler(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now,
+    std::function<HighResTimeStamp()> now,
     RuntimeSchedulerTaskErrorHandler onTaskError)
     : runtimeSchedulerImpl_(getRuntimeSchedulerImplementation(
           std::move(runtimeExecutor),
@@ -68,13 +67,13 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
     jsi::Function&& callback,
-    RuntimeSchedulerTimeout timeout) noexcept {
+    HighResDuration timeout) noexcept {
   return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
 }
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleIdleTask(
     RawCallback&& callback,
-    RuntimeSchedulerTimeout timeout) noexcept {
+    HighResDuration timeout) noexcept {
   return runtimeSchedulerImpl_->scheduleIdleTask(std::move(callback), timeout);
 }
 
@@ -90,7 +89,7 @@ SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const noexcept {
   return runtimeSchedulerImpl_->getCurrentPriorityLevel();
 }
 
-RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
+HighResTimeStamp RuntimeScheduler::now() const noexcept {
   return runtimeSchedulerImpl_->now();
 }
 
@@ -125,6 +124,13 @@ void RuntimeScheduler::setPerformanceEntryReporter(
 void RuntimeScheduler::setEventTimingDelegate(
     RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) {
   return runtimeSchedulerImpl_->setEventTimingDelegate(eventTimingDelegate);
+}
+
+void RuntimeScheduler::setIntersectionObserverDelegate(
+    RuntimeSchedulerIntersectionObserverDelegate*
+        intersectionObserverDelegate) {
+  return runtimeSchedulerImpl_->setIntersectionObserverDelegate(
+      intersectionObserverDelegate);
 }
 
 } // namespace facebook::react

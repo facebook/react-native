@@ -221,7 +221,7 @@ internal class FabricEventDispatcher(
       if (reactContext.isOnUiQueueThread()) {
         maybeDispatchBatchedEvents()
       } else {
-        reactContext.runOnUiQueueThread(Runnable { maybeDispatchBatchedEvents() })
+        reactContext.runOnUiQueueThread { maybeDispatchBatchedEvents() }
       }
     }
   }

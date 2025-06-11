@@ -18,23 +18,23 @@ end
 
 react_native_path = ".."
 
-Pod::Spec.new do |s|
+header_search_path = [
+  "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
+  "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+  "\"$(PODS_TARGET_SRCROOT)\"",
+]
 
-  header_search_path = [
-    "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
-    "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-    "\"$(PODS_TARGET_SRCROOT)\"",
+if ENV['USE_FRAMEWORKS']
+  header_search_path = header_search_path + [
+    "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
+    "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/scrollview/platform/cxx\"",
+    "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
+    "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/text/platform/cxx\"",
+    "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
   ]
+end
 
-  if ENV['USE_FRAMEWORKS']
-    header_search_path = header_search_path + [
-      "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
-      "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/platform/ios\"",
-      "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/text/platform/cxx\"",
-      "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
-    ]
-  end
-
+Pod::Spec.new do |s|
   s.name                   = "React-FabricComponents"
   s.version                = version
   s.summary                = "Fabric Components for React Native."
@@ -44,8 +44,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
-  s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+  s.pod_target_xcconfig = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "DEFINES_MODULE" => "YES",
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" "),
                           }
@@ -69,9 +68,11 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact"
   s.dependency "Yoga"
 
+  add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-Fabric", :additional_framework_paths => [
+    "react/renderer/components/scrollview/platform/cxx",
     "react/renderer/components/view/platform/cxx",
     "react/renderer/imagemanager/platform/ios"
   ])
@@ -93,49 +94,40 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/modal"
     end
 
-    ss.subspec "rncore" do |sss|
-      sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
-      sss.header_dir           = "react/renderer/components/rncore"
-    end
-
     ss.subspec "safeareaview" do |sss|
       sss.source_files         = "react/renderer/components/safeareaview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/safeareaview/tests"
       sss.header_dir           = "react/renderer/components/safeareaview"
-
     end
 
     ss.subspec "scrollview" do |sss|
-      sss.source_files         = "react/renderer/components/scrollview/*.{m,mm,cpp,h}"
+      sss.source_files         = "react/renderer/components/scrollview/*.{m,mm,cpp,h}",
+                                 "react/renderer/components/scrollview/platform/cxx/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "react/renderer/components/scrollview/tests"
       sss.header_dir           = "react/renderer/components/scrollview"
-
     end
 
     ss.subspec "text" do |sss|
       sss.source_files         = "react/renderer/components/text/*.{m,mm,cpp,h}",
                                  "react/renderer/components/text/platform/cxx/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/text"
-
     end
 
     ss.subspec "iostextinput" do |sss|
       sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}",
                                  "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
-
     end
 
     ss.subspec "textinput" do |sss|
       sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/textinput"
-
     end
 
     ss.subspec "unimplementedview" do |sss|
       sss.source_files         = "react/renderer/components/unimplementedview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/unimplementedview/tests"
       sss.header_dir           = "react/renderer/components/unimplementedview"
-
     end
   end
 
@@ -148,21 +140,4 @@ Pod::Spec.new do |s|
                               "react/renderer/textlayoutmanager/platform/cxx"
     ss.header_dir           = "react/renderer/textlayoutmanager"
   end
-
-  s.script_phases = [
-    {
-      :name => '[RN]Check rncore',
-      :execution_position => :before_compile,
-      :always_out_of_date => '1',
-      :script => <<-EOS
-echo "Checking whether Codegen has run..."
-rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"
-
-if [[ ! -d "$rncorePath" ]]; then
-  echo 'error: Codegen did not run properly in your project. Please reinstall cocoapods with `bundle exec pod install`.'
-  exit 1
-fi
-      EOS
-    }
-  ]
 end

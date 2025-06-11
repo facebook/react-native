@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 /* eslint-env node */
 
 'use strict';
 
-// eslint-disable-next-line lint/sort-imports
+// eslint-disable-next-line @react-native/monorepo/sort-imports
 const {
   transformFromAstSync: babelTransformFromAstSync,
   transformSync: babelTransformSync,
@@ -59,6 +59,9 @@ const babelPluginPreventBabelRegister = [
 
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
+    if (file.endsWith('.json')) {
+      return {code: src};
+    }
     if (nodeFiles.test(file)) {
       // node specific transforms only
       return babelTransformSync(src, {

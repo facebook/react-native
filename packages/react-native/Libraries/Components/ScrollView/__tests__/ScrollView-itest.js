@@ -6,23 +6,23 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {createRef} from 'react';
 import {ScrollView} from 'react-native';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('onScroll', () => {
   it('delivers onScroll event', () => {
     const root = Fantom.createRoot();
-    const scrollViewRef = React.createRef<HostInstance>();
+    const scrollViewRef = createRef<HostInstance>();
     const onScroll = jest.fn();
 
     Fantom.runTask(() => {
@@ -66,7 +66,7 @@ describe('onScroll', () => {
 
   it('batches onScroll event per UI tick', () => {
     const root = Fantom.createRoot();
-    const scrollViewRef = React.createRef<HostInstance>();
+    const scrollViewRef = createRef<HostInstance>();
     const onScroll = jest.fn();
 
     Fantom.runTask(() => {

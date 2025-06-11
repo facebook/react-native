@@ -5,12 +5,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
 const {setHermesTag} = require('./hermes-utils');
+// $FlowFixMe[untyped-import]
 const inquirer = require('inquirer');
 /**
  * This script walks a releaser through bumping the Hermes version for a release.
@@ -27,6 +29,7 @@ let argv = yargs.option('t', {
 }).argv;
 
 async function main() {
+  // $FlowFixMe[prop-missing]
   const hermesTag = argv.tag;
   const {confirmHermesTag} = await inquirer.prompt({
     type: 'confirm',
@@ -42,6 +45,6 @@ async function main() {
   setHermesTag(hermesTag);
 }
 
-main().then(() => {
+void main().then(() => {
   exit(0);
 });

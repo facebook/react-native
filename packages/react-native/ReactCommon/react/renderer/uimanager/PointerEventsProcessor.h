@@ -12,7 +12,6 @@
 #include <jsi/jsi.h>
 #include <react/renderer/uimanager/PointerHoverTracker.h>
 #include <react/renderer/uimanager/UIManager.h>
-#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
 
@@ -42,7 +41,7 @@ using DispatchEvent = std::function<void(
 
 using PointerIdentifier = int32_t;
 using CaptureTargetOverrideRegistry =
-    std::unordered_map<PointerIdentifier, ShadowNode::Weak>;
+    std::unordered_map<PointerIdentifier, std::weak_ptr<const ShadowNode>>;
 
 using ActivePointerRegistry =
     std::unordered_map<PointerIdentifier, ActivePointer>;

@@ -7,68 +7,14 @@
 
 package com.facebook.react.uimanager
 
+import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import android.widget.TextView
 import com.facebook.react.R
 import com.facebook.react.bridge.ReadableArray
 
 private object ReactAxOrderHelper {
-  @JvmStatic
-  public fun setCustomAccessibilityFocusOrder(host: View) {
-
-    val axOrderIds = host.getTag(R.id.accessibility_order) as ReadableArray?
-
-    if (axOrderIds == null || axOrderIds.size() == 0) {
-      return
-    }
-
-    val axOrderIdsList = mutableListOf<String>()
-    val axOrderSet: MutableSet<String> = HashSet()
-    for (i in 0 until axOrderIds.size()) {
-      val id = axOrderIds.getString(i)
-      if (id != null) {
-        axOrderIdsList.add(id)
-        axOrderSet.add(axOrderIdsList[i])
-      }
-    }
-
-    val axOrderViews = processAxOrderTree(host, axOrderIdsList, axOrderSet).filterNotNull()
-
-    // Set up traversal order between views
-    for (i in 0 until axOrderViews.size - 1) {
-      val currentView = axOrderViews[i]
-      val flowToView = axOrderViews[i + 1]
-
-      currentView.setTag(R.id.accessibility_order_flow_to, flowToView)
-    }
-  }
-
-  @JvmStatic
-  public fun applyFlowToTraversal(host: View, info: AccessibilityNodeInfoCompat) {
-    val flowTo = host.getTag(R.id.accessibility_order_flow_to) as View?
-
-    if (flowTo != null) {
-      info.setTraversalBefore(flowTo)
-    }
-  }
-
-  @JvmStatic
-  public fun unsetAccessibilityOrder(view: View) {
-    view.setTag(R.id.accessibility_order_flow_to, null)
-    // Restore original accessibility importance if it was saved
-    val originalImportance = view.getTag(R.id.original_important_for_ax) as Int?
-    if (originalImportance != null) {
-      view.importantForAccessibility = originalImportance
-    }
-
-    if (view is ViewGroup) {
-      for (i in 0 until view.childCount) {
-        unsetAccessibilityOrder(view.getChildAt(i))
-      }
-    }
-  }
-
   /**
    * Processes the View tree that begins at the View with AccessibilityOrder set
    *
@@ -83,47 +29,134 @@ private object ReactAxOrderHelper {
    *
    * @return an array of views following the accessibility order
    */
-  private fun processAxOrderTree(
+  @JvmStatic
+  public fun processAxOrderTree(
       root: View,
-      axOrderIds: List<String?>,
-      axOrderSet: Set<String?>
-  ): Array<View?> {
-    val axOrderViews = arrayOfNulls<View?>(axOrderIds.size)
+      axOrderIds: MutableList<String?>,
+      axOrderSet: MutableSet<String?>
+  ): List<View> {
+    val axOrderViews = Array(axOrderIds.size) { mutableListOf<View?>() }.toMutableList()
 
-    fun traverseAndDisableAxFromExcludedViews(view: View, parent: View) {
+    fun traverseAndBuildAxOrder(parent: View, view: View, containerId: String?) {
       val nativeId = view.getTag(R.id.view_tag_native_id) as String?
 
-      val isIncluded = nativeId != null && axOrderSet.contains(nativeId)
+      val isContained = (containerId != null && axOrderSet.contains(containerId))
+      val isIncluded = (nativeId != null && axOrderSet.contains(nativeId))
 
-      if (nativeId != null) {
-        view.setTag(R.id.accessibility_order_parent, parent)
-        ReactAccessibilityDelegate.setDelegate(
-            view, view.isFocusable, view.importantForAccessibility)
+      val isNestedAxOrder = view.getTag(R.id.accessibility_order) != null && view != parent
+
+      if (isIncluded && view.isFocusable) {
+        axOrderViews[axOrderIds.indexOf(nativeId)].add(view)
+        if (parent != view) {
+          view.setTag(R.id.accessibility_order_parent, parent)
+        }
+      } else if (isContained && view.isFocusable) {
+        axOrderViews[axOrderIds.indexOf(containerId)].add(view)
+        if (parent != view) {
+          view.setTag(R.id.accessibility_order_parent, parent)
+        }
       }
 
-      if (isIncluded) {
-        axOrderViews[axOrderIds.indexOf(nativeId)] = view
-      } else {
-        // Save original state before disabling
-        view.setTag(R.id.original_important_for_ax, view.importantForAccessibility)
+      if (isNestedAxOrder) {
+        val nestedOrder = view.getTag(R.id.accessibility_order) as ReadableArray
+        for (i in 0 until nestedOrder.size()) {
+          val id = nestedOrder.getString(i)
+          if (id != null) {
+            val insertIdx = axOrderIds.indexOf(nativeId) + 1
+            if (insertIdx < axOrderIds.size) {
+              axOrderIds.add(axOrderIds.indexOf(nativeId) + 1 + i, id)
+              axOrderViews.add(axOrderIds.indexOf(nativeId) + 1 + i, mutableListOf())
+            } else {
+              axOrderIds.add(id)
+              axOrderViews.add(mutableListOf())
+            }
+
+            axOrderSet.add(id)
+          }
+        }
+      }
+
+      if (!isIncluded && !isContained && parent != view && view !is TextView) {
         view.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
       }
 
+      // Don't traverse the children of a nested accessibility order
       if (view is ViewGroup) {
-        // Continue to try to disable children if this view is not included and is focusable.
-        // This view being focusable means it's an element, and not a container which means its
-        // presence doesn't imply all its children should be focusable. And if its not included we
-        // still want to attempt to disable the children of the container
-        if (!isIncluded || view.isFocusable()) {
-          for (i in 0 until view.childCount) {
-            traverseAndDisableAxFromExcludedViews(view.getChildAt(i), parent)
+        val axChildren: ArrayList<View> = getAxChildren(view)
+
+        // If the View is a "container" (Not focusable but is included in the order) We add all its
+        // children to the order.
+        if (containerId != null) {
+          for (i in 0 until axChildren.size) {
+            traverseAndBuildAxOrder(parent, axChildren[i], containerId)
+          }
+        } else if (!view.isFocusable && isIncluded) {
+          for (i in 0 until axChildren.size) {
+            traverseAndBuildAxOrder(parent, axChildren[i], nativeId)
+          }
+        } else {
+          for (i in 0 until axChildren.size) {
+            traverseAndBuildAxOrder(parent, axChildren[i], null)
           }
         }
       }
     }
 
-    traverseAndDisableAxFromExcludedViews(root, root)
+    traverseAndBuildAxOrder(
+        root,
+        root,
+        null,
+    )
 
-    return axOrderViews
+    val result = mutableListOf<View>()
+    for (viewList in axOrderViews) {
+      for (view in viewList) {
+        if (view != null) {
+          result.add(view)
+        }
+      }
+    }
+
+    root.setTag(R.id.accessibility_order_dirty, false)
+
+    return result
+  }
+
+  @JvmStatic
+  public fun getVirtualViewBounds(host: View, virtualView: View): Rect {
+    var currentView: View = virtualView
+    val viewBoundsInParent =
+        Rect(virtualView.left, virtualView.top, virtualView.right, virtualView.bottom)
+    while (currentView.parent != host && currentView != host) {
+      val parent = currentView.parent as View
+      viewBoundsInParent.top += parent.top
+      viewBoundsInParent.bottom += parent.top
+      viewBoundsInParent.left += parent.left
+      viewBoundsInParent.right += parent.left
+      currentView = parent
+    }
+
+    return viewBoundsInParent
+  }
+
+  private fun getAxChildren(host: ViewGroup): ArrayList<View> {
+    val axChildren: ArrayList<View> = ArrayList()
+
+    // When host has an accessibilityNodeProvider it means the order is not default so ViewGroup's
+    // method bails, in this case we should just add the children to the node in the edge case where
+    // we need to coopt at accessibilityOrderParent level
+    if (host.accessibilityNodeProvider != null) {
+      for (i in 0 until host.childCount) {
+        val child = host.getChildAt(i)
+        if (child != null) {
+          axChildren.add(child)
+        }
+      }
+    } else {
+      // This extracts the children of host sorted in accessibility order, this is by layout
+      // top to bottom, left to right
+      host.addChildrenForAccessibility(axChildren)
+    }
+    return axChildren
   }
 }

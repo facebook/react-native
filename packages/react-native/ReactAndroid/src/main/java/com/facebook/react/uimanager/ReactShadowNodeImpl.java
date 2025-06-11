@@ -57,7 +57,7 @@ import java.util.Arrays;
  * NativeViewHierarchyOptimizer} for more information.
  */
 @ReactPropertyHolder
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
   private static final YogaConfig sYogaConfig;
@@ -68,7 +68,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "ReactShadowNodeImpl", LegacyArchitectureLogLevel.WARNING);
+        "ReactShadowNodeImpl", LegacyArchitectureLogLevel.ERROR);
   }
 
   private int mReactTag;

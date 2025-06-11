@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
-
-'use strict';
 
 import {create} from '../../../jest/renderer';
 import SectionList from '../SectionList';
@@ -42,16 +40,19 @@ describe('SectionList', () => {
           <defaultItemSeparator v={propStr(props)} />
         )}
         ListEmptyComponent={props => <empty v={propStr(props)} />}
+        // $FlowFixMe[incompatible-type]
         ListFooterComponent={props => <footer v={propStr(props)} />}
+        // $FlowFixMe[incompatible-type]
         ListHeaderComponent={props => <header v={propStr(props)} />}
         SectionSeparatorComponent={props => (
           <sectionSeparator v={propStr(props)} />
         )}
         sections={[
+          // $FlowFixMe[incompatible-type]
           {
             renderItem: props => <itemForSection1 v={propStr(props)} />,
             key: 's1',
-            keyExtractor: (item, index) => item.id,
+            keyExtractor: (item, index) => item?.id,
             ItemSeparatorComponent: props => (
               <itemSeparatorForSection1 v={propStr(props)} />
             ),
@@ -98,11 +99,12 @@ describe('SectionList', () => {
   });
 });
 
-function propStr(props) {
+function propStr(props: $ReadOnly<{[string]: $FlowFixMe}>) {
   return Object.keys(props)
     .map(k => {
       const propObj = props[k] || {};
-      return `${k}:${propObj.key || propObj.id || props[k]}`;
+      // $FlowFixMe[incompatible-type]
+      return `${k}:${propObj.key ?? propObj.id ?? props[k]}`;
     })
     .join(',');
 }

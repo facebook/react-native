@@ -34,5 +34,5 @@ target_link_libraries(react_renderer_imagemanager
         react_renderer_mounting
         reactnativejni
         yoga)
-target_compile_reactnative_options(react_renderer_imagemanager PRIVATE "Fabric")
+target_compile_reactnative_options(react_renderer_imagemanager PRIVATE)
 target_compile_options(react_renderer_imagemanager PRIVATE -Wpedantic)

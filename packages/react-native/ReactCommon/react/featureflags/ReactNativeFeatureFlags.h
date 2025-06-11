@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<871f96445659d2f927efeda5480b6f96>>
+ * @generated SignedSource<<dfad04f9ff620686a1619070f8c19efe>>
  */
 
 /**
@@ -50,6 +50,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool animatedShouldSignalBatch();
 
   /**
+   * Do not incorrectly ceil the available width of an Android text layout
+   */
+  RN_EXPORT static bool avoidCeilingAvailableAndroidTextWidth();
+
+  /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
    */
   RN_EXPORT static bool cxxNativeAnimatedEnabled();
@@ -63,6 +68,11 @@ class ReactNativeFeatureFlags {
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
+   * Turns off the global measurement cache used by TextLayoutManager on Android.
+   */
+  RN_EXPORT static bool disableTextLayoutManagerCacheAndroid();
 
   /**
    * When enabled, the accessibilityOrder prop will propagate to native platforms and define the accessibility order.
@@ -88,6 +98,11 @@ class ReactNativeFeatureFlags {
    * This enables the fabric implementation of focus search so that we can focus clipped elements
    */
   RN_EXPORT static bool enableCustomFocusSearchOnClippedElementsAndroid();
+
+  /**
+   * Enables destructor calls for ShadowTreeRevision in the background to reduce UI thread work.
+   */
+  RN_EXPORT static bool enableDestroyShadowTreeRevisionAsync();
 
   /**
    * When enabled a subset of components will avoid double measurement on Android.
@@ -120,14 +135,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
 
   /**
+   * Applies base offset for each line of text separately on iOS.
+   */
+  RN_EXPORT static bool enableIOSTextBaselineOffsetPerLine();
+
+  /**
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
-   * Trigger JS runtime GC on memory pressure event on iOS
+   * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
    */
-  RN_EXPORT static bool enableJSRuntimeGCOnMemoryPressureOnIOS();
+  RN_EXPORT static bool enableIntersectionObserverEventLoopIntegration();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -140,9 +160,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableLayoutAnimationsOnIOS();
 
   /**
+   * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
+   */
+  RN_EXPORT static bool enableMainQueueCoordinatorOnIOS();
+
+  /**
    * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
    */
   RN_EXPORT static bool enableMainQueueModulesOnIOS();
+
+  /**
+   * Enable NSNull conversion when handling module arguments on iOS
+   */
+  RN_EXPORT static bool enableModuleArgumentNSNullConversionIOS();
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
@@ -158,6 +188,11 @@ class ReactNativeFeatureFlags {
    * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
    */
   RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
+
+  /**
+   * Enables caching text layout artifacts for later reuse
+   */
+  RN_EXPORT static bool enablePreparedTextLayout();
 
   /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
@@ -210,6 +245,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 
   /**
+   * Set maxLines and ellipsization during Android layout creation
+   */
+  RN_EXPORT static bool incorporateMaxLinesDuringAndroidLayout();
+
+  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
@@ -225,9 +265,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
 
   /**
-   * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
+   * Trust the width of a text layout we create, instead of re-deriving it from its contents
    */
-  RN_EXPORT static bool useEditTextStockAndroidFocusBehavior();
+  RN_EXPORT static bool useAndroidTextLayoutWidthDirectly();
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
@@ -263,6 +303,11 @@ class ReactNativeFeatureFlags {
    * When enabled, NativeModules will be executed by using the TurboModule system
    */
   RN_EXPORT static bool useTurboModules();
+
+  /**
+   * Initial prerender ratio for VirtualView.
+   */
+  RN_EXPORT static double virtualViewPrerenderRatio();
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

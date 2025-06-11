@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeToastAndroid';
-import NativeToastAndroid from '../../../src/private/specs_DEPRECATED/modules/NativeToastAndroid';
-export default NativeToastAndroid;
+export {default} from '../../../src/private/specs_DEPRECATED/modules/NativeToastAndroid';

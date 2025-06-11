@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeAnimatedTurboModule';
 import NativeAnimatedTurboModule from '../../src/private/specs_DEPRECATED/modules/NativeAnimatedTurboModule';
+
 export default NativeAnimatedTurboModule;
