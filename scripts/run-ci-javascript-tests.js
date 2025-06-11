@@ -86,7 +86,7 @@ try {
   describe('Test: Build @react-native/codegen-typescript-test');
   if (
     exec(
-      `${YARN_BINARY} --cwd ./packages/react-native-codegen-typescript-test run build`,
+      `${YARN_BINARY} --cwd ./private/react-native-codegen-typescript-test run build`,
     ).code
   ) {
     echo('Failed to build @react-native/codegen-typescript-test.');

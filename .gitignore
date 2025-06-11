@@ -144,7 +144,7 @@ vendor/
 /**/RCTThirdPartyFabricComponentsProvider.*
 
 # @react-native/codegen-typescript-test
-/packages/react-native-codegen-typescript-test/lib
+/private/react-native-codegen-typescript-test/lib
 
 # Additional SDKs
 /packages/react-native/sdks/download

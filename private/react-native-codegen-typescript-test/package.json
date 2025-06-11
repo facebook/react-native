@@ -1,15 +1,9 @@
 {
   "name": "@react-native/codegen-typescript-test",
-  "version": "0.80.0-main",
+  "version": "0.0.0",
   "private": true,
   "description": "TypeScript related unit test for @react-native/codegen",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/facebook/react-native.git",
-    "directory": "packages/react-native-codegen-typescript-test"
-  },
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-typescript-test",
   "engines": {
     "node": ">= 22.14.0"
   },
