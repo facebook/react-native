@@ -5385,11 +5385,6 @@ public abstract interface class com/facebook/react/viewmanagers/UnimplementedNat
 	public abstract fun setName (Landroid/view/View;Ljava/lang/String;)V
 }
 
-public final class com/facebook/react/views/common/ContextUtils {
-	public static final field INSTANCE Lcom/facebook/react/views/common/ContextUtils;
-	public static final fun findContextOfType (Landroid/content/Context;Ljava/lang/Class;)Ljava/lang/Object;
-}
-
 public final class com/facebook/react/views/drawer/ReactDrawerLayout : androidx/drawerlayout/widget/DrawerLayout {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
