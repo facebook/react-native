@@ -13,7 +13,6 @@ import android.content.Context
 import com.facebook.common.logging.FLog
 import com.facebook.hermes.reactexecutor.HermesExecutor
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
-import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.JSExceptionHandler
 import com.facebook.react.bridge.JavaScriptExecutorFactory
@@ -40,7 +39,7 @@ import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.ReactInstanceManager.initializeSoLoaderIfNecessary
 
 /** Builder class for [ReactInstanceManager]. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class ReactInstanceManagerBuilder {
   private val packages: MutableList<ReactPackage> = mutableListOf()
   private var jsBundleAssetUrl: String? = null
@@ -90,7 +89,7 @@ public class ReactInstanceManagerBuilder {
    * Example: `"index.android.js"`
    */
   public fun setBundleAssetName(bundleAssetName: String?): ReactInstanceManagerBuilder {
-    jsBundleAssetUrl = (if (bundleAssetName == null) null else "assets://$bundleAssetName")
+    jsBundleAssetUrl = if (bundleAssetName == null) null else "assets://$bundleAssetName"
     jsBundleLoader = null
     return this
   }
@@ -111,7 +110,7 @@ public class ReactInstanceManagerBuilder {
 
   /**
    * Bundle loader to use when setting up JS environment. This supersedes prior invocations of
-   * [.setJSBundleFile] and [.setBundleAssetName].
+   * [setJSBundleFile] and [setBundleAssetName].
    *
    * Example: `JSBundleLoader.createFileLoader(application, bundleFile)`
    */
@@ -179,7 +178,7 @@ public class ReactInstanceManagerBuilder {
 
   /**
    * When `true`, developer options such as JS reloading and debugging are enabled. Note you
-   * still have to call [.showDevOptionsDialog] to show the dev menu, e.g. when the device
+   * still have to call [showDevOptionsDialog] to show the dev menu, e.g. when the device
    * Menu button is pressed.
    */
   public fun setUseDeveloperSupport(useDeveloperSupport: Boolean): ReactInstanceManagerBuilder {
@@ -313,13 +312,13 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
-   * Instantiates a new [ReactInstanceManager]. Before calling `build`, the following
+   * Instantiates a new [ReactInstanceManager]. Before calling [build], the following
    * must be called:
    *
-   *  * [.setApplication]
-   *  * [.setCurrentActivity] if the activity has already resumed
-   *  * [.setDefaultHardwareBackBtnHandler] if the activity has already resumed
-   *  * [.setJSBundleFile] or [.setJSMainModulePath]
+   *  * [setApplication]
+   *  * [setCurrentActivity] if the activity has already resumed
+   *  * [setDefaultHardwareBackBtnHandler] if the activity has already resumed
+   *  * [setJSBundleFile] or [setJSMainModulePath]
    *
    */
   public fun build(): ReactInstanceManager {
@@ -331,15 +330,13 @@ public class ReactInstanceManagerBuilder {
       }
     }
 
-    Assertions.assertCondition(
-      useDeveloperSupport || jsBundleAssetUrl != null || jsBundleLoader != null,
+    check(useDeveloperSupport || jsBundleAssetUrl != null || jsBundleLoader != null) {
       "JS Bundle File or Asset URL has to be provided when dev support is disabled"
-    )
+    }
 
-    Assertions.assertCondition(
-      jsMainModulePath != null || jsBundleAssetUrl != null || jsBundleLoader != null,
+    check(jsMainModulePath != null || jsBundleAssetUrl != null || jsBundleLoader != null) {
       "Either MainModulePath or JS Bundle File needs to be provided"
-    )
+    }
 
     // We use the name of the device and the app for debugging & metrics
     val appName = application.packageName
@@ -421,7 +418,7 @@ public class ReactInstanceManagerBuilder {
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-        "ReactInstanceManagerBuilder", LegacyArchitectureLogLevel.WARNING
+        "ReactInstanceManagerBuilder", LegacyArchitectureLogLevel.ERROR
       )
     }
 
