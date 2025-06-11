@@ -101,7 +101,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
-    uses: ./.github/workflows/prebuild-ios.yml
+    uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
   build_hermesc_linux:

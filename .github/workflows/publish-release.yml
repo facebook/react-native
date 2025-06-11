@@ -96,8 +96,9 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
+
   prebuild_apple_dependencies:
-    uses: ./.github/workflows/prebuild-ios.yml
+    uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
   build_hermesc_linux:
