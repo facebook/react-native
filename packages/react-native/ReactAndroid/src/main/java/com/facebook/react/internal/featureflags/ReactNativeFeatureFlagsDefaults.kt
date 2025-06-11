@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3792f1be08a9175b71c3bef175fbb71>>
+ * @generated SignedSource<<afd0aeeeb2e96544ce5e7503fb521f18>>
  */
 
 /**
@@ -26,8 +26,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun commonTestFlag(): Boolean = false
 
   override fun animatedShouldSignalBatch(): Boolean = false
-
-  override fun avoidCeilingAvailableAndroidTextWidth(): Boolean = true
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
@@ -105,15 +103,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
-  override fun incorporateMaxLinesDuringAndroidLayout(): Boolean = true
-
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
   override fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean = false
 
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
-
-  override fun useAndroidTextLayoutWidthDirectly(): Boolean = true
 
   override fun useFabricInterop(): Boolean = true
 

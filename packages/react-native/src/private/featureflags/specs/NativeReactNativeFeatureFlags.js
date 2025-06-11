@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<afe099f339fe761a3856eb3f43dc6ae7>>
+ * @generated SignedSource<<a9d9b3671aae6cd62c5d5181504116af>>
  * @flow strict
  * @noformat
  */
@@ -27,7 +27,6 @@ export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +animatedShouldSignalBatch?: () => boolean;
-  +avoidCeilingAvailableAndroidTextWidth?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
   +disableMainQueueSyncDispatchIOS?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
@@ -66,11 +65,9 @@ export interface Spec extends TurboModule {
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
-  +incorporateMaxLinesDuringAndroidLayout?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
-  +useAndroidTextLayoutWidthDirectly?: () => boolean;
   +useFabricInterop?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useOptimizedEventBatchingOnAndroid?: () => boolean;

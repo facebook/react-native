@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ac09fd0e72e9fa41a5a13578fcd98d03>>
+ * @generated SignedSource<<14d4c814891cefeba1db30642249cfd8>>
  */
 
 /**
@@ -61,15 +61,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::animatedShouldSignalBatch();
-  }
-
-  bool avoidCeilingAvailableAndroidTextWidth() override {
-    auto value = values_["avoidCeilingAvailableAndroidTextWidth"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::avoidCeilingAvailableAndroidTextWidth();
   }
 
   bool cxxNativeAnimatedEnabled() override {
@@ -414,15 +405,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled();
   }
 
-  bool incorporateMaxLinesDuringAndroidLayout() override {
-    auto value = values_["incorporateMaxLinesDuringAndroidLayout"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::incorporateMaxLinesDuringAndroidLayout();
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     auto value = values_["traceTurboModulePromiseRejectionsOnAndroid"];
     if (!value.isNull()) {
@@ -448,15 +430,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useAlwaysAvailableJSErrorHandling();
-  }
-
-  bool useAndroidTextLayoutWidthDirectly() override {
-    auto value = values_["useAndroidTextLayoutWidthDirectly"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useAndroidTextLayoutWidthDirectly();
   }
 
   bool useFabricInterop() override {
