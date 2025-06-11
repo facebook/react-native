@@ -120,6 +120,11 @@ jobs:
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
+  prebuild_react_native_core:
+    uses: ./.github/workflows/prebuild-ios-core.yml
+    secrets: inherit
+    needs: [prebuild_apple_dependencies, build_hermes_macos]
+
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-14
     needs:

@@ -104,6 +104,11 @@ jobs:
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
+  prebuild_react_native_core:
+    uses: ./.github/workflows/prebuild-ios-core.yml
+    secrets: inherit
+    needs: [prebuild_apple_dependencies, build_hermes_macos]
+
   build_hermesc_linux:
     runs-on: ubuntu-latest
     needs: prepare_hermes_workspace
