@@ -54,13 +54,11 @@ export function observe(result: ExecaPromiseMetaized): TaskResult<{}, string> {
     result.stdout.on('error', error => observer.error(error.trim()));
     result.then(
       (_: Result) => observer.complete(),
-      error =>
+      cause =>
         observer.error(
-          new Error(
-            `${styleText(['red', 'bold'], error.shortMessage)}\n${
-              error.stderr || error.stdout
-            }`,
-          ),
+          new Error(`${styleText(['red', 'bold'], cause.shortMessage)}`, {
+            cause,
+          }),
         ),
     );
 
