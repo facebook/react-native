@@ -36,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -146,9 +147,6 @@ public class ReactEditText extends AppCompatEditText {
 
   public ReactEditText(Context context) {
     super(context);
-    if (!ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
-      setFocusableInTouchMode(false);
-    }
 
     mInputMethodManager =
         (InputMethodManager)
@@ -191,9 +189,7 @@ public class ReactEditText extends AppCompatEditText {
                 // selection on accessibility click to undo that.
                 setSelection(length);
               }
-              return ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()
-                  ? requestFocusProgramatically()
-                  : requestFocusInternal();
+              return requestFocusProgramatically();
             }
             return super.performAccessibilityAction(host, action, args);
           }
@@ -341,29 +337,28 @@ public class ReactEditText extends AppCompatEditText {
     return super.onTextContextMenuItem(id);
   }
 
-  @Override
-  public void clearFocus() {
-    boolean useStockFocusBehavior = ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior();
-    if (!useStockFocusBehavior) {
-      setFocusableInTouchMode(false);
+  public void clearFocusAndMaybeRefocus() {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || !isInTouchMode()) {
+      super.clearFocus();
+    } else {
+      // Avoid refocusing to a new view on old versions of Android by default
+      // by preventing `requestFocus()` on the rootView from moving focus to any child.
+      // https://cs.android.com/android/_/android/platform/frameworks/base/+/bdc66cb5a0ef513f4306edf9156cc978b08e06e4
+      ViewGroup rootViewGroup = (ViewGroup)getRootView();
+      int oldDescendantFocusability = rootViewGroup.getDescendantFocusability();
+      rootViewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+      super.clearFocus();
+      rootViewGroup.setDescendantFocusability(oldDescendantFocusability);
     }
-    super.clearFocus();
+
     hideSoftKeyboard();
   }
 
-  @Override
-  public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
-    // This is a no-op so that when the OS calls requestFocus(), nothing will happen. ReactEditText
-    // is a controlled component, which means its focus is controlled by JS, with two exceptions:
-    // autofocus when it's attached to the window, and responding to accessibility events. In both
-    // of these cases, we call requestFocusInternal() directly.
-    return ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()
-        ? super.requestFocus(direction, previouslyFocusedRect)
-        : isFocused();
+    /* package */ void clearFocusFromJS() {
+    clearFocusAndMaybeRefocus();
   }
 
   private boolean requestFocusInternal() {
-    setFocusableInTouchMode(true);
     // We must explicitly call this method on the super class; if we call requestFocus() without
     // any arguments, it will call into the overridden requestFocus(int, Rect) above, which no-ops.
     boolean focused = super.requestFocus(View.FOCUS_DOWN, null);
@@ -656,15 +651,7 @@ public class ReactEditText extends AppCompatEditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
-    if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
-      requestFocusProgramatically();
-    } else {
-      requestFocusInternal();
-    }
-  }
-
-  /* package */ void clearFocusFromJS() {
-    clearFocus();
+    requestFocusProgramatically();
   }
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
@@ -1107,11 +1094,7 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     if (mAutoFocus && !mDidAttachToWindow) {
-      if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
-        requestFocusProgramatically();
-      } else {
-        requestFocusInternal();
-      }
+      requestFocusProgramatically();
     }
 
     mDidAttachToWindow = true;
