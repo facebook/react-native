@@ -117,7 +117,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
-    uses: ./.github/workflows/prebuild-ios.yml
+    uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
   test_ios_rntester_ruby_3_2_0:
