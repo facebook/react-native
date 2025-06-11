@@ -122,7 +122,7 @@ val reactCoreReleaseDSYMArtifact: PublishArtifact =
     artifacts.add("externalArtifacts", reactCoreReleaseDSYMArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
-      classifier = "reactnative-dependencies-dSYM-release"
+      classifier = "reactnative-core-dSYM-release"
     }
 
 apply(from = "../publish.gradle")
