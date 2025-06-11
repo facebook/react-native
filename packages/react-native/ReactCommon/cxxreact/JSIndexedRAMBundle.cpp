@@ -7,6 +7,9 @@
 
 #include "JSIndexedRAMBundle.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
+#include <glog/logging.h>
 #include <fstream>
 #include <sstream>
 
@@ -129,3 +132,5 @@ void JSIndexedRAMBundle::readBundle(
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

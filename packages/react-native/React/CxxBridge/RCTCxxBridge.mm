@@ -64,6 +64,8 @@
 #import <React/RCTDevLoadingViewProtocol.h>
 #endif
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
 typedef void (^RCTPendingCall)();
@@ -1587,3 +1589,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 }
 
 @end
+
+#else // RCT_FIT_RM_OLD_RUNTIME
+@implementation RCTCxxBridge
+@end
+#endif // RCT_FIT_RM_OLD_RUNTIME

@@ -80,7 +80,9 @@ class JSIExecutor : public JSExecutor {
   void loadBundle(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override;
+#endif // RCT_FIT_RM_OLD_RUNTIME
   void registerBundle(uint32_t bundleId, const std::string& bundlePath)
       override;
   void callFunction(
@@ -109,6 +111,7 @@ class JSIExecutor : public JSExecutor {
   void flush() override;
 
  private:
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   class NativeModuleProxy;
 
   void bindBridge();
@@ -129,6 +132,7 @@ class JSIExecutor : public JSExecutor {
   std::optional<jsi::Function> callFunctionReturnFlushedQueue_;
   std::optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
   std::optional<jsi::Function> flushedQueue_;
+#endif // RCT_FIT_RM_OLD_RUNTIME
 };
 
 using Logger =

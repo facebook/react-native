@@ -7,6 +7,8 @@
 
 #include "ModuleRegistry.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <glog/logging.h>
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
@@ -239,3 +241,5 @@ MethodCallResult ModuleRegistry::callSerializableNativeHook(
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

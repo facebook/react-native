@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <cxxreact/JSBigString.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>

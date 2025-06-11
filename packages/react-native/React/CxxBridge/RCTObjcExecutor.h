@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <functional>
 #include <memory>
 
@@ -29,3 +31,5 @@ class RCTObjcExecutorFactory : public JSExecutorFactory {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

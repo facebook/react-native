@@ -10,6 +10,7 @@
 
 #import "RCTDefines.h"
 #import "RCTSurface.h"
+#import "RCTSurfaceProtocol.h"
 #import "RCTSurfaceRootView.h"
 
 @implementation RCTSurfaceView {
