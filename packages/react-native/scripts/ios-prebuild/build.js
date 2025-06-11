@@ -9,7 +9,7 @@
  */
 
 /*::
-import type {Destination} from './types';
+import type {BuildFlavor, Destination} from './types';
 */
 
 const {createLogger} = require('./utils');
@@ -52,7 +52,7 @@ function computeFrameworkPaths(
 function buildSwiftPackage(
   rootFolder /*: string */,
   buildFolder /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   platform /*: Destination */,
   outputFolder /*: string */,
 ) {
