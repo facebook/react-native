@@ -173,27 +173,27 @@ jobs:
         if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
         run: |
           cd packages/react-native/.build/output/xcframeworks/${{matrix.flavor}}
-          tar -cz -f ../React${{matrix.flavor}}.xcframework.tar.gz React.xcframework
+          tar -cz -f ../ReactCore${{matrix.flavor}}.xcframework.tar.gz React.xcframework
       - name: Compress and Rename dSYM
         if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
         run: |
           cd packages/react-native/.build/output/xcframeworks/${{matrix.flavor}}/Symbols
-          tar -cz -f ../../React${{ matrix.flavor }}.framework.dSYM.tar.gz .
+          tar -cz -f ../../ReactCore${{ matrix.flavor }}.framework.dSYM.tar.gz .
       - name: Upload XCFramework Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ReactCore${{ matrix.flavor }}.xcframework.tar.gz
-          path: packages/react-native/.build/output/xcframeworks/React${{matrix.flavor}}.xcframework.tar.gz
+          path: packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.xcframework.tar.gz
       - name: Upload dSYM Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ReactCore${{ matrix.flavor }}.framework.dSYM.tar.gz
-          path: packages/react-native/.build/output/xcframeworks/React${{matrix.flavor}}.framework.dSYM.tar.gz
+          path: packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.framework.dSYM.tar.gz
       - name: Save cache if present
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
         uses: actions/cache/save@v4
         with:
           path: |
-            packages/react-native/.build/output/xcframeworks/React${{matrix.flavor}}.xcframework.tar.gz
-            packages/react-native/.build/output/xcframeworks/React${{matrix.flavor}}.framework.dSYM.tar.gz
+            packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.xcframework.tar.gz
+            packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.framework.dSYM.tar.gz
           key: v2-ios-core-xcframework-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}
