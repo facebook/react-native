@@ -182,12 +182,12 @@ jobs:
       - name: Upload XCFramework Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: React${{ matrix.flavor }}.xcframework.tar.gz
+          name: ReactCore${{ matrix.flavor }}.xcframework.tar.gz
           path: packages/react-native/.build/output/xcframeworks/React${{matrix.flavor}}.xcframework.tar.gz
       - name: Upload dSYM Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: React${{ matrix.flavor }}.framework.dSYM.tar.gz
+          name: ReactCore${{ matrix.flavor }}.framework.dSYM.tar.gz
           path: packages/react-native/.build/output/xcframeworks/React${{matrix.flavor}}.framework.dSYM.tar.gz
       - name: Save cache if present
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
