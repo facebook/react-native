@@ -40,7 +40,7 @@
   "workspaces": [
     "packages/*",
     "private/*",
-    "!packages/helloworld"
+    "!private/helloworld"
   ],
   "devDependencies": {
     "@babel/core": "^7.25.2",

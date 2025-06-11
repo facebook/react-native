@@ -14,11 +14,19 @@
 // - Github and Meta: dynamicly transpile our dependencies. They each have to register on the monorepo
 // - NPM: `yarn run build`, and it should update the package.json's exports, main and files
 function patchCoreCLIUtilsPackageJSON(patch /*: boolean */) {
-  const fs = require('fs');
   const log = require('debug');
-  const pkg = JSON.parse(
-    fs.readFileSync('../core-cli-utils/package.json', 'utf8'),
+  const fs = require('fs');
+  const path = require('path');
+
+  function repositoryPath(relativePath /*: string */) {
+    return path.join(__dirname, '..', '..', '..', relativePath);
+  }
+
+  const packageJsonPath = repositoryPath(
+    'packages/core-cli-utils/package.json',
   );
+
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   const target = patch ? './src/monorepo.js' : './src/index.flow.js';
   if (pkg.main === target) {
     return;
@@ -32,10 +40,7 @@ function patchCoreCLIUtilsPackageJSON(patch /*: boolean */) {
       2,
     )}`,
   );
-  fs.writeFileSync(
-    '../core-cli-utils/package.json',
-    JSON.stringify(pkg, null, 2),
-  );
+  fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2));
 }
 
 module.exports.patchCoreCLIUtilsPackageJSON = patchCoreCLIUtilsPackageJSON;
