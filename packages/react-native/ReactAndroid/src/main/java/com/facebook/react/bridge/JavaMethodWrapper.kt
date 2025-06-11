@@ -119,8 +119,8 @@ internal class JavaMethodWrapper(
     while (i < paramTypes.size) {
       val argumentClass = paramTypes[i]
       val extractor: ArgumentExtractor<*> = when (argumentClass) {
-        java.lang.Boolean::class.java,
-        java.lang.Boolean::class.javaPrimitiveType -> ARGUMENT_EXTRACTOR_BOOLEAN
+        Boolean::class.javaObjectType,
+        Boolean::class.javaPrimitiveType -> ARGUMENT_EXTRACTOR_BOOLEAN
         Int::class.javaObjectType,
         Int::class.javaPrimitiveType -> ARGUMENT_EXTRACTOR_INTEGER
         Double::class.javaObjectType,
@@ -381,8 +381,8 @@ internal class JavaMethodWrapper(
 
     private fun commonTypeToChar(typeClass: Class<*>): Char {
       return when (typeClass) {
-        java.lang.Boolean::class.javaPrimitiveType -> 'z'
-        java.lang.Boolean::class.java -> 'Z'
+        Boolean::class.javaPrimitiveType -> 'z'
+        Boolean::class.javaObjectType -> 'Z'
         Int::class.javaPrimitiveType -> 'i'
         Int::class.javaObjectType -> 'I'
         Double::class.javaPrimitiveType -> 'd'
