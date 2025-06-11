@@ -96,9 +96,15 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
+
   prebuild_apple_dependencies:
-    uses: ./.github/workflows/prebuild-ios.yml
+    uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
+
+  prebuild_react_native_core:
+    uses: ./.github/workflows/prebuild-ios-core.yml
+    secrets: inherit
+    needs: [prebuild_apple_dependencies, build_hermes_macos]
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -166,6 +172,7 @@ jobs:
         build_hermesc_windows,
         build_android,
         prebuild_apple_dependencies,
+        prebuild_react_native_core,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest

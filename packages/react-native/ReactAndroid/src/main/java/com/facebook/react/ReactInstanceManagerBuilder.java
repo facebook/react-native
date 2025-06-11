@@ -81,7 +81,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
   private @Nullable DevLoadingViewManager mDevLoadingViewManager;
-  private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
   private @Nullable ChoreographerProvider mChoreographerProvider = null;
   private @Nullable PausedInDebuggerOverlayManager mPausedInDebuggerOverlayManager = null;
 
@@ -132,16 +131,6 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setJSBundleLoader(JSBundleLoader jsBundleLoader) {
     mJSBundleLoader = jsBundleLoader;
     mJSBundleAssetUrl = null;
-    return this;
-  }
-
-  /**
-   * Sets the JS Engine to load as either Hermes or JSC. If not set, the default is JSC with a
-   * Hermes fallback.
-   */
-  public ReactInstanceManagerBuilder setJSEngineResolutionAlgorithm(
-      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
-    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
     return this;
   }
 
@@ -389,33 +378,24 @@ public class ReactInstanceManagerBuilder {
 
     initializeSoLoaderIfNecessary(applicationContext);
     // Hermes has been enabled by default in OSS since React Native 0.70.
-    // If the user hasn't specified a JSEngineResolutionAlgorithm,
-    // we attempt to load Hermes first, and fallback to JSC if we can't resolve the library.
-    if (mJSEngineResolutionAlgorithm == null) {
-      try {
-        HermesExecutor.loadLibrary();
-        return new HermesExecutorFactory();
-      } catch (UnsatisfiedLinkError ignoredHermesError) {
-        try {
-          JSCExecutor.loadLibrary();
-          return new JSCExecutorFactory(appName, deviceName);
-        } catch (UnsatisfiedLinkError jscError) {
-          FLog.e(
-              TAG,
-              "Unable to load neither the Hermes nor the JSC native library. "
-                  + "Your application is not built correctly and will fail to execute");
-          if (jscError.getMessage().contains("__cxa_bad_typeid")) {
-            throw jscError;
-          }
-          return null;
-        }
-      }
-    } else if (mJSEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.HERMES) {
+    // Here we attempt to load Hermes first, and fallback to JSC if we can't resolve the library.
+    try {
       HermesExecutor.loadLibrary();
       return new HermesExecutorFactory();
-    } else {
-      JSCExecutor.loadLibrary();
-      return new JSCExecutorFactory(appName, deviceName);
+    } catch (UnsatisfiedLinkError ignoredHermesError) {
+      try {
+        JSCExecutor.loadLibrary();
+        return new JSCExecutorFactory(appName, deviceName);
+      } catch (UnsatisfiedLinkError jscError) {
+        FLog.e(
+            TAG,
+            "Unable to load neither the Hermes nor the JSC native library. "
+                + "Your application is not built correctly and will fail to execute");
+        if (jscError.getMessage().contains("__cxa_bad_typeid")) {
+          throw jscError;
+        }
+        return null;
+      }
     }
   }
 }

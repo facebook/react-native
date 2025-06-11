@@ -23,12 +23,17 @@ CullingContext CullingContext::adjustCullingContextIfNeeded(
   if (ReactNativeFeatureFlags::enableViewCulling()) {
     if (auto scrollViewShadowNode =
             dynamic_cast<const ScrollViewShadowNode*>(pair.shadowNode)) {
-      cullingContext.frame.origin =
-          -scrollViewShadowNode->getContentOriginOffset(
-              /* includeTransform */ true);
-      cullingContext.frame.size =
-          scrollViewShadowNode->getLayoutMetrics().frame.size;
-      cullingContext.transform = Transform::Identity();
+      if (scrollViewShadowNode->getConcreteProps().yogaStyle.overflow() !=
+          yoga::Overflow::Visible) {
+        cullingContext.frame.origin =
+            -scrollViewShadowNode->getContentOriginOffset(
+                /* includeTransform */ true);
+        cullingContext.frame.size =
+            scrollViewShadowNode->getLayoutMetrics().frame.size;
+        cullingContext.transform = Transform::Identity();
+      } else {
+        cullingContext = {};
+      }
     } else if (pair.shadowView.traits.check(
                    ShadowNodeTraits::Trait::RootNodeKind)) {
       cullingContext = {};

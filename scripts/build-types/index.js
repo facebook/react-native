@@ -20,12 +20,13 @@ const config = {
     debug: {type: 'boolean'},
     help: {type: 'boolean'},
     withSnapshot: {type: 'boolean'},
+    validate: {type: 'boolean'},
   },
 };
 
 async function main() {
   const {
-    values: {debug: debugEnabled, help, withSnapshot},
+    values: {debug: debugEnabled, help, withSnapshot, validate},
     /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
@@ -68,7 +69,7 @@ async function main() {
         '\n',
     );
 
-    await buildApiSnapshot();
+    await buildApiSnapshot(validate);
   }
 }
 

@@ -9,7 +9,7 @@
  */
 
 /*::
-import type {Destination} from './types';
+import type {BuildFlavor, Destination} from './types';
 */
 
 const {createLogger} = require('./utils');
@@ -52,13 +52,14 @@ function computeFrameworkPaths(
 function buildSwiftPackage(
   rootFolder /*: string */,
   buildFolder /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   platform /*: Destination */,
   outputFolder /*: string */,
 ) {
   const buildCommand =
     `xcodebuild -scheme React -destination "generic/platform=${platform}" -derivedDataPath "${outputFolder}" ` +
-    `-configuration "${buildType}" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface"`;
+    `-configuration "${buildType}" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface" ` +
+    `DEBUG_INFORMATION_FORMAT="dwarf-with-dsym"`;
   buildLog(`Building Swift package for ${buildType}`);
   buildLog(buildCommand);
 
