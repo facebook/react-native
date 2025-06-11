@@ -138,6 +138,10 @@ function buildXCFrameworks(
     fs.mkdirSync(outputFolder, {recursive: true});
     execSync(`cp -r ${symbol} ${outputFolder}`);
   });
+
+  if (identity) {
+    signXCFramework(identity, outputPath);
+  }
 }
 
 function copyHeaderFiles(
@@ -353,6 +357,16 @@ function extractDestinationFromPath(symbolPath /*: string */) /*: string */ {
     `Impossible to extract destination from ${symbolPath}. Valid destinations are iphoneos, iphonesimulator and catalyst.`,
   );
 }
+
+function signXCFramework(
+  identity /*: string */,
+  xcframeworkPath /*: string */,
+) {
+  console.log('Signing XCFramework...');
+  const command = `codesign --timestamp --sign "${identity}" ${xcframeworkPath}`;
+  execSync(command, {stdio: 'inherit'});
+}
+
 module.exports = {
   buildXCFrameworks,
 };
