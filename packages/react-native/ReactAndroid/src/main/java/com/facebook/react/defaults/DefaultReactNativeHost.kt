@@ -17,7 +17,6 @@ import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
-import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.hermes.HermesInstance
 import com.facebook.react.uimanager.ViewManagerRegistry
@@ -93,6 +92,9 @@ protected constructor(
    * If true, the app will load the Hermes engine, and fail if not found. If false, the app will
    * load the JSC engine, and fail if not found.
    */
+  @Deprecated(
+      "Setting isHermesEnabled inside `ReactNativeHost` is deprecated and this field will be ignored. If this field is set to true, you can safely remove it. If this field is set to false, please follow the setup on https://github.com/react-native-community/javascriptcore to continue using JSC",
+      ReplaceWith(""))
   protected open val isHermesEnabled: Boolean
     get() = true
 
@@ -106,8 +108,7 @@ protected constructor(
       context: Context,
       jsRuntimeFactory: JSRuntimeFactory? = null
   ): ReactHost {
-    val concreteJSRuntimeFactory =
-        jsRuntimeFactory ?: if (isHermesEnabled) HermesInstance() else JSCInstance()
+    val concreteJSRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
     return DefaultReactHost.getDefaultReactHost(
         context,
         packages,
