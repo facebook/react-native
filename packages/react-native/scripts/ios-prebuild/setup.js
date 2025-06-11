@@ -8,6 +8,8 @@
  * @format
  */
 
+/*:: import type {BuildFlavor} from './types'; */
+
 const {prepareHermesArtifactsAsync} = require('./hermes');
 const {
   prepareReactNativeDependenciesArtifactsAsync,
@@ -21,7 +23,7 @@ async function setup(
   root /*:string*/,
   buildFolder /*: string */,
   currentVersion /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
 ) {
   const prebuildLog = createLogger('prebuild');
   createFolderIfNotExists(buildFolder);

@@ -11,7 +11,7 @@
 const yargs = require('yargs');
 
 /*::
-import type {Destination, Platform} from './types';
+import type {BuildFlavor, Destination, Platform} from './types';
 */
 
 const platforms /*: $ReadOnlyArray<Platform> */ = [
@@ -77,7 +77,7 @@ async function getCLIConfiguration() /*: Promise<?{|
     build: boolean,
     compose: boolean,
   |},
-  flavor: 'debug' | 'release',
+  flavor: BuildFlavor,
   destinations: $ReadOnlyArray<Destination>,
   identity: ?string,
 |}> */ {
@@ -103,10 +103,10 @@ async function getCLIConfiguration() /*: Promise<?{|
     .map(p => platformToDestination[p]);
 
   // Validate flavor
-  const resolvedFlavor = argv.flavor.toLowerCase();
-  if (resolvedFlavor !== 'debug' && resolvedFlavor !== 'release') {
+  const flavor = argv.flavor;
+  if (flavor !== 'Debug' && flavor !== 'Release') {
     console.error(
-      `Invalid flavor specified: ${resolvedFlavor}\nValid flavors are: debug, release`,
+      `Invalid flavor specified: ${flavor}\nValid flavors are: Debug, Release`,
     );
     return undefined;
   }
@@ -121,7 +121,7 @@ async function getCLIConfiguration() /*: Promise<?{|
       build: runAllCommands || argv.build != null,
       compose: runAllCommands || argv.compose != null,
     },
-    flavor: resolvedFlavor,
+    flavor: flavor,
     destinations: resolvedPlatforms,
     identity: argv.identity,
   };

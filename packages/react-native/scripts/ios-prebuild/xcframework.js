@@ -8,6 +8,8 @@
  * @format
  */
 
+/*:: import type {BuildFlavor} from './types'; */
+
 const {createFolderIfNotExists, createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -73,7 +75,8 @@ function buildXCFrameworks(
   rootFolder /*: string */,
   buildFolder /*: string */,
   frameworkFolders /*: Array<string> */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
+  identity /*: ?string */,
 ) {
   const outputPath = path.join(
     buildFolder,
