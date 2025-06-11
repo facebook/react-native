@@ -154,7 +154,7 @@ public class FpsDebugFrameCallback(private val reactContext: ReactContext) :
 
   /**
    * Returns the FpsInfo as if stop had been called at the given upToTimeMs. Only valid if
-   * monitoring was started with [.startAndRecordFpsAtEachFrame].
+   * monitoring was started with [startAndRecordFpsAtEachFrame].
    */
   public fun getFpsInfo(upToTimeMs: Long): FpsInfo? {
     Assertions.assertNotNull(timeToFps, "FPS was not recorded at each frame!")

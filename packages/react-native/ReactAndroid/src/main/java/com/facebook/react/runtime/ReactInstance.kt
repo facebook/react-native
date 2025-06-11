@@ -355,7 +355,7 @@ internal class ReactInstance(
   /**
    * Renders a React Native surface.
    *
-   * @param surface The [ReactSurface] to render.
+   * @param surface The [com.facebook.react.interfaces.fabric.ReactSurface] to render.
    */
   @ThreadConfined("ReactHost")
   fun startSurface(surface: ReactSurfaceImpl) {

@@ -53,7 +53,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
 
   /**
    * Get the [ReactNativeHost] used by this app. By default, assumes [Activity.getApplication] is an
-   * instance of [ReactApplication] and calls [ReactApplication.getReactNativeHost]. Override this
+   * instance of [ReactApplication] and calls [ReactApplication.reactNativeHost]. Override this
    * method if your application class does not implement `ReactApplication` or you simply have a
    * different mechanism for storing a `ReactNativeHost`, e.g. as a static field somewhere.
    */
@@ -62,7 +62,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
 
   /**
    * Get the [ReactHost] used by this app. By default, assumes [Activity.getApplication] is an
-   * instance of [ReactApplication] and calls [ReactApplication.getReactHost]. Override this method
+   * instance of [ReactApplication] and calls [ReactApplication.reactHost]. Override this method
    * if your application class does not implement `ReactApplication` or you simply have a different
    * mechanism for storing a `ReactHost`, e.g. as a static field somewhere.
    *

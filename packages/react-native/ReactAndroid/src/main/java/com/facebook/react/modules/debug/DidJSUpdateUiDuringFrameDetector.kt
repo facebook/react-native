@@ -17,7 +17,7 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
  * Debug object that listens to bridge busy/idle events and UiManagerModule dispatches and uses it
  * to calculate whether JS was able to update the UI during a given frame. After being installed on
  * a [ReactBridge] and a [com.facebook.react.uimanager.UIManagerModule],
- * [.getDidJSHitFrameAndCleanup] should be called once per frame via a
+ * [getDidJSHitFrameAndCleanup] should be called once per frame via a
  * [android.view.Choreographer.FrameCallback].
  */
 internal class DidJSUpdateUiDuringFrameDetector :

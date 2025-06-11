@@ -83,7 +83,7 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
 
   /**
    * Removes a NotThreadSafeBridgeIdleDebugListener previously added with
-   * [ ][.addBridgeIdleDebugListener]
+   * [addBridgeIdleDebugListener]
    */
   public fun removeBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener)
 

@@ -10,7 +10,7 @@ package com.facebook.react.devsupport.interfaces
 /**
  * Callback class for custom options that may appear in [DevSupportManager] developer options menu.
  * In case when option registered for this handler is selected from the menu, the instance method
- * [.onOptionSelected] will be triggered.
+ * [onOptionSelected] will be triggered.
  */
 public fun interface DevOptionHandler {
   /**

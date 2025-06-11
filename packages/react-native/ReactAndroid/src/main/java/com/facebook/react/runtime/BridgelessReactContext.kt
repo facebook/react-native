@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 /**
  * This class is used instead of [ReactApplicationContext] when React Native is operating in
- * bridgeless mode. The purpose of this class is to override some methods on [ReactContext] that use
+ * bridgeless mode. The purpose of this class is to override some methods on [com.facebook.react.bridge.ReactContext] that use
  * the [CatalystInstance], which doesn't exist in bridgeless mode.
  */
 internal class BridgelessReactContext(context: Context, private val reactHost: ReactHostImpl) :

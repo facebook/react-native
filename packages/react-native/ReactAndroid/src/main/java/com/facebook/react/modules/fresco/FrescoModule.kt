@@ -50,7 +50,7 @@ constructor(
 
   /**
    * Create a new Fresco module with a default configuration (or the previously given configuration
-   * via [.FrescoModule].
+   * via [FrescoModule].
    *
    * @param reactContext the context to use
    * @param imagePipeline the Fresco image pipeline to use
@@ -132,7 +132,7 @@ constructor(
 
     /**
      * Check whether the FrescoModule has already been initialized. If this is the case, Calls to
-     * [.FrescoModule] will ignore the given configuration.
+     * [FrescoModule] will ignore the given configuration.
      *
      * @return true if this module has already been initialized
      */
