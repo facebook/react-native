@@ -46,14 +46,6 @@ public final class com/facebook/react/HeadlessJsTaskService$Companion {
 	public final fun acquireWakeLockNow (Landroid/content/Context;)V
 }
 
-public final class com/facebook/react/JSEngineResolutionAlgorithm : java/lang/Enum {
-	public static final field HERMES Lcom/facebook/react/JSEngineResolutionAlgorithm;
-	public static final field JSC Lcom/facebook/react/JSEngineResolutionAlgorithm;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/JSEngineResolutionAlgorithm;
-	public static fun values ()[Lcom/facebook/react/JSEngineResolutionAlgorithm;
-}
-
 public abstract class com/facebook/react/LazyReactPackage : com/facebook/react/ReactPackage {
 	public fun <init> ()V
 	public fun createNativeModules (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
@@ -315,7 +307,6 @@ public class com/facebook/react/ReactInstanceManagerBuilder {
 	public fun setInitialLifecycleState (Lcom/facebook/react/common/LifecycleState;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJSBundleFile (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJSBundleLoader (Lcom/facebook/react/bridge/JSBundleLoader;)Lcom/facebook/react/ReactInstanceManagerBuilder;
-	public fun setJSEngineResolutionAlgorithm (Lcom/facebook/react/JSEngineResolutionAlgorithm;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJSExceptionHandler (Lcom/facebook/react/bridge/JSExceptionHandler;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJSMainModulePath (Ljava/lang/String;)Lcom/facebook/react/ReactInstanceManagerBuilder;
 	public fun setJavaScriptExecutorFactory (Lcom/facebook/react/bridge/JavaScriptExecutorFactory;)Lcom/facebook/react/ReactInstanceManagerBuilder;
@@ -343,7 +334,6 @@ public abstract class com/facebook/react/ReactNativeHost {
 	protected fun getDevLoadingViewManager ()Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;
 	protected fun getDevSupportManagerFactory ()Lcom/facebook/react/devsupport/DevSupportManagerFactory;
 	protected fun getJSBundleFile ()Ljava/lang/String;
-	protected fun getJSEngineResolutionAlgorithm ()Lcom/facebook/react/JSEngineResolutionAlgorithm;
 	protected fun getJSExceptionHandler ()Lcom/facebook/react/bridge/JSExceptionHandler;
 	protected fun getJSMainModuleName ()Ljava/lang/String;
 	protected fun getJavaScriptExecutorFactory ()Lcom/facebook/react/bridge/JavaScriptExecutorFactory;
@@ -1902,10 +1892,9 @@ public final class com/facebook/react/defaults/DefaultReactHost {
 public abstract class com/facebook/react/defaults/DefaultReactNativeHost : com/facebook/react/ReactNativeHost {
 	protected fun <init> (Landroid/app/Application;)V
 	public fun clear ()V
-	protected fun getJSEngineResolutionAlgorithm ()Lcom/facebook/react/JSEngineResolutionAlgorithm;
 	protected fun getReactPackageTurboModuleManagerDelegateBuilder ()Lcom/facebook/react/ReactPackageTurboModuleManagerDelegate$Builder;
 	protected fun getUIManagerProvider ()Lcom/facebook/react/bridge/UIManagerProvider;
-	protected fun isHermesEnabled ()Ljava/lang/Boolean;
+	protected fun isHermesEnabled ()Z
 	protected fun isNewArchEnabled ()Z
 }
 

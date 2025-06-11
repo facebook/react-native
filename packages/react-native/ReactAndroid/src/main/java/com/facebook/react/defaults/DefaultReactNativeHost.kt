@@ -9,7 +9,6 @@ package com.facebook.react.defaults
 
 import android.app.Application
 import android.content.Context
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
@@ -72,13 +71,6 @@ protected constructor(
         null
       }
 
-  override fun getJSEngineResolutionAlgorithm(): JSEngineResolutionAlgorithm? =
-      when (isHermesEnabled) {
-        true -> JSEngineResolutionAlgorithm.HERMES
-        false -> JSEngineResolutionAlgorithm.JSC
-        null -> null
-      }
-
   override fun clear() {
     super.clear()
     DefaultReactHost.invalidate()
@@ -99,11 +91,10 @@ protected constructor(
    * Returns whether the user wants to use Hermes.
    *
    * If true, the app will load the Hermes engine, and fail if not found. If false, the app will
-   * load the JSC engine, and fail if not found. If null, the app will attempt to load JSC first and
-   * fallback to Hermes if not found.
+   * load the JSC engine, and fail if not found.
    */
-  protected open val isHermesEnabled: Boolean?
-    get() = null
+  protected open val isHermesEnabled: Boolean
+    get() = true
 
   /**
    * Converts this [ReactNativeHost] (bridge-mode) to a [ReactHost] (bridgeless-mode).
@@ -116,7 +107,7 @@ protected constructor(
       jsRuntimeFactory: JSRuntimeFactory? = null
   ): ReactHost {
     val concreteJSRuntimeFactory =
-        jsRuntimeFactory ?: if (isHermesEnabled == false) JSCInstance() else HermesInstance()
+        jsRuntimeFactory ?: if (isHermesEnabled) HermesInstance() else JSCInstance()
     return DefaultReactHost.getDefaultReactHost(
         context,
         packages,
