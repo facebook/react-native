@@ -175,6 +175,7 @@ jobs:
         build_hermesc_windows,
         build_android,
         prebuild_apple_dependencies,
+        prebuild_react_native_core,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
