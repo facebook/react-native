@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f2600dc760fa878ded68e0e15110904>>
+ * @generated SignedSource<<df546f9681034c05ba8641fdea0e9d29>>
  */
 
 /**
@@ -26,8 +26,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
   @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
-
-  @DoNotStrip public fun avoidCeilingAvailableAndroidTextWidth(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
@@ -105,15 +103,11 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
-  @DoNotStrip public fun incorporateMaxLinesDuringAndroidLayout(): Boolean
-
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip public fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
 
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
-
-  @DoNotStrip public fun useAndroidTextLayoutWidthDirectly(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 

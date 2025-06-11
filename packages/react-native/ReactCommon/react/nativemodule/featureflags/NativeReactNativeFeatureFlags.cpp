@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9eaa018054616593369563add66571d1>>
+ * @generated SignedSource<<edafc97ab152975a0fa0747071d0d689>>
  */
 
 /**
@@ -52,11 +52,6 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
 bool NativeReactNativeFeatureFlags::animatedShouldSignalBatch(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::animatedShouldSignalBatch();
-}
-
-bool NativeReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth();
 }
 
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
@@ -249,11 +244,6 @@ bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
 }
 
-bool NativeReactNativeFeatureFlags::incorporateMaxLinesDuringAndroidLayout(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::incorporateMaxLinesDuringAndroidLayout();
-}
-
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -267,11 +257,6 @@ bool NativeReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit(
 bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
-}
-
-bool NativeReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly();
 }
 
 bool NativeReactNativeFeatureFlags::useFabricInterop(

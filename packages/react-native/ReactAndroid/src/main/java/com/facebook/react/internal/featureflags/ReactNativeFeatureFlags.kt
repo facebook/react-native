@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7484b716c0cb8d12d307e3b34767e559>>
+ * @generated SignedSource<<c55f75461405db6ddf70300f6d3ab95f>>
  */
 
 /**
@@ -41,12 +41,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
-
-  /**
-   * Do not incorrectly ceil the available width of an Android text layout
-   */
-  @JvmStatic
-  public fun avoidCeilingAvailableAndroidTextWidth(): Boolean = accessor.avoidCeilingAvailableAndroidTextWidth()
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
@@ -277,12 +271,6 @@ public object ReactNativeFeatureFlags {
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
 
   /**
-   * Set maxLines and ellipsization during Android layout creation
-   */
-  @JvmStatic
-  public fun incorporateMaxLinesDuringAndroidLayout(): Boolean = accessor.incorporateMaxLinesDuringAndroidLayout()
-
-  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   @JvmStatic
@@ -299,12 +287,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useAlwaysAvailableJSErrorHandling(): Boolean = accessor.useAlwaysAvailableJSErrorHandling()
-
-  /**
-   * Trust the width of a text layout we create, instead of re-deriving it from its contents
-   */
-  @JvmStatic
-  public fun useAndroidTextLayoutWidthDirectly(): Boolean = accessor.useAndroidTextLayoutWidthDirectly()
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

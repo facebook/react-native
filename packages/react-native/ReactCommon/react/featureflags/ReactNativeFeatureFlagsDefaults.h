@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<999bacd5ad8eac2c69f0d7e8d20dcba9>>
+ * @generated SignedSource<<292a0fe664c0beab6edcdfdd567a69b1>>
  */
 
 /**
@@ -33,10 +33,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool animatedShouldSignalBatch() override {
     return false;
-  }
-
-  bool avoidCeilingAvailableAndroidTextWidth() override {
-    return true;
   }
 
   bool cxxNativeAnimatedEnabled() override {
@@ -191,10 +187,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool incorporateMaxLinesDuringAndroidLayout() override {
-    return true;
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     return false;
   }
@@ -205,10 +197,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useAlwaysAvailableJSErrorHandling() override {
     return false;
-  }
-
-  bool useAndroidTextLayoutWidthDirectly() override {
-    return true;
   }
 
   bool useFabricInterop() override {

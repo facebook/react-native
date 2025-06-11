@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa8099e1d7d94dffcd229b00af5c748a>>
+ * @generated SignedSource<<f823c07ce5151de80241bcc6e91f24bc>>
  */
 
 /**
@@ -48,12 +48,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool animatedShouldSignalBatch() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("animatedShouldSignalBatch");
-    return method(javaProvider_);
-  }
-
-  bool avoidCeilingAvailableAndroidTextWidth() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("avoidCeilingAvailableAndroidTextWidth");
     return method(javaProvider_);
   }
 
@@ -285,12 +279,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool incorporateMaxLinesDuringAndroidLayout() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("incorporateMaxLinesDuringAndroidLayout");
-    return method(javaProvider_);
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("traceTurboModulePromiseRejectionsOnAndroid");
@@ -306,12 +294,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool useAlwaysAvailableJSErrorHandling() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useAlwaysAvailableJSErrorHandling");
-    return method(javaProvider_);
-  }
-
-  bool useAndroidTextLayoutWidthDirectly() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useAndroidTextLayoutWidthDirectly");
     return method(javaProvider_);
   }
 
@@ -375,11 +357,6 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
 bool JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::animatedShouldSignalBatch();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::avoidCeilingAvailableAndroidTextWidth(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::avoidCeilingAvailableAndroidTextWidth();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
@@ -572,11 +549,6 @@ bool JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled(
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::incorporateMaxLinesDuringAndroidLayout(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::incorporateMaxLinesDuringAndroidLayout();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -590,11 +562,6 @@ bool JReactNativeFeatureFlagsCxxInterop::updateRuntimeShadowNodeReferencesOnComm
 bool JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useAndroidTextLayoutWidthDirectly(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useAndroidTextLayoutWidthDirectly();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::useFabricInterop(
@@ -674,9 +641,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "animatedShouldSignalBatch",
         JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch),
-      makeNativeMethod(
-        "avoidCeilingAvailableAndroidTextWidth",
-        JReactNativeFeatureFlagsCxxInterop::avoidCeilingAvailableAndroidTextWidth),
       makeNativeMethod(
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
@@ -792,9 +756,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "fuseboxNetworkInspectionEnabled",
         JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled),
       makeNativeMethod(
-        "incorporateMaxLinesDuringAndroidLayout",
-        JReactNativeFeatureFlagsCxxInterop::incorporateMaxLinesDuringAndroidLayout),
-      makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),
       makeNativeMethod(
@@ -803,9 +764,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useAlwaysAvailableJSErrorHandling",
         JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling),
-      makeNativeMethod(
-        "useAndroidTextLayoutWidthDirectly",
-        JReactNativeFeatureFlagsCxxInterop::useAndroidTextLayoutWidthDirectly),
       makeNativeMethod(
         "useFabricInterop",
         JReactNativeFeatureFlagsCxxInterop::useFabricInterop),

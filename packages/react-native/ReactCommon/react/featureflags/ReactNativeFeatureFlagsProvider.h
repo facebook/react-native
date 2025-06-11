@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2ae65ebd8470b768fa42f240842d0f87>>
+ * @generated SignedSource<<512f970ac9fbe13cdd5b0e0622ebbb9e>>
  */
 
 /**
@@ -27,7 +27,6 @@ class ReactNativeFeatureFlagsProvider {
 
   virtual bool commonTestFlag() = 0;
   virtual bool animatedShouldSignalBatch() = 0;
-  virtual bool avoidCeilingAvailableAndroidTextWidth() = 0;
   virtual bool cxxNativeAnimatedEnabled() = 0;
   virtual bool disableMainQueueSyncDispatchIOS() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
@@ -66,11 +65,9 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
-  virtual bool incorporateMaxLinesDuringAndroidLayout() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool updateRuntimeShadowNodeReferencesOnCommit() = 0;
   virtual bool useAlwaysAvailableJSErrorHandling() = 0;
-  virtual bool useAndroidTextLayoutWidthDirectly() = 0;
   virtual bool useFabricInterop() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
