@@ -112,7 +112,7 @@ void getTextContentInShadowNode(
   }
 }
 
-LayoutMetrics getRelativeLayoutMetrics(
+LayoutMetrics getLayoutMetricsFromRoot(
     const ShadowNode& ancestorNode,
     const ShadowNode& shadowNode,
     LayoutableShadowNode::LayoutInspectingPolicy policy) {
@@ -123,7 +123,7 @@ LayoutMetrics getRelativeLayoutMetrics(
     return EmptyLayoutMetrics;
   }
 
-  return LayoutableShadowNode::computeRelativeLayoutMetrics(
+  return LayoutableShadowNode::computeLayoutMetricsFromRoot(
       shadowNode.getFamily(), *layoutableAncestorShadowNode, policy);
 }
 
@@ -261,7 +261,7 @@ DOMRect getBoundingClientRect(
     return DOMRect{};
   }
 
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       shadowNode,
       {.includeTransform = includeTransform, .includeViewportOffset = true});
@@ -295,13 +295,13 @@ DOMOffset getOffset(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto shadowNodeLayoutMetricsRelativeToRoot = getRelativeLayoutMetrics(
+  auto shadowNodeLayoutMetricsRelativeToRoot = getLayoutMetricsFromRoot(
       *currentRevision, shadowNode, {.includeTransform = false});
   if (shadowNodeLayoutMetricsRelativeToRoot == EmptyLayoutMetrics) {
     return DOMOffset{};
   }
 
-  auto positionedAncestorLayoutMetricsRelativeToRoot = getRelativeLayoutMetrics(
+  auto positionedAncestorLayoutMetricsRelativeToRoot = getLayoutMetricsFromRoot(
       *currentRevision,
       *positionedAncestorOfShadowNodeInCurrentRevision,
       {.includeTransform = false});
@@ -340,7 +340,7 @@ DOMPoint getScrollPosition(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = true});
@@ -374,7 +374,7 @@ DOMSizeRounded getScrollSize(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
@@ -410,7 +410,7 @@ DOMSizeRounded getInnerSize(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
@@ -437,7 +437,7 @@ DOMBorderWidthRounded getBorderWidth(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
@@ -479,7 +479,7 @@ RNMeasureRect measure(
     return RNMeasureRect{};
   }
 
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = true, .includeViewportOffset = false});
@@ -514,7 +514,7 @@ DOMRect measureInWindow(
     return DOMRect{};
   }
 
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = true, .includeViewportOffset = true});
@@ -548,7 +548,7 @@ std::optional<DOMRect> measureLayout(
     return std::nullopt;
   }
 
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *relativeToShadowNodeInCurrentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});

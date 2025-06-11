@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeShareModule';
 import NativeShareModule from '../../src/private/specs_DEPRECATED/modules/NativeShareModule';
+
 export default NativeShareModule;

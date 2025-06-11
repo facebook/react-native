@@ -12,6 +12,8 @@ type A = {
   aMethod(): void;
   b: string,
   a: string,
+  "ba": string,
+  "ab": string,
 }
 
 interface B {

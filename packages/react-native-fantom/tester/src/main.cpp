@@ -5,15 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <fmt/format.h>
+#include <glog/logging.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGValue.h>
 #include <iostream>
 
 int main() {
-  std::cout << "Hello, I am fantom_tester using Yoga!" << std::endl;
+  google::InitGoogleLogging("fantom_tester");
+  FLAGS_logtostderr = true;
 
-  std::cout << "[Yoga] undefined == zero: " << (YGValueZero == YGValueUndefined)
-            << std::endl;
+  LOG(INFO) << "Hello, I am fantom_tester using glog!";
+
+  LOG(INFO) << fmt::format(
+      "[Yoga] undefined == zero: {}", YGValueZero == YGValueUndefined);
 
   return 0;
 }

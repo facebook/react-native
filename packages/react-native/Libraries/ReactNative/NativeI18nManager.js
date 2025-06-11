@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeI18nManager';
 import NativeI18nManager from '../../src/private/specs_DEPRECATED/modules/NativeI18nManager';
+
 export default NativeI18nManager;

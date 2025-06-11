@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeIntentAndroid';
 import NativeIntentAndroid from '../../src/private/specs_DEPRECATED/modules/NativeIntentAndroid';
+
 export default NativeIntentAndroid;

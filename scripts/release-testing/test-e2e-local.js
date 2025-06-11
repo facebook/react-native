@@ -26,10 +26,10 @@ const {
   prepareArtifacts,
   setupGHAArtifacts,
 } = require('./utils/testing-utils');
-const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 const {cd, exec, popd, pushd, pwd, sed} = require('shelljs');
+const {styleText} = require('util');
 const yargs = require('yargs');
 
 /* ::
@@ -159,9 +159,7 @@ async function testRNTesterAndroid(
   maybeLaunchAndroidEmulator();
 
   console.info(
-    `We're going to test the ${
-      argv.hermes === true ? 'Hermes' : 'JSC'
-    } version of RNTester Android with the new Architecture enabled`,
+    `We're going to test RNTester Android with the new Architecture enabled`,
   );
 
   // Start the Metro server so it will be ready if the app can be built and installed successfully.
@@ -180,9 +178,7 @@ async function testRNTesterAndroid(
     // Github Actions zips all the APKs in a single archive
     console.info('Start Downloading APK');
     const rntesterAPKURL =
-      argv.hermes === true
-        ? await ciArtifacts.artifactURLForHermesRNTesterAPK(emulatorArch)
-        : await ciArtifacts.artifactURLForJSCRNTesterAPK(emulatorArch);
+      await ciArtifacts.artifactURLForRNTesterAPK(emulatorArch);
 
     ciArtifacts.downloadArtifact(rntesterAPKURL, downloadPath);
     const unzipFolder = path.join(ciArtifacts.baseTmpPath(), 'rntester-apks');
@@ -387,12 +383,15 @@ async function main() {
     await testRNTestProject(ghaArtifacts);
 
     console.warn(
-      chalk.yellow(`
+      styleText(
+        'yellow',
+        `
 ================================================================================
 NOTE: Verdaccio may still be running on after this script has finished. Please
 Force Quit via Activity Monitor.
 ================================================================================
-    `),
+    `,
+      ),
     );
   }
 }

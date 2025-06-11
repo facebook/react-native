@@ -25,6 +25,7 @@ export type NativeIntersectionObserverEntry = {
 
 export type NativeIntersectionObserverObserveOptions = {
   intersectionObserverId: number,
+  rootShadowNode?: ?mixed,
   targetShadowNode: mixed,
   thresholds: $ReadOnlyArray<number>,
   rootThresholds?: ?$ReadOnlyArray<number>,

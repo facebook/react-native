@@ -48,14 +48,13 @@ public class ReactDelegate {
   private boolean mFabricEnabled = ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer();
 
   /**
-   * Do not use this constructor as it's not accounting for New Architecture at all. You should
-   * either use {@link ReactDelegate#ReactDelegate(Activity, ReactHost, String, Bundle)} if you're
-   * on bridgeless mode or {@link ReactDelegate#ReactDelegate(Activity, ReactNativeHost, String,
-   * Bundle, boolean)} and use the last parameter to toggle paper/fabric.
+   * Do not use this constructor as it's not accounting for New Architecture at all. You should use
+   * {@link ReactDelegate#ReactDelegate(Activity, ReactNativeHost, String, Bundle, boolean)} as it's
+   * the constructor used for New Architecture.
    *
    * @deprecated Use one of the other constructors instead to account for New Architecture.
    */
-  @Deprecated
+  @Deprecated(since = "0.75.0")
   public ReactDelegate(
       Activity activity,
       ReactNativeHost reactNativeHost,
@@ -80,6 +79,7 @@ public class ReactDelegate {
     mReactHost = reactHost;
   }
 
+  @Deprecated(since = "0.81.0")
   public ReactDelegate(
       Activity activity,
       ReactNativeHost reactNativeHost,

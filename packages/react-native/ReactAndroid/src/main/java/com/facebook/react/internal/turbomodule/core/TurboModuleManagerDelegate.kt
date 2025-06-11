@@ -34,17 +34,17 @@ public abstract class TurboModuleManagerDelegate {
    * Create and return a TurboModule Java object with name `moduleName`. If `moduleName` isn't a
    * TurboModule, return null.
    */
-  public abstract fun getModule(moduleName: String?): TurboModule?
+  public abstract fun getModule(moduleName: String): TurboModule?
 
-  public abstract fun unstable_isModuleRegistered(moduleName: String?): Boolean
+  public abstract fun unstable_isModuleRegistered(moduleName: String): Boolean
 
   /**
    * Create an return a legacy NativeModule with name `moduleName`. If `moduleName` is a
    * TurboModule, return null.
    */
-  public open fun getLegacyModule(moduleName: String?): NativeModule? = null
+  public open fun getLegacyModule(moduleName: String): NativeModule? = null
 
-  public open fun unstable_isLegacyModuleRegistered(moduleName: String?): Boolean = false
+  public open fun unstable_isLegacyModuleRegistered(moduleName: String): Boolean = false
 
   public open fun getEagerInitModuleNames(): List<String> = emptyList()
 

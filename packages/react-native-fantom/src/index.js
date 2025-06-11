@@ -37,6 +37,8 @@ export type RootConfig = {
   viewportWidth?: number,
   viewportHeight?: number,
   devicePixelRatio?: number,
+  viewportOffsetX?: number,
+  viewportOffsetY?: number,
 };
 
 export {getConstants} from './Constants';
@@ -50,6 +52,8 @@ class Root {
   #surfaceId: number;
   #viewportWidth: number;
   #viewportHeight: number;
+  #viewportOffsetX: number;
+  #viewportOffsetY: number;
   #devicePixelRatio: number;
   #document: ?ReactNativeDocument;
 
@@ -62,6 +66,8 @@ class Root {
     this.#devicePixelRatio =
       config?.devicePixelRatio ?? DEFAULT_DEVICE_PIXEL_RATIO;
     globalSurfaceIdCounter += 10;
+    this.#viewportOffsetX = config?.viewportOffsetX ?? 0;
+    this.#viewportOffsetY = config?.viewportOffsetY ?? 0;
   }
 
   // $FlowExpectedError[unsafe-getters-setters]
@@ -88,6 +94,8 @@ class Root {
         this.#viewportWidth,
         this.#viewportHeight,
         this.#devicePixelRatio,
+        this.#viewportOffsetX,
+        this.#viewportOffsetY,
       );
       this.#hasRendered = true;
     }

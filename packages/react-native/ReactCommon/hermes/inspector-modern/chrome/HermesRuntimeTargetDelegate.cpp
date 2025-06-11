@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <jsi/jsi.h>
 #include <jsinspector-modern/RuntimeTarget.h>
 
 #include "HermesRuntimeSamplingProfileSerializer.h"
@@ -39,12 +40,12 @@ class HermesRuntimeSamplingProfileDelegate {
       : hermesRuntime_(std::move(hermesRuntime)) {}
 
   void startSampling() {
-    auto* hermesAPI = castInterface<IHermesRootAPI>(makeHermesRootAPI());
+    auto* hermesAPI = jsi::castInterface<IHermesRootAPI>(makeHermesRootAPI());
     hermesAPI->enableSamplingProfiler(HERMES_SAMPLING_FREQUENCY_HZ);
   }
 
   void stopSampling() {
-    auto* hermesAPI = castInterface<IHermesRootAPI>(makeHermesRootAPI());
+    auto* hermesAPI = jsi::castInterface<IHermesRootAPI>(makeHermesRootAPI());
     hermesAPI->disableSamplingProfiler();
   }
 

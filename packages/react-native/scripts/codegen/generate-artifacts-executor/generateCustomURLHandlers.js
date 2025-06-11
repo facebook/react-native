@@ -14,6 +14,7 @@ const {TEMPLATES_FOLDER_PATH} = require('./constants');
 const {parseiOSAnnotations} = require('./utils');
 const fs = require('fs');
 const path = require('path');
+
 const MODULES_PROTOCOLS_H_TEMPLATE_PATH = path.join(
   TEMPLATES_FOLDER_PATH,
   'RCTModulesConformingToProtocolsProviderH.template',
