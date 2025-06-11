@@ -365,7 +365,10 @@ public class FabricUIManager
       final SurfaceHandlerBinding surfaceHandler,
       final Context context,
       final @Nullable View rootView) {
-    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    final int rootTag =
+        rootView instanceof ReactRoot
+            ? ((ReactRoot) rootView).getRootViewTag()
+            : ReactRootViewTagGenerator.getNextRootViewTag();
 
     ThemedReactContext reactContext =
         new ThemedReactContext(
