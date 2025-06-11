@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.DisplayMetricsHolder.getDisplayMetricsWritableMap
 import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNotInitialized
@@ -34,7 +35,11 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
 
     // Cache the initial dimensions for later comparison in emitUpdateDimensionsEvent
     previousDisplayMetrics = displayMetrics.copy()
-    return mapOf("Dimensions" to displayMetrics.toHashMap())
+
+    return mapOf(
+      "Dimensions" to displayMetrics.toHashMap(),
+      "isEdgeToEdge" to ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED,
+    )
   }
 
   override fun onHostResume() {

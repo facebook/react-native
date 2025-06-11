@@ -52,8 +52,9 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
+import com.facebook.react.views.view.disableEdgeToEdge
+import com.facebook.react.views.view.enableEdgeToEdge
 import com.facebook.react.views.view.setStatusBarTranslucency
-import com.facebook.react.views.view.setSystemBarsTranslucency
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -80,14 +81,22 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var onRequestCloseListener: OnRequestCloseListener? = null
   public var statusBarTranslucent: Boolean = false
     set(value) {
-      field = value
-      createNewDialog = true
+      if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+        field = true
+      } else {
+        field = value
+        createNewDialog = true
+      }
     }
 
   public var navigationBarTranslucent: Boolean = false
     set(value) {
-      field = value
-      createNewDialog = true
+      if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+        field = true
+      } else {
+        field = value
+        createNewDialog = true
+      }
     }
 
   public var animationType: String? = null
@@ -374,9 +383,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
       }
 
       // Navigation bar cannot be translucent without status bar being translucent too
-      dialogWindow.setSystemBarsTranslucency(navigationBarTranslucent)
-
-      if (!navigationBarTranslucent) {
+      if (navigationBarTranslucent) {
+        dialogWindow.enableEdgeToEdge()
+      } else {
+        dialogWindow.disableEdgeToEdge()
         dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
       }
 
@@ -412,6 +422,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
           WindowInsetsControllerCompat(activityWindow, activityWindow.decorView)
       val dialogWindowInsetsController =
           WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
+
+      if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+        activityWindowInsetsController.systemBarsBehavior =
+          WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        dialogWindowInsetsController.systemBarsBehavior =
+          WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      }
 
       dialogWindowInsetsController.isAppearanceLightStatusBars =
           activityWindowInsetsController.isAppearanceLightStatusBars
