@@ -18,6 +18,10 @@ const {promisify} = require('util');
 const pipeline = promisify(stream.pipeline);
 const hermesLog = createLogger('Hermes');
 
+/*::
+import type {BuildFlavor, Destination, Platform} from './types';
+*/
+
 /**
  * Downloads hermes artifacts from the specified version and build type. If you want to specify a specific
  * version of hermes, use the HERMES_VERSION environment variable. The path to the artifacts will be inside
@@ -26,7 +30,7 @@ const hermesLog = createLogger('Hermes');
  */
 async function prepareHermesArtifactsAsync(
   version /*:string*/,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
 ) /*: Promise<string> */ {
   hermesLog(`Preparing Hermes...`);
 
@@ -135,7 +139,7 @@ const HermesEngineSourceTypes = {
 function checkExistingVersion(
   versionFilePath /*: string */,
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string */,
 ) {
   const resolvedVersion = `${version}-${buildType}`;
@@ -177,18 +181,18 @@ function hermesEngineTarballEnvvarDefined() /*: boolean */ {
 
 function getTarballUrl(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
 ) /*: string */ {
   const mavenRepoUrl = 'https://repo1.maven.org/maven2';
   const namespace = 'com/facebook/react';
-  return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${buildType}.tar.gz`;
+  return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${buildType.toLowerCase()}.tar.gz`;
 }
 
 function getNightlyTarballUrl(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
 ) /*: string */ {
-  const params = `r=snapshots&g=com.facebook.react&a=react-native-artifacts&c=hermes-ios-${buildType}&e=tar.gz&v=${version}-SNAPSHOT`;
+  const params = `r=snapshots&g=com.facebook.react&a=react-native-artifacts&c=hermes-ios-${buildType.toLowerCase()}&e=tar.gz&v=${version}-SNAPSHOT`;
   return `https://oss.sonatype.org/service/local/artifact/maven/redirect?${params}`;
 }
 
@@ -231,7 +235,7 @@ async function hermesArtifactExists(
  */
 async function hermesSourceType(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
 ) /*: Promise<HermesEngineSourceType> */ {
   if (hermesEngineTarballEnvvarDefined()) {
     hermesLog('Using local prebuild tarball');
@@ -262,7 +266,7 @@ async function hermesSourceType(
 async function resolveSourceFromSourceType(
   sourceType /*: HermesEngineSourceType */,
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string*/,
 ) /*: Promise<string> */ {
   switch (sourceType) {
@@ -296,7 +300,7 @@ function localPrebuiltTarball() /*: string */ {
 
 async function downloadPrebuildTarball(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string*/,
 ) /*: Promise<string> */ {
   const url = getTarballUrl(version, buildType);
@@ -306,7 +310,7 @@ async function downloadPrebuildTarball(
 
 async function downloadPrebuiltNightlyTarball(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string*/,
 ) /*: Promise<string> */ {
   const url = await resolveUrlRedirects(
@@ -318,7 +322,7 @@ async function downloadPrebuiltNightlyTarball(
 
 async function downloadStableHermes(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string */,
 ) /*: Promise<string> */ {
   const tarballUrl = getTarballUrl(version, buildType);
@@ -331,7 +335,7 @@ async function downloadStableHermes(
 async function downloadHermesTarball(
   tarballUrl /*: string */,
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string */,
 ) /*: Promise<string> */ {
   const destPath = buildType

@@ -8,6 +8,8 @@
  * @format
  */
 
+/*:: import type {BuildFlavor} from './types'; */
+
 const {createFolderIfNotExists, createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -73,7 +75,8 @@ function buildXCFrameworks(
   rootFolder /*: string */,
   buildFolder /*: string */,
   frameworkFolders /*: Array<string> */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
+  identity /*: ?string */,
 ) {
   const outputPath = path.join(
     buildFolder,
@@ -122,6 +125,23 @@ function buildXCFrameworks(
 
   // Create the module map file
   createModuleMapFile(outputPath, umbrellaHeaderFile);
+
+  // Copy Symbols to symbols folder
+  const symbolPaths = frameworkFolders.map(framework =>
+    path.join(framework, `..`, `..`, `React.framework.dSYM`),
+  );
+  console.log('Copying symbols to symbols folder...');
+  const symbolOutput = path.join(outputPath, '..', 'Symbols');
+  symbolPaths.forEach(symbol => {
+    const destination = extractDestinationFromPath(symbol);
+    const outputFolder = path.join(symbolOutput, destination);
+    fs.mkdirSync(outputFolder, {recursive: true});
+    execSync(`cp -r ${symbol} ${outputFolder}`);
+  });
+
+  if (identity) {
+    signXCFramework(identity, outputPath);
+  }
 }
 
 function copyHeaderFiles(
@@ -318,6 +338,33 @@ function cleanPlatformFolders(outputPath /*:string*/) {
       );
     }
   });
+}
+
+function extractDestinationFromPath(symbolPath /*: string */) /*: string */ {
+  if (symbolPath.includes('iphoneos')) {
+    return 'iphoneos';
+  }
+
+  if (symbolPath.includes('iphonesimulator')) {
+    return 'iphonesimulator';
+  }
+
+  if (symbolPath.includes('maccatalyst')) {
+    return 'catalyst';
+  }
+
+  throw new Error(
+    `Impossible to extract destination from ${symbolPath}. Valid destinations are iphoneos, iphonesimulator and catalyst.`,
+  );
+}
+
+function signXCFramework(
+  identity /*: string */,
+  xcframeworkPath /*: string */,
+) {
+  console.log('Signing XCFramework...');
+  const command = `codesign --timestamp --sign "${identity}" ${xcframeworkPath}`;
+  execSync(command, {stdio: 'inherit'});
 }
 
 module.exports = {

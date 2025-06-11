@@ -354,8 +354,9 @@ void RuntimeScheduler_Modern::updateRendering() {
 
   // This is the integration of the Event Timing API in the Event Loop.
   // See https://w3c.github.io/event-timing/#sec-modifications-HTML
-  if (eventTimingDelegate_ != nullptr) {
-    eventTimingDelegate_->dispatchPendingEventTimingEntries(
+  const auto eventTimingDelegate = eventTimingDelegate_.load();
+  if (eventTimingDelegate != nullptr) {
+    eventTimingDelegate->dispatchPendingEventTimingEntries(
         surfaceIdsWithPendingRenderingUpdates_);
   }
 
