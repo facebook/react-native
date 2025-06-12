@@ -73,6 +73,20 @@ const ALL_GENERATORS = {
   generateViewConfigJs: generateViewConfigJs.generate,
 };
 
+type FilesOutput = Map<string, string>;
+
+type GenerateFunction = (
+  libraryName: string,
+  schema: SchemaType,
+  packageName?: string,
+  assumeNonnull: boolean,
+  headerPrefix?: string,
+) => FilesOutput;
+
+type LibraryGeneratorsFunctions = $ReadOnly<{
+  [string]: Array<GenerateFunction>,
+}>;
+
 type LibraryOptions = $ReadOnly<{
   libraryName: string,
   schema: SchemaType,
@@ -113,7 +127,7 @@ type SchemasConfig = $ReadOnly<{
   test?: boolean,
 }>;
 
-const LIBRARY_GENERATORS = {
+const LIBRARY_GENERATORS: LibraryGeneratorsFunctions = {
   descriptors: [
     generateComponentDescriptorCpp.generate,
     generateComponentDescriptorH.generate,
