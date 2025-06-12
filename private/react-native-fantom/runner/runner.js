@@ -209,7 +209,7 @@ module.exports = async function runTest(
   const setupModulePath = path.resolve(__dirname, '../runtime/setup.js');
   const featureFlagsModulePath = path.resolve(
     __dirname,
-    '../../react-native/src/private/featureflags/ReactNativeFeatureFlags.js',
+    '../../../packages/react-native/src/private/featureflags/ReactNativeFeatureFlags.js',
   );
 
   const testResultsByConfig = [];

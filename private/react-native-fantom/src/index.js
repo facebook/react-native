@@ -15,8 +15,8 @@ import type {
 import type {MixedElement} from 'react';
 import type {RootTag} from 'react-native';
 import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
+import type ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
-import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
 import {getConstants} from './Constants';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
@@ -226,9 +226,7 @@ export function unstable_produceFramesForDuration(milliseconds: number) {
  *
  * Note: This API is marked as unstable and may change in future versions.
  */
-export function unstable_getDirectManipulationProps(
-  node: ReactNativeElement,
-): mixed {
+export function unstable_getDirectManipulationProps(node: ReadOnlyNode): mixed {
   const shadowNode = getNativeNodeReference(node);
   return NativeFantom.getDirectManipulationProps(shadowNode);
 }
@@ -394,7 +392,7 @@ export function createRoot(rootConfig?: RootConfig): Root {
  * ```
  */
 export function enqueueNativeEvent(
-  node: ReactNativeElement,
+  node: ReadOnlyNode,
   type: string,
   payload?: $ReadOnly<{[key: string]: mixed}>,
   options?: $ReadOnly<{category?: NativeEventCategory, isUnique?: boolean}>,
@@ -425,7 +423,7 @@ export function enqueueNativeEvent(
  * ```
  */
 export function dispatchNativeEvent(
-  node: ReactNativeElement,
+  node: ReadOnlyNode,
   type: string,
   payload?: $ReadOnly<{[key: string]: mixed}>,
   options?: $ReadOnly<{category?: NativeEventCategory, isUnique?: boolean}>,
@@ -487,7 +485,7 @@ export type ScrollEventOptions = {
  * ```
  */
 export function enqueueScrollEvent(
-  node: ReactNativeElement,
+  node: ReadOnlyNode,
   options: ScrollEventOptions,
 ) {
   const shadowNode = getNativeNodeReference(node);
@@ -525,10 +523,7 @@ export function enqueueScrollEvent(
  * // Assert that changes from Fantom.scrollTo are in effect.
  * ```
  */
-export function scrollTo(
-  node: ReactNativeElement,
-  options: ScrollEventOptions,
-) {
+export function scrollTo(node: ReadOnlyNode, options: ScrollEventOptions) {
   runOnUIThread(() => {
     enqueueScrollEvent(node, options);
   });
@@ -561,7 +556,7 @@ export function scrollTo(
  * ```
  */
 export function enqueueModalSizeUpdate(
-  node: ReactNativeElement,
+  node: ReadOnlyNode,
   size: $ReadOnly<{width: number, height: number}>,
 ) {
   const shadowNode = getNativeNodeReference(node);
@@ -642,7 +637,7 @@ if (typeof global.EventTarget === 'undefined') {
  * @param node The node for which to create a reference counting function.
  */
 export function createShadowNodeReferenceCounter(
-  node: ReactNativeElement,
+  node: ReadOnlyNode,
 ): () => number {
   let shadowNode = getNativeNodeReference(node);
   return NativeFantom.createShadowNodeReferenceCounter(shadowNode);
@@ -655,7 +650,7 @@ export function createShadowNodeReferenceCounter(
  * @param node The node for which to create a revision getter.
  */
 export function createShadowNodeRevisionGetter(
-  node: ReactNativeElement,
+  node: ReadOnlyNode,
 ): () => ?number {
   let shadowNode = getNativeNodeReference(node);
   return NativeFantom.createShadowNodeRevisionGetter(shadowNode);
