@@ -283,7 +283,7 @@ public class ReactInstanceManagerBuilder {
   }
 
   public fun setCustomPackagerCommandHandlers(
-      customPackagerCommandHandlers: Map<String, RequestHandler>
+      customPackagerCommandHandlers: Map<String, RequestHandler>?
   ): ReactInstanceManagerBuilder {
     this.customPackagerCommandHandlers = customPackagerCommandHandlers
     return this
