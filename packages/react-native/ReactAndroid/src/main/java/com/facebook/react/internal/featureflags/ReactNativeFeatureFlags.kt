@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c55f75461405db6ddf70300f6d3ab95f>>
+ * @generated SignedSource<<4c40e490481c50d2f19830366f50aad5>>
  */
 
 /**
@@ -251,6 +251,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecyclingForView(): Boolean = accessor.enableViewRecyclingForView()
+
+  /**
+   * Enables VirtualView debug features such as logging and overlays.
+   */
+  @JvmStatic
+  public fun enableVirtualViewDebugFeatures(): Boolean = accessor.enableVirtualViewDebugFeatures()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

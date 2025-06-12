@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b09f539c2d08d29bd37210dbad99d8fb>>
+ * @generated SignedSource<<b6ddd7c2e829c427e7d6b07bc588cd8c>>
  */
 
 /**
@@ -101,6 +101,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForText(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForView(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableVirtualViewDebugFeatures(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 

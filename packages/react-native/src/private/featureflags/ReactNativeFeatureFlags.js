@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<12f73fc32923835f12126ddad92130aa>>
+ * @generated SignedSource<<d2d919062947b9901b37a01cbf5c8670>>
  * @flow strict
  * @noformat
  */
@@ -35,7 +35,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
-  enableVirtualViewDebugFeatures: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   reduceDefaultPropsInView: Getter<boolean>,
@@ -88,6 +87,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
+  enableVirtualViewDebugFeatures: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
@@ -138,11 +138,6 @@ export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGe
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
  */
 export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
-
-/**
- * Enables VirtualView debug features such as logging and overlays.
- */
-export const enableVirtualViewDebugFeatures: Getter<boolean> = createJavaScriptFlagGetter('enableVirtualViewDebugFeatures', false);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
@@ -336,6 +331,10 @@ export const enableViewRecyclingForText: Getter<boolean> = createNativeFlagGette
  * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
  */
 export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForView', true);
+/**
+ * Enables VirtualView debug features such as logging and overlays.
+ */
+export const enableVirtualViewDebugFeatures: Getter<boolean> = createNativeFlagGetter('enableVirtualViewDebugFeatures', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

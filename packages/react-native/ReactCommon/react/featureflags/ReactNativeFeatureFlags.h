@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b406620de35708ab673647bd9c27f19a>>
+ * @generated SignedSource<<25b3585f3648fe156fab4a5abbf32e60>>
  */
 
 /**
@@ -223,6 +223,11 @@ class ReactNativeFeatureFlags {
    * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
    */
   RN_EXPORT static bool enableViewRecyclingForView();
+
+  /**
+   * Enables VirtualView debug features such as logging and overlays.
+   */
+  RN_EXPORT static bool enableVirtualViewDebugFeatures();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

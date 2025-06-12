@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e07dba250bd6956beed7b32aa3de032a>>
+ * @generated SignedSource<<65d21b40786d625e15440e7aeb70e0ee>>
  */
 
 /**
@@ -69,6 +69,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecycling();
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
+  bool enableVirtualViewDebugFeatures();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
@@ -94,7 +95,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 51> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 52> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -133,6 +134,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
+  std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
