@@ -35,28 +35,28 @@ const ModuleDeclarationTemplate = ({
 }>) => {
   // Split methods into required and optional groups
   const methodLines = protocolMethods.split('\n');
-const requiredMethods = [];
-const optionalMethods = [];
+  const requiredMethods = [];
+  const optionalMethods = [];
 
-let isOptional = false;
-for (const line of methodLines) {
-  switch (line.trim()) {
-    case '@optional':
-      isOptional = true;
-      continue;
-    case '@required':
-      isOptional = false;
-      continue;
-    case '':
-      continue;
-    default:
-      if (isOptional) {
-        optionalMethods.push(line);
-      } else {
-        requiredMethods.push(line);
-      }
+  let isOptional = false;
+  for (const line of methodLines) {
+    switch (line.trim()) {
+      case '@optional':
+        isOptional = true;
+        continue;
+      case '@required':
+        isOptional = false;
+        continue;
+      case '':
+        continue;
+      default:
+        if (isOptional) {
+          optionalMethods.push(line);
+        } else {
+          requiredMethods.push(line);
+        }
+    }
   }
-}
   return `${structDeclarations}
 @protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
 
