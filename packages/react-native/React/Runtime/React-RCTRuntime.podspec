@@ -58,15 +58,14 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RuntimeCore")
   add_dependency(s, "React-RuntimeApple")
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+  if use_third_party_jsc()
+    s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}", "RCTJscInstanceFactory.{mm,h}"]
+  else
     s.dependency "hermes-engine"
     add_dependency(s, "React-RuntimeHermes")
     s.exclude_files = "RCTJscInstanceFactory.{h,mm}"
-  elsif ENV['USE_THIRD_PARTY_JSC'] == '1'
-    s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}", "RCTJscInstanceFactory.{mm,h}"]
-  else
-    s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}"]
   end
+
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
 end

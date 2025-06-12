@@ -6,6 +6,7 @@
 require 'shellwords'
 
 require_relative "./helpers.rb"
+require_relative "./jsengine.rb"
 
 # Utilities class for React Native Cocoapods
 class ReactNativePodsUtils
@@ -32,7 +33,7 @@ class ReactNativePodsUtils
             flags[:hermes_enabled] = true
         end
 
-        if ENV['USE_HERMES'] == '0'
+        if !use_hermes()
             flags[:hermes_enabled] = false
         end
 

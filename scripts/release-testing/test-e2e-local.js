@@ -135,9 +135,7 @@ async function testRNTesterIOS(
     exec('xcrun simctl launch booted com.meta.RNTester.localDevelopment');
   } else {
     exec(
-      `USE_HERMES=${
-        argv.hermes === true ? 1 : 0
-      } CI=${onReleaseBranch.toString()} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
+      `CI=${onReleaseBranch.toString()} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
     // launch the app on iOS simulator
@@ -337,9 +335,7 @@ async function testRNTestProject(
     cd('ios');
     exec('bundle install');
     exec(
-      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
-        hermesEnabled ? 1 : 0
-      } bundle exec pod install --ansi`,
+      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} bundle exec pod install --ansi`,
     );
 
     cd('..');

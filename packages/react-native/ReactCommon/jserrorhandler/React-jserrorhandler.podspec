@@ -44,7 +44,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-featureflags")
   add_dependency(s, "React-debug")
 
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+  if use_hermes()
     s.dependency 'hermes-engine'
   end
 
