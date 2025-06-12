@@ -10,6 +10,11 @@
 
 static const CGFloat RCTViewBorderThreshold = 0.001;
 
+CGFloat RCTMaxBorderInset(UIEdgeInsets borderInsets)
+{
+  return MAX(MAX(borderInsets.top, borderInsets.left), MAX(borderInsets.bottom, borderInsets.right));
+}
+
 BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets)
 {
   return ABS(borderInsets.left - borderInsets.right) < RCTViewBorderThreshold &&
@@ -415,8 +420,8 @@ static UIImage *RCTGetSolidBorderImage(
   return image;
 }
 
-// Currently, the dashed / dotted implementation only supports a single colour +
-// single width, as that's currently required and supported on Android.
+// Currently, the dashed / dotted implementation only supports a single colour,
+// as that's currently required and supported on Android.
 //
 // Supporting individual widths + colours on each side is possible by modifying
 // the current implementation. The idea is that we will draw four different lines
@@ -486,12 +491,12 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
 {
   NSCParameterAssert(borderStyle == RCTBorderStyleDashed || borderStyle == RCTBorderStyleDotted);
 
-  if (!RCTBorderColorsAreEqual(borderColors) || !RCTBorderInsetsAreEqual(borderInsets)) {
+  if (!RCTBorderColorsAreEqual(borderColors)) {
     RCTLogWarn(@"Unsupported dashed / dotted border style");
     return nil;
   }
 
-  const CGFloat lineWidth = borderInsets.top;
+  const CGFloat lineWidth = RCTMaxBorderInset(borderInsets);
   if (lineWidth <= 0.0) {
     return nil;
   }
@@ -518,6 +523,34 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
     CGRect pathRect = CGRectInset(rect, lineWidth / 2.0, lineWidth / 2.0);
     CGPathRef path =
         RCTPathCreateWithRoundedRect(pathRect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL, NO);
+
+    if (!RCTBorderInsetsAreEqual(borderInsets)) {
+      CGContextSaveGState(context);
+      {
+        // Create a path representing the full rect
+        CGMutablePathRef outerPath = CGPathCreateMutable();
+        CGPathAddRect(outerPath, NULL, rect);
+
+        CGRect insetRect = CGRectMake(
+            rect.origin.x + borderInsets.left,
+            rect.origin.y + borderInsets.top,
+            rect.size.width - borderInsets.left - borderInsets.right,
+            rect.size.height - borderInsets.top - borderInsets.bottom);
+
+        // The padding edge (inner border) radius is the outer border radius minus the corresponding border thickness
+        CGPathRef innerRoundedRect =
+            RCTPathCreateWithRoundedRect(insetRect, RCTGetCornerInsets(cornerRadii, borderInsets), NULL, NO);
+
+        // Add both paths to outerPath
+        CGPathAddPath(outerPath, NULL, innerRoundedRect);
+
+        // Clip using even-odd
+        CGContextAddPath(context, outerPath);
+        CGContextEOClip(context);
+        CGPathRelease(outerPath);
+        CGPathRelease(innerRoundedRect);
+      }
+    }
 
     CGFloat dashLengths[2];
     dashLengths[0] = dashLengths[1] = (borderStyle == RCTBorderStyleDashed ? 3 : 1) * lineWidth;
