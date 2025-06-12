@@ -38,8 +38,8 @@ internal class MultiplicationAnimatedNode(
           if (animatedNode != null && animatedNode is ValueAnimatedNode) {
             animatedNode.getValue()
           } else {
-            throw JSApplicationCausedNativeException(
-                "Illegal node ID set as an input for Animated.multiply node")
+//            throw JSApplicationCausedNativeException(
+//                "Illegal node ID set as an input for Animated.multiply node")
           }
       nodeValue *= multiplier
     }

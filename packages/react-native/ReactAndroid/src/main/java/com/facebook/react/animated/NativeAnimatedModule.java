@@ -257,6 +257,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                 enqueueFrameCallback();
               }
             } catch (Exception ex) {
+              //PATCH: COMMENTED
+              // throw new RuntimeException(ex);
               throw new RuntimeException(ex);
             }
           }

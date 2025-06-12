@@ -43,7 +43,8 @@ internal class EventAnimationDriver(
       touches: WritableArray,
       changedIndices: WritableArray
   ) {
-    throw UnsupportedOperationException("receiveTouches is not support by native animated events")
+    //PATCH: COMMENTED
+//    throw UnsupportedOperationException("receiveTouches is not support by native animated events")
   }
 
   @Deprecated("Deprecated in Java")
@@ -60,7 +61,10 @@ internal class EventAnimationDriver(
       params: WritableMap?,
       @EventCategoryDef category: Int
   ) {
-    requireNotNull(params) { "Native animated events must have event data." }
+//    requireNotNull(params) { "Native animated events must have event data." }
+    if(params == null) {
+      return;
+    }
 
     // Get the new value for the node by looking into the event map using the provided event path.
     var currMap: ReadableMap? = params
@@ -75,9 +79,11 @@ internal class EventAnimationDriver(
         } else if (keyType == ReadableType.Array) {
           currArray = currMap.getArray(key)
           currMap = null
-        } else {
-          throw UnexpectedNativeTypeException("Unexpected type $keyType for key '$key'")
         }
+        //PATCH: COMMENTED
+//        else {
+//          throw UnexpectedNativeTypeException("Unexpected type $keyType for key '$key'")
+//        }
       } else {
         val index = eventPath[i].toInt()
         val keyType = currArray?.getType(index)
@@ -87,9 +93,11 @@ internal class EventAnimationDriver(
         } else if (keyType == ReadableType.Array) {
           currArray = currArray?.getArray(index)
           currMap = null
-        } else {
-          throw UnexpectedNativeTypeException("Unexpected type $keyType for index '$index'")
         }
+        //PATCH: COMMENTED
+//        else {
+//          throw UnexpectedNativeTypeException("Unexpected type $keyType for index '$index'")
+//        }
       }
     }
     val lastKey = eventPath[eventPath.size - 1]

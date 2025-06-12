@@ -41,8 +41,9 @@ internal class SubtractionAnimatedNode(
           nodeValue -= value
         }
       } else {
-        throw JSApplicationCausedNativeException(
-            "Illegal node ID set as an input for Animated.subtract node")
+        return;
+//        throw JSApplicationCausedNativeException(
+//            "Illegal node ID set as an input for Animated.subtract node")
       }
     }
   }

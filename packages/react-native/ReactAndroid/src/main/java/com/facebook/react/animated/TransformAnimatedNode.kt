@@ -53,14 +53,16 @@ internal class TransformAnimatedNode(
                 val nodeTag = transformConfig.nodeTag
                 val node = nativeAnimatedNodesManager.getNodeById(nodeTag)
                 if (node == null) {
-                  throw IllegalArgumentException("Mapped style node does not exist")
+//                  throw IllegalArgumentException("Mapped style node does not exist")
+                  return;
                 } else if (node is ValueAnimatedNode) {
                   node.getValue()
                 } else {
-                  throw IllegalArgumentException(
-                      "Unsupported type of node used as a transform child " +
-                          "node " +
-                          node.javaClass)
+//                  throw IllegalArgumentException(
+//                      "Unsupported type of node used as a transform child " +
+//                          "node " +
+//                          node.javaClass)
+                  return;
                 }
               } else {
                 (transformConfig as StaticTransformConfig).value

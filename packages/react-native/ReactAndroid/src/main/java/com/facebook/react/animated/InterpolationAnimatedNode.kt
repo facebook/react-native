@@ -51,13 +51,22 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
   }
 
   override fun onAttachedToNode(parent: AnimatedNode) {
-    check(this.parent == null) { "Parent already attached" }
-    require(parent is ValueAnimatedNode) { "Parent is of an invalid type" }
+//    check(this.parent == null) { "Parent already attached" }
+    if(this.parent == null) {
+      return;
+    }
+    if(parent !is ValueAnimatedNode ) {
+      return;
+    }
+//    require(parent is ValueAnimatedNode) { "Parent is of an invalid type" }
     this.parent = parent
   }
 
   override fun onDetachedFromNode(parent: AnimatedNode) {
-    require(parent === this.parent) { "Invalid parent node provided" }
+//    require(parent === this.parent) { "Invalid parent node provided" }
+    if(parent === this.parent) {
+      return;
+    }
     this.parent = null
   }
 
@@ -170,8 +179,10 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
           EXTRAPOLATE_TYPE_CLAMP -> result = inputMin
           EXTRAPOLATE_TYPE_EXTEND -> {}
           else ->
-              throw JSApplicationIllegalArgumentException(
-                  "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation")
+              return inputMin;
+               // PATCH: COMMENTED
+//              throw JSApplicationIllegalArgumentException(
+//                  "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation")
         }
       }
       if (result > inputMax) {
@@ -180,8 +191,9 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
           EXTRAPOLATE_TYPE_CLAMP -> result = inputMax
           EXTRAPOLATE_TYPE_EXTEND -> {}
           else ->
-              throw JSApplicationIllegalArgumentException(
-                  "Invalid extrapolation type " + extrapolateRight + "for right extrapolation")
+              return inputMax
+//              throw JSApplicationIllegalArgumentException(
+//                  "Invalid extrapolation type " + extrapolateRight + "for right extrapolation")
         }
       }
       if (outputMin == outputMax) {

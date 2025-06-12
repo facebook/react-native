@@ -145,7 +145,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.createClient(context), null);
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), null);
   }
 
   /**
@@ -155,7 +155,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
    */
   public NetworkingModule(
       ReactApplicationContext context, List<NetworkInterceptorCreator> networkInterceptorCreators) {
-    this(context, null, OkHttpClientProvider.createClient(context), networkInterceptorCreators);
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), networkInterceptorCreators);
   }
 
   /**
@@ -164,7 +164,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
    *     caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
+    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient(), null);
   }
 
   public static void setCustomClientBuilder(

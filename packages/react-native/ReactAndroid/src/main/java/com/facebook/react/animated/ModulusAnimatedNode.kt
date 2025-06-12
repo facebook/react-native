@@ -24,8 +24,9 @@ internal class ModulusAnimatedNode(
       val animatedNodeValue = animatedNode.getValue()
       nodeValue = (animatedNodeValue % modulus + modulus) % modulus
     } else {
-      throw JSApplicationCausedNativeException(
-          "Illegal node ID set as an input for Animated.modulus node")
+      //PATCH: COMMENTED
+//      throw JSApplicationCausedNativeException(
+//          "Illegal node ID set as an input for Animated.modulus node")
     }
   }
 

@@ -145,3 +145,11 @@ React Native documentation is Creative Commons licensed, as found in the [LICENS
 
 [l]: https://github.com/facebook/react-native/blob/main/LICENSE
 [ld]: https://github.com/facebook/react-native/blob/main/LICENSE-docs
+
+## Building React Native and Hermes aar in local
+ ```shell
+ sudo ./gradlew :packages:react-native:ReactAndroid:installArchives --no-daemon --stacktrace   
+
+ sudo ./gradlew :packages:react-native:ReactAndroid:hermes-engine:installArchives --no-daemon --stacktrace 
+ ```
+ 
