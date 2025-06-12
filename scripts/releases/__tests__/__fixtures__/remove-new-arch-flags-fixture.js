@@ -14,7 +14,6 @@ def use_react_native! (
   fabric_enabled: false,
   new_arch_enabled: NewArchitectureHelper.new_arch_enabled,
   production: false, # deprecated
-  hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
@@ -27,7 +26,6 @@ def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
   production: false, # deprecated
-  hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
@@ -39,7 +37,6 @@ const expectedReactNativePodsFile = `
 def use_react_native! (
   path: "../node_modules/react-native",
   production: false, # deprecated
-  hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
   config_file_dir: '',
