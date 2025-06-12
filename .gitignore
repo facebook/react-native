@@ -171,8 +171,8 @@ fix_*.patch
 .metro-health-check*
 
 # Jest Integration
-/packages/react-native-fantom/build/
-/packages/react-native-fantom/tester/build/
+/private/react-native-fantom/build/
+/private/react-native-fantom/tester/build/
 
 # [Experimental] Generated TS type definitions
 /packages/**/types_generated/

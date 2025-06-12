@@ -92,7 +92,7 @@ For a full API reference, please see the [inline documentation](../src/index.js)
 defined for the methods in the `@react-native/fantom` [module](../src/index.js).
 
 You can check out existing files with the `-itest.js` suffix (e.g.:
-[`View-itest`](../../react-native/Libraries/Components/View/__tests__/View-itest.js))
+[`View-itest`](../../../packages/react-native/Libraries/Components/View/__tests__/View-itest.js))
 for code examples.
 
 Run the test using the following command from the root of the React Native
@@ -123,7 +123,7 @@ docblock at the top of the file. E.g.:
 Available pragmas:
 
 - `@fantom_flags`: used to set overrides for
-  [`ReactNativeFeatureFlags`](../../react-native/src/private/featureflags/__docs__/README.md).
+  [`ReactNativeFeatureFlags`](../../../packages/react-native/src/private/featureflags/__docs__/README.md).
   - Example: `@fantom_flags name:value`.
   - Multiple flags can be defined in different lines or in the same line
     separated by spaces (e.g.: `@fantom_flags name:value otherName:otherValue`).
@@ -195,7 +195,7 @@ The results of Fabric are mounted in a mock UI tree that can be asserted against
 and individual mounting instructions can be inspected.
 
 You can even test your C++ code. For example, we have
-[Fantom tests for the new View Culling optimization](../../react-native/Libraries/Components/ScrollView/__tests__/ScrollView-viewCulling-itest.js),
+[Fantom tests for the new View Culling optimization](../../../packages/react-native/Libraries/Components/ScrollView/__tests__/ScrollView-viewCulling-itest.js),
 which is written in C++.
 
 #### How can I test logic related to &lt;ScrollView /> scrolling?
@@ -343,6 +343,6 @@ The runner then follows these steps:
   CLI.
 - Hermes Compiler, to compile the JavaScript test code into Hermes bytecode.
 - The
-  [React Native Feature Flags](../../react-native/src/private/featureflags/__docs__/README.md)
+  [React Native Feature Flags](../../../packages/react-native/src/private/featureflags/__docs__/README.md)
   system, via the `@fantom_flags` pragmas defined in the docblock for test
   files.

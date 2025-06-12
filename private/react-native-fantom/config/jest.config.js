@@ -19,15 +19,15 @@ const isCI =
 // In CI, we want to prewarm the caches/builds before running the tests so
 // that time isn't attributed to the first test that runs.
 const globalSetup /*: ?string */ = isCI
-  ? '<rootDir>/packages/react-native-fantom/runner/warmup/index.js'
+  ? '<rootDir>/private/react-native-fantom/runner/warmup/index.js'
   : null;
 
 module.exports = {
   rootDir: path.resolve(__dirname, '../../..') /*:: as string */,
   roots: [
     '<rootDir>/packages/react-native',
-    '<rootDir>/packages/react-native-fantom',
     '<rootDir>/packages/polyfills',
+    '<rootDir>/private/react-native-fantom',
   ],
   moduleFileExtensions: [
     ...baseConfig.moduleFileExtensions,
@@ -38,7 +38,7 @@ module.exports = {
   testRegex: '/__tests__/.*-itest(\\.fb)?\\.js$',
   testPathIgnorePatterns: baseConfig.testPathIgnorePatterns,
   transformIgnorePatterns: ['.*'],
-  testRunner: '<rootDir>/packages/react-native-fantom/runner/index.js',
-  watchPathIgnorePatterns: ['<rootDir>/packages/react-native-fantom/build/'],
+  testRunner: '<rootDir>/private/react-native-fantom/runner/index.js',
+  watchPathIgnorePatterns: ['<rootDir>/private/react-native-fantom/build/'],
   globalSetup,
 };

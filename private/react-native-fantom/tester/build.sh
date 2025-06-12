@@ -8,7 +8,7 @@ set -e
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 BUILD_DIR="$SCRIPT_DIR/build"
-REACT_NATIVE_ROOT_DIR=$(readlink -f "$SCRIPT_DIR/../../react-native")
+REACT_NATIVE_ROOT_DIR=$(readlink -f "$SCRIPT_DIR/../../../packages/react-native")
 
 cmake -S "$SCRIPT_DIR" -B "$BUILD_DIR" \
  -DREACT_THIRD_PARTY_NDK_DIR="${REACT_NATIVE_ROOT_DIR}/ReactAndroid/build/third-party-ndk" \
