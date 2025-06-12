@@ -4,7 +4,6 @@
 
 ### Breaking
 
-- Fixed codegen breaking when a subset of `modulesConformingToProtocol` fields was specified or when the value was string ([e4ef685dd7](https://github.com/facebook/react-native/commit/e4ef685dd75f09f22b0122e83fc94bc9d2df8a97) by [@j-piasecki](https://github.com/j-piasecki))
 - The `NewAppScreen` component is redesigned and moved to the `react-native/new-app-screen` package ([3cf0102007](https://github.com/facebook/react-native/commit/3cf01020071c76f40499878674cc7aaf5dbe168a) by [@huntie](https://github.com/huntie))
 - The `react-native` package now defines package.json `"exports"`. ([319ba0afd2](https://github.com/facebook/react-native/commit/319ba0afd2f694bc70a20250f0b8c79a06a36dc6) by [@huntie](https://github.com/huntie))
 - Subpath imports to the internal react-native/virtualized-lists package are not allowed. ([be8393c41b](https://github.com/facebook/react-native/commit/be8393c41b3d613385a2ee4632438030e80d6b2d) by [@iwoplaza](https://github.com/iwoplaza))
@@ -88,10 +87,9 @@
 
 ### Changed
 
-
-- **Deps:** Update debugger-frontend from bc635fa...343405b (S523384 mitigation) ([647af1c4ca](https://github.com/facebook/react-native/commit/647af1c4ca219515ab00b442370b61346ba1edb1) by [@huntie](https://github.com/huntie))
-- Re-expose `src/*` subpaths when not using the Strict TypeScript API ([1a46b203b8](https://github.com/facebook/react-native/commit/1a46b203b83d7cbe44185cd7e437e77b850e1af5) by [@huntie](https://github.com/huntie))
 - Bump React to 19.1 ([0e11e6a28b](https://github.com/facebook/react-native/commit/0e11e6a28bf3a12e30b5c6a7e93f3a5653888375) by [@cipolleschi](https://github.com/cipolleschi))
+- - **Deps:** Update debugger-frontend from bc635fa...343405b (S523384 mitigation) ([647af1c4ca](https://github.com/facebook/react-native/commit/647af1c4ca219515ab00b442370b61346ba1edb1) by [@huntie](https://github.com/huntie))
+- Re-expose `src/*` subpaths when not using the Strict TypeScript API ([1a46b203b8](https://github.com/facebook/react-native/commit/1a46b203b83d7cbe44185cd7e437e77b850e1af5) by [@huntie](https://github.com/huntie))
 - TypeScript: Replace deprecated React.ElementRef usages to React.ComponentRef ([12147e3bee](https://github.com/facebook/react-native/commit/12147e3bee782a73c1560593912ad706d2262b0c) by [@mateoguzmana](https://github.com/mateoguzmana))
 - Configured Hermes Parser to target React 19, resulting in Component Syntax no longer producing `forwardRef` calls. ([f2518d4374](https://github.com/facebook/react-native/commit/f2518d43746fbf712b8cb0ca920f134005c1faec) by [@yungsters](https://github.com/yungsters))
 - *[General] [Changed]* – Replaced `let` with `const` where applicable for better code standards and micro-optimization. ([38fefb2771](https://github.com/facebook/react-native/commit/38fefb2771d7ff65568fa989f2ca4a5bf44e58ec) by [@sanjaiyan-dev](https://github.com/sanjaiyan-dev))
@@ -190,8 +188,12 @@
 - **Runtime:** Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
 - **TypeScript:** Reference `global.d.ts` using `path` so they can be resolved by TSC ([6399caef63](https://github.com/facebook/react-native/commit/6399caef635b6aadc4c98ec37c9f007f81fa1f79) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - **VirtualizeSectionList:** Fix VirtualizeSectionList generic arguments ([44b0f5560b](https://github.com/facebook/react-native/commit/44b0f5560b285dfd8e28e6056e9434d76734f3fd)) by [@coado](https://github.com/coado)
-- Fixed the generated type definitions for `Animated.FlatList` and `Animated.SectionList` to correctly infer item types. ([9be5ac1010](https://github.com/facebook/react-native/commit/9be5ac101051dd8121a48af1a29a60b7ba0b753e) by [@j-piasecki](https://github.com/j-piasecki))
 - Fix generated types in react-native/virtualized-lists being used without opt-in ([c9f2055097](https://github.com/facebook/react-native/commit/c9f20550972db2f94c5970948239312046a66a4e) by [@j-piasecki](https://github.com/j-piasecki))
+- Made DevServerHelper and its method open so that they can be overridden. ([2a0c1e6a9e](https://github.com/facebook/react-native/commit/2a0c1e6a9e98c19101dc89b9adba4a990cd6902c) by [@chrfalch](https://github.com/chrfalch))
+- Wrong borderBottomEndRadius on RTL ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
+- Made function `removeView` open in Kotlin class ([9d11dcd3b0](https://github.com/facebook/react-native/commit/9d11dcd3b06641dc8780043067d6d4fbfcac71d1) by [@chrfalch](https://github.com/chrfalch))
+- Fixed codegen breaking when a subset of `modulesConformingToProtocol` fields was specified or when the value was string ([e4ef685dd7](https://github.com/facebook/react-native/commit/e4ef685dd75f09f22b0122e83fc94bc9d2df8a97) by [@j-piasecki](https://github.com/j-piasecki))
+- Fixed the generated type definitions for `Animated.FlatList` and `Animated.SectionList` to correctly infer item types. ([9be5ac1010](https://github.com/facebook/react-native/commit/9be5ac101051dd8121a48af1a29a60b7ba0b753e) by [@j-piasecki](https://github.com/j-piasecki))
 - Fixed switches correctly reverting to controlled state ([aa8c072870](https://github.com/facebook/react-native/commit/aa8c072870f6f9740e567a0f455c0e500ff1400c) by [@javache](https://github.com/javache))
 - Skip cloning Fragments in ListEmptyComponent to avoid onLayout warning ([2b0189b964](https://github.com/facebook/react-native/commit/2b0189b9649b58dc93ac79ad2bf709fd7bc8f117) by [@mateoguzmana](https://github.com/mateoguzmana))
 - Update Danger to 13.0.4 ([e2232090d7](https://github.com/facebook/react-native/commit/e2232090d7577dde3cba97bc0e8a782fc3c7b537) by [@GijsWeterings](https://github.com/GijsWeterings))
@@ -205,14 +207,14 @@
 - Fixed crash in RCTPullToRefreshViewComponentView#updateProps ([fab7fa88e3](https://github.com/facebook/react-native/commit/fab7fa88e3bd3c84a0ffe0c027e14185b037120d) by [@javache](https://github.com/javache))
 - Fix New Arch handling of inline views when text truncated ([99f962627f](https://github.com/facebook/react-native/commit/99f962627f1b88b8a48c2b64b1887652f784b624) by [@NickGerleman](https://github.com/NickGerleman))
 - - [General] [Fixed] Add missing type variation `{login: string, password: string}` to **AlertType** type definition to properly support `login-password` prompt callbacks ([c6a075bcc7](https://github.com/facebook/react-native/commit/c6a075bcc72b984da787a94d30d38426a68cef80) by [@assynu](https://github.com/assynu))
+- Fix set-rn-version to consider also the codegen snapshot tests ([79e2298230](https://github.com/facebook/react-native/commit/79e2298230ac202432cec1940ffda894d09a9231) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix draft creation ([cdf7d76101](https://github.com/facebook/react-native/commit/cdf7d761011daf67ce92854372f96900dbbc42c9) by [@cipolleschi](https://github.com/cipolleschi))
+
 
 #### Android specific
 
 - **Layout:** Restored the possibility to extend `LayoutAnimationController` ([bca7c5a553](https://github.com/facebook/react-native/commit/bca7c5a55301398beaa6ca35c96ae7ad5426c297) by [@tomekzaw](https://github.com/tomekzaw))
 - **TextInput:** Fix broken focus behavior for TextInput in older Android versions (< 9) ([fb62355555](https://github.com/facebook/react-native/commit/fb623555552075793086acdd1ddd0c1e3fba72c4)) by [@joevilches](https://github.com/joevilches)
-- Made DevServerHelper and its method open so that they can be overridden. ([2a0c1e6a9e](https://github.com/facebook/react-native/commit/2a0c1e6a9e98c19101dc89b9adba4a990cd6902c) by [@chrfalch](https://github.com/chrfalch))
-- Wrong borderBottomEndRadius on RTL ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
-- Made function `removeView` open in Kotlin class ([9d11dcd3b0](https://github.com/facebook/react-native/commit/9d11dcd3b06641dc8780043067d6d4fbfcac71d1) by [@chrfalch](https://github.com/chrfalch))
 - Assume full container width when ellipsizing line ([e565c662d7](https://github.com/facebook/react-native/commit/e565c662d7550b143930bf2e646a749bcaea026a) by [@NickGerleman](https://github.com/NickGerleman))
 - Fix incorrect clip to padding box on new Background and Border drawables ([989b3f61a0](https://github.com/facebook/react-native/commit/989b3f61a070c68f30d36036925f54cb081da49e) by [@jorge-cab](https://github.com/jorge-cab))
 - Can now focus TextInput with keyboard ([e00028f6bb](https://github.com/facebook/react-native/commit/e00028f6bb6c19de861f9a25f377295755f3671b) by [@joevilches](https://github.com/joevilches))
@@ -292,8 +294,12 @@
 
 #### iOS specific
 
-- Fixed adding child views to a native view using the interop layer ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
 - Skip codegen for selectively disabled libraries in react-native.config.js ([be8595b18a](https://github.com/facebook/react-native/commit/be8595b18a46635bf679d8e7473f2960c33530fa) by [@ismarbesic](https://github.com/ismarbesic))
+- Fixed adding child views to a native view using the interop layer ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
+- Fix codegen crawling all library code with `componentProvider` defined in config ([65aa819811](https://github.com/facebook/react-native/commit/65aa8198116e1d23175358f75c9b23774d3522b4) by [@kkafar](https://github.com/kkafar))
+- Skip codegen for selectively disabled libraries in react-native.config.js ([7681036537](https://github.com/facebook/react-native/commit/7681036537d8759673881843a9a8f6f5a1ae93e0) by [@aattola](https://github.com/aattola))
+- Fix codegen extracting `.class` from complex component classes ([f2b19608cc](https://github.com/facebook/react-native/commit/f2b19608cca36c118786b4e3d22bf2468fced86d) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Ignore `build/` and `DerivedData/` directories when reading `.plist` files. ([c783128f6e](https://github.com/facebook/react-native/commit/c783128f6e8541bb0b13c4f5c634e790ca854c23) by [@tjzel](https://github.com/tjzel))
 - Remove deprecated ATOMIC_VAR_INIT macro in RCTProfile.m ([21bf7cf6cf](https://github.com/facebook/react-native/commit/21bf7cf6cf043de323c40edc001add4cd21256ce) by [@rmaz](https://github.com/rmaz))
 - – Fix disappearing redbox on initial load of an invalid bundle. ([4cc9db1cd5](https://github.com/facebook/react-native/commit/4cc9db1cd501b019e90bb540ce836e2a2c2bf2ff) by [@aleqsio](https://github.com/aleqsio))
 - Properly check for debug schemes when building hermes from source ([bef5cc1007](https://github.com/facebook/react-native/commit/bef5cc100771c3b8bc5dffa565b7c24fef3eb34d) by [@WoLewicki](https://github.com/WoLewicki))
@@ -331,9 +337,6 @@
 
 ### Unknown
 
-- Fix set-rn-version to consider also the codegen snapshot tests ([79e2298230](https://github.com/facebook/react-native/commit/79e2298230ac202432cec1940ffda894d09a9231) by [@cipolleschi](https://github.com/cipolleschi))
-- Fix draft creation ([cdf7d76101](https://github.com/facebook/react-native/commit/cdf7d761011daf67ce92854372f96900dbbc42c9) by [@cipolleschi](https://github.com/cipolleschi))
-- Bump Podfile.lock ([f70a146699](https://github.com/facebook/react-native/commit/f70a146699f870a230126bab1f3ef0e47d5cedc1) by [@react-native-bot](https://github.com/react-native-bot))
 - Release 0.80.0-rc.0 ([d9c2857e59](https://github.com/facebook/react-native/commit/d9c2857e59b9e209e6902565e5cb59247bd03acb) by [@react-native-bot](https://github.com/react-native-bot))
 - Bump hermes version ([cbf1710fd5](https://github.com/facebook/react-native/commit/cbf1710fd5ef180d53edd0e3fc7bb613e3348223) by [@hezi](https://github.com/hezi))
 - Fix CQS signal. Id] 19045409 -- readability-redundant-string-init in xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/components/view ([cd5991c648](https://github.com/facebook/react-native/commit/cd5991c64830780a54eb86f2e490208d919cf652) by generatedunixname89002005287564)
