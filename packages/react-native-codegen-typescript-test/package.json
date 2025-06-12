@@ -1,6 +1,6 @@
 {
   "name": "@react-native/codegen-typescript-test",
-  "version": "0.80.0-rc.5",
+  "version": "0.80.0",
   "private": true,
   "description": "TypeScript related unit test for @react-native/codegen",
   "license": "MIT",
@@ -19,7 +19,7 @@
     "prepare": "yarn run build"
   },
   "dependencies": {
-    "@react-native/codegen": "0.80.0-rc.5"
+    "@react-native/codegen": "0.80.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -1,6 +1,6 @@
 {
   "name": "@react-native/debugger-frontend",
-  "version": "0.80.0-rc.5",
+  "version": "0.80.0",
   "description": "Debugger frontend for React Native based on Chrome DevTools",
   "keywords": [
     "react-native",
