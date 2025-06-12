@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <jsireact/JSIExecutor.h>
 
 namespace facebook::react {
@@ -25,3 +27,5 @@ class JSCExecutorFactory : public JSExecutorFactory {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

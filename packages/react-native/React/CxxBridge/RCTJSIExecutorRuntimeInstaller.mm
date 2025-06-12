@@ -7,6 +7,8 @@
 
 #include "RCTJSIExecutorRuntimeInstaller.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #import <React/RCTLog.h>
 #include <chrono>
 
@@ -28,3 +30,5 @@ JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(JSIExecutor::Runtim
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

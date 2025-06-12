@@ -16,7 +16,9 @@
 
 - (void)createRootViewController:(UIView *)view;
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
+#endif // RCT_FIT_RM_OLD_RUNTIME
 - (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (void)show;

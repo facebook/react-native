@@ -7,6 +7,8 @@
 
 #include "JSCExecutorFactory.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #import <jsc/JSCRuntime.h>
 
 #import <memory>
@@ -22,3 +24,5 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

@@ -12,13 +12,17 @@
 
 @implementation RCTModuleRegistry {
   __weak id<RCTTurboModuleRegistry> _turboModuleRegistry;
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   __weak RCTBridge *_bridge;
+#endif // RCT_FIT_RM_OLD_RUNTIME
 }
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
 }
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
 - (void)setTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
@@ -34,10 +38,12 @@
 {
   id<RCTBridgeModule> module = nil;
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   RCTBridge *bridge = _bridge;
   if (bridge) {
     module = [bridge moduleForName: [NSString stringWithUTF8String:moduleName] lazilyLoadIfNecessary:lazilyLoad];
   }
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
   id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
   if (module == nil && turboModuleRegistry && (lazilyLoad || [turboModuleRegistry moduleIsInitialized:moduleName])) {
@@ -49,11 +55,13 @@
 
 - (BOOL)moduleIsInitialized:(Class)moduleClass
 {
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   RCTBridge *bridge = _bridge;
 
   if (bridge) {
     return [bridge moduleIsInitialized:moduleClass];
   }
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
   id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
   if (turboModuleRegistry) {

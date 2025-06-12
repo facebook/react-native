@@ -265,6 +265,7 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
   kDispatchAccessibilityManagerInitOntoMain = enabled;
 }
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTBridgeHostTargetDelegate(RCTBridge *bridge)
@@ -675,3 +676,110 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   return _inspectorTarget.get();
 }
 @end
+#else // RCT_FIT_RM_OLD_RUNTIME
+@implementation RCTBridge
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
+{
+  return self;
+}
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                   moduleProvider:(__strong RCTBridgeModuleListProvider)block
+                    launchOptions:(NSDictionary *)launchOptions
+{
+  return self;
+}
+
+- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
+{
+}
+
+- (void)enqueueJSCall:(NSString *)module
+               method:(NSString *)method
+                 args:(NSArray *)args
+           completion:(__strong dispatch_block_t)completion
+{
+}
+
+- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
+{
+}
+
+- (id)moduleForName:(NSString *)moduleName
+{
+  return nil;
+}
+
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  return nil;
+}
+
+- (id)moduleForClass:(Class)moduleClass
+{
+  return nil;
+}
+
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
+{
+}
+
+- (RCTBridgeModuleDecorator *)bridgeModuleDecorator
+{
+  return nil;
+}
+
+- (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
+{
+  return @[];
+}
+
+- (BOOL)moduleIsInitialized:(Class)moduleClass
+{
+  return NO;
+}
+
+- (void)reload __attribute__((deprecated("Use RCTReloadCommand instead")))
+{
+}
+
+- (void)reloadWithReason:(NSString *)reason __attribute__((deprecated("Use RCTReloadCommand instead")))
+{
+}
+
+- (void)onFastRefresh
+{
+}
+
+- (void)requestReload __attribute__((deprecated("Use RCTReloadCommand instead")))
+{
+}
+
+- (BOOL)isBatchActive
+{
+  return NO;
+}
+
+- (void)setUp
+{
+}
+
+- (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
+{
+}
+
++ (void)setCurrentBridge:(RCTBridge *)bridge
+{
+}
+
+- (void)invalidate
+{
+}
+
++ (instancetype)currentBridge
+{
+  return nil;
+}
+
+@end
+#endif // RCT_FIT_RM_OLD_RUNTIME
