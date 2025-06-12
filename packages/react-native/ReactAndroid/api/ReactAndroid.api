@@ -6447,37 +6447,6 @@ public final class com/facebook/react/views/text/TextAttributes {
 	public fun toString ()Ljava/lang/String;
 }
 
-public class com/facebook/react/views/text/TextLayoutManager {
-	public static final field AS_KEY_BASE_ATTRIBUTES S
-	public static final field AS_KEY_CACHE_ID S
-	public static final field AS_KEY_FRAGMENTS S
-	public static final field AS_KEY_HASH S
-	public static final field AS_KEY_STRING S
-	public static final field FR_KEY_HEIGHT S
-	public static final field FR_KEY_IS_ATTACHMENT S
-	public static final field FR_KEY_REACT_TAG S
-	public static final field FR_KEY_STRING S
-	public static final field FR_KEY_TEXT_ATTRIBUTES S
-	public static final field FR_KEY_WIDTH S
-	public static final field PA_KEY_ADJUST_FONT_SIZE_TO_FIT S
-	public static final field PA_KEY_ELLIPSIZE_MODE S
-	public static final field PA_KEY_HYPHENATION_FREQUENCY S
-	public static final field PA_KEY_INCLUDE_FONT_PADDING S
-	public static final field PA_KEY_MAXIMUM_FONT_SIZE S
-	public static final field PA_KEY_MAX_NUMBER_OF_LINES S
-	public static final field PA_KEY_MINIMUM_FONT_SIZE S
-	public static final field PA_KEY_TEXT_ALIGN_VERTICAL S
-	public static final field PA_KEY_TEXT_BREAK_STRATEGY S
-	public fun <init> ()V
-	public static fun deleteCachedSpannableForTag (I)V
-	public static fun getOrCreateSpannableForText (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)Landroid/text/Spannable;
-	public static fun getTextGravity (Lcom/facebook/react/common/mapbuffer/MapBuffer;Landroid/text/Spannable;I)I
-	public static fun isRTL (Lcom/facebook/react/common/mapbuffer/MapBuffer;)Z
-	public static fun measureLines (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FF)Lcom/facebook/react/bridge/WritableArray;
-	public static fun measureText (Landroid/content/Context;Lcom/facebook/react/common/mapbuffer/MapBuffer;Lcom/facebook/react/common/mapbuffer/MapBuffer;FLcom/facebook/yoga/YogaMeasureMode;FLcom/facebook/yoga/YogaMeasureMode;Lcom/facebook/react/views/text/ReactTextViewManagerCallback;[F)J
-	public static fun setCachedSpannableForTag (ILandroid/text/Spannable;)V
-}
-
 public abstract interface class com/facebook/react/views/textinput/ContentSizeWatcher {
 	public abstract fun onLayout ()V
 }
