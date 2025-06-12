@@ -38,7 +38,8 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-                               "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
+                               "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                               "DEFINES_MODULE" => "YES"
                              }
   s.framework              = ["Accelerate", "UIKit", "QuartzCore", "ImageIO", "CoreGraphics"]
 
