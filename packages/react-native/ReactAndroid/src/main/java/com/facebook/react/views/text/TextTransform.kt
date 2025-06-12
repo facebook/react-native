@@ -21,11 +21,7 @@ internal enum class TextTransform {
 
   internal companion object {
     @JvmStatic
-    fun apply(text: String?, textTransform: TextTransform?): String? =
-        text?.applyTextTransform(textTransform)
-
-    @JvmStatic
-    fun applyNonNull(text: String, textTransform: TextTransform?): String =
+    fun apply(text: String, textTransform: TextTransform?): String =
         text.applyTextTransform(textTransform)
   }
 }

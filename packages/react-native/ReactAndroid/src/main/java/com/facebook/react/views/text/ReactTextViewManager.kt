@@ -134,12 +134,12 @@ public constructor(
     view.setSpanned(spanned)
 
     val minimumFontSize: Float =
-        paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE.toInt()).toFloat()
+        paragraphAttributes.getDouble(TextLayoutManager.PA_KEY_MINIMUM_FONT_SIZE).toFloat()
     view.setMinimumFontSize(minimumFontSize)
 
     val textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY.toInt()))
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY))
     val currentJustificationMode =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else view.getJustificationMode()
 
@@ -147,7 +147,7 @@ public constructor(
         spanned,
         -1, // UNUSED FOR TEXT
         false, // TODO add this into local Data
-        TextLayoutManager.getTextGravity(attributedString, spanned, view.gravityHorizontal),
+        TextLayoutManager.getTextGravity(attributedString, spanned),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode))
   }
