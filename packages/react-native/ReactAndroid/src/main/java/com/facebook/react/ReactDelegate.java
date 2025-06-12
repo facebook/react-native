@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
@@ -23,14 +24,17 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import java.util.Objects;
 
 /**
  * A delegate for handling React Application support. This delegate is unaware whether it is used in
  * an {@link Activity} or a {@link android.app.Fragment}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactDelegate {
 
   private final Activity mActivity;
+
   @Nullable private ReactRootView mReactRootView;
 
   @Nullable private final String mMainComponentName;
@@ -57,7 +61,7 @@ public class ReactDelegate {
   @Deprecated(since = "0.75.0")
   public ReactDelegate(
       Activity activity,
-      ReactNativeHost reactNativeHost,
+      @Nullable ReactNativeHost reactNativeHost,
       @Nullable String appKey,
       @Nullable Bundle launchOptions) {
     mActivity = activity;
@@ -69,7 +73,7 @@ public class ReactDelegate {
 
   public ReactDelegate(
       Activity activity,
-      ReactHost reactHost,
+      @Nullable ReactHost reactHost,
       @Nullable String appKey,
       @Nullable Bundle launchOptions) {
     mActivity = activity;
@@ -82,7 +86,7 @@ public class ReactDelegate {
   @Deprecated(since = "0.81.0")
   public ReactDelegate(
       Activity activity,
-      ReactNativeHost reactNativeHost,
+      @Nullable ReactNativeHost reactNativeHost,
       @Nullable String appKey,
       @Nullable Bundle launchOptions,
       boolean fabricEnabled) {
@@ -100,7 +104,8 @@ public class ReactDelegate {
         && mReactHost != null
         && mReactHost.getDevSupportManager() != null) {
       return mReactHost.getDevSupportManager();
-    } else if (getReactNativeHost().hasInstance()
+    } else if (getReactNativeHost() != null
+        && getReactNativeHost().hasInstance()
         && getReactNativeHost().getReactInstanceManager() != null) {
       return getReactNativeHost().getReactInstanceManager().getDevSupportManager();
     } else {
@@ -113,11 +118,13 @@ public class ReactDelegate {
       throw new ClassCastException(
           "Host Activity does not implement DefaultHardwareBackBtnHandler");
     }
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
     } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost()
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (reactNativeHost != null && reactNativeHost.hasInstance()) {
+        reactNativeHost
             .getReactInstanceManager()
             .onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
       }
@@ -125,43 +132,51 @@ public class ReactDelegate {
   }
 
   public void onUserLeaveHint() {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onHostLeaveHint(mActivity);
     } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onUserLeaveHint(mActivity);
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (reactNativeHost != null && reactNativeHost.hasInstance()) {
+        reactNativeHost.getReactInstanceManager().onUserLeaveHint(mActivity);
       }
     }
   }
 
   public void onHostPause() {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onHostPause(mActivity);
     } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onHostPause(mActivity);
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (reactNativeHost != null && reactNativeHost.hasInstance()) {
+        reactNativeHost.getReactInstanceManager().onHostPause(mActivity);
       }
     }
   }
 
   public void onHostDestroy() {
     unloadApp();
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onHostDestroy(mActivity);
     } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onHostDestroy(mActivity);
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (reactNativeHost != null && reactNativeHost.hasInstance()) {
+        reactNativeHost.getReactInstanceManager().onHostDestroy(mActivity);
       }
     }
   }
 
   public boolean onBackPressed() {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onBackPressed();
       return true;
     } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onBackPressed();
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (reactNativeHost != null && reactNativeHost.hasInstance()) {
+        reactNativeHost.getReactInstanceManager().onBackPressed();
         return true;
       }
     }
@@ -169,12 +184,14 @@ public class ReactDelegate {
   }
 
   public boolean onNewIntent(Intent intent) {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onNewIntent(intent);
       return true;
     } else {
-      if (getReactNativeHost().hasInstance()) {
-        getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (reactNativeHost != null && reactNativeHost.hasInstance()) {
+        reactNativeHost.getReactInstanceManager().onNewIntent(intent);
         return true;
       }
     }
@@ -182,12 +199,19 @@ public class ReactDelegate {
   }
 
   public void onActivityResult(
-      int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+      int requestCode,
+      int resultCode,
+      @Nullable Intent data,
+      boolean shouldForwardToReactInstance) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onActivityResult(mActivity, requestCode, resultCode, data);
     } else {
-      if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
-        getReactNativeHost()
+      ReactNativeHost reactNativeHost = getReactNativeHost();
+      if (reactNativeHost != null
+          && reactNativeHost.hasInstance()
+          && shouldForwardToReactInstance) {
+        reactNativeHost
             .getReactInstanceManager()
             .onActivityResult(mActivity, requestCode, resultCode, data);
       }
@@ -195,20 +219,22 @@ public class ReactDelegate {
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onWindowFocusChange(hasFocus);
     } else {
-      if (getReactNativeHost().hasInstance()) {
+      if (getReactNativeHost() != null && getReactNativeHost().hasInstance()) {
         getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
       }
     }
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+        && mReactHost != null) {
       mReactHost.onConfigurationChanged(Assertions.assertNotNull(mActivity));
     } else {
-      if (getReactNativeHost().hasInstance()) {
+      if (getReactNativeHost() != null && getReactNativeHost().hasInstance()) {
         getReactInstanceManager()
             .onConfigurationChanged(Assertions.assertNotNull(mActivity), newConfig);
       }
@@ -220,7 +246,8 @@ public class ReactDelegate {
         && ((ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
                 && mReactHost != null
                 && mReactHost.getDevSupportManager() != null)
-            || (getReactNativeHost().hasInstance()
+            || (getReactNativeHost() != null
+                && getReactNativeHost().hasInstance()
                 && getReactNativeHost().getUseDeveloperSupport()))) {
       event.startTracking();
       return true;
@@ -239,8 +266,11 @@ public class ReactDelegate {
           return true;
         }
       } else {
-        if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
-          getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+        ReactNativeHost reactNativeHost = getReactNativeHost();
+        if (reactNativeHost != null
+            && reactNativeHost.hasInstance()
+            && reactNativeHost.getUseDeveloperSupport()) {
+          reactNativeHost.getReactInstanceManager().showDevOptionsDialog();
           return true;
         }
       }
@@ -264,7 +294,8 @@ public class ReactDelegate {
       } else {
         UiThreadUtil.runOnUiThread(
             () -> {
-              if (mReactNativeHost.hasInstance()
+              if (mReactNativeHost != null
+                  && mReactNativeHost.hasInstance()
                   && mReactNativeHost.getReactInstanceManager() != null) {
                 mReactNativeHost.getReactInstanceManager().recreateReactContextInBackground();
               }
@@ -279,7 +310,11 @@ public class ReactDelegate {
 
   /** Start the React surface with the app key supplied in the {@link ReactDelegate} constructor. */
   public void loadApp() {
-    loadApp(mMainComponentName);
+    if (mMainComponentName == null) {
+      throw new IllegalStateException("Cannot loadApp without a main component name.");
+    } else {
+      loadApp(mMainComponentName);
+    }
   }
 
   /**
@@ -290,17 +325,19 @@ public class ReactDelegate {
   public void loadApp(String appKey) {
     // With Bridgeless enabled, create and start the surface
     if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
-      if (mReactSurface == null) {
+      if (mReactSurface == null && mReactHost != null) {
         mReactSurface = mReactHost.createSurface(mActivity, appKey, mLaunchOptions);
       }
-      mReactSurface.start();
+      Objects.requireNonNull(mReactSurface).start();
     } else {
       if (mReactRootView != null) {
         throw new IllegalStateException("Cannot loadApp while app is already running.");
       }
       mReactRootView = createRootView();
-      mReactRootView.startReactApplication(
-          getReactNativeHost().getReactInstanceManager(), appKey, mLaunchOptions);
+      if (getReactNativeHost() != null) {
+        mReactRootView.startReactApplication(
+            getReactNativeHost().getReactInstanceManager(), appKey, mLaunchOptions);
+      }
     }
   }
 
@@ -366,7 +403,7 @@ public class ReactDelegate {
       return true;
     }
     boolean didDoubleTapR =
-        Assertions.assertNotNull(mDoubleTapReloadRecognizer)
+        Objects.requireNonNull(mDoubleTapReloadRecognizer)
             .didDoubleTapR(keyCode, mActivity.getCurrentFocus());
     if (didDoubleTapR) {
       devSupportManager.handleReloadJS();
@@ -377,12 +414,15 @@ public class ReactDelegate {
 
   /** Get the {@link ReactNativeHost} used by this app. */
   @DeprecatedInNewArchitecture(message = "Use getReactHost()")
-  private ReactNativeHost getReactNativeHost() {
+  private @Nullable ReactNativeHost getReactNativeHost() {
     return mReactNativeHost;
   }
 
   @DeprecatedInNewArchitecture(message = "Use getReactHost()")
   public ReactInstanceManager getReactInstanceManager() {
+    if (getReactNativeHost() == null) {
+      throw new IllegalStateException("Cannot get ReactInstanceManager without a ReactNativeHost.");
+    }
     return getReactNativeHost().getReactInstanceManager();
   }
 
