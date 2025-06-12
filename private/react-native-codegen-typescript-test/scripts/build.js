@@ -12,25 +12,25 @@
 const fs = require('fs');
 const path = require('path');
 
-const tsComponentFixturePath = path.join(
-  __dirname,
-  '../../react-native-codegen/src/parsers/typescript/components/__test_fixtures__/fixtures.js',
+function repositoryPath(relativePath) {
+  return path.join(__dirname, '..', '..', '..', relativePath);
+}
+
+const tsComponentFixturePath = repositoryPath(
+  'packages/react-native-codegen/src/parsers/typescript/components/__test_fixtures__/fixtures.js',
 );
-const tsComponentSnapshotPath = path.join(
-  __dirname,
-  '../../react-native-codegen/src/parsers/typescript/components/__tests__/__snapshots__/typescript-component-parser-test.js.snap',
+const tsComponentSnapshotPath = repositoryPath(
+  'packages/react-native-codegen/src/parsers/typescript/components/__tests__/__snapshots__/typescript-component-parser-test.js.snap',
 );
-const tsModuleFixturePath = path.join(
-  __dirname,
-  '../../react-native-codegen/src/parsers/typescript/modules/__test_fixtures__/fixtures.js',
+const tsModuleFixturePath = repositoryPath(
+  'packages/react-native-codegen/src/parsers/typescript/modules/__test_fixtures__/fixtures.js',
 );
-const tsModuleSnapshotPath = path.join(
-  __dirname,
-  '../../react-native-codegen/src/parsers/typescript/modules/__tests__/__snapshots__/typescript-module-parser-snapshot-test.js.snap',
+const tsModuleSnapshotPath = repositoryPath(
+  'packages/react-native-codegen/src/parsers/typescript/modules/__tests__/__snapshots__/typescript-module-parser-snapshot-test.js.snap',
 );
 const snapshotOutputPath = path.join(__dirname, '../__generated__');
 
-function genereateSnapshotTestCases(
+function generateSnapshotTestCases(
   name,
   fixturePath,
   snapshotPath,
@@ -61,13 +61,13 @@ export default snapshot;
   }
 }
 
-genereateSnapshotTestCases(
+generateSnapshotTestCases(
   'component',
   tsComponentFixturePath,
   tsComponentSnapshotPath,
   snapshotOutputPath,
 );
-genereateSnapshotTestCases(
+generateSnapshotTestCases(
   'module',
   tsModuleFixturePath,
   tsModuleSnapshotPath,
