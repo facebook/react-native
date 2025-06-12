@@ -27,7 +27,7 @@
 <PROJECT_ROOT>/packages/.*/dist
 
 ; helloworld
-<PROJECT_ROOT>/packages/helloworld/ios/Pods/
+<PROJECT_ROOT>/private/helloworld/ios/Pods/
 
 ; Ignore rn-tester Pods
 <PROJECT_ROOT>/packages/rn-tester/Pods/

@@ -1,6 +1,6 @@
 {
   "name": "helloworld",
-  "version": "0.80.0-main",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "bootstrap": "node ./cli.js bootstrap",
