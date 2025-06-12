@@ -49,7 +49,7 @@ internal class FabricEventEmitter(private val uiManager: FabricUIManager) : RCTM
     }
   }
 
-  /** Touches are dispatched by [.receiveTouches] */
+  /** Touches are dispatched by [receiveTouches] */
   @Deprecated("Deprecated in Java")
   override fun receiveTouches(
       eventName: String,
