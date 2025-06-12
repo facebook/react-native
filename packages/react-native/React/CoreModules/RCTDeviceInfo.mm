@@ -142,11 +142,12 @@ static BOOL RCTIsIPhoneNotched()
 
 static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 {
-  UIScreen *mainScreen = UIScreen.mainScreen;
-  CGSize screenSize = mainScreen.bounds.size;
-
-  // We fallback to screen size if a key window is not found.
-  CGSize windowSize = [RCTKeyWindowValuesProxy sharedInstance].windowSize;
+  UIScreen *mainScreen = UIScreen.mainScreen; 
+  CGSize screenSize = mainScreen.bounds.size; 
+  UIView *mainWindow = RCTKeyWindow(); 
+    
+  // We fallback to screen size if a key window is not found. 
+  CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
 
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
     @"width" : @(windowSize.width),
