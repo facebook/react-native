@@ -20,6 +20,8 @@
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 using namespace facebook::jni;
 
 namespace facebook::react {
@@ -309,3 +311,5 @@ MethodCallResult MethodInvoker::invoke(
 }
 
 } // namespace facebook::react
+
+#endif
