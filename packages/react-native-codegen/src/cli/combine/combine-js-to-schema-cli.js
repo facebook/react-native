@@ -28,6 +28,17 @@ const argv = yargs
     alias: 'exclude',
     default: null,
   })
+  .option('exclude-interface-only', {
+    describe: 'Exclude components with interfaceOnly: true',
+    type: 'boolean',
+    default: false,
+  })
+  .option('exclude-unimplemented', {
+    describe:
+      'Exclude component named UnimplementedNativeViewNativeComponent.js',
+    type: 'boolean',
+    default: false,
+  })
   .parseSync();
 
 const [outfile, ...fileList] = argv._;
@@ -35,10 +46,14 @@ const platform: ?string = argv.platform;
 const exclude: string = argv.exclude;
 const excludeRegExp: ?RegExp =
   exclude != null && exclude !== '' ? new RegExp(exclude) : null;
+const excludeInterfaceOnly: boolean = argv['exclude-interface-only'];
+const excludeUnimplemented: boolean = argv['exclude-unimplemented'];
 
 combineSchemasInFileListAndWriteToFile(
   fileList,
   platform != null ? platform.toLowerCase() : platform,
   outfile,
   excludeRegExp,
+  excludeInterfaceOnly,
+  excludeUnimplemented,
 );
