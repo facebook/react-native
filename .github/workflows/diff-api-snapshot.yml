@@ -3,6 +3,8 @@ name: Run API Breaking Change Detection
 on:
   pull_request:
     types: [synchronize, opened]
+permissions:
+  pull-requests: write
 env:
   SNAPSHOT_PATH: packages/react-native/ReactNativeApi.d.ts
 jobs:
