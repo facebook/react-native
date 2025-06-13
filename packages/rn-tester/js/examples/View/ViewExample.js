@@ -13,6 +13,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
+
 import * as React from 'react';
 import {useState} from 'react';
 import {
@@ -20,6 +21,7 @@ import {
   PlatformColor,
   Pressable,
   StyleSheet,
+  TextInput,
   View,
 } from 'react-native';
 
@@ -768,6 +770,42 @@ function FocusBlurExample(): React.Node {
   );
 }
 
+function ContentSensitivityExample(): React.Node {
+  return (
+    <View style={{gap: 8}}>
+      <RNTesterText>Content Visibility Example</RNTesterText>
+
+      <View
+        contentSensitivity="sensitive"
+        style={{backgroundColor: 'gray', padding: 12}}>
+        <RNTesterText>
+          This view has contentSensitivity set to 'sensitive'. It will not be
+          visible to screen readers.
+        </RNTesterText>
+      </View>
+
+      <View
+        contentSensitivity="auto"
+        style={{backgroundColor: 'gray', padding: 12}}>
+        <TextInput
+          autoComplete="password"
+          secureTextEntry={true}
+          defaultValue={'12345'}
+        />
+      </View>
+
+      <View
+        contentSensitivity="not-sensitive"
+        style={{backgroundColor: 'gray', padding: 12}}>
+        <RNTesterText>
+          This view has contentSensitivity set to 'not_sensitive'. It will be
+          visible to screen readers.
+        </RNTesterText>
+      </View>
+    </View>
+  );
+}
+
 export default ({
   title: 'View',
   documentationURL: 'https://reactnative.dev/docs/view',
@@ -1436,6 +1474,11 @@ export default ({
       title: 'Focus/Blur',
       name: 'focus-blur',
       render: FocusBlurExample,
+    },
+    {
+      title: 'Content Visibility Example (Android)',
+      name: 'content-visibility',
+      render: ContentSensitivityExample,
     },
   ],
 }: RNTesterModule);

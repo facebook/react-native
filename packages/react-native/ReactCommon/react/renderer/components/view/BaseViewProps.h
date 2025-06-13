@@ -96,6 +96,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   bool shouldRasterize{};
   std::optional<int> zIndex{};
 
+  // Content Sensitivity
+  ContentSensitivityMode contentSensitivity{};
+
   // Events
   PointerEventsMode pointerEvents{};
   EdgeInsets hitSlop{};

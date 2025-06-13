@@ -8,7 +8,11 @@
 package com.facebook.react.views.view
 
 import android.graphics.Rect
+import android.os.Build
 import android.view.View
+import android.view.View.CONTENT_SENSITIVITY_AUTO
+import android.view.View.CONTENT_SENSITIVITY_NOT_SENSITIVE
+import android.view.View.CONTENT_SENSITIVITY_SENSITIVE
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.DynamicFromObject
@@ -311,6 +315,18 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
       view.isClickable = false
       // Don't set view.setFocusable(false) because we might still want it to be focusable for
       // accessibility reasons
+    }
+  }
+
+  @ReactProp(name = ViewProps.CONTENT_SENSITIVITY)
+  public open fun setContentSensitivity(view: ReactViewGroup, contentSensitivity: String?) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+      when (contentSensitivity) {
+        "auto" -> view.contentSensitivity = CONTENT_SENSITIVITY_AUTO
+        "sensitive" -> view.contentSensitivity = CONTENT_SENSITIVITY_SENSITIVE
+        "not-sensitive" -> view.contentSensitivity = CONTENT_SENSITIVITY_NOT_SENSITIVE
+        else -> view.contentSensitivity = CONTENT_SENSITIVITY_AUTO
+      }
     }
   }
 

@@ -656,6 +656,21 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["mixBlendMode"] = toString(mixBlendMode);
   }
 
+  if (contentSensitivity != oldProps->contentSensitivity) {
+    std::string value;
+    switch (contentSensitivity) {
+      case ContentSensitivityMode::NotSensitive:
+        result["contentSensitivity"] = "not-sensitive";
+        break;
+      case ContentSensitivityMode::Sensitive:
+        result["contentSensitivity"] = "sensitive";
+        break;
+      case ContentSensitivityMode::Auto:
+          result["contentSensitivity"] = "auto";
+        break;
+    }
+  }
+
   if (pointerEvents != oldProps->pointerEvents) {
     std::string value;
     switch (pointerEvents) {
