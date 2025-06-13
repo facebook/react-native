@@ -245,8 +245,6 @@ function checkOrWriteFiles(
 
 module.exports = {
   allGenerators: ALL_GENERATORS,
-  libraryGenerators: LIBRARY_GENERATORS,
-  schemaGenerators: SCHEMAS_GENERATORS,
 
   generate(
     {
