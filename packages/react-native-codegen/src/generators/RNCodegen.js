@@ -94,6 +94,7 @@ type LibraryOptions = $ReadOnly<{
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
   assumeNonnull: boolean,
   useLocalIncludePaths?: boolean,
+  libraryGenerators?: LibraryGeneratorsFunctions,
 }>;
 
 type SchemasOptions = $ReadOnly<{
@@ -254,6 +255,7 @@ module.exports = {
       packageName,
       assumeNonnull,
       useLocalIncludePaths,
+      libraryGenerators = LIBRARY_GENERATORS,
     }: LibraryOptions,
     {generators, test}: LibraryConfig,
   ): boolean {
@@ -290,7 +292,7 @@ module.exports = {
     const generatedFiles: Array<CodeGenFile> = [];
 
     for (const name of generators) {
-      for (const generator of LIBRARY_GENERATORS[name]) {
+      for (const generator of libraryGenerators[name]) {
         generator(
           libraryName,
           schema,
