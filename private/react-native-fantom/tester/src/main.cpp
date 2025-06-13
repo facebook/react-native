@@ -6,17 +6,38 @@
  */
 
 #include <glog/logging.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDynamicProvider.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGValue.h>
 #include <format>
 #include <iostream>
+#include <memory>
+
+using namespace facebook::react;
+
+static void setUpLogging() {
+  google::InitGoogleLogging("react-native-fantom");
+  FLAGS_logtostderr = true;
+}
+
+static void setUpFeatureFlags() {
+  folly::dynamic dynamicFeatureFlags = folly::dynamic::object();
+
+  dynamicFeatureFlags["enableBridgelessArchitecture"] = true;
+  dynamicFeatureFlags["cxxNativeAnimatedEnabled"] = true;
+
+  ReactNativeFeatureFlags::override(
+      std::make_unique<ReactNativeFeatureFlagsDynamicProvider>(
+          dynamicFeatureFlags));
+}
 
 int main() {
-  google::InitGoogleLogging("fantom_tester");
-  FLAGS_logtostderr = true;
+  setUpLogging();
+
+  setUpFeatureFlags();
 
   LOG(INFO) << "Hello, I am fantom_tester using glog!";
-
   LOG(INFO) << std::format(
       "[Yoga] undefined == zero: {}", YGValueZero == YGValueUndefined);
 

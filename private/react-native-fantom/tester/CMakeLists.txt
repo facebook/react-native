@@ -37,6 +37,7 @@ add_react_third_party_ndk_subdir(folly)
 
 # Common targets
 add_react_common_subdir(yoga)
+add_react_common_subdir(react/featureflags)
 
 file(GLOB SOURCES "src/*.cpp" "src/*.h")
 add_executable(fantom_tester ${SOURCES})
@@ -48,6 +49,7 @@ target_link_libraries(fantom_tester
     double-conversion
     fast_float
     folly_runtime
+    react_featureflags
     yogacore)
 
 target_compile_options(fantom_tester

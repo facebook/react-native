@@ -15,3 +15,10 @@ cmake -S "$SCRIPT_DIR" -B "$BUILD_DIR" \
  -DREACT_COMMON_DIR="${REACT_NATIVE_ROOT_DIR}/ReactCommon"
 
 cmake --build "$BUILD_DIR" --target fantom_tester
+
+while getopts ":r" opt; do
+  case $opt in
+    r) "$BUILD_DIR/fantom_tester" ;;
+    \?) echo "Invalid option: -$OPTARG"; exit 1;;
+  esac
+done
