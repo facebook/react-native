@@ -5,6 +5,7 @@ on:
     types: [synchronize, opened]
 permissions:
   pull-requests: write
+  issues: write
 env:
   SNAPSHOT_PATH: packages/react-native/ReactNativeApi.d.ts
 jobs:
