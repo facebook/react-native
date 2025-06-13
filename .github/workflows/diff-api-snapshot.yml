@@ -29,7 +29,7 @@ jobs:
           > ${{ runner.temp }}/snapshot/output.json
       - name: Run diff-api-snapshot bot
         shell: bash
-        run: ./.github/workflow-scripts/exec_swallow_error.sh ./.github/workflow-scripts/diff_api_snapshot.sh
+        run: ./.github/workflow-scripts/diff_api_snapshot.sh
         env:
           GITHUB_TOKEN: ${{ inputs.github-token }}
           GITHUB_PR_NUMBER: ${{ github.event.number }}
