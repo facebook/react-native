@@ -36,9 +36,25 @@ describe('inlineTypes', () => {
     );
   });
 
+  test('should resolve `keyof` operator on a type reference', async () => {
+    const code = `
+      type Foo = {
+        A: number;
+        B: string;
+        C: boolean;
+      };
+
+      export type FooKeys = keyof Foo;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(
+      `"export type FooKeys = \\"A\\" | \\"B\\" | \\"C\\";"`,
+    );
+  });
+
   test('should resolve the builtin Omit<T, K> type on a type literal', async () => {
     const code = `
-
       export type Bar = Omit<
         {
           A: number;
@@ -55,6 +71,102 @@ describe('inlineTypes', () => {
       "export type Bar = {
         A: number;
         C: boolean;
+      };"
+    `);
+  });
+
+  test('should resolve the builtin Omit<T, K> type on a type reference', async () => {
+    const code = `
+      type Foo = {
+        A: number;
+        B: string;
+        C: boolean;
+        D: 123;
+      };
+      export type Bar = Omit<Foo, 'B' | 'D'>;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Bar = {
+        A: number;
+        C: boolean;
+      };"
+    `);
+  });
+
+  test('should inline type non-generic type aliases', async () => {
+    const code = `
+      type AnimatedNodeConfig = {
+        readonly debugID?: string | undefined;
+      };
+
+      export type Example = Omit<
+        AnimatedNodeConfig,
+        keyof {
+          useNativeDriver: boolean;
+        }
+      > & {
+        useNativeDriver: boolean;
+      };
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Example = {
+        readonly debugID?: string | undefined;
+      } & {
+        useNativeDriver: boolean;
+      };"
+    `);
+  });
+
+  test('should skip recursive definitions', async () => {
+    const code = `
+      export type LinkedNode = {
+        value: number;
+        next: LinkedNode;
+      };
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type LinkedNode = {
+        value: number;
+        next: LinkedNode;
+      };"
+    `);
+  });
+
+  test('should skip co-recursive definitions', async () => {
+    const code = `
+      export type Expr = Add | Multiply | number;
+
+      export type Add = {
+        type: 'add';
+        lhs: Expr;
+        rhs: Expr;
+      };
+
+      export type Multiply = {
+        type: 'multiply';
+        lhs: Expr;
+        rhs: Expr;
+      };
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Expr = Add | Multiply | number;
+      export type Add = {
+        type: 'add';
+        lhs: Add | Multiply | number;
+        rhs: Expr;
+      };
+      export type Multiply = {
+        type: 'multiply';
+        lhs: Expr;
+        rhs: Expr;
       };"
     `);
   });
