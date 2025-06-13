@@ -950,16 +950,16 @@ public abstract interface class com/facebook/react/bridge/MemoryPressureListener
 	public abstract fun handleMemoryPressure (I)V
 }
 
-public class com/facebook/react/bridge/ModuleHolder {
+public final class com/facebook/react/bridge/ModuleHolder {
 	public fun <init> (Lcom/facebook/react/bridge/NativeModule;)V
 	public fun <init> (Lcom/facebook/react/module/model/ReactModuleInfo;Ljavax/inject/Provider;)V
-	public fun destroy ()V
-	public fun getCanOverrideExistingModule ()Z
-	public fun getClassName ()Ljava/lang/String;
-	public fun getModule ()Lcom/facebook/react/bridge/NativeModule;
-	public fun getName ()Ljava/lang/String;
-	public fun isCxxModule ()Z
-	public fun isTurboModule ()Z
+	public final fun destroy ()V
+	public final fun getCanOverrideExistingModule ()Z
+	public final fun getClassName ()Ljava/lang/String;
+	public final fun getModule ()Lcom/facebook/react/bridge/NativeModule;
+	public final fun getName ()Ljava/lang/String;
+	public final fun isCxxModule ()Z
+	public final fun isTurboModule ()Z
 }
 
 public final class com/facebook/react/bridge/ModuleSpec {
