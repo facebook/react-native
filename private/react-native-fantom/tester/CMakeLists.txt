@@ -26,6 +26,10 @@ function(add_react_common_subdir relative_path)
   add_subdirectory(${REACT_COMMON_DIR}/${relative_path} src/${relative_path})
 endfunction()
 
+function(add_fantom_thrid_party_subdir relative_path)
+  add_subdirectory(${FANTOM_THIRD_PARTY_DIR}/${relative_path} ${relative_path})
+endfunction()
+
 # Third-party downloaded targets
 add_react_third_party_ndk_subdir(glog)
 # Boost in NDK is not compatible with desktop build
@@ -34,9 +38,11 @@ add_react_third_party_ndk_subdir(double-conversion)
 add_react_third_party_ndk_subdir(fast_float)
 add_react_third_party_ndk_subdir(fmt)
 add_react_third_party_ndk_subdir(folly)
+add_fantom_thrid_party_subdir(gflags)
 
 # Common targets
 add_react_common_subdir(yoga)
+add_react_common_subdir(react/featureflags)
 
 file(GLOB SOURCES "src/*.cpp" "src/*.h")
 add_executable(fantom_tester ${SOURCES})
@@ -44,10 +50,12 @@ add_executable(fantom_tester ${SOURCES})
 target_link_libraries(fantom_tester
   PRIVATE
     glog
+    gflags
     boost
     double-conversion
     fast_float
     folly_runtime
+    react_featureflags
     yogacore)
 
 target_compile_options(fantom_tester
