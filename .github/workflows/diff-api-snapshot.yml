@@ -25,4 +25,8 @@ jobs:
         run: |
           node ./scripts/diff-api-snapshot \
           ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts \
-          ${{ github.workspace }}/${{ env.SNAPSHOT_PATH }}
+          ${{ github.workspace }}/${{ env.SNAPSHOT_PATH }} \
+          > ${{ runner.temp }}/snapshot/output.json
+
+          echo "Snapshot diff output:"
+          echo "snapshot_output=$(cat ${{ runner.temp }}/snapshot/output.json)"
