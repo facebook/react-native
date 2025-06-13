@@ -28,5 +28,9 @@ jobs:
           ${{ github.workspace }}/${{ env.SNAPSHOT_PATH }} \
           > ${{ runner.temp }}/snapshot/output.json
 
-          echo "Snapshot diff output:"
-          echo "snapshot_output=$(cat ${{ runner.temp }}/snapshot/output.json)"
+          echo "snapshot_output=$(cat ${{ runner.temp }}/snapshot/output.json)" >> $GITHUB_OUTPUT
+      - name: Run diff-api-snapshot bot
+        run: node ./private/react-native-bots/diff-api-snapshot-bot.js
+        env:
+          GITHUB_TOKEN: ${{ inputs.github-token }}
+          GITHUB_PR_NUMBER: ${{ github.event.number }}
