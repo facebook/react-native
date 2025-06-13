@@ -57,11 +57,20 @@ const ModuleDeclarationTemplate = ({
         }
     }
   }
+  let protocolMethodsBody = requiredMethods.join('\n')
+  if (optionalMethods.length > 0) {
+    if (protocolMethodsBody === '') {
+      protocolMethodsBody += optionalMethods.join('\n');
+    } else {
+      protocolMethodsBody += `\n\n@optional\n${optionalMethods.join('\n')}`;
+    }
+  }
+
   return `${structDeclarations}
 @protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
 
-${requiredMethods.join('\n')}
-${optionalMethods.length > 0 ? '\n@optional\n' + optionalMethods.join('\n') + '\n' : ''}
+${protocolMethodsBody}
+
 @end
 
 @interface ${hasteModuleName}SpecBase : NSObject {

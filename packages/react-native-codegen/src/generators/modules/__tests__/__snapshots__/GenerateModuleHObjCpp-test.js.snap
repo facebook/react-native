@@ -840,10 +840,12 @@ namespace JS {
 - (void)reportSoftException:(NSString *)message
                       stack:(NSArray *)stack
                 exceptionId:(double)exceptionId;
-- (void)reportException:(JS::NativeExceptionsManager::ExceptionData &)data;
 - (void)updateExceptionMessage:(NSString *)message
                          stack:(NSArray *)stack
                    exceptionId:(double)exceptionId;
+
+@optional
+- (void)reportException:(JS::NativeExceptionsManager::ExceptionData &)data;
 - (void)dismissRedbox;
 
 @end
