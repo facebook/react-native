@@ -92,14 +92,12 @@ internal class JavaMethodWrapper(
       method: Method,
       paramTypes: Array<Class<*>>,
       isSync: Boolean
-  ): String {
-    val builder = StringBuilder(paramTypes.size + 2)
-
+  ): String = buildString(paramTypes.size + 2) {
     if (isSync) {
-      builder.append(returnTypeToChar(method.returnType))
-      builder.append('.')
+      append(returnTypeToChar(method.returnType))
+      append('.')
     } else {
-      builder.append("v.")
+      append("v.")
     }
 
     for (i in paramTypes.indices) {
@@ -107,10 +105,8 @@ internal class JavaMethodWrapper(
       if (paramClass == Promise::class.java) {
         check(i == paramTypes.size - 1) { "Promise must be used as last parameter only" }
       }
-      builder.append(paramTypeToChar(paramClass))
+      append(paramTypeToChar(paramClass))
     }
-
-    return builder.toString()
   }
 
   private fun buildArgumentExtractors(paramTypes: Array<Class<*>>): Array<ArgumentExtractor<*>> {
@@ -154,13 +150,12 @@ internal class JavaMethodWrapper(
     return n
   }
 
-  private fun getAffectedRange(startIndex: Int, jsArgumentsNeeded: Int): String {
-    return if (jsArgumentsNeeded > 1) {
+  private fun getAffectedRange(startIndex: Int, jsArgumentsNeeded: Int): String =
+    if (jsArgumentsNeeded > 1) {
       "$startIndex-${startIndex + jsArgumentsNeeded - 1}"
     } else {
       "$startIndex"
     }
-  }
 
   override fun invoke(jsInstance: JSInstance, parameters: ReadableArray) {
     val traceName = moduleWrapper.name + "." + method.name
@@ -235,13 +230,13 @@ internal class JavaMethodWrapper(
         throw RuntimeException(createInvokeExceptionMessage(traceName), e)
       } catch (e: IllegalAccessException) {
         throw RuntimeException(createInvokeExceptionMessage(traceName), e)
-      } catch (ite: InvocationTargetException) {
+      } catch (e: InvocationTargetException) {
         // Exceptions thrown from native module calls end up wrapped in InvocationTargetException
         // which just make traces harder to read and bump out useful information
-        if (ite.cause is RuntimeException) {
-          throw (ite.cause as RuntimeException)
+        if (e.cause is RuntimeException) {
+          throw (e.cause as RuntimeException)
         }
-        throw RuntimeException(createInvokeExceptionMessage(traceName), ite)
+        throw RuntimeException(createInvokeExceptionMessage(traceName), e)
       }
     } finally {
         SystraceMessage.endSection(TRACE_TAG_REACT).flush()
@@ -315,14 +310,13 @@ internal class JavaMethodWrapper(
       object : ArgumentExtractor<Callback>() {
         override fun extractArgument(
             jsInstance: JSInstance, jsArguments: ReadableArray, atIndex: Int
-        ): Callback? {
+        ): Callback? =
           if (jsArguments.isNull(atIndex)) {
-            return null
+            null
           } else {
             val id = jsArguments.getDouble(atIndex).toInt()
-            return CallbackImpl(jsInstance, id)
+            CallbackImpl(jsInstance, id)
           }
-        }
       }
 
     private val ARGUMENT_EXTRACTOR_PROMISE: ArgumentExtractor<Promise> =
