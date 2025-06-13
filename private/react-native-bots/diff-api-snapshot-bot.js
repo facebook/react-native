@@ -36,7 +36,10 @@ async function main() {
     const {Octokit} = require('@octokit/rest');
     const fs = require('fs');
     const path = require('path');
-    const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+    const octokit = new Octokit({
+        auth: process.env.GITHUB_TOKEN,
+        userAgent: 'react-native-diff-api-snapshot-bot',
+    });
 
     const owner = process.env.GITHUB_OWNER;
     const repo = process.env.GITHUB_REPO;
