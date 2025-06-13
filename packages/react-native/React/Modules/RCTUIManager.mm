@@ -1381,6 +1381,14 @@ RCT_EXPORT_METHOD(measure : (nonnull NSNumber *)reactTag callback : (RCTResponse
       rootView = rootView.superview;
     }
 
+    // It is possible that the RootView can't be found because this view is no longer on the screen
+    // and has been removed by clipping (eg. by setting the `removeClippedSubview` prop to `true`)
+    if (![rootView isReactRootView]) {
+      RCTLogError(@"measure cannot find react root view for view with tag #%@", reactTag);
+      callback(@[ @(0), @(0), @(0), @(0), @(0), @(0) ]);
+      return;
+    }
+
     // By convention, all coordinates, whether they be touch coordinates, or
     // measurement coordinates are with respect to the root view.
     CGRect frame = view.frame;
