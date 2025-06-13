@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fmt/format.h>
 #include <glog/logging.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGValue.h>
+#include <format>
 #include <iostream>
 
 int main() {
@@ -17,7 +17,7 @@ int main() {
 
   LOG(INFO) << "Hello, I am fantom_tester using glog!";
 
-  LOG(INFO) << fmt::format(
+  LOG(INFO) << std::format(
       "[Yoga] undefined == zero: {}", YGValueZero == YGValueUndefined);
 
   return 0;
