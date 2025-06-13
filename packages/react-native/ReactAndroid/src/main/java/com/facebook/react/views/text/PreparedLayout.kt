@@ -16,7 +16,7 @@ import com.facebook.proguard.annotations.DoNotStrip
  */
 @DoNotStrip
 internal class PreparedLayout(
-    public val layout: Layout,
-    public val maximumNumberOfLines: Int,
-    public val verticalOffset: Float
+    val layout: Layout,
+    val maximumNumberOfLines: Int,
+    val verticalOffset: Float
 )

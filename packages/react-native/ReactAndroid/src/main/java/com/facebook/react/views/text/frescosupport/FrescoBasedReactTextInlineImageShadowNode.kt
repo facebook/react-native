@@ -43,7 +43,7 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
   private var tintColor = 0
 
   @ReactProp(name = "src")
-  public fun setSource(sources: ReadableArray?) {
+  fun setSource(sources: ReadableArray?) {
     val source =
         if (sources == null || sources.size() == 0 || sources.getType(0) != ReadableType.Map) null
         else checkNotNull(sources.getMap(0)).getString("uri")
@@ -69,12 +69,12 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
   }
 
   @ReactProp(name = "headers")
-  public fun setHeaders(newHeaders: ReadableMap?) {
+  fun setHeaders(newHeaders: ReadableMap?) {
     headers = newHeaders
   }
 
   @ReactProp(name = "tintColor", customType = "Color")
-  public fun setTintColor(newTintColor: Int) {
+  fun setTintColor(newTintColor: Int) {
     tintColor = newTintColor
   }
 
@@ -98,13 +98,13 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
   }
 
   @ReactProp(name = ViewProps.RESIZE_MODE)
-  public fun setResizeMode(newResizeMode: String?) {
+  fun setResizeMode(newResizeMode: String?) {
     resizeMode = newResizeMode
   }
 
-  public fun getUri(): Uri? = uri
+  fun getUri(): Uri? = uri
 
-  public fun getHeaders(): ReadableMap? = headers
+  fun getHeaders(): ReadableMap? = headers
 
   override fun isVirtual(): Boolean = true
 
@@ -124,13 +124,13 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
         resizeMode)
   }
 
-  public fun getDraweeControllerBuilder() = draweeControllerBuilder
+  fun getDraweeControllerBuilder() = draweeControllerBuilder
 
-  public fun getCallerContext(): Any? = callerContext
+  fun getCallerContext(): Any? = callerContext
 
   // TODO: t9053573 is tracking that this code should be shared
   companion object {
-    public fun getResourceDrawableUri(context: Context, name: String?): Uri? {
+    fun getResourceDrawableUri(context: Context, name: String?): Uri? {
       if (name == null || name.isEmpty()) {
         return null
       }

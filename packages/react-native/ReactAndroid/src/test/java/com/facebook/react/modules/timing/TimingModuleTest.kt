@@ -50,9 +50,9 @@ import org.mockito.stubbing.Answer
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 
-public object MockCompat {
+object MockCompat {
   // Same as Mockito's 'eq()', but works for non-nullable types
-  public fun <T : Any> eq(value: T): T = ArgumentMatchers.eq(value) ?: value
+  fun <T : Any> eq(value: T): T = ArgumentMatchers.eq(value) ?: value
 
   // Same as Mockito's 'any()', but works for non-nullable types
   fun <T> any(): T {

@@ -57,7 +57,7 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
 
   override fun getSourceURL(): String? = sourceURLRef.get()
 
-  public fun setSourceURL(sourceURL: String?) {
+  fun setSourceURL(sourceURL: String?) {
     sourceURLRef.set(sourceURL)
   }
 
