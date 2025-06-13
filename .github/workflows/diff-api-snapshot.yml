@@ -16,7 +16,8 @@ jobs:
       - name: Save previous snapshot
         run: |
           mkdir ${{ runner.temp }}/snapshot
-          git show HEAD^:${{ env.SNAPSHOT_PATH }} > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
+          # git show HEAD^:${{ env.SNAPSHOT_PATH }} > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
+          echo "" > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
