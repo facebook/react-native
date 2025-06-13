@@ -2747,36 +2747,6 @@ public final class com/facebook/react/modules/debug/DevSettingsModule : com/face
 public final class com/facebook/react/modules/debug/DevSettingsModule$Companion {
 }
 
-public final class com/facebook/react/modules/debug/FpsDebugFrameCallback : android/view/Choreographer$FrameCallback {
-	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun doFrame (J)V
-	public final fun get4PlusFrameStutters ()I
-	public final fun getExpectedNumFrames ()I
-	public final fun getFps ()D
-	public final fun getFpsInfo (J)Lcom/facebook/react/modules/debug/FpsDebugFrameCallback$FpsInfo;
-	public final fun getJsFPS ()D
-	public final fun getNumFrames ()I
-	public final fun getNumJSFrames ()I
-	public final fun getTotalTimeMS ()I
-	public final fun reset ()V
-	public final fun start ()V
-	public final fun start (D)V
-	public static synthetic fun start$default (Lcom/facebook/react/modules/debug/FpsDebugFrameCallback;DILjava/lang/Object;)V
-	public final fun startAndRecordFpsAtEachFrame ()V
-	public final fun stop ()V
-}
-
-public final class com/facebook/react/modules/debug/FpsDebugFrameCallback$FpsInfo {
-	public fun <init> (IIIIDDI)V
-	public final fun getFps ()D
-	public final fun getJsFps ()D
-	public final fun getTotal4PlusFrameStutters ()I
-	public final fun getTotalExpectedFrames ()I
-	public final fun getTotalFrames ()I
-	public final fun getTotalJsFrames ()I
-	public final fun getTotalTimeMs ()I
-}
-
 public final class com/facebook/react/modules/debug/SourceCodeModule : com/facebook/fbreact/specs/NativeSourceCodeSpec {
 	public static final field Companion Lcom/facebook/react/modules/debug/SourceCodeModule$Companion;
 	public static final field NAME Ljava/lang/String;
