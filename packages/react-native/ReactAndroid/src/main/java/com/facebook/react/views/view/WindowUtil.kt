@@ -14,7 +14,7 @@ import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.facebook.react.views.common.ContextUtils
+import com.facebook.react.views.common.UiModeUtils
 
 @Suppress("DEPRECATION")
 internal fun Window.setStatusBarTranslucency(isTranslucent: Boolean) {
@@ -71,7 +71,7 @@ internal fun Window.setSystemBarsTranslucency(isTranslucent: Boolean) {
   WindowCompat.setDecorFitsSystemWindows(this, !isTranslucent)
 
   if (isTranslucent) {
-    val isDarkMode = ContextUtils.isDarkMode(context)
+    val isDarkMode = UiModeUtils.isDarkMode(context)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       isStatusBarContrastEnforced = false

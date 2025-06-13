@@ -14,7 +14,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.views.common.ContextUtils
+import com.facebook.react.views.common.UiModeUtils
 
 /** Module that exposes the user's preferred color scheme. */
 @ReactModule(name = NativeAppearanceSpec.NAME)
@@ -41,10 +41,7 @@ constructor(
       return overrideColorScheme.getScheme()
     }
 
-    return when (ContextUtils.isDarkMode(context)) {
-      true -> "dark"
-      false -> "light"
-    }
+    return if (UiModeUtils.isDarkMode(context)) "dark" else "light"
   }
 
   public override fun getColorScheme(): String {

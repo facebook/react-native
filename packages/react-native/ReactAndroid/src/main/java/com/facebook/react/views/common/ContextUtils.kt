@@ -17,17 +17,6 @@ import android.content.res.Configuration
 internal object ContextUtils {
 
   /**
-   * Determines whether the current UI mode is dark mode
-   *
-   * @param context The context to check the UI mode from
-   * @return true if the current UI mode is dark mode, false otherwise
-   */
-  @JvmStatic
-  public fun isDarkMode(context: Context): Boolean =
-    context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
-      Configuration.UI_MODE_NIGHT_YES
-
-  /**
    * Returns the nearest context in the chain (as defined by ContextWrapper.getBaseContext()) which
    * is an instance of the specified type, or null if one could not be found
    *
