@@ -37,7 +37,7 @@ internal object DependencyUtils {
           }
         }
         // We add the snapshot for users on nightlies.
-        mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/") { repo ->
+        mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
           repo.content { it.excludeGroup("org.webkit") }
         }
         repositories.mavenCentral { repo ->
