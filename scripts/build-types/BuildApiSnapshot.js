@@ -39,6 +39,7 @@ const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
   require('./transforms/sortTypeDefinitions'),
   require('./transforms/sortProperties'),
   require('./transforms/sortUnions'),
+  require('./transforms/removeUndefinedFromOptionalMembers'),
 ];
 
 async function buildAPISnapshot(validate: boolean) {
