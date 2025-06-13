@@ -1,7 +1,7 @@
 name: Run API Breaking Change Detection
 
 on:
-  pull_request_target:
+  pull_request:
     types: [synchronize, opened]
 permissions:
   pull-requests: write
@@ -11,6 +11,9 @@ env:
 jobs:
   check-api-changes:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_PR_NUMBER: ${{ github.event.number }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -36,6 +39,3 @@ jobs:
       - name: Run diff-api-snapshot bot
         shell: bash
         run: ./.github/workflow-scripts/exec_swallow_error.sh ./.github/workflow-scripts/diff_api_snapshot.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_PR_NUMBER: ${{ github.event.number }}
