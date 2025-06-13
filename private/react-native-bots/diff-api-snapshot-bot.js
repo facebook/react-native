@@ -32,12 +32,14 @@ if (!process.env.GITHUB_PR_NUMBER) {
 async function main() {
     // https://octokit.github.io/rest.js/
     const {Octokit} = require('@octokit/rest');
+    const fs = require('fs');
+    const path = require('path');
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
     const owner = process.env.GITHUB_OWNER;
     const repo = process.env.GITHUB_REPO;
     const issue_number = parseInt(process.env.GITHUB_PR_NUMBER, 10);
-    const snapshot_output = JSON.parse(process.env.SNAPSHOT_OUTPUT);
+    const snapshot_output = JSON.parse(fs.readFileSync(path.join(process.env.RUNNER_TEMP, 'snapshot/output.json'), 'utf8'));
 
     const commentBody = `
     **API Breaking Change Detection Result**:
