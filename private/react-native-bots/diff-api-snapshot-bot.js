@@ -20,6 +20,8 @@ if (!process.env.GITHUB_REPO) {
     process.exit(1);
 }
 
+console.log('PR NUMBER: ', process.env.GITHUB_PR_NUMBER)
+
 if (!process.env.GITHUB_PR_NUMBER) {
     console.error(
       'Missing GITHUB_PR_NUMBER. Example: 4687. Review feedback with diff-api-snapshot result cannot be provided on GitHub without a valid pull request number.',
