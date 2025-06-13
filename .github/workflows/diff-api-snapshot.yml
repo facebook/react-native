@@ -28,7 +28,8 @@ jobs:
           ${{ github.workspace }}/${{ env.SNAPSHOT_PATH }} \
           > ${{ runner.temp }}/snapshot/output.json
       - name: Run diff-api-snapshot bot
-        run: node ./private/react-native-bots/diff-api-snapshot-bot.js
+        shell: bash
+        run: ./.github/workflow-scripts/exec_swallow_error.sh ./.github/workflow-scripts/diff_api_snapshot.sh
         env:
           GITHUB_TOKEN: ${{ inputs.github-token }}
           GITHUB_PR_NUMBER: ${{ github.event.number }}
