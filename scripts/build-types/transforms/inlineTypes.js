@@ -12,6 +12,8 @@
 import type {PluginObj} from '@babel/core';
 import type {NodePath, Visitor} from '@babel/traverse';
 
+import traverse from '@babel/traverse';
+
 const t = require('@babel/types');
 const debug = require('debug')('build-types:transforms:inlineTypes');
 
@@ -27,6 +29,7 @@ const aliasInliningBlocklist = new Set([
   'DisplayMetricsAndroid',
   'NativeTouchEvent',
   'State',
+  'WithAnimatedValue',
 ]);
 
 // TODO: Handle more builtin TS types
@@ -396,11 +399,6 @@ const gatherTypeAliasesVisitor: Visitor<GatherTypeAliasesVisitorState> = {
   TSTypeAliasDeclaration(path, state) {
     const alias = path.node.id.name;
 
-    if (path.node.typeParameters) {
-      // TODO: Handle generic type alias inlining
-      return;
-    }
-
     state.aliasToPathMap.set(alias, path);
 
     const isExported = path.findParent(p => p.isExportDeclaration());
@@ -429,6 +427,11 @@ type ArrayLayer = {
   type: 'array',
 };
 
+type TypeAliasLayer = {
+  type: 'typeAlias',
+  typeParams?: string[],
+};
+
 type TypeParameterInstantiationLayer = {
   type: 'typeParameterInstantiation',
 };
@@ -446,6 +449,7 @@ type StackLayer =
   | UnionLayer
   | ExtendsLayer
   | ArrayLayer
+  | TypeAliasLayer
   | TypeParameterInstantiationLayer
   | UnresolvableTypeLayer
   | ResolvableTypeLayer;
@@ -496,6 +500,17 @@ function insideArrayLayer(state: VisitorState): boolean {
   return state.stack.some(layer => layer.type === 'array');
 }
 
+function insideTypeAliasLayerWithTypeParam(
+  state: VisitorState,
+  parameter: string,
+): boolean {
+  return state.stack.some(
+    layer =>
+      layer.type === 'typeAlias' &&
+      layer.typeParams?.includes(parameter) === true,
+  );
+}
+
 function insideUnresolvableTypeInstantiation(state: VisitorState): boolean {
   const lastUnresolvableTypeIdx = state.stack.findLastIndex(
     layer => layer.type === 'unresolvableType',
@@ -541,6 +556,81 @@ function replaceWithCleanup(
   path.replaceWith(clonedNewNode);
 }
 
+function alignGenerics(
+  node: BabelNodeTSType,
+  declarationPath: NodePath<t.TSTypeAliasDeclaration>,
+  path: NodePath<t.Node>,
+): BabelNodeTSType {
+  const declarationTypeParameters = declarationPath.node.typeParameters?.params;
+  const nodeTypeParameters = path.node.typeParameters?.params;
+
+  if (!declarationTypeParameters || !nodeTypeParameters) {
+    throw new Error(
+      `No type parameters found for ${declarationPath.node.id.name ?? ''}`,
+    );
+  }
+
+  if (nodeTypeParameters.length > declarationTypeParameters.length) {
+    throw new Error(
+      `Encountered ${nodeTypeParameters.length} type parameters for type ${declarationPath.node.id.name ?? ''} while at maximum ${declarationTypeParameters.length} are allowed`,
+    );
+  }
+
+  const genericMapping = new Map<string, BabelNodeTSType>();
+  for (let i = 0; i < declarationTypeParameters.length; i++) {
+    const declarationTypeParameter = declarationTypeParameters[i];
+    let nodeTypeParameter: ?BabelNodeTSType = nodeTypeParameters[
+      i
+    ] as $FlowFixMe;
+
+    if (nodeTypeParameter == null) {
+      nodeTypeParameter = declarationTypeParameter.default;
+    }
+
+    if (nodeTypeParameter == null) {
+      throw new Error(
+        `No value provided for a required type parameter ${declarationPath.node.id.name ?? ''}`,
+      );
+    }
+
+    genericMapping.set(declarationTypeParameter.name, nodeTypeParameter);
+  }
+
+  // handle edge case where the generic type is equal to one of the type
+  // parameters, i.e. `type Foo<T> = T`
+  if (t.isTSTypeReference(node) && t.isIdentifier(node.typeName)) {
+    const mappedType = genericMapping.get(node.typeName.name);
+    if (mappedType) {
+      return mappedType;
+    }
+  }
+
+  const wrapped = t.tsTypeAliasDeclaration(
+    t.identifier('Wrapper'),
+    undefined,
+    node,
+  );
+
+  traverse(t.file(t.program([wrapped])), {
+    TSTypeReference(innerPath) {
+      const type = innerPath.node.typeName;
+      if (!t.isIdentifier(type)) {
+        return;
+      }
+
+      const mappedType = t.cloneDeep(genericMapping.get(type.name));
+      if (!mappedType) {
+        return;
+      }
+
+      innerPath.replaceWith(mappedType);
+      innerPath.skip();
+    },
+  });
+
+  return node;
+}
+
 function inlineType(
   state: VisitorState,
   path: NodePath<t.Node>,
@@ -553,7 +643,13 @@ function inlineType(
     return;
   }
 
-  const cloned = t.cloneDeep(declarationPath.node.typeAnnotation);
+  let cloned: BabelNodeTSType = t.cloneDeep(
+    declarationPath.node.typeAnnotation,
+  );
+
+  if (declarationPath.node.typeParameters) {
+    cloned = alignGenerics(cloned, declarationPath, path);
+  }
 
   state.parentTypeAliases?.add(alias);
   state.nodeToAliasMap?.set(cloned, alias);
@@ -631,9 +727,16 @@ const inlineTypes: PluginObj<VisitorState> = {
     TSTypeAliasDeclaration: {
       enter(path, state): void {
         state.parentTypeAliases?.add(path.node.id.name);
+        pushLayer(state, {
+          type: 'typeAlias',
+          typeParams: path.node.typeParameters?.params?.map(
+            param => param.name,
+          ),
+        });
       },
       exit(path, state): void {
         state.parentTypeAliases?.delete(path.node.id.name);
+        popLayer(state, 'typeAlias');
       },
     },
     TSUnionType: {
@@ -740,6 +843,21 @@ const inlineTypes: PluginObj<VisitorState> = {
           path.skip();
           // Name used in a public type, so we don't prune it
           state.aliasesToPrune?.delete(typeName);
+
+          function clearTypeParams(node: t.TSTypeReference) {
+            if (node.typeParameters) {
+              node.typeParameters.params.forEach(param => {
+                if (t.isTSTypeReference(param) && param.typeName.name != null) {
+                  state.aliasesToPrune?.delete(param.typeName.name);
+                  clearTypeParams(param);
+                }
+              });
+            }
+          }
+
+          // Don't prune the type arguments as well
+          clearTypeParams(path.node);
+
           return;
         }
 
@@ -754,10 +872,7 @@ const inlineTypes: PluginObj<VisitorState> = {
           return;
         }
 
-        if (path.node.typeParameters) {
-          // Not a builtin, yet is generic. Skipping for now.
-          state.aliasesToPrune?.delete(typeName);
-          pushLayer(state, {type: 'unresolvableType'});
+        if (insideTypeAliasLayerWithTypeParam(state, typeName)) {
           return;
         }
 
@@ -804,12 +919,6 @@ const inlineTypes: PluginObj<VisitorState> = {
         if (resolver) {
           popLayer(state, 'resolvableType');
           resolver(path, state);
-          return;
-        }
-
-        if (path.node.typeParameters) {
-          // Not a builtin, yet is generic.
-          popLayer(state, 'unresolvableType');
           return;
         }
       },
