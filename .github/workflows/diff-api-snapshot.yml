@@ -1,6 +1,8 @@
 name: Run API Breaking Change Detection
 
-on: push
+on:
+  pull_request:
+    types: [synchronize, opened]
 env:
   SNAPSHOT_PATH: packages/react-native/ReactNativeApi.d.ts
 jobs:
@@ -31,5 +33,5 @@ jobs:
         shell: bash
         run: ./.github/workflow-scripts/exec_swallow_error.sh ./.github/workflow-scripts/diff_api_snapshot.sh
         env:
-          GITHUB_TOKEN: ${{ inputs.github-token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_NUMBER: ${{ github.event.number }}
