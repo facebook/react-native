@@ -13,15 +13,13 @@
 
 #import <memory>
 
-#if USE_HERMES
+#if USE_THIRD_PARTY_JSC != 1
 #if __has_include(<jsireact/HermesExecutorFactory.h>)
 #import <jsireact/HermesExecutorFactory.h>
 #elif __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
-#elif USE_THIRD_PARTY_JSC != 1
-#import <React/JSCExecutorFactory.h>
-#endif // USE_HERMES
+#endif
 
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <jsireact/JSIExecutor.h>
