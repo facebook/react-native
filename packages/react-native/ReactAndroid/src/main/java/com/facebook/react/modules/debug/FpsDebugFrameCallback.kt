@@ -65,6 +65,11 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
       val uiManagerModule = reactContext.getNativeModule(UIManagerModule::class.java)
       if (!reactContext.isBridgeless) {
         reactContext.catalystInstance.addBridgeIdleDebugListener(didJSUpdateUiDuringFrameDetector)
+        isRunningOnFabric = false
+      } else {
+        // T172641976 Consider either implementing a mechanism similar to addBridgeIdleDebugListener
+        // for Fabric or point users to use RNDT.
+        isRunningOnFabric = true
       }
       uiManagerModule?.setViewHierarchyUpdateDebugListener(didJSUpdateUiDuringFrameDetector)
     }
@@ -97,6 +102,10 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
           0.0
         } else numFrames.toDouble() * 1e9 / (lastFrameTime - firstFrameTime)
 
+  /**
+   * Please note that this value is not relevant if running on Fabric. That's because we don't
+   * implement addBridgeIdleDebugListener on Fabric.
+   */
   val jsFPS: Double
     get() =
         if (lastFrameTime == firstFrameTime) {
@@ -114,6 +123,9 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
       val totalTimeMS = totalTimeMS.toDouble()
       return (targetFps * totalTimeMS / 1000 + 1).toInt()
     }
+
+  var isRunningOnFabric = true
+    private set
 
   fun get4PlusFrameStutters(): Int = fourPlusFrameStutters
 
