@@ -123,6 +123,14 @@ export interface ViewPropsAndroid {
    * - -1 (View is not focusable)
    */
   tabIndex?: 0 | -1 | undefined;
+
+  /**
+   * Sets content sensitivity mode to determine whether this view displays sensitive content (e.g. username, password etc.).
+   * The system may improve user privacy i.e. hide content drawn by a sensitive view from screen sharing and recording.
+   *
+   * @platform android
+   */
+  contentSensitivity?: 'auto' | 'sensitive' | 'not-sensitive' | undefined;
 }
 
 /**
