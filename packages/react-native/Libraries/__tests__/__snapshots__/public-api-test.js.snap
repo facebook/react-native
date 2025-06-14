@@ -628,10 +628,9 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedScrollView.js 1`] = `
-"type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
-type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
+"type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
 declare const AnimatedScrollView: AnimatedComponentType<
-  AnimatedScrollViewProps,
+  ScrollViewProps,
   AnimatedScrollViewInstance,
 >;
 declare export default typeof AnimatedScrollView;
@@ -648,7 +647,7 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedText.js 1`] = `
 "declare export default AnimatedComponentType<
-  React.ElementConfig<typeof Text>,
+  TextProps,
   React.ElementRef<typeof Text>,
 >;
 "
@@ -656,7 +655,7 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedView.js 1`] = `
 "declare export default AnimatedComponentType<
-  React.ElementConfig<typeof View>,
+  ViewProps,
   React.ElementRef<typeof View>,
 >;
 "
@@ -695,9 +694,7 @@ type NonAnimatedProps =
   | \\"disabled\\"
   | \\"accessibilityLabel\\";
 type PassThroughProps = $ReadOnly<{
-  passthroughAnimatedPropExplicitValues?: React.ElementConfig<
-    typeof View,
-  > | null,
+  passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 export type AnimatedProps<Props: { ... }> = {
   [K in keyof Props]: K extends NonAnimatedProps
@@ -1757,8 +1754,7 @@ declare export default typeof LayoutConformanceNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
-"type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
-export type { PressableAndroidRippleConfig };
+"export type { PressableAndroidRippleConfig };
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -4940,8 +4936,7 @@ declare export default typeof FillRateHelper;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FlatList.js 1`] = `
-"declare const VirtualizedList: typeof VirtualizedLists.VirtualizedList;
-type RequiredProps<ItemT> = {
+"type RequiredProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
 type OptionalProps<ItemT> = {
@@ -4971,7 +4966,6 @@ type FlatListBaseProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
 };
-type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 export type FlatListProps<ItemT> = {
   ...Omit<
     VirtualizedListProps,
