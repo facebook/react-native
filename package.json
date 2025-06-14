@@ -74,7 +74,6 @@
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-jsx-a11y": "^6.6.0",
     "eslint-plugin-react": "^7.30.1",
-    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-native": "^4.0.0",
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
@@ -111,6 +110,7 @@
     "ws": "^6.2.3"
   },
   "resolutions": {
+    "eslint-plugin-react-hooks": "6.1.0-canary-12bc60f5-20250613",
     "react-is": "19.1.0"
   }
 }
