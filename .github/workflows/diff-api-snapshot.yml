@@ -1,0 +1,28 @@
+name: Run API Breaking Change Detection
+
+on: push
+env:
+  SNAPSHOT_PATH: packages/react-native/ReactNativeApi.d.ts
+jobs:
+  check-api-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Save previous snapshot
+        run: |
+          mkdir ${{ runner.temp }}/snapshot
+          git show HEAD^:${{ env.SNAPSHOT_PATH }} > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+      - name: Run yarn
+        uses: ./.github/actions/yarn-install
+      - name: Run breaking change detection
+        run: |
+          node ./scripts/diff-api-snapshot \
+          ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts \
+          ${{ github.workspace }}/${{ env.SNAPSHOT_PATH }}
