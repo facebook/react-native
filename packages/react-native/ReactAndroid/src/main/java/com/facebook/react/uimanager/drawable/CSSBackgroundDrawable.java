@@ -32,7 +32,6 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
-import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.LengthPercentage;
@@ -346,7 +345,6 @@ public class CSSBackgroundDrawable extends Drawable {
     invalidateSelf();
   }
 
-  @VisibleForTesting
   public int getColor() {
     return mColor;
   }

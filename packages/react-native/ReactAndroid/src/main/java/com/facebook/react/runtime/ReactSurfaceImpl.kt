@@ -188,7 +188,6 @@ internal constructor(
   internal val eventDispatcher: EventDispatcher?
     get() = reactHost?.eventDispatcher
 
-  @get:VisibleForTesting
   internal val isAttached: Boolean
     get() = reactHost != null
 
