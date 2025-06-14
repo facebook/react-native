@@ -48,6 +48,7 @@ packages/react-native/flow/
 [options]
 enums=true
 casting_syntax=both
+component_syntax=true
 
 emoji=true
 
