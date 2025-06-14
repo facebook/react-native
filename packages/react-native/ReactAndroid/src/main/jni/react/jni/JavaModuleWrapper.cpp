@@ -23,6 +23,8 @@
 #include "CatalystInstanceImpl.h"
 #include "ReadableNativeArray.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 using facebook::xplat::module::CxxModule;
 
 namespace facebook::react {
@@ -152,3 +154,5 @@ jni::local_ref<JReflectMethod::javaobject> JMethodDescriptor::getMethod()
 }
 
 } // namespace facebook::react
+
+#endif

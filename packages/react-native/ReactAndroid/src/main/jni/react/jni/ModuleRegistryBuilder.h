@@ -14,6 +14,8 @@
 #include "CxxModuleWrapper.h"
 #include "JavaModuleWrapper.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 class MessageQueueThread;
@@ -36,3 +38,5 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
         cxxModules,
     std::shared_ptr<MessageQueueThread> moduleMessageQueue);
 } // namespace facebook::react
+
+#endif

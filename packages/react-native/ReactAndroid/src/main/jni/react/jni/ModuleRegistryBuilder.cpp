@@ -13,6 +13,8 @@
 
 #include <cxxreact/CxxNativeModule.h>
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 std::string ModuleHolder::getName() const {
@@ -68,3 +70,5 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
 }
 
 } // namespace facebook::react
+
+#endif
