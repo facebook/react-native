@@ -123,7 +123,8 @@ function executeTestsWithRetries(
   const recProcess = startVideoRecording(jsengine, currentAttempt);
   try {
     const timeout = 1000 * 60 * 10; // 10 minutes
-    const command = `$HOME/.maestro/bin/maestro --udid="${udid}" test "${maestroFlow}" --format junit -e APP_ID="${appId}"`;
+    const excludeTagsFlag = IS_DEBUG ? '--exclude-tags=exclude-from-debug' : '';
+    const command = `$HOME/.maestro/bin/maestro --udid="${udid}" test "${maestroFlow}" ${excludeTagsFlag} --format junit -e APP_ID="${appId}"`;
     console.log(command);
     childProcess.execSync(`MAESTRO_DRIVER_STARTUP_TIMEOUT=1500000 ${command}`, {
       stdio: 'inherit',
