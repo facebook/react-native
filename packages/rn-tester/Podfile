@@ -37,15 +37,9 @@ def pods(target_name, options = {})
 
   fabric_enabled = true
 
-  # Hermes is now enabled by default.
-  # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
-  hermes_enabled = !ENV.has_key?('USE_HERMES') || ENV['USE_HERMES'] == '1'
-  puts "Configuring #{target_name} with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
-
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
-    hermes_enabled: hermes_enabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
     production: false, #deprecated

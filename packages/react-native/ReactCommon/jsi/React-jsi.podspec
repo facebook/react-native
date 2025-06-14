@@ -5,10 +5,6 @@
 
 require "json"
 
-js_engine = ENV['USE_HERMES'] == "0" ?
-  :jsc :
-  :hermes
-
 package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
 version = package['version']
 
@@ -42,7 +38,7 @@ Pod::Spec.new do |s|
                       "jsi/jsilib-windows.cpp",
                       "**/test/*"
                      ]
-  if js_engine == :hermes
+  if use_hermes()
     # JSI is a part of hermes-engine. Including them also in react-native will violate the One Definition Rulle.
     files_to_exclude += [ "jsi/jsi.cpp" ]
     s.dependency "hermes-engine"

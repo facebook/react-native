@@ -34,7 +34,6 @@ class UtilsTests < Test::Unit::TestCase
         Xcodeproj::Plist.reset()
         XcodebuildMock.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
-        ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
         system_reset_commands
         $RN_PLATFORMS = nil
@@ -106,21 +105,6 @@ class UtilsTests < Test::Unit::TestCase
         })
     end
 
-    def test_getDefaultFlag_whenOldArchitectureButHermesDisabled()
-        # Arrange
-        ENV['RCT_NEW_ARCH_ENABLED'] = '0'
-        ENV['USE_HERMES'] = '0'
-
-        # Act
-        flags = ReactNativePodsUtils.get_default_flags()
-
-        # Assert
-        assert_equal(flags, {
-            :fabric_enabled => false,
-            :hermes_enabled => false,
-        })
-    end
-
     def test_getDefaultFlag_whenNewArchitecture()
         # Arrange
         ENV['RCT_NEW_ARCH_ENABLED'] = '1'
@@ -132,21 +116,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => true,
             :hermes_enabled => true,
-        })
-    end
-
-    def test_getDefaultFlag_whenNewArchitectureButHermesDisabled()
-        # Arrange
-        ENV['RCT_NEW_ARCH_ENABLED'] = '1'
-        ENV['USE_HERMES'] = '0'
-
-        # Act
-        flags = ReactNativePodsUtils.get_default_flags()
-
-        # Assert
-        assert_equal(flags, {
-            :fabric_enabled => true,
-            :hermes_enabled => false,
         })
     end
 
