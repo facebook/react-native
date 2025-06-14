@@ -55,6 +55,7 @@ const config /*: InputConfigT */ = {
     // We need to wrap the default transformer so we can run it from source
     // using babel-register.
     babelTransformerPath: path.resolve(__dirname, 'metro-babel-transformer.js'),
+    hermesParser: true,
   },
   serializer: {
     // Force an empty list so Metro doesn't inject InitializeCore in tests.
