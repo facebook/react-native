@@ -118,6 +118,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       BaseShadowNode::orderIndex_ = 0;
     }
 
+    // TODO why is this not needed
     bool isKeyboardFocusable =
         HostPlatformViewTraitsInitializer::isKeyboardFocusable(props) ||
         props.accessible;
