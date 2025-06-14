@@ -49,7 +49,10 @@ class AccessibilityProps {
   bool accessibilityViewIsModal{false};
   bool accessibilityElementsHidden{false};
   bool accessibilityIgnoresInvertColors{false};
-  bool accessibilityRespondsToUserInteraction{};
+  // This prop is enabled by default on iOS, we need to match this on
+  // C++ because if not, it will default to false before render which prevents
+  // the view from being updated with the correct value.
+  bool accessibilityRespondsToUserInteraction{true};
   bool onAccessibilityTap{};
   bool onAccessibilityMagicTap{};
   bool onAccessibilityEscape{};
