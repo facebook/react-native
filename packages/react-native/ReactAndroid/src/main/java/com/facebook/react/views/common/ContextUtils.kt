@@ -9,6 +9,7 @@ package com.facebook.react.views.common
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.res.Configuration
 
 /**
  * Class containing static methods involving manipulations of Contexts and their related subclasses.
