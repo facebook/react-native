@@ -48,7 +48,8 @@ class TextInputEventEmitter : public ViewEventEmitter {
  private:
   void dispatchTextInputEvent(
       const std::string& name,
-      const Metrics& textInputMetrics) const;
+      const Metrics& textInputMetrics,
+      bool includeSelectionState = false) const;
 
   void dispatchTextInputContentSizeChangeEvent(
       const std::string& name,
