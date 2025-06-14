@@ -85,7 +85,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   if (_frameStartTime == -1) {
     // Since this is the first animation step, consider the start to be on the previous frame.
-    _frameStartTime = currentTime - RCTSingleFrameInterval;
+    _frameStartTime = currentTime - RCTSingleFrameInterval();
     if (_fromValue == _lastValue) {
       // First iteration, assign _fromValue based on _valueNode.
       _fromValue = _valueNode.value;
