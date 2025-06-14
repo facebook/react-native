@@ -17,8 +17,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
@@ -27,6 +25,8 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureDoNotStrip;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureDoNotStripAny;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This provides an implementation of the public CatalystInstance instance. It is public because it
  * is built by ReactInstanceManager which is in a different package.
  */
-@DoNotStrip
+@LegacyArchitectureDoNotStrip
 @LegacyArchitecture
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
@@ -163,7 +163,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }
 
-  @DoNotStripAny
+  @LegacyArchitectureDoNotStripAny
   private static class InstanceCallback {
     // We do this so the callback doesn't keep the CatalystInstanceImpl alive.
     // In this case, the callback is held in C++ code, so the GC can't see it
