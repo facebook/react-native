@@ -233,8 +233,8 @@ internal object TurboModuleInteropUtils {
       i += 1
     }
 
-    if (returnClass == java.lang.Boolean::class.javaPrimitiveType ||
-        returnClass == java.lang.Boolean::class.java) {
+    if (returnClass == Boolean::class.javaPrimitiveType ||
+        returnClass == Boolean::class.javaObjectType) {
       return "BooleanKind"
     }
 
