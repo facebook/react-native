@@ -227,11 +227,6 @@ internal class BorderDrawable(
     return borderColors?.edgeColors?.get(position.ordinal) ?: Color.BLACK
   }
 
-  fun invalidateSelfAndUpdatePath() {
-    needUpdatePath = true
-    invalidateSelf()
-  }
-
   private fun drawRectangularBorders(canvas: Canvas) {
     val borderWidth = computeBorderInsets()
     val borderLeft = borderWidth.left.roundToInt()

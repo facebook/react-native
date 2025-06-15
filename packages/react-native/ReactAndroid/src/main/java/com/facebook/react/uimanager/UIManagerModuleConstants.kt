@@ -13,9 +13,6 @@ import com.facebook.react.uimanager.events.TouchEventType
 
 /** Constants exposed to JS from [UIManagerModule]. */
 internal object UIManagerModuleConstants {
-  const val ACTION_DISMISSED: String = "dismissed"
-  const val ACTION_ITEM_SELECTED: String = "itemSelected"
-
   @JvmField
   val bubblingEventTypeConstants: Map<String, Any> =
       mapOf(

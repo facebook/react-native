@@ -37,7 +37,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
@@ -392,7 +391,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
       // java.lang.IllegalArgumentException: View=DecorView@c94931b[XxxActivity] not attached to
       // window manager
       FLog.e(
-          ReactConstants.TAG, "ReactModalHostView: error while setting window flags: ", e.message)
+          TAG, "ReactModalHostView: error while setting window flags: ", e.message)
     }
   }
 
