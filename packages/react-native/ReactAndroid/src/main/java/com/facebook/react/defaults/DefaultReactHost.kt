@@ -17,7 +17,6 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.runtime.BindingsInstaller
-import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
@@ -150,124 +149,6 @@ public object DefaultReactHost {
     }
     return reactHost as ReactHost
   }
-
-  /**
-   * Util function to create a default [ReactHost] to be used in your application. This method is
-   * used by the New App template.
-   *
-   * @param context the Android [Context] to use for creating the [ReactHost]
-   * @param packageList the list of [ReactPackage]s to use for creating the [ReactHost]
-   * @param jsMainModulePath the path to your app's main module on Metro. Usually `index` or
-   *   `index.<platform>`
-   * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
-   *   composed in a `asset://...` URL
-   * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
-   *   `file://...` URL
-   * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
-   * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
-   * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
-   *   modules)
-   * @param exceptionHandler Callback that can be used by React Native host applications to react to
-   *   exceptions thrown by the internals of React Native.
-   * @param bindingsInstaller that can be used for installing bindings.
-   */
-  @Deprecated(
-      message = "Use `getDefaultReactHost`  with `jsRuntimeFactory` instead",
-      replaceWith =
-          ReplaceWith(
-              """
-      fun getDefaultReactHost(
-        context: Context,
-        packageList: List<ReactPackage>,
-        jsMainModulePath: String,
-        jsBundleAssetPath: String,
-        jsBundleFilePath: String?,
-        jsRuntimeFactory: JSRuntimeFactory?,
-        useDevSupport: Boolean,
-        cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage>,
-        exceptionHandler: (Exception) -> Unit,
-        bindingsInstaller: BindingsInstaller?,
-      ): ReactHost
-    """))
-  @JvmStatic
-  public fun getDefaultReactHost(
-      context: Context,
-      packageList: List<ReactPackage>,
-      jsMainModulePath: String = "index",
-      jsBundleAssetPath: String = "index",
-      jsBundleFilePath: String? = null,
-      isHermesEnabled: Boolean = true,
-      useDevSupport: Boolean = ReactBuildConfig.DEBUG,
-      cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
-      exceptionHandler: (Exception) -> Unit = { throw it },
-      bindingsInstaller: BindingsInstaller? = null,
-  ): ReactHost =
-      getDefaultReactHost(
-          context,
-          packageList,
-          jsMainModulePath,
-          jsBundleAssetPath,
-          jsBundleFilePath,
-          if (isHermesEnabled) HermesInstance() else JSCInstance(),
-          useDevSupport,
-          cxxReactPackageProviders,
-          exceptionHandler,
-          bindingsInstaller)
-
-  /**
-   * Util function to create a default [ReactHost] to be used in your application. This method is
-   * used by the New App template.
-   *
-   * @param context the Android [Context] to use for creating the [ReactHost]
-   * @param packageList the list of [ReactPackage]s to use for creating the [ReactHost]
-   * @param jsMainModulePath the path to your app's main module on Metro. Usually `index` or
-   *   `index.<platform>`
-   * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
-   *   composed in a `asset://...` URL
-   * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
-   *   `file://...` URL
-   * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
-   * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
-   * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
-   *   modules)
-   */
-  @Deprecated(
-      message = "Use `getDefaultReactHost`  with `jsRuntimeFactory` instead",
-      replaceWith =
-          ReplaceWith(
-              """
-      fun getDefaultReactHost(
-        context: Context,
-        packageList: List<ReactPackage>,
-        jsMainModulePath: String,
-        jsBundleAssetPath: String,
-        jsBundleFilePath: String?,
-        jsRuntimeFactory: JSRuntimeFactory?,
-        useDevSupport: Boolean,
-        cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage>,
-      ): ReactHost
-    """))
-  @JvmStatic
-  public fun getDefaultReactHost(
-      context: Context,
-      packageList: List<ReactPackage>,
-      jsMainModulePath: String = "index",
-      jsBundleAssetPath: String = "index",
-      jsBundleFilePath: String? = null,
-      isHermesEnabled: Boolean = true,
-      useDevSupport: Boolean = ReactBuildConfig.DEBUG,
-      cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
-  ): ReactHost =
-      getDefaultReactHost(
-          context,
-          packageList,
-          jsMainModulePath,
-          jsBundleAssetPath,
-          jsBundleFilePath,
-          if (isHermesEnabled) HermesInstance() else JSCInstance(),
-          useDevSupport,
-          cxxReactPackageProviders,
-      )
 
   /**
    * Util function to create a default [ReactHost] to be used in your application. This method is
