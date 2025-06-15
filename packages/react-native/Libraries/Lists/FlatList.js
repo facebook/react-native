@@ -20,7 +20,9 @@ import type {
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import View from '../Components/View/View';
-import VirtualizedLists from '@react-native/virtualized-lists';
+import VirtualizedLists, {
+  type VirtualizedListProps,
+} from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
 import * as React from 'react';
 
@@ -180,8 +182,6 @@ type FlatListBaseProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
 };
-
-type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
 export type FlatListProps<ItemT> = {
   ...Omit<
