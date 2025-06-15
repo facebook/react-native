@@ -283,6 +283,13 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   }
 }
 
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
+  auto eventEmitter = [self modalEventEmitter];
+  if (eventEmitter) {
+    eventEmitter->onRequestClose({});
+  }
+}
+
 @end
 
 #ifdef __cplusplus

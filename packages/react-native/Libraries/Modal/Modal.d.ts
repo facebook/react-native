@@ -35,9 +35,9 @@ export interface ModalBaseProps {
    */
   visible?: boolean | undefined;
   /**
-   * The `onRequestClose` callback is called when the user taps the hardware back button on Android or the menu button on Apple TV.
+   * The `onRequestClose` callback is called when the user taps the hardware back button on Android, dismisses the sheet using a gesture on iOS or the menu button on Apple TV.
    *
-   * This is required on Apple TV and Android.
+   * This is required on iOS and Android.
    */
   onRequestClose?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
   /**
