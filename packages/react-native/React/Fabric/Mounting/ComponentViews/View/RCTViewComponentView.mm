@@ -986,6 +986,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   // filter
   [_filterLayer removeFromSuperlayer];
   _filterLayer = nil;
+  self.layer.filters = nil;
   self.layer.opacity = (float)_props->opacity;
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
@@ -995,6 +996,18 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           multiplicativeBrightness *= std::get<Float>(primitive.parameters);
         } else if (primitive.type == FilterType::Opacity) {
           self.layer.opacity *= std::get<Float>(primitive.parameters);
+        } else if (primitive.type == FilterType::Blur) {
+          float amount = std::get<Float>(primitive.parameters);
+          if (amount > 0) {
+            Class clz = NSClassFromString(@"CAFilter");
+            if (clz) {
+              id filter = [clz performSelector:@selector(filterWithName:) withObject:@"gaussianBlur"];
+              if (filter) {
+                [filter setValue:[NSNumber numberWithFloat: amount] forKey:@"inputRadius"];
+                self.layer.filters = @[filter];
+              }
+            }
+          }
         }
       }
     }
