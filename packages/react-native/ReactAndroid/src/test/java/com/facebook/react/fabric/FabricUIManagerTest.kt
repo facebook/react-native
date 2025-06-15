@@ -33,7 +33,6 @@ class FabricUIManagerTest {
   private lateinit var viewManagerRegistry: ViewManagerRegistry
   private lateinit var batchEventDispatchedListener: BatchEventDispatchedListener
   private lateinit var underTest: FabricUIManager
-  private lateinit var featureFlags: MockedStatic<ReactNativeFeatureFlags>
 
   @Before
   fun setup() {
