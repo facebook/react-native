@@ -280,6 +280,7 @@ export type ViewPropsAndroid = $ReadOnly<{
    * Whether to force the Android TV focus engine to move focus to this view.
    *
    * @platform android
+   * @deprecated Use `focusable` instead
    */
   hasTVPreferredFocus?: ?boolean,
 
