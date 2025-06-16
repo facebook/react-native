@@ -1076,6 +1076,10 @@ public class ReactInstanceManager {
             if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
               Collection<String> names =
                   ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
+              // When converting this class to Kotlin, you need to retain this null check
+              // or wrap around a try/catch otherwise this will cause a crash for OSS libraries
+              // that are not migrated to Kotlin yet and are returning null for
+              // `getViewManagerNames`
               if (names != null) {
                 uniqueNames.addAll(names);
               }
