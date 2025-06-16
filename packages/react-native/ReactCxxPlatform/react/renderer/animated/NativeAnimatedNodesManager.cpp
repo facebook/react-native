@@ -246,6 +246,14 @@ void NativeAnimatedNodesManager::setAnimatedNodeValue(Tag tag, double value) {
   }
 }
 
+void NativeAnimatedNodesManager::setAnimatedNodeOffset(Tag tag, double offset) {
+  if (auto node = getAnimatedNode<ValueAnimatedNode>(tag)) {
+    if (node->setOffset(offset)) {
+      updatedNodeTags_.insert(node->tag());
+    }
+  }
+}
+
 void NativeAnimatedNodesManager::stopAnimationsForNode(Tag nodeTag) {
   std::vector<int> discardedAnimIds{};
 
