@@ -71,8 +71,9 @@ void ValueAnimatedNode::flattenOffset() noexcept {
 }
 
 void ValueAnimatedNode::extractOffset() noexcept {
-  setOffset(value_ + getOffset());
-  setRawValue(0.0f);
+  offset_ += value_;
+  value_ = 0;
+  onValueUpdate();
 }
 
 void ValueAnimatedNode::onValueUpdate() noexcept {

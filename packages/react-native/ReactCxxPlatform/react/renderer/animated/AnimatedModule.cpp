@@ -137,8 +137,8 @@ void AnimatedModule::flattenAnimatedNodeOffset(
 
 void AnimatedModule::extractAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
-    Tag /*nodeTag*/) {
-  // TODO(T196513004): missing implementation
+    Tag nodeTag) {
+  operations_.push_back(ExtractAnimatedNodeOffsetOp({.nodeTag = nodeTag}));
 }
 
 void AnimatedModule::connectAnimatedNodeToView(
@@ -253,6 +253,8 @@ void AnimatedModule::executeOperation(const Operation& operation) {
           nodesManager_->setAnimatedNodeOffset(op.nodeTag, op.offset);
         } else if constexpr (std::is_same_v<T, FlattenAnimatedNodeOffsetOp>) {
           nodesManager_->flattenAnimatedNodeOffset(op.nodeTag);
+        } else if constexpr (std::is_same_v<T, ExtractAnimatedNodeOffsetOp>) {
+          nodesManager_->extractAnimatedNodeOffsetOp(op.nodeTag);
         } else if constexpr (std::is_same_v<T, ConnectAnimatedNodeToViewOp>) {
           nodesManager_->connectAnimatedNodeToView(op.nodeTag, op.viewTag);
         } else if constexpr (std::is_same_v<

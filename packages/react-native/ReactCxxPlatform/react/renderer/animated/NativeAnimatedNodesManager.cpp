@@ -260,6 +260,12 @@ void NativeAnimatedNodesManager::flattenAnimatedNodeOffset(Tag tag) {
   }
 }
 
+void NativeAnimatedNodesManager::extractAnimatedNodeOffsetOp(Tag tag) {
+  if (auto node = getAnimatedNode<ValueAnimatedNode>(tag)) {
+    node->extractOffset();
+  }
+}
+
 void NativeAnimatedNodesManager::stopAnimationsForNode(Tag nodeTag) {
   std::vector<int> discardedAnimIds{};
 
