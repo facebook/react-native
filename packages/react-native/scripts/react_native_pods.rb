@@ -64,12 +64,14 @@ def use_react_native! (
   fabric_enabled: false,
   new_arch_enabled: NewArchitectureHelper.new_arch_enabled,
   production: false, # deprecated
-  hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
+  hermes_enabled: true, # deprecated. Hermes is the default engine and JSC has been moved to community support
   app_path: '..',
   config_file_dir: '',
   privacy_file_aggregation_enabled: true
 )
+  error_if_try_to_use_jsc_from_core()
 
+  hermes_enabled= true
   # Set the app_path as env variable so the podspecs can access it.
   ENV['APP_PATH'] = app_path
   ENV['REACT_NATIVE_PATH'] = path
@@ -93,7 +95,6 @@ def use_react_native! (
   fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
 
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
-  ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
   ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
   ENV["RCT_NEW_ARCH_ENABLED"] = new_arch_enabled ? "1" : "0"
 
@@ -142,8 +143,6 @@ def use_react_native! (
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)
-  else
-    setup_jsc!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
   end
 
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
@@ -385,8 +384,7 @@ end
 def print_jsc_removal_message()
   puts ''
   puts '=============== JavaScriptCore is being moved ==============='.yellow
-  puts 'JavaScriptCore has been extracted from react-native core'.yellow
-  puts 'and will be removed in a future release. It can now be'.yellow
+  puts 'JavaScriptCore has been removed from React Native. It can now be'.yellow
   puts 'installed from `@react-native-community/javascriptcore`'.yellow
   puts 'See: https://github.com/react-native-community/javascriptcore'.yellow
   puts '============================================================='.yellow
@@ -412,6 +410,19 @@ def print_cocoapods_deprecation_message()
 
 end
 
+def error_if_try_to_use_jsc_from_core()
+  explicitly_not_use_hermes = ENV['USE_HERMES'] != nil && ENV['USE_HERMES'] == '0'
+  not_use_3rd_party_jsc = ENV['USE_THIRD_PARTY_JSC'] == nil || ENV['USE_THIRD_PARTY_JSC'] == '0'
+  if (explicitly_not_use_hermes && not_use_3rd_party_jsc)
+    message = "Hermes is the default engine and JSC has been moved to community support.\n" +
+    "Please remove the USE_HERMES=0, as it is not supported anymore.\n" +
+    "If you want to use JSC, you can install it from `@react-native-community/javascriptcore`.\n" +
+    "See: https://github.com/react-native-community/javascriptcore"
+    puts message.red
+    exit()
+  end
+end
+
 # Function that executes after React Native has been installed to configure some flags and build settings.
 #
 # Parameters
@@ -429,17 +440,16 @@ def react_native_post_install(
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
-  hermes_enabled = ENV['USE_HERMES'] == '1'
   privacy_file_aggregation_enabled = ENV['RCT_AGGREGATE_PRIVACY_FILES'] == '1'
 
-  if hermes_enabled
+  if use_hermes()
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
   end
   ReactNativePodsUtils.set_gcc_preprocessor_definition_for_debugger(installer)
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
-  ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: hermes_enabled)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: use_hermes())
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", "..", react_native_path))
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
 
@@ -459,7 +469,7 @@ def react_native_post_install(
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
   NewArchitectureHelper.set_RCTNewArchEnabled_in_info_plist(installer, NewArchitectureHelper.new_arch_enabled)
 
-  if ENV['USE_HERMES'] == '0' && ENV['USE_THIRD_PARTY_JSC'] != '1'
+  if !use_hermes() && !use_third_party_jsc()
     print_jsc_removal_message()
   end
 
