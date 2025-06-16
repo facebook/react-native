@@ -21,7 +21,7 @@ class DecayAnimationDriver : public AnimationDriver {
       int id,
       Tag animatedValueTag,
       std::optional<AnimationEndCallback> endCallback,
-      const folly::dynamic& config,
+      folly::dynamic config,
       NativeAnimatedNodesManager* manager);
 
  protected:

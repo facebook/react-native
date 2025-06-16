@@ -273,7 +273,7 @@ void NativeAnimatedNodesManager::stopAnimationsForNode(Tag nodeTag) {
 void NativeAnimatedNodesManager::startAnimatingNode(
     int animationId,
     Tag animatedNodeTag,
-    const folly::dynamic& config,
+    folly::dynamic config,
     std::optional<AnimationEndCallback> endCallback) noexcept {
   if (auto iter = activeAnimations_.find(animationId);
       iter != activeAnimations_.end()) {
@@ -291,7 +291,7 @@ void NativeAnimatedNodesManager::startAnimatingNode(
               animationId,
               animatedNodeTag,
               std::move(endCallback),
-              config,
+              std::move(config),
               this);
         } break;
         case AnimationDriverType::Spring: {
@@ -299,7 +299,7 @@ void NativeAnimatedNodesManager::startAnimatingNode(
               animationId,
               animatedNodeTag,
               std::move(endCallback),
-              config,
+              std::move(config),
               this);
         } break;
         case AnimationDriverType::Decay: {
@@ -307,7 +307,7 @@ void NativeAnimatedNodesManager::startAnimatingNode(
               animationId,
               animatedNodeTag,
               std::move(endCallback),
-              config,
+              std::move(config),
               this);
         } break;
       }
