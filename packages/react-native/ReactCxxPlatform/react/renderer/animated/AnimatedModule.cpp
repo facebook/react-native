@@ -123,9 +123,10 @@ void AnimatedModule::setAnimatedNodeValue(
 
 void AnimatedModule::setAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
-    Tag /*nodeTag*/,
-    double /*offset*/) {
-  // TODO(T196512946): missing implementation
+    Tag nodeTag,
+    double offset) {
+  operations_.emplace_back(
+      SetAnimatedNodeOffsetOp{.nodeTag = nodeTag, .offset = offset});
 }
 
 void AnimatedModule::flattenAnimatedNodeOffset(
@@ -245,6 +246,8 @@ void AnimatedModule::executeOperation(const Operation& operation) {
           nodesManager_->stopAnimation(op.animationId, false);
         } else if constexpr (std::is_same_v<T, SetAnimatedNodeValueOp>) {
           nodesManager_->setAnimatedNodeValue(op.nodeTag, op.value);
+        } else if constexpr (std::is_same_v<T, SetAnimatedNodeOffsetOp>) {
+          nodesManager_->setAnimatedNodeOffset(op.nodeTag, op.offset);
         } else if constexpr (std::is_same_v<T, ConnectAnimatedNodeToViewOp>) {
           nodesManager_->connectAnimatedNodeToView(op.nodeTag, op.viewTag);
         } else if constexpr (std::is_same_v<

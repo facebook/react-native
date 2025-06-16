@@ -197,3 +197,69 @@ test('animated opacity', () => {
     <rn-view opacity="0" />,
   );
 });
+
+test('moving box by 50 points with offset 10', () => {
+  let _translateX;
+  const viewRef = createRef<HostInstance>();
+
+  function MyApp() {
+    const translateX = useAnimatedValue(0);
+    _translateX = translateX;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: 100,
+            height: 100,
+          },
+          {transform: [{translateX}]},
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+  expect(viewElement.getBoundingClientRect().x).toBe(0);
+
+  Fantom.runTask(() => {
+    Animated.timing(_translateX, {
+      toValue: 50,
+      duration: 1000, // 1 second
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.runTask(() => {
+    _translateX.setOffset(10);
+  });
+
+  Fantom.unstable_produceFramesForDuration(500);
+
+  // shadow tree is not synchronised yet, position X is still 0.
+  expect(viewElement.getBoundingClientRect().x).toBe(0);
+
+  expect(
+    // $FlowFixMe[incompatible-use]
+    Fantom.unstable_getDirectManipulationProps(viewElement).transform[0]
+      .translateX,
+  ).toBeCloseTo(35, 0.001);
+
+  Fantom.unstable_produceFramesForDuration(500);
+
+  expect(
+    // $FlowFixMe[incompatible-use]
+    Fantom.unstable_getDirectManipulationProps(viewElement).transform[0]
+      .translateX,
+  ).toBeCloseTo(60, 0.001);
+
+  // TODO: this shouldn't be neccessary but C++ Animated still schedules a React state update.
+  Fantom.runWorkLoop();
+});
