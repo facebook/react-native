@@ -241,7 +241,10 @@ void AnimatedModule::executeOperation(const Operation& operation) {
           nodesManager_->disconnectAnimatedNodes(op.parentTag, op.childTag);
         } else if constexpr (std::is_same_v<T, StartAnimatingNodeOp>) {
           nodesManager_->startAnimatingNode(
-              op.animationId, op.nodeTag, op.config, std::move(op.endCallback));
+              op.animationId,
+              op.nodeTag,
+              std::move(op.config),
+              std::move(op.endCallback));
         } else if constexpr (std::is_same_v<T, StopAnimationOp>) {
           nodesManager_->stopAnimation(op.animationId, false);
         } else if constexpr (std::is_same_v<T, SetAnimatedNodeValueOp>) {
