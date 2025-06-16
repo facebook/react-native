@@ -46,6 +46,7 @@ fastFloat="8.0.0"
 fmt="11.0.2"
 folly="2024.11.18.00"
 glog="0.3.5"
+gflags="2.2.0"
 
 [libraries]
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
