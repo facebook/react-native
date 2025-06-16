@@ -43,8 +43,12 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "DEFINES_MODULE" => "YES" }
 
+  add_rn_third_party_dependencies(s)
+
   s.dependency "React-jsi", version
-  s.dependency "React-featureflags", version
+  add_dependency(s, "React-featureflags")
   add_dependency(s, "React-debug")
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
+
+
 end
