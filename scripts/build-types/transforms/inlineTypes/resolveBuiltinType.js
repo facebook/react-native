@@ -104,7 +104,7 @@ const builtinTypeResolvers: {
       path.node.typeParameters.params.length !== 1
     ) {
       throw new Error(
-        `Readonly type must have exactly 1 type parameters. Got ${path.node.typeParameters?.params.length ?? 0}`,
+        `Readonly type must have exactly 1 type parameter. Got ${path.node.typeParameters?.params.length ?? 0}`,
       );
     }
 
@@ -128,6 +128,44 @@ const builtinTypeResolvers: {
             return member;
           }
           member.readonly = true;
+          return member;
+        }),
+      ),
+    );
+
+    path.skip(); // We don't want to traverse the new node
+  },
+  Partial: (path, state) => {
+    if (
+      !path.node.typeParameters ||
+      path.node.typeParameters.params.length !== 1
+    ) {
+      throw new Error(
+        `Partial type must have exactly 1 type parameter. Got ${path.node.typeParameters?.params.length ?? 0}`,
+      );
+    }
+
+    const [objectType] = path.node.typeParameters.params;
+
+    if (!t.isTSTypeLiteral(objectType)) {
+      // The parameter was not inlined, so we cannot do anything.
+      return;
+    }
+
+    replaceWithCleanup(
+      state,
+      path,
+      t.tsTypeLiteral(
+        (t.cloneDeep(objectType).members ?? []).map(member => {
+          if (
+            t.isTSMethodSignature(member) ||
+            t.isTSCallSignatureDeclaration(member) ||
+            t.isTSConstructSignatureDeclaration(member) ||
+            t.isTSIndexSignature(member)
+          ) {
+            return member;
+          }
+          member.optional = true;
           return member;
         }),
       ),
