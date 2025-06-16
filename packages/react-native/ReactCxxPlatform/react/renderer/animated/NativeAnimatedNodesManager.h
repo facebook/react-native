@@ -104,7 +104,7 @@ class NativeAnimatedNodesManager {
       int animationId,
       Tag animatedNodeTag,
       const folly::dynamic& config,
-      const std::optional<AnimationEndCallback>& endCallback) noexcept;
+      std::optional<AnimationEndCallback> endCallback) noexcept;
 
   void stopAnimation(
       int animationId,
