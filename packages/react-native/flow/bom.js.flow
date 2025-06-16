@@ -25,6 +25,7 @@ declare type DOMHighResTimeStamp = number;
 
 declare class Performance {
   now: () => DOMHighResTimeStamp;
+  mark: () => void;
 }
 
 declare var performance: Performance;
