@@ -30,6 +30,9 @@ type AndroidProps = $ReadOnly<{
 }>;
 
 type IOSProps = $ReadOnly<{
+  /**
+   * @deprecated Use `focusable` instead
+   */
   hasTVPreferredFocus?: ?boolean,
 }>;
 

@@ -26,6 +26,7 @@ export type TVProps = $ReadOnly<{
    * *(Apple TV only)* TV preferred focus (see documentation for the View component).
    *
    * @platform ios
+   * @deprecated Use `focusable` instead
    */
   hasTVPreferredFocus?: ?boolean,
 
