@@ -45,7 +45,7 @@ class DependencyUtilsTest {
 
   @Test
   fun configureRepositories_containsSnapshotRepo() {
-    val repositoryURI = URI.create("https://oss.sonatype.org/content/repositories/snapshots/")
+    val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
     val project = createProject()
 
     configureRepositories(project)
@@ -176,7 +176,7 @@ class DependencyUtilsTest {
 
   @Test
   fun configureRepositories_snapshotRepoHasHigherPriorityThanMavenCentral() {
-    val repositoryURI = URI.create("https://oss.sonatype.org/content/repositories/snapshots/")
+    val repositoryURI = URI.create("https://central.sonatype.com/repository/maven-snapshots/")
     val mavenCentralURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
