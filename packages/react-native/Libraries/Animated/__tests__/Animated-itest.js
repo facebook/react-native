@@ -355,3 +355,91 @@ describe('Value.flattenOffset', () => {
     Fantom.runWorkLoop();
   });
 });
+
+describe('Value.extractOffset', () => {
+  it('sets the offset value to the base value and resets the base value to zero', () => {
+    const scrollViewRef = createRef<HostInstance>();
+    const viewRef = createRef<HostInstance>();
+    let _onScroll;
+
+    function PressableWithNativeDriver() {
+      _onScroll = useAnimatedValue(0);
+
+      return (
+        <View style={{flex: 1}}>
+          <Animated.View
+            ref={viewRef}
+            style={{
+              position: 'absolute',
+              width: 10,
+              height: 10,
+              transform: [{translateY: _onScroll}],
+            }}
+          />
+          <Animated.ScrollView
+            ref={scrollViewRef}
+            onScroll={Animated.event(
+              [
+                {
+                  nativeEvent: {
+                    contentOffset: {
+                      y: _onScroll,
+                    },
+                  },
+                },
+              ],
+              {useNativeDriver: true},
+            )}>
+            <View style={{height: 1000, width: 100}} />
+          </Animated.ScrollView>
+        </View>
+      );
+    }
+
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
+      root.render(<PressableWithNativeDriver />);
+    });
+
+    const scrollViewelement = ensureInstance(
+      scrollViewRef.current,
+      ReactNativeElement,
+    );
+    const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+    Fantom.scrollTo(scrollViewelement, {
+      x: 0,
+      y: 10,
+    });
+
+    Fantom.runTask(() => {
+      _onScroll.setOffset(15);
+      // Sets offset to be 15 + 10 = 25 (this is not observable from JS).
+      _onScroll.extractOffset();
+    });
+
+    let transform =
+      // $FlowFixMe[incompatible-use]
+      Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
+
+    // Animated value is now 0 but offset is 25. The final value is 25.
+    expect(transform.translateY).toBeCloseTo(25, 0.001);
+
+    Fantom.runTask(() => {
+      // Sets offset 35, overriding the previous `setOffset`.
+      // Due to `extractOffset`, base value was restarted to 0.
+      _onScroll.setOffset(35);
+    });
+
+    transform =
+      // $FlowFixMe[incompatible-use]
+      Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
+
+    // `extractOffset` resets value back to 0.
+    // Previously we set offset to 35. The final value is 35.
+    expect(transform.translateY).toBeCloseTo(35, 0.001);
+
+    // TODO: this shouldn't be neccessary.
+    Fantom.runWorkLoop();
+  });
+});
