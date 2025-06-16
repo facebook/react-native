@@ -325,6 +325,11 @@ describe('Value.flattenOffset', () => {
       root.render(<PressableWithNativeDriver />);
     });
 
+    const fn = jest.fn();
+    Fantom.runTask(() => {
+      _onScroll.addListener(fn);
+    });
+
     const scrollViewelement = ensureInstance(
       scrollViewRef.current,
       ReactNativeElement,
@@ -336,14 +341,20 @@ describe('Value.flattenOffset', () => {
       y: 10,
     });
 
+    expect(fn).toBeCalledWith({value: 10});
+
     Fantom.runTask(() => {
       _onScroll.setOffset(15);
       _onScroll.flattenOffset();
     });
 
+    expect(fn).toHaveBeenCalledTimes(1);
+
     Fantom.runTask(() => {
       _onScroll.setOffset(15);
     });
+
+    expect(fn).toHaveBeenCalledTimes(1);
 
     let transform =
       // $FlowFixMe[incompatible-use]
@@ -401,6 +412,11 @@ describe('Value.extractOffset', () => {
       root.render(<PressableWithNativeDriver />);
     });
 
+    const fn = jest.fn();
+    Fantom.runTask(() => {
+      _onScroll.addListener(fn);
+    });
+
     const scrollViewelement = ensureInstance(
       scrollViewRef.current,
       ReactNativeElement,
@@ -412,11 +428,15 @@ describe('Value.extractOffset', () => {
       y: 10,
     });
 
+    expect(fn).toBeCalledWith({value: 10});
+
     Fantom.runTask(() => {
       _onScroll.setOffset(15);
       // Sets offset to be 15 + 10 = 25 (this is not observable from JS).
       _onScroll.extractOffset();
     });
+
+    expect(fn).toHaveBeenCalledTimes(1);
 
     let transform =
       // $FlowFixMe[incompatible-use]
@@ -430,6 +450,8 @@ describe('Value.extractOffset', () => {
       // Due to `extractOffset`, base value was restarted to 0.
       _onScroll.setOffset(35);
     });
+
+    expect(fn).toHaveBeenCalledTimes(1);
 
     transform =
       // $FlowFixMe[incompatible-use]
