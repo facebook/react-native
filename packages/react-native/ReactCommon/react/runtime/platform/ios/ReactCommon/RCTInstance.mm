@@ -128,7 +128,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
-                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions
 {
@@ -142,7 +141,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
-                                                                     moduleRegistry:moduleRegistry
+                                                                     moduleRegistry:[RCTModuleRegistry new]
                                                                       bundleManager:bundleManager
                                                                   callableJSModules:[RCTCallableJSModules new]];
     _parentInspectorTarget = parentInspectorTarget;
@@ -175,6 +174,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name:UIApplicationDidReceiveMemoryWarningNotification
                                                 object:nil];
+}
+
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return _bridgeModuleDecorator.moduleRegistry;
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args

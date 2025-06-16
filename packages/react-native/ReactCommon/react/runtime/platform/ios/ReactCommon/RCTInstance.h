@@ -69,7 +69,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions;
 
@@ -77,6 +76,7 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 - (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &runtime)> &&)executor;
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
+- (RCTModuleRegistry *)moduleRegistry;
 
 - (void)invalidate;
 
