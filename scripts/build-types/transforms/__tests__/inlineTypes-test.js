@@ -185,4 +185,61 @@ describe('inlineTypes', () => {
       `"export declare type BootsPrice = 123;"`,
     );
   });
+
+  test('should preserve types exported in the namespace', async () => {
+    const code = `
+      declare type Foo = string;
+      declare type Bar = {
+        bar?: string;
+      };
+      export declare namespace Appearance {
+        export {
+          Foo,
+          Bar as Baz,
+        };
+      }
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "declare type Foo = string;
+      declare type Bar = {
+        bar?: string;
+      };
+      export declare namespace Appearance {
+        export { Foo, Bar as Baz };
+      }"
+    `);
+  });
+
+  test('should preserve exported types', async () => {
+    const code = `
+      declare type Foo = string | number;
+      export { Foo };
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "declare type Foo = string | number;
+      export { Foo };"
+    `);
+  });
+
+  test('should preserve default-exported types', async () => {
+    const code = `
+      declare const Value: {}
+
+      declare const $$Value: typeof Value;
+      declare type $$Value = typeof $$Value;
+      export default $$Value;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "declare const Value: {};
+      declare const $$Value: typeof Value;
+      declare type $$Value = typeof $$Value;
+      export default $$Value;"
+    `);
+  });
 });
