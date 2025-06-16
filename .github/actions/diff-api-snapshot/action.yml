@@ -11,12 +11,12 @@ runs:
       shell: bash
       run: |
         mkdir ${{ runner.temp }}/snapshot
-        # git show HEAD^:${{ env.SNAPSHOT_PATH }} > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
+        # git show HEAD^:${{ inputs.snapshot-path }} > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
         echo "" > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
     - name: Run breaking change detection
       shell: bash
       run: |
         node ./scripts/diff-api-snapshot \
         ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts \
-        ${{ github.workspace }}/${{ env.SNAPSHOT_PATH }} \
+        ${{ github.workspace }}/${{ inputs.snapshot-path }} \
         > ${{ runner.temp }}/snapshot/output.json
