@@ -279,3 +279,79 @@ test('moving box by 50 points with offset 10', () => {
   expect(finishValue?.value).toBe(50); // must not include offset.
   expect(finishValue?.offset).toBe(10);
 });
+
+describe('Value.flattenOffset', () => {
+  it('accumulates offset with onScroll value', () => {
+    const scrollViewRef = createRef<HostInstance>();
+    const viewRef = createRef<HostInstance>();
+    let _onScroll;
+
+    function PressableWithNativeDriver() {
+      _onScroll = useAnimatedValue(0);
+
+      return (
+        <View style={{flex: 1}}>
+          <Animated.View
+            ref={viewRef}
+            style={{
+              position: 'absolute',
+              width: 10,
+              height: 10,
+              transform: [{translateY: _onScroll}],
+            }}
+          />
+          <Animated.ScrollView
+            ref={scrollViewRef}
+            onScroll={Animated.event(
+              [
+                {
+                  nativeEvent: {
+                    contentOffset: {
+                      y: _onScroll,
+                    },
+                  },
+                },
+              ],
+              {useNativeDriver: true},
+            )}>
+            <View style={{height: 1000, width: 100}} />
+          </Animated.ScrollView>
+        </View>
+      );
+    }
+
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
+      root.render(<PressableWithNativeDriver />);
+    });
+
+    const scrollViewelement = ensureInstance(
+      scrollViewRef.current,
+      ReactNativeElement,
+    );
+    const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+    Fantom.scrollTo(scrollViewelement, {
+      x: 0,
+      y: 10,
+    });
+
+    Fantom.runTask(() => {
+      _onScroll.setOffset(15);
+      _onScroll.flattenOffset();
+    });
+
+    Fantom.runTask(() => {
+      _onScroll.setOffset(15);
+    });
+
+    let transform =
+      // $FlowFixMe[incompatible-use]
+      Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
+
+    expect(transform.translateY).toBeCloseTo(40, 0.001);
+
+    // TODO: this shouldn't be neccessary.
+    Fantom.runWorkLoop();
+  });
+});
