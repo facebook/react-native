@@ -96,6 +96,8 @@ class NativeAnimatedNodesManager {
 
   void setAnimatedNodeValue(Tag tag, double value);
 
+  void setAnimatedNodeOffset(Tag tag, double offset);
+
   // drivers
 
   void startAnimatingNode(
