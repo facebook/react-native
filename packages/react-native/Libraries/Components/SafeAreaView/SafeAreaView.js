@@ -13,12 +13,8 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import Platform from '../../Utilities/Platform';
 import View from '../View/View';
 import * as React from 'react';
-import {useEffect} from 'react';
 
 /**
- * @deprecated
- * Use `react-native-safe-area-context` instead. This component is deprecated and will be removed in a future release.
- *
  * Renders nested content and automatically applies paddings reflect the portion
  * of the view that is not covered by navigation bars, tab bars, toolbars, and
  * other ancestor views.
@@ -26,23 +22,14 @@ import {useEffect} from 'react';
  * Moreover, and most importantly, Safe Area's paddings reflect physical
  * limitation of the screen, such as rounded corners or camera notches (aka
  * sensor housing area on iPhone X).
+ * @deprecated Use `react-native-safe-area-context` instead. This component will be removed in a future release.
  */
-const SafeAreaView = React.forwardRef(function SafeAreaView(props, ref) {
-  useEffect(() => {
-    if (__DEV__) {
-      console.warn(
-        'SafeAreaView is deprecated and will be removed in a future release. ' +
-        'Please use `react-native-safe-area-context` instead.'
-      );
-    }
-  }, []);
-
-  const Component = Platform.select({
-    ios: require('./RCTSafeAreaViewNativeComponent').default,
-    default: View,
-  });
-
-  return <Component ref={ref} {...props} />;
+const exported: component(
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: ViewProps,
+) = Platform.select({
+  ios: require('./RCTSafeAreaViewNativeComponent').default,
+  default: View,
 });
 
-export default SafeAreaView;
+export default exported;
