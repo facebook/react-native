@@ -126,6 +126,8 @@ internal object NdkConfiguratorUtils {
   ): Pair<List<String>, List<String>> {
     val excludes = mutableListOf<String>()
     val includes = mutableListOf<String>()
+
+    // note: libjsctooling.so is kept here for backward compatibility.
     when {
       hermesEnabled -> {
         excludes.add("**/libjsc.so")
