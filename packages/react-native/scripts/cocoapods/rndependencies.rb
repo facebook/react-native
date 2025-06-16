@@ -142,17 +142,23 @@ class ReactNativeDependenciesUtils
     end
 
     def self.nightly_tarball_url(version)
-        artefact_coordinate = "react-native-artifacts"
-        artefact_name = "reactnative-dependencies-debug.tar.gz"
-        xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artefact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
+        artifact_coordinate = "react-native-artifacts"
+        artifact_name = "reactnative-dependencies-debug.tar.gz"
+        xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
-        xml = REXML::Document.new(Net::HTTP.get(URI(xml_url)))
-        timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
-        build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
-        full_version = "#{version}-#{timestamp}-#{build_number}"
 
-        final_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artefact_coordinate}/#{version}-SNAPSHOT/#{artefact_coordinate}-#{full_version}-#{artefact_name}"
-        return final_url
+        response = Net::HTTP.get(URI(xml_url))
+        if response.kind_of? Net::HTTPSuccess
+          xml = REXML::Document.new(response)
+          timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
+          build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
+          full_version = "#{version}-#{timestamp}-#{build_number}"
+
+          final_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
+          return final_url
+        else
+          return ""
+        end
     end
 
     def self.download_stable_rndeps(react_native_path, version, configuration)
