@@ -32,11 +32,9 @@ test('moving box by 100 points', () => {
           {
             width: 100,
             height: 100,
-            backgroundColor: 'red',
           },
           {transform: [{translateX}]},
         ]}
-        testID="box"
       />
     );
   }
@@ -145,4 +143,57 @@ test('animation driven by onScroll event', () => {
 
   // TODO(T226364699): this should `toBe(100)` but we are not syncing shadow tree yet.
   expect(viewElement.getBoundingClientRect().y).toBe(0);
+});
+
+test('animated opacity', () => {
+  let _opacity;
+  const viewRef = createRef<HostInstance>();
+
+  function MyApp() {
+    const opacity = useAnimatedValue(1);
+    _opacity = opacity;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: 100,
+            height: 100,
+            opacity: opacity,
+          },
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+  expect(viewElement.getBoundingClientRect().x).toBe(0);
+
+  Fantom.runTask(() => {
+    Animated.timing(_opacity, {
+      toValue: 0,
+      duration: 30,
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(30);
+  // $FlowFixMe[incompatible-use]
+  expect(Fantom.unstable_getDirectManipulationProps(viewElement).opacity).toBe(
+    0,
+  );
+
+  // TODO: this shouldn't be neccessary but C++ Animated still schedules a React state update.
+  Fantom.runWorkLoop();
+
+  expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
+    <rn-view opacity="0" />,
+  );
 });
