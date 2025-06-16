@@ -59,5 +59,7 @@ val prepareNative3pDependencies by
     tasks.registering {
       dependsOn(
           prepareGflags,
+          ":packages:react-native:ReactAndroid:hermes-engine:buildHermesLib",
+          ":packages:react-native:ReactAndroid:hermes-engine:prepareHeadersForPrefab",
       )
     }
