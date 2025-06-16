@@ -86,7 +86,7 @@ export type ModalBaseProps = {
    */
   visible?: ?boolean,
   /**
-   * The `onRequestClose` callback is called when the user taps the hardware back button on Android, dismisses the sheet using a gesture on iOS or the menu button on Apple TV.
+   * The `onRequestClose` callback is called when the user taps the hardware back button on Android, dismisses the sheet using a gesture on iOS (when `allowSwipeDismissal` is set to true) or the menu button on Apple TV.
    *
    * This is required on iOS and Android.
    */
@@ -147,6 +147,12 @@ export type ModalPropsIOS = {
   //   | ((event: NativeSyntheticEvent<any>) => void)
   //   | undefined;
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+
+  /**
+   * Controls whether the modal can be dismissed by swiping down on iOS.
+   * This requires you to implement the `onRequestClose` prop to handle the dismissal.
+   */
+  allowSwipeDismissal?: ?boolean,
 };
 
 export type ModalPropsAndroid = {
@@ -193,9 +199,13 @@ function confirmProps(props: ModalProps) {
       );
     }
 
-    if (!props.onRequestClose) {
+    if (
+      Platform.OS === 'ios' &&
+      props.allowSwipeDismissal === true &&
+      !props.onRequestClose
+    ) {
       console.warn(
-        'Modal requires the onRequestClose prop. This is necessary to prevent state corruption.',
+        'Modal requires the onRequestClose prop when used with `allowSwipeDismissal`. This is necessary to prevent state corruption.',
       );
     }
   }
@@ -333,6 +343,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}
+        allowSwipeDismissal={this.props.allowSwipeDismissal}
         testID={this.props.testID}>
         <VirtualizedListContextResetter>
           <ScrollView.Context.Provider value={null}>

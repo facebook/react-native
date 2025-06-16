@@ -124,6 +124,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _viewController = [RCTFabricModalHostViewController new];
     _viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     _viewController.delegate = self;
+    _viewController.modalInPresentation = YES;
   }
   return _viewController;
 }
@@ -239,6 +240,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
+  const auto &oldViewProps = static_cast<const ModalHostViewProps &>(*_props);
   const auto &newProps = static_cast<const ModalHostViewProps &>(*props);
 
 #if !TARGET_OS_TV
@@ -250,6 +252,11 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   self.viewController.modalTransitionStyle = transitionStyle;
 
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
+  
+  if (oldViewProps.allowSwipeDismissal != newProps.allowSwipeDismissal) {
+    self.viewController.modalInPresentation = !newProps.allowSwipeDismissal;
+  }
+  
 
   _shouldPresent = newProps.visible;
   [self ensurePresentedOnlyIfNeeded];
@@ -285,7 +292,9 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
   auto eventEmitter = [self modalEventEmitter];
-  if (eventEmitter) {
+  const auto &props = static_cast<const ModalHostViewProps &>(*_props);
+  
+  if (eventEmitter && props.allowSwipeDismissal) {
     eventEmitter->onRequestClose({});
   }
 }
