@@ -179,6 +179,7 @@ const NativePerformanceMock = {
   createObserver: (
     callback: NativeBatchedObserverCallback,
   ): OpaqueNativeObserverHandle => {
+    // $FlowExpectedError[incompatible-return]
     return createMockObserver(callback);
   },
 
