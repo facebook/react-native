@@ -18,5 +18,5 @@ runs:
       run: |
         node ./scripts/diff-api-snapshot \
         ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts \
-        ${{ github.workspace }}/${{ inputs.snapshot-path }}
-        # > ${{ runner.temp }}/snapshot/output.json
+        ${{ github.workspace }}/${{ inputs.snapshot-path }} \
+        > ${{ runner.temp }}/snapshot/output.json
