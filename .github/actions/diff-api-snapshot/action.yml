@@ -7,11 +7,13 @@ inputs:
 runs:
   steps:
     - name: Save previous snapshot
+      shell: bash
       run: |
         mkdir ${{ runner.temp }}/snapshot
         # git show HEAD^:${{ env.SNAPSHOT_PATH }} > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
         echo "" > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
     - name: Run breaking change detection
+      shell: bash
       run: |
         node ./scripts/diff-api-snapshot \
         ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts \
