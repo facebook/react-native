@@ -17,7 +17,6 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.runtime.BindingsInstaller
-import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
@@ -208,7 +207,7 @@ public object DefaultReactHost {
           jsMainModulePath,
           jsBundleAssetPath,
           jsBundleFilePath,
-          if (isHermesEnabled) HermesInstance() else JSCInstance(),
+          HermesInstance(),
           useDevSupport,
           cxxReactPackageProviders,
           exceptionHandler,
@@ -264,7 +263,7 @@ public object DefaultReactHost {
           jsMainModulePath,
           jsBundleAssetPath,
           jsBundleFilePath,
-          if (isHermesEnabled) HermesInstance() else JSCInstance(),
+          HermesInstance(),
           useDevSupport,
           cxxReactPackageProviders,
       )
