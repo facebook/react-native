@@ -62,6 +62,25 @@ function reportException(
   isFatal: boolean,
   reportToConsole: boolean, // only true when coming from handleException; the error has not yet been logged
 ) {
+  let currentE = e;
+  while (currentE != null) {
+    // $FlowIgnore
+    if (typeof currentE.stack === 'string') {
+      // $FlowIgnore
+      currentE.stack = currentE.stack.replaceAll('10.0.2.2:', 'localhost:');
+    }
+
+    if (typeof currentE.componentStack === 'string') {
+      // $FlowIgnore
+      currentE.componentStack = currentE.componentStack.replaceAll(
+        '10.0.2.2:',
+        'localhost:',
+      );
+    }
+
+    // $FlowIgnore
+    currentE = currentE.cause;
+  }
   const parseErrorStack = require('./Devtools/parseErrorStack').default;
   const stack = parseErrorStack(e?.stack);
   const currentExceptionID = ++exceptionID;
