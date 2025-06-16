@@ -5,6 +5,7 @@ inputs:
     default: 'packages/react-native/ReactNativeApi.d.ts'
     description: Path to the current snapshot file
 runs:
+  using: node20
   steps:
     - name: Save previous snapshot
       shell: bash
