@@ -52,6 +52,7 @@ describe('extractLibrariesFromJSON', () => {
         jsSrcsDir: '.',
       },
       libraryPath: rootPath,
+      name: 'react-native',
     });
   });
 
@@ -71,6 +72,7 @@ describe('extractLibrariesFromJSON', () => {
         jsSrcsDir: '.',
       },
       libraryPath: myDependencyPath,
+      name: 'react-native',
     });
     expect(libraries[1]).toEqual({
       config: {
@@ -79,6 +81,7 @@ describe('extractLibrariesFromJSON', () => {
         jsSrcsDir: 'component/js',
       },
       libraryPath: myDependencyPath,
+      name: 'my-component',
     });
     expect(libraries[2]).toEqual({
       config: {
@@ -87,6 +90,7 @@ describe('extractLibrariesFromJSON', () => {
         jsSrcsDir: 'module/js',
       },
       libraryPath: myDependencyPath,
+      name: 'my-module',
     });
   });
 });
