@@ -17,6 +17,24 @@ export class SyntheticError extends Error {
   name: string = '';
 }
 
+class UncaughtInComponentError extends Error {
+  name: string = 'UncaughtInComponentError';
+  constructor(e: ExtendedError) {
+    const componentName = e.componentStack
+      ?.split('\n')?.[1]
+      .replace(/ \(\S+\)$/, '')
+      .replace(/^\s*at /, '');
+
+    const errorMessage =
+      `An uncaught error was thrown from ` +
+      (componentName != null ? `'${componentName}'` : 'a component');
+
+    super(errorMessage, {cause: e});
+
+    this.stack = `${this.name}: ${this.message}${e.componentStack ?? ''}`;
+  }
+}
+
 type ExceptionDecorator = ExceptionData => ExceptionData;
 
 let userExceptionDecorator: ?ExceptionDecorator;
@@ -124,7 +142,12 @@ function reportException(
     // we feed back into console.error, to make sure any methods that are
     // monkey patched on top of console.error are called when coming from
     // handleException
-    console.error(data.message);
+
+    if (e.isComponentError === true) {
+      console.error(new UncaughtInComponentError(e));
+    } else {
+      console.error(e);
+    }
   }
 
   if (__DEV__) {
