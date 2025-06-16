@@ -229,12 +229,16 @@ test('moving box by 50 points with offset 10', () => {
 
   expect(viewElement.getBoundingClientRect().x).toBe(0);
 
+  let finishValue = null;
+
   Fantom.runTask(() => {
     Animated.timing(_translateX, {
       toValue: 50,
       duration: 1000, // 1 second
       useNativeDriver: true,
-    }).start();
+    }).start(result => {
+      finishValue = result;
+    });
   });
 
   Fantom.runTask(() => {
@@ -260,6 +264,18 @@ test('moving box by 50 points with offset 10', () => {
       .translateX,
   ).toBeCloseTo(60, 0.001);
 
+  expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+    <rn-view transform='[{"translateX": 60.000000}]' />,
+  );
+
   // TODO: this shouldn't be neccessary but C++ Animated still schedules a React state update.
   Fantom.runWorkLoop();
+
+  expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+    <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
+  );
+
+  expect(finishValue?.finished).toBe(true);
+  expect(finishValue?.value).toBe(50); // must not include offset.
+  expect(finishValue?.offset).toBe(10);
 });
