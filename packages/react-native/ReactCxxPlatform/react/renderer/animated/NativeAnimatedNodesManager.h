@@ -78,7 +78,7 @@ class NativeAnimatedNodesManager {
 
   std::optional<double> getValue(Tag tag) noexcept;
 
-  // graph
+#pragma mark - Graph
 
   void createAnimatedNode(Tag tag, const folly::dynamic& config) noexcept;
 
@@ -102,7 +102,7 @@ class NativeAnimatedNodesManager {
 
   void setAnimatedNodeOffset(Tag tag, double offset);
 
-  // drivers
+#pragma mark - Drivers
 
   void startAnimatingNode(
       int animationId,
@@ -127,7 +127,8 @@ class NativeAnimatedNodesManager {
   std::shared_ptr<EventEmitterListener> getEventEmitterListener() noexcept {
     return ensureEventEmitterListener();
   }
-  // listeners
+
+#pragma mark - Listeners
 
   void startListeningToAnimatedNodeValue(
       Tag tag,
