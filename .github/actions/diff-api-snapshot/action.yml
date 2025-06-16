@@ -1,0 +1,19 @@
+name: check-api-changes
+description: Check for breaking changes in the public React Native JS API
+inputs:
+  snapshot-path:
+    default: 'packages/react-native/ReactNativeApi.d.ts'
+    description: Path to the current snapshot file
+runs:
+  steps:
+    - name: Save previous snapshot
+      run: |
+        mkdir ${{ runner.temp }}/snapshot
+        # git show HEAD^:${{ env.SNAPSHOT_PATH }} > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
+        echo "" > ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts
+    - name: Run breaking change detection
+      run: |
+        node ./scripts/diff-api-snapshot \
+        ${{ runner.temp }}/snapshot/ReactNativeApi.d.ts \
+        ${{ github.workspace }}/${{ env.SNAPSHOT_PATH }} \
+        > ${{ runner.temp }}/snapshot/output.json

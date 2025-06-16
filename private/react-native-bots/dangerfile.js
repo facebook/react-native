@@ -11,6 +11,7 @@
 'use strict';
 
 const {danger, fail, warn} = require('danger');
+const fs = require('fs');
 
 const body = danger.github.pr.body?.toLowerCase() ?? '';
 
@@ -27,6 +28,9 @@ const isFromPhabricator = body_contains('differential revision:');
 
 // Provides advice if a summary section is missing, or body is too short
 const includesSummary = body_contains('## summary', 'summary:');
+
+const snapshot_output = JSON.parse(fs.readFileSync(path.join(process.env.RUNNER_TEMP, 'snapshot/output.json'), 'utf8'));
+console.log({snapshot_output})
 
 const hasNoUsefulBody =
   !danger.github.pr.body || danger.github.pr.body.length < 50;
