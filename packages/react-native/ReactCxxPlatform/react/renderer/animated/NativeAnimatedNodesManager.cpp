@@ -274,7 +274,7 @@ void NativeAnimatedNodesManager::startAnimatingNode(
     int animationId,
     Tag animatedNodeTag,
     const folly::dynamic& config,
-    const std::optional<AnimationEndCallback>& endCallback) noexcept {
+    std::optional<AnimationEndCallback> endCallback) noexcept {
   if (auto iter = activeAnimations_.find(animationId);
       iter != activeAnimations_.end()) {
     // reset animation config
@@ -288,15 +288,27 @@ void NativeAnimatedNodesManager::startAnimatingNode(
       switch (typeEnum.value()) {
         case AnimationDriverType::Frames: {
           animation = std::make_unique<FrameAnimationDriver>(
-              animationId, animatedNodeTag, endCallback, config, this);
+              animationId,
+              animatedNodeTag,
+              std::move(endCallback),
+              config,
+              this);
         } break;
         case AnimationDriverType::Spring: {
           animation = std::make_unique<SpringAnimationDriver>(
-              animationId, animatedNodeTag, endCallback, config, this);
+              animationId,
+              animatedNodeTag,
+              std::move(endCallback),
+              config,
+              this);
         } break;
         case AnimationDriverType::Decay: {
           animation = std::make_unique<DecayAnimationDriver>(
-              animationId, animatedNodeTag, endCallback, config, this);
+              animationId,
+              animatedNodeTag,
+              std::move(endCallback),
+              config,
+              this);
         } break;
       }
       if (animation) {
