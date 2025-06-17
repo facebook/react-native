@@ -2448,6 +2448,19 @@ public abstract interface class com/facebook/react/interfaces/fabric/ReactSurfac
 	public abstract fun stop ()Lcom/facebook/react/interfaces/TaskInterface;
 }
 
+public final class com/facebook/react/jscexecutor/JSCExecutor : com/facebook/react/bridge/JavaScriptExecutor {
+	public fun getName ()Ljava/lang/String;
+	public static final fun loadLibrary ()V
+}
+
+public final class com/facebook/react/jscexecutor/JSCExecutorFactory : com/facebook/react/bridge/JavaScriptExecutorFactory {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public fun create ()Lcom/facebook/react/bridge/JavaScriptExecutor;
+	public fun startSamplingProfiler ()V
+	public fun stopSamplingProfiler (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/facebook/react/jstasks/HeadlessJsTaskConfig {
 	public fun <init> (Lcom/facebook/react/jstasks/HeadlessJsTaskConfig;)V
 	public fun <init> (Ljava/lang/String;Lcom/facebook/react/bridge/WritableMap;)V
@@ -3122,6 +3135,10 @@ public class com/facebook/react/runtime/CoreReactPackage$$ReactModuleInfoProvide
 	public fun getReactModuleInfos ()Ljava/util/Map;
 }
 
+public final class com/facebook/react/runtime/JSCInstance : com/facebook/react/runtime/JSRuntimeFactory {
+	public fun <init> ()V
+}
+
 public abstract class com/facebook/react/runtime/JSRuntimeFactory {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
 }
@@ -3236,6 +3253,10 @@ public final class com/facebook/react/soloader/OpenSourceMergedSoMapping : com/f
 	public final fun libhermes_executor_so ()I
 	public final fun libhermesinstancejni_so ()I
 	public final fun libhermestooling_so ()I
+	public final fun libjscexecutor_so ()I
+	public final fun libjscinstance_so ()I
+	public final fun libjscruntime_so ()I
+	public final fun libjsctooling_so ()I
 	public final fun libjsijniprofiler_so ()I
 	public final fun libjsinspector_so ()I
 	public final fun libmapbufferjni_so ()I
