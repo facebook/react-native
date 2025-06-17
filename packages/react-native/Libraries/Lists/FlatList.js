@@ -15,6 +15,7 @@ import type {
   ListRenderItemInfo,
   ViewabilityConfigCallbackPair,
   ViewToken,
+  VirtualizedListProps,
 } from '@react-native/virtualized-lists';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
@@ -180,8 +181,6 @@ type FlatListBaseProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
 };
-
-type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
 export type FlatListProps<ItemT> = {
   ...Omit<

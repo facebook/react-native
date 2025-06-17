@@ -13,8 +13,8 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {DisplayModeType} from './DisplayMode';
 
-type Task = (taskData: any) => Promise<void>;
-export type TaskProvider = () => Task;
+type HeadlessTask = (taskData: any) => Promise<void>;
+export type TaskProvider = () => HeadlessTask;
 
 export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (

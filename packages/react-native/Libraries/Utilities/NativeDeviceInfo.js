@@ -9,6 +9,4 @@
  */
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo';
-import NativeDeviceInfo from '../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo';
-
-export default NativeDeviceInfo;
+export {default} from '../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo';
