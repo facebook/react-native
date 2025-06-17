@@ -490,6 +490,13 @@ type ViewBaseProps = $ReadOnly<{
    * See https://reactnative.dev/docs/view#removeclippedsubviews
    */
   removeClippedSubviews?: ?boolean,
+
+  /**
+   * Defines the order in which descendant elements receive accessibility focus.
+   * The elements in the array represent nativeID values for the respective
+   * descendant elements.
+   */
+  experimental_accessibilityOrder?: ?Array<string>,
 }>;
 
 export type ViewProps = $ReadOnly<{
