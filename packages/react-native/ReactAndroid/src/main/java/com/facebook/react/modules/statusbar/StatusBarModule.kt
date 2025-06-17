@@ -23,6 +23,7 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.DisplayMetricsHolder.getStatusBarHeightPx
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.setStatusBarVisibility
 
@@ -54,6 +55,12 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
           "StatusBarModule: Ignored status bar change, current activity is null.")
       return
     }
+    if (isEdgeToEdgeFeatureFlagOn) {
+      FLog.w(
+        ReactConstants.TAG,
+        "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
+      return
+    }
     UiThreadUtil.runOnUiThread(
         object : GuardedRunnable(reactApplicationContext) {
           override fun runGuarded() {
@@ -80,6 +87,12 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
       FLog.w(
           ReactConstants.TAG,
           "StatusBarModule: Ignored status bar change, current activity is null.")
+      return
+    }
+    if (isEdgeToEdgeFeatureFlagOn) {
+      FLog.w(
+        ReactConstants.TAG,
+        "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
       return
     }
     UiThreadUtil.runOnUiThread(
