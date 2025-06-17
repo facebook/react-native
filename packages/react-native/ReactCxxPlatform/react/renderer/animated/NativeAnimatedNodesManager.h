@@ -214,7 +214,13 @@ class NativeAnimatedNodesManager {
   std::mutex uiTasksMutex_;
   std::vector<UiTask> operations_;
 
-  bool isGestureAnimationInProgress_{false};
+  /*
+   * Tracks whether a event-driven animation is currently in progress.
+   * This is set to true when an event handler triggers an animation,
+   * and reset to false when UI tick results in no changes to UI from
+   * animations.
+   */
+  bool isEventAnimationInProgress_{false};
 
   // React context required to commit props onto Component View
   DirectManipulationCallback directManipulationCallback_;

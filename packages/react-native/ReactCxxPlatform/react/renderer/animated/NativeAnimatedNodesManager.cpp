@@ -430,10 +430,10 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
       }
     }
 
-    if (foundAtLeastOneDriver && !isGestureAnimationInProgress_) {
+    if (foundAtLeastOneDriver && !isEventAnimationInProgress_) {
       // There is an animation driver handling this event and
-      // gesture driven animation has not been started yet.
-      isGestureAnimationInProgress_ = true;
+      // event driven animation has not been started yet.
+      isEventAnimationInProgress_ = true;
       // Some platforms (e.g. iOS) have UI tick listener disable
       // when there are no active animations. Calling
       // `startRenderCallbackIfNeeded` will call platform specific code to
@@ -478,7 +478,7 @@ void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
 
 bool NativeAnimatedNodesManager::isAnimationUpdateNeeded() const noexcept {
   return !activeAnimations_.empty() || !updatedNodeTags_.empty() ||
-      isGestureAnimationInProgress_;
+      isEventAnimationInProgress_;
 }
 
 void NativeAnimatedNodesManager::updateNodes(
@@ -768,14 +768,33 @@ void NativeAnimatedNodesManager::onRender() {
                             g_now().time_since_epoch())
                             .count();
 
-    auto containsChange =
-        onAnimationFrame(static_cast<double>(microseconds) / 1000.0);
+    auto timestamp = static_cast<double>(microseconds) / 1000.0;
+    auto containsChange = onAnimationFrame(timestamp);
 
     if (!containsChange) {
       // The last animation tick didn't result in any changes to the UI.
-      // It is safe to assume any gesture animation that was in progress has
+      // It is safe to assume any event animation that was in progress has
       // completed.
-      isGestureAnimationInProgress_ = false;
+
+      // Step 1: gather all animations driven by events.
+      std::set<int> finishedAnimationValueNodes;
+      for (auto& [key, drivers] : eventDrivers_) {
+        for (auto& driver : drivers) {
+          finishedAnimationValueNodes.insert(driver->getAnimatedNodeTag());
+          if (auto node = getAnimatedNode<ValueAnimatedNode>(
+                  driver->getAnimatedNodeTag())) {
+            updatedNodeTags_.insert(node->tag());
+          }
+        }
+      }
+
+      // Step 2: update all nodes that are connected to the finished animations.
+      updateNodes(finishedAnimationValueNodes);
+
+      isEventAnimationInProgress_ = false;
+
+      // Step 3: commit the changes to the UI.
+      commitProps();
     }
   } else {
     // There is no active animation. Stop the render callback.
