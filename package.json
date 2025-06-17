@@ -17,7 +17,6 @@
     "format": "npm run prettier && npm run clang-format",
     "featureflags": "yarn --cwd packages/react-native featureflags",
     "lint-ci": "./.github/workflow-scripts/analyze_code.sh && yarn shellcheck",
-    "lint-java": "node ./scripts/lint-java.js",
     "lint-markdown": "markdownlint-cli2 2>&1",
     "lint": "eslint --max-warnings 0 .",
     "prettier": "prettier --write \"./**/*.{js,md,yml,ts,tsx}\"",
