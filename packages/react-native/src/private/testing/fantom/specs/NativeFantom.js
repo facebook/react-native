@@ -8,7 +8,10 @@
  * @format
  */
 
-import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
+import type {
+  RootTag,
+  TurboModule,
+} from '../../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
 
@@ -65,14 +68,13 @@ export type ScrollOptions = {
 
 interface Spec extends TurboModule {
   startSurface: (
-    surfaceId: number,
     viewportWidth: number,
     viewportHeight: number,
     devicePixelRatio: number,
     viewportOffsetX?: number,
     viewportOffsetY?: number,
-  ) => void;
-  stopSurface: (surfaceId: number) => void;
+  ) => RootTag;
+  stopSurface: (surfaceId: RootTag) => void;
   enqueueNativeEvent: (
     shadowNode: mixed /* ShadowNode */,
     type: string,
@@ -89,13 +91,16 @@ interface Spec extends TurboModule {
     height: number,
     width: number,
   ) => void;
-  takeMountingManagerLogs: (surfaceId: number) => Array<string>;
+  takeMountingManagerLogs: (surfaceId: RootTag) => Array<string>;
   getDirectManipulationProps: (shadowNode: mixed /* ShadowNode */) => mixed;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
   produceFramesForDuration: (miliseconds: number) => void;
   validateEmptyMessageQueue: () => void;
-  getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
+  getRenderedOutput: (
+    surfaceId: RootTag,
+    config: RenderFormatOptions,
+  ) => string;
   reportTestSuiteResultsJSON: (results: string) => void;
   createShadowNodeReferenceCounter(
     shadowNode: mixed /* ShadowNode */,
