@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-plugins { alias(libs.plugins.kotlin.jvm).apply(false) }
+plugins {
+  alias(libs.plugins.kotlin.jvm).apply(false)
+  alias(libs.plugins.ktfmt).apply(true)
+}
 
 tasks.register("build") {
   dependsOn(
@@ -23,4 +26,21 @@ tasks.register("clean") {
       ":shared-testutil:clean",
       ":shared:clean",
   )
+}
+
+// Configure ktfmt tasks to run on all subprojects
+tasks.named("ktfmtCheck") {
+  subprojects.forEach { subproject ->
+    if (subproject.plugins.hasPlugin("com.ncorti.ktfmt.gradle")) {
+      dependsOn(subproject.tasks.named("ktfmtCheck"))
+    }
+  }
+}
+
+tasks.named("ktfmtFormat") {
+  subprojects.forEach { subproject ->
+    if (subproject.plugins.hasPlugin("com.ncorti.ktfmt.gradle")) {
+      dependsOn(subproject.tasks.named("ktfmtFormat"))
+    }
+  }
 }

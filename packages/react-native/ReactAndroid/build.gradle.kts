@@ -698,37 +698,3 @@ apply(from = "./publish.gradle")
 publishing {
   publications { getByName("release", MavenPublication::class) { artifactId = "react-android" } }
 }
-
-// ktfmt configuration for Kotlin code formatting
-ktfmt {
-  // Custom config: 2 spaces for blocks, 4 spaces for continuation (function params)
-  blockIndent.set(2)
-  continuationIndent.set(4)
-  maxWidth.set(100)
-  removeUnusedImports.set(false)
-  manageTrailingCommas.set(false)
-}
-
-val ktfmtExcludePatterns = listOf(
-  "**/build/**",
-  "**/hermes-engine/**",
-  "**/internal/featureflags/**",
-  "**/systeminfo/ReactNativeVersion.kt"
-)
-
-// Configure ktfmt tasks with common exclusions
-listOf(
-  com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask::class,
-  com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask::class
-).forEach { taskType ->
-  tasks.withType(taskType).configureEach {
-    exclude(ktfmtExcludePatterns)
-  }
-}
-
-// Disable the problematic ktfmt script tasks due to symbolic link issues
-listOf("ktfmtCheckScripts", "ktfmtFormatScripts").forEach { taskName ->
-  tasks.named(taskName) {
-    enabled = false
-  }
-}
