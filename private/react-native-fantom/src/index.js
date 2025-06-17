@@ -217,7 +217,11 @@ export function unstable_produceFramesForDuration(milliseconds: number) {
  *
  * Note: This API is marked as unstable and may change in future versions.
  */
-export function unstable_getDirectManipulationProps(node: ReadOnlyNode): mixed {
+export function unstable_getDirectManipulationProps(
+  node: ReadOnlyNode,
+): $ReadOnly<{
+  [string]: mixed,
+}> {
   const shadowNode = getNativeNodeReference(node);
   return NativeFantom.getDirectManipulationProps(shadowNode);
 }

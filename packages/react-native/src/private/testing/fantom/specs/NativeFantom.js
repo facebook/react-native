@@ -92,7 +92,11 @@ interface Spec extends TurboModule {
     width: number,
   ) => void;
   takeMountingManagerLogs: (surfaceId: RootTag) => Array<string>;
-  getDirectManipulationProps: (shadowNode: mixed /* ShadowNode */) => mixed;
+  getDirectManipulationProps: (
+    shadowNode: mixed /* ShadowNode */,
+  ) => $ReadOnly<{
+    [string]: mixed,
+  }>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
   produceFramesForDuration: (miliseconds: number) => void;
