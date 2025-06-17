@@ -185,7 +185,6 @@ test('animated opacity', () => {
   });
 
   Fantom.unstable_produceFramesForDuration(30);
-  // $FlowFixMe[incompatible-use]
   expect(Fantom.unstable_getDirectManipulationProps(viewElement).opacity).toBe(
     0,
   );
