@@ -1233,7 +1233,8 @@ function handleGenericTypeAnnotation(
   let node;
 
   switch (resolvedTypeAnnotation.type) {
-    case parser.typeAlias: {
+    case parser.typeAlias:
+    case 'OpaqueType': {
       typeResolutionStatus = getTypeResolutionStatus(
         'alias',
         typeAnnotation,
