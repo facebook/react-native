@@ -175,6 +175,80 @@ void PerformanceTracer::reportMeasure(
   });
 }
 
+void PerformanceTracer::reportTimeStamp(
+    const std::string& label,
+    HighResTimeStamp timestamp) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  folly::dynamic data = folly::dynamic::object("message", label)("name", label);
+  buffer_.push_back(TraceEvent{
+      .name = "TimeStamp",
+      .cat = "devtools.timeline",
+      .ph = 'I',
+      .ts = timestamp,
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
+      .args = folly::dynamic::object("data", std::move(data)),
+  });
+}
+
+void PerformanceTracer::reportTimeStamp(
+    const std::string& label,
+    const TimeStampEntry& start,
+    const TimeStampEntry& end,
+    const std::optional<std::string>& trackName,
+    const std::optional<std::string>& trackGroup,
+    const std::optional<TimeStampColor>& color) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  folly::dynamic data = folly::dynamic::object("message", label)("name", label);
+  if (std::holds_alternative<HighResTimeStamp>(start)) {
+    data["start"] = highResTimeStampToTracingClockTimeStamp(
+        std::get<HighResTimeStamp>(start));
+  } else {
+    data["start"] = std::get<std::string>(start);
+  }
+  if (std::holds_alternative<HighResTimeStamp>(end)) {
+    data["end"] = highResTimeStampToTracingClockTimeStamp(
+        std::get<HighResTimeStamp>(end));
+  } else {
+    data["end"] = std::get<std::string>(end);
+  }
+  if (trackName) {
+    data["track"] = *trackName;
+  }
+  if (trackGroup) {
+    data["trackGroup"] = *trackGroup;
+  }
+  if (color) {
+    data["color"] = timeStampColorToString(*color);
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "TimeStamp",
+      .cat = "devtools.timeline",
+      .ph = 'I',
+      .ts = HighResTimeStamp::now(),
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
+      .args = folly::dynamic::object("data", std::move(data)),
+  });
+}
+
 void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
   if (!tracing_) {
     return;

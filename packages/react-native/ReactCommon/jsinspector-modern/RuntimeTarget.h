@@ -284,6 +284,11 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   void installDebuggerSessionObserver();
 
   /**
+   * https://developer.chrome.com/docs/devtools/performance/extension#inject_your_data_with_consoletimestamp
+   */
+  void installConsoleTimeStamp();
+
+  /**
    * Propagates the debugger session state change to the JavaScript via calling
    * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
    */
