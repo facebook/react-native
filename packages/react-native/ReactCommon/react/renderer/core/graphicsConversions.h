@@ -50,11 +50,11 @@ inline std::string toString(const SharedColor& value) {
   std::snprintf(
       buffer.data(),
       buffer.size(),
-      "rgba(%.0f, %.0f, %.0f, %.0f)",
+      "rgba(%.0f, %.0f, %.0f, %f)",
       components.red * 255.f,
       components.green * 255.f,
       components.blue * 255.f,
-      components.alpha * 255.f);
+      components.alpha);
   return buffer.data();
 }
 
