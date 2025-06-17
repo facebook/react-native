@@ -55,7 +55,7 @@ runs:
           TASKS="publishAllToMavenTempLocal publishAndroidToSonatype build"
         else
           # release: we want to build all archs (default)
-          TASKS="publishAllToMavenTempLocal publishAndroidToSonatype closeSonatypeStagingRepository build"
+          TASKS="publishAllToMavenTempLocal publishAndroidToSonatype build"
         fi
         ./gradlew $TASKS -PenableWarningsAsErrors=true
     - name: Save Android ccache
