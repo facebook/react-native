@@ -17,22 +17,23 @@ import com.facebook.react.bridge.UiThreadUtil
  */
 public class ViewManagerRegistry : ComponentCallbacks2 {
 
-  private val viewManagers: MutableMap<String, ViewManager<*, *>>
+  private val viewManagersMap: MutableMap<String, ViewManager<*, *>>
   private val viewManagerResolver: ViewManagerResolver?
 
   public constructor(viewManagerResolver: ViewManagerResolver) {
-    this.viewManagers = mutableMapOf<String, ViewManager<*, *>>()
+    this.viewManagersMap = mutableMapOf<String, ViewManager<*, *>>()
     this.viewManagerResolver = viewManagerResolver
   }
 
   public constructor(viewManagerList: List<ViewManager<in Nothing, in Nothing>>) {
-    viewManagers = viewManagerList.associateBy { it.name }.toMutableMap()
-    viewManagerResolver = null
+    this.viewManagersMap = viewManagerList.associateBy { it.name }.toMutableMap()
+    this.viewManagerResolver = null
   }
 
   public constructor(viewManagerMap: Map<String, ViewManager<*, *>>?) {
-    viewManagers = viewManagerMap?.toMutableMap() ?: mutableMapOf<String, ViewManager<*, *>>()
-    viewManagerResolver = null
+    this.viewManagersMap =
+        viewManagerMap?.toMutableMap() ?: mutableMapOf<String, ViewManager<*, *>>()
+    this.viewManagerResolver = null
   }
 
   /**
@@ -44,13 +45,13 @@ public class ViewManagerRegistry : ComponentCallbacks2 {
   @Synchronized
   public fun get(className: String): ViewManager<*, *> {
     // 1. Try to get the manager without the prefix.
-    viewManagers[className]?.let {
+    viewManagersMap[className]?.let {
       return it
     }
 
     // 2. Try to get the manager with the RCT prefix.
     val rctViewManagerName = "RCT$className"
-    viewManagers[rctViewManagerName]?.let {
+    viewManagersMap[rctViewManagerName]?.let {
       return it
     }
 
@@ -79,7 +80,7 @@ public class ViewManagerRegistry : ComponentCallbacks2 {
   private fun getViewManagerFromResolver(className: String): ViewManager<*, *>? {
     val viewManager = viewManagerResolver?.getViewManager(className)
     if (viewManager != null) {
-      viewManagers[className] = viewManager
+      viewManagersMap[className] = viewManager
     }
     return viewManager
   }
@@ -91,7 +92,7 @@ public class ViewManagerRegistry : ComponentCallbacks2 {
   @JvmName("getViewManagerIfExists")
   @Synchronized
   internal fun getViewManagerIfExists(className: String): ViewManager<*, *>? {
-    viewManagers[className]?.let {
+    viewManagersMap[className]?.let {
       return it
     }
     return viewManagerResolver?.let { getViewManagerFromResolver(className) }
@@ -100,7 +101,7 @@ public class ViewManagerRegistry : ComponentCallbacks2 {
   /** Send lifecycle signal to all ViewManagers that StopSurface has been called. */
   public fun onSurfaceStopped(surfaceId: Int) {
     val viewManagers: List<ViewManager<*, *>> =
-        synchronized(this) { ArrayList(viewManagers.values) }
+        synchronized(this) { ArrayList(viewManagersMap.values) }
 
     val runnable = {
       for (viewManager in viewManagers) {
@@ -118,7 +119,7 @@ public class ViewManagerRegistry : ComponentCallbacks2 {
   /** Called on instance destroy */
   public fun invalidate() {
     val viewManagers: List<ViewManager<*, *>> =
-        synchronized(this) { ArrayList(viewManagers.values) }
+        synchronized(this) { ArrayList(viewManagersMap.values) }
 
     val runnable = {
       for (viewManager in viewManagers) {
@@ -136,7 +137,7 @@ public class ViewManagerRegistry : ComponentCallbacks2 {
   /** ComponentCallbacks2 method. */
   public override fun onTrimMemory(level: Int) {
     val viewManagers: List<ViewManager<*, *>> =
-        synchronized(this) { ArrayList(viewManagers.values) }
+        synchronized(this) { ArrayList(viewManagersMap.values) }
 
     val runnable = {
       for (viewManager in viewManagers) {
