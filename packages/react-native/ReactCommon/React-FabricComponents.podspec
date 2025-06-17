@@ -129,6 +129,12 @@ Pod::Spec.new do |s|
       sss.exclude_files        = "react/renderer/components/unimplementedview/tests"
       sss.header_dir           = "react/renderer/components/unimplementedview"
     end
+
+    # Legacy header paths for backwards compat
+    ss.subspec "rncore" do |sss|
+      sss.source_files         = "react/renderer/components/rncore/**/*.h"
+      sss.header_dir           = "react/renderer/components/rncore"
+    end
   end
 
   s.subspec "textlayoutmanager" do |ss|
