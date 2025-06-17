@@ -23,6 +23,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
+import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
@@ -36,6 +37,7 @@ import kotlin.math.roundToInt
  * existing layout, previously generated for measurement by Fabric, to ensure consistency of
  * measurements, and avoid duplicate work.
  */
+@DoNotStrip
 internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), ReactCompoundView {
 
   private var clickableSpans: List<ClickableSpan> = emptyList()
@@ -74,7 +76,9 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   @ColorInt var selectionColor: Int? = null
 
   val text: CharSequence?
-    get() = preparedLayout?.layout?.text
+    // Avoid mangling the getter name, to allow black box E2E tests to read text content via
+    // reflection
+    @DoNotStrip get() = preparedLayout?.layout?.text
 
   init {
     initView()
