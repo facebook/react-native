@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RootTag} from 'react-native';
+
 // $FlowExpectedError[untyped-import]
 import micromatch from 'micromatch';
 import * as React from 'react';
@@ -103,7 +105,7 @@ class FantomRenderedOutput {
 export type {FantomRenderedOutput};
 
 export default function getFantomRenderedOutput(
-  surfaceId: number,
+  surfaceId: RootTag,
   config: RenderOutputConfig,
 ): FantomRenderedOutput {
   const {
