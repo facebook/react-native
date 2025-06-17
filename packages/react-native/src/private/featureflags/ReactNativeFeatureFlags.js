@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2d919062947b9901b37a01cbf5c8670>>
+ * @generated SignedSource<<eab8c8d6490730084776ef01c46e0f9d>>
  * @flow strict
  * @noformat
  */
@@ -53,6 +53,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
+  cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
@@ -195,6 +196,10 @@ export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter
  * Use a C++ implementation of Native Animated instead of the platform implementation.
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
+/**
+ * Removes JS sync at end of native animation
+ */
+export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedRemoveJsSync', false);
 /**
  * Disable sync dispatch on the main queue on iOS
  */
