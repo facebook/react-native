@@ -469,7 +469,7 @@ internal object TextLayoutManager {
       baseTextAttributes: TextAttributeProps,
       context: Context
   ): TextPaint {
-    val paint = TextPaint()
+    val paint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
     updateTextPaint(paint, baseTextAttributes, context)
     return paint
   }
