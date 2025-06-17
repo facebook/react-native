@@ -22,6 +22,8 @@ jobs:
         uses: ./.github/actions/setup-node
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
+      - name: Run diff-api-snapshot
+        uses: ./.github/actions/diff-api-snapshot
       - name: Danger
         run: yarn danger ci --use-github-checks --failOnErrors
         working-directory: private/react-native-bots
