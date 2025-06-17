@@ -9348,6 +9348,11 @@ export type {
   PublicRootInstance,
   PublicTextInstance,
 } from \\"./Libraries/ReactPrivate/ReactNativePrivateInterface\\";
+export {
+  default as unstable_VirtualView,
+  VirtualViewMode,
+} from \\"./src/private/components/virtualview/VirtualView\\";
+export type { ModeChangeEvent } from \\"./src/private/components/virtualview/VirtualView\\";
 "
 `;
 

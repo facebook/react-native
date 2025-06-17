@@ -23,8 +23,14 @@ declare var navigator: Navigator;
 // https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
 declare type DOMHighResTimeStamp = number;
 
+declare type PerformanceMarkOptions = {
+  detail?: mixed,
+  startTime?: number,
+};
+
 declare class Performance {
   now: () => DOMHighResTimeStamp;
+  mark(name: string, options?: PerformanceMarkOptions): void;
 }
 
 declare var performance: Performance;
