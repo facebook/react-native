@@ -1230,10 +1230,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return label;
   }
 
-  if (self.isAccessibilityElement) {
-    return RCTRecursiveAccessibilityLabel(self.currentContainerView);
-  }
-  return nil;
+  return RCTRecursiveAccessibilityLabel(self.currentContainerView);
 }
 
 - (NSString *)accessibilityLabelForCoopting
