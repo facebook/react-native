@@ -87,7 +87,7 @@ std::optional<double> NativeAnimatedNodesManager::getValue(Tag tag) noexcept {
   }
 }
 
-// graph
+#pragma mark - Graph
 
 std::unique_ptr<AnimatedNode> NativeAnimatedNodesManager::animatedNode(
     Tag tag,
@@ -235,7 +235,7 @@ void NativeAnimatedNodesManager::dropAnimatedNode(Tag tag) noexcept {
   animatedNodes_.erase(tag);
 }
 
-// mutations
+#pragma mark - Mutations
 
 void NativeAnimatedNodesManager::setAnimatedNodeValue(Tag tag, double value) {
   if (auto node = getAnimatedNode<ValueAnimatedNode>(tag)) {
@@ -280,7 +280,7 @@ void NativeAnimatedNodesManager::stopAnimationsForNode(Tag nodeTag) {
   }
 }
 
-// drivers
+#pragma mark - Drivers
 
 void NativeAnimatedNodesManager::startAnimatingNode(
     int animationId,
@@ -701,7 +701,8 @@ bool NativeAnimatedNodesManager::isOnRenderThread() const noexcept {
   return isOnRenderThread_;
 }
 
-// listeners
+#pragma mark - Listeners
+
 void NativeAnimatedNodesManager::startListeningToAnimatedNodeValue(
     Tag tag,
     ValueListenerCallback&& callback) noexcept {

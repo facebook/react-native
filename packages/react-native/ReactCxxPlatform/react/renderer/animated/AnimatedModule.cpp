@@ -56,7 +56,9 @@ void AnimatedModule::updateAnimatedNodeConfig(
     jsi::Runtime& rt,
     Tag tag,
     jsi::Object config) {
-  // TODO(T196513045): missing implementation
+  // TODO(T196513045): missing implementation. This API is only used by Animated
+  // when PlatformColor API is used and animation is updated with a new value
+  // through AnimatedColor.setValue.
 }
 
 void AnimatedModule::getValue(
@@ -191,11 +193,15 @@ void AnimatedModule::removeAnimatedEventFromView(
 void AnimatedModule::addListener(
     jsi::Runtime& /*rt*/,
     const std::string& /*eventName*/) {
-  // TODO(T225953415): missing implementation
+  // Not needed in C++ Animated. addListener is used to synchronise event
+  // animations like onScroll with React and Fabric. However C++ Animated
+  // synchronises with Fabric directly.
 }
 
 void AnimatedModule::removeListeners(jsi::Runtime& /*rt*/, int /*count*/) {
-  // TODO(T225953457): missing implementation
+  // Not needed in C++ Animated. removeListeners is used to synchronise event
+  // animations like onScroll with React and Fabric. However C++ Animated
+  // synchronises with Fabric directly.
 }
 
 void AnimatedModule::queueAndExecuteBatchedOperations(
