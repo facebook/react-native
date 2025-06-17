@@ -17,15 +17,11 @@ import {
   Button,
   DeviceInfo,
   Modal,
-  // SafeAreaView is deprecated. Use `react-native-safe-area-context` instead.
   SafeAreaView,
   StyleSheet,
   View,
 } from 'react-native';
 
-/**
- * @deprecated SafeAreaView is deprecated. Use `react-native-safe-area-context` instead.
- */
 function SafeAreaViewExample(): React.Node {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
