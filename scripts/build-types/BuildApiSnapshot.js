@@ -212,6 +212,8 @@ async function getCleanedUpRollup(tempDirectory: string) {
 
   const formattedRollup = prettier.format(transformedRollup, {
     parser: 'typescript',
+    semi: false,
+    trailingComma: 'all',
   });
 
   return formattedRollup;
