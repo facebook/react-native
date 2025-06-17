@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<892db232156970e8241d1f1ddde3a745>>
+ * @generated SignedSource<<e671a1bb72c4b5afcd6f364f05666e89>>
  */
 
 /**
@@ -28,6 +28,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
+
+  @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
   @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<898d5acbbe56a09ea10e9423accd69fd>>
+ * @generated SignedSource<<fa8ed2b8df27a93af45d70bef48a6060>>
  */
 
 /**
@@ -41,6 +41,8 @@ class NativeReactNativeFeatureFlags
   bool animatedShouldSignalBatch(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
+
+  bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
 
   bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
 

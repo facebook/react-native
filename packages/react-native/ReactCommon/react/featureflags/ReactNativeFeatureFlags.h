@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<25b3585f3648fe156fab4a5abbf32e60>>
+ * @generated SignedSource<<8112c62255be23bde3fc558953dc8b67>>
  */
 
 /**
@@ -53,6 +53,11 @@ class ReactNativeFeatureFlags {
    * Use a C++ implementation of Native Animated instead of the platform implementation.
    */
   RN_EXPORT static bool cxxNativeAnimatedEnabled();
+
+  /**
+   * Removes JS sync at end of native animation
+   */
+  RN_EXPORT static bool cxxNativeAnimatedRemoveJsSync();
 
   /**
    * Disable sync dispatch on the main queue on iOS
