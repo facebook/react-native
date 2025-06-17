@@ -13,6 +13,8 @@
 
 #include "MethodInvoker.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 class Instance;
@@ -85,3 +87,5 @@ class JavaNativeModule : public NativeModule {
 };
 
 } // namespace facebook::react
+
+#endif
