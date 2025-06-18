@@ -259,17 +259,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableInteropViewManagerClassLookUpOptimizationIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-06-17',
-        description:
-          'This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableIntersectionObserverEventLoopIntegration: {
       defaultValue: true,
       metadata: {

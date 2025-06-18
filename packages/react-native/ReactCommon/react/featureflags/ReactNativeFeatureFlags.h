@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<25bace4eb813dedb3fb05cd0170aedf5>>
+ * @generated SignedSource<<25b3585f3648fe156fab4a5abbf32e60>>
  */
 
 /**
@@ -138,11 +138,6 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
-
-  /**
-   * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
-   */
-  RN_EXPORT static bool enableInteropViewManagerClassLookUpOptimizationIOS();
 
   /**
    * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.

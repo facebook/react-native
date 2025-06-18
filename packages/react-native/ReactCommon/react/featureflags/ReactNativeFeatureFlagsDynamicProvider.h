@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f23fb31f7ba7f92362ecede5b0666155>>
+ * @generated SignedSource<<5e0fefd464f6f7f693eaad1b72441d1a>>
  */
 
 /**
@@ -223,15 +223,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
-  }
-
-  bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
-    auto value = values_["enableInteropViewManagerClassLookUpOptimizationIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableInteropViewManagerClassLookUpOptimizationIOS();
   }
 
   bool enableIntersectionObserverEventLoopIntegration() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<671a38628896126536e8390758032617>>
+ * @generated SignedSource<<898d5acbbe56a09ea10e9423accd69fd>>
  */
 
 /**
@@ -75,8 +75,6 @@ class NativeReactNativeFeatureFlags
   bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
-
-  bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
 
   bool enableIntersectionObserverEventLoopIntegration(jsi::Runtime& runtime);
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<debf3b462af8766b6921d6a6879971bb>>
+ * @generated SignedSource<<4c40e490481c50d2f19830366f50aad5>>
  */
 
 /**
@@ -149,12 +149,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
-
-  /**
-   * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
-   */
-  @JvmStatic
-  public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = accessor.enableInteropViewManagerClassLookUpOptimizationIOS()
 
   /**
    * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.

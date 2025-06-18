@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7dc8b9b303060f53704acef5cd87299f>>
+ * @generated SignedSource<<e718763435de15f788b1f510e4799a67>>
  */
 
 /**
@@ -44,7 +44,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
-  private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
   private var enableIntersectionObserverEventLoopIntegrationCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
@@ -274,16 +273,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableIOSViewClipToPaddingBox()
       accessedFeatureFlags.add("enableIOSViewClipToPaddingBox")
       enableIOSViewClipToPaddingBoxCache = cached
-    }
-    return cached
-  }
-
-  override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean {
-    var cached = enableInteropViewManagerClassLookUpOptimizationIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableInteropViewManagerClassLookUpOptimizationIOS()
-      accessedFeatureFlags.add("enableInteropViewManagerClassLookUpOptimizationIOS")
-      enableInteropViewManagerClassLookUpOptimizationIOSCache = cached
     }
     return cached
   }

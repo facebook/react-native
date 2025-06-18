@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc393eb9e9b219068bbf01c38d17d555>>
+ * @generated SignedSource<<76edde93369be682e837189f82871dfe>>
  */
 
 /**
@@ -62,8 +62,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableIOSTextBaselineOffsetPerLine(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
-
-  override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
 
   override fun enableIntersectionObserverEventLoopIntegration(): Boolean = true
 
