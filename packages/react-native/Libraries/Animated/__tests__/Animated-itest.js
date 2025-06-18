@@ -141,8 +141,7 @@ test('animation driven by onScroll event', () => {
 
   expect(transform.translateY).toBeCloseTo(100, 0.001);
 
-  // TODO(T226364699): this should `toBe(100)` but we are not syncing shadow tree yet.
-  expect(viewElement.getBoundingClientRect().y).toBe(0);
+  expect(viewElement.getBoundingClientRect().y).toBe(100);
 });
 
 test('animated opacity', () => {
