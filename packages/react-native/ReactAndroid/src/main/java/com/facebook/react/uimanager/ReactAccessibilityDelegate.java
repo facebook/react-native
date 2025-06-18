@@ -117,6 +117,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
             || view.getTag(R.id.accessibility_order) != null
+            || (view.getTag(R.id.accessibility_order_parent) != null && view.isFocusable())
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
@@ -538,7 +539,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
-    if (mView.getTag(R.id.accessibility_order) != null) {
+    if ((mView.getTag(R.id.accessibility_order) != null)
+        || ((mView.getTag(R.id.accessibility_order_parent) != null) && mView.isFocusable())) {
       return super.getAccessibilityNodeProvider(host);
     }
 

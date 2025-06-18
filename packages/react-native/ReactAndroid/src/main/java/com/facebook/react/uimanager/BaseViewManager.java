@@ -355,6 +355,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 @Override
                 public void onChildViewAdded(View parent, View child) {
                   view.setTag(R.id.accessibility_order_dirty, true);
+                  child.setTag(R.id.accessibility_order_parent, parent);
+                  ReactAccessibilityDelegate.setDelegate(
+                      child, child.isFocusable(), child.getImportantForAccessibility());
 
                   // We also want to listen to changes on the hierarchy of nested ViewGroups
                   if (child instanceof ViewGroup) {
