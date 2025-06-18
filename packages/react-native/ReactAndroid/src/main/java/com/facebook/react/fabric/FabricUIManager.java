@@ -1317,7 +1317,7 @@ public class FabricUIManager
     @UiThread
     @ThreadConfined(UI)
     @Override
-    public void willMountItems(@Nullable List<MountItem> mountItems) {
+    public void willMountItems(@Nullable List<? extends MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.willMountItems(FabricUIManager.this);
       }
@@ -1326,7 +1326,7 @@ public class FabricUIManager
     @UiThread
     @ThreadConfined(UI)
     @Override
-    public void didMountItems(@Nullable List<MountItem> mountItems) {
+    public void didMountItems(@Nullable List<? extends MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.didMountItems(FabricUIManager.this);
       }
