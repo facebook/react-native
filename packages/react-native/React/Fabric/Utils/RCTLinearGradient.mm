@@ -43,7 +43,7 @@ using namespace facebook::react;
   CGFloat gradientLineLength = sqrt(dx * dx + dy * dy);
   const auto colorStops = [RCTGradientUtils getFixedColorStops:gradient.colorStops
                                             gradientLineLength:gradientLineLength];
-  NSMutableArray *colors = [NSMutableArray array];
+  NSMutableArray<id> *colors = [NSMutableArray array];
   NSMutableArray<NSNumber *> *locations = [NSMutableArray array];
   CGPoint relativeStartPoint = CGPointMake(startPoint.x / size.width, startPoint.y / size.height);
   CGPoint relativeEndPoint = CGPointMake(endPoint.x / size.width, endPoint.y / size.height);
@@ -51,24 +51,18 @@ using namespace facebook::react;
   CGPoint fixedStartPoint;
   CGPoint fixedEndPoint;
   
-  std::tie(fixedStartPoint, fixedEndPoint) = [RCTGradientUtils fixGradientPoints: relativeStartPoint endPoint: relativeEndPoint bounds:size];
+  std::tie(fixedStartPoint, fixedEndPoint) = [RCTGradientUtils getPointsForCAGradientLayerLinearGradient: relativeStartPoint endPoint: relativeEndPoint bounds:size];
   
   gradientLayer.startPoint = fixedStartPoint;
   gradientLayer.endPoint = fixedEndPoint;
-
-  for (size_t i = 0; i < colorStops.size(); ++i) {
-    const auto &colorStop = colorStops[i];
-    CGColorRef cgColor = RCTCreateCGColorRefFromSharedColor(colorStop.color);
-    [colors addObject:(__bridge id)cgColor];
-    [locations addObject: @(std::max(std::min(colorStop.position.value(), 1.0), 0.0))];
+  
+  for (const auto &colorStop : colorStops) {
+    [colors addObject:(id) RCTUIColorFromSharedColor(colorStop.color).CGColor];
+    [locations addObject:@(std::max(std::min(colorStop.position.value(), 1.0), 0.0))];
   }
   
   gradientLayer.colors = colors;
   gradientLayer.locations = locations;
-
-  for (id color in colors) {
-    CGColorRelease((__bridge CGColorRef)color);
-  }
   
   return gradientLayer;
 }

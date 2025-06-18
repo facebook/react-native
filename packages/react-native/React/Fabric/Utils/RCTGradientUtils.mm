@@ -46,7 +46,7 @@ struct LineSegment {
   CGFloat getSlope() const
   {
     CGFloat dx = p2.x - p1.x;
-    if (facebook::react::floatEquality(dx, 0.0f)) {
+    if (floatEquality(dx, 0.0f)) {
       return std::numeric_limits<CGFloat>::infinity();
     }
     return (p2.y - p1.y) / dx;
@@ -58,7 +58,7 @@ struct LineSegment {
     if (std::isinf(slope)) {
       return 0.0;
     }
-    if (facebook::react::floatEquality(slope, 0.0f)) {
+    if (floatEquality(slope, 0.0f)) {
       return -std::numeric_limits<CGFloat>::infinity();
     }
     return -1 / slope;
@@ -113,7 +113,7 @@ struct Line {
   {
     CGFloat n = other.m;
     CGFloat c = other.b;
-    if (facebook::react::floatEquality(m, n)) {
+    if (floatEquality(m, n)) {
       return std::nullopt;
     }
     CGFloat x = (c - b) / (m - n);
@@ -127,7 +127,7 @@ LineSegment::LineSegment(CGPoint p1, CGFloat m, CGFloat distance) : p1(p1)
   CGPoint measuringPoint = line.point(p1.x + 1);
   LineSegment measuringSegment(p1, measuringPoint);
   CGFloat measuringDeltaH = measuringSegment.getDistance();
-  CGFloat deltaX = !facebook::react::floatEquality(measuringDeltaH, 0.0f) ? distance / measuringDeltaH : 0.0f;
+  CGFloat deltaX = !floatEquality(measuringDeltaH, 0.0f) ? distance / measuringDeltaH : 0.0f;
   p2 = line.point(p1.x + deltaX);
 }
 
@@ -189,18 +189,18 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
     SharedColor leftSharedColor = colorStops[x - 1].color;
     SharedColor rightSharedColor = colorStops[x + 1].color;
     
-    if (facebook::react::floatEquality(leftDist, rightDist)) {
+    if (floatEquality(leftDist, rightDist)) {
       colorStops.erase(colorStops.begin() + x);
       --indexOffset;
       continue;
     }
     
-    if (facebook::react::floatEquality(leftDist, .0f)) {
+    if (floatEquality(leftDist, .0f)) {
       colorStops[x].color = rightSharedColor;
       continue;
     }
     
-    if (facebook::react::floatEquality(rightDist, .0f)) {
+    if (floatEquality(rightDist, .0f)) {
       colorStops[x].color = leftSharedColor;
       continue;
     }
@@ -254,7 +254,7 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
       auto green = (interpolatedColor >> 8) & 0xFF;
       auto blue = interpolatedColor & 0xFF;
       
-      newStop.color = facebook::react::colorFromRGBA(red, green, blue, alpha);
+      newStop.color = colorFromRGBA(red, green, blue, alpha);
     }
     
     // Replace the color hint with new color stops
@@ -339,12 +339,12 @@ gradientLineLength:(CGFloat)gradientLineLength
 // CAGradientLayer linear gradient squishes the non-square gradient to square gradient.
 // This function fixes the "squished" effect.
 // See https://stackoverflow.com/a/43176174 for more information.
-+ (std::pair<CGPoint, CGPoint>)fixGradientPoints:(CGPoint)startPoint
++ (std::pair<CGPoint, CGPoint>)getPointsForCAGradientLayerLinearGradient:(CGPoint)startPoint
 endPoint:(CGPoint)endPoint
 bounds:(CGSize)bounds
 {
-  if (facebook::react::floatEquality(startPoint.x, endPoint.x) ||
-      facebook::react::floatEquality(startPoint.y, endPoint.y)) {
+  if (floatEquality(startPoint.x, endPoint.x) ||
+      floatEquality(startPoint.y, endPoint.y)) {
     // Apple's implementation of horizontal and vertical gradients works just fine
     return {startPoint, endPoint};
   }
