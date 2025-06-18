@@ -90,7 +90,7 @@ const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
  * /**
  *  * @flow strict-local
  *  * @fantom_mode opt
- *  * @fantom_hermes_variant static_hermes
+ *  * @fantom_hermes_variant static_hermes_stable
  *  * @fantom_flags commonTestFlag:true
  *  * @fantom_flags jsOnlyTestFlag:true
  *  * @fantom_react_fb_flags reactInternalFlag:true
@@ -101,8 +101,8 @@ const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
  * - `fantom_mode`: specifies the level of optimization to compile the test
  *  with. Valid values are `dev`, `dev-bytecode` and `opt`.
  * - `fantom_hermes_variant`: specifies the Hermes variant to use to run the
- *  test. Valid values are `hermes`, `static_hermes` and
- *  `static_hermes_experimental`.
+ *  test. Valid values are `hermes`, `static_hermes_stable`,
+ *  `static_hermes_staging` and `static_hermes_experimental`.
  * - `fantom_flags`: specifies the configuration for common and JS-only feature
  *  flags. They can be specified in the same pragma or in different ones, and
  *  the format is `<flag_name>:<value>`.
@@ -187,8 +187,11 @@ export default function getFantomTestConfigs(
       case 'hermes':
         config.hermesVariant = HermesVariant.Hermes;
         break;
-      case 'static_hermes':
-        config.hermesVariant = HermesVariant.StaticHermes;
+      case 'static_hermes_stable':
+        config.hermesVariant = HermesVariant.StaticHermesStable;
+        break;
+      case 'static_hermes_staging':
+        config.hermesVariant = HermesVariant.StaticHermesStaging;
         break;
       case 'static_hermes_experimental':
         config.hermesVariant = HermesVariant.StaticHermesExperimental;
@@ -196,7 +199,8 @@ export default function getFantomTestConfigs(
       case '*':
         configVariations.push([
           {hermesVariant: HermesVariant.Hermes},
-          {hermesVariant: HermesVariant.StaticHermes},
+          {hermesVariant: HermesVariant.StaticHermesStable},
+          {hermesVariant: HermesVariant.StaticHermesStaging},
           {hermesVariant: HermesVariant.StaticHermesExperimental},
         ]);
         break;
